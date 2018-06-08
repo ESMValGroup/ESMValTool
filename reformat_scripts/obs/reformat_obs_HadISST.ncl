@@ -24,7 +24,8 @@
 ;;    None
 ;;
 ;; Modification history
-;;    20150422D-A_laue_ax: written.
+;;    20150422-A_laue_ax: written.
+;;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'
 ;;
 ;; ############################################################################
 
@@ -103,8 +104,8 @@ begin
     sst@_FillValue = -1000
     sst@missing_value = -1000
     sst@units = "K"
-    sst@long_name = "sea surface temperature"
-    sst@standard_name = "sst"
+    sst@long_name = "Sea Surface Temperature"
+    sst@standard_name = "sea_surface_temperature"
 
     sst!0 = "time"
     sst!1 = "lat"
@@ -131,10 +132,14 @@ begin
     gAtt@conventions = "CF/CMOR"
 
     ; outfile (file naming following Dominik Kunert, DLR)
-    fout = OUTDIR + "OBS_HadISST_reanaly_1_" + FIELD + "_ts_187001-201412.nc"
+    fout_tos = OUTDIR + "OBS_HadISST_reanaly_1_" + FIELD + \
+               "_tos_187001-201412.nc"
+    fout_ts  = OUTDIR + "OBS_HadISST_reanaly_1_" + FIELD + \
+               "_ts_187001-201412.nc"
 
     ; write sst
-    write_nc(fout, "ts", sst, gAtt)
+    write_nc(fout_tos, "tos", sst, gAtt)
+    write_nc(fout_ts, "ts", sst, gAtt)
 
     delete(sst)
 
@@ -168,11 +173,11 @@ begin
     gAtt@conventions = "CF/CMOR"
 
     ; outfile (file naming following Dominik Kunert, DLR)
-    fout = OUTDIR + "OBS_HadISST_reanaly_20130524_" + FIELD + \
+    fout_sic = OUTDIR + "OBS_HadISST_reanaly_20130524_" + FIELD + \
         "_sic_187001-201412.nc"
 
     ; write sic
-    write_nc(fout, "sic", ice, gAtt)
+    write_nc(fout_sic, "sic", ice, gAtt)
 
     delete(ice)
 

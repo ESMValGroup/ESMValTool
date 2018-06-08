@@ -40,6 +40,7 @@ This namelist is part of the ESMValTool
     <force_calc type="boolean">         False          </force_calc>
     <force_gradecalc type="boolean">    False          </force_gradecalc>
     <force_taylorcalc type="boolean">   False          </force_taylorcalc>
+    <tags> D_anav13jclim, A_anav_al </tags>
 </GLOBAL>
 
 <MODELS>
@@ -75,6 +76,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                     </variable_def_dir>
     <variable MIP="Amon"> tas-degC                             </variable>
     <field_type>          T2Ms                                 </field_type>
+    <tags>                R_atmos, T_phys          </tags> 
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/               </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -98,8 +100,9 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                </variable_def_dir>
     <variable MIP="Amon"> pr-mmday                        </variable>
     <field_type>          T2Ms                            </field_type>
+    <tags>                R_atmos, T_phys                 </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/          </diag_script_cfg_dir>
-
+          
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
     <model> CMIP5_ETHZ   bcc-csm1-1-m     MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
     <model> CMIP5_ETHZ   BNU-ESM          MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -122,6 +125,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
     <variable MIP="Lmon"> NBP                                   </variable>
     <field_type>          T2Ms                                  </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/                </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   BNU-ESM          MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5       </model>
@@ -143,6 +147,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/       </variable_def_dir>
     <variable MIP="Lmon"> GPP                    </variable>
     <field_type>          T2Ms                   </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/ </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -164,6 +169,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
     <variable MIP="Lmon"> GPP                     </variable>
     <field_type>          T2Ms                    </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -185,6 +191,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/       </variable_def_dir>
     <variable MIP="Lmon"> LAI                    </variable>
     <field_type>          T2Ms                   </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/ </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -207,6 +214,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
     <variable MIP="Lmon"> LAI                     </variable>
     <field_type>          T2Ms                    </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -230,6 +238,7 @@ This namelist is part of the ESMValTool
     <variable MIP="Lmon" ref_model="HWSD" exclude="NDP">  CSOIL </variable>
     <variable MIP="Lmon" ref_model="NDP"  exclude="HWSD"> CVEG  </variable>    
     <field_type>          T2Ms                                  </field_type>
+    <tags>                R_land, T_carbon, T_bigchem           </tags>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/                </diag_script_cfg_dir>
 
     <model> CMIP5_ETHZ   bcc-csm1-1       MIP_VAR_DEF   historical   r1i1p1   1986 2005   @{MODELPATH}/ETHZ_CMIP5 </model>

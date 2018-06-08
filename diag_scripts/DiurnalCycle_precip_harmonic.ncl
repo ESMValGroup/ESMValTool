@@ -34,6 +34,7 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"
 
@@ -66,8 +67,11 @@ begin
     ;; ||          REFERENCES INFO               ||
     ;; ||                                        ||
     ;; ============================================
+
+    contrib_authors = "A_rio_ca"
+
     write_references(diag_script,            \  ; script name
-                     "A_rio_ca",             \  ; authors
+                     contrib_authors,        \  ; authors
                      "",                     \  ; contributors
                      "",                     \  ; diag_references
                      "",                     \  ; obs_references
@@ -110,6 +114,11 @@ begin
                             "cn_levels_phase_basic",\
                             "cn_levels_var_basic" /)
     exit_if_missing_atts(diag_script_info, required_attributes)
+
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "PS"
+    end if
 
     ;; Abbreviate a little...
     di = diag_script_info
@@ -374,16 +383,76 @@ begin
     plot_settings@prefix_to_header = ""
     multipanel(storage_vault, di, plot_settings, "amplitude", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    ;; base_name + climofiles are the same for all plots
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+    do n_var = 0, dimsizes(variables) - 1
+        do imod = 0, dimsizes(models@name) - 1
+            climofiles(n_var * dimsizes(models@name) + imod) = \
+                        interface_get_inpaths(imod) + "/" + \
+                        interface_get_infile(variables(n_var), field_types(n_var), imod)
+        end do
+    end do
+
+    ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
+    aux_title_info = di@season + "-amplitude"
+    plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
+          aux_title_info, -1)
+    alltags = array_append_record(tags, "DM_reg", 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
+    caption = di@season + " - amplitude" + plot_settings@part_of_header
+    id = diag_script + "_" + base_name + "-amplitude"
+
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
+
+
     plot_settings@type = "mean"
     plot_settings@part_of_header = " of the 1st harmonic of the mean diurnal cycle of " + variable_info@long_name
     plot_settings@lb_units = "hour"
     multipanel(storage_vault, di, plot_settings, "phase", debuginfo, valid_statistics, res)
+
+   ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
+    aux_title_info = di@season + "-phase"
+    plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
+          aux_title_info, -1)
+    alltags = array_append_record(tags, "DM_reg", 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
+    caption = di@season + " - phase" + plot_settings@part_of_header
+    id = diag_script + "_" + base_name + "-phase"
+
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
 
     plot_settings@type = "mean"
     plot_settings@prefix_to_header = " "
     plot_settings@part_of_header = " of the 1st harmonic of the mean diurnal cycle of " + variable_info@long_name
     plot_settings@lb_units = "%"
     multipanel(storage_vault, di, plot_settings, "var", debuginfo, valid_statistics, res)
+
+   ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
+    aux_title_info = di@season + "-var"
+    plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
+          aux_title_info, -1)
+    alltags = array_append_record(tags, "DM_reg", 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
+    caption = di@season + " - var" + plot_settings@part_of_header
+    id = diag_script + "_" + base_name + "-var"
+
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

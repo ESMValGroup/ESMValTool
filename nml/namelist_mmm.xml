@@ -3,16 +3,21 @@
 <namelist_summary>
 ###############################################################################
 namelist_mmm.xml
-Calculates multi-model means over given models, years and variables.
 
 Description
+Calculates multi-model means over given models, years and variables.
 
 Author
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
+n/a
 
 References
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -32,6 +37,7 @@ This namelist is part of the ESMValTool
     <exit_on_warning  type="boolean">     False          </exit_on_warning>
     <output_file_type>                       ps          </output_file_type>
     <force_calc type="boolean">           False          </force_calc>
+    <tags>                                               </tags>
 </GLOBAL>
 
 <MODELS>
@@ -74,6 +80,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 
     <diag>
@@ -109,6 +117,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 -->
     <!-- *** RCP2.6 simulations *** -->
@@ -146,6 +156,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 
     <diag>
@@ -181,6 +193,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 -->
     <!-- *** RCP4.5 simulations *** -->
@@ -218,6 +232,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 
     <diag>
@@ -253,6 +269,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 -->
     <!-- *** RCP8.5 simulations *** -->
@@ -290,6 +308,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 
     <diag>
@@ -325,6 +345,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     Amon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_atmos, T_phys </tags>
     </diag>
 -->
 
@@ -363,6 +385,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      OImon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      OImon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     OImon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_seaIce, T_seaIce </tags>
     </diag>
 
     <diag>
@@ -396,6 +420,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      OImon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      OImon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     OImon rcp26 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+    <tags> R_seaIce, T_seaIce </tags>
     </diag>
 -->
     <diag>
@@ -429,6 +455,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      OImon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      OImon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     OImon rcp45 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        
+    <tags> R_seaIce, T_seaIce </tags>
     </diag>
 
     <diag>
@@ -462,6 +490,8 @@ This namelist is part of the ESMValTool
     <model> CMIP5_ETHZ MRI-CGCM3      OImon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-M      OImon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ NorESM1-ME     OImon rcp85 r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        
+    <tags> R_seaIce, T_seaIce </tags>    
     </diag>
 
 </DIAGNOSTICS>

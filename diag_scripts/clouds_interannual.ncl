@@ -33,6 +33,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20170620-A_laue_ax: added tags for reporting
 ;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
@@ -55,6 +56,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 begin
@@ -72,6 +75,12 @@ begin
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+
+    ; ###############################
+    ; define diagnostic specific tags
+    ; ###############################
+
+    diag_tags = (/"PT_geo", "DM_global", "ST_clim", "ST_var"/)
 
     ; ###########################################
     ; # references                              #
@@ -163,7 +172,7 @@ begin
         ; add entry "multi-model mean"
 
         dim_MOD = dim_MOD + 1
-        modelsatname = array_append_record((/"multi-model mean"/), \
+        modelsatname = array_append_record((/"multi-model-mean"/), \
                                            models@name, 0)
         delete(models@name)
         models@name = modelsatname
@@ -202,6 +211,10 @@ begin
     ; ###########################################
 
     maps = new(dim_MOD, graphic)  ; collect individual maps in a graphic array
+
+    if (flag_mean) then
+        mmind = new((/dim_MOD/), integer)
+    end if
 
     do imod = 0, dim_MOD - 1
 
@@ -287,8 +300,12 @@ begin
 
             ; Do not process data if already processed
 
-            if (isfilepresent(regr_path) .and. \
-                getenv("ESMValTool_force_calc").eq."False") then
+            force = getenv("ESMValTool_force_calc")
+            if (ismissing(force)) then
+                force = "False"
+            end if
+
+            if (isfilepresent(regr_path) .and. force.eq."False") then
 
                 info_output("Reading in file = " + regr_path, verbosity, 1)
                 var_hreg = ncdf_read(regr_path, var0)
@@ -362,6 +379,7 @@ begin
             end if
 
             if ((.not.skip_this_model).and.(imod.ne.mm_ind)) then
+                mmind(nummod) = imod
                 nummod = nummod + 1
                 if (nummod.eq.1) then  ; first element
                     mmdata = var_hreg
@@ -529,6 +547,32 @@ begin
             text = gsn_add_text(wks, maps(imod), annots(imod), 170, -80, txres)
             draw(maps(imod))
             frame(wks)
+
+            ; *** add meta data for reporting to plots ***
+
+            alltags = array_append_record(tags, diag_tags, 0)
+            caption = "Interannual variability of variable " + variables(0) + \
+                      " from model " + models@name(imod) + "."
+            id = diag_script + "_" + models@name(imod)
+
+            if (imod.ne.mm_ind) then
+                climofiles = interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(variables(0), field_types(0), imod)
+            else
+                climofiles = new(nummod, string)
+                do ii = 0, nummod - 1
+                    climofiles(ii) = \
+                        interface_get_inpaths(mmind(ii)) + "/" + \
+                        interface_get_infile(variables(0), field_types(0), ii)
+                end do
+            end if
+
+            contrib_authors = "A_laue_ax"
+
+            ESMValMD(maps@outfile, alltags, caption, id, variables(0), models@name(imod), climofiles, diag_script, contrib_authors)
+
+            delete([/alltags, caption, id, climofiles/])
+
         end if
     end do  ; imod-loop (models)
 
@@ -574,6 +618,29 @@ begin
     else
         outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
         info_output(" Wrote " + outfile, verbosity, 1)
+
+        alltags = array_append_record(tags, diag_tags, 0)
+        caption = "Interannual variability of variable " + variables(0) + "."
+        id = diag_script + "_" + variables(0) + "_all_models"
+
+        if (flag_mean) then
+            nm = dim_MOD - 1
+        else
+            nm = dim_MOD
+        end if
+        climofiles = new(nm, string)
+        do ii = 0, nm - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" + \
+                interface_get_infile(variables(0), field_types(0), ii)
+        end do
+
+        contrib_authors = "A_laue_ax"
+
+        ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
+
     end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)

@@ -35,6 +35,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170906-A_bock_ls: added tags for reporting
 ;;    20151217-A_laue_ax: changed to new version of "add_legenda" (defined
 ;;                        in diag_scripts/lib/ncl/misc_function.ncl) introduced
 ;;                        with namelist_eyring13jgr
@@ -65,6 +66,8 @@ load "diag_scripts/aux/GO/GO_functions/set_ref_mask.ncl"
 load "diag_scripts/aux/GO/GO_functions/output_area.ncl"
 
 load "diag_scripts/aux/GO/GO_functions/calc_multimean.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 load "diag_scripts/aux/GO/GO_functions/calc_anom.ncl"
 load "diag_scripts/aux/GO/GO_functions/calc_metrics.ncl"
 ;
@@ -754,6 +757,56 @@ begin
     gsn_panel(wks, plot, (/2, 1/), pan)         ; panel plot
     frame(wks)
 
+    ; add meta data to plot (for reporting)
+
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    domain = "DM_reg"
+
+    if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
+        if ((diag_script_info@ts_latrange(0).eq.-90.).and. \
+            (diag_script_info@ts_latrange(1).eq.90.).and.  \
+            (diag_script_info@ts_lonrange(0).eq.0.).and. \
+            (diag_script_info@ts_lonrange(1).eq.360.)) then
+            domain = "DM_global"
+        end if
+    else
+        if ((diag_script_info@ts_latrange(0).eq.-90.).and. \
+            (diag_script_info@ts_latrange(1).eq.90.)) then
+            domain = "DM_global"
+        end if
+    end if
+
+    if (anom .eq. "anom") then
+        stat = "ST_anomaly"
+        captionadd = "anomalies"
+    else
+        stat = "ST_mean"
+        captionadd = "means"
+    end if
+
+    alltags = array_append_record(tags, (/"PT_time", stat, domain/), 0)
+
+    if (diag_script_info@ts_multimean.eq."y") then
+        allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+    else
+        allmodelnames = models@name
+    end if
+
+    caption = "Time series of the " + captionadd + " for variable " + variables(0) \
+              + " for all seasons."
+
+    id = diag_script + "_seasonal_" + variables(0)
+
+    contrib_authors = (/"A_eyri_ve", "A_gett_an", "A_cion_ir", "A_andr_ol", "A_enri_col"/)
+
+    ESMValMD(diri_out + "/" + output_filename, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
+
     delete(plot)
 
     ;; seasonal loop here...
@@ -817,6 +870,14 @@ begin
     pan@gsnFrame = False
     gsn_panel(wks, plot, (/2, 2/), pan)         ; panel plot
     frame(wks)
+
+    ; add meta data to plot (for reporting)
+
+    caption = "Time series of the " + captionadd + " for variable " + variables(0) 
+
+    id = diag_script + "_" + variables(0)
+
+    ESMValMD(diri_out + "/" + output_filename, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
     delete(Ydata)
     delete(Xdata)

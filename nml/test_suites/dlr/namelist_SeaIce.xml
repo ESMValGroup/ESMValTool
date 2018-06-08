@@ -42,10 +42,25 @@ This namelist is part of the ESMValTool
 <MODELS>
     <model>  CMIP5_ETHZ  MPI-ESM-LR  OImon    historical  r1i1p1  2001  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
     <model>  CMIP5_ETHZ  MPI-ESM-MR  OImon    historical  r1i1p1  2002  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
-    <model>  OBS         HadISST     reanaly  20130524            1999  2004  @{OBSPATH}/Tier2/HadISST/       </model> 
 </MODELS>
 
 <DIAGNOSTICS>
+<diag>
+    <description>    Set of NH sit contour and difference plots    </description>
+    <variable_def_dir>                 ./variable_defs/            </variable_def_dir>
+    <variable>                          sit                        </variable>
+    <field_type>                        T2Ms                       </field_type>
+    <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
+    <tags>                              R_seaIce, T_seaIce         </tags>
+
+    <model>  OBS_gridfile  PIOMAS    reanaly   2-1       1999  2004  @{OBSPATH}/Tier2/PIOMAS/
+                       @{OBSPATH}/Tier2/PIOMAS/OBS_PIOMAS_reanaly_2-1_T2Ms_sit_197801-201712.nc  </model>
+
+    <diag_script cfg="cfg_SeaIce_NH_sit.ncl">  SeaIce_polcon.ncl       </diag_script>
+    <diag_script cfg="cfg_SeaIce_NH_sit.ncl">  SeaIce_polcon_diff.ncl  </diag_script>
+</diag>
+
+
 <diag>
     <description> Set of NH Sea Ice conc. timeline, contour and difference plots </description>
     <variable_def_dir>                 ./variable_defs/            </variable_def_dir>
@@ -57,9 +72,9 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon.ncl         </diag_script>
     <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
 
+    <model>  OBS           HadISST   reanaly   20130524  1999  2004  @{OBSPATH}/Tier2/HadISST/   </model> 
     <model>  OBS_gridfile  NSIDC-NT  sat       NH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
-
     <model>  OBS_gridfile  NSIDC-BT  sat       NH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
 </diag>
@@ -75,10 +90,10 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon.ncl         </diag_script>
     <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
 
-    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+    <model>  OBS           HadISST   reanaly   20130524  1999  2004  @{OBSPATH}/Tier2/HadISST/   </model> 
+    <model>  OBS_gridfile  NSIDC-NT  sat       SH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
-
-    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2013  @{OBSPATH}/Tier2/NSIDC/
+    <model>  OBS_gridfile  NSIDC-BT  sat       SH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
 
 </diag>

@@ -2,6 +2,11 @@
 # diagnostics. Authors, diagnostics, observations and projects references
 # are identified by the tags "A", "D", "E" and "P", respectively.
 #
+# For reporting, the following additional namelist and diagnostic tags
+# are defined:
+# "R" = CMIP6 realm, "T" = theme
+# "DM" = domain, "PT" = plot type, "ST" = statistics
+#
 # Add new entries alphabetically (for authors) or at the end of the 
 # respective lists. Do not change the current entries!
 #
@@ -22,6 +27,7 @@ A_loew_al = Loew, Alexander (LMU, Germany - alexander.loew 'at' lmu.de)
 ### Development team
 A_anav_al = Anav, Alessandro (Univ. of Exeter, UK - a.anav 'at' exeter.ac.uk)
 A_andr_ol = Andrews, Oliver (Tyndall Centre, UK - oliverdandrews 'at' googlemail.com)
+A_bock_ls = Bock, Lisa (DLR, Germany - lisa.bock 'at' dlr.de)
 A_chen_ja = Chen, Jack (NCAR, USA - cchen 'at' ucar.edu)
 A_cion_ir = Cionni, Irene (ENEA, Italy - irene.cionni 'at' enea.it)
 A_davi_ed = Davin, Edouard Leopold (ETH, CH, edouard.davin 'at' env.ethz.ch)
@@ -49,7 +55,7 @@ A_mass_fr = Massonnet, Francois (Spain)
 A_mart_gi = Martin, Gill (MetOffice, UK - gill.martin 'at' metoffice.gov.uk)
 A_mell_fe = Mello, Felipe (INPE, Brazil)
 A_mohi_da = Dalvi, Mohit (MetOffice, UK - mohit.dalvi 'at' metoffice.gov.uk)
-A_muel_bn = Muller, Ben (LMU, Germany)
+A_muel_bn = Mueller, Benjamin (LMU, Germany)
 A_niku_gr = Nikulin, Grigory (SMHI, Sweden - grigory.nikulin 'at' smhi.se)
 A_nobr_pa = Nobre, Paulo (INPE, Brazil) 
 A_oliv_ar = Oliveira, Arildo (INPE, Brazil)
@@ -121,21 +127,52 @@ A_tilm_si = Tilmes, Simone (NCAR, US - tilmes 'at' ucar.edu)
 D_0000 = Please acknowledge the author(s).
 D_0001 = Please contact the author(s) to discuss acknowledgment or co-authorship.
 D_0002 = Please acknowledge the project(s).
+D_anav13jclim = Anav et al., J. Clim., 26, 6801-6843, doi: https://doi.org/10.1175/JCLI-D-12-00417.1, 2013.
+D_antonov10usgov = Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
 D_aquila11gmd = Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011.
+D_bakker14essd, Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014.
+D_bianchi12gbc, Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012.
 D_cionni11acp = Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011.
+D_clivar09jclim = CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030, doi: https://doi.org/10.1175/2008JCLI2731.1 (2009)
+D_dong08grl = Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051 (2008)
+D_duemenil00mpimr: Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany (2000)
+D_emmons00jgr = Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000.
 D_eyring06jgr = Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006.
 D_eyring13jgr = Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013.
+D_flato13ipcc = Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, 2013.
+D_gen14jclim = Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1 (2014)
 D_gleckler08jgr = Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008.
+D_goswami99qjrms = Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611–633, doi:10.1002/qj.49712555412 (1999).
 D_hagemann13jadvmodelearthsyst = Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013.
+D_jones15james, J. Adv. Model. Earth Syst., 7, 1554-1575, doi:10.1002/2014MS000416, 2015.
+D_kerry06jclim = Kerry H. et al, J. Climate, 19, 3681-3703, doi:10.1175/JCLI3814.1 (2006)
+D_kim09jclim = Kim, D. et al., J. Climate, 22, 6413-6436, doi:10.1175/2009JCLI3063.1 (2009)
+D_kim12grl = Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012.
+D_key04gbc = Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004.
 D_lauer05acp = Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005.
 D_lauer13jclim = Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013.
 D_lauer17rse = Lauer et al., Remote Sens. Environ., in press, 2017.
-D_li14jclim = Li and Xie, J. Climate, 27, 1765-1780, doi:http://dx.doi.org/10.1175/JCLI-D-13-00337.1, 2014.
+D_li14jclim = Li and Xie, J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014.
+D_lin08jclim = Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008.
+D_lloyd-hughes02jclim = Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846 (2002)
+D_locarini10usgov = Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
+D_mueller14grl = Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055 (2014)
+D_mueller13hess = Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013 (2013)
+D_phillips14eos = Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455 (2
 D_righi13acp = Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013.
 D_righi15gmd = Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015.
-D_anav13jclim = Anav et al., J. Clim., 26, 6801-6843, doi: http://dx.doi.org/10.1175/JCLI-D-12-00417.1, 2013.
+D_roedenbeck13os = Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013.
+D_roehrig13jclim = Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1 (2013)
+D_sperber12asl = Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012.
+D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007.
+D_taylor12 = Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377 (2012)
+D_takahashi14marchem = Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014.
+D_wang99bams = Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2 (1999)
+D_wang11climdyn = Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z (2011)
+D_webster92qjrms = Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877-926. doi:10.1002/qj.49711850705
+D_weedon14wrr = Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638 (2014)
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
-D_Williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
+D_williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
 
 ### OBSERVATIONS REFERENCES ############################################
 
@@ -172,6 +209,7 @@ E_niwa = NIWA
 E_odell08jcli = UWisc - O'Dell et al., J. Climate, 21, 1721-1739, 2008.
 E_lace1 = LACE - Petzold et al., J. Geophys. Res., 107, D21, 8128, 2002.
 E_lace2 = LACE - Schroeder et al., J. Geophys. Res., 107, D21, 8126, 2002.
+E_oct-ave = Oct-AVE - Schwarz et al., J. Geophys. Res., 111, D16207, 2006.
 E_pincus08jcli = MODIS-CFMIP - Pincus et al., J. Climate, 25, 4699-4720, 2012.
 E_saltrace1 = SALTRACE - B. Weinzierl (DLR)
 E_saltrace2 = SALTRACE - K. Fomba (TROPOS)
@@ -179,7 +217,6 @@ E_samum1 = SAMUM - Weinzierl et al., Tellus B 2009.
 E_samum2 = SAMUM - K. Kandler (TU Darmstadt)
 E_srb = SRB
 E_tc4 = TC4 - Spackman et al., Geophys. Res. Lett., 38, L09803, 2011.
-E_texas = Texas - Schwarz et al., J. Geophys. Res., 111, D16207, 2006.
 E_ucnpacific = UCN-Pacific - Clarke and Kapustin, J. Atmos. Sci. 59, 363, 2002.
 E_ukmo = UKMO
 E_weedon14waterresourres = WFDEI - Weedon et al., Water Resour. Res. 50, 2014
@@ -187,9 +224,87 @@ E_weedon14waterresourres = WFDEI - Weedon et al., Water Resour. Res. 50, 2014
 ### PROJECTS REFERENCES ################################################
 
 P_climval = BMBF MiKlip Project ClimVal
+P_cmip6dicad = BMBF CMIP6 Project Germany
 P_cmug = ESA CMUG
+P_crescendo = EU H2020 project CRESCENDO
 P_dlrveu = DLR project VEU
 P_dlrveu2 = DLR project VEU2
 P_embrace = EU FP7 project EMBRACE
 P_esmval = DLR project ESMVal
+P_qa4ecv = QA4ECV
+
+### CMIP6 REALMS (for reporting) #####################################
+
+R_aerosol = aerosol
+R_atmos = atmosphere
+R_atmosChem = atmospheric chemistry
+R_land = land
+R_landIce = land ice
+R_ocean = ocean
+R_ocnBgchem = ocean biogeochemistry
+R_seaIce = sea ice
+
+### THEME (for reporting) ############################################
+
+T_aerosols = aerosols
+T_atmDyn = atmospheric dynamics
+T_bgchem = biogeochemistry
+T_bgphys = biogeophysics
+T_carbon = carbon cycle
+T_chem = chemistry
+T_clouds = clouds
+T_EC = emergent constraint
+T_ghg = greenhouse gases
+T_monsoon = monsoons
+T_phys = physics
+T_seaIce = sea ice
+T_varmodes = modes of variability
+
+### DOMAIN (for reporting) ##########################################
+
+DM_et = extra tropics
+DM_global = global
+DM_midlat = mid-latittudes
+DM_nh = northern hemisphere
+DM_polar = polar
+DM_reg = regional
+DM_sh = southern hemisphere
+DM_trop = tropics
+
+### PLOT TYPE (for reporting) ######################################
+
+PT_errorbar = error bar plot
+PT_bar = bar chart
+PT_diurn = diurnal cycle
+PT_geo = geographical distribution
+PT_portrait = portrait diagram
+PT_polar = polar-stereographic plot
+PT_scatter = scatter plot
+PT_seas = seasonal cycle
+PT_size = size-distribution
+PT_vert = vertical profile
+PT_taylor = taylor diagram
+PT_times = time series
+PT_zonal = zonal mean
+PT_pro = profile (any other kind of line chart)
+PT_other = other plot types
+
+### STATISTICS (for reporting) #####################################
+
+ST_anomaly = anomaly
+ST_corr = correlation
+ST_diff = difference
+ST_eof = empirical orthogonal function (EOF)
+ST_mean = mean
+ST_spectrum = spectrum
+ST_stddev = standard deviation
+ST_var = variability
+ST_rmsd = rmsd
+ST_range = range of values
+ST_trend = temporal trend
+ST_clim = climatology
+ST_perc = percentiles
+ST_median = median
+ST_detrend = detrend
+ST_other = other statistics
 

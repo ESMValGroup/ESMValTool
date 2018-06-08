@@ -31,7 +31,7 @@
 from auxiliary import info
 import exceptions
 import os
-import pdb
+#import pdb
 import projects
 
 
@@ -125,7 +125,15 @@ def cmor_reformat(currProject, project_info, variable, model):
     # Check if the current project has a specific reformat routine,
     # otherwise use default
     if (os.path.isdir("reformat_scripts/" + project)):
-        which_reformat = project
+        # path was found; however on a case insensitive filesystem
+        # like e.g. MacOS, this might be a problem, as
+        # directories OBS and obs are considered to be the same
+        # This causes errors in the namelist processing
+        # a second check is therefore performed here
+        if project in os.listdir('reformat_scripts'):
+            which_reformat = project
+        else:
+            which_reformat = 'default'
     else:
         which_reformat = 'default'
 

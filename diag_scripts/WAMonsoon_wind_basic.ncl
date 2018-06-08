@@ -35,6 +35,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170904-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20140515-A_roeh_ro: written
@@ -53,6 +54,9 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 exact_panel_position_file = "./diag_scripts/aux/" + diag_script_info@my_region + "Monsoon/exact_panel_positions_wind.ncl"
 
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 
 begin
@@ -336,8 +340,79 @@ begin
 
     res@lbBoxCount = dimsizes(diff_colormap) - 1
     three_by_one_vector(storage_vault, di, plot_settings, storage_names, debuginfo, valid_statistics, res)
+
+    ;; Attach Metadata to plots
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    contrib_authors = (/"A_roeh_ro"/)
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+
+    do idx_mod = 0, dim_MOD - 1
+        if (any(idx_mod .eq. plot_settings@idx_ref)) then
+            continue
+        end if
+        caption = "Average of zonal and meridional wind component over the " + \
+               di@season + " season." + \
+               " Zonal wind is in shading and total wind is in vector."
+        alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_geo"/), 0)
+        climofiles = new(2, string)
+        climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_mod)
+        climofiles(1) = interface_get_inpaths(idx_ref(0)) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_ref(0))
+        allmodelnames = (/models@name(idx_mod), models@name(idx_ref(0))/)
+        id = diag_script + "_mean_" + variables(0)
+        aux_filename_info = di@season + "-mean"
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, idx_mod)
+
+        output_file_path = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+
+    end do
+
     if (di@plot_stddev) then
         three_by_one_diff(storage_vault, di, plot_settings, "stddev", debuginfo, valid_statistics, res)
+
+        ;; Attach Metadata to plots
+        do idx_mod = 0, dim_MOD - 1
+            if (any(idx_mod .eq. plot_settings@idx_ref)) then
+                continue
+            end if
+            caption = "Standard deviation of zonal and meridional wind component over the " + \
+               di@season + " season." + \
+               " Zonal wind is in shading and total wind is in vector."
+            alltags = array_append_record(tags, (/"DM_trop", "ST_stddev", "PT_geo"/), 0)
+            id = diag_script + "_stddev_" + variables(0)
+            aux_filename_info = di@season + "-stddev"
+            output_filename = interface_get_figure_filename(diag_script_base,\
+                                                        var0 + var1,\
+                                                        field_type0 + field_type1,\
+                                                        aux_filename_info, idx_mod)
+            output_file_path = output_dir + output_filename + "." + output_file_type
+
+            ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+        end do
+
+    end if
+
+    if (isvar("alltags")) then
+        delete(alltags)
+    end if
+    if (isvar("caption")) then
+        delete(caption)
+    end if
+    if (isvar("id")) then
+        delete(id)
+    end if
+    if (isvar("climofiles")) then
+        delete(climofiles)
     end if
 
     res = orig_res
@@ -349,18 +424,119 @@ begin
     plot_settings@part_of_header = " of " + variable_info@long_name
     multipanel_vector(storage_vault, di, plot_settings, storage_names, debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_geo"/), 0)
+
+    caption = "Average of zonal and meridional wind component over the " + \
+           di@season + " season." + \
+           " Zonal wind is in shading and total wind is in vector."
+
+    id = diag_script + "_mean_" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+
+    aux_title_info = di@season + "-mean"
+
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_title_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, imod/])
+
     plot_settings@type = "diff"
     plot_settings@part_of_header = " of " + variable_info@long_name
     multipanel_vector(storage_vault, di, plot_settings, storage_names, debuginfo, valid_statistics, res)
+
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_reg", "ST_mean", "ST_diff", "PT_geo"/), 0)
+
+    caption = "Difference in zonal and meridional wind component over the " + \
+           di@season + " season." + \
+           " Zonal wind is in shading and total wind is in vector."
+
+    id = diag_script + "_mean_diff" + variables(0)
+
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_title_info = di@season + "-mean-diff"
+
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_title_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
 
     if (di@plot_stddev) then
         plot_settings@type = "mean"
         plot_settings@part_of_header = " of stddev of " + variable_info@long_name
         multipanel(storage_vault, di, plot_settings, "stddev", debuginfo, valid_statistics, res)
 
+        ;; Attach Metadata to plot
+        alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "PT_geo"/), 0)
+
+        caption = "Interannual standard deviation of zonal and meridional wind component over the " + \
+           di@season + " season." + \
+           " Zonal wind is in shading and total wind is in vector."
+
+        id = diag_script + "_stddev" + variables(0)
+
+        diag_script_base = basename(diag_script)
+        output_dir = get_output_dir(plot_dir, diag_script_base)
+        aux_title_info = di@season + "-stddev"
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                        var0 + var1,\
+                                                        field_type0 + field_type1,\
+                                                        aux_title_info, -1)
+        output_file_path = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id/])
+
         plot_settings@type = "diff"
         plot_settings@part_of_header = " of stddev of " + variable_info@long_name
         multipanel(storage_vault, di, plot_settings, "stddev", debuginfo, valid_statistics, res)
+
+        ;; Attach Metadata to plot
+        alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "ST_diff", "PT_geo"/), 0)
+
+        caption = "Difference in interannual standard deviation of zonal and meridional wind component over the " + \
+           di@season + " season." + \
+           " Zonal wind is in shading and total wind is in vector."
+        caption = "Difference in interannual standard deviation of variable "  + variables(0) + \
+                   " and " + variables(1) + " over given seasons (" + di@season + ")"
+
+        id = diag_script + "_stddev_diff" + variables(0)
+
+        diag_script_base = basename(diag_script)
+        output_dir = get_output_dir(plot_dir, diag_script_base)
+        aux_title_info = di@season + "-stddev-diff"
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                        var0 + var1,\
+                                                        field_type0 + field_type1,\
+                                                        aux_title_info, -1)
+        output_file_path = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
+
     end if
 
     ;; Reference plot

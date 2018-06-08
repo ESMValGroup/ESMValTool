@@ -1,0 +1,33 @@
+name: root
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # esmvaltool
+  - cython
+  - basemap
+  - iris
+  - esgf-pyclient
+  - ncl
+  # iris
+  - matplotlib
+  - cartopy
+
+  # ncl
+  - libnetcdf
+  - hdf5
+  - hdf4
+  - xorg-libsm
+  - icu
+  - xorg-libxrender
+  - xorg-libxext
+  - pip:
+      - geoval
+
+  # testing
+  - nose
+  - pytest
+  - pytest-cov
+  - pytest-html
+  - easytest

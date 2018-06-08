@@ -1,35 +1,29 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
-;;#############################################################################
-;; catchment_analysis_val.py
-;; Author: Philipp Sommer (MPI,Germany)
-;;         Stefan Hagemann (MPI, Germany)
-;;         Alexander Loew (LMU, Germany)
-;; EMBRACE project
-;;#############################################################################
-;; Description
-;;    The diagnostics calculates water balance components for different
-;;    catchments and compares the results against observations.
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;
-;; Required variable_info attributes (variable specific)
-;;
-;; Optional variable_info attributes (variable specific)
-;;
-;; Caveats
-;;     !!!Be aware to have no spaces in the filenames and paths!!!
-;;     Otherwise it might produce errors.
-;;
-;; Modification history
-;;    20151029-A_laue_ax: added output of acknowledgements + processed files
-;;                        to log-file
-;;    20150717-A_somm_ph: written
-;;
-;; ############################################################################
+The diagnostics calculates water balance components for different
+catchments and compares the results against observations.
+
+Author: Philipp Sommer (MPI,Germany)
+        Stefan Hagemann (MPI, Germany)
+        Alexander Loew (LMU, Germany)
+EMBRACE project
+
+Required diag_script_info attributes (diagnostics specific)
+
+Optional diag_script_info attributes (diagnostic specific)
+
+Required variable_info attributes (variable specific)
+
+Optional variable_info attributes (variable specific)
+
+Caveats
+    !!!Be aware to have no spaces in the filenames and paths!!!
+    Otherwise it might produce errors.
+
+Modification history
+   20151029-A_laue_ax: added output of acknowledgements + processed files
+                       to log-file
+   20150717-A_somm_ph: written
+
 """
 import os
 import pdb

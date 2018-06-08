@@ -29,6 +29,9 @@ alt_unit = W/m**2,1, W/m2,1
 std_unit = 1
 alt_unit = kg/kg,1, kg kg-1,1
 
+std_unit = W m-2 / W m-2
+alt_unit = W/m2 / W/m2,1
+
 std_unit = mole mole-1
 alt_unit = 1e-6,1.e-6, 1e-9,1.e-9, 1,1, 1e-12,1.e-12, ppm,1.e-6, ppb,1.e-9, ppt,1.e-12, mol/mol,1, mol mol-1,1, mole mole^-1,1
 

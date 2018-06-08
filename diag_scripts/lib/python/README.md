@@ -33,8 +33,20 @@ Thus the ESMVal python library is supposed to look like e.g.
                      |_stattests.py
 
 
+Testing
+-------
+Create tests in the folder tests.
+
+Run them with the command 
+
+```
+pytest
+```
+
 Further reading
 ---------------
 For further reading reagarding modules in python look at the following links:
 
 * http://docs.python.org/2/tutorial/modules.html
+
+

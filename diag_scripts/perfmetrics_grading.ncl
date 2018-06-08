@@ -50,6 +50,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -206,7 +207,7 @@ begin
             delete(tmp)
         end do
 
-        ;; Get the index of the reference/alternative model
+        ;; Get the index of the FpFerence/alternative model
         refs_ind = get_ref_model_idx(models, var_attr_ref(0))
         l_altern = dimsizes(refs_ind).gt.1
       
@@ -226,7 +227,7 @@ begin
                     median = models_only(0:0, :, :, :, :)
                     median(0, :, :, :, :) = dim_median_n(models_only, 0)
                 end if
-                median&model = "Median-model"
+                median&model = "multi-model-median"
                 super_array := array_append_record(median, super_array, 0)
                 delete(median)
                 refs_ind = refs_ind + 1  ; update ref model index
@@ -246,7 +247,7 @@ begin
                     mean = models_only(0:0, :, :, :, :)
                     mean(0, :, :, :, :) = dim_avg_n(models_only, 0)
                 end if
-                mean&model = "Mean-model"
+                mean&model = "multi-model-mean"
                 super_array := array_append_record(mean, super_array, 0)
                 delete(mean)
                 refs_ind = refs_ind + 1  ; update ref model index
@@ -332,6 +333,16 @@ begin
         val@diag_script = (/diag_script/)
         val@var = "grade"
         val@region = location
+        ;add climofiles for tagging
+        val@num_climofiles = dimsizes(models@name)
+        do imod = 0, dimsizes(models@name) -1
+            num_climo = "climofile_"+imod
+            climofile = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+            val@$num_climo$ = climofile
+        end do 
+	print("********************")
+	printVarSummary(val)
 
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(val, val@ncdf_dir)

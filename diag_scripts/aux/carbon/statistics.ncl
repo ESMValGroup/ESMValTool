@@ -20,21 +20,21 @@ load "./diag_scripts/lib/ncl/regridding.ncl"
 
 ;#######################################################################
 undef("Cond_PDF")
-function Cond_PDF(xfit[*]:numeric,   \ ; x-values (from regressionline y=a*x+b)
-                  yfit[*]:numeric,   \ ; y-values (from regressionline y=a*x+b)
-                  Xval[*]:numeric,   \ ; x-values (from models)
-                  Yval[*]:numeric,   \ ; y-values (from models)
-                  MSE[*]:numeric,    \ ; mean sqaured error of regressionline
-                  obs_std[*]:numeric \ ; conditional values
+function Cond_PDF(xfit[*]:numeric,   
+                  yfit[*]:numeric,   
+                  Xval[*]:numeric,   
+                  Yval[*]:numeric,   
+                  MSE[*]:numeric,    
+                  obs_std[*]:numeric 
                   )
 ;;
 ;; Arguments:
-;;  * xfit    : x-values (from regressionline y=a*x+b)
-;;  * yfit    : y-values (from regressionline y=a*x+b)
-;;  * Xval    : x-values (from models)
-;;  * Yval    : y-values (from models)
-;;  * MSE     : mean sqaured error of regressionline
-;;  * obs_std : conditional values
+;;  * xfit    : 1-D array of the X variable (from regressionline y=a*x+b)
+;;  * yfit    : 1-D array of the Y variable (from regressionline y=a*x+b)
+;;  * Xval    : 1-D array of the X variable (from models)
+;;  * Yval    : 1-D array of the Y variable (from models)
+;;  * MSE     : 1-D array of the mean squared error of regressionline
+;;  * obs_std : 1-D array of the conditional values
 ;;
 ;; Description:
 ;;  * calculates the normal (Py_pr) and conditional dirstibution (Py) following
@@ -44,14 +44,7 @@ function Cond_PDF(xfit[*]:numeric,   \ ; x-values (from regressionline y=a*x+b)
 ;;    PDF@y     = X values of distribution
 ;;    PDF@Py    = Y values of normal distribution
 ;;    PDF@Py_pr = Y values of conditional distribution
-;;
-;; Arguments:
-;;  xfit = 1-D array of the X variable (from regressionline y=a*x+b)  
-;;  yfit = 1-D array of the Y variable (from regressionline y=a*x+b)  
-;;  Xval = 1-D array of the Y variable                                
-;;  Yval = 1-D array of the Y variable                                
-;;  MSE  =  1-D array of the mean sqaured error of regressionline      
-;;  obs_std = 1-D array of the conditional values                     
+;;           
 ;;                                                                      
 ;; Modification history:
 ;;    * 20140128 written by S. Wenzel (sabrina.wenzel@dlr.de)
@@ -128,13 +121,19 @@ end
 
 ;########################################################################
 undef("seas_cycle")
-function seas_cycle(\;Xann[*]:numeric, \ ; x-values annual
-                   Xdata[*]:numeric, \ ; x-values monthly
-                   Ydata[*]:numeric, \ ; y-values 
-                     opt[1]:string)
+function seas_cycle(Xdata[*]:numeric, 
+                    Ydata[*]:numeric, 
+                      opt[1]:string)
 ;;
-;; Author: Sabrina Wenzel (DLR, Germany)
-;;
+;; Arguments:
+;;  Xdata = 1-D array of x-values monthly
+;;  Ydata = 1-D array of y-values 
+;;  opt   = possible options: 
+;;         'amplitude' only calculates the relative amplitude of the cycle
+;;         'integral'  only calculates the integral over growing season
+;;         'phase'     only calculates the phase of the cycle
+;;         'all'       calculates all
+;;                                           
 ;; Description:
 ;;  * analyses the sasonal cycle of an de-trendet periodic timeseries eg CO2
 ;;    - calculates the relative seasonal amplitude of the timeseries
@@ -148,16 +147,7 @@ function seas_cycle(\;Xann[*]:numeric, \ ; x-values annual
 ;;    SEAS_CYC@Yday = Y values of phase (zero crossing)
 ;;    SEAS_CYC@Yintg = Y values of integral for growing season
 ;;    SEAS_CYC@Yintd = Y values of integral for dormant season
-;;
-;; Arguments:
-;;  Xdata = 1-D array of x-values monthly
-;;  Ydata = 1-D array of y-values 
-;;  opt   = possible options: 
-;;         'amplitude' only calculates the relative amplitude of the cycle
-;;         'integral'  only calculates the integral over growing season
-;;         'phase'     only calculates the phase of the cycle
-;;         'all'       calculates all
-;;                                                                      
+;;                           
 ;; Modification history:
 ;;    * 20140218 written by S. Wenzel (sabrina.wenzel@dlr.de)
 ;;

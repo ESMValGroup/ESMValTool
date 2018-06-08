@@ -10,10 +10,14 @@ Diagnostics of clouds and hydrological cycle
 Author
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
 References
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -33,6 +37,7 @@ This namelist is part of the ESMValTool
     <exit_on_warning  type="boolean">     False          </exit_on_warning>
     <output_file_type>                       ps          </output_file_type>
     <force_calc type="boolean">           False          </force_calc>
+    <tags>                                P_embrace      </tags>
 </GLOBAL>
 
 <MODELS>
@@ -111,7 +116,7 @@ This namelist is part of the ESMValTool
         <variable>            pr-mmday          </variable>
         <field_type>          T2Ms              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/ </diag_script_cfg_dir>
-
+        <tags>                R_atmos, T_phys   </tags>
         <model> obs4mips   GPCP-SG   L3   v2.2   1980 2005   @{OBSPATH}/Tier1/ </model>
 
         <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl  </diag_script>
@@ -122,6 +127,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/  </variable_def_dir>
         <variable>            tas-degC          </variable>
         <field_type>          T2Ms              </field_type>
+        <tags>                R_atmos, T_phys   </tags>
         <diag_script_cfg_dir> ./nml/cfg_clouds/ </diag_script_cfg_dir>
 
         <model> OBS    ERA-Interim    reanaly   1    1980 2005    @{OBSPATH}/Tier3/ERA-Interim </model>
