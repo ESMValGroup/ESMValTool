@@ -203,7 +203,7 @@ References
 ----------
 
 * Cook, K. H. and E. K. Vizy, 2006: Coupled model simulations of the West African monsoon system: Twentieth- and twenty-first-century simulations. J. Climate, 19, 3681-3703.
-* Roehrig, R., D. Bouniol, F. Guichard, F. Hourdin, and J.-L. Redelsperger, 2013: The Present and Future of the West African Monsoon: A Process-Oriented Assessment of CMIP5 Simulations along the AMMA Transect. J. Climate, 26, 6471-6505. doi: http://dx.doi.org/10.1175/JCLI-D-12-00505.1.
+* Roehrig, R., D. Bouniol, F. Guichard, F. Hourdin, and J.-L. Redelsperger, 2013: The Present and Future of the West African Monsoon: A Process-Oriented Assessment of CMIP5 Simulations along the AMMA Transect. J. Climate, 26, 6471-6505. doi: https://doi.org/10.1175/JCLI-D-12-00505.1.
 
 
 Example plots
