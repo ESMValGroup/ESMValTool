@@ -14,7 +14,7 @@ import sys
 
 from setuptools import Command, setup
 
-from esmvaltool.version import __version__
+from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
@@ -31,9 +31,8 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
-        'cf_units',
+        'cf_units>=2.0.1',
         'cython',
-        'esgf-pyclient',
         'matplotlib',
         'netCDF4',
         'numba',
@@ -126,7 +125,6 @@ class RunTests(CustomCommand):
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
-            '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
@@ -214,7 +212,8 @@ with open('README.md') as readme:
         },
         entry_points={
             'console_scripts': [
-                'esmvaltool = esmvaltool.main:run',
+                'esmvaltool = esmvaltool._main:run',
+                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             ],
         },
         cmdclass={

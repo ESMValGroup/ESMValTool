@@ -3,14 +3,12 @@ import logging
 import os
 import shutil
 from itertools import groupby
-import traceback
 
 import iris
 import iris.exceptions
 import yaml
-import numpy as np
 
-from ..task import write_ncl_settings
+from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
 
