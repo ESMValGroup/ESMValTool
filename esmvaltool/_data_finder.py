@@ -1,5 +1,6 @@
 """Data finder module for the ESMValTool."""
 # Authors:
+# Bouwe Andela (eScience, NL - b.andela@esciencecenter.nl)
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
