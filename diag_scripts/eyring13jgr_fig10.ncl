@@ -35,6 +35,7 @@
 ;# Caveats:                                                                   #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    * 20170816-A_bock_ls: added tags for reporting                          #
 ;#    * 20151209-A-laue_ax: code clean-up, added call to write_references,    #
 ;#                          several bugfixes for processing zonal wind (ua)   #
 ;#                          and handling missing variable attribute "units"   #
@@ -56,6 +57,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;************************************************************************
 ;************************************************************************
@@ -177,6 +180,9 @@ begin
 
     ;--------------------------------------------------------------------------
     ;--------------------------------------------------------------------------
+
+    ;; tagging
+    DM_tag = new(dimsizes(season) , string)
 
     do ipan = 0, dimsizes(season) - 1  ; panel loop
         chem_t       = new((/dim_EXP, dimsizes(list_chem_mod) + 1, yearsize/), "float")
@@ -374,6 +380,36 @@ begin
             end if
         end if
 
+        ;; tagging
+        DM_tag(ipan) = "DM_reg"
+        if (latrange(ipan, 1).eq.90) then
+            if(latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_global"
+            else if (latrange(ipan, 0).eq.60) then
+                DM_tag(ipan) = "DM_polar"
+            else if (latrange(ipan, 0).eq.0) then
+                DM_tag(ipan) = "DM_nh"
+            end if
+            end if
+            end if
+        else if (latrange(ipan, 1).eq.30) then
+            if (latrange(ipan, 0).eq.30.) then
+                DM_tag(ipan) = "DM_trop"
+            end if
+        else if (latrange(ipan, 1).eq.0) then
+            if (latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_sh"
+            end if
+        else if (latrange(ipan, 1).eq.-60) then
+            if (latrange(ipan, 0).eq.-90.) then
+                DM_tag(ipan) = "DM_polar"
+            end if
+        end if
+        end if
+        end if
+        end if
+
+
         res                   = True                      ;  plot mods desired
 
         if ((isatt(variable_info, "units"))) then
@@ -522,6 +558,33 @@ begin
     pan@gsnPanelYWhiteSpacePercent = 5
     gsn_panel(wks, plot, (/dimsizes(season), 1/), pan)  ; panel plot               
     frame(wks)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, DM_tag, 0)
+    alltags := array_append_record(alltags, (/"ST_trend", "PT_other"/), 0)
+
+    caption = "Trends of " + variables(0) + \
+               " for the RCP simulations over given domains, levels and seasons" + \
+               ", similar to Eyring et al., JGR, 2013, fig. 10."
+
+    id = diag_script + "_" + variables(0)
+
+    climofiles = new(dim_MOD, string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    contrib_authors = "A_cion_ir" 
+
+    ESMValMD(output_file_path+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles, DM_tag, imod/])
+
 
     ;--------------------------------------------------
 

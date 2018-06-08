@@ -15,6 +15,9 @@ Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
 Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
 DLR ESMVal
 
@@ -41,6 +44,7 @@ This namelist is part of the ESMValTool
     <force_calc type="boolean">              False         </force_calc>
     <force_gradecalc type="boolean">         False         </force_gradecalc>
     <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+    <tags> P_esmval, P_embrace, P_crescendo, P_c3s-magic, P_cmug, D_gleckler08jgr         </tags>
 </GLOBAL>
 
 <MODELS>
@@ -128,6 +132,8 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_taylor.ncl        </diag_script>
+
+    <tags> R_atmos, T_phys </tags>    
 </diag>
 
 
@@ -197,6 +203,8 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+
+    <tags> R_atmos, T_atmDyn </tags>    
 </diag>
 
 
@@ -265,6 +273,8 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+
+    <tags> R_atmos, T_atmDyn </tags>
 </diag>
 
 
@@ -330,6 +340,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -388,6 +400,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -459,6 +473,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -519,6 +535,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl">         perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl">         perfmetrics_grading.ncl       </diag_script>
+    
+        <tags> R_atmos, R_ocean, T_phys </tags>
 </diag>
 
 
@@ -585,6 +603,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+        <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -648,6 +668,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_clouds </tags>
 </diag>
 
 
@@ -707,6 +729,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -763,6 +787,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 
@@ -822,12 +848,14 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_clouds </tags>
 </diag>
 
 
 <!-- ### SW CLOUD FORCING: lat-lon plot and grading precalculations ############################################################################## -->
 <diag>
-    <description>          Shortwave cloud frocing      </description>
+    <description>          Shortwave cloud forcing      </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
     <variable  ref_model="CERES-EBAF">  SW_CRE          </variable>
     <field_type>           T2Ms                         </field_type>
@@ -879,6 +907,8 @@ This namelist is part of the ESMValTool
     <!-- Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_clouds </tags>
 </diag>
 
 
@@ -918,6 +948,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_aerosol, T_aerosols </tags>
 </diag>
 
 
@@ -948,6 +980,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_aerosol, T_aerosols </tags>
 </diag>
 
 
@@ -978,6 +1012,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_atmDyn </tags>
 </diag>
 
 
@@ -1007,6 +1043,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmos, T_atmDyn </tags>
 </diag>
 
 
@@ -1034,6 +1072,8 @@ This namelist is part of the ESMValTool
 
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl">    perfmetrics_main.ncl          </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl">    perfmetrics_grading.ncl       </diag_script>
+    
+    <tags> R_atmosChem, T_chem, T_ghg </tags>
 </diag>
 
 
@@ -1099,6 +1139,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl">  perfmetrics_main.ncl                 </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl">  perfmetrics_grading.ncl              </diag_script>
+    
+    <tags> R_seaIce, T_seaIce </tags>
 </diag>
 
 
@@ -1163,6 +1205,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl">  perfmetrics_main.ncl                 </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl">  perfmetrics_grading.ncl              </diag_script>
+    
+    <tags> R_seaIce, T_seaIce </tags>
 </diag>
 
 
@@ -1210,6 +1254,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl">       perfmetrics_main.ncl           </diag_script>
     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl">       perfmetrics_grading.ncl        </diag_script>
+    
+    <tags> R_land, T_phys </tags>
 </diag>
 
 <!-- ### SOIL MOISTURE (DEGREE OF SATURATION): grading precalculations ########################################################################## -->
@@ -1230,6 +1276,8 @@ This namelist is part of the ESMValTool
     <!--  Grading precalculations -->
 <!--     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl">       perfmetrics_main.ncl          </diag_script> -->
 <!--     <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl">       perfmetrics_grading.ncl       </diag_script> -->
+    
+<!--    <tags> R_land, T_phys </tags> -->
 <!-- </diag> -->
 
 
@@ -1246,6 +1294,8 @@ This namelist is part of the ESMValTool
 
     <!-- Grading plot -->
     <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
+    
+    <tags> R_atmos, R_aerosol, R_atmosChem, R_land, R_seaIce, T_aerosols, T_atmDyn, T_clouds, T_chem, T_ghg, T_phys, T_seaIce </tags>
 </diag>
 
 
@@ -1262,6 +1312,8 @@ This namelist is part of the ESMValTool
 
     <!-- Taylor plot -->
     <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">     perfmetrics_taylor_collect.ncl          </diag_script>
+    
+    <tags> R_atmos, R_aerosol, R_atmosChem, R_land, R_seaIce, T_aerosols, T_atmDyn, T_clouds, T_chem, T_ghg, T_phys, T_seaIce </tags>
 </diag>
 
 </DIAGNOSTICS>

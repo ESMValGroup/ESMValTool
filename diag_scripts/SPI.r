@@ -22,7 +22,7 @@
 #    to the quantile of the standard normal distribution which is assigned
 #    by preserving the probability of the original precipitation sum, H(x).
 #
-# Required diag_script_info attributes (diagnostics specific)
+# Required diag_script_info attributes (diagnostics specimefic)
 #
 # Optional diag_script_info attributes (diagnostic specific)
 #
@@ -34,6 +34,7 @@
 #    No output of processed files to log-file yet!
 #
 # Modification history
+#    201710??-A_bock_ls: Adding tags for routine evaluation
 #    20151113-A_laue_ax: added header
 #
 # ############################################################################
@@ -42,6 +43,7 @@ source('diag_scripts/aux/SPI/SPI_auxiliary.r')
 source('interface_data/r.interface')
 source(diag_script_cfg)
 source('diag_scripts/lib/R/info_output.r')
+source('diag_scripts/lib/R/meta_data.r')
 
 ## Do not print warnings
 options(warn=-1)
@@ -166,5 +168,14 @@ for (model_idx in c(1:length(models_name))) {
         smallplot <- c(0.1, 0.2, 0.3, 0.7))
     
     invisible(dev.off())
+
+    tags = union(tags,c("PT_geo", "ST_other", "DM_global"))
+    caption <- "Standard Precipitation Index (SPI) trend plots"
+    id = paste("id", diag_script, var0, sep="_")
+    modelnames <- c("MPI", "EMAC")
+    infiles <- fullpath_filename
+    contrib_authors <- c("A_orlo_bo", "A_eval_ma")
+    ESMValMD(figure_filename, tags, caption, id, var0, modelnames, infiles, diag_script, contrib_authors)
+
 }
 info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)

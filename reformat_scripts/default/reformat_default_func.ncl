@@ -375,7 +375,9 @@ begin
             end if
 
             ;; Extract time interval
-            if (rank.eq.4) then
+	    if (rank.eq.5) then
+	        xx = tmp({set_date1:set_date2}, :, :, :, :)
+            else if (rank.eq.4) then
                 xx = tmp({set_date1:set_date2}, :, :, :)
             else if (rank.eq.3) then
                 xx = tmp({set_date1:set_date2}, :, :)
@@ -387,6 +389,7 @@ begin
             end if
             end if
             end if
+	    end if
 
         end if
         delete(tmp)
@@ -1130,6 +1133,11 @@ begin
             continue
         end if
 
+	if (any(dnames(dd).eq.(/"plev", "plev7"/)).and.ndnames.eq.5) then
+	    var!dd = "plev"
+	    continue
+	end if
+
         ;; Pressure level
         if (dnames(dd).eq."plev".or. \
             any(dnames(dd).eq.find_alt_names("plev"))) then
@@ -1179,6 +1187,11 @@ begin
         if (any(dnames(dd).eq.(/"i", "j"/))) then
             continue
         end if
+
+	;; Skip tau (ISCCP variables)
+	if (dnames(dd).eq."tau") then
+	    continue
+	end if
 
         ;; Error if none of the above is called
         error_msg("f", scriptname, funcname, \

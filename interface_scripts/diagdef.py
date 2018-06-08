@@ -69,7 +69,7 @@ class Diag_tag:
     """ @brief Class to hold an instance for a single Diagnostic xml-file
     """
     def __init__(self, variable, var_def_dir, field, var_attr, diag_scripts,
-                 cfg_dir, cfg, diag_specific_models, launch_args):
+                 cfg_dir, cfg, diag_specific_models, tags, launch_args):
         self.variable = variable
         self.var_def_dir = var_def_dir
         self.var_attr = var_attr
@@ -78,10 +78,18 @@ class Diag_tag:
         self.diag_script_cfg_dir = cfg_dir
         self.diag_script_cfg = cfg
         self.diag_specific_models = diag_specific_models
+        # bn_muel ++
+        self.tags=tags
+        # bn_muel ++
         self.launcher_arguments = launch_args
 
     def get_tag_variable(self):
         return self.variable
+    
+    # bn_muel ++
+    def get_tag_tags(self):
+        return self.tags
+    # bn_muel ++
 
     def get_tag_attr(self):
         return self.var_attr
@@ -113,7 +121,7 @@ class Diagnostic:
     """ @brief Class to hold a single Diagnostic instance
     """
     def __init__(self, variable, variable_def_dir, field_type,
-                 var_attrs, diag_script, diag_script_cfg, models, launch_args):
+                 var_attrs, diag_script, diag_script_cfg, models, tags, launch_args):
 
         self.diag_script = diag_script
         self.launcher_arguments = launch_args
@@ -121,7 +129,11 @@ class Diagnostic:
         variable_list = variable.split(",")
         field_types = field_type.split(",")
         self.variables = []
-
+        # bn_muel++
+        self.tags = tags
+        # bn_muel++
+    
+        
         # List valid variable attributes
         possible_var_attr_keys = ["mip", "exp", "ref_model", "id", "exclude", "only"]
         attrs = {}
@@ -199,6 +211,11 @@ class Diagnostic:
 
     def get_variable_def_dir(self):
         return self.variable_def_dir
+    
+    # bn_muel++
+    def get_tags(self):
+        return self.tags
+    # bn_muel++
 
     def id_is_explicitly_excluded(self, var, model):
         """ Checks if variable attributes expclitly excludes

@@ -258,10 +258,29 @@ begin
         fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + \
             "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
+        ;; Add height coordinate to tas variable (required by the new backend)
+        if (VARS(vID).eq."tas") then
+            output@coordinates = "height"
+        end if
+
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)
         delete(gAtt)
         delete(output)
+
+        ;; Add height coordinate to tas variable (required by the new backend)
+        if (VARS(vID).eq."tas") then
+            height = 2.d
+            height!0 = "ncl_scalar"
+            height@units = "m"
+            height@axis = "Z"
+            height@positive = "up"
+            height@long_name = "height"
+            height@standard_name = "height"
+            w = addfile(fout, "w")
+            w->height = height
+            delete(w)
+        end if
 
     end do
 

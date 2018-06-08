@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Test runner script for ESMValtool. This should eventually go into
+# setup.py once this is available. For now a oneliner using pytest
+report_dir='test-reports'
+pytest tests --ignore=tests/test_diagnostics --ignore=tests/test_diagnostics_old --ignore=tests/test_esmval_testlib.py --cov=. --cov-report=term --cov-report=html:$report_dir/coverage_html --cov-report=xml:$report_dir/coverage.xml --junit-xml=$report_dir/report.xml --html=$report_dir/report.html

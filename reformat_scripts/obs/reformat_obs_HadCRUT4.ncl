@@ -4,7 +4,7 @@
 ;; Note: In contrast to the HadCRUT3 reformat script which produces temperature
 ;;       anomalies (relative to the 1961-90 climatology), this script calculates
 ;;       absolute tas by adding the climatology ("absolute.nc") to the anomalies
-;;       ("HadCRUT.4.4.0.0.median.nc").
+;;       ("HadCRUT.4.6.0.0.median.nc").
 ;;###############################################################################
 ;;
 ;; Tier
@@ -14,7 +14,7 @@
 ;;    https://crudata.uea.ac.uk/cru/data/temperature/
 ;;
 ;; Last access
-;;    20160203
+;;    20180222
 ;;
 ;; Download and processing instructions
 ;;    Download the dataset "HadCRUT4" (median temperature anomalies) and
@@ -33,6 +33,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20180222-A_laue_ax: bug fix (added swapping of latitudes if needed)
 ;;    20160203-A_laue_ax: written.
 ;;
 ;;###############################################################################
@@ -55,7 +56,7 @@ begin
 
     ;; Period
     YEAR1 = 1850
-    YEAR2 = 2015
+    YEAR2 = 2017
 
     ;; Selected variable (standard name)
     VARS = (/"tas"/)
@@ -81,29 +82,43 @@ begin
     end if
 
     ;; Read file
-    fname  = INDIR + "HadCRUT.4.4.0.0.median.nc"
+    fname  = INDIR + "HadCRUT.4.6.0.0.median.nc"
     fname2 = INDIR + "absolute.nc"
     f  = addfile(fname, "r")
     f2 = addfile(fname2, "r")
 
     ;; Read variables
     anomaly = f->temperature_anomaly
-    climatology = tofloat(where(.not.ismissing(f2->tem), \
-        f2->tem * f2->tem@scale_factor + 273.15, anomaly@_FillValue))
-    climatology@_FillValue = anomaly@_FillValue
-    climatology@missing_value = anomaly@_FillValue
+    tem = f2->tem
+
+    ;; swap latitudes if needed
+
+    if (isMonotonic(anomaly&latitude) .eq. -1) then
+        anomaly = anomaly(:, ::-1, :)
+    end if
+
+    if (isMonotonic(tem&lat) .eq. -1) then
+        tem = tem(:, ::-1, :)
+    end if
+
+    climatology = tofloat(where(.not.ismissing(tem), \
+        tofloat(tem * tem@scale_factor) + 273.15, tofloat(anomaly@_FillValue)))
+    delete(tem)
+
+    climatology@_FillValue = tofloat(anomaly@_FillValue)
+    climatology@missing_value = tofloat(anomaly@_FillValue)
     info_output("  Climatology range: " + min(climatology) + \
                 " K to " + max(climatology) + " K", verbosity, 1)
+    info_output("  Anomalies range: " + min(anomaly) + \
+                " K to " + max(anomaly) + " K", verbosity, 1)
 
     output = anomaly
-;    printVarSummary(output)
-;    printVarSummary(climatology)
     dims = dimsizes(output)
     do yr = 0, dims(0) / 12 - 1
         m1 = yr * 12
         m2 = m1 + 11
         output(m1:m2, :, :) = where(.not.ismissing(climatology), \
-            output(m1:m2, :, :) + climatology, anomaly@_FillValue)
+            anomaly(m1:m2, :, :) + climatology, tofloat(anomaly@_FillValue))
     end do
 
     info_output("", verbosity, 1)
@@ -114,18 +129,7 @@ begin
     output = tmp
     delete(tmp)
 
-;    ;; Delete level coordinate (dimension 1)
-;    tmp = rm_single_dims(output)
-;    delete(output)
-;    output = tmp
-;    delete(tmp)
-
     ;; Format time coordinate
-;    output_new = output(0:dimsizes(output&time)-3,:,:)
-;    delete(output)
-;    output = output_new
-;    delete(output_new)
-;    output!0 = "time"
     ctime = time_attrib(output&time)
     delete(output&time)
     output&time = ctime

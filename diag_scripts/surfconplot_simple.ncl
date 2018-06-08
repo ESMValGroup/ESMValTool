@@ -8,9 +8,9 @@
 ;#    Creates longitude vs latitude 2D-field contour plots (set5) for the     #
 ;#    AMWG diagnostics package (http://www.cgd.ucar.edu/cms/diagnostics/)     #
 ;#    The original script has been modified for use within the CCMVal         #
-;#    diagnostic software package                                             #
+;#    diagnostic software package.                                             #
 ;#    The CCMVal script script has been furthered developed as a part of      #
-;#    the ESMValTool                                                          #
+;#    the ESMValTool.                                                          #
 ;#                                                                            #
 ;# Required variable_info attributes (variable specific):                     #
 ;#    scp_dcnlvl: vector of contour levels covering range of values for       #
@@ -48,6 +48,7 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/functions_contrib.ncl"
 load "./diag_scripts/uniform_coordinates.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
@@ -303,6 +304,10 @@ begin
 
                     ;; plot differences
                     plot(jmod) = gsn_csm_contour_map_ce(wks, C, res)
+                                                  
+                    ;; tagging
+                    stat_tag = (/"ST_diff", "ST_rmsd", "ST_mean"/)                 
+                    
                     delete(res@cnLevels)
                     delete(res@tiMainString)
                     delete(res@gsnLeftString)
@@ -403,6 +408,10 @@ begin
 
                 ;; plot model data
                 plot(imod) = gsn_csm_contour_map_ce(wks, A, res)
+                
+                ;; tagging
+                stat_tag = (/ "ST_mean"/)                 
+
 
                 delete(res@lbTitleString)
                 delete(res@tiMainString)
@@ -417,6 +426,7 @@ begin
                 delete(A)
                 delete(gblmean_A)
             end do  ; imod
+            delete(imod)
 
         end if
 
@@ -435,10 +445,36 @@ begin
         end if
         gsn_panel(wks, plot, (/n_p, 2/), pan)    ; panel plot
         frame(wks)
+        
+        ;; Attach Metadata to plot
+        xml_name = getenv("ESMValTool_xml_name")
+        suffix = get_file_suffix(xml_name, 0)
+        base_name = str_sub_str(xml_name, suffix, "")
+        id = diag_script + "_" + base_name
+        
+        plot_type_tag = "PT_seas"
+        domain_tag = "DM_global"
+        alltags = array_append_record(stat_tag, (/plot_type_tag, domain_tag/), 0)
+        caption = "Seasonal contour plot of " + variables(0) + " in " + season
+        
+        ;; it is also possible to have +1 variables
+        climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+        do n_var = 0, dimsizes(variables) - 1
+            do imod = 0, dimsizes(models@name) - 1
+                climofiles(n_var * dimsizes(models@name) + imod) = \
+                        interface_get_inpaths(imod) + "/" + \
+                        interface_get_infile(variables(n_var), field_types(n_var), imod)
+            end do
+        end do
+        
+        ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
 
+        delete([/alltags, caption, id, climofiles, domain_tag, stat_tag, plot_type_tag, imod, n_var/])        
+
+        
         delete(plot)
         delete(pan)
-
+        
     end do
 
     delete(res)

@@ -18,11 +18,14 @@ Daniel Senftleben (DLR, Germany - daniel.senftleben@dlr.de)
 Sabrina Wenzel (DLR, Germany - sabrina.wenzel@dlr.de)
 Ulrika Willen (SMHI, Sweden - ulrika.willen@dmhi.se)
 
+Contributor(s)
+n/a
+
 Project
 ESA CMUG
 
 Reference
-Lauer et al., Remote Sensing of Environment (2017)
+Lauer et al., Remote Sensing of Environment (2017), doi:10.1016/j.rse.2017.01.007
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -44,6 +47,7 @@ This namelist is part of the ESMValTool
     <force_calc type="boolean">              False         </force_calc>
     <force_gradecalc type="boolean">         False         </force_gradecalc>
     <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+    <tags>                                   D_lauer17rse, P_cmug   </tags>
 </GLOBAL>
 
 <MODELS>
@@ -1068,6 +1072,7 @@ This namelist is part of the ESMValTool
     <field_type>           T3M                          </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_lauer17rse/        </diag_script_cfg_dir>
     <model>  CMIP5_ETHZ  ACCESS1-0           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <tags> R_atmos, R_land, R_seaIce, R_ocean, R_aerosol, R_atmosChem, T_ghg, T_bgchem, T_phys, T_atmDyn, T_clouds, T_seaIce, T_bgphys , T_aerosols  </tags>
     <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
     </diag>
 

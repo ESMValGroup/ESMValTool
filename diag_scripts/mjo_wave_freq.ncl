@@ -25,6 +25,7 @@
 ;;            http://ncl.ucar.edu/Applications/mjoclivar.shtml
 ;;
 ;; Modification history
+;;     20170918-A_bock_ls: added tags for reporting
 ;;     20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                         of the code
 ;;     20150828-A_wang_sh: written
@@ -51,6 +52,8 @@ load "./diag_scripts/aux/SAMonsoon/descriptions.ncl"
 load "./diag_scripts/aux/mjo/mjo.ncl"
 load "./plot_scripts/ncl/mjo_level1.ncl"
 load "./plot_scripts/ncl/mjo_level2.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -155,6 +158,21 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     optPlot = True
+
+    ;-----------------------------------------------------------------------------
+    ; for meta data
+        climofiles = new(dim_MOD, string)
+        do ii = 0, dim_MOD - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+        domain = "DM_global"
+        alltags = array_append_record(tags, (/"PT_other", "ST_spectrum", domain/), 0)
+        contrib_authors = (/"A_wang_sh"/)
+    ;-----------------------------------------------------------------------------
+
+
     do s = 0, dimsizes(seasons) - 1
 
         ;; ***************************************************************
@@ -234,6 +252,17 @@ begin
         delete(plot)
         delete(pan)
         delete(n_p)
+
+        ; add meta data to plot (for reporting)
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  "wavenumber - frequency spectra of season " + seasons(s) + \
+                  " of variable " + var0
+
+        id = diag_script + "_" + variables(0) + "_" + seasons(s)
+
+        outfile = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(outfile, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
 
     end do  ; end number of season loop
 

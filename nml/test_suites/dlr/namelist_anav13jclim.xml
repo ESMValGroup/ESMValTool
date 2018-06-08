@@ -36,10 +36,11 @@ This namelist is part of the ESMValTool
     <max_data_blocksize type="integer"> 500            </max_data_blocksize>
     <verbosity  type="integer">         1              </verbosity>
     <exit_on_warning  type="boolean">   False          </exit_on_warning>
-    <output_file_type>                  epsi           </output_file_type>
+    <output_file_type>                  png           </output_file_type>
     <force_calc type="boolean">         False          </force_calc>
     <force_gradecalc type="boolean">    False          </force_gradecalc>
     <force_taylorcalc type="boolean">   False          </force_taylorcalc>
+    <watermark>                         default        </watermark>
 </GLOBAL>
 
 <MODELS>
@@ -53,7 +54,7 @@ This namelist is part of the ESMValTool
 
 <DIAGNOSTICS>
 
-  <diag>
+<!--  <diag>
     <description> MVI scatter plot surface temperature </description>
     <variable_def_dir>     ./variable_defs/            </variable_def_dir>
     <variable MIP="Amon">  tas-degC                    </variable>
@@ -77,7 +78,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_anav_main_glob.ncl"> CarbonCycle_main.ncl </diag_script>
   </diag>
 
-
+-->
   <diag>
     <description> Two-variable scatter plot CSOIL-CVEG           </description>
     <variable_def_dir>     ./variable_defs/                      </variable_def_dir>

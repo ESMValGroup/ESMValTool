@@ -42,6 +42,7 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">       True               </write_netcdf>
   <read_from_vault type="boolean">    False              </read_from_vault>
   <force_processing type="boolean">   False              </force_processing>
+  <tags>                     D_phillips14eos, P_embrace  </tags>
 </GLOBAL>
 
 <MODELS>
@@ -58,7 +59,8 @@ This namelist is part of the ESMValTool
     <variable>            ts                                         </variable>
     <field_type>          T2Ms                                       </field_type>
     <diag_script_cfg_dir> ./nml/cfg_CVDP/                            </diag_script_cfg_dir>   
-
+    <tags>                R_ocean, T_varmodes                        </tags>
+    
     <model> OBS  HadISST  reanaly  1  1900 2005  @{OBSPATH}/Tier2/HadISST </model>
 
     <diag_script cfg="cfg_cvdp.ncl"> cvdp_obs.ncl  </diag_script>
@@ -69,7 +71,8 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                        </variable_def_dir>
     <variable>            psl                                     </variable>
     <field_type>          T2Ms                                    </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_CVDP/                         </diag_script_cfg_dir>   
+    <diag_script_cfg_dir> ./nml/cfg_CVDP/                         </diag_script_cfg_dir>
+    <tags>                R_atmos, T_varmodes                     </tags>
 
     <model> ana4mips  IFS-Cy31r2  Amon  reanalysis  1984 2005  @{OBSPATH}/Tier1 </model>
 
@@ -81,7 +84,8 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
     <variable>            tas                                   </variable>
     <field_type>          T2Ms                                  </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_CVDP/                       </diag_script_cfg_dir>   
+    <diag_script_cfg_dir> ./nml/cfg_CVDP/                       </diag_script_cfg_dir>
+    <tags>                R_atmos, T_varmodes                   </tags>
 
     <model> OBS  NCEP  reanaly  1  1984 2005  @{OBSPATH}/Tier2/NCEP </model>
 
@@ -93,7 +97,8 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/                </variable_def_dir>
     <variable>            pr                              </variable>
     <field_type>          T2Ms                            </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_CVDP/                 </diag_script_cfg_dir>   
+    <diag_script_cfg_dir> ./nml/cfg_CVDP/                 </diag_script_cfg_dir>
+    <tags>                R_atmos, T_varmodes             </tags>
 
     <model> obs4mips  GPCP-SG  L3  v2.2  1984 2005  @{OBSPATH}/Tier1 </model>
 
@@ -106,7 +111,8 @@ This namelist is part of the ESMValTool
     <variable_def_dir>    ./variable_defs/              </variable_def_dir>
     <variable>            snowdp                        </variable>
     <field_type>          T2Ms                          </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_SAMonsoon/          </diag_script_cfg_dir>   
+    <diag_script_cfg_dir> ./nml/cfg_SAMonsoon/          </diag_script_cfg_dir>
+    <tags>                R_landIce, T_varmodes         </tags>
 
     <diag_script cfg="cfg_cvdp.ncl"> test.ncl  </diag_script>    
   </diag>
@@ -114,11 +120,12 @@ This namelist is part of the ESMValTool
 
 <!--
   <diag>
-    <description>         OImon Models     </description>
-    <variable_def_dir>    ./variable_defs/ </variable_def_dir>
-    <variable>            snd              </variable>
-    <field_type>          T2Ms             </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_CVDP/  </diag_script_cfg_dir>   
+    <description>         OImon Models                   </description>
+    <variable_def_dir>    ./variable_defs/               </variable_def_dir>
+    <variable>            snd                            </variable>
+    <field_type>          T2Ms                           </field_type>
+    <diag_script_cfg_dir> ./nml/cfg_CVDP/                </diag_script_cfg_dir>
+    <tags>                R_ocean, R_seaIce, T_varmodes  </tags>
 
     <model> CMIP5_ETHZ  MPI-ESM-LR  OImon  historical  r1i1p1  1900 2005  @{MODELPATH}/ETHZ_CMIP5 </model>
 
@@ -128,11 +135,12 @@ This namelist is part of the ESMValTool
 
 <!-- OCEAN MODELS PREPROCESSING -->
   <diag>
-    <description>         Omon Models      </description>
-    <variable_def_dir>    ./variable_defs/ </variable_def_dir>
-    <variable>            msftmyz          </variable>
-    <field_type>          T3Mz             </field_type>
-    <diag_script_cfg_dir> ./nml/cfg_CVDP/  </diag_script_cfg_dir>   
+    <description>         Omon Models          </description>
+    <variable_def_dir>    ./variable_defs/     </variable_def_dir>
+    <variable>            msftmyz              </variable>
+    <field_type>          T3Mz                 </field_type>
+    <diag_script_cfg_dir> ./nml/cfg_CVDP/      </diag_script_cfg_dir>
+    <tags>                R_ocean, T_varmodes  </tags>
 
     <model> CMIP5_ETHZ CanESM2        Omon  historical r1i1p1 1900 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
     <model> CMIP5_ETHZ CCSM4          Omon  historical r2i1p1 1900 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
@@ -153,14 +161,15 @@ This namelist is part of the ESMValTool
 
 <!-- ATMOSPHERIC MODELS PREPROCESSING -->
   <diag>
-    <description>                Amon Models      </description>
-    <variable_def_dir>           ./variable_defs/ </variable_def_dir>
-    <variable>                   ts               </variable>
-    <variable exclude="ersst">   psl              </variable>
-    <variable exclude="ersst">   tas              </variable>
-    <variable exclude="ersst">   pr               </variable>
-    <field_type exclude="ersst"> T2Ms             </field_type>
-    <diag_script_cfg_dir>        ./nml/cfg_CVDP/  </diag_script_cfg_dir>   
+    <description>                Amon Models          </description>
+    <variable_def_dir>           ./variable_defs/     </variable_def_dir>
+    <variable>                   ts                   </variable>
+    <variable exclude="ersst">   psl                  </variable>
+    <variable exclude="ersst">   tas                  </variable>
+    <variable exclude="ersst">   pr                   </variable>
+    <field_type exclude="ersst"> T2Ms                 </field_type>
+    <diag_script_cfg_dir>        ./nml/cfg_CVDP/      </diag_script_cfg_dir>
+    <tags>                       R_atmos, T_varmodes  </tags>
 
     <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1900 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1900 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>

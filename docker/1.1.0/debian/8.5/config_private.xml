@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- user defined configuration file -->
+<settings>
+	<pathCollection>
+		<usrpath category="userDirectory" type="output" id="WORKPATH">
+			<path>/data/out/work/</path>
+			<description>working directory</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="PLOTPATH">
+			<path>/data/out/plots/</path>
+			<description>directory for output plots</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="CLIMOPATH">
+			<path>/data/out/climo/</path>
+			<description>directory for output files</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="REGRPATH">
+			<path>/data/out/regridding/</path>
+			<description>directory for regridding files</description>
+		</usrpath>
+
+		<usrpath category="simulation" type="input" id="MODELPATH">
+			<path>/data/in/modeldata/</path>
+			<description>root directory of model data</description>
+		</usrpath>
+
+		<usrpath category="observation" type="input" id="OBSPATH">
+			<path>/data/in/obsdata/</path>
+			<description>root directory of observational data</description>
+		</usrpath>
+
+		<usrpath category="observation" type="input" id="RAWOBSPATH">
+			<path>/data/in/rawobsdata/</path>
+			<description>root directory of raw observational data (for reformat_obs scripts)</description>
+		</usrpath>
+
+	</pathCollection>
+</settings>

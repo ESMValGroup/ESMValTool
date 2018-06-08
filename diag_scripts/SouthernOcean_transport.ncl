@@ -31,6 +31,7 @@
 ;;        Southern hemisphere, abort for positive lats.
 ;;
 ;; Modification history
+;;    20170908-A_bock_ls: Added reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20141028-A_vanu_be: written.
@@ -51,6 +52,8 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;;#############################################################################
 ;; Collect information
@@ -599,6 +602,26 @@ begin
     ;; add line to plot
     debuginfo = False
     xy_line(wks_xy, dvoltrpsum, times, 0, res_xy, debuginfo)
+
+    ; add meta data to plot (for reporting)
+
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"PT_time", "ST_diff", "DM_reg"/), 0)
+
+    caption = "Sea water volume transport across section " + diag_script_info@section_name \
+               + " from variables " + varu + " and " + varv 
+
+    id = diag_script + "_" + variables(0)
+
+    contrib_authors = (/"A_vanu_be"/)
+
+    ESMValMD(wks_xy@fullname, alltags, caption, id, (/varu, varv/), models@name, climofiles, diag_script, contrib_authors)
 
     ;; clean
     delete([/adj_mm_time, dvoltrpsum, mm_time, months, ntimes, ones, \

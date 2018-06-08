@@ -24,22 +24,23 @@
 # 2010-12-14  HS   added termination call when error occurs with reformat
 # 2012-06-08  HS   set environment variable (OPTIONS_FILE) if
 #                  namelist.global_vars.write_plot_vars is defined
+# 2015-06-26  SR   Added optional <ESGF> section quality check and print
 # 2015-06-30  a_laue_ax: added ESMValTool version
 
 import sys
-sys.path.append("./interface_scripts")
+import os
+sys.path.append(os.path.abspath("./interface_scripts"))
 
-# path to ESMVal python toolbox library
-sys.path.append("./diag_scripts/lib/python")
-sys.path.append("./diag_scripts")
+# path to ESMVal python toolbox library (ensure absolute path as otherwise modules might not found properly)
+sys.path.append(os.path.abspath("./diag_scripts/lib/python"))
+sys.path.append(os.path.abspath("./diag_scripts"))
 
 from auxiliary import info, error, print_header, ncl_version_check
 ## from climate import climate
 from optparse import OptionParser
 import datetime
 import projects
-import os
-import pdb
+#import pdb
 import reformat
 import xml.sax
 import xml_parsers
@@ -47,6 +48,9 @@ import xml_parsers
 # Define ESMValTool version
 version = "1.1.0"
 os.environ['0_ESMValTool_version'] = version
+
+# watermarks (None, default)
+os.environ['0_ESMValTool_watermark'] = "None"
 
 # Check NCL version
 ncl_version_check()
@@ -78,20 +82,28 @@ parser.parse(input_xml_full_path)
 project_info = Project.project_info
 
 if options.reformat:
-	if 'REFORMAT' not in project_info.keys():
-		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
-	if len(project_info['REFORMAT']) == 0:
-		info('No reformat script specified',1,1)
+    if 'REFORMAT' not in project_info.keys():
+        error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
+    if len(project_info['REFORMAT']) == 0:
+        info('No reformat script specified',1,1)
         print_header({}, options.reformat)
-	for k,v in project_info['REFORMAT'].iteritems():
-		if not os.path.exists(v):
-			error('Path {0} does not exist'.format(v))
-		projects.run_executable(v,
-	                                project_info,
-	                                1,
-	                                False,
-	                                write_di=False)
-	sys.exit(0)
+    for k,v in project_info['REFORMAT'].iteritems():
+        if not os.path.exists(v):
+            error('Path {0} does not exist'.format(v))
+        projects.run_executable(v, project_info, 1, False, write_di=False)
+        sys.exit(0)
+
+# bn_muel++
+# add namelist to tags
+if 'GLOBAL' not in project_info.keys():
+    assert False, "This is a reporting namelist!"
+
+if "tags" in project_info.get('GLOBAL').keys():
+    project_info.get('GLOBAL')['tags'].\
+        append(input_xml_full_path.split('/')[-1])
+else:
+    project_info.get('GLOBAL')['tags'] = [input_xml_full_path.split('/')[-1]]
+# bn_muel++
 
 verbosity = project_info['GLOBAL']['verbosity']
 climo_dir = project_info['GLOBAL']['climo_dir']
@@ -134,12 +146,66 @@ timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
 print_header(project_info, options.reformat)
+
 info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
+# Load ESGF config info (if specified in namelist)
+if 'ESGF' in project_info and 'config_file' in project_info['ESGF']:
+    esgf_config_file = project_info['ESGF']['config_file']
+    if os.path.isfile(esgf_config_file):
+        info("Loading ESGF config file", verbosity, 2)
+        esgf_config_handler = xml_parsers.ESGFConfigHandler()
+        parser = xml.sax.make_parser()
+        parser.setContentHandler(esgf_config_handler)
+        parser.parse(esgf_config_file)
+        esgf_config = esgf_config_handler.current_tag.config
+        esgf_config.config_file_name = esgf_config_file
+        info("ESGF config file loaded", verbosity, 2)
+
+        # Summary of ESGF config info (if exists) to std-out
+        info('', verbosity, 3)
+        info('Summary of ESGF config information:',\
+            verbosity, 3)
+        msg = str(esgf_config)
+        for msg_line in msg.split('\n'):
+            info(msg_line, verbosity, 3)
+        info("", verbosity, 3)
+
+        # Perform quality check on ESGF config
+        projects.ESGF.quality_check(esgf_config)
+        info("ESGF config file passed quality check.", verbosity, 2)
+
+        # Store ESGF config in project_info
+        project_info['ESGF']['config'] = esgf_config
+
+        # Also, add fullpath of namelist file to
+        # ESGF section of project info, so it can be
+        # included in report/console output
+        project_info['ESGF']['namelist_fullpath']\
+            = input_xml_full_path
+
+    else:
+        msg = "Cannot find ESGF config file '%s'" % esgf_config_file
+        raise IOError(msg)
+
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
+DiagCounter = 1
+
 for currDiag in project_info['DIAGNOSTICS']:
+
+    # bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        GlobalTags = list(project_info.get('GLOBAL')['tags'])
+        if len(currDiag.__dict__['tags']) > 0:
+            more_tags = currDiag.__dict__['tags'][0].split(",") + \
+                ["Auto_Diag_" + str(DiagCounter).zfill(3)]
+        else:
+            more_tags = ["Auto_Diag_" + str(DiagCounter).zfill(3)]
+        project_info.get('GLOBAL')['tags'].extend(more_tags)
+        DiagCounter += 1
+    # bn_muel++
 
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.get_variables_list()
@@ -207,6 +273,11 @@ for currDiag in project_info['DIAGNOSTICS']:
                             verbosity,
                             exit_on_warning,
                             launcher_arguments=currDiag.get_launcher_arguments())
+
+    #bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        project_info.get('GLOBAL')['tags'] = list(GlobalTags)
+    #bn_muel++
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])

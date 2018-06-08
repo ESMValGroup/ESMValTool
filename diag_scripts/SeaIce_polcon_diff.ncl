@@ -5,7 +5,7 @@
 ;;#############################################################################
 ;;
 ;; Description
-;;    Transfers all data to a common 1°x1° Gaussian grid
+;;    Transfers all data to a common 1Â°x1Â° Gaussian grid
 ;;    Draws contour maps of absolute difference in sea ice concentration between
 ;;      all models and the specified reference model (e.g., observations)
 ;;
@@ -34,8 +34,11 @@
 ;;    No masking of the apparent line of missing data between the two grid
 ;;      poles yet (for a workaround, see
 ;;      http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
+;;    When using multi-model-mean option, make sure to exclude all unwanted 
+;;      files (e.g., observations that are not the reference) from the namelist.
 ;;
 ;; Modification history
+;;    20170512-A_senf_da: Added reporting
 ;;    20170120-A_senf_da: Moved regridding to cdo_remapdis (latlon.ncl)
 ;;    20160713-A_senf_da: Included multi-model-mean option
 ;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
@@ -67,6 +70,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/aux_plotting.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 
 begin
@@ -232,9 +237,11 @@ begin
                     verbosity, 2)
         ;; See ./interface_scripts/data_handling.ncl
         var_raw = extract_data(imod, data, -1, 0, 0)
-        if (var_raw@units.eq."%") then
-            var_raw = var_raw / 100.    ; Subsequent code expects %/100
-            var_raw@units = "%/100"
+        if (var0.eq."sic") then
+            if (var_raw@units.eq."%") then
+                var_raw = var_raw / 100.    ; Subsequent code expects %/100
+                var_raw@units = "%/100"
+            end if
         end if
 
         ;; Show units in title (default False)
@@ -318,13 +325,10 @@ begin
             end if
 
             ;; Difference to ref_model
-printVarSummary(var_regrid)
-printVarSummary(var_ref)
             var = var_regrid - var_ref
             copy_VarMeta(var_regrid, var)
             var = where(ismissing(var_ref), var_ref@_FillValue, var)
             var = where(ismissing(var_regrid), var_ref@_FillValue, var)
-
             var@long_name = "~F33~D~F~ of " + var@long_name + strUnits
             var_perc = 100. * (var_regrid - var_ref) / \
                 where(var_ref .le. 0., var_ref@_FillValue, var_ref)
@@ -340,6 +344,12 @@ printVarSummary(var_ref)
             grid_center =  0.0  ; default
             if (isatt(diag_script_info, "grid_min")) then
                 grid_min = tofloat(diag_script_info@grid_min)
+            else
+                if (var0.eq."sit") then
+                    error_msg("w", diag_script, "", "For sea ice thickness," + \
+                              " grid min and max values " + \
+                              " should be specified in the cfg file.")
+                end if
             end if
             if (isatt(diag_script_info, "grid_max")) then
                 grid_max = tofloat(diag_script_info@grid_max)
@@ -413,11 +423,77 @@ printVarSummary(var_ref)
 
     if (MMM) then
         outfile = panelling(wks, plots(dimsizes(plots)-1), nvert, nhori, pres)
+        model_string = "multi-model-mean"
     else
         outfile = panelling(wks, plots, nvert, nhori, pres)
+        model_string = "CMIP model"
+    end if
+
+    ;; Reporting
+    alltags = array_append_record(tags, (/"DM_polar", "PT_polar", \
+                                          "ST_mean"/), 0)
+    caption = "Polar-stereographic contour map of difference in sea ice concentration between " + model_string + " and " + diag_script_info@ref_model  + ". TODO: Problem with OBS* classes - climofile not passed correctly. for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
+    if (npages.eq.1 .or. MMM) then  ; only 1 file: no sequence number added
+        plot_fname = wks@fullname
+        id = "#idSeaIcePolcon"
+        climofiles = interface_get_inpaths(0) + "/" + \
+                     interface_get_infile(var0, field_type0, 0)
+        if (dimsizes(models@name).gt.1) then
+            do imod=1, dimsizes(models@name)-1
+;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
+;;      already returns path + file! Reason yet unknown.
+                climofiles := array_append_record( climofiles, \
+                    interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(var0, field_type0, imod), 0 )
+            end do
+        end if
+        contrib_authors = (/"A_gott_kl", "A_senf_da"/)
+        ESMValMD(plot_fname, alltags, caption, id, var0, \
+                 models@name, climofiles, diag_script, contrib_authors)
+    else  ; Multiple files, each with its own sequence number
+        ; Split wks@fullname to later add number sequence before '.png'
+        plotname_split = str_split(wks@fullname, ".")
+        plotname = ""
+        do isplit=0, dimsizes(plotname_split)-2  ; reassemble except '.png'
+            plotname = plotname + plotname_split(isplit) + "."
+        end do
+        ; Add number sequence before '.png' and call reporting procedure
+        do ipage=1, npages
+            seq_num = sprinti("%0.6i", ipage)
+            plot_fname = plotname + seq_num + "." + \
+                         plotname_split(dimsizes(plotname_split)-1)
+            id = "#idSeaIcePolcon" + seq_num
+            if (ipage.ne.npages) then
+                ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+                                          ipage*nvert*nhori-1, 1 )
+            else
+                ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+                                          dimsizes(plots)-1, 1 )
+            end if
+            ind_ref_model = ind(models@name .eq. diag_script_info@ref_model)
+            ind_models_shown_exclref = ind_models_shown( get1Dindex_Collapse( \
+                                       ind_models_shown, ind_ref_model) )
+            climofiles = interface_get_inpaths(ind_ref_model) + "/" + \
+                         interface_get_infile(var0, field_type0, ind_ref_model)
+            do imod=0, dimsizes(ind_models_shown)-1
+;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
+;;      already returns path + file! Reason yet unknown.
+                climofiles := array_append_record( climofiles, \
+                    interface_get_inpaths(ind_models_shown_exclref(imod)) + \
+                    "/" + interface_get_infile(var0, field_type0, \
+                    ind_models_shown_exclref(imod)), 0 )
+            end do
+            contrib_authors = (/"A_gott_kl", "A_senf_da"/)
+            ESMValMD(plot_fname, alltags, caption, id, var0, \
+                     models@name(ind_models_shown), climofiles, diag_script, \
+                     contrib_authors)
+            delete([/ seq_num, plot_fname, id, ind_models_shown, \
+                      ind_models_shown_exclref, climofiles /])
+        end do
     end if
 
     info_output(" gv " + outfile + " &", verbosity, 1)
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
+
 end

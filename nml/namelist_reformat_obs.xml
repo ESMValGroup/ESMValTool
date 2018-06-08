@@ -14,9 +14,14 @@ Authors
 Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
 Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
+n/a
 
 Reference
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -32,6 +37,7 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="CARSNET">                 ./reformat_scripts/obs/reformat_obs_CARSNET.ncl                 </reformat_script> -->
 <!--   <reformat_script id="CASTNET">                 ./reformat_scripts/obs/reformat_obs_CASTNET.ncl                 </reformat_script> -->
 <!--   <reformat_script id="CERES-SYN1deg-SFC">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-SFC.bash      </reformat_script> -->
+<!--   <reformat_script id="CERES-SYN1deg-mon">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-mon.bash      </reformat_script> -->
 <!--   <reformat_script id="CERES-SYN1deg-TOA">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-TOA.bash      </reformat_script> -->
 <!--   <reformat_script id="CIRRUS">                  ./reformat_scripts/obs/reformat_obs_CIRRUS.ncl                  </reformat_script> -->
 <!--   <reformat_script id="cloudsat">                ./reformat_scripts/obs/reformat_obs_cloudsat.bash               </reformat_script> -->
@@ -61,6 +67,7 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="HadISST">                 ./reformat_scripts/obs/reformat_obs_HadISST.ncl                 </reformat_script> -->
 <!--   <reformat_script id="HALOE">                   ./reformat_scripts/obs/reformat_obs_HALOE.ncl                   </reformat_script> -->
 <!--   <reformat_script id="HIPPO">                   ./reformat_scripts/obs/reformat_obs_HIPPO.ncl                   </reformat_script> -->
+<!--   <reformat_script id="IASI">                    ./reformat_scripts/obs/reformat_obs_IASI.ncl                    </reformat_script> -->
 <!--   <reformat_script id="IMPROVE">                 ./reformat_scripts/obs/reformat_obs_IMPROVE.ncl                 </reformat_script> -->
 <!--   <reformat_script id="INCA">                    ./reformat_scripts/obs/reformat_obs_INCA.ncl                    </reformat_script> -->
 <!--   <reformat_script id="LACE">                    ./reformat_scripts/obs/reformat_obs_LACE.ncl                    </reformat_script> -->
@@ -72,14 +79,16 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="NIWA">                    ./reformat_scripts/obs/reformat_obs_NIWA.ncl                    </reformat_script> -->
 <!--   <reformat_script id="NOAA-PSD-Interp">         ./reformat_scripts/obs/reformat_obs_NOAA-PSD-Interp.ncl         </reformat_script> -->
 <!--   <reformat_script id="NSIDC">                   ./reformat_scripts/obs/reformat_obs_NSIDC.ncl                   </reformat_script> -->
+<!--   <reformat_script id="Oct-AVE">                 ./reformat_scripts/obs/reformat_obs_Oct-AVE.ncl                 </reformat_script> -->
 <!--   <reformat_script id="Putaud">                  ./reformat_scripts/obs/reformat_obs_Putaud.ncl                  </reformat_script> -->
-<!--   <reformat_script id="SALTRACE">                ./reformat_scripts/obs/reformat_obs_SALTRACE.ncl                </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-CPC">            ./reformat_scripts/obs/reformat_obs_SALTRACE-CPC.ncl            </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-LIDAR">          ./reformat_scripts/obs/reformat_obs_SALTRACE-LIDAR.ncl          </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-SP2">            ./reformat_scripts/obs/reformat_obs_SALTRACE-SP2.ncl            </reformat_script> -->
 <!--   <reformat_script id="SeaWIFS">                 ./reformat_scripts/obs/reformat_obs_SeaWIFS.csh                 </reformat_script> -->
 <!--   <reformat_script id="SOCAT">                   ./reformat_scripts/obs/reformat_obs_SOCAT.csh                   </reformat_script> -->
 <!--   <reformat_script id="SRB">                     ./reformat_scripts/obs/reformat_obs_SRB.ncl                     </reformat_script> -->
 <!--   <reformat_script id="takahashi14">             ./reformat_scripts/obs/reformat_obs_takahashi14.csh             </reformat_script> -->
 <!--   <reformat_script id="TC4">                     ./reformat_scripts/obs/reformat_obs_TC4.ncl                     </reformat_script> -->
-<!--   <reformat_script id="Texas">                   ./reformat_scripts/obs/reformat_obs_Texas.ncl                   </reformat_script> -->
 <!--   <reformat_script id="Tilmes">                  ./reformat_scripts/obs/reformat_obs_Tilmes.ncl                  </reformat_script> -->
 <!--   <reformat_script id="TRMM-3B42-3hourly">       ./reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl       </reformat_script> -->
 <!--   <reformat_script id="TRMM-3B42-daily">         ./reformat_scripts/obs/reformat_obs_TRMM-3B42-daily.ncl         </reformat_script> -->

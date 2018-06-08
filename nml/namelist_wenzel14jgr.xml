@@ -12,6 +12,9 @@ of Wenzel et al. (2014)
 Author
 Sabrina Wenzel (DLR, Germany - sabrina.wenzel@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
@@ -23,18 +26,19 @@ This namelist is part of the ESMValTool
 </namelist_summary>
 
 <GLOBAL>
-    <write_plots type="boolean">        True           </write_plots>
-    <write_netcdf type="boolean">       True           </write_netcdf>
-    <force_processing type="boolean">   False          </force_processing>
-    <wrk_dir type="path">               @{WORKPATH}    </wrk_dir>
-    <plot_dir type="path">              @{PLOTPATH}    </plot_dir>
-    <climo_dir type="path">             @{CLIMOPATH}   </climo_dir>
-    <write_plot_vars type="boolean">    True           </write_plot_vars>
-    <max_data_filesize type="integer">  100            </max_data_filesize>
-    <max_data_blocksize type="integer"> 500            </max_data_blocksize>
-    <verbosity  type="integer">         1              </verbosity>
-    <exit_on_warning  type="boolean">   False          </exit_on_warning>
-    <output_file_type>                  ps             </output_file_type>
+    <write_plots type="boolean">        True                     </write_plots>
+    <write_netcdf type="boolean">       True                     </write_netcdf>
+    <force_processing type="boolean">   False                    </force_processing>
+    <wrk_dir type="path">               @{WORKPATH}              </wrk_dir>
+    <plot_dir type="path">              @{PLOTPATH}              </plot_dir>
+    <climo_dir type="path">             @{CLIMOPATH}             </climo_dir>
+    <write_plot_vars type="boolean">    True                     </write_plot_vars>
+    <max_data_filesize type="integer">  100                      </max_data_filesize>
+    <max_data_blocksize type="integer"> 500                      </max_data_blocksize>
+    <verbosity  type="integer">         1                        </verbosity>
+    <exit_on_warning  type="boolean">   False                    </exit_on_warning>
+    <output_file_type>                  ps                       </output_file_type>
+    <tags>                              P_embrace, D_wenzel14jgr </tags>
 </GLOBAL>
 
 <MODELS>
@@ -67,6 +71,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
+    
+  <tags> R_land, T_carbon, T_chem, T_ghg, T_carbon </tags>
 </diag>
 
 <diag>
@@ -86,6 +92,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
+    
+  <tags> R_land, T_carbon, T_chem, T_ghg </tags>
 </diag>
 
 <diag>
@@ -105,6 +113,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
+    
+  <tags> R_land, T_carbon, T_chem, T_ghg </tags>
 </diag>
 
 <!-- ################################################################## -->
@@ -128,6 +138,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+    
+  <tags> R_land, T_carbon, T_chem, T_ghg </tags>
 </diag>
 
 <diag>
@@ -147,6 +159,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+    
+  <tags> R_land, T_carbon, T_chem, T_ghg </tags>
 </diag>
 
 <!--<diag>
@@ -174,6 +188,8 @@ This namelist is part of the ESMValTool
 @{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model>
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+
+  <tags> R_ocean, T_carbon, T_chem, T_ghg </tags>
 </diag>
 
 <diag>
@@ -201,6 +217,8 @@ This namelist is part of the ESMValTool
 @{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model> 
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+
+<tags> R_ocean, T_carbon, T_chem, T_ghg </tags>
 </diag>-->
 
 <diag>
@@ -220,6 +238,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 <diag>
@@ -239,6 +259,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
+    
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 <!-- ################################################################## -->
@@ -266,6 +288,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_G_IAV.ncl"> create_co2flux.ncl </diag_script>
+    
+    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
 </diag>
 
 <diag>
@@ -290,6 +314,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5 NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
 
   <diag_script cfg="cfg_carbon_G_IAV.ncl">  carbon_corr_2var.ncl </diag_script>
+    
+    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
 </diag>
 
 <!-- ############################################################################# -->
@@ -333,6 +359,8 @@ This namelist is part of the ESMValTool
   <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
 
   <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_constraint.ncl </diag_script>
+    
+    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys, T_EC </tags>
 </diag>
 
 </DIAGNOSTICS>

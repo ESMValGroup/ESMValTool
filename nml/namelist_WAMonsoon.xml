@@ -9,6 +9,9 @@ Evaluates West African monsoon for monthly data sets
 Author
 Romain Roehrig (Meteo France, France - romain.roehrig@meteo.fr)
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
@@ -36,6 +39,7 @@ This namelist is part of the ESMValTool
   <read_from_vault type="boolean">      False                 </read_from_vault>
   <write_netcdf type="boolean">         True                  </write_netcdf>
   <force_processing type="boolean">     False                 </force_processing>
+  <tags> D_kerry06jclim, D_roehrig13jclim, P_embrace </tags>
 </GLOBAL>
 
 <MODELS>
@@ -54,6 +58,7 @@ This namelist is part of the ESMValTool
     <variable>                      va-200               </variable>
     <field_type>                    T2Ms                </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+    <tags> R_atmos, T_atmDyn, PT_geo </tags>
 
     <diag_script cfg="cfg_WAMonsoon_wind_basic_200mb.ncl">   WAMonsoon_wind_basic.ncl               </diag_script>
 
@@ -67,7 +72,8 @@ This namelist is part of the ESMValTool
     <variable>                      va-700                </variable>
     <field_type>                    T2Ms                 </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
-
+   <tags> R_atmos, T_atmDyn , PT_geo  </tags> 
+  
     <diag_script cfg="cfg_WAMonsoon_wind_basic_700mb.ncl">   WAMonsoon_wind_basic.ncl   </diag_script>
 
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1980 2004     /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -79,7 +85,8 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">   ua                   </variable>
     <field_type>                    T3M                  </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_atmDyn, PT_zonal </tags>
+  
     <diag_script cfg="cfg_WAMonsoon_10W10E_ua.ncl">   WAMonsoon_10W10E_3D_basic.ncl    </diag_script>
 
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1980 2004     /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -91,7 +98,8 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">   va                   </variable>
     <field_type>                    T3M                  </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_atmDyn , PT_zonal</tags>
+  
     <diag_script cfg="cfg_WAMonsoon_10W10E_va.ncl">   WAMonsoon_10W10E_3D_basic.ncl   </diag_script>
 
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1980 2004     /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -103,6 +111,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">   theta                </variable>
     <field_type>                    T3M                  </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+    <tags> R_atmos, T_atmDyn , PT_zonal</tags>
 
     <diag_script cfg="cfg_WAMonsoon_10W10E_theta.ncl">   WAMonsoon_10W10E_3D_basic.ncl   </diag_script>
 
@@ -115,6 +124,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">   theta-850             </variable>
     <field_type>                    T2Ms                 </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+    <tags> R_atmos, T_atmDyn, PT_zonal </tags>
 
     <diag_script cfg="cfg_WAMonsoon_10W10E_theta850.ncl">   WAMonsoon_10W10E_1D_basic.ncl  </diag_script>
 
@@ -127,6 +137,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="trmm">   pr-mmday                </variable>
     <field_type>                  T2Ms                   </field_type>
     <diag_script_cfg_dir>       ./nml/cfg_WAMonsoon/     </diag_script_cfg_dir>
+    <tags> R_atmos, T_phys , PT_times</tags>
 
     <diag_script cfg="cfg_WAMonsoon_precip.ncl">        WAMonsoon_contour_basic.ncl   </diag_script>
     <diag_script cfg="cfg_WAMonsoon_10W10E_pr.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script>
@@ -140,6 +151,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">    tas                 </variable>
     <field_type>                     T2Ms                </field_type>
     <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+    <tags> R_atmos, T_phys, T_atmDyn, PT_times </tags>
 
     <diag_script cfg="cfg_WAMonsoon_tas.ncl">            WAMonsoon_contour_basic.ncl   </diag_script>
     <diag_script cfg="cfg_WAMonsoon_10W10E_tas.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
@@ -153,7 +165,8 @@ This namelist is part of the ESMValTool
     <variable>                 pr-mmday             </variable>
     <field_type>               T2Ms                 </field_type>
     <diag_script_cfg_dir>    ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_phys, T_atmDyn , PT_times</tags>
+    
     <diag_script cfg="cfg_WAMonsoon_precip.ncl">         WAMonsoon_precip_IAV.ncl   </diag_script>
     <diag_script cfg="cfg_WAMonsoon_precip.ncl">    WAMonsoon_precip_seasonal.ncl   </diag_script>
 
@@ -166,7 +179,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="CERES-EBAF">    rsds                 </variable>
     <field_type>                     T2Ms                </field_type>
     <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_phys, PT_times </tags>
     <diag_script cfg="cfg_WAMonsoon_10W10E_rsds.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
     
     <model>  CMIP5       CERES-EBAF      Amon     observation  r1i1p1  2001 2009  /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -178,7 +191,8 @@ This namelist is part of the ESMValTool
     <variable ref_model="CERES-EBAF">    rlds                 </variable>
     <field_type>                     T2Ms                </field_type>
     <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_phys, PT_times </tags>
+  
     <diag_script cfg="cfg_WAMonsoon_10W10E_rlds.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
     
     <model>  CMIP5       CERES-EBAF      Amon     observation  r1i1p1  2001 2009  /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -190,7 +204,8 @@ This namelist is part of the ESMValTool
     <variable ref_model="CERES-EBAF">    SW_CRE                 </variable>
     <field_type>                     T2Ms                </field_type>
     <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_phys, T_clouds , PT_times</tags>
+  
     <diag_script cfg="cfg_WAMonsoon_10W10E_SW_CRE.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
     
     <model>  CMIP5       CERES-EBAF      Amon     observation  r1i1p1  2001 2009  /home/roehrig/script/EMBRACE/ESMValTool/data </model>
@@ -202,7 +217,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="CERES-EBAF">    LW_CRE                 </variable>
     <field_type>                     T2Ms                </field_type>
     <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
-
+    <tags> R_atmos, T_phys, T_clouds, PT_times </tags> 
     <diag_script cfg="cfg_WAMonsoon_10W10E_LW_CRE.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
     
     <model>  CMIP5       CERES-EBAF      Amon     observation  r1i1p1  2001 2009  /home/roehrig/script/EMBRACE/ESMValTool/data </model>
