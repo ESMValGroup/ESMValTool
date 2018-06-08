@@ -1,5 +1,5 @@
 
-;; Temporary file updated by Python on the fly
+; Temporary file updated by Python on the fly
 
 
 load "./interface_scripts/auxiliary.ncl"
@@ -24,7 +24,7 @@ function mjo_wave_freq_plot(wks[1]:graphic, \
 ;   carry switches for the plot routine behaviour.
 local res, NW, fMin, fMax, day1, fline1, day2, fline2, gsres, tres
 begin
-    ;; Set plot setting
+    ; Set plot setting
     res = True                   ; plot mods desired
     res@gsnFrame = False
     res@gsnDraw = False
@@ -187,7 +187,7 @@ begin
         plotPhase = False
     end if
 
-    ;;  res@gsnLeftString = "Coh^2: Symmetric"
+    ;  res@gsnLeftString = "Coh^2: Symmetric"
     if(isatt(opt, "gsnLeftString")) then
         res@gsnLeftString = opt@gsnLeftString
     end if
@@ -203,9 +203,9 @@ begin
         nWavePlt = 15     ; default
     end if
 
-    ;;---------------------------------------------------------------
-    ;; dispersion: curves
-    ;;---------------------------------------------------------------
+    ;---------------------------------------------------------------
+    ; dispersion: curves
+    ;---------------------------------------------------------------
     rlat = 0.0
     Ahe = (/50., 25., 12./)
     nWaveType = 6
@@ -221,9 +221,9 @@ begin
                         Afreq,\
                         Apzwn)
 
-    ;;---------------------------------------------------------------
-    ;; dispersion curve and text plot resources
-    ;;---------------------------------------------------------------
+    ;---------------------------------------------------------------
+    ; dispersion curve and text plot resources
+    ;---------------------------------------------------------------
     dcres = True
     dcres@gsLineThicknessF = 2.0
     dcres@gsLineDashPattern = 0
@@ -233,9 +233,9 @@ begin
     txres@txFontHeightF = 0.013
     txres@txBackgroundFillColor = "Background"
 
-    ;;---------------------------------------------------------------
-    ;; plot symmetric data
-    ;;---------------------------------------------------------------
+    ;---------------------------------------------------------------
+    ; plot symmetric data
+    ;---------------------------------------------------------------
     if(spectraType .eq. "Symmetric") then
         n = 8
 
@@ -311,9 +311,9 @@ begin
         dumdcs(idx_mod, 13) = gsn_add_text(wks, plot, "h = 25", -14.0, .60, txres)
         dumdcs(idx_mod, 14) = gsn_add_text(wks, plot, "h = 12", -14.0, .46, txres)
 
-    ;;---------------------------------------------------------------
-    ;; plot asymmetric data
-    ;;---------------------------------------------------------------
+    ;---------------------------------------------------------------
+    ; plot asymmetric data
+    ;---------------------------------------------------------------
     else if(spectraType .eq. "Asymmetric") then
         n = 9
         if(isatt(opt, "gsnLeftString")) then
@@ -420,9 +420,9 @@ function mjo_ceof_plot(wks[1]    : graphic, \
                        opt[1]    : logical)
 local res, rts, var0, lon, plot
 begin
-    ;;************************************************
-    ;; Multivariate EOF plots
-    ;;************************************************
+    ;************************************************
+    ; Multivariate EOF plots
+    ;************************************************
     rts = True
     rts@gsnDraw = False       ; don't draw yet
     rts@gsnFrame = False      ; don't advance frame yet
@@ -519,20 +519,20 @@ begin
                                                   idx_mod)
     f = addfile(netcdf_dir + input_netcdf + ".nc", "r")
 
-    ;;***********************************************************
-    ;; Find the indices corresponding to the start/end times
-    ;;      on the MJO_PC_INDEX.nc file
-    ;;***********************************************************
-    ;;  TIME = f->time                          ; days since ...
-    ;;  YMD = cd_calendar(TIME, -2)            ; entire(time, 6)
+    ;***********************************************************
+    ; Find the indices corresponding to the start/end times
+    ;      on the MJO_PC_INDEX.nc file
+    ;***********************************************************
+    ;  TIME = f->time                          ; days since ...
+    ;  YMD = cd_calendar(TIME, -2)            ; entire(time, 6)
     ;
-    ;;  iStrt = ind(YMD .eq. twStrt)              ; index start
-    ;;  iLast = ind(YMD .eq. twLast)              ; index last
-    ;;  delete(TIME)
-    ;;  delete(YMD)
-    ;;***********************************************************
-    ;; Read the data for the desired period
-    ;;***********************************************************
+    ;  iStrt = ind(YMD .eq. twStrt)              ; index start
+    ;  iLast = ind(YMD .eq. twLast)              ; index last
+    ;  delete(TIME)
+    ;  delete(YMD)
+    ;***********************************************************
+    ; Read the data for the desired period
+    ;***********************************************************
     pc1 = f->PC1(:)
     pc2 = f->PC2(:)
     mjo_indx = f->MJO_INDEX(:)
@@ -542,9 +542,9 @@ begin
 
     imon = floattoint(ymdhms(:, 1))   ; convenience
     iday = floattoint(ymdhms(:, 2))   ; subscripts must be integer
-    ;;***********************************************************
-    ;; Place each array into an appropriate array
-    ;;***********************************************************
+    ;***********************************************************
+    ; Place each array into an appropriate array
+    ;***********************************************************
     phase = (/202.5, 247.5, 292.5, 337.5,\   ; phi: Matt Wheeler's f77 code
                22.5,  67.5, 112.5, 157.5/)
     nPhase = dimsizes(phase)
@@ -616,14 +616,14 @@ begin
     amres@amOrthogonalPosF = 0.75
     amres@amJust = "CenterCenter"
 
-    ;;*******************************************
-    ;; Loop over each phase
-    ;;*******************************************
+    ;*******************************************
+    ; Loop over each phase
+    ;*******************************************
     res@gsnLeftString = ""
     res@gsnRightString = ""
 
-    ;; Output dir
-    ;; 'plot_dir' is fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
 
@@ -657,7 +657,7 @@ begin
                             + ": Nov to Apr"
         end if
         do n = 0, nPhase - 1
-            ;; All times where the following criteria are met
+            ; All times where the following criteria are met
             if(nSeason .eq. 1) then
                 nt = ind(mjo_indx .gt. 1.0\
                          .and.(imon .ge. 5 .and. imon .le. 10)\
