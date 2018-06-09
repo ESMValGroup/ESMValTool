@@ -56,12 +56,11 @@ def main(cfg):
 def shapeselect2(cfg, cube, filename):
     """ New solution with fiona! """
     shppath = cfg['shppath']
-    #shpidcol = cfg['shpidcol']
     wgtmet = cfg['wgtmet']
     if ((cube.coord('latitude').ndim == 1 and
          cube.coord('longitude').ndim == 1)):
-        coordpoints = [(x, y) for x in cube.coord('latitude').points
-                  for y in cube.coord('longitude').points]
+        coordpoints = [(x, y) for x in cube.coord('longitude').points
+                  for y in cube.coord('latitude').points]
     else:
         logger.info("Support for 2-d coords not yet implemented!")
         sys.exit(1)
@@ -70,30 +69,16 @@ def shapeselect2(cfg, cube, filename):
         # Set limits for map (This can definitely be improved!)
         shap = shapefile.Reader(shppath)
         llcrnrlon=shap.bbox[0]-1
-        llcrnrlat=max((shap.bbox[2]-1,-90))
-        urcrnrlon=shap.bbox[1]+1
+        llcrnrlat=max((shap.bbox[1]-1,-90))
+        urcrnrlon=shap.bbox[2]+1
         urcrnrlat=min((shap.bbox[3]+1,90))
-        #import cartopy.crs as ccrs
-        #ax = p.axes(projection=ccrs.Mollweide())
-        #ax.coastlines()
         alons = []
         alats = []
-        for lat, lon in coordpoints:
-            #if ( lat > llcrnrlat and lat < urcrnrlat
-            #     and lon > llcrnrlon and lon < urcrnrlon ):
-            if ( lat > 45 and lat < 53
-                 and lon > 3 and lon < 14 ):
+        for lon, lat in coordpoints:
+            if ( lat > llcrnrlat and lat < urcrnrlat
+                 and lon > llcrnrlon and lon < urcrnrlon ):
                 alons.append(lon)
                 alats.append(lat)
-        #map = Basemap(llcrnrlon=5,llcrnrlat=55,urcrnrlon=15,urcrnrlat=73,projection='tmerc',lat_0=0, lon_0=0)
-        #map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
-        #              urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, 
-        #              projection='tmerc',
-        #              lat_0=0, lon_0=0)
-        #map.drawmapboundary()
-        #map.drawcoastlines()
-        #map.readshapefile(shppath[0:-4], 'obj', color='red')
-        #map.scatter(alats, alons, 3, marker='o', latlon=True, color='red')
         cols = ['go', 'bo', 'co']
         cnt=0
         for shapp in shap.shapeRecords():
@@ -102,10 +87,8 @@ def shapeselect2(cfg, cube, filename):
             p.plot(xm, ym)
             p.plot(alons, alats, 'ro', markersize = 2)
             cnt += 1
-        #p.set_xlabel('xlabel')
         p.xlabel('Longitude')
         p.ylabel('Latitude')
-        #p.title()
     with fiona.open(shppath) as shp:
         gpx = []
         gpy = []
@@ -117,13 +100,9 @@ def shapeselect2(cfg, cube, filename):
                 pth = 'o'
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube, cfg)
                 if cfg['evalplot']:
-                    #map.scatter(cube.coord('longitude').points[gpx],
-                    #            cube.coord('latitude').points[gpy],
-                    #            6, marker='+', latlon=True,
-                    #            color='blue')
                     p.plot(cube.coord('longitude').points[gpx],
                            cube.coord('latitude').points[gpy],
-                           'bo',markersize=6)#, marker='+')
+                           'bo',markersize=6)
                 if len(gpx) == 0:
                     gpx, gpy = representative(gpx, gpy, points, multi, cube,
                                               cfg)
@@ -131,25 +110,21 @@ def shapeselect2(cfg, cube, filename):
                 pth = 'x'
                 gpx, gpy = representative(gpx, gpy, points, multi, cube, cfg)
                 if cfg['evalplot']:
-                    #map.scatter(cube.coord('longitude').points[gpx],
-                    #            cube.coord('latitude').points[gpy],
-                    #            6, marker='+', latlon=True,
-                    #            color='blue')
                     p.plot(cube.coord('longitude').points[gpx],
                            cube.coord('latitude').points[gpy],
-                           'g', marker='+')
+                           'ro', markersize=3)
         name = os.path.splitext(os.path.basename(filename))[0]
         path = os.path.join(
                 cfg['work_dir'],
                 name + '.png',
             )
-        #plt.savefig(path)
+        #p.savefig(path)
         p.show()
         # select points and calc mean of all points at each timestep of cube
 
 
 def mean_inside(gpx, gpy, points, multi, cube, cfg):
-    for i, point in enumerate(points):
+    for point in points:
         if point.within(multi):
             if point.x < 0 and np.min(cube.coord('longitude').points) >= 0:
                 addx = 360.
@@ -160,10 +135,6 @@ def mean_inside(gpx, gpy, points, multi, cube, cfg):
                               point.x + addx, point.y)
             gpx.append(x)
             gpy.append(y)
-            #gpx.append(np.where(cube.coord('longitude').points ==
-            #                    point.x))
-            #gpy.append(np.where(cube.coord('latitude').points ==
-            #                    point.y))
     return gpx, gpy
 
 def representative(gpx, gpy, points, multi, cube, cfg):
@@ -173,9 +144,6 @@ def representative(gpx, gpy, points, multi, cube, cfg):
     npy = nearest[1].coords[0][1]
     if npx < 0 and np.min(cube.coord('longitude').points) >= 0:
         npx = npx + 360.
-    print(reprpoint.x, reprpoint.y, npx, npy)
-    #gpx.append(np.where(cube.coord('longitude').points == npx)[0][0])
-    #gpy.append(np.where(cube.coord('latitude').points == npy)[0][0])
     x, y = best_match(cube.coord('longitude').points,
                       cube.coord('latitude').points,
                       npx, npy)
@@ -183,21 +151,24 @@ def representative(gpx, gpy, points, multi, cube, cfg):
     gpy.append(y)
     return gpx, gpy
 
-def best_match(xx, yy, px, py):
+def best_match(i, j, px, py):
     """ Identifies the grid points in 2-d with minimum distance. """
-    if xx.shape != 2 or yy.shape != 2:
-        x = deepcopy(xx)
-        y = deepcopy(yy)
+    if i.shape != 2 or j.shape != 2:
+        x = deepcopy(i)
+        y = deepcopy(j)
         xx = np.zeros((len(x),len(y)))
         yy = np.zeros((len(x),len(y)))
         for i in range(0,len(y)):
             xx[:,i] = x
         for j in range(0,len(x)):
             yy[j,:] = y
+    else:
+        xx = deepcopy(i)
+        yy = deepcopy(j)
     distance = ( (xx - px)**2 + (yy - py)**2 )**0.5
     ind = np.unravel_index(np.argmin(distance, axis=None), distance.shape)
-    print(np.min(distance), distance[ind[0],ind[1]])
-    print(xx[ind[0],ind[1]],yy[ind[0],ind[1]], px, py)
+    #print(np.min(distance), distance[ind[0],ind[1]])
+    #print(xx[ind[0],ind[1]],yy[ind[0],ind[1]], px, py)
     return ind[0], ind[1]
 
 
@@ -292,56 +263,7 @@ def shapeselect(cfg, cube, filename):
     return poly_id, var
 
 
-def shape_plot(selected_points, cube, filename, cfg):
-    """Plot shapefiles and included grid points"""
-    print('plot1')
-    shppath = cfg['shppath']
-    lons = []
-    lats = []
-    for xx, yy in selected_points:
-        lons.append(cube.coord('longitude').points[xx][0]) #point[0]])
-        lats.append(cube.coord('latitude').points[yy][0]) #point[1]])
-    # Set limits for map (This can definitely be improved!)
-    shp = shapefile.Reader(shppath)
-    llcrnrlon=shp.bbox[0]-15
-    llcrnrlat=max((shp.bbox[2]-1,-90))
-    urcrnrlon=shp.bbox[1]+15
-    urcrnrlat=min((shp.bbox[3]+1,90))
-    print('plot2')
-    # Read all model points within map limits
-    if ((cube.coord('latitude').ndim == 1 and
-         cube.coord('longitude').ndim == 1)):
-        coord_points = [(x, y) for x in cube.coord('latitude').points
-                        for y in cube.coord('longitude').points]
-    elif (cube.coord('latitude').ndim == 2 and
-          cube.coord('longitude').ndim == 2):
-        logger.info("Matrix coords not yet implemented with iris!")
-        sys.exit(1)
-    else:
-        logger.info("Unexpected error: " +
-                    "Inconsistency between grid lon and lat dimensions")
-        sys.exit(1)
-    alons = []
-    alats = []
-    for lat, lon in coord_points:
-        alons.append(lon)
-        alats.append(lat)
-    print('plot3')
-    map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
-                  urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, 
-                  projection='tmerc',
-                  lat_0=0, lon_0=0)
-    map.drawmapboundary()
-    map.drawcoastlines()
-    #map.readshapefile(shppath[0:-4], 'obj', color='red')
-    map.scatter(alats, alons, 3, marker='o', latlon=True, color='gray')
-    map.scatter(lats, lons, 6, marker='x', latlon=True, color='red')
-    print('plot4')
 
-    #plt.show()
-    #name = os.path.splitext(os.path.basename(filename))[0]
-    #path = os.path.join(cfg['work_dir'], name + '.png',)
-    #plt.savefig(path)
 
 def write_netcdf(path, polyid, var, cube, cfg):
     """Write results to a netcdf file."""
