@@ -3,16 +3,15 @@ from copy import deepcopy
 import logging
 import os
 import sys
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
 import fiona
 from shapely.geometry import shape, mapping, Point, Polygon, MultiPolygon
 from shapely.geometry import MultiPoint
 import shapefile
-#from shapely.geometry import MultiPoint
-#from shapely.geometry import shape, Point
-#from shapely.geometry.multipolygon import MultiPolygon
 from shapely.ops import nearest_points
 import numpy as np
+import xlsxwriter
+import csv
 
 from matplotlib import pyplot as p 
 import matplotlib.pyplot as plt
@@ -23,7 +22,6 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 def main(cfg):
     """Select grid points within shapefiles."""
     for filename, attributes in cfg['input_data'].items():
@@ -31,15 +29,46 @@ def main(cfg):
                     attributes['standard_name'], attributes['model'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        #polyid, var = 
-        shapeselect2(cfg, cube, filename)
+        ncts, nclon, nclat = shapeselect2(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
-        #if cfg['write_csv']:
-        #    path = os.path.join(
-        #        cfg['work_dir'],
-        #        name + '.csv',
-        #    )
-        #    with open(path, 'w') as file:
+        if cfg['write_xlsxcsv']:
+            ncfile = Dataset(filename, 'r')
+            otime = ncfile.variables['time']
+            dtime = num2date(otime[:], otime.units, otime.calendar)
+            wtime = []
+            for tim in range(len(dtime)):
+                wtime.append(str(dtime[tim]))
+            pathx = os.path.join(cfg['work_dir'], name + '.xlsx')
+            pathc = os.path.join(cfg['work_dir'], name + '.csv')
+            workbook = xlsxwriter.Workbook(pathx)
+            #worksheetMeta = workbook.add_worksheet()
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'Date/lonlat')
+            worksheet.write_row(0, 1, wtime)
+            for row in range(ncts.shape[1]):
+                # Better change to ID here
+                #worksheet.write(row+1, 0, str(row))
+                worksheet.write(row+1, 0, str(round(nclon[row], 3)) +
+                                '_' + str(round(nclat[row], 3)))
+                worksheet.write_row(row+1, 1, np.squeeze(ncts[:, row]))
+            #### Convert to cls before closing
+            #csvfile = open(pathc, 'w')
+            #wr = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+            #for rownum in range(row):
+            #    wr.writerow(worksheet.row_values(rownum))
+            #csvfile.close()
+            #workbook.close()
+
+        # fixme: write nrows of header in first row
+        # fixme: dump cfg
+        # fixme: dump cube.metadata
+        # fixme: write info about representative coordinates
+        # fixme: write time coordinate
+        # fixme: write lon and lat info in first two rows
+                #timenp = np.zeros((ncts.shape[0]+2))
+                #timenp[
+            
+        #
         #        file.write("id time \n")
         #        file.close()
         #        tvar = deepcopy(var)
@@ -51,7 +80,16 @@ def main(cfg):
         #        cfg['work_dir'],
         #        name + '.nc',
         #    )
+        # fixme: add similar stuff as in csv to netcdf
         #    write_netcdf(path, polyid, var, cube, cfg)
+
+def dates(otime):
+    """ Converts iris time to human readable format """
+    calendar = otime.units.calendar
+    origin = otime.units.origin
+    #otime.cell(0).point
+    
+
 
 def shapeselect2(cfg, cube, filename):
     """ New solution with fiona! """
@@ -93,7 +131,10 @@ def shapeselect2(cfg, cube, filename):
         gpx = []
         gpy = []
         cnt = -1
-        for multipol in shp:
+        ncts = np.zeros((cube.coord('time').shape[0], len(shp)))
+        nclon = np.zeros((len(shp))) # Takes representative point
+        nclat = np.zeros((len(shp)))
+        for ishp, multipol in enumerate(shp):
             cnt += 1
             multi = shape(multipol['geometry'])
             if wgtmet == 'mean_inside':
@@ -113,15 +154,32 @@ def shapeselect2(cfg, cube, filename):
                     p.plot(cube.coord('longitude').points[gpx],
                            cube.coord('latitude').points[gpy],
                            'ro', markersize=3)
-        name = os.path.splitext(os.path.basename(filename))[0]
-        path = os.path.join(
-                cfg['work_dir'],
-                name + '.png',
-            )
-        #p.savefig(path)
-        p.show()
-        # select points and calc mean of all points at each timestep of cube
+            print(len(gpx))
+            if len(gpx) == 1:
+                ncts[:,ishp] = np.reshape(cube.data[:, gpy, gpx],
+                                          (cube.data.shape[0],))
+                #for tt in range(cube.data.shape[0]):
+                #    ncts[:,ishp] = tmpdat[tt] #cube.data[:, gpy, gpx][]
+            else:
+                print('lengths: ',len(gpx),len(gpy))
+                #print(cube.data[:, gpy, gpx])
+                #tmpdat = np.mean(cube.data[:, gpy, gpx],axis=1)
+                #for tt in range(cube.data.shape[0]):
+                ncts[:,ishp] = np.mean(cube.data[:, gpy, gpx],axis=1)
+                    #tmpdat[tt] #np.mean(cube.data[:, gpy, gpx],axis=(1,2))
+            print(ncts[:,ishp])
+            print('***********************************')
+            gx, gy = representative([], [], points, multi, cube, cfg)
+            nclon[ishp] = cube.coord('longitude').points[gx]
+            nclat[ishp] = cube.coord('latitude').points[gy]
 
+    if cfg['evalplot']:
+        name = os.path.splitext(os.path.basename(filename))[0]
+        path = os.path.join(cfg['work_dir'],name + '.png')
+        p.savefig(path)
+        p.show()
+    #print(ncts)
+    return ncts, nclon, nclat
 
 def mean_inside(gpx, gpy, points, multi, cube, cfg):
     for point in points:
