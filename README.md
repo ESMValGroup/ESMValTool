@@ -19,7 +19,7 @@ To install in development mode, follow these instructions.
 - Activate the esmvaltool environment: `source activate esmvaltool`
 - Clone the ESMValTool github repository: `git clone git@github.com/ESMValGroup/ESMValTool`
 - Go to the esmvaltool directory: `cd ESMValTool`
-- Check out the version 2 development branch: `git checkout REFACTORING_backend`
+- Check out the version 2 development branch: `git checkout version2_development`
 - Update the esmvaltool conda environment `conda env update`
 - Install in development mode: `pip install -e .[develop]`
 - Test that your installation was succesful by running `esmvaltool -h`.

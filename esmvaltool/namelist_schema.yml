@@ -19,7 +19,7 @@ model:
   mip: str(required=False)
   realm: str(required=False)
   shift: str(required=False)
-  tier: int(min=2, max=3, required=False)
+  tier: int(min=1, max=3, required=False)
   type: str(required=False)
 
 variable:

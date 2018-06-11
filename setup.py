@@ -31,7 +31,7 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
-        'cf_units',
+        'cf_units>=2.0.1',
         'cython',
         'matplotlib',
         'netCDF4',
@@ -125,7 +125,6 @@ class RunTests(CustomCommand):
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
-            '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
@@ -214,6 +213,7 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
+                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             ],
         },
         cmdclass={
