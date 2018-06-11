@@ -31,7 +31,7 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
-        'cf_units>=2.0.1',
+        'cf_units',
         'cython',
         'matplotlib',
         'netCDF4',
