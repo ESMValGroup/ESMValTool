@@ -348,7 +348,7 @@ def _get_default_settings(variable, config_user, derive=False):
         'short_name': variable['short_name'],
     }
     # File fixes
-    fix_dir = variable['filename'] + '_fixed'
+    fix_dir = os.path.splitext(variable['filename'])[0] + '_fixed'
     if not derive:
         settings['fix_file'] = dict(fix)
         settings['fix_file']['output_dir'] = fix_dir
