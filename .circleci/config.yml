@@ -9,11 +9,13 @@ jobs:
     steps:
       - checkout
       - run:
-          # Add some system packages (mostly since geoval needs them)
           command: |
             apt-get update -y && apt-get install -y build-essential
+            # Create a file to checksum as cache key
+            date --rfc-3339 date > cache_key.txt
+            cat environment.yml >> cache_key.txt
       - restore_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           # Update/Create Conda Environment
           command: |
@@ -23,7 +25,7 @@ jobs:
             fi
             conda env update --name esmvaltool
       - save_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
       - run:
@@ -51,11 +53,13 @@ jobs:
     steps:
       - checkout
       - run:
-          # Add some system packages (mostly since geoval needs them)
           command: |
             apt-get update -y && apt-get install -y build-essential
+            # Create a file to checksum as cache key
+            date --rfc-3339 date > cache_key.txt
+            cat environment.yml >> cache_key.txt
       - restore_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
+          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           # Update/Create Conda Environment
           command: |
@@ -65,7 +69,7 @@ jobs:
             fi
             conda env update --name esmvaltool
       - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
+          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
       - run:
@@ -218,7 +222,7 @@ jobs:
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
-            conda install -y conda-build >> /logs/conda_base.txt 2>&1 
+            conda install -y conda-build >> /logs/conda_base.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
@@ -230,7 +234,7 @@ jobs:
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
-            set +x; source deactivate; set -x 
+            set +x; source deactivate; set -x
             # Install Python 2 conda package
             conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
             set +x; source activate esmvaltool2; set -x
@@ -282,7 +286,8 @@ workflows:
           filters:
             branches:
               only:
-                - REFACTORING_backend
+                - version2_development
+                - version2_master
     jobs:
       - python3_test
       - python2_test

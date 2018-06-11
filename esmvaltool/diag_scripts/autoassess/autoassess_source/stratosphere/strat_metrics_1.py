@@ -348,8 +348,10 @@ def tpole_metrics(run, tcube, metrics):
     t_son = t_seas_mean.extract(iris.Constraint(clim_season='son'))
 
     # Calculate area averages over polar regions at 50hPa
-    nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=5000.0)
-    shpole = iris.Constraint(latitude=lambda la: la <= -60, air_pressure=5000.0)
+    nhpole = iris.Constraint(latitude=lambda la: la >= 60,
+                             air_pressure=5000.0)
+    shpole = iris.Constraint(latitude=lambda la: la <= -60,
+                             air_pressure=5000.0)
 
     djf_polave = weight_lat_ave(t_djf.extract(nhpole))
     mam_polave = weight_lat_ave(t_mam.extract(nhpole))
