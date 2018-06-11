@@ -16,6 +16,7 @@ from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
 from ._time_area import volume_average as average_volume
 from ._time_area import area_average as average_region
+from ._time_area import time_average as time_average
 from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
 from ._time_area import volume_slice as extract_volume
@@ -54,6 +55,7 @@ __all__ = [
     # Grid-point operations
     'average_region',
     'average_volume',    
+    'time_average',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
