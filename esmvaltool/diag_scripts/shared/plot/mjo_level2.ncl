@@ -11,6 +11,8 @@ load "./diag_scripts/shared/statistics.ncl"
 
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 
+; #############################################################################
+
 undef("mjo_wave_freq_plot")
 function mjo_wave_freq_plot(wks[1]:graphic, \
                              wf[*][*]:numeric,\
@@ -96,7 +98,7 @@ begin
     return(plot)
 end
 
-; -----------
+; #############################################################################
 
 undef("addHorVertLinesCross_extended")
 function addHorVertLinesCross_extended(wks[1]    : graphic,\
@@ -136,7 +138,7 @@ begin
     return(plot)
 end
 
-;-----------------------------------------------
+; #############################################################################
 
 undef("mjo_cross_spectra_plot")
 function mjo_cross_spectra_plot(wks[1]       : graphic, \
@@ -410,7 +412,9 @@ begin
 
     return(plot)
 end
-;---------------------------------
+
+; #############################################################################
+
 undef("mjo_ceof_plot")
 function mjo_ceof_plot(wks[1]    : graphic, \
                       ceof[*][*] : numeric,\
@@ -480,14 +484,14 @@ begin
     return(plot)
 end
 
-;----------------------
+; #############################################################################
 
 undef("mjo_life_cycle_plot")
-procedure mjo_life_cycle_plot(x[*][*][*] : numeric,\
-                              u[*][*][*] : numeric,\
-                              v[*][*][*] : numeric,\
-                        idx_mod[1]       : numeric,\
-                             di[1]       : logical)
+procedure mjo_life_cycle_plot(x[*][*][*]:numeric,\
+                              u[*][*][*]:numeric,\
+                              v[*][*][*]:numeric,\
+                              idx_mod[1]:numeric,\
+                              di[1]:logical)
 local amres,           ang,               angBnd,\
     aux_title_info,  diag_script_base,  f,\
     field_type0,     iday,              imon,\
