@@ -1,5 +1,5 @@
 # ESMValTool
-[![DOIBadge](https://img.shields.io/badge/DOI-10.17874%2Fac8548f0315-blue.svg)](http://dx.doi.org/10.17874/ac8548f0315)
+[![DOIBadge](https://img.shields.io/badge/DOI-10.17874%2Fac8548f0315-blue.svg)](https://doi.org/10.17874/ac8548f0315)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
 [![Codacy Coverage Badge](https://api.codacy.com/project/badge/Coverage/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Coverage)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ESMValGroup?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -19,7 +19,7 @@ To install in development mode, follow these instructions.
 - Activate the esmvaltool environment: `source activate esmvaltool`
 - Clone the ESMValTool github repository: `git clone git@github.com/ESMValGroup/ESMValTool`
 - Go to the esmvaltool directory: `cd ESMValTool`
-- Check out the version 2 development branch: `git checkout REFACTORING_backend`
+- Check out the version 2 development branch: `git checkout version2_development`
 - Update the esmvaltool conda environment `conda env update`
 - Install in development mode: `pip install -e .[develop]`
 - Test that your installation was succesful by running `esmvaltool -h`.
