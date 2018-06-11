@@ -305,6 +305,15 @@ def _model_to_file(model, variables, config_user):
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
+            if not files and variable.get('derive'):
+                variable = copy.deepcopy(variable)
+                variable['short_name'], variable['field'] = get_required(
+                    variable['short_name'], variable['field'])[0]
+                files = get_input_filelist(
+                    variable=variable,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs'])
+            check_data_availability(files, variable)
             return files[0]
 
     raise NamelistError(
