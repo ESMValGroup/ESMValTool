@@ -126,8 +126,11 @@ def main(cfg):
     # run the thing
     proc = subprocess.Popen(sys_call, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
+    rc = proc.returncode
     logger.info("Diagnostic output: %s", out)
-    logger.info("Diagnostic error: %s", err)
+    if int(rc) != 0:
+        logger.info("Diagnostic has failed!")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
