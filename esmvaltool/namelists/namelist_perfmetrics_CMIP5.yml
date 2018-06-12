@@ -30,7 +30,7 @@ preprocessors:
       levels: 85000
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -44,7 +44,7 @@ preprocessors:
       levels: 50000
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -58,7 +58,7 @@ preprocessors:
       levels: 40000
       scheme: linear
     regrid:
-      target_grid: AIRS
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -72,7 +72,7 @@ preprocessors:
       levels: 20000
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -86,7 +86,7 @@ preprocessors:
       levels: 3000
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -100,7 +100,7 @@ preprocessors:
       levels: 500
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -108,10 +108,21 @@ preprocessors:
       span: overlap
       statistics: [mean, median]
       exclude: [reference_model, alternative_model]
-      
-  ppNOLEV:
+
+  ppNOLEV1:
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_model]
+      
+  ppNOLEV2:
+    regrid:
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -130,46 +141,13 @@ preprocessors:
       span: overlap
       statistics: [mean, median]
       exclude: [reference_model, alternative_model]      
-
-  ppNOLEVpr:
-    regrid:
-      target_grid: GPCP-SG
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [reference_model]
-
-  ppNOLEVclt:
-    regrid:
-      target_grid: ESACCI-CLOUD
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [reference_model, alternative_model]
-      
-  ppNOLEVrad:
-    regrid:
-      target_grid: CERES-EBAF
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [reference_model]
-
+         
   ppALL:
     extract_levels:
-      levels: ERA-Interim
+      levels: reference_model
       scheme: linear
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -953,7 +931,7 @@ diagnostics:
     description: Near-surface air temperature
     variables:
       tas:
-        preprocessor: ppNOLEV
+        preprocessor: ppNOLEV2
         reference_model: ERA-Interim
         alternative_model: NCEP
         mip: Amon
@@ -1099,7 +1077,7 @@ diagnostics:
     description: Precipitations
     variables:
       pr:
-        preprocessor: ppNOLEVpr
+        preprocessor: ppNOLEV1
         reference_model: GPCP-SG
         mip: Amon
         field: T2Ms
@@ -1167,7 +1145,7 @@ diagnostics:
     description: Total cloud cover
     variables:
       clt:
-        preprocessor: ppNOLEVclt
+        preprocessor: ppNOLEV2
         reference_model: ESACCI-CLOUD
         alternative_model: PATMOS
         mip: Amon
@@ -1234,7 +1212,7 @@ diagnostics:
 #     description: All-sky longwave radiation
 #     variables:
 #       rlut:
-#         preprocessor: ppNOLEVrad
+#         preprocessor: ppNOLEV1
 #         reference_model: CERES-EBAF
 #         mip: Amon
 #         field: T2Ms
@@ -1295,7 +1273,7 @@ diagnostics:
 #     description: All-sky longwave radiation
 #     variables:
 #       rsut:
-#         preprocessor: ppNOLEVrad
+#         preprocessor: ppNOLEV1
 #         reference_model: CERES-EBAF
 #         mip: Amon
 #         field: T2Ms

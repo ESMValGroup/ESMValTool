@@ -1,5 +1,6 @@
 """Fixes for CESM1-BGC model"""
 import shutil
+import six
 from cf_units import Unit
 from netCDF4 import Dataset
 
@@ -34,14 +35,28 @@ class nbp(Fix):
 
         """
         temp = Fix.get_fixed_filepath(output_dir, filepath)
-        shutil.copy(filepath, temp)
-        original_dataset = Dataset(temp, mode='a')
-        original_var = original_dataset.variables['nbp']
-        attr = {k: original_var.getncattr(k) for k in original_var.ncattrs()}
-        attr['missing_value'] = 1e+33
-        attr['_FillValue'] = 1e+33
-        original_var.setncatts(attr)
-        original_dataset.close()
+
+        original_dataset = Dataset(filepath)
+        new_dataset = Dataset(temp, mode='w')
+
+        for dim_name, dimension in six.iteritems(original_dataset.dimensions):
+            new_dataset.createDimension(dim_name, dimension.size)
+
+        for var_name, variable in six.iteritems(original_dataset.variables):
+            fill_value = variable._FillValue
+            if var_name == 'nbp':
+                fill_value = 1e+33
+            new_var = new_dataset.createVariable(var_name, variable.datatype,
+                                                 variable.dimensions,
+                                                 zlib=True,
+                                                 fill_value=fill_value)
+            attr = {k: variable.getncattr(k) for k in variable.ncattrs()}
+            del attr['_FillValue']
+            attr['missing_value'] = 1e+33
+            new_var.setncatts(attr)
+            new_var[...] = variable[...]
+        original_dataset.close
+        new_dataset.close()
         return temp
 
 
