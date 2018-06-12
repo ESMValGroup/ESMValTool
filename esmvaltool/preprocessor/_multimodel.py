@@ -225,7 +225,10 @@ def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
         # reset mask
         ndat.mask = True
         ndat[indices[idx_cube]] = cube.data
-        ndat.mask[indices[idx_cube]] = cube.data.mask
+        if np.ma.is_masked(cube.data):
+            ndat.mask[indices[idx_cube]] = cube.data.mask
+        else:
+            ndat.mask[indices[idx_cube]] = False
         ndatarr[idx_cube] = ndat[t_idx]
 
     # return time slice
