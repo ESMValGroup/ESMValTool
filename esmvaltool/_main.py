@@ -137,6 +137,7 @@ def main(args):
         process_namelist(namelist_file=namelist_file, config_user=cfg)
     return cfg
 
+
 def process_namelist(namelist_file, config_user):
     """Process namelist"""
     if not os.path.isfile(namelist_file):
