@@ -34,6 +34,7 @@ import logging
 import os
 import shutil
 import sys
+import subprocess
 from multiprocessing import cpu_count
 
 from . import __version__
@@ -54,6 +55,17 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 """ + __doc__
+
+
+def remove_preproc(preproc_dir):
+    """Remove the preproc dir if all finished fine"""
+    rm_call = 'rm -r ' + preproc_dir
+    proc = subprocess.Popen(rm_call, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    if int(proc.returncode) == 0:
+        logger.info("Removed preprocessed data...")
+    else:
+        logger.warning("Could not remove preprocessed data...")
 
 
 def get_args():
@@ -123,7 +135,7 @@ def main(args):
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
         process_namelist(namelist_file=namelist_file, config_user=cfg)
-
+    return cfg
 
 def process_namelist(namelist_file, config_user):
     """Process namelist"""
@@ -183,7 +195,7 @@ def run():
     """Run the `esmvaltool` program, logging any exceptions."""
     args = get_args()
     try:
-        main(args)
+        conf = main(args)
     except:  # noqa
         logger.exception(
             "Program terminated abnormally, see stack trace "
@@ -191,4 +203,6 @@ def run():
             exc_info=True)
         sys.exit(1)
     else:
+        if conf["remove_preproc_dir"]:
+            remove_preproc(conf["preproc_dir"])
         logger.info("Run was succesful")
