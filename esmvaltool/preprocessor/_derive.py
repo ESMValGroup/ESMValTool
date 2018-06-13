@@ -113,11 +113,6 @@ def calc_lwcre(cubes):
     lwcre = rlutcs_cube - rlut_cube
     lwcre.units = rlut_cube.units
 
-    # Set names
-    lwcre.var_name = 'lwcre'
-    lwcre.standard_name = 'toa_longwave_cloud_radiative_effect'
-    lwcre.long_name = 'TOA Longwave Cloud Radiative Effect'
-    lwcre.attributes['positive'] = 'up'
     return lwcre
 
 
@@ -139,9 +134,9 @@ def calc_lwp(cubes):
 
     """
     clwvi_cube = cubes.extract_strict(
-        Constraint(name='atmosphere_mass_content_of_cloud_condensed_water'))
+        Constraint(name='atmosphere_cloud_condensed_water_content'))
     clivi_cube = cubes.extract_strict(
-        Constraint(name='atmosphere_mass_content_of_cloud_ice'))
+        Constraint(name='atmosphere_cloud_ice_content'))
 
     model = clwvi_cube.attributes.get('model_id')
     project = clwvi_cube.attributes.get('project_id')
@@ -188,11 +183,6 @@ def calc_swcre(cubes):
     swcre = rsutcs_cube - rsut_cube
     swcre.units = rsut_cube.units
 
-    # Set names
-    swcre.var_name = 'swcre'
-    swcre.standard_name = 'toa_shortwave_cloud_radiative_effect'
-    swcre.long_name = 'TOA Shortwave Cloud Radiative Effect'
-    swcre.attributes['positive'] = 'up'
     return swcre
 
 
