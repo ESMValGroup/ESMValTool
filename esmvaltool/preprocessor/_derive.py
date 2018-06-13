@@ -6,6 +6,7 @@ import cf_units
 import iris
 import numba
 import numpy as np
+import yaml
 from iris import Constraint
 from scipy import constants
 
@@ -50,26 +51,43 @@ def get_required(short_name, field=None):
     raise NotImplementedError("Don't know how to derive {}".format(short_name))
 
 
-def derive(cubes, short_name):
-    """Derive variable `short_name`"""
+def derive(cubes, variable):
+    """Derive variable"""
+    short_name = variable['short_name']
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
         return cubes[0]
 
-    # Derive
+    # Available derivation functions
     functions = {
         'lwcre': calc_lwcre,
         'lwp': calc_lwp,
         'swcre': calc_swcre,
         'toz': calc_toz,
     }
-    if short_name in functions:
-        cubes = iris.cube.CubeList(cubes)
-        cube = functions[short_name](cubes)
-        cube.attributes['_filename'] = cubes[0].attributes['_filename']
-        return cube
 
-    raise NotImplementedError("Don't know how to derive {}".format(short_name))
+    if short_name not in functions:
+        raise NotImplementedError(
+            "Don't know how to derive {}".format(short_name))
+
+    # Preprare input cubes and derive
+    cubes = iris.cube.CubeList(cubes)
+    cube = functions[short_name](cubes)
+
+    # Set standard attributes
+    cube.var_name = short_name
+    if variable['standard_name'] not in iris.std_names.STD_NAMES:
+        iris.std_names.STD_NAMES[variable['standard_name']] = {
+            'canonical_units': variable['units']
+        }
+    for attribute in ('standard_name', 'long_name', 'units'):
+        setattr(cube, attribute, variable[attribute])
+
+    # Set attributes required by preprocessor
+    cube.attributes['_filename'] = variable['filename']
+    cube.attributes['metadata'] = yaml.safe_dump(variable)
+
+    return cube
 
 
 def calc_lwcre(cubes):
@@ -143,8 +161,6 @@ def calc_lwp(cubes):
     else:
         lwp_cube = clwvi_cube - clivi_cube
 
-    # TODO: Rename cube lwp_cube.name('liquid_water_path') here?
-    # TODO: Fix units? lwp_cube.units = cf_units.Unit('kg') here?
     return lwp_cube
 
 
@@ -212,13 +228,7 @@ def calc_toz(cubes):
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
-    toz.units = cf_units.Unit('DU')
 
-    # Set names
-    toz.var_name = 'toz'
-    toz.standard_name = (
-        'equivalent_thickness_at_stp_of_atmosphere_ozone_content')
-    toz.long_name = ' Total Ozone Column'
     return toz
 
 
