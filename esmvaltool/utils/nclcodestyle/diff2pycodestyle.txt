@@ -1,0 +1,148 @@
+2,3c2,3
+< # nclcodestyle.py - Check NCL source code formatting, according to PEP 8
+< # Adapted to NCL based on the original pycodestyle.py for Python
+---
+> # pycodestyle.py - Check Python source code formatting, according to
+> # PEP 8
+30c30
+< Check NCL source code formatting, according to PEP 8.
+---
+> Check Python source code formatting, according to PEP 8.
+57a58
+> import tokenize
+80,81d80
+< from . import tokenize
+< 
+118c117
+< WS_OPTIONAL_OPERATORS = ARITHMETIC_OP.union(['^', '<<', '>>', '%'])
+---
+> WS_OPTIONAL_OPERATORS = ARITHMETIC_OP.union(['^', '&', '|', '<<', '>>', '%'])
+134c133
+< EXTRANEOUS_WHITESPACE_REGEX = re.compile(r'[\[({] | [\]}),;]')
+---
+> EXTRANEOUS_WHITESPACE_REGEX = re.compile(r'[\[({] | [\]}),;:]')
+160,164d158
+< # Work around Python < 2.6 behaviour, which does not generate NL after
+< # a comment which is on a line by itself.
+< COMMENT_WITH_NL = tokenize.generate_tokens(['#\n'].pop).send(None)[1] == '#\n'
+< 
+< 
+491c485,486
+<             if char == ':':
+---
+>             if char == ':' and before.count('[') > before.count(']') and \
+>                     before.rfind('{') < before.rfind('['):
+521,522c516,517
+<     if indent_level % 2:
+<         yield 0, tmpl % (1 + c, "indentation is not a multiple of two")
+---
+>     if indent_level % 4:
+>         yield 0, tmpl % (1 + c, "indentation is not a multiple of four")
+527d521
+<         return
+572c566
+<     valid_hangs = (2,) if indent_char != '\t' else (2, 4)
+---
+>     valid_hangs = (4,) if indent_char != '\t' else (4, 8)
+782,783d775
+<             if re.search(before + "=" + after, logical_line) is not None:
+<                 continue
+789,790d780
+<             if re.search(before + "=" + after, logical_line) is not None:
+<                 continue
+839c829
+<                            "E225 missing whitespace around operator 1")
+---
+>                            "E225 missing whitespace around operator")
+845,848d834
+<             elif text == '&':
+<                 continue
+<             elif text == ':':
+<                 continue
+852c838
+<                     yield prev_end, "E225 missing whitespace around operator 2"
+---
+>                     yield prev_end, "E225 missing whitespace around operator"
+866,868d851
+<             if text == '/' and parens:
+<                 # Allow keyword args or defaults: foo(bar=None).
+<                 continue
+880,887c863
+<             if text == '/' and prev_text in ('('):
+<                 continue
+<             if text == '=' and prev_text == ':':
+<                 continue
+<             if text == '&':
+<                 continue
+<             if text == '|':
+<                 continue
+---
+> 
+894c870
+<                 yield prev_end, "E225 missing whitespace around operator 3"
+---
+>                 yield prev_end, "E225 missing whitespace around operator"
+1015c991
+<             bad_prefix = symbol not in ';:' and (symbol.lstrip(';')[:1] or ';')
+---
+>             bad_prefix = symbol not in '#:' and (symbol.lstrip('#')[:1] or '#')
+1018c994
+<                     yield start, "E262 inline comment should start with '; '"
+---
+>                     yield start, "E262 inline comment should start with '# '"
+1020,1021c996,997
+<                 if bad_prefix != ';':
+<                     yield start, "E265 block comment should start with '; '"
+---
+>                 if bad_prefix != '#':
+>                     yield start, "E265 block comment should start with '# '"
+1023c999
+<                     yield start, "E266 too many leading ';' for block comment"
+---
+>                     yield start, "E266 too many leading '#' for block comment"
+1140c1116
+<     counts = dict((char, 0) for char in '{}[]()')
+---
+>     counts = {char: 0 for char in '{}[]()'}
+1193d1168
+<             continue
+1785,1787c1760,1764
+<     return dict([(os.path.join(parent, filepath), rows)
+<                  for (filepath, rows) in rv.items()
+<                  if rows and filename_match(filepath, patterns)])
+---
+>     return {
+>         os.path.join(parent, filepath): rows
+>         for (filepath, rows) in rv.items()
+>         if rows and filename_match(filepath, patterns)
+>     }
+1830,1834d1806
+< if COMMENT_WITH_NL:
+<     def _is_eol_token(token, _eol_token=_is_eol_token):
+<         return _eol_token(token) or (token[0] == tokenize.COMMENT and
+<                                      token[1] == token[4])
+< 
+2102,2109d2073
+<                 elif COMMENT_WITH_NL and token_type == tokenize.COMMENT:
+<                     if len(self.tokens) == 1:
+<                         # The comment also ends a physical line
+<                         token = list(token)
+<                         token[1] = text.rstrip('\r\n')
+<                         token[3] = (token[2][0], token[2][1] + len(token[1]))
+<                         self.tokens = [tuple(token)]
+<                         self.check_logical()
+2177,2178c2141,2142
+<         return sum([self.counters[key]
+<                     for key in self.messages if key.startswith(prefix)])
+---
+>         return sum(self.counters[key]
+>                    for key in self.messages if key.startswith(prefix))
+2435c2399
+<     parser.add_option('--filename', metavar='patterns', default='*.ncl',
+---
+>     parser.add_option('--filename', metavar='patterns', default='*.py',
+2526,2527c2490
+<         option_list = dict([(o.dest, o.type or o.action)
+<                             for o in parser.option_list])
+---
+>         option_list = {o.dest: o.type or o.action for o in parser.option_list}

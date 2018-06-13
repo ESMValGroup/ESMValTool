@@ -4,7 +4,7 @@
 Porting namelists and diagnostics to ESMValTool v2.0
 ****************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``REFACTORING_backend``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``version2_development``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
 In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <http://www.esmvaltool.org/download/Righi_ESMValTool2-TechnicalOverview.pdf>`_).
 
@@ -17,14 +17,14 @@ Do not forget to assign it to yourself.
 Create your own branch
 ======================
 
-A dedicated branch shall be created from ``REFACTORING_backend`` for each namelist to be ported.
+A dedicated branch shall be created from ``version2_development`` for each namelist to be ported.
 
 .. code-block:: bash
 
-    git checkout REFACTORING_backend
+    git checkout version2_development
     git checkout -b REFACTORING_<namelist>
 
-``REFACTORING_backend`` contains only v2.0 under the ``./esmvaltool/`` directory. 
+``version2_development`` contains only v2.0 under the ``./esmvaltool/`` directory. 
 
 Convert xml to yml
 ==================
@@ -190,10 +190,10 @@ Before submitting a pull request, the code shall be cleaned to adhere to the cod
 - two-space instead of four-space indentation is now adopted for NCL as per NCL standard;
 - ``load`` statements for NCL standard libraries shall be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
 - the description of diagnostic- and variable-specific settings shall be moved from the header of the diagnostic script to the main namelist, since the settings are now defined there (see above);
-- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``info_output`` and ``debug_output`` functions;
+- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
 - for error and warning statments, the ``error_msg`` function shall be used, which automatically include an exit statement.
 
 Open a pull request
 ===================
 
-Create a pull request on github to merge your branch back to ``REFACTORING_backend``, provide a short description of what has been done and nominate one or more reviewers.
+Create a pull request on github to merge your branch back to ``version2_development``, provide a short description of what has been done and nominate one or more reviewers.

@@ -142,7 +142,7 @@ Observations and reformat scripts
 References
 ----------
 
-* Lauer, A., V. Eyring, M. Righi, M. Buchwitz, P. Defourny, M. Evaldsson, P. Friedlingstein, R. de Jeuf, G. de Leeuw, A. Loew, C. J. Merchant, B. Müller, T. Popp, M. Reuter, S. Sandven, D. Senftleben, M. Stengel, M. Van Roozendael, S. Wenzel, and U. Willén: Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sensing of Environment, http://dx.doi.org/10.1016/j.rse.2017.01.007, 2017.
+* Lauer, A., V. Eyring, M. Righi, M. Buchwitz, P. Defourny, M. Evaldsson, P. Friedlingstein, R. de Jeuf, G. de Leeuw, A. Loew, C. J. Merchant, B. Müller, T. Popp, M. Reuter, S. Sandven, D. Senftleben, M. Stengel, M. Van Roozendael, S. Wenzel, and U. Willén: Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sensing of Environment, https://doi.org/10.1016/j.rse.2017.01.007, 2017.
 
 
 Example plots
