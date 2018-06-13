@@ -34,7 +34,6 @@ import logging
 import os
 import shutil
 import sys
-import subprocess
 from multiprocessing import cpu_count
 
 from . import __version__
@@ -55,17 +54,6 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 """ + __doc__
-
-
-def remove_preproc(preproc_dir):
-    """Remove the preproc dir if all finished fine"""
-    rm_call = 'rm -r ' + preproc_dir
-    proc = subprocess.Popen(rm_call, stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
-    if int(proc.returncode) == 0:
-        logger.info("Removed preprocessed data...")
-    else:
-        logger.warning("Could not remove preprocessed data...")
 
 
 def get_args():
@@ -205,5 +193,5 @@ def run():
         sys.exit(1)
     else:
         if conf["remove_preproc_dir"]:
-            remove_preproc(conf["preproc_dir"])
+            shutil.rmtree(conf["preproc_dir"])
         logger.info("Run was succesful")
