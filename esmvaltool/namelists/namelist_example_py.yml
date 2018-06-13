@@ -36,6 +36,8 @@ diagnostics:
         preprocessor: preprocessor1
         field: T3M
         reference_model: ERA-Interim
+        additional_models:
+          - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
       pr:
         preprocessor: preprocessor2
         field: T2Ms
