@@ -286,7 +286,8 @@ workflows:
           filters:
             branches:
               only:
-                - REFACTORING_backend
+                - version2_development
+                - version2_master
     jobs:
       - python3_test
       - python2_test

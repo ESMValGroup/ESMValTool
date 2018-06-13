@@ -13,7 +13,7 @@ preprocessors:
       levels: 85000
       scheme: nearest
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     multi_model_statistics:
       span: overlap
@@ -21,7 +21,7 @@ preprocessors:
 
   preprocessor2:
     regrid:
-      target_grid: ERA-Interim
+      target_grid: reference_model
       scheme: linear
     multi_model_statistics:
       span: overlap
@@ -35,9 +35,11 @@ diagnostics:
       ta:
         preprocessor: preprocessor1
         field: T3M
+        reference_model: ERA-Interim
       pr:
         preprocessor: preprocessor2
         field: T2Ms
+        reference_model: ERA-Interim
     scripts:
       script1:
         script: examples/diagnostic.py

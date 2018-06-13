@@ -125,7 +125,6 @@ class RunTests(CustomCommand):
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
-            '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
