@@ -285,16 +285,31 @@ class CoordinateInfo(JsonInfo):
         self.generic_level = False
 
         self.axis = ""
+        """Axis"""
         self.value = ""
+        """Coordinate value"""
         self.standard_name = ""
+        """Standard name"""
         self.long_name = ""
+        """Long name"""
         self.out_name = ""
+        """
+        Out name
+        
+        This is the name of the variable inside the file
+        """
         self.var_name = ""
+        """Short name"""
         self.units = ""
+        """Units"""
         self.stored_direction = ""
+        """Direction in which the coordinate increases"""
         self.requested = []
+        """Values requested"""
         self.valid_min = ""
+        """Minimum admitted value"""
         self.valid_max = ""
+        """Maximum admitted value"""
 
     def read_json(self, json_data):
         """
