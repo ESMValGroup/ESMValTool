@@ -1,0 +1,64 @@
+# Reproducing selected figures from IPCC AR5, chap. 12 (Collins et al., 2013):
+#
+# Authors
+# Ruth Lorenz (ETH, Switzerland - ruth.lorenz@env.ethz.ch)
+# Jan Sedlacek (ETH, Switzerland - jan.sedlacek@env.ethz.ch)
+#
+# Contributors
+#
+# Project
+# CRESCENDO
+#
+# Reference
+# Collins, M. et al., Long-term climate change: Projections, Commitments, and
+# Irreversibility, in: Climate Change 2013:
+# the Physical Science Basis, contribution of Working Group I to the Fifth
+# Assessment Report of the Intergovernmental Panel on Climate Change, edited
+# by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K.,
+# Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge
+# University Press, Cambridge, UK and New York, NY, USA (2013)
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+  - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+  - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
+  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
+
+preprocessors:
+  preprocessor_1:
+    regrid: false
+    mask_landocean: false
+    multi_model_statistics: false
+
+diagnostics:
+  tas_change_all_models:
+    description: Air temperature change for RCP45 for all models as maps.
+    variables:
+      tas:
+        preprocessor: preprocessor_1
+        mip: Amon
+        field: T2Ms
+    additional_models:
+      - {model: ACCESS1-3,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {model: ACCESS1-3,   project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+
+    scripts:
+      tas_all: &settings
+        script: collins13ipcc/map_diff_each_model_ipcc12.ncl
+        projection: Robinson
+        styleset: CMIP5
+        max_vert: 9
+        max_hori: 5
+        #title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
+        time_avg: annualclim
+        experiment: rcp45
+        ncdf: default #"_tas_each_model_1209.ncl"
+        #colormap:
+        levs: [-2. -1.5, -1. -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
