@@ -13,7 +13,25 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 
 def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
                  mip=None):
-    """Apply fixes to the metadata of the cube."""
+    """
+    Apply fixes to the metadata of the cube.
+
+    Parameters:
+    -----------
+    cube: iris.cube.Cube
+        Data cube to fix
+    short_name: basestring
+        Short name of the variable to fix
+    project: basestring
+    dataset: basestring
+    cmor_table: basestring or None
+    mip: basestring or None
+
+    Returns:
+    --------
+    iris.cube.Cube
+
+    """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
         cube = fix.fix_metadata(cube)

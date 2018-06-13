@@ -1,4 +1,7 @@
-"""CMOR checker for Iris cubes"""
+"""
+Module for checking iris cubes against their CMOR definitions
+
+"""
 import logging
 
 import cf_units
@@ -115,7 +118,7 @@ class CMORCheck(object):
         Raises
         ------
         CMORCheckError:
-            If there are errors reported.
+            If any errors were reported before calling this method.
 
         """
         if self.has_errors():
@@ -155,7 +158,7 @@ class CMORCheck(object):
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error if defected. If set to False, it perform
-            all checks and the raises.
+            all checks and then raises.
 
         """
         if logger is None:
@@ -539,21 +542,69 @@ def _get_cmor_checker(table,
 
 
 def cmor_check_metadata(cube, cmor_table, mip, short_name):
-    """Check if metadata conforms to CMOR."""
+    """
+    Check if metadata conforms to variable's CMOR definiton.
+
+    None of the checks at this step will force the cube to load the data
+
+    Parameters:
+    ----------
+    cube: iris,cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_metadata()
     return cube
 
 
 def cmor_check_data(cube, cmor_table, mip, short_name):
-    """Check if data conforms to CMOR."""
+    """
+    Check if data conforms to variable's CMOR definiton.
+
+    The checks performed at this step require the data in memory
+
+    Parameters:
+    ----------
+    cube: iris,cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_data()
     return cube
 
 
 def cmor_check(cube, cmor_table, mip, short_name):
-    """Check if cube conforms to CMOR."""
+    """
+    Check if cube conforms to variable's CMOR definiton.
+
+    Equivalent to calling cmor_check_metadata and cmor_check_data consecutively
+
+    Parameters:
+    ----------
+    cube: iris,cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     cmor_check_metadata(cube, cmor_table, mip, short_name)
     cmor_check_data(cube, cmor_table, mip, short_name)
     return cube
