@@ -123,14 +123,13 @@ def get_input_dirname_template(variable, rootpath, drs):
     _drs = drs.get(project, 'default')
     input_dir = cfg['input_dir']
     if isinstance(input_dir, six.string_types):
-        dir2 = replace_tags(input_dir, variable)
+        dir2 = replace_tags(input_dir, variable, 0)
     elif _drs in input_dir:
         try:
             insts = cmip5_model2inst(variable['model'])
         except KeyError as msg:
             logger.debug('CMIP5 model2inst: %s', msg)
             insts = 0
-            pass
         dirs2 = []
         if isinstance(insts, list):
             for j in range(len(insts)):
@@ -144,7 +143,7 @@ def get_input_dirname_template(variable, rootpath, drs):
             'drs {} for {} project not specified in config-developer file'
             .format(_drs, project))
 
-    dirname_template = [os.path.join(dir1, dir2) for dir2 in dirs2]
+    dirname_template = [os.path.join(dir1, dir_2) for dir_2 in dirs2]
 
     return dirname_template
 
