@@ -1,8 +1,9 @@
 """
 Apply automatic fixes for known errors in cmorized data
 
-All functions in this module will work even if no fixes are available for the given dataset.
-Therefore is recommended to apply them to all variables to be sure that all known errors are
+All functions in this module will work even if no fixes are available
+for the given dataset. Therefore is recommended to apply them to all
+variables to be sure that all known errors are
 fixed.
 
 """
@@ -14,7 +15,8 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     """
     Apply fixes to the netCDF files
 
-    This allow fixing errors that prevent loading or can not be fixed in the cube.
+    This allow fixing errors that prevent loading or can not be fixed
+    in the cube.
 
     Parameters:
     -----------
@@ -30,7 +32,8 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     Returns:
     --------
     path:
-        Filename to the fixed file. If no fix has been applied it will be the original
+        Filename to the fixed file. If no fix has been applied
+        it will be the original
 
     """
     for fix in Fix.get_fixes(
@@ -81,8 +84,8 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """
     Apply fixes to the metadata of the cube.
 
-    Fixes at this step require the data to be loaded onto memory, but the returned cube can be lazy loaded if no
-    fixes were applied.
+    Fixes at this step require the data to be loaded onto memory,
+    but the returned cube can be lazy loaded if no fixes were applied.
 
     Parameters:
     -----------

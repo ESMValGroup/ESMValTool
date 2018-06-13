@@ -295,7 +295,7 @@ class CoordinateInfo(JsonInfo):
         self.out_name = ""
         """
         Out name
-        
+
         This is the name of the variable inside the file
         """
         self.var_name = ""
