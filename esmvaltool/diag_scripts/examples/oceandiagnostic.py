@@ -11,9 +11,9 @@ import yaml
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
-# from esmvaltool.diag_scripts.shared.plot import example_map_plot
-
+# This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def folder(name):
@@ -64,7 +64,7 @@ def sensibleUnits(cube,name):
     if name in ['chl',]:
         new_units = 'mg m-3'
     
-    if new_units:
+    if new_units != '':
         logger.info(' '.join(["Changing units from ",str(cube.units),'to', new_units]))
         cube.convert_units(new_units)
         
@@ -93,77 +93,151 @@ def get_image_path(cfg,
     if suffix:
         path += '_' + suffix
     path += '.' + image_extention
-    logger.info("Image path will be ", path)
+    logger.info("Image path will be: %s", path)
     return path
 
-
-def loadCubeAndSavePng(cfg, md, fn, plotType='Mean'):
+def make_cube_layer_dict(cube):
+    """
+        This method takes a cube and return a dictionairy with a cube for each layer 
+        as it's own item. ie:
+          cubes[depth] = cube from specific layer
+        Also, cubes with no depth component are returns as:
+          cubes[''] = cube with no depth component.
+        """
+        
+    # Check layering:
+    depth = cube.coords('depth')
+    cubes = {}
+   
+    if depth == []:
+        cubes[''] = cube
+    else: 
+        # iris stores coords as a list with one entry:
+        depth = depth[0]
+        if len(depth.points) in [1,]:
+            cubes[''] = cube
+        else:
+            for l,layer in enumerate(depth.points):
+                cubes[layer] = cube[:,l]
+    return cubes
+    
+def TimeSeriesPlots(cfg, md, fn,):
     """
         This function makes a simply plot for an indivudual model.
         The cfg is the opened global config,
         md is the metadata dictionairy (for the individual model file).
-        plotTypes: 
-            Mean: the temporal mean of the entire time range
-            WeightedMean: time series of the weighted global mean
-            
+        Mean: the temporal mean of the entire time range
         """
-
-    cube = iris.load_cube(fn)
-    
+    # Load cube and set up units
+    cube = iris.load_cube(fn)  
     cube = sensibleUnits(cube, md['short_name'])
 
-
-    print('loadCubeAndSavePng:', md['model'],'data: ',
-         cube.data.min(),cube.data.mean(),cube.data.max())
-    
-    print('Attempting to take time mean in iris.')
+    # Is this data is a multi-model dataset?
     multiModel = md['model'].find('MultiModel') > -1
-    if plotType == 'Mean':
-        cube = cube.collapsed('time', iris.analysis.MEAN)
-        qplt.contourf(cube, 25)
-        # try:
-        plt.gca().coastlines()
-        # except:
-        #    logger.warning(
-        #        'loadCubeAndSavePng:\tFailed to add coastlines to map.')
 
-    if plotType == 'WeightedMean':
-        weights = iris.analysis.cartography.area_weights(cube, normalize=False)
-        coords = ['longitude', 'latitude']
-        cube = cube.collapsed(
-            coords,
-            iris.analysis.MEAN,
-            weights=weights,
-        )
-
+    # Collapse cube into a time series.
+    weights = iris.analysis.cartography.area_weights(cube, normalize=False)
+    coords = ['longitude', 'latitude']
+    cube = cube.collapsed(
+        coords,
+        iris.analysis.MEAN,
+        weights=weights,
+    )
+    
+    # Make a dict of cubes for each layer.
+    cubes = make_cube_layer_dict(cube)
+                
+    # Making plots for each layer
+    for l,(layer,c) in enumerate(cubes.items()):
+        layer = str(layer)
+        
         if multiModel:
-            qplt.plot(cube, label=md['model'], ls=':')
+            qplt.plot(c, label=md['model'], ls=':')
         else:
-            qplt.plot(cube, label=md['model'])
+            qplt.plot(c, label=md['model'])
+
+        # Add title, legend to plots
+        title = ' '.join([md['model'], md['long_name']])
+        if layer:
+            title = ' '.join([title,'(',layer,str(c.coords('depth')[0].units),')'])
+        plt.title(title)
         plt.legend(loc='best')
-
-    if multiModel:
-        path = folder(cfg['plot_dir']) + os.path.basename(fn).replace(
-            '.nc', '_' + plotType + '.png')
-    else:
-        path = get_image_path(
-            cfg,
-            md,
-            suffix=plotType,
-            image_extention='png',
-        )
+    
+        # Determine filename:
+        if multiModel:
+            path = folder(cfg['plot_dir']) + os.path.basename(fn).replace(
+                '.nc', '_timeseries_'+str(l)+'.png')
+        else:
+            path = get_image_path(
+                cfg,
+                md,
+                suffix='timeseries_'+str(l),
+                image_extention='png',
+            )
             
+        # Saving files:
+        if cfg['write_plots']:
+
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
+
+        plt.close()
+
+
+def MapOfMeanOverTime(cfg, md, fn):
+    """
+        This function makes a simply plot for an indivudual model.
+        The cfg is the opened global config,
+        md is the metadata dictionairy (for the individual model file).
+        """
+    # Load cube and set up units
+    cube = iris.load_cube(fn)  
+    cube = sensibleUnits(cube, md['short_name'])
+    
+    # take mean over entire time range
+    cube = cube.collapsed('time', iris.analysis.MEAN)
+
+    # Is this data is a multi-model dataset? 
+    multiModel = md['model'].find('MultiModel') > -1
+
+
+    # Make a dict of cubes for each layer.
+    cubes = make_cube_layer_dict(cube)
+                
+    # Making plots for each layer
+    for l,(layer,c) in enumerate(cubes.items()):
+        layer = str(layer)
+
+        # Making plots
+        qplt.contourf(c, 25)
+        plt.gca().coastlines()
+        
+        # Add title to plots
+        title = ' '.join([md['model'], md['long_name']])
+        if layer:
+            title = ' '.join([title,'(',layer,str(depth.units),')'])
+        plt.title(title)
+    
+        # Determine filename:
+        if multiModel:
+             path = folder(cfg['plot_dir']) + os.path.basename(fn).replace(
+                '.nc', '_map_'+str(l)+'.png')
+        else:
+            path = get_image_path(
+                cfg,
+                md,
+                suffix='map_'+str(l),
+                image_extention='png',
+            )
             
-    plt.title(md['model'] + ' ' + md['long_name'])
+        # Saving files:
+        if cfg['write_plots']:
 
-    if cfg['write_plots']:
-        # plt.show()
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
 
-        logger.info('Saving plots to', path)
-        plt.savefig(path)
-
-    plt.close()
-
+        plt.close()
+    
 
 def multiModelTimeSeries(cfg, metadata, plotType='WeightedMean'):
     """
@@ -182,9 +256,6 @@ def multiModelTimeSeries(cfg, metadata, plotType='WeightedMean'):
         cube = iris.load_cube(fn)
         cube = sensibleUnits(cube, metadata[fn]['short_name'])
 
-        print('multiModelTimeSeries:', metadata[fn]['model'],'data: ',
-              cube.data.min(),cube.data.mean(),cube.data.max())
-                  
         multiModel = metadata[fn]['model'].find('MultiModel') > -1
 
         if plotType == 'WeightedMean':
@@ -222,8 +293,6 @@ def multiModelTimeSeries(cfg, metadata, plotType='WeightedMean'):
 
 def main(cfg):
     #####
-    # This part sends debug statements to stdout
-    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
     input_files = get_input_files(cfg)
 
@@ -241,25 +310,24 @@ def main(cfg):
 
         #######
         # Multi model time series
-        multiModelTimeSeries(cfg, metadata, plotType='WeightedMean')
+        try:multiModelTimeSeries(cfg, metadata, plotType='WeightedMean')
+        except:pass
 
-        fns = sorted(metadata.keys())
-        for fn in fns:
+        for fn in sorted(metadata.keys()):
 
             print('-----------------')
             print(
-                'model filenames:',
+                'model filenames:\t',
                 fn,
             )
-            print('metadata[fn]:', metadata[fn])
 
             ######
             # Time series of individual model
-            loadCubeAndSavePng(cfg, metadata[fn], fn, plotType='WeightedMean')
+            TimeSeriesPlots(cfg, metadata[fn], fn)
 
             ######
-            # Map of temperal mean
-            loadCubeAndSavePng(cfg, metadata[fn], fn, plotType='Mean')
+            # Map of temporal mean
+            MapOfMeanOverTime(cfg, metadata[fn], fn)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')
