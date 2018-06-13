@@ -2432,7 +2432,7 @@ def get_parser(prog='pycodestyle', version=__version__):
     parser.add_option('--exclude', metavar='patterns', default=DEFAULT_EXCLUDE,
                       help="exclude files or directories which match these "
                            "comma separated patterns (default: %default)")
-    parser.add_option('--filename', metavar='patterns', default='*.py',
+    parser.add_option('--filename', metavar='patterns', default='*.ncl',
                       help="when parsing directories, only check filenames "
                            "matching these comma separated patterns "
                            "(default: %default)")

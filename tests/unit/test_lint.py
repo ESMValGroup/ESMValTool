@@ -1,8 +1,12 @@
 """ Lint tests """
+from __future__ import print_function
+
 import os
 import textwrap
 
 import pycodestyle  # formerly known as pep8
+
+from esmvaltool.utils.nclcodestyle import nclcodestyle
 
 
 def test_pep8_conformance():
@@ -43,3 +47,30 @@ def test_pep8_conformance():
         """))
 
     assert success, "Your code does not conform to PEP8"
+
+
+def test_nclcodestyle():
+    """Test that NCL code is formatted according to our standards."""
+    check_paths = [
+        'esmvaltool',
+        'tests',
+    ]
+
+    print("Formatting check of NCL code in directories: {}\n".format(
+        ', '.join(check_paths)))
+
+    style = nclcodestyle.StyleGuide()
+
+    success = style.check_files(check_paths).total_errors == 0
+
+    if not success:
+        print(textwrap.dedent("""
+            Your NCL code does not follow our formatting standards.
+
+            A list of warning and error messages can be found above,
+            prefixed with filename:line number:column number.
+
+            Please fix the mentioned issues.
+        """))
+
+    assert success, "Your NCL code does not follow our formatting standards."
