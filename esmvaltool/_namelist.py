@@ -421,6 +421,9 @@ def _get_default_settings(variable, config_user, derive=False):
         'd2': 1,
     }
 
+    if derive:
+        settings['derive'] = {'variable': variable}
+
     # Configure CMOR metadata check
     if variable.get('cmor_table'):
         settings['cmor_check_metadata'] = {
@@ -613,7 +616,7 @@ def _get_preprocessor_task(variables,
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = preprocessor.split_settings(
             profile, 'derive')
-        profile['derive'] = {'short_name': variable['short_name']}
+        profile['derive'] = {}
 
         derive_input = {}
         for variable in variables:
