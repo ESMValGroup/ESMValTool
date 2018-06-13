@@ -128,6 +128,7 @@ def main(args):
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
         process_namelist(namelist_file=namelist_file, config_user=cfg)
+    return cfg
 
 
 def process_namelist(namelist_file, config_user):
@@ -188,7 +189,7 @@ def run():
     """Run the `esmvaltool` program, logging any exceptions."""
     args = get_args()
     try:
-        main(args)
+        conf = main(args)
     except:  # noqa
         logger.exception(
             "Program terminated abnormally, see stack trace "
@@ -196,4 +197,9 @@ def run():
             exc_info=True)
         sys.exit(1)
     else:
+        if conf["remove_preproc_dir"]:
+            logger.info("Removing preproc containing preprocessed data")
+            logger.info("If this data is further needed, then")
+            logger.info("set remove_preproc_dir to false in config")
+            shutil.rmtree(conf["preproc_dir"])
         logger.info("Run was succesful")

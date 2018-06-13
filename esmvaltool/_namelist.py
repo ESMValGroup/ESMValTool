@@ -677,13 +677,9 @@ class Namelist(object):
         self._cfg = config_user
         self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
-        if raw_namelist.get('models'):
-            self.models = raw_namelist['models']
-        else:
-            self.models = []
         self._support_ncl = self._need_ncl(raw_namelist['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
-            raw_namelist['diagnostics'])
+            raw_namelist['diagnostics'], raw_namelist.get('models', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     @staticmethod
@@ -700,7 +696,7 @@ class Namelist(object):
                     return True
         return False
 
-    def _initialize_diagnostics(self, raw_diagnostics):
+    def _initialize_diagnostics(self, raw_diagnostics, raw_models):
         """Define diagnostics in namelist"""
         logger.debug("Retrieving diagnostics from namelist")
 
@@ -709,26 +705,21 @@ class Namelist(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
-            models = self._initialize_models(
-                name, raw_diagnostic.get('additional_models'))
-            diagnostic['models'] = models
             diagnostic['preprocessor_output'] = \
                 self._initialize_preprocessor_output(
-                    name, raw_diagnostic.get('variables'), models)
+                    name,
+                    raw_diagnostic.get('variables', {}),
+                    raw_models + raw_diagnostic.get('additional_models', []))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
 
         return diagnostics
 
-    def _initialize_models(self, diagnostic_name, raw_additional_models):
-        """Define models in diagnostic"""
-        logger.debug("Setting models for diagnostic %s", diagnostic_name)
-
-        models = list(self.models)
-
-        if raw_additional_models:
-            models += raw_additional_models
+    @staticmethod
+    def _initialize_models(raw_models):
+        """Define models used by variable"""
+        models = copy.deepcopy(raw_models)
 
         for model in models:
             for key in model:
@@ -737,11 +728,14 @@ class Namelist(object):
         check_duplicate_models(models)
         return models
 
-    def _initialize_variables(self, raw_variable, models):
+    def _initialize_variables(self, raw_variable, raw_models):
         """Define variables for all models."""
         # TODO: rename `variables` to `attributes` and store in dict
         # using filenames as keys?
         variables = []
+
+        models = self._initialize_models(
+            raw_models + raw_variable.pop('additional_models', []))
 
         for model in models:
             variable = copy.deepcopy(raw_variable)
@@ -765,11 +759,8 @@ class Namelist(object):
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
-                                        models):
+                                        raw_models):
         """Define variables in diagnostic"""
-        if not raw_variables:
-            return {}
-
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -781,7 +772,7 @@ class Namelist(object):
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
             preprocessor_output[variable_name] = \
-                self._initialize_variables(raw_variable, models)
+                self._initialize_variables(raw_variable, raw_models)
 
         return preprocessor_output
 
