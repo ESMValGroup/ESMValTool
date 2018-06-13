@@ -254,13 +254,27 @@ def _add_cmor_info(variable, override=False):
     check_variable(variable, required_keys=cmor_keys)
 
 
+def _special_name_to_model(variable, special_name):
+    """Convert special names to model names."""
+    if special_name in ('reference_model', 'alternative_model'):
+        if special_name not in variable:
+            raise NamelistError(
+                "Preprocessor {} uses {}, but {} is not defined for "
+                "variable {} of diagnostic {}".format(
+                    variable['preprocessor'], special_name, special_name,
+                    variable['short_name'], variable['diagnostic']))
+        special_name = variable[special_name]
+
+    return special_name
+
+
 def _update_target_levels(variable, variables, settings, config_user):
     """Replace the target levels model name with a filename if needed."""
-    if (not settings.get('extract_levels')
-            or 'levels' not in settings['extract_levels']):
+    levels = settings.get('extract_levels', {}).get('levels')
+    if not levels:
         return
 
-    levels = settings['extract_levels']['levels']
+    levels = _special_name_to_model(variable, levels)
 
     # If levels is a model name, replace it by a dict with a 'model' entry
     if any(levels == v['model'] for v in variables):
@@ -285,10 +299,11 @@ def _update_target_levels(variable, variables, settings, config_user):
 
 def _update_target_grid(variable, variables, settings, config_user):
     """Replace the target grid model name with a filename if needed."""
-    if not settings.get('regrid') or 'target_grid' not in settings['regrid']:
+    grid = settings.get('regrid', {}).get('target_grid')
+    if not grid:
         return
 
-    grid = settings['regrid']['target_grid']
+    grid = _special_name_to_model(variable, grid)
 
     if variable['model'] == grid:
         del settings['regrid']
@@ -305,10 +320,50 @@ def _model_to_file(model, variables, config_user):
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
+            if not files and variable.get('derive'):
+                variable = copy.deepcopy(variable)
+                variable['short_name'], variable['field'] = get_required(
+                    variable['short_name'], variable['field'])[0]
+                files = get_input_filelist(
+                    variable=variable,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs'])
+            check_data_availability(files, variable)
             return files[0]
 
     raise NamelistError(
         "Unable to find matching file for model {}".format(model))
+
+
+def _limit_models(variables, profile, max_models=None):
+    """Try to limit the number of models to max_models."""
+    if not max_models:
+        return variables
+
+    logger.info("Limiting the number of models to %s", max_models)
+
+    required_models = (
+        profile.get('extract_levels', {}).get('levels'),
+        profile.get('regrid', {}).get('target_grid'),
+        variables[0].get('reference_model'),
+        variables[0].get('alternative_model'),
+    )
+
+    limited = []
+
+    for variable in variables:
+        if variable['model'] in required_models:
+            limited.append(variable)
+
+    for variable in variables[::-1]:
+        if len(limited) >= max_models:
+            break
+        if variable not in limited:
+            limited.append(variable)
+
+    logger.info("Only considering %s", ', '.join(v['model'] for v in limited))
+
+    return limited
 
 
 def _get_default_settings(variable, config_user, derive=False):
@@ -549,6 +604,8 @@ def _get_preprocessor_task(variables,
     profile = copy.deepcopy(profiles[variable['preprocessor']])
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
+    variables = _limit_models(variables, profile,
+                              config_user.get('max_models'))
 
     # Create preprocessor task(s)
     derive_tasks = []
