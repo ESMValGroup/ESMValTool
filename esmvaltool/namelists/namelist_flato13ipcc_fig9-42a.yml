@@ -28,9 +28,6 @@
 ###############################################################################
 
 
-models:
-
-
 preprocessors:
 
     noop:
@@ -45,7 +42,7 @@ diagnostics:
             tas:
                 preprocessor: noop
                 mip: Amon
-                field: T2M
+                field: T2Ms
             # rtmt:
             #     preprocessor: noop
             #     mip: Amon
@@ -57,6 +54,10 @@ diagnostics:
             - {model: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             - {model: MPI-ESM-LR, project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 2015, end_year: 2164}
             - {model: MPI-ESM-LR, project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+
+            # Missing height2m
+            # - {model: HadCRUT,    project: OBS, type: ground, version: 3v, start_year: 1950, end_year: 2005, tier: 2}
+            # - {model: HadCRUT4,   project: OBS, type: ground, version: 1, start_year: 1950, end_year: 2005, tier: 2}
         scripts:
             test:
                 script: flato13ipcc/fig9-42a.py

@@ -13,27 +13,12 @@ Description
     mean surface temperature (GMSAT) for several CMIP5 models (see IPCC AR5 WG1
     ch. 9, fig. 9.42a).
 
-Required diag_script_info attributes (diagnostics specific)
-    [ecs_plots]
-        plot : Switch to plot the linear regression needed for the ECS
-               calculation
-    [netcdf]
-        filename  : Name of the output file
-        overwrite : Overwrite existing files
+Configuration options
+    plot_ecs_regression : Switch to plot the linear regressions needed for the
+                          ECS calculations
 
 Optional diag_script_info attributes (diagnostic specific)
-    [main_plot]
-        fontsize : Fonzsize used in the plot
-        xmin     : Left boundary of the plot
-        xmax     : Right boundary of the plot
-        ymin     : Lower boundary of the plot
-        ymax     : Upper boundary of the plot
-    [ecs_plots]
-        fontsize : Fontsize used in the plot
-        xmin     : Left boundary of the plot
-        xmax     : Right boundary of the plot
-        ymin     : Lower boundary of the plot
-        ymax     : Upper boundary of the plot
+    None
 
 Caveats
 
@@ -50,8 +35,14 @@ from esmvaltool.diag_scripts.shared import *
 import iris
 
 from collections import OrderedDict
+from scipy import stats
 import logging
+import numpy as np
 import os
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -66,50 +57,57 @@ def main(cfg):
     """
 
     ###########################################################################
-    # Variables and experiments needed for this diagnostic
+    # Setup diagnostic
     ###########################################################################
 
-    VARS = Variables(cfg)
+    logging.info(cfg)
+
+    # Model data containers
     MODELS = Models(cfg)
-    v1 = Variables(cfg, tas=Variable("tas", 1, 2, 4))
-    v2 = Variables(cfg, tas=Variable("tas", 1, 2, "hiiii"))
-    logging.info(VARS)
-    logging.info(VARS.short_names())
-    logging.info(VARS.standard_names())
-    logging.info(MODELS)
+    logging.info("Found models:\n{}".format(MODELS))
 
-    print()
-    print(cfg)
+    # Variables
+    VARS = Variables(cfg)
+    logging.info("Found variables:\n{}".format(VARS))
 
-    # for filename, attributes in cfg['input_data'].items():
-    #     logger.info("Processing variable %s from model %s",
-    #                 attributes['standard_name'], attributes['model'])
+    # Experiments
+    PICONTROL = 'piControl'
+    HISTORICAL = 'historical'
+    ABRUPT4XCO2 = 'abrupt4xCO2'
 
-    #     logger.debug("Loading %s", filename)
-    #     cube = iris.load_cube(filename)
+    # Matplotlib instance
+    fig, axes = plt.subplots()
 
-    #     logger.debug("Running example computation")
-    #     cube = cube.collapsed('time', iris.analysis.MEAN)
+    ###########################################################################
+    # Read data
+    ###########################################################################
 
-    #     name = os.path.splitext(os.path.basename(filename))[0] + '_mean'
-    #     if cfg['write_netcdf']:
-    #         path = os.path.join(
-    #             cfg['work_dir'],
-    #             name + '.nc',
-    #         )
-    #         logger.debug("Saving analysis results to %s", path)
-    #         iris.save(cube, target=path)
+    # Create iris cube for each model
+    for model_path in MODELS:
+        cube = iris.load(model_path, VARS.standard_names())[0]
 
-    #     if cfg['write_plots'] and cfg.get('quickplot'):
-    #         path = os.path.join(
-    #             cfg['plot_dir'],
-    #             name + '.' + cfg['output_file_type'],
-    #         )
-    #         logger.debug("Plotting analysis results to %s", path)
-    #         quickplot(cube, filename=path, **cfg['quickplot'])
+        # Global annual mean
+        for coord in [cube.coord(LAT), cube.coord(LON)]:
+            if (not coord.has_bounds()):
+                coord.guess_bounds()
+        area_weights = iris.analysis.cartography.area_weights(cube)
+        cube = cube.collapsed([LAT, LON], iris.analysis.MEAN,
+                              weights=area_weights)
+        cube = cube.aggregated_by(YEAR, iris.analysis.MEAN)
+        MODELS.set_data(cube.data, path_to_model=model_path)
+
+    print(MODELS.get_data())
+
+    ###########################################################################
+    # Process data
+    ###########################################################################
+
+    ###########################################################################
+    # Plot data
+    ###########################################################################
 
 
 if __name__ == '__main__':
 
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as cfg:
+        main(cfg)
