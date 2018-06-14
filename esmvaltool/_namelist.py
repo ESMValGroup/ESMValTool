@@ -258,13 +258,27 @@ def _add_cmor_info(variable, override=False):
     check_variable(variable, required_keys=cmor_keys)
 
 
+def _special_name_to_model(variable, special_name):
+    """Convert special names to model names."""
+    if special_name in ('reference_model', 'alternative_model'):
+        if special_name not in variable:
+            raise NamelistError(
+                "Preprocessor {} uses {}, but {} is not defined for "
+                "variable {} of diagnostic {}".format(
+                    variable['preprocessor'], special_name, special_name,
+                    variable['short_name'], variable['diagnostic']))
+        special_name = variable[special_name]
+
+    return special_name
+
+
 def _update_target_levels(variable, variables, settings, config_user):
     """Replace the target levels model name with a filename if needed."""
-    if (not settings.get('extract_levels')
-            or 'levels' not in settings['extract_levels']):
+    levels = settings.get('extract_levels', {}).get('levels')
+    if not levels:
         return
 
-    levels = settings['extract_levels']['levels']
+    levels = _special_name_to_model(variable, levels)
 
     # If levels is a model name, replace it by a dict with a 'model' entry
     if any(levels == v['model'] for v in variables):
@@ -289,10 +303,11 @@ def _update_target_levels(variable, variables, settings, config_user):
 
 def _update_target_grid(variable, variables, settings, config_user):
     """Replace the target grid model name with a filename if needed."""
-    if not settings.get('regrid') or 'target_grid' not in settings['regrid']:
+    grid = settings.get('regrid', {}).get('target_grid')
+    if not grid:
         return
 
-    grid = settings['regrid']['target_grid']
+    grid = _special_name_to_model(variable, grid)
 
     if variable['model'] == grid:
         del settings['regrid']
@@ -309,10 +324,50 @@ def _model_to_file(model, variables, config_user):
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
+            if not files and variable.get('derive'):
+                variable = copy.deepcopy(variable)
+                variable['short_name'], variable['field'] = get_required(
+                    variable['short_name'], variable['field'])[0]
+                files = get_input_filelist(
+                    variable=variable,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs'])
+            check_data_availability(files, variable)
             return files[0]
 
     raise NamelistError(
         "Unable to find matching file for model {}".format(model))
+
+
+def _limit_models(variables, profile, max_models=None):
+    """Try to limit the number of models to max_models."""
+    if not max_models:
+        return variables
+
+    logger.info("Limiting the number of models to %s", max_models)
+
+    required_models = (
+        profile.get('extract_levels', {}).get('levels'),
+        profile.get('regrid', {}).get('target_grid'),
+        variables[0].get('reference_model'),
+        variables[0].get('alternative_model'),
+    )
+
+    limited = []
+
+    for variable in variables:
+        if variable['model'] in required_models:
+            limited.append(variable)
+
+    for variable in variables[::-1]:
+        if len(limited) >= max_models:
+            break
+        if variable not in limited:
+            limited.append(variable)
+
+    logger.info("Only considering %s", ', '.join(v['model'] for v in limited))
+
+    return limited
 
 
 def _get_default_settings(variable, config_user, derive=False):
@@ -369,6 +424,9 @@ def _get_default_settings(variable, config_user, derive=False):
         'd1': 1,
         'd2': 1,
     }
+
+    if derive:
+        settings['derive'] = {'variable': variable}
 
     # Configure CMOR metadata check
     if variable.get('cmor_table'):
@@ -553,6 +611,8 @@ def _get_preprocessor_task(variables,
     profile = copy.deepcopy(profiles[variable['preprocessor']])
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
+    variables = _limit_models(variables, profile,
+                              config_user.get('max_models'))
 
     # Create preprocessor task(s)
     derive_tasks = []
@@ -560,7 +620,7 @@ def _get_preprocessor_task(variables,
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = preprocessor.split_settings(
             profile, 'derive')
-        profile['derive'] = {'short_name': variable['short_name']}
+        profile['derive'] = {}
 
         derive_input = {}
         for variable in variables:
@@ -621,13 +681,9 @@ class Namelist(object):
         self._cfg = config_user
         self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
-        if raw_namelist.get('models'):
-            self.models = raw_namelist['models']
-        else:
-            self.models = []
         self._support_ncl = self._need_ncl(raw_namelist['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
-            raw_namelist['diagnostics'])
+            raw_namelist['diagnostics'], raw_namelist.get('models', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     @staticmethod
@@ -644,7 +700,7 @@ class Namelist(object):
                     return True
         return False
 
-    def _initialize_diagnostics(self, raw_diagnostics):
+    def _initialize_diagnostics(self, raw_diagnostics, raw_models):
         """Define diagnostics in namelist"""
         logger.debug("Retrieving diagnostics from namelist")
 
@@ -653,26 +709,21 @@ class Namelist(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
-            models = self._initialize_models(
-                name, raw_diagnostic.get('additional_models'))
-            diagnostic['models'] = models
             diagnostic['preprocessor_output'] = \
                 self._initialize_preprocessor_output(
-                    name, raw_diagnostic.get('variables'), models)
+                    name,
+                    raw_diagnostic.get('variables', {}),
+                    raw_models + raw_diagnostic.get('additional_models', []))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
 
         return diagnostics
 
-    def _initialize_models(self, diagnostic_name, raw_additional_models):
-        """Define models in diagnostic"""
-        logger.debug("Setting models for diagnostic %s", diagnostic_name)
-
-        models = list(self.models)
-
-        if raw_additional_models:
-            models += raw_additional_models
+    @staticmethod
+    def _initialize_models(raw_models):
+        """Define models used by variable"""
+        models = copy.deepcopy(raw_models)
 
         for model in models:
             for key in model:
@@ -681,11 +732,14 @@ class Namelist(object):
         check_duplicate_models(models)
         return models
 
-    def _initialize_variables(self, raw_variable, models):
+    def _initialize_variables(self, raw_variable, raw_models):
         """Define variables for all models."""
         # TODO: rename `variables` to `attributes` and store in dict
         # using filenames as keys?
         variables = []
+
+        models = self._initialize_models(
+            raw_models + raw_variable.pop('additional_models', []))
 
         for model in models:
             variable = copy.deepcopy(raw_variable)
@@ -709,11 +763,8 @@ class Namelist(object):
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
-                                        models):
+                                        raw_models):
         """Define variables in diagnostic"""
-        if not raw_variables:
-            return {}
-
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -725,7 +776,7 @@ class Namelist(object):
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
             preprocessor_output[variable_name] = \
-                self._initialize_variables(raw_variable, models)
+                self._initialize_variables(raw_variable, raw_models)
 
         return preprocessor_output
 

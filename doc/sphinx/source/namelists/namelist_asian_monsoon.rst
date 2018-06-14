@@ -176,7 +176,7 @@ References
 ----------
 
 * Sperber, K. R., et al., The Asian summer monsoon: an intercomparison of CMIP5 vs. CMIP3 simulations of the late 20th century, Clim Dyn (2013) 41:2711--2744, doi: 10.1007/s00382-012-1607-6, 2012.
-* Lin, Jia-Lin, Klaus M. Weickman, George N. Kiladis, Brian E. Mapes, Siegfried D. Schubert, Max J. Suarez, Julio T. Bacmeister, Myong-In Lee, 2008: Subseasonal Variability Associated with Asian Summer Monsoon Simulated by 14 IPCC AR4 Coupled GCMs. J. Climate, 21, 4541-4567. doi: http://dx.doi.org/10.1175/2008JCLI1816.1.
+* Lin, Jia-Lin, Klaus M. Weickman, George N. Kiladis, Brian E. Mapes, Siegfried D. Schubert, Max J. Suarez, Julio T. Bacmeister, Myong-In Lee, 2008: Subseasonal Variability Associated with Asian Summer Monsoon Simulated by 14 IPCC AR4 Coupled GCMs. J. Climate, 21, 4541-4567. doi: https://doi.org/10.1175/2008JCLI1816.1.
 * Webster, P. J., and S.Yang, 1992: Monsoon and ENSO: Selectively interactive systems. Quart. J. Roy. Meteor. Soc., 118, 877-926. (Webster-Yang dynamical monsoon index)
 * Goswami, B. N., B. Krishnamurthy, and H. Annamalai, 1999: A broad-scale circulation index for interannual variability of the Indian summer monsoon. Quart. J. Roy. Meteor. Soc., 125, 611-633. (Goswami dynamical monsoon index)
 * Wang, B., and Z. Fan, 1999: Choice of south Asian summer monsoon indices. Bull. Amer. Meteor. Soc., 80, 629-638. (Wang-Fan dynamical monsoon index)

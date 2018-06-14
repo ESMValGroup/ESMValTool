@@ -18,7 +18,7 @@ end
 ; Load input_file_info, model_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
-    str_match_ic_regex(diag_script_info@input_files, ".*_info\.ncl")
+    str_match_ic_regex(diag_script_info@input_files, ".*_info\" + ".ncl")
   if (.not. ismissing(vardeffiles)) then
     vardeffile = diag_script_info@input_files(0)
     print("INFO    Loading input data description from " + vardeffile)
