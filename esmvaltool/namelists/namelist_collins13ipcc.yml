@@ -50,7 +50,7 @@ diagnostics:
       - {model: ACCESS1-3,   project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
 
     scripts:
-      tas_all: &settings
+      map_diff_each_model_ipcc12: &settings
         script: collins13ipcc/map_diff_each_model_ipcc12.ncl
         projection: Robinson
         styleset: CMIP5
