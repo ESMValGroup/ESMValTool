@@ -30,7 +30,9 @@ def determine_transect_str(cube):
             if value > 180.:
                 return str(value-360.)+' W' 
             return str(value)+' E' 
-
+    return ''
+    
+    
 def transectsPlots(
         cfg,
         md,
@@ -52,7 +54,8 @@ def transectsPlots(
     # Make a dict of cubes for each layer.
 
     qplt.contourf(cube, 25)
-        
+    plt.axes().set_yscale('log') 
+    
     # Add title to plot
     title = ' '.join([md['model'], md['long_name'], determine_transect_str(cube)])
     plt.title(title)
