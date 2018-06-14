@@ -53,7 +53,6 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
     # TODO: add R, julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
