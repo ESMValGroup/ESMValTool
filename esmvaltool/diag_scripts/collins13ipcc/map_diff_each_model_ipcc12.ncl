@@ -79,12 +79,12 @@ begin
   ;;###########################################
   ;;# References Information                  #
   ;;###########################################
-  ;write_references(diag_script, \  ; script name
-  ;                 "A_lore_ru", \  ; authors
-  ;                 "A_sedl_ja", \  ; contributors
-  ;                 "D_collins13ipcc",    \  ; diag_references
-  ;                 "",          \  ; obs_references
-  ;                 "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "A_sedl_ja", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"experiment", "time_avg"/))
@@ -97,6 +97,12 @@ begin
 
   ;; Output netcdf directory
   work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
+
+  ; Create output plot directory
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
+ 
 end
 begin
   ;;#############################################
@@ -117,8 +123,10 @@ begin
   ;;###########################################
   ;;# Get data and average time               #
   ;;###########################################
+  ; Set model indexes
+  modidx = ispan(0, dim_MOD / 2 - 1, 1)
   ;; get data from first model
-  imod = 0  ; NCL array indicies start from zero
+  imod = modidx(0)  ; NCL array indicies start from zero
   log_debug("processing " + model_info@model(imod) + "_" \
             + model_info@exp(imod) + "_"\
             + model_info@ensemble(imod))
@@ -152,7 +160,8 @@ begin
   climofiles = new(dim_MOD, string)
 
   i = 0
-  do imod = 0, dim_MOD / 2 - 1
+  do ii = 0, dimsizes(modidx) - 1
+    imod = modidx(ii)
     if (imod .eq. 0) then
       data2 = data1
     else
@@ -166,7 +175,7 @@ begin
 			       diag_script_info@experiment, \
 			       model_info@exp, model_info@ensemble(imod), \
 			       model_info@ensemble, 0)
-    A1 = extract_data(idx_rcp, data, -1, 0, 0)
+    A1 = read_data(idx_rcp, var0, field_type0)
     data3 = time_operations(A1, -1, -1, "average", \
 			    diag_script_info@time_avg, True)
 
@@ -328,22 +337,22 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, pres)
 
 ;;# add tags
-  alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
-  caption = "Surface change in " + variable_info@long_name + " in " + \
-            model_info@start_year(idx_rcp) + "-" + \
-	    model_info@end_year(idx_rcp) + " displayed as anomalies with " + \
-	    "respect to " + model_info@start_year(0) + "-" + \
-	    model_info@end_year(0) + " for " + model_info@exp(idx_rcp) + \
-	    " from one ensemble member of each of the concentration" + \
-            " driven models available in the CMIP5 archive. " + \
-            "Similar to Figure 12.9 of Collins et al. (2013)."
-  id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
-  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
+  ;alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
+  ;caption = "Surface change in " + variable_info@long_name + " in " + \
+  ;          model_info@start_year(idx_rcp) + "-" + \
+;	    model_info@end_year(idx_rcp) + " displayed as anomalies with " + \
+;	    "respect to " + model_info@start_year(0) + "-" + \
+;	    model_info@end_year(0) + " for " + model_info@exp(idx_rcp) + \
+;	    " from one ensemble member of each of the concentration" + \
+ ;           " driven models available in the CMIP5 archive. " + \
+ ;           "Similar to Figure 12.9 of Collins et al. (2013)."
+;  id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
+;  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
 
   ;ESMValMD(outfile, alltags, caption, id, variables(0), model_info@model, \
   ;         climofiles, diag_script, contrib_authors)
 
-  delete([/alltags, caption, id, climofiles/])
+;  delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + outfile)
   leave_msg(diag_script, "")

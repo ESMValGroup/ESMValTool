@@ -24,10 +24,12 @@
 
 models:
   - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
   - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 
   - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
+  - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
   - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
   - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
 
@@ -46,8 +48,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_models:
-      - {model: ACCESS1-3,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {model: ACCESS1-3,   project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
 
     scripts:
       map_diff_each_model_ipcc12: &settings
@@ -59,6 +59,6 @@ diagnostics:
         #title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
         time_avg: annualclim
         experiment: rcp45
-        ncdf: default #"_tas_each_model_1209.ncl"
+        ncdf: "_tas_each_model_1209.nc"
         #colormap:
-        levs: [-2. -1.5, -1. -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
+        explicit_cn_levels: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
