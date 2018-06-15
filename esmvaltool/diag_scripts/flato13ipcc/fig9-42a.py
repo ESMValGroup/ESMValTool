@@ -31,6 +31,7 @@ Modification history
 
 
 from esmvaltool.diag_scripts.shared import *
+from esmvaltool.diag_scripts.shared.plot import get_path_to_mpl_style
 
 import iris
 
@@ -60,23 +61,27 @@ def main(cfg):
     # Setup diagnostic
     ###########################################################################
 
-    logging.info(cfg)
-
     # Model data containers
     MODELS = Models(cfg)
-    logging.info("Found models:\n{}".format(MODELS))
+    logging.info("Found models in namelist:\n{}".format(MODELS))
 
     # Variables
     VARS = Variables(cfg)
-    logging.info("Found variables:\n{}".format(VARS))
+    logging.info("Found variables in namelist:\n{}".format(VARS))
+    ECS = Variable('ecs', 'ecs', 'equilibrium climate sensitivity', 'K')
+    VARS.add_var(ecs=ECS)
 
     # Experiments
     PICONTROL = 'piControl'
     HISTORICAL = 'historical'
     ABRUPT4XCO2 = 'abrupt4xCO2'
+    DIFF = 'difference of abrupt4xCO2 and piControl'
+    PICONTROL_TEMP_MEAN = 'total temporal mean of piControl'
 
     # Matplotlib instance
-    fig, axes = plt.subplots()
+    style_file = get_path_to_mpl_style('default.mplstyle')
+    plt.style.use(style_file)
+    fig, ax = plt.subplots()
 
     ###########################################################################
     # Read data
@@ -86,25 +91,92 @@ def main(cfg):
     for model_path in MODELS:
         cube = iris.load(model_path, VARS.standard_names())[0]
 
-        # Global annual mean
+        # Global mean
         for coord in [cube.coord(LAT), cube.coord(LON)]:
             if (not coord.has_bounds()):
                 coord.guess_bounds()
         area_weights = iris.analysis.cartography.area_weights(cube)
         cube = cube.collapsed([LAT, LON], iris.analysis.MEAN,
                               weights=area_weights)
-        cube = cube.aggregated_by(YEAR, iris.analysis.MEAN)
-        MODELS.set_data(cube.data, path_to_model=model_path)
 
-    print(MODELS.get_data())
+        # Historical: total temporal mean; else: annual mean
+        if (MODELS.get_exp(model_path) == HISTORICAL):
+            cube = cube.collapsed([TIME], iris.analysis.MEAN)
+        else:
+            cube = cube.aggregated_by(YEAR, iris.analysis.MEAN)
+
+        MODELS.set_data(cube.data, model_path=model_path)
 
     ###########################################################################
     # Process data
     ###########################################################################
 
+    # Substract piControl experiment from abrupt4xCO2 experiment and add total
+    # temporal mean of piControl
+    for model_path in MODELS.get_path_list(exp=PICONTROL):
+        model = MODELS.get_model(model_path)
+        short_name = MODELS.get_short_name(model_path)
+        data = MODELS.get_data(model_path=model_path)
+        data_diff = MODELS.get_data(short_name=short_name, exp=ABRUPT4XCO2,
+                                    model=model) - data
+        MODELS.add_model(short_name+DIFF+model, data_diff,
+                         short_name=short_name, exp=DIFF, model=model)
+        MODELS.add_model(short_name+PICONTROL_TEMP_MEAN+model, np.mean(data),
+                         short_name=short_name, exp=PICONTROL_TEMP_MEAN,
+                         model=model)
+
+    # Calculate ECS (cf. Andrews et al. 2015)
+    for model_path in MODELS.get_path_list(short_name=VARS.tas, exp=DIFF):
+        model = MODELS.get_model(model_path)
+        data_tas = MODELS.get_data(model_path=model_path)
+        data_rtmt = MODELS.get_data(short_name=VARS.rtmt, exp=DIFF,
+                                    model=model)
+        reg_stats = stats.linregress(data_tas, data_rtmt)
+        data_ecs = -reg_stats.intercept / (2*reg_stats.slope)
+        MODELS.add_model(short_name+DIFF+model+VARS.ecs, data_ecs,
+                         short_name=short_name, exp=DIFF, model=model)
+
+        # Plot ECS regression if desired
+        if (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
+
+            # Plot data
+            ax.plot(data_tas, data_rtmt, linestyle='none',
+                    markeredgecolor='b', markerfacecolor='none',
+                    marker='s')
+
+            # Plot regerssion line
+            x_reg = np.linspace(-1.0, 8.0, 2)
+            y_reg = reg_stats.slope*x_reg + reg_stats.intercept
+            ax.plot(x_reg, y_reg, color='k', linestyle='-')
+
+            # Options
+            ax.set_title(model)
+            ax.set_xlabel(VARS.TAS.standard_name + " / " + VARS.TAS.units)
+            ax.set_ylabel(VARS.RTMT.standard_name + " / " + VARS.RTMT.units)
+            ax.set_xlim(0.0, 7.0)
+            ax.set_ylim(-2.0, 10.0)
+            ax.axhline(linestyle='dotted', c='black')
+            ax.text(0.05, 0.05,
+                    "r = {:.2f}".format(reg_stats.rvalue),
+                    transform=ax.transAxes)
+            ax.text(0.05, 0.9,
+                    r"$\alpha$ = {:.2f},  ".format(-reg_stats.slope) +
+                    "F = {:.2f},  ".format(reg_stats.intercept) +
+                    "ECS = {:.2f}".format(data_ecs),
+                    transform=ax.transAxes)
+
+            # Save plot
+            filename = model + '.' + cfg['output_file_type']
+            filepath = os.path.join(cfg['plot_dir'], filename)
+            fig.savefig(filepath, bbox_inches='tight', orientation='landscape')
+            logger.info("Writing {}".format(filepath))
+            ax.cla()
+
     ###########################################################################
     # Plot data
     ###########################################################################
+
+    plt.close()
 
 
 if __name__ == '__main__':
