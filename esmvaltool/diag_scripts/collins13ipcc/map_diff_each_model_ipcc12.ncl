@@ -101,9 +101,9 @@ begin
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
-  system("mkdir -p " + plot_dir)
- 
+  system("mkdir -p " + plot_dir) 
 end
+
 begin
   ;;#############################################
   ;;# Get parameters from ./variable_defs/*.ncl #
