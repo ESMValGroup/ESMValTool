@@ -43,10 +43,10 @@ diagnostics:
                 preprocessor: noop
                 mip: Amon
                 field: T2Ms
-            # rtmt:
-            #     preprocessor: noop
-            #     mip: Amon
-            #     field: T2M
+            rtmt:
+                preprocessor: noop
+                mip: Amon
+                field: T2Ms
         additional_models:
             - {model: CanESM2,    project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             - {model: CanESM2,    project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 2015, end_year: 2164}
@@ -59,5 +59,6 @@ diagnostics:
             # - {model: HadCRUT,    project: OBS, type: ground, version: 3v, start_year: 1950, end_year: 2005, tier: 2}
             # - {model: HadCRUT4,   project: OBS, type: ground, version: 1, start_year: 1950, end_year: 2005, tier: 2}
         scripts:
-            test:
+            fig9-42a:
                 script: flato13ipcc/fig9-42a.py
+                plot_ecs_regression: True

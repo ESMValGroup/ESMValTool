@@ -201,7 +201,7 @@ class CMORCheck(object):
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
                 cube_attr = self._cube.attributes.get(attr)
-                if (cube_attr is None):
+                if cube_attr is None:
                     self._cube.attributes[attr] = attr_value
                 else:
                     if cube_attr != attr_value:
