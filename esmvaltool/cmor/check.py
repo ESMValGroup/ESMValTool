@@ -200,10 +200,14 @@ class CMORCheck(object):
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
-                if self._cube.attributes[attr] != attr_value:
-                    self.report_error(self._attr_msg, self._cube.var_name,
-                                      attr, attr_value,
-                                      self._cube.attributes[attr])
+                cube_attr = self._cube.attributes.get(attr)
+                if (cube_attr is None):
+                    self._cube.attributes[attr] = attr_value
+                else:
+                    if cube_attr != attr_value:
+                        self.report_error(self._attr_msg, self._cube.var_name,
+                                          attr, attr_value,
+                                          self._cube.attributes[attr])
 
     def _check_data_range(self):
         # Check data is not less than valid_min
