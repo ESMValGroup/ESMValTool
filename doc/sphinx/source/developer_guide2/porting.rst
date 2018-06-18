@@ -84,7 +84,7 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``info_output(arg1, arg2, arg3)``               | ``log_info(arg1)`` if ``arg3=1``                    | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``info_output(arg1, arg2, arg3)``               | ``debug_info(arg1)`` if ``arg3>1``                  | all .ncl scripts |
+| ``info_output(arg1, arg2, arg3)``               | ``log_debug(arg1)`` if ``arg3>1``                   | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``verbosity = config_user_info@verbosity``      | remove this statement                               | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
