@@ -320,9 +320,9 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def test_bad_standard_name_genlevel(self):
-        """Fail if a generic level has a bad standard name at metadata step"""
+        """Check if generic level has a different"""
         self.cube.coord('depth').standard_name = None
-        self._check_fails_in_metadata()
+        self._check_cube()
 
     def test_bad_frequency_day(self):
         """Fail at metadata if frequency (day) not matches data frequency"""
