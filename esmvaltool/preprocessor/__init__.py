@@ -20,7 +20,9 @@ from ._time_area import time_average as time_average
 from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
 from ._time_area import volume_slice as extract_volume
-
+from ._time_area import extract_trajectory as extract_trajectory
+from ._time_area import extract_slice as extract_slice
+from ._time_area import depth_integration as depth_integration
 from ._time_area import seasonal_mean
 
 logger = logging.getLogger(__name__)
@@ -52,7 +54,10 @@ __all__ = [
     # Region selection
     'extract_region',
     'extract_volume',
+    'extract_trajectory',
+    'extract_slice',
     # Grid-point operations
+    'depth_integration',
     'average_region',
     'average_volume',    
     'time_average',
@@ -282,3 +287,4 @@ class PreprocessingTask(AbstractTask):
         if self._input_files is not None:
             txt += '\ninput_files: {}'.format(self._input_files)
         return txt
+        
