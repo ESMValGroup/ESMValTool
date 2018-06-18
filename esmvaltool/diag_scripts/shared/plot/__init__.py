@@ -7,5 +7,6 @@ from ._plot import *
 
 __all__ = [
     'get_path_to_mpl_style',
+    'get_model_style',
     'quickplot'
 ]
