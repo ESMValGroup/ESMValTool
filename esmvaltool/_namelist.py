@@ -417,8 +417,8 @@ def _get_default_settings(variable, config_user, derive=False):
         'yr2': variable['end_year'] + 1,
         'mo1': 1,
         'mo2': 1,
-        'd1': 1,
-        'd2': 1,
+        'day1': 1,
+        'day2': 1,
     }
 
     if derive:

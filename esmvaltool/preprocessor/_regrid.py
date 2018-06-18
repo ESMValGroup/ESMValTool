@@ -12,16 +12,17 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
-import six
-from ..cmor.table import CMOR_TABLES
 
-import iris
-import iris.exceptions
-import numpy as np
 import six
-import stratify
-from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
+import numpy as np
 from numpy import ma
+import iris
+import iris.cube
+import iris.exceptions
+from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
+import stratify
+
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -192,11 +193,15 @@ def regrid(src_cube, target_grid, scheme):
             if coords:
                 [coord] = coords
                 src_cube.remove_coord(coord)
+        slice_coords = ['latitude', ]
+    else:
+        slice_coords = ['latitude', 'longitude']
 
     # Perform the horizontal regridding.
-    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
-
-    return result
+    regridder = horizontal_schemes[scheme].regridder(src_cube, target_grid)
+    results = iris.cube.CubeList([regridder(map_slice) for map_slice in
+                                  src_cube.slices(slice_coords)])
+    return results.merge_cube()
 
 
 def _create_cube(src_cube, data, levels):
