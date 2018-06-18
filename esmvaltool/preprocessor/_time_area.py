@@ -92,12 +92,15 @@ def volume_slice(mycube, long1, long2, lat1, lat2, z1,z2):
             longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
         latitude=lambda cell: float(lat1) <= cell <= float(lat2))
+        
     subz = iris.Constraint(
-        latitude=lambda cell: float(z1) <= cell <= float(z2))
+        depth=lambda cell: float(z1) <= cell <= float(z2))
                 
     region_subset = mycube.extract(sublon & sublat & subz)
     return region_subset
     
+    
+        
 
 # get the time average
 def time_average(mycube):
@@ -186,7 +189,126 @@ def volume_average(mycube, coordz, coord1, coord2, ):
     return result
     
 
+# get the depth integration
+def depth_integration(mycube, coordz, new_units ):
+    """
+    Determine the total sum over the vertical component.
 
+    Requires a 3D cube, and the name of the z coordinate.
+    Returns a cube 2D.
+    """
+    from cf_units import Unit
+    
+    depth = mycube.coord(coordz)
+    thickness = depth.bounds[...,1] - depth.bounds[...,0] # 1D
+
+    if depth.ndim == 1:
+        slices = [None for i in mycube.shape]
+        coord_dim = mycube.coord_dims(coordz)[0]
+        slices[coord_dim] = slice(None)
+        thickness = thickness[tuple(slices)]
+        
+    result = mycube * thickness
+    result = mycube.collapsed( [coordz, ], iris.analysis.SUM, ) 
+    result.rename('Depth_integrated_'+str(mycube.name()))    
+    
+    # This doesn't work:
+    # Not able to change units on cube.
+    # Waiting for news from iris community.
+    # result.units = Unit('m') * result.units
+    return result
+    
+
+# extract along a constand latitude or longitude
+def extract_slice(mycube, latitude=None, longitude=None):
+    """
+    Extract data along a constant latitude or longitude.
+    A range may also be extracted using a minimum and maximum 
+    value for latitude or longitude.
+    """
+    
+    from iris.analysis.trajectory import interpolate
+    import numpy as np
+
+    second_coord=False
+    lats = mycube.coord('latitude')
+    lons = mycube.coord('longitude')
+    
+    if lats.ndim ==2:
+        raise ValueError('extract_slice: Not implemented for irregular arrays!')
+
+    if isinstance(latitude, float) and isinstance(longitude, float):
+        raise ValueError('extract_slice: Can\'t slice along longitude and latitude at the same time')
+
+    if isinstance(latitude, list) and isinstance(longitude, list):
+        raise ValueError('extract_slice: Can\'t reduce longitude and latitude at the same time')
+        
+    #####
+    # Look for the first coordinate. 
+    if isinstance(latitude, float):
+        d = lats.nearest_neighbour_index(latitude)
+        coord_dim = mycube.coord_dims('latitude')[0]
+
+    if isinstance(longitude, float):
+        d = lons.nearest_neighbour_index(longitude)
+        coord_dim = mycube.coord_dims('longitude')[0]
+    
+    #####
+    # Look for the second coordinate. 
+    if isinstance(latitude, list):
+        second_coord = 'latitude'
+        if len(latitude)>2:
+           raise ValueError('extract_slice: latitude slice has too many points: {}'.format(latitude))           
+        d1 = lats.nearest_neighbour_index(latitude[0])
+        d2 = lats.nearest_neighbour_index(latitude[1])  
+        print('extract_slice(second_coord,', second_coord, d1,d2)
+
+    if isinstance(longitude, list):
+        second_coord = 'longitude'        
+        if len(longitude)>2:
+           raise ValueError('extract_slice: longitude slice has too many points: {}'.format(longitude))     
+        d1 = lons.nearest_neighbour_index(longitude[0])
+        d2 = lons.nearest_neighbour_index(longitude[1])  
+        print('extract_slice(second_coord,', second_coord, d1,d2)
+        
+    #####
+    # Extracting the line of constant longitude/latitude
+    slices = [slice(None) for i in mycube.shape]
+    slices[coord_dim] = d
+    
+    if second_coord:
+        coord_dim2 = mycube.coord_dims(second_coord)[0]            
+        slices[coord_dim2] = slice(d1,d2)        
+    
+    newcube = mycube[tuple(slices)]
+    print('extract_slice(slicess),', slices,newcube.shape, ('was',mycube.shape)) 
+    return newcube
+    
+    
+# extract along a trajectory
+def extract_trajectory(mycube, latitudes, longitudes, n):
+    """
+    Extract data along a trajectory.
+
+    """
+    from iris.analysis.trajectory import interpolate
+    import numpy as np
+   
+    if len(latitudes) != len(longitudes):
+        raise ValueError('extract_trajectory: longitude & latitude coordinates have different lengths')
+    
+    if len(latitudes) == len(longitudes) == 2:
+        minlat, maxlat = np.min(latitudes),  np.max(latitudes)
+        minlon, maxlon = np.min(longitudes), np.max(longitudes)
+
+        longitudes = np.linspace(minlat, maxlat,num=n)
+        latitudes  = np.linspace(minlon, maxlon,num=n)
+                         
+    points = [('latitude', latitudes), ('longitude', longitudes)]
+    interpolated_cube = interpolate(mycube, points)	# Very slow!
+    return interpolated_cube
+        
+    
 # get the seasonal mean
 def seasonal_mean(mycube):
     """
@@ -208,6 +330,7 @@ def seasonal_mean(mycube):
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return annual_seasonal_mean.extract(three_months_bound)
+
 
 
 # operate along a trajectory line
