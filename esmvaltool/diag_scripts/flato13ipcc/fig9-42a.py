@@ -31,11 +31,10 @@ Modification history
 
 
 from esmvaltool.diag_scripts.shared import *
-from esmvaltool.diag_scripts.shared.plot import get_path_to_mpl_style
 
 import iris
 
-from collections import OrderedDict
+from datetime import datetime
 from scipy import stats
 import logging
 import numpy as np
@@ -79,7 +78,7 @@ def main(cfg):
     PICONTROL_TEMP_MEAN = 'total temporal mean of piControl'
 
     # Matplotlib instance
-    style_file = get_path_to_mpl_style('default.mplstyle')
+    style_file = plot.get_path_to_mpl_style('default.mplstyle')
     plt.style.use(style_file)
     fig, ax = plt.subplots()
 
@@ -134,7 +133,7 @@ def main(cfg):
         reg_stats = stats.linregress(data_tas, data_rtmt)
         data_ecs = -reg_stats.intercept / (2*reg_stats.slope)
         MODELS.add_model(short_name+DIFF+model+VARS.ecs, data_ecs,
-                         short_name=short_name, exp=DIFF, model=model)
+                         short_name=VARS.ecs, exp=DIFF, model=model)
 
         # Plot ECS regression if desired
         if (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
@@ -176,7 +175,66 @@ def main(cfg):
     # Plot data
     ###########################################################################
 
+    if (cfg['write_plots']):
+        for model_path in MODELS.get_path_list(short_name=VARS.ecs, exp=DIFF):
+            model = MODELS.get_model(model_path)
+            data_ecs = MODELS.get_data(model_path=model_path)
+            data_tas_hist = MODELS.get_data(short_name=VARS.tas,
+                                            exp=HISTORICAL, model=model)
+            data_tas_piC = MODELS.get_data(short_name=VARS.tas,
+                                           exp=PICONTROL_TEMP_MEAN,
+                                           model=model)
+            style = plot.get_model_style(model)
+
+            # Plot
+            ax.plot(data_ecs, data_tas_hist, linestyle='none',
+                    markeredgecolor=style['color'],
+                    markerfacecolor=style['facecolor'],
+                    marker=style['mark'], markersize=10, label=model)
+            ax.plot(data_ecs, data_tas_piC, linestyle='none',
+                    markeredgecolor=style['color'],
+                    markerfacecolor=style['facecolor'],
+                    marker=style['mark'], markersize=6, label=model)
+
+        # Options
+        ax.set_title("GMSAT vs. ECS for CMIP5 models")
+        ax.set_xlabel(VARS.ECS.standard_name + " / " + VARS.ECS.units)
+        ax.set_ylabel(VARS.TAS.standard_name + " / " + VARS.TAS.units)
+        ax.set_xlim(1.5, 5.0)
+        legend = ax.legend(loc='upper left',
+                           bbox_to_anchor=(1.05, 1.0), borderaxespad=0.0)
+
+        # Save plot
+        filename = 'flato13_fig9-42a.' + cfg['output_file_type']
+        filepath = os.path.join(cfg['plot_dir'], filename)
+        fig.savefig(filepath, additional_artists=[legend],
+                    bbox_inches='tight', orientation='landscape')
+        logger.info("Writing {}".format(filepath))
+        ax.cla()
     plt.close()
+
+    ###########################################################################
+    # Write nc file
+    ###########################################################################
+
+    if (cfg['write_netcdf']):
+        data_ecs = MODELS.get_data_list(short_name=VARS.ecs, exp=DIFF)
+        models = [model_info[MODEL_STR] for model_info in
+                  MODELS.get_model_info_list(short_name=VARS.ecs, exp=DIFF)]
+        model_coord = iris.coords.AuxCoord(models, long_name='models')
+        attr = {'created_by': 'ESMValTool version {}'.format(cfg['version']) +
+                              ', diagnostic {}'.format(cfg['script']),
+                'creation_date': datetime.utcnow().isoformat(' ') + ' UTC'}
+        cube = iris.cube.Cube(data_ecs, long_name=VARS.ECS.long_name,
+                              var_name=VARS.ecs, units=VARS.ECS.units,
+                              attributes=attr)
+        cube.add_aux_coord(model_coord, 0)
+
+        # Save file
+        filename = VARS.ecs + '.nc'
+        filepath = os.path.join(cfg['work_dir'], filename)
+        iris.save(cube, filepath)
+        logger.info("Writing {}".format(filepath))
 
 
 if __name__ == '__main__':
