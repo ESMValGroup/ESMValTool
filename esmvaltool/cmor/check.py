@@ -431,8 +431,8 @@ class CMORCheck(object):
     CALENDARS = [
         ['gregorian', 'standard'],
         ['proleptic_gregorian'],
-        ['noleap', '365_day'],
-        ['all_leap', '366_day'],
+        ['365_day', 'noleap'],
+        ['366_day', 'all_leap'],
         ['360_day'],
         ['julian'],
         ['none'],
