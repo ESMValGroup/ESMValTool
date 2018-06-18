@@ -1,0 +1,116 @@
+###############################################################################
+# namelist_ReichlerKim08bams.xml
+
+# Description
+# Namelist for computing Single Model Performance Index. Follows Reichler and Kim
+# 2008. Considers variables:
+# Sea level pressure, Air Temperature, Zonal Wind Stress, Meridional Wind Stress,
+# 2m air temperature, Zonal Wind, Meridional Wind, Net surface heat flux,
+# Precipitation, Specific Humidity, Snow fraction, Sea Surface Temperature,
+# Sea Ice Fraction and sea surface salinity.
+
+# Authors
+# Bettina Gier (DLR, Germany - bettina.gier@dlr.de)
+# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+# Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+
+# Project
+# CRESCENDO
+
+# Reference
+# Reichler, T. and J. Kim, 2008. Bull. Amer. Meteor. Soc., 89, 303-311,
+# doi: 10.1175/BAMS-89-3-303.
+
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+  - {model: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {model: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+#   - {model: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+#   - {model: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+#   - {model: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005} 
+#   - {model: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+#   - {model: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005} 
+#   - {model: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005} 
+#   - {model: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005} 
+#   - {model: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+#   - {model: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+
+preprocessors:
+
+  ppALL:
+    extract_levels:
+      levels: ERA-Interim
+      scheme: linear
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_model]
+
+  ppNOLEV:
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_model]
+      
+
+diagnostics:
+
+#   ta:
+#     description: Air temperature zonal mean
+#     variables:
+#       ta:
+#         preprocessor: ppALL
+#         reference_model: ERA-Interim
+#         mip: Amon
+#         field: T3M
+#     additional_models:
+#       - {model: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#     scripts:
+#       grading: &grading_settings
+#         script: perfmetrics/main.ncl
+#         plot_type: cycle_zonal
+#         time_avg: yearly
+#         region: Global
+#         range_option: 1
+#         draw_plots: false
+#         calc_grading: true
+#         metric: [SMPI]
+#         normalization: [none]
+#         smpi_n_bootstrap: 100
+#         smpi_ref_ensemble: CMIP5
+        
+  tas:
+    description: Near-surface temperature
+    variables:
+      tas:
+        preprocessor: ppNOLEV
+        reference_model: ERA-Interim
+        mip: Amon
+        field: T2Ms
+    additional_models:
+      - {model: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: [CMIP5]
+        smpi_n_bootstrap: 100
