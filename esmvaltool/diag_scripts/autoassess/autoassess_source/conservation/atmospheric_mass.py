@@ -11,7 +11,8 @@ from .area_utils import area_average
 
 def global_atmos_mass_conservation(run):
     """
-    Purpose:
+    Purpose
+
     Compute and plot HadGEM3 dry and wet mass conservation (trend) metrics
     for AutoAssess.
 
@@ -39,12 +40,12 @@ def global_atmos_mass_conservation(run):
     # VPREDOI
     # temporarily replacing these crazy variables with standard ones
     # so I can test the code flow
-    # dry = load_run_ss(run, 'annual', 'm01s30i403')  # TOTAL COLUMN DRY MASS  RHO GRID
-    # wet = load_run_ss(run, 'annual', 'atmosphere_mass_per_unit_area')  # m01s30i404
-    dry = load_run_ss(
-        run, 'monthly', 'eastward_wind', lbproc=192)
-    wet = load_run_ss(
-        run, 'monthly', 'eastward_wind', lbproc=192)
+    # dry = load_run_ss(run, 'annual', 'm01s30i403')
+    # TOTAL COLUMN DRY MASS  RHO GRID
+    # wet = load_run_ss(run, 'annual', 'atmosphere_mass_per_unit_area')
+    # m01s30i404
+    dry = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
+    wet = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
 
     # calculating global means
     # Get time series of global means:
@@ -100,8 +101,12 @@ def global_atmos_mass_conservation(run):
 
     xtickFormatter = FormatStrFormatter('%4d')
     ytickFormatter = FormatStrFormatter('%4.1e')
-    titl1_temp = '{0}   Global {1} mass (deviation from time mean, Pa)'  # TODO unit from cube
-    #titl2_temp = '$log_{{10}}$(e-fold time/year): {0:6.2f}   s.d.: {1:9.2e} Pa'  # TODO unit from cube?
+    titl1_temp = '{0}   Global {1} mass (deviation from time mean, Pa)'
+    # TODO unit from cube
+    # VPREDOI
+    # see below at use of titl2_temp
+    # titl2_temp = '$log_{{10}}$(e-fold time/year):{0:6.2f}s.d.:{1:9.2e} Pa'
+    # TODO unit from cube?
 
     plt.figure(figsize=(8.27, 11.69))
 
@@ -115,8 +120,8 @@ def global_atmos_mass_conservation(run):
     titl2 = 'dry titties'
     plt.plot(time_years, deldry.data, linewidth=2, color='black')
     plt.xticks(time_years)
-    top_ax.set_xticklabels(ctime_years, ha='left', fontsize='x-small',
-                           rotation=315)
+    top_ax.set_xticklabels(
+        ctime_years, ha='left', fontsize='x-small', rotation=315)
     plt.xlim([np.min(time_years), np.max(time_years)])
     plt.ylim([np.min(deldry.data) - 1.0e-4, np.max(deldry.data) + 1.0e-4])
     plt.title(titl1 + '\n' + titl2)
@@ -132,8 +137,8 @@ def global_atmos_mass_conservation(run):
     titl2 = 'wet titties'
     plt.plot(time_years, delwet.data, linewidth=2, color='black')
     plt.xticks(time_years)
-    bottom_ax.set_xticklabels(ctime_years, ha='left', fontsize='x-small',
-                              rotation=315)
+    bottom_ax.set_xticklabels(
+        ctime_years, ha='left', fontsize='x-small', rotation=315)
     plt.xlim([np.min(time_years), np.max(time_years)])
     plt.ylim([np.min(delwet.data) - 1.0, np.max(delwet.data) + 1.0])
     plt.title(titl1 + '\n' + titl2)

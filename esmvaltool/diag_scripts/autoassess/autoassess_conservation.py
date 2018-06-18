@@ -50,7 +50,7 @@ def main(cfg):
         os.makedirs(cons_dir)
     # grab the masks and place them in the called dirs
     # /masks/qrparm.landfrac_n240.0.pp
-    # /conservation/glacialmask_n240.0.pp 
+    # /conservation/glacialmask_n240.0.pp
     # NEED TO FIGURE OUT WHERE TO STORE
     # THESE TYPE OF FILES IN BASE DIR(S)
     # for now I am moving some dummy files

@@ -1,4 +1,6 @@
 """
+Autoassess Conservation
+
 Module with routines to estimate conservation of water in all sub-models
 in a GC configuration. Presently it calculates conservation as long-term
 water fluxes across various sub-models, using annual mean data. It is
@@ -17,11 +19,13 @@ from .matplotlib_table import render_mpl_table
 
 
 def resolution(cube):
-    '''
+    """
+    Get resolution
+
     Get resolution for cube and whether it is on ENDGame grid
     Assume on full p grid
     Different algorithm required if longitude or latitude missing
-    '''
+    """
     # TODO: Extend to C grid variables?
     resol = "n" + str(cube.coord('longitude').points.size / 2)
     endgame = (cube.coord('latitude').points.size % 2 == 0)
@@ -30,6 +34,8 @@ def resolution(cube):
 
 def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     """
+    Calculate fluxes
+
     Function to calculate long-term water fluxes in varios sub-models
     The conservation will be measured using as units 1e9 Kg/m2s~ Sv
     It is assumed that data comes from a model configuration of GA5
@@ -39,7 +45,8 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
 
     # Preliminaries to produce table with fluxes:
     expid = run['runid']
-    fluxes_table = expid + '_global_freshwater_fluxes_table'  # filename for storing fluxes table
+    fluxes_table = expid + '_global_freshwater_fluxes_table'
+    # filename for storing fluxes table
 
     table = []
     val_format = '{:.3f}'
@@ -53,7 +60,8 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # determine atmospheric horizontal model resolution:
     # VPREDOI
     # need the right data file
-    # pptest = load_run_ss(run, 'seasonal', 'precipitation_flux')  # m01s05i216: total precipitation rate; arbitrary cube
+    # pptest = load_run_ss(run, 'seasonal', 'precipitation_flux')
+    # m01s05i216: total precipitation rate; arbitrary cube
     pptest = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
     resol, endgame = resolution(pptest)
 
@@ -67,9 +75,11 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # glacial mask:
     # TODO :  put mask in central directory
     if endgame:
-        gmpath = run['ancil_root'] + '/conservation/glacialmask_' + resol + '_endgame.pp'
+        gmpath = run['ancil_root'] + '/conservation/glacialmask_' \
+            + resol + '_endgame.pp'
     else:
-        gmpath = run['ancil_root'] + '/conservation/glacialmask_' + resol + '.pp'
+        gmpath = run['ancil_root'] + '/conservation/glacialmask_' \
+            + resol + '.pp'
 
     # NEMO:
     # Jan 2015:  At the present version, Maverick does not handle ocean fields.
@@ -92,10 +102,8 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
 
     # load land-fraction mask and calculate ocean fraction mask:
     # VPREDOI
-    # land fraction file is needed, it is looked up in eg
-    # '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu/
-    # ESMValTool_AA_Cons/strato/namelist_autoassess_conservation_20180605_142620/
-    # work/aa_strato/autoassess_strato_test_1/ancil/masks/qrparm.landfrac_n240.0.pp'
+    # land fraction file is needed
+    # /home/users/valeriu/base_masks_autoassess
     # lfm = iris.load_cube(lfpath)
     # ofm = -1.0 * lfm + 1.0
     lfm = pptest
@@ -103,10 +111,8 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
 
     # load glacial mask and obtain corresponding fraction masks:
     # VPREDOI
-    # glacial mask is needed, it is looked up in eg
-    # '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu/
-    # ESMValTool_AA_Cons/strato/namelist_autoassess_conservation_20180605_142620/
-    # work/aa_strato/autoassess_strato_test_1/ancil/conservation/glacialmask_n240.0.pp'
+    # glacial mask is needed
+    # /home/users/valeriu/base_masks_autoassess
     # gm = iris.load_cube(gmpath)
     gm = pptest
     # lfm_is = gm * lfm
@@ -117,9 +123,9 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # calculate water fluxes into the different sub-models
 
     # Template strings for writing information to file
-    #hdr_temp = "{0:>39s}\n"
-    #val_temp = "{0:>39s}  {1:7.3f} \n"
-    #eql_temp = "{0:>48s}\n"
+    # hdr_temp = "{0:>39s}\n"
+    # val_temp = "{0:>39s}  {1:7.3f} \n"
+    # eql_temp = "{0:>48s}\n"
 
     # Calculate global WATER CONSERVATION IN VARIOUS SUB-MODELS
 
@@ -165,17 +171,18 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
 
     table.append(['TRIP', ''])
     table.append(['Surf.+sub-surf. runoff', val_format.format(runoff)])
-    table.append(['River discharge',     val_format.format(rdis_trip)])
-    table.append(['Inland-basin runoff',  val_format.format(ibrunoff)])
-    table.append(['Net Flux',              val_format.format(fval[4])])
-    table.append(['',                                              ''])
-
+    table.append(['River discharge', val_format.format(rdis_trip)])
+    table.append(['Inland-basin runoff', val_format.format(ibrunoff)])
+    table.append(['Net Flux', val_format.format(fval[4])])
+    table.append(['', ''])
 
     # Calculate Ice sheet fluxes
 
     # flbl = ['l. scale snowfall', 'conv. snowfall', 'sublimation',
     #         'sublim. sea-ice', 'snow melt']
-    stash_f = ['m01s04i204', 'm01s05i206', 'm01s03i298', 'm01s03i353', 'm01s08i231']
+    stash_f = [
+        'm01s04i204', 'm01s05i206', 'm01s03i298', 'm01s03i353', 'm01s08i231'
+    ]
     f_mult = [lfm_is, lfm_is, -1.0 * gm, ofm_is, -1.0 * lfm_is]
 
     fval = gwb.fluxes_submodel(run, stash_f, f_mult)
@@ -187,47 +194,57 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     smelt_is = fval[4]
     net_is = fval[5]
 
-    table.append(['Ice sheets',                            ''])
-    table.append(['Snowfall',     val_format.format(sfall_is)])
+    table.append(['Ice sheets', ''])
+    table.append(['Snowfall', val_format.format(sfall_is)])
     table.append(['Sublimation', val_format.format(sublim_is)])
-    table.append(['Snow melt',    val_format.format(smelt_is)])
-    table.append(['Net Flux',      val_format.format(fval[5])])
-    table.append(['',                                      ''])
+    table.append(['Snow melt', val_format.format(smelt_is)])
+    table.append(['Net Flux', val_format.format(fval[5])])
+    table.append(['', ''])
 
     # Calculate land-snow fluxes
-    stash_f = ['m01s04i204', 'm01s05i206', 'm01s03i298', 'm01s03i353', 'm01s08i231']
+    stash_f = [
+        'm01s04i204', 'm01s05i206', 'm01s03i298', 'm01s03i353', 'm01s08i231'
+    ]
     f_mult = [lfm, lfm, -1.0, ofm, -1.0 * lfm]
 
     fval = gwb.fluxes_submodel(run, stash_f, f_mult)
     name = 'global net water flux land snow'
-    metrics[name] = float(fval[-1]-net_is)
+    metrics[name] = float(fval[-1] - net_is)
 
-    table.append(['Land Snow',                                                 ''])
-    table.append(['Snowfall',     val_format.format(fval[0] + fval[1] - sfall_is)])
-    table.append(['Sublimation', val_format.format(fval[2] + fval[3] - sublim_is)])
-    table.append(['Snow melt',              val_format.format(fval[4] - smelt_is)])
-    table.append(['Net Flux',                 val_format.format(fval[5] - net_is)])
-    table.append(['',                                                          ''])
+    table.append(['Land Snow', ''])
+    table.append(['Snowfall', val_format.format(fval[0] + fval[1] - sfall_is)])
+    table.append(
+        ['Sublimation',
+         val_format.format(fval[2] + fval[3] - sublim_is)])
+    table.append(['Snow melt', val_format.format(fval[4] - smelt_is)])
+    table.append(['Net Flux', val_format.format(fval[5] - net_is)])
+    table.append(['', ''])
 
     smelt_l = fval[4]
 
     # Calculate soil moisture fluxes
     # calculate rainfall minus evaporation and obtain the remaining fluxes from
     # results from sub-models previously calculated:
-    stash_f = ['m01s04i203', 'm01s05i205', 'm01s03i298', 'm01s03i223', 'm01s03i232']
+    stash_f = [
+        'm01s04i203', 'm01s05i205', 'm01s03i298', 'm01s03i223', 'm01s03i232'
+    ]
     f_mult = [lfm, lfm, 1.0, -1.0, ofm]
     fval = gwb.fluxes_submodel(run, stash_f, f_mult)
 
     name = 'global net water flux soil moisture'
     metrics[name] = float(fval[5] - smelt_l - runoff - ibrunoff)
 
-    table.append(['Soil moisture',                                                  ''])
-    table.append(['Rainfall minus evaporation',             val_format.format(fval[5])])
-    table.append(['Snow melt',                       val_format.format(-1.0 * smelt_l)])
-    table.append(['Surf. + sub-surv. runoff',         val_format.format(-1.0 * runoff)])
-    table.append(['Inland basin runoff',            val_format.format(-1.0 * ibrunoff)])
-    table.append(['Net Flux', val_format.format(fval[5] - smelt_l - runoff - ibrunoff)])
-    table.append(['',                                                               ''])
+    table.append(['Soil moisture', ''])
+    table.append(['Rainfall minus evaporation', val_format.format(fval[5])])
+    table.append(['Snow melt', val_format.format(-1.0 * smelt_l)])
+    table.append(
+        ['Surf. + sub-surv. runoff',
+         val_format.format(-1.0 * runoff)])
+    table.append(['Inland basin runoff', val_format.format(-1.0 * ibrunoff)])
+    table.append(
+        ['Net Flux',
+         val_format.format(fval[5] - smelt_l - runoff - ibrunoff)])
+    table.append(['', ''])
 
     # Calculate atmospheric fluxes
     stash_f = ['m01s03i223', 'm01s05i216']
@@ -237,14 +254,18 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     name = 'global net water flux into atmosphere'
     metrics[name] = float(fval[-1])
 
-    table.append(['Atmosphere',                            ''])
-    table.append(['Evaporation',   val_format.format(fval[0])])
+    table.append(['Atmosphere', ''])
+    table.append(['Evaporation', val_format.format(fval[0])])
     table.append(['Precipitation', val_format.format(fval[1])])
-    table.append(['Net Flux',      val_format.format(fval[2])])
+    table.append(['Net Flux', val_format.format(fval[2])])
 
-    _fig = render_mpl_table(table, header_rows=2, header_columns=0, col_width=5,
-                            highlight_cells=[(2, 0), (6, 1), (8, 0), (12, 1), (14, 0),
-                                             (18, 1), (20, 0), (25, 1), (27, 0), (30, 1)])
+    _fig = render_mpl_table(
+        table,
+        header_rows=2,
+        header_columns=0,
+        col_width=5,
+        highlight_cells=[(2, 0), (6, 1), (8, 0), (12, 1), (14, 0), (18, 1),
+                         (20, 0), (25, 1), (27, 0), (30, 1)])
     plt.savefig(fluxes_table + '.png', format='png')
 
     return metrics
