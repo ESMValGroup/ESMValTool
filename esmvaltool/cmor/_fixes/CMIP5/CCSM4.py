@@ -23,8 +23,8 @@ class rlut(Fix):
 
         """
         lat = cube.coord('latitude')
-        lat.points = np.round(lat.points, 4)
-        lat.bounds = np.round(lat.bounds, 4)
+        lat.points = np.round(lat.points, 3)
+        lat.bounds = np.round(lat.bounds, 3)
         return cube
 
 
