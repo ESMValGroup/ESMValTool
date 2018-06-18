@@ -108,8 +108,6 @@ def calc_lwcre(cubes):
     rlutcs_cube = cubes.extract_strict(
         Constraint(name='toa_outgoing_longwave_flux_assuming_clear_sky'))
 
-    assert rlut_cube.coord_dims('time') and rlutcs_cube.coord_dims('time'), \
-        'No time dimension found.'
     lwcre = rlutcs_cube - rlut_cube
     lwcre.units = rlut_cube.units
 
@@ -178,8 +176,6 @@ def calc_swcre(cubes):
     rsutcs_cube = cubes.extract_strict(
         Constraint(name='toa_outgoing_shortwave_flux_assuming_clear_sky'))
 
-    assert rsut_cube.coord_dims('time') and rsutcs_cube.coord_dims('time'), \
-        'No time dimension found.'
     swcre = rsutcs_cube - rsut_cube
     swcre.units = rsut_cube.units
 
@@ -206,8 +202,6 @@ def calc_toz(cubes):
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
-    assert tro3_cube.coord_dims('time') and ps_cube.coord_dims('time'), \
-        'No time dimension found.'
     p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
     toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
