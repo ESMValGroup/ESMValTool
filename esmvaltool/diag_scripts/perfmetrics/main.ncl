@@ -124,7 +124,8 @@ begin
   ; Store required attributes
   ptype = diag_script_info@plot_type
 
-  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
+  if (all(ptype.ne.(/"cycle", "zonal", "cycle_zonal", \
+                     "latlon", "cycle_latlon"/))) then
     error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
               "supported plot_type in this diagnostic")
   end if
@@ -142,14 +143,14 @@ begin
   end if
 
   ; Check valid field
-  if ((ptype.eq."zonal" .and. \
+  if (((ptype.eq."zonal" .or. ptype.eq."cycle_zonal") .and. \
       all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
       (ptype.eq."cycle" .and. \
       all(field_type0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
       (ptype.eq."latlon" .and. \
-      all(field_type0.ne.(/"T3M", "T2Ms"/))) .or. \
+      all(field_type0.ne.(/"T3M", "T2Ms", "TO2Ms"/))) .or. \
       (ptype.eq."cycle_latlon" .and. \
-      all(field_type0.ne.(/"T3M", "T2Ms"/)))) then
+      all(field_type0.ne.(/"T3M", "T2Ms", "TO2Ms"/)))) then
     error_msg("f", diag_script, "", "input field " + field_type0 + \
               " is not compatible with plot_type " + ptype)
   end if
@@ -184,6 +185,13 @@ begin
       error_msg("f", diag_script, "", "normalization must be " + \
                 "provided for each requested metric")
     end if
+    if (any(diag_script_info@metric.eq."SMPI") .and. \
+        diag_script_info@range_option.eq.0) then
+      error_msg("f", diag_script, "", "Currently Single Model " + \
+                "Performance Index is only supported for time periods of " + \
+                "the same length for all models and observations")
+    end if
+
   end if
 
   ; Unique names for models
@@ -284,6 +292,16 @@ begin
       taylor&models = remove_index(modelnames, ref_ind)
     end if
 
+    ; Special case SMPI
+    if (any(diag_script_info@metric.eq."SMPI")) then
+      nmodels = dimsizes(modelnames) - 1  ; always 1 reference model
+      smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nmodels/), float)
+      smpi!0 = "bootstrap_member"
+      smpi!1 = "models"
+      smpi&bootstrap_member = ispan(0, diag_script_info@smpi_n_bootstrap, 1)
+      smpi&models = remove_index(modelnames, ref_ind)
+    end if
+
     ; Define grading filename
     do met = 0, nmetrics - 1
       ncdf_dir(met) = config_user_info@work_dir + "/" + \
@@ -315,12 +333,38 @@ begin
       end if
 
       ; Apply normalization
-      if (diag_script_info@metric(met).ne."taylor") then
+      if (diag_script_info@metric(met).ne."taylor" .and. \
+          diag_script_info@metric(met).ne."SMPI") then
         do iobs = 0, nobs - 1
           metric(:, :, iobs) = \
             normalize_metric(metric(:, :, iobs), \
                              diag_script_info@normalization(met))
         end do
+      end if
+
+      ; Special case, SMPI normalization
+      if (diag_script_info@metric(met).eq."SMPI") then
+        ens_idx = new(dimsizes(smpi&model), integer)
+        do ii = 0, dimsizes(ens_idx) - 1
+          loc_idx = ind(model_info@model.eq.smpi&models(ii))
+          ; Select only the models of the specified project
+          if (model_info@project(loc_idx).ne.normalization(met)) then
+            ens_idx(ii) = ens_idx@_FillValue
+          else
+            ens_idx(ii) = ii
+          end if
+        end do
+        if (all(ismissing(ens_idx))) then
+          error_msg("f", diag_script, "", "No models for the selected " + \
+                    "normalization (" + diag_script_info@normalization(met) + \
+                    ") found")
+        end if
+        ens_idx := ens_idx(ind(.not.ismissing(ens_idx)))
+        ; Apply normalization
+        do iboot = 0, dimsizes(smpi&bootstrap_member) - 1
+          smpi(iboot, :) = smpi(iboot, :) / avg(smpi(iboot, ens_idx))
+        end do
+
       end if
 
       ; Reduce dimensionality if no alternative model

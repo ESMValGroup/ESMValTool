@@ -1397,8 +1397,26 @@ begin
       time_weights = sdays
     end if
 
+    ; Annual-mean time-series
+    if (dim_names(0).eq."year") then
+      time_weights = new(dims_var(0), float)
+      time_weights = 1.
+    end if
+
     if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
       area_weights = map_area(var&lat, var&lon)
+    end if
+
+    if (dim_names(1).eq."plev" .and. dim_names(2).eq."lat") then
+      areas = map_area(ref&lat, (/1.0, 2.0/))
+      nlev = dimsizes(ref&plev)
+      ptop = ref&plev(nlev - 1) - \
+        0.5 * (ref&plev(nlev - 2) - ref&plev(nlev - 1))
+      delta_p = dpres_plevel(ref&plev, 101325., ptop, 0)
+      area_weights = new((/nlev, dimsizes(ref&lat)/), float)
+      wdims = dimsizes(area_weights)
+      area_weights = conform_dims(wdims, delta_p, 0) * \
+        conform_dims(wdims, areas(:, 0), 1)
     end if
 
     if (isdefined("time_weights").and.isdefined("area_weights")) then
@@ -1460,6 +1478,41 @@ begin
     leave_msg(scriptname, funcname)
     return(out)
   end if
+
+  ; Single Model Performance Index
+  if (metric.eq."SMPI") then
+    nyears = dimsizes(var&year)
+    out = new(diag_script_info@smpi_n_bootstrap + 1, float)
+    do ibootstrap = 0, diag_script_info@smpi_n_bootstrap
+      if (ibootstrap.eq.0) then
+        bootvect = ispan(0, nyears - 1, 1)
+      else
+        icnt = 0
+        do while (icnt .le. 10)
+          bootvect = generate_sample_indices(nyears, 1)
+          icnt = icnt + 1
+          if (.not.all(bootvect(:).eq.bootvect(0))) then
+            break
+          end if
+        end do
+        if (all(bootvect(:).eq.bootvect(0))) then
+          error_msg("f", scriptname, funcname, \
+                    "Number of years to small for bootstrapping. Abort.")
+        end if
+        obs = ref(bootvect, :, :)
+        mod1D = ndtooned(dim_avg_n(var, 0))
+        ref1D = ndtooned(dim_avg_n(obs, 0))
+        sig1D = ndtooned(dim_stddev_n_Wrap(obs, 0))
+        sig1D@_FillValue = default_fillvalue(typeof(sig1D))
+        sig1D = where(sig1D.eq.0, sig1D@_FillValue, sig1D)
+        out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D)^2 \
+                                            / sig1D^2, wgt1d, 1)
+      end if
+    end do
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
+
 
   error_msg("f", scriptname, funcname, "metric " + metric + " not available")
 

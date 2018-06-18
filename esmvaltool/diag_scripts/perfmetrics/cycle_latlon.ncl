@@ -102,6 +102,11 @@ begin
         taylor(0, locidx, 1) = \
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
+      else if (diag_script_info@metric(met).eq."SMPI") then
+        locidx = ind(modelnames(imod).eq.smpi&models)
+        smpi(:, locidx) = \
+          calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
+                           "SMPI")
       else
         locidx = ind(modelnames(imod).eq.grading&models)
         if (ismissing(locidx)) then
@@ -116,6 +121,8 @@ begin
                              diag_script_info@metric(met))
         end if
       end if
+      end if
+
 
     end do
 
