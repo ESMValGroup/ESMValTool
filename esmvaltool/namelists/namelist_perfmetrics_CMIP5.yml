@@ -1,26 +1,27 @@
 ###############################################################################
 # namelist_perfmetrics_CMIP5.xml
-#
-# Description
-# Namelist for plotting the performance metrics for the CMIP5 models,
-# including the "standard" ECVs as in Gleckler et al., plus some additional
-# variables (like ozone, sea-ice, aerosol...)
-#
-# Authors
-# Franziska Frank (DLR, Germany)
-# Mattia Righi (DLR, Germany)
-# Veronika Eyring (DLR, Germany)
-#
-# Project
-# DLR ESMVal
-#
-# Reference
-# Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972
-# (2008)
-#
-# This namelist is part of the ESMValTool
-###############################################################################
 ---
+documentation:
+  description: |
+    Namelist for plotting the performance metrics for the CMIP5 models,
+    including the "standard" ECVs as in Gleckler et al., plus some additional
+    variables (like ozone, sea-ice, aerosol...)
+
+  authors:
+    - fran_fr
+    - righ_ma
+    - eyri_ve
+
+  references:
+    - gleckler08jgr
+
+  projects:
+    - esmval
+    - embrace
+    - crescendo
+    - c3s-magic
+    - cmug
+
 preprocessors:
   pp850:
     extract_levels:
@@ -160,6 +161,10 @@ diagnostics:
 
   ta850:
     description: Air temperature at 850 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: pp850
