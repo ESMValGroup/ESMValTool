@@ -162,8 +162,9 @@ class CMORCheck(object):
             logger = logging.getLogger(__name__)
 
         if self._cmor_var.units:
-            if str(self._cube.units) != self._cmor_var.units:
-                self._cube.convert_units(self._cmor_var.units)
+            units = self._get_efective_units()
+            if str(self._cube.units) != units:
+                self._cube.convert_units(units)
 
         self._check_data_range()
         self._check_coords_data()
@@ -189,8 +190,14 @@ class CMORCheck(object):
                     self._cmor_var.standard_name, self._cube.standard_name)
 
         # Check units
+        if self._cube.attributes.get('invalid_units', '').lower() == 'psu':
+            self._cube.units = '1.0'
+            del self._cube.attributes['invalid_units']
+
         if self._cmor_var.units:
-            if not self._cube.units.is_convertible(self._cmor_var.units):
+            units = self._get_efective_units()
+
+            if not self._cube.units.is_convertible(units):
                 self.report_error('Variable {0} units () can not be '
                                   'converted to {2}', self._cube.var_name,
                                   self._cmor_var.units, self._cube.units)
@@ -213,6 +220,13 @@ class CMORCheck(object):
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
                                       self._cube.attributes[attr])
+
+    def _get_efective_units(self):
+        if self._cmor_var.units.lower() == 'psu':
+            units = '1.0'
+        else:
+            units = self._cmor_var.units
+        return units
 
     def _check_data_range(self):
         # Check data is not less than valid_min
