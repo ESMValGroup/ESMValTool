@@ -4,7 +4,6 @@ import six
 from cf_units import Unit
 from netCDF4 import Dataset
 
-
 from ..fix import Fix
 
 
