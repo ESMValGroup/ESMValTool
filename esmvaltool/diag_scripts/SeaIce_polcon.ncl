@@ -55,18 +55,18 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 ;load "./interface_data/ncl.interface"
 load "./interface_scripts/interface.ncl"
 
-load "./diag_scripts/calc_seasonal.ncl"
+;load "./diag_scripts/calc_seasonal.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/style.ncl"
-load "./diag_scripts/shared/meta_data.ncl"
+load "./diag_scripts/shared/plot/style.ncl"
+;load "./diag_scripts/shared/meta_data.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
     verbosity = config_user_info@log_level
-    debug_info("<<<<<<<< Entering " + diag_script)
+;    debug_info("<<<<<<<< Entering " + diag_script)
     log_info("++++++++++++++++++++++++++++++++++++++++++")
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
