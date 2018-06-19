@@ -58,9 +58,21 @@ def TimeSeriesPlots(
 
         # Determine png filename:
         if multiModel:
-            path = diagtools.folder(
-                cfg['plot_dir']) + os.path.basename(fn).replace(
-                    '.nc', '_timeseries_' + str(l) + '.png')
+            # path = diagtools.folder(
+            #     cfg['plot_dir']) + os.path.basename(fn).replace(
+            #         '.nc', '_timeseries_' + str(l) + '.png')
+            path = diagtools.get_image_path(
+                cfg,
+                md,
+                prefix='MultiModel',
+                suffix='_'.join(['timeseries', str(layer)]),
+                image_extention='png',
+                basenamelist=[
+                    'field', 'short_name', 'preprocessor', 'diagnostic',
+                    'start_year', 'end_year'
+                ],
+            )
+
         else:
             path = diagtools.get_image_path(
                 cfg,
@@ -105,18 +117,46 @@ def multiModelTimeSeries(
 
         long_name = ''
         z_units = ''
+        plotDetails = {}
+        cmap = plt.cm.get_cmap('viridis')
+
         # Plot each file in the group
-        for fn in sorted(metadata.keys()):
+        for i, fn in enumerate(sorted(metadata.keys())):
+            c = cmap(
+                (float(i) / (len(metadata.keys()) - 1.)
+                 ))  # - timefloats[0]) / (timefloats[-1] - timefloats[0]))
 
             multiModel = metadata[fn]['model'].find('MultiModel') > -1
 
             if multiModel:
                 qplt.plot(
                     model_cubes[fn][layer],
-                    label=metadata[fn]['model'],
-                    ls=':')
+                    c=c,
+                    # label=metadata[fn]['model'],
+                    ls=':',
+                    lw=2.,
+                )
+                plotDetails[fn] = {
+                    'c': c,
+                    'ls': ':',
+                    'lw': 2.,
+                    'label': metadata[fn]['model']
+                }
             else:
-                qplt.plot(model_cubes[fn][layer], label=metadata[fn]['model'])
+                qplt.plot(
+                    model_cubes[fn][layer],
+                    c=c,
+                    # label=metadata[fn]['model'])
+                    ls='-',
+                    lw=2.,
+                )
+                plotDetails[fn] = {
+                    'c': c,
+                    'ls': '-',
+                    'lw': 2.,
+                    'label': metadata[fn]['model']
+                }
+
             long_name = metadata[fn]['long_name']
             if layer != '':
                 z_units = model_cubes[fn][layer].coords('depth')[0].units
@@ -133,12 +173,20 @@ def multiModelTimeSeries(
             path = diagtools.get_image_path(
                 cfg,
                 metadata[fn],
-                prefix='MultiModel',
+                prefix='MultipleModels_',
                 suffix='_'.join(['timeseries', str(layer)]),
                 image_extention='png',
-                basenamelist=['field', 'short_name', 'preprocessor',
-                              'diagnostic', 'start_year', 'end_year'],
+                basenamelist=[
+                    'field', 'short_name', 'preprocessor', 'diagnostic',
+                    'start_year', 'end_year'
+                ],
             )
+
+        # Resize and add legend outside thew axes.
+        plt.gcf().set_size_inches(9., 6.)
+        diagtools.add_legend_outside_right(
+            plotDetails, plt.gca(), column_width=0.15)
+
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
