@@ -15,6 +15,7 @@ cat("\nINFO: Installing packages to --> ", RLIBLOC, "\n\n")
 
 # list of dependencies
 pkgMirror <- 'https://cloud.r-project.org'
+# chooseCRANmirror(ind=1)
 dependencies <-read.table("requirements.r", header=FALSE)
 
 packageList <- dependencies[!(dependencies %in% installed.packages()[,"Package"])]
