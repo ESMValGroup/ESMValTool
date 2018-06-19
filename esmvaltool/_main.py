@@ -4,6 +4,7 @@ http://www.esmvaltool.org
 
 CORE DEVELOPMENT TEAM AND CONTACTS:
   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
@@ -142,7 +143,7 @@ def process_namelist(namelist_file, config_user):
 
     logger.info(
         "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
-       __version__, timestamp1.strftime(timestamp_format))
+        __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
     logger.info("NAMELIST   = %s", namelist_file)
