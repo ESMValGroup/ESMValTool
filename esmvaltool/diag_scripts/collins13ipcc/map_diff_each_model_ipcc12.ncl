@@ -79,12 +79,12 @@ begin
   ;;###########################################
   ;;# References Information                  #
   ;;###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "A_sedl_ja", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
+  ;write_references(diag_script, \  ; script name
+  ;                 "A_lore_ru", \  ; authors
+  ;                 "A_sedl_ja", \  ; contributors
+  ;                 "D_collins13ipcc",    \  ; diag_references
+  ;                 "",          \  ; obs_references
+  ;                 "P_crescendo")   ; proj_references
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"experiment", "time_avg"/))
@@ -128,7 +128,7 @@ begin
   ;; get data from first model
   imod = modidx(0)  ; NCL array indicies start from zero
   log_debug("processing " + model_info@model(imod) + "_" \
-            + model_info@exp(imod) + "_"\
+            + model_info@exp(imod) + "_" \
             + model_info@ensemble(imod))
 
   ;; See ./interface_scripts/data_handling.ncl

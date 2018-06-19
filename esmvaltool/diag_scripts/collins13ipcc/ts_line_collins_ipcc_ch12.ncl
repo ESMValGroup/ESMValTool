@@ -45,7 +45,7 @@
 ;;    Variable number of scenarios? So far hardcoded 4 scenarios (rcp2.6,
 ;;    rcp4.5, rcp6.0, rcp8.5)
 ;;    every model (ensemble) in RCP needs corresponding historical run as
-;;    reference
+;;    reference, if no corresponding model found in scenario log_info
 ;;
 ;; Modification history
 ;;    20170523-A_lore_ru: separated plotting from calcuation
@@ -201,7 +201,7 @@ begin
   data26_rel = new((/dim_MOD_26, nyearsp1/), float, \
                    data1_glob@_FillValue)
   i26 = 0
-                   
+
   ;; How many rcp4.5 model runs?
   ind_45 = ind(model_info@exp .eq. diag_script_info@scenarios(1))
   dim_MOD_45 = dimsizes(model_info@model(ind_45))
@@ -222,6 +222,7 @@ begin
   data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
                    data1_glob@_FillValue)
   i85 = 0
+
   i = 0
   do imod = 0, dim_MOD_hist - 1
     if (imod .eq. 0) then
@@ -275,6 +276,11 @@ begin
       delete(A1)
       delete(data3)
       delete(data3_glob)
+    else
+      log_info("No corresponding model for historial run " + \
+               model_info@model(imod) + " found in scenario " + \
+               diag_script_info@scenarios(0) + \
+               ", cannot calculate relative change.")
     end if
     delete(imod26)
 
@@ -302,6 +308,11 @@ begin
       delete(A1)
       delete(data3)
       delete(data3_glob)
+    else
+      log_info("No corresponding model ensemble for historial run " + \
+               model_info@model(imod) + " found in scenario " + \
+               diag_script_info@scenarios(1) +\
+               ", cannot calculate relative change.")      
     end if
     delete(imod45)
 
@@ -329,6 +340,11 @@ begin
       delete(A1)
       delete(data3)
       delete(data3_glob)
+    else
+      log_info("No corresponding model ensemble for historial run " + \
+               model_info@model(imod) + " found in scenario " + \
+               diag_script_info@scenarios(2) + \
+               ", cannot calculate relative change.")            
     end if
     delete(imod60)
 
@@ -340,7 +356,7 @@ begin
           A1 = read_data(imod85(ens), var0, field_type0)
         end do
       else
-	    A1 = read_data(imod85, var0, field_type0)
+        A1 = read_data(imod85, var0, field_type0)
       end if
       data3 = time_operations(A1, -1, -1, "average", "yearly", True)
       data3_glob = coswgt_areaave(data3)
@@ -356,6 +372,11 @@ begin
       delete(A1)
       delete(data3)
       delete(data3_glob)
+    else
+      log_info("No corresponding model ensemble for historial run " + \
+               model_info@model(imod) + " found in scenario " + \
+               diag_script_info@scenarios(3) + \
+               ", cannot calculate relative change.")      
     end if
     delete(imod85)
   end do  ; imod
@@ -416,8 +437,9 @@ begin
         p3 = toint(eyears(p)) - toint(syears(0))
         mean_val(scen + 1, p2 : p3) = mean_val@_FillValue
         std_val(scen + 1, p2 : p3) = std_val@_FillValue
-        log_info("Scenario " + runs(scen + 1) + " in period " + p + \
-                 "has less than 5 models, set to missing.")
+        log_info("Scenario " + diag_script_info@scenarios(scen) + \
+                 " in period ending " + diag_script_info@eyears(p)+ \
+                 " has less than 5 models, set to missing.")
       end if
     end do
   end do
