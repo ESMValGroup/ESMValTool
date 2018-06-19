@@ -339,6 +339,40 @@ class DiagnosticTask(AbstractTask):
                 "There were warnings during the execution of NCL script %s, "
                 "for details, see the log %s", self.script, self.log)
 
+    def _start_diagnostic_script(self, cmd, env, cwd):
+        """Start the diagnostic script."""
+        logger.info("Running command %s", cmd)
+        logger.debug("in environment\n%s", pprint.pformat(env))
+        logger.debug("in current working directory: %s", cwd)
+        logger.info("Writing output to %s", self.output_dir)
+        logger.info("Writing plots to %s", self.settings['plot_dir'])
+        logger.info("Writing log to %s", self.log)
+
+        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        if env:
+            rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
+                                  if k not in os.environ)
+        rerun_msg += ' ' + ' '.join(cmd)
+        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
+
+        try:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=cwd,
+                env=env)
+        except OSError as exc:
+            if exc.errno == errno.ENOEXEC:
+                logger.error(
+                    "Diagnostic script has its executable bit set, but is "
+                    "not executable. To fix this run:\nchmod -x %s", cmd[0])
+                logger.error(
+                    "You may also need to fix this in the git repository.")
+            raise
+
+        return process
+
     def _run(self, input_files):
         """Run the diagnostic script."""
         if self.script is None:  # Run only preprocessor
@@ -374,35 +408,7 @@ class DiagnosticTask(AbstractTask):
         else:
             cmd.append(settings_file)
 
-        logger.info("Running command %s", cmd)
-        logger.debug("in environment\n%s", pprint.pformat(env))
-        logger.debug("in current working directory: %s", cwd)
-        logger.info("Writing output to %s", self.output_dir)
-        logger.info("Writing plots to %s", self.settings['plot_dir'])
-        logger.info("Writing log to %s", self.log)
-
-        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
-        if env:
-            rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
-                                  if k not in os.environ)
-        rerun_msg += ' ' + ' '.join(cmd)
-        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
-
-        try:
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd=cwd,
-                env=env)
-        except OSError as exc:
-            if exc.errno == errno.ENOEXEC:
-                logger.error(
-                    "Diagnostic script has its executable bit set, but is "
-                    "not executable. To fix this run:\nchmod -x %s", cmd[0])
-                logger.error(
-                    "You may also need to fix this in the git repository.")
-            raise
+        process = self._start_diagnostic_script(cmd, env, cwd)
 
         returncode = None
         last_line = ['']
