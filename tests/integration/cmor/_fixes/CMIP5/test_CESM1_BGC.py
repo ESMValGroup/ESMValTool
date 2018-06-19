@@ -19,15 +19,25 @@ class TestAll(unittest.TestCase):
                 [0, 1],
                 standard_name='time',
                 units=Unit(
-                    'days since 0001-01-01 00:00:00', calendar='gregorian')),
+                    'days since 0001-01-01 00:00:00.0000000 UTC',
+                    calendar='gregorian')),
             0)
         self.fix = allvars()
 
-    def test_fix_data(self):
+    def test_fix_metadata(self):
         cube = self.fix.fix_metadata(self.cube)
 
         time = cube.coord('time')
         self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
+        self.assertEqual(time.units.calendar, 'gregorian')
+
+    def test_fix_metadata_good_units(self):
+        self.cube.coord('time').units = Unit('days since 1950-01-01 00:00:00',
+                                             calendar='gregorian')
+        cube = self.fix.fix_metadata(self.cube)
+
+        time = cube.coord('time')
+        self.assertEqual(time.units.origin, 'days since 1950-01-01 00:00:00')
         self.assertEqual(time.units.calendar, 'gregorian')
 
 
