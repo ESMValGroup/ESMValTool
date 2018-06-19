@@ -48,11 +48,10 @@ diagnostics:
                 mip: Amon
                 field: T2Ms
         additional_models:
-            # Day is out of range for month
+            # Day is out of range for month (wait for iris > 2.0)
             # - {model: ACCESS1-0,     project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             # - {model: ACCESS1-0,     project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year:  300, end_year:  449}
             # - {model: ACCESS1-0,     project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year:  300, end_year:  449}
-
             - {model: bcc-csm1-1,    project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             - {model: bcc-csm1-1,    project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year:  160, end_year:  309}
             - {model: bcc-csm1-1,    project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year:  160, end_year:  309}
@@ -89,12 +88,9 @@ diagnostics:
             - {model: IPSL-CM5B-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             - {model: IPSL-CM5B-LR,  project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 1850, end_year: 1999}
             - {model: IPSL-CM5B-LR,  project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
-
-            # # Preprocessor receives NoneType cube somewhere (in abrupt4xCO2)
-            # - {model: MIROC-ESM,     project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
-            # - {model: MIROC-ESM,     project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 1800, end_year: 1949}
-            # - {model: MIROC-ESM,     project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year:    1, end_year:  150}
-
+            - {model: MIROC-ESM,     project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+            - {model: MIROC-ESM,     project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 1800, end_year: 1949}
+            - {model: MIROC-ESM,     project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year:    1, end_year:  150}
             - {model: MIROC5,        project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1961, end_year: 1990}
             - {model: MIROC5,        project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 2100, end_year: 2249}
             - {model: MIROC5,        project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 2100, end_year: 2249}
@@ -102,9 +98,6 @@ diagnostics:
             - {model: MPI-ESM-LR,    project: CMIP5, exp: piControl,   ensemble: r1i1p1, start_year: 2015, end_year: 2164}
             - {model: MPI-ESM-LR,    project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
 
-            # Missing height2m
-            # - {model: HadCRUT,    project: OBS, type: ground, version: 3v, start_year: 1950, end_year: 2005, tier: 2}
-            # - {model: HadCRUT4,   project: OBS, type: ground, version: 1, start_year: 1950, end_year: 2005, tier: 2}
         scripts:
             fig9-42a:
                 script: ipcc_ar5/ch09_fig09-42a.py
