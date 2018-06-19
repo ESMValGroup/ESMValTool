@@ -38,6 +38,11 @@ CMIP5:
     SMHI: '[model]/[ensemble]/[exp]/[freq]'
     BSC: '[project]/[exp]/[model]'
   input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_*'
+  fx_dir:
+    default: '/'
+    DKRZ: '[institute]/[model]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[var]'
+    ETHZ: '[exp]/fx/[var]/[model]/r0i0p0'
+  fx_file: '[var]_fx_[model]_[exp]_r0i0p0.nc'
   output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   institute:
     'HadGEM2-CC': 'MOHC'
