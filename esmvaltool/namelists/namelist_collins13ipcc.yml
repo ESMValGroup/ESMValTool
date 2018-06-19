@@ -33,6 +33,11 @@ preprocessors:
     mask_landocean: false
     multi_model_statistics: false
 
+  preproc_IAV:
+    regrid: false
+    mask_landocean: false
+    multi_model_statistics: false
+
 diagnostics:
 #  tas_change_all_models:
 #    description: Air temperature change for RCP45 for all models as maps.
@@ -149,3 +154,29 @@ diagnostics:
         ymin: -2
         ymax: 12
         model_nr: False
+
+  IAV_calc_tas:
+    description: Calculate temperature IAV for stippling significance
+    variables:
+      tas:
+        preprocessor: preproc_IAV
+        mip: Amon
+        field: T2Ms
+    additional_models:
+      - {model: ACCESS1-0,        project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 300,  end_year: 799}
+      - {model: ACCESS1-3,        project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 250,  end_year: 749}
+      - {model: bcc-csm1-1,       project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1,    end_year: 500}
+      - {model: bcc-csm1-1-m,     project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1,    end_year: 400}
+      - {model: BNU-ESM,          project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1450, end_year: 2008}
+      - {model: CanESM2,          project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2015, end_year: 3010}
+
+    scripts:
+      IAV_calc: &IAV_settings
+        script: ipcc_ar5/ch12_calc_IAV_for_stipp_and_hatch.py
+        styleset: CMIP5
+        periodlength: 20.
+        time_avg: annualclim
+        grid: 1x1
+        ncdf: default
+	
+      
