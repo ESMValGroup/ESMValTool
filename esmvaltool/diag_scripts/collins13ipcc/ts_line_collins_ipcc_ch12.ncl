@@ -16,10 +16,11 @@
 ;;             (end year of historical runs and rcps)
 ;;    begin_ref_year: start year of reference period (e.g. 1986)
 ;;    end_ref_year: end year of reference period (e.g 2005)
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
+;;    label: labels to use in legend depending on scenarios
 ;;    ncdf : enable to output to netCDF; either use "default"
 ;;           or give a full file name
+;;
+;; Optional diag_script_info attributes (diagnostic specific)
 ;;    ts_minlat: minimum latitude if not global e.g(/0/)
 ;;    ts_maxlat: maximum latitude if not global e.g.(/90/)
 ;;    ts_minlon: minimum longitude if not global e.g.(/0/)
@@ -31,7 +32,6 @@
 ;;    ymin: minimim value on y-axis
 ;;    ymax: maximum value on y-axis
 ;;    title: title in plot
-;;    label: labels to use in legend depending on scenarios
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -68,13 +68,13 @@ begin
 
   ;; 'diag_script' and 'variables' are fetched from the
   ;; above 'ncl.interface' file
-  info_output("++++++++++++++++++++++++++++++++++++++++++")
-  info_output(diag_script + " (var: " + variables(0) + ")")
-  info_output("++++++++++++++++++++++++++++++++++++++++++")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ;; 'models', 'variables' and 'field_types' are fetched from the
   ;; above 'ncl.interface' file
-  dim_MOD = dimsizes(models@name)
+  dim_MOD = dimsizes(model_info@model)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -92,12 +92,6 @@ begin
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", \
                                            "begin_ref_year", "end_ref_year"/))
-end
-
-; Load variable_info, delete?
-begin
-  vardeffile = "interface_data/" + var0 + "_info.tmp"
-  loadscript(vardeffile)
 end
 
 begin
@@ -130,7 +124,7 @@ begin
   end if
   if(isatt(variable_info, "long_name")) then
     MyParam = variable_info@long_name
-    info_output(" MyParam = " + MyParam, verbosity, 5)
+    log_debug(" MyParam = " + MyParam)
   else
     error_msg("f", diag_script, "", "missing variable attribute " + \
               "'long_name'")
@@ -138,10 +132,8 @@ begin
   ;;###########################################
   ;;# Get data and average annual and globally#
   ;;###########################################
-  ; Set model indexes
-  modidx = ispan(0, dim_MOD / 2 - 1, 1)
   ;; get data from first model for historical period
-  imod = modidx(0)  ; NCL array indices start from zero
+  imod = 0  ; NCL array indices start from zero
   log_debug("processing " + model_info@model(imod) + "_" \
             + model_info@exp(imod) + "_" + model_info@ensemble(imod))
 
@@ -321,7 +313,7 @@ begin
           A1 = read_data(imod60(ens), var0, field_type0)
         end do
       else
-	A1 = extract_data(imod60, var0, field_type0)
+	A1 = read_data(imod60, var0, field_type0)
       end if
       data3 = time_operations(A1, -1, -1, "average", "yearly", True)
       data3_glob = coswgt_areaave(data3)
@@ -344,11 +336,11 @@ begin
 		 model_info@exp .eq. diag_script_info@scenarios(3))
     if (.not.all(ismissing(imod85))) then
       if (dimsizes(imod85) .gt. 1) then
-	    do ens = 0, dimsizes(imod85) - 1
-		A1 = extract_data(imod85(ens), data, -1, 0, 0)
-	    end do
+        do ens = 0, dimsizes(imod85) - 1
+          A1 = read_data(imod85(ens), var0, field_type0)
+        end do
       else
-	    A1 = extract_data(imod85, data, -1, 0, 0)
+	    A1 = read_data(imod85, var0, field_type0)
       end if
       data3 = time_operations(A1, -1, -1, "average", "yearly", True)
       data3_glob = coswgt_areaave(data3)
@@ -424,6 +416,8 @@ begin
         p3 = toint(eyears(p)) - toint(syears(0))
         mean_val(scen + 1, p2 : p3) = mean_val@_FillValue
         std_val(scen + 1, p2 : p3) = std_val@_FillValue
+        log_info("Scenario " + runs(scen + 1) + " in period " + p + \
+                 "has less than 5 models, set to missing.")
       end if
     end do
   end do
@@ -489,7 +483,7 @@ begin
   runs@var_units     = 1
   ;log_debug(" ++++++++++++++ Variable summary of runs" + \
   ;          "(runs): " + printVarSummary(runs))
-  
+
   ;;###########################################
   ;;# Output to netCDF                        #
   ;;###########################################
