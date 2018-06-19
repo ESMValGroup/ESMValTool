@@ -173,6 +173,9 @@ def make_cube_layer_dict(cube):
         ]:
             cubes[''] = cube
         else:
+            coord_dim = cube.coord_dims('depth')[0]
             for l, layer in enumerate(depth.points):
-                cubes[layer] = cube[:, l]
+                slices = [slice(None) for i in cube.shape]
+                slices[coord_dim] = l
+                cubes[layer] = cube[tuple(slices)]
     return cubes
