@@ -3,6 +3,7 @@ import datetime
 import logging
 import logging.config
 import os
+import time
 
 import yaml
 
@@ -94,6 +95,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
                 handler['level'] = console_log_level.upper()
 
     logging.config.dictConfig(cfg)
+    logging.Formatter.converter = time.gmtime
 
     return log_files
 
