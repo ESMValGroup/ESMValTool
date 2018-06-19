@@ -324,7 +324,7 @@ begin
       end if
 
       ; Reduce dimensionality if no alternative model
-      if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
+      if (.not.l_altern .and. diag_script_info@metric(met).ne."taylor") then
         metric := metric(:, :, 0)
         delete(metric@reference)
       end if

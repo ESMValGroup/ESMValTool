@@ -200,7 +200,16 @@ class CMORCheck(object):
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
-                if self._cube.attributes[attr] != attr_value:
+                if attr not in self._cube.attributes:
+                    # It is usually missing in CMIP5 data, so we only report
+                    # a warning in that case
+                    if self._cmor_var.table_type == 'CMIP5':
+                        self.report_warning('{}: attribute {} not present',
+                                            self._cube.var_name, attr)
+                    else:
+                        self.report_error('{}: attribute {} not present',
+                                          self._cube.var_name, attr)
+                elif self._cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
                                       self._cube.attributes[attr])
@@ -378,7 +387,8 @@ class CMORCheck(object):
                 cf_units.Unit(
                     'days since 1950-01-01 00:00:00',
                     calendar=coord.units.calendar))
-            coord.units = cf_units.Unit(coord.units.name, coord.units.calendar)
+            simplified_cal = self._simplify_calendars(coord.units.calendar)
+            coord.units = cf_units.Unit(coord.units.name, simplified_cal)
 
         tol = 0.001
         intervals = {
@@ -410,6 +420,22 @@ class CMORCheck(object):
                 msg = '{}: Frequency {} does not match input data'
                 self.report_error(msg, var_name, self.frequency)
                 break
+
+    CALENDARS = [
+        ['gregorian', 'standard'],
+        ['proleptic_gregorian'],
+        ['365_day', 'noleap'],
+        ['366_day', 'all_leap'],
+        ['360_day'],
+        ['julian'],
+        ['none'],
+    ]
+
+    @staticmethod
+    def _simplify_calendars(calendar):
+        for calendar_type in CMORCheck.CALENDARS:
+            if calendar in calendar_type:
+                return calendar_type[0]
 
     def has_errors(self):
         """
