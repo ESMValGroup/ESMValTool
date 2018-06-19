@@ -136,7 +136,8 @@ def multiModelTimeSeries(
                 prefix='MultiModel',
                 suffix='_'.join(['timeseries', str(layer)]),
                 image_extention='png',
-                basenamelist=['field', 'short_name', 'start_year', 'end_year'],
+                basenamelist=['field', 'short_name', 'preprocessor',
+                              'diagnostic', 'start_year', 'end_year'],
             )
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
