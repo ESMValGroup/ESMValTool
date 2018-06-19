@@ -22,17 +22,6 @@
 ###############################################################################
 ---
 
-models:
-  - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-
-  - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
-  - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2081,  end_year: 2100}
-
 preprocessors:
   preprocessor_1:
     regrid: false
@@ -45,68 +34,95 @@ preprocessors:
     multi_model_statistics: false
 
 diagnostics:
-  tas_change_all_models:
-    description: Air temperature change for RCP45 for all models as maps.
-    variables:
-      tas:
-        preprocessor: preprocessor_1
-        mip: Amon
-        field: T2Ms
-    additional_models:
+#  tas_change_all_models:
+#    description: Air temperature change for RCP45 for all models as maps.
+#    variables:
+#      tas:
+#        preprocessor: preprocessor_1
+#        mip: Amon
+#        field: T2Ms
+#    additional_models:
+#      - {model: ACCESS1-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+#      - {model: ACCESS1-3,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+#      - {model: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+#      - {model: MPI-ESM-LR, project: CMIP5,  mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
 
-    scripts:
-      map_diff_each_model_ipcc12: &settings
-        script: collins13ipcc/map_diff_each_model_ipcc12.ncl
-        projection: Robinson
-        styleset: CMIP5
-        max_vert: 9
-        max_hori: 5
-        #title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
-        time_avg: annualclim
-        experiment: rcp45
-        ncdf: "_tas_each_model_1209.nc"
-        #colormap:
-        explicit_cn_levels: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
+#      - {model: ACCESS1-0,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+#      - {model: ACCESS1-3,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+#      - {model: GFDL-ESM2G, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+#      - {model: MPI-ESM-LR, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+
+#    scripts:
+#      map_diff_each_model_ipcc12: &settings
+#        script: collins13ipcc/map_diff_each_model_ipcc12.ncl
+#        projection: Robinson
+#        styleset: CMIP5
+#        max_vert: 9
+#        max_hori: 5
+#        #title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
+#        time_avg: annualclim
+#        experiment: rcp45
+#        ncdf: "_tas_each_model_1209.nc"
+#        #colormap:
+#        explicit_cn_levels: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
 
   ts_line:
     description: Prepare data for timeseries of multiple scenarios incl. spread
     variables:
       tas:
         preprocessor: preproc_time
-	mip: Amon
-	field: T2Ms
+        mip: Amon
+        field: T2Ms
     additional_models:
-        - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-        - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-        - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-        - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}	
-        - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+      - {model: ACCESS1-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: ACCESS1-3,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: CCSM4,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: CESM1-CAM5,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: CSIRO-Mk3-6-0,project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: GFDL-ESM2G,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1861, end_year: 2005}
+      - {model: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: MIROC5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
+      - {model: MPI-ESM-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 2005}
 
-        - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
-        - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
-        - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+#      - {model: CCSM4,        project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+#      - {model: CESM1-CAM5,   project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+      - {model: CSIRO-Mk3-6-0,project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: GFDL-ESM2G,   project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: IPSL-CM5A-LR, project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+      - {model: MIROC5,       project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: MPI-ESM-LR,   project: CMIP5, exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
 
-        - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
-        - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
-        - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
-	- {model: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
-        - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
-	
-        - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp60,  ensemble: r1i1p1,  start_year: 208106,  end_year: 2100}
-        - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: ACCESS1-0,    project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: ACCESS1-3,    project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+#      - {model: CCSM4,        project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2299}
+      - {model: GFDL-ESM2G,   project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: IPSL-CM5A-LR, project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+      - {model: MIROC5,       project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: MPI-ESM-LR,   project: CMIP5, exp: rcp45,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
 
-        - {model: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
-        - {model: ACCESS1-3,   project: CMIP5,  mip: Amon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
-        - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
-        - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+#      - {model: CCSM4,        project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+#      - {model: CESM1-CAM5,   project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: CSIRO-Mk3-6-0,project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}   
+      - {model: GFDL-ESM2G,   project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: IPSL-CM5A-LR, project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: MIROC5,       project: CMIP5, exp: rcp60,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+
+      - {model: ACCESS1-0,   project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: ACCESS1-3,   project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+#      - {model: CCSM4,       project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
+#      - {model: CESM1-CAM5,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: GFDL-ESM2G,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: MIROC5,      project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2100}
+      - {model: MPI-ESM-LR,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
 
     scripts:
-      ts_line_collins_ipcc_ch12: &settings
-      script: collins13ipcc/ts_line_collins_ipcc_ch12.ncl
-      styleset: CMIP5
-      scenarios: ["rcp26", "rcp45", "rcp60", "rcp85"]
-      syears: [1950, 2006, 2101]
-      eyears: [2005, 2100, 2300]
-      begin_ref_year: 1986
-      end_ref_year: 2005
-      
+      ts_line_collins_ipcc_ch12: &ts_settings
+        script: collins13ipcc/ts_line_collins_ipcc_ch12.ncl
+        styleset: CMIP5
+        scenarios: [rcp26, rcp45, rcp60, rcp85]
+        syears: [1850, 2006, 2101]
+        eyears: [2005, 2100, 2300]
+        begin_ref_year: 1986
+        end_ref_year: 2005
+        label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
+        ncdf: "tas_ts_line.nc"
