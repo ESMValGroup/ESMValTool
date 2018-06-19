@@ -44,7 +44,10 @@ def mapPlots(
 
         qplt.contourf(c, 25)
 
-        plt.gca().coastlines()
+        try:
+            plt.gca().coastlines()
+        except AttributeError:
+            print('Not able to add coastlines')
 
         # Add title to plot
         title = ' '.join([md['model'], md['long_name']])
