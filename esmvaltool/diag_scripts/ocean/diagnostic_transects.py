@@ -18,30 +18,30 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def determine_transect_str(cube):
-    options = ['latitude','longitude']
+    options = ['latitude', 'longitude']
     for o in options:
         coord = cube.coord(o)
-        if len(coord.points) > 1: 
+        if len(coord.points) > 1:
             continue
         value = coord.points.mean()
         if o == 'latitude':
-            return str(value)+' N'
+            return str(value) + ' N'
         if o == 'longitude':
             if value > 180.:
-                return str(value-360.)+' W' 
-            return str(value)+' E' 
+                return str(value - 360.) + ' W'
+            return str(value) + ' E'
     return ''
-    
-    
+
+
 def transectsPlots(
         cfg,
         md,
         fn,
-    ):
+):
     """
         This function makes a simple plot for an indivudual model.
         The cfg is the opened global config,
-        md is the metadata dictionairy 
+        md is the metadata dictionairy
         fn is the preprocessing model file.
         """
     # Load cube and set up units
@@ -54,10 +54,12 @@ def transectsPlots(
     # Make a dict of cubes for each layer.
 
     qplt.contourf(cube, 25)
-    plt.axes().set_yscale('log') 
-    
+    plt.axes().set_yscale('log')
+
     # Add title to plot
-    title = ' '.join([md['model'], md['long_name'], determine_transect_str(cube)])
+    title = ' '.join(
+        [md['model'], md['long_name'],
+         determine_transect_str(cube)])
     plt.title(title)
 
     # Determine png filename:
@@ -115,4 +117,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-        

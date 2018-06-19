@@ -67,7 +67,7 @@ def _compute_statistic(datas, name):
         statistic_function = np.ma.mean
     else:
         raise NotImplementedError
-              
+
     # no plevs
     if len(datas[0].shape) < 3:
         # get all NOT fully masked data - u_data
@@ -116,7 +116,7 @@ def _put_in_cube(template_cube, cube_data, stat_name,
     lons = template_cube.coord('longitude')
 
     # no plevs
-    
+
     if len(template_cube.shape) == 3:
         cspec = [(times, 0), (lats, 1), (lons, 2)]
     # plevs
@@ -124,13 +124,13 @@ def _put_in_cube(template_cube, cube_data, stat_name,
         plev = template_cube.coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
     elif len(template_cube.shape) == 1:
-        cspec = [(times, 0),]
+        cspec = [(times, 0), ]
     elif len(template_cube.shape) == 2:
         # If you're going to hardwire air_pressure into this,
         # might as well have depth here too.
         plev = template_cube.coord('depth')
-        cspec = [(times, 0), (plev, 1),]     
-        
+        cspec = [(times, 0), (plev, 1), ]
+
     # correct dspec if necessary
     fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
     # put in cube

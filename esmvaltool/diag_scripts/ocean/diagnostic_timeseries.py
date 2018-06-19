@@ -21,11 +21,11 @@ def TimeSeriesPlots(
         cfg,
         md,
         fn,
-    ):
+):
     """
         This function makes a simple plot for an indivudual model.
         The cfg is the opened global config,
-        md is the metadata dictionairy 
+        md is the metadata dictionairy
         fn is the preprocessing model file.
         """
     # Load cube and set up units
@@ -81,7 +81,7 @@ def TimeSeriesPlots(
 def multiModelTimeSeries(
         cfg,
         metadata,
-    ):
+):
     """
         This method makes a time series plot showing several models.
         This function makes a simple plot for an indivudual model.

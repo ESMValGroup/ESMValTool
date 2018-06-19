@@ -54,7 +54,7 @@ horizontal_schemes = dict(
     unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest', 'nearest_extrap','linear_extrap']
+vertical_schemes = ['linear', 'nearest', 'nearest_extrap', 'linear_extrap']
 
 
 def _stock_cube(spec):
@@ -321,7 +321,8 @@ def vinterp(src_cube, levels, scheme):
         raise ValueError(emsg)
 
     if scheme not in vertical_schemes:
-        emsg = 'Unknown vertical interpolation scheme, got {!r}. Possible schemes are: {!r}'
+        emsg = 'Unknown vertical interpolation scheme, got {!r}. '
+        emsg += 'Possible schemes: {!r}'
         raise ValueError(emsg.format(scheme, list(vertical_schemes)))
 
     # This allows us to put level 0. to load the ocean surface.
@@ -333,7 +334,7 @@ def vinterp(src_cube, levels, scheme):
     if scheme == 'linear_extrap':
         scheme = 'linear'
         extrap_scheme = 'nearest'
-        
+
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
 

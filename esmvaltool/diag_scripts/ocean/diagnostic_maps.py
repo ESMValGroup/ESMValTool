@@ -21,11 +21,11 @@ def mapPlots(
         cfg,
         md,
         fn,
-    ):
+):
     """
         This function makes a simple plot for an indivudual model.
         The cfg is the opened global config,
-        md is the metadata dictionairy 
+        md is the metadata dictionairy
         fn is the preprocessing model file.
         """
     # Load cube and set up units
@@ -43,10 +43,9 @@ def mapPlots(
         layer = str(layer)
 
         qplt.contourf(c, 25)
-        
-        try:plt.gca().coastlines()
-        except:pass
-        
+
+        plt.gca().coastlines()
+
         # Add title to plot
         title = ' '.join([md['model'], md['long_name']])
         if layer:

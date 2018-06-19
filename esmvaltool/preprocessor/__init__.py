@@ -59,7 +59,7 @@ __all__ = [
     # Grid-point operations
     'depth_integration',
     'average_region',
-    'average_volume',    
+    'average_volume',
     'time_average',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
@@ -287,4 +287,3 @@ class PreprocessingTask(AbstractTask):
         if self._input_files is not None:
             txt += '\ninput_files: {}'.format(self._input_files)
         return txt
-        

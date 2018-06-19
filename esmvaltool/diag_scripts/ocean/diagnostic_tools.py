@@ -41,7 +41,7 @@ def get_input_files(cfg, index=0):
 
 def sensibleUnits(cube, name):
     """
-    Convert the cubes into some friendlier units for the range of 
+    Convert the cubes into some friendlier units for the range of
     values typically seen in BGC.
     """
 
@@ -68,55 +68,61 @@ def sensibleUnits(cube, name):
 
     return cube
 
+
 def timecoord_to_float(times):
     """
        converts an iris time coordinate into a list of floats.
     """
     dtimes = times.units.num2date(times.points)
     floattimes = []
-    daysperyear= 365.25
+    daysperyear = 365.25
     for dt in dtimes:
-        floattime = dt.year + dt.dayofyr/daysperyear + dt.hour/(24.*daysperyear)
+        floattime = dt.year + dt.dayofyr / daysperyear + dt.hour / (
+            24. * daysperyear)
         if dt.minute:
-            floattime+= dt.minute /(24.*60.*daysperyear)
+            floattime += dt.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
     return floattimes
 
-        
-    
-def add_legend_outside_right(plotDetails,ax1):
-        """
+
+def add_legend_outside_right(plotDetails, ax1):
+    """
            Add a legend outside the plot, to the right.
-           PlotDetails is a 2 level dict, where the first level is some key (which is hidden)
+           PlotDetails is a 2 level dict,
+           where the first level is some key (which is hidden)
            and the 2nd level contains the keys:
                'c': color
                'lw': line width
                'label': label for the legend.
            ax1 is the axis where the plot was drawn.
         """
-        #####
-        # Create dummy axes:
-        legendSize = len(plotDetails.keys())+1
-        ncols = int(legendSize/25)+1
-        box = ax1.get_position()
-        ax1.set_position([box.x0,
-                          box.y0 ,
-                          box.width*(1.-0.1*ncols),
-                          box.height ])
-                          
-        # Add emply plots to dummy axis.
-        for i in sorted(plotDetails.keys()):
-                
-                plt.plot([], [], c=plotDetails[i]['c'], 
-                           lw = plotDetails[i]['lw'], 
-                           ls = plotDetails[i]['ls'],                            
-                           label=plotDetails[i]['label'])
+    #####
+    # Create dummy axes:
+    legendSize = len(plotDetails.keys()) + 1
+    ncols = int(legendSize / 25) + 1
+    box = ax1.get_position()
+    ax1.set_position(
+        [box.x0, box.y0, box.width * (1. - 0.1 * ncols), box.height])
 
-        legd = ax1.legend(loc='center left', ncol=ncols,prop={'size':10},bbox_to_anchor=(1., 0.5))
-        legd.draw_frame(False)
-        legd.get_frame().set_alpha(0.)
+    # Add emply plots to dummy axis.
+    for i in sorted(plotDetails.keys()):
 
-    
+        plt.plot(
+            [], [],
+            c=plotDetails[i]['c'],
+            lw=plotDetails[i]['lw'],
+            ls=plotDetails[i]['ls'],
+            label=plotDetails[i]['label'])
+
+    legd = ax1.legend(
+        loc='center left',
+        ncol=ncols,
+        prop={'size': 10},
+        bbox_to_anchor=(1., 0.5))
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+
+
 def get_image_path(cfg,
                    md,
                    prefix='',
@@ -124,7 +130,8 @@ def get_image_path(cfg,
                    image_extention='png',
                    basenamelist=[
                        'project', 'model', 'mip', 'exp', 'ensemble', 'field',
-                       'short_name', 'preprocessor','diagnostic', 'start_year', 'end_year'
+                       'short_name', 'preprocessor', 'diagnostic',
+                       'start_year', 'end_year'
                    ]):
     """
         This produces a path to the final location of the image.
@@ -145,8 +152,8 @@ def get_image_path(cfg,
 
 def make_cube_layer_dict(cube):
     """
-        This method takes a cube and return a dictionairy with a cube for each layer 
-        as it's own item. ie:
+        This method takes a cube and return a dictionairy
+        with a cube for each layer as it's own item. ie:
           cubes[depth] = cube from specific layer
         Also, cubes with no depth component are returns as:
           cubes[''] = cube with no depth component.
