@@ -120,7 +120,7 @@ Observations and reformat scripts
 References
 ----------
 
-* Li, G. and S.-P. Xie (2014), Tropical Biases in CMIP5 Multimodel Ensemble: The Excessive Equatorial Pacific Cold Tongue and Double ITCZ Problems. J. Climate, 27, 1765-1780. doi: http://dx.doi.org/10.1175/JCLI-D-13-00337.1.
+* Li, G. and S.-P. Xie (2014), Tropical Biases in CMIP5 Multimodel Ensemble: The Excessive Equatorial Pacific Cold Tongue and Double ITCZ Problems. J. Climate, 27, 1765-1780. doi: https://doi.org/10.1175/JCLI-D-13-00337.1.
 
 
 Example plots

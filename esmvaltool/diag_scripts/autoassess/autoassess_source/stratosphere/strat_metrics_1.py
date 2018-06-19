@@ -130,7 +130,12 @@ def plot_qbo(cube, filename):
     levels = np.arange(-80, 81, 10)
     title = 'QBO'
     fig = plt.figure(figsize=(12, 6))
-    plot_timehgt(cube, levels, title, log=True)
+    # perform a check on iris version
+    # plot_timehgt will not work correctly
+    # for iris<2.1
+    ivlist = iris.__version__.split('.')
+    if float('.'.join([ivlist[0], ivlist[1]])) >= 2.1:
+        plot_timehgt(cube, levels, title, log=True)
     fig.savefig(filename)
     plt.close()
 
@@ -647,13 +652,15 @@ def multi_qbo_plot(runs):
     ax1 = plt.gca()
     # Plot control
     qbo30_cntl = iris.load_cube(cntlfile)
-    iplt.plot(qbo30_cntl, label=run_cntl.id)
-    # Plot experiments
-    for run_expt in run_expts:
-        exptfile = exptfiles[run_expt.id]
-        if os.path.exists(exptfile):
-            qbo30_expt = iris.load_cube(exptfile)
-            iplt.plot(qbo30_expt, label=run_expt.id)
+    ivlist = iris.__version__.split('.')
+    if float('.'.join([ivlist[0], ivlist[1]])) >= 2.1:
+        iplt.plot(qbo30_cntl, label=run_cntl.id)
+        # Plot experiments
+        for run_expt in run_expts:
+            exptfile = exptfiles[run_expt.id]
+            if os.path.exists(exptfile):
+                qbo30_expt = iris.load_cube(exptfile)
+                iplt.plot(qbo30_expt, label=run_expt.id)
     ax1.set_title('QBO at 30hPa')
     ax1.set_xlabel('Time', fontsize='small')
     ax1.set_ylabel('U (m/s)', fontsize='small')

@@ -287,7 +287,7 @@ workflows:
             branches:
               only:
                 - version2_development
-		- version2_master
+                - version2_master
     jobs:
       - python3_test
       - python2_test
