@@ -287,8 +287,32 @@ preprocessors:
       coord1: longitude
       coord2: latitude
                   
+  # --------------------------------------------------
+  # Depth-profile preprocessors
+  # --------------------------------------------------
+  prep_depth_integration_1: # For a 2D map global profile
+    fix_data:     
+    fix_metadata: 
+    depth_integration:
+      coordz: depth
+    time_average:      
+
+       
      
 diagnostics:
+  # --------------------------------------------------
+  # Depth integrated diagnostics
+  # --------------------------------------------------  
+  diag_depthInt_1:
+    description: Global Ocean Surface mean timeseries
+    variables:       
+      thetao: # Temperature ocean 
+        preprocessor: prep_depth_integration_1      
+        field: TO3M
+    scripts:
+      Global_Ocean_DepthIntegration_map: &Global_Ocean_DepthIntegration_map
+        script: ocean/diagnostic_maps.py
+        
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------  

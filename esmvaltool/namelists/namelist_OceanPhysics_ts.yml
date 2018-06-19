@@ -64,7 +64,7 @@ models:
  
   
 preprocessors:
-  preprocessor1: # For 2D fields
+  prep_timeseries_1: # For 2D fields
     fix_metadata: 
     average_region:               
       coord1: longitude
@@ -73,7 +73,7 @@ preprocessors:
       span: overlap
       statistics: [mean ]
       
-  preprocessor2: # For specific levels of 3D fields
+  prep_timeseries_2: # For specific levels of 3D fields
     fix_data:
     fix_metadata:  
     extract_levels:
@@ -86,7 +86,7 @@ preprocessors:
       span: overlap
       statistics: [mean ]
       
-  preprocessor3: # For regional fields
+  prep_timeseries_3: # For regional fields
     fix_data:
     fix_metadata:
     extract_region:
@@ -101,7 +101,7 @@ preprocessors:
       span: overlap
       statistics: [mean ]
             
-  preprocessor4: # For regional fields at depth
+  prep_timeseries_4: # For regional fields at depth
     fix_data:
     fix_metadata:
     extract_levels:
@@ -118,9 +118,8 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-      
 
-  preprocessor5: # For Global Volume Averaged
+  prep_timeseries_5: # For Global Volume Averaged
     fix_data:
     fix_metadata:
     average_volume:               
@@ -131,7 +130,7 @@ preprocessors:
       span: overlap
       statistics: [mean ]
             
-  preprocessor6: # For regional volume averaged
+  prep_timeseries_6: # For regional volume averaged
     fix_data:
     fix_metadata:
     extract_region:
@@ -147,7 +146,7 @@ preprocessors:
       span: overlap
       statistics: [mean ]      
 
-  preprocessor7: # For regional volume averaged (at the surface)
+  prep_timeseries_7: # For regional volume averaged (at the surface)
     fix_data:
     fix_metadata:
     extract_volume:
@@ -165,12 +164,13 @@ preprocessors:
       span: overlap
       statistics: [mean ]   
       
+      
 diagnostics:
   diagnostic1:
     description: Global Ocean Surface mean timeseries
     variables:       
       tos: # Temperature ocean surface
-        preprocessor: preprocessor1      
+        preprocessor: prep_timeseries_1      
         field: TO2Ms
     scripts:
       Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries
@@ -180,7 +180,7 @@ diagnostics:
     description: Global Ocean Depth Layers mean timeseries
     variables:       
       thetao: # Temperature ocean 3D
-        preprocessor: preprocessor2
+        preprocessor: prep_timeseries_2
         field: TO3M
     scripts:
       Global_Ocean_DepthLayers_mean_timeseries: &Global_Ocean_DepthLayers_mean_timeseries
@@ -190,7 +190,7 @@ diagnostics:
     description: Regional scale surface diagnostics
     variables:       
       tos: # Temperature ocean surface
-        preprocessor: preprocessor3      
+        preprocessor: prep_timeseries_3      
         field: TO2Ms             
     scripts:
       Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
@@ -200,7 +200,7 @@ diagnostics:
     description: Regional scale diagnostics
     variables:       
       thetao: # Temperature ocean 3D
-        preprocessor: preprocessor4
+        preprocessor: prep_timeseries_4
         field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
@@ -210,7 +210,7 @@ diagnostics:
     description: Global Volume average diagnostics
     variables:       
       thetao: # Temperature ocean 3D
-        preprocessor: preprocessor5
+        preprocessor: prep_timeseries_5
         field: TO3M
     scripts:
       Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
@@ -220,7 +220,7 @@ diagnostics:
     description: Regional Volume average diagnostics
     variables:       
       thetao: # Temperature ocean 3D
-        preprocessor: preprocessor6
+        preprocessor: prep_timeseries_6
         field: TO3M               
     scripts:
       Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
@@ -230,7 +230,7 @@ diagnostics:
     description: Regional Volume to 100m depth average diagnostics 
     variables:       
       thetao: # Temperature ocean 3D averaged over top 100m
-        preprocessor: preprocessor7
+        preprocessor: prep_timeseries_7
         field: TO3M               
     scripts:
       Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
