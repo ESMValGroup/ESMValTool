@@ -194,15 +194,16 @@ def main(cfg):
             ax.plot(data_ecs, data_tas_piC, linestyle='none',
                     markeredgecolor=style['color'],
                     markerfacecolor=style['facecolor'],
-                    marker=style['mark'], markersize=6, label=model)
+                    marker=style['mark'], markersize=6, label='_'+model)
 
         # Options
         ax.set_title("GMSAT vs. ECS for CMIP5 models")
         ax.set_xlabel(VARS.ECS.standard_name + " / " + VARS.ECS.units)
         ax.set_ylabel(VARS.TAS.standard_name + " / " + VARS.TAS.units)
         ax.set_xlim(1.5, 5.0)
-        legend = ax.legend(loc='upper left',
-                           bbox_to_anchor=(1.05, 1.0), borderaxespad=0.0)
+        legend = ax.legend(loc='center left',
+                           bbox_to_anchor=(1.05, 0.5), borderaxespad=0.0,
+                           ncol=2)
 
         # Save plot
         filename = 'ch09_fig09-42a.' + cfg['output_file_type']
