@@ -200,7 +200,16 @@ class CMORCheck(object):
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
-                if self._cube.attributes[attr] != attr_value:
+                if attr not in self._cube.attributes:
+                    # It is usually missing in CMIP5 data, so we only report
+                    # a warning in that case
+                    if self._cmor_var.table_type == 'CMIP5':
+                        self.report_warning('{}: attribute {} not present',
+                                            self._cube.var_name, attr)
+                    else:
+                        self.report_error('{}: attribute {} not present',
+                                          self._cube.var_name, attr)
+                elif self._cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
                                       self._cube.attributes[attr])
@@ -233,14 +242,7 @@ class CMORCheck(object):
     def _check_dim_names(self):
         for (axis, coordinate) in self._cmor_var.coordinates.items():
             if coordinate.generic_level:
-                var_name = 'generic_level'
-                if self._cube.coords(axis, dim_coords=True):
-                    cube_coord = self._cube.coord(axis, dim_coords=True)
-                    if not cube_coord.standard_name:
-                        self.report_error(self._does_msg, var_name,
-                                          'have standard_name')
-                else:
-                    self.report_error(self._does_msg, var_name, 'exist')
+                continue
             else:
                 try:
                     cube_coord = self._cube.coord(var_name=coordinate.out_name)
@@ -420,10 +422,10 @@ class CMORCheck(object):
                 break
 
     CALENDARS = [
-        ['standard', 'gregorian'],
+        ['gregorian', 'standard'],
         ['proleptic_gregorian'],
-        ['noleap', '365_day'],
-        ['all_leap', '366_day'],
+        ['365_day', 'noleap'],
+        ['366_day', 'all_leap'],
         ['360_day'],
         ['julian'],
         ['none'],

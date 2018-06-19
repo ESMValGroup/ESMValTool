@@ -19,15 +19,26 @@ class TestAll(unittest.TestCase):
                 [0, 1],
                 standard_name='time',
                 units=Unit(
-                    'days since 0001-01-01 00:00:00', calendar='standard')), 0)
+                    'days since 0001-01-01 00:00:00.0000000 UTC',
+                    calendar='gregorian')),
+            0)
         self.fix = allvars()
 
-    def test_fix_data(self):
+    def test_fix_metadata(self):
         cube = self.fix.fix_metadata(self.cube)
 
         time = cube.coord('time')
         self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'standard')
+        self.assertEqual(time.units.calendar, 'gregorian')
+
+    def test_fix_metadata_good_units(self):
+        self.cube.coord('time').units = Unit('days since 1950-01-01 00:00:00',
+                                             calendar='gregorian')
+        cube = self.fix.fix_metadata(self.cube)
+
+        time = cube.coord('time')
+        self.assertEqual(time.units.origin, 'days since 1950-01-01 00:00:00')
+        self.assertEqual(time.units.calendar, 'gregorian')
 
 
 class TestCo2(unittest.TestCase):
@@ -51,21 +62,24 @@ class TestNbp(unittest.TestCase):
         """Prepare temp folder for test"""
         shutil.rmtree(self.temp_folder)
 
-    def test_fix_data(self):
+    def test_fix_file(self):
         """Test fix on nbp files to set correct missing and fill values"""
         temp_handler, temp_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
         os.close(temp_handler)
         output_dir = os.path.join(self.temp_folder, 'fixed')
 
         dataset = netCDF4.Dataset(temp_path, "w")
-        var = dataset.createVariable('nbp', float, fill_value=1.0e20)
+        dataset.createDimension('dim', 1)
+        var = dataset.createVariable('nbp', float, dimensions=('dim',),
+                                     fill_value=1.0e20)
         var.missing_value = 1.0e20
+        var[0] = 1.0
         dataset.close()
 
         new_file = self.fix.fix_file(temp_path, output_dir)
 
-        self.assertNotEqual(os.path.realpath(temp_path),
-                            os.path.realpath(new_file))
+        self.assertNotEqual(
+            os.path.realpath(temp_path), os.path.realpath(new_file))
 
         dataset = netCDF4.Dataset(new_file)
         var = dataset.variables['nbp']
