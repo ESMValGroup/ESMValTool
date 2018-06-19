@@ -26,7 +26,8 @@ class Test(tests.Test):
         self.mock_create_cube = self.patch(
             'esmvaltool.preprocessor._regrid._create_cube',
             return_value=self.created_cube)
-        self.vinterp_schemes = ['linear', 'nearest']
+        self.vinterp_schemes = ['linear', 'nearest',
+                                'nearest_extrap', 'linear_extrap']
 
     def test_nop(self):
         cube = mock.sentinel.cube
