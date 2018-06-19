@@ -143,7 +143,7 @@ def process_namelist(namelist_file, config_user):
 
     logger.info(
         "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
-       __version__, timestamp1.strftime(timestamp_format))
+        __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
     logger.info("NAMELIST   = %s", namelist_file)
