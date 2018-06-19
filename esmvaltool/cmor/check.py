@@ -237,11 +237,11 @@ class CMORCheck(object):
                 var_name = 'generic_level'
                 if self._cube.coords(axis, dim_coords=True):
                     cube_coord = self._cube.coord(axis, dim_coords=True)
-                    if not cube_coord.standard_name:
-                        self.report_error(self._does_msg, var_name,
-                                          'have standard_name')
-                else:
-                    self.report_error(self._does_msg, var_name, 'exist')
+#                    if not cube_coord.standard_name:
+#                        # self.report_error(self._does_msg, var_name, 
+#                        #                  'have standard_name')
+#                else:
+#                    # self.report_error(self._does_msg, var_name, 'exist in '+str(axis))
             else:
                 try:
                     cube_coord = self._cube.coord(var_name=coordinate.out_name)
@@ -508,7 +508,7 @@ def _get_cmor_checker(table,
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
-
+    print ('var_info', mip, short_name, table)
     def _checker(cube):
         return CMORCheck(
             cube,
