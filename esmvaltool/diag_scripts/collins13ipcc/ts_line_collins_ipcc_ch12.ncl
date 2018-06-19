@@ -202,27 +202,30 @@ begin
                    data1_glob@_FillValue)
   i26 = 0
 
-  ;; How many rcp4.5 model runs?
-  ind_45 = ind(model_info@exp .eq. diag_script_info@scenarios(1))
-  dim_MOD_45 = dimsizes(model_info@model(ind_45))
-  data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
-                   data1_glob@_FillValue)
-  i45 = 0
-                   
-  ;; How many rcp6.0 model runs?
-  ind_60 = ind(model_info@exp .eq. diag_script_info@scenarios(2))
-  dim_MOD_60 = dimsizes(model_info@model(ind_60))
-  data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
-                   data1_glob@_FillValue)
-  i60 = 0
-                   
-  ;; How many rcp8.5 model runs?
-  ind_85 = ind(model_info@exp .eq. diag_script_info@scenarios(3))
-  dim_MOD_85 = dimsizes(model_info@model(ind_85))
-  data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
-                   data1_glob@_FillValue)
-  i85 = 0
-
+  if (dim_scen .gt. 1) then
+    ;; How many rcp4.5 model runs?
+    ind_45 = ind(model_info@exp .eq. diag_script_info@scenarios(1))
+    dim_MOD_45 = dimsizes(model_info@model(ind_45))
+    data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
+                     data1_glob@_FillValue)
+    i45 = 0
+  end if
+  if (dim_scen .gt. 2) then
+    ;; How many rcp6.0 model runs?
+    ind_60 = ind(model_info@exp .eq. diag_script_info@scenarios(2))
+    dim_MOD_60 = dimsizes(model_info@model(ind_60))
+    data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
+                     data1_glob@_FillValue)
+    i60 = 0
+  end if
+  if (dim_scen .gt. 3) then
+    ;; How many rcp8.5 model runs?
+    ind_85 = ind(model_info@exp .eq. diag_script_info@scenarios(3))
+    dim_MOD_85 = dimsizes(model_info@model(ind_85))
+    data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
+                     data1_glob@_FillValue)
+    i85 = 0
+  end if
   i = 0
   do imod = 0, dim_MOD_hist - 1
     if (imod .eq. 0) then
@@ -395,18 +398,6 @@ begin
   datahist_avg = dim_avg_n_Wrap(data2_rel, 0)
   datahist_std = dim_stddev_n_Wrap(data2_rel, 0)
 
-  data26_avg = dim_avg_n_Wrap(data26_rel, 0)
-  data26_std = dim_stddev_n_Wrap(data26_rel, 0)
-
-  data45_avg = dim_avg_n_Wrap(data45_rel, 0)
-  data45_std = dim_stddev_n_Wrap(data45_rel, 0)
-
-  data60_avg = dim_avg_n_Wrap(data60_rel, 0)
-  data60_std = dim_stddev_n_Wrap(data60_rel, 0)
-
-  data85_avg = dim_avg_n_Wrap(data85_rel, 0)
-  data85_std = dim_stddev_n_Wrap(data85_rel, 0)
-
   ;; put all data from 1850-2100 into mean_val and std_val
   mean_val = new((/dim_scen + 1, nyears/), typeof(data2_rel), \
                  data2_rel@_FillValue)
@@ -417,14 +408,29 @@ begin
   mean_val(0, 0 : p0) = datahist_avg
   std_val(0, 0 : p0) = datahist_std
 
+  data26_avg = dim_avg_n_Wrap(data26_rel, 0)
+  data26_std = dim_stddev_n_Wrap(data26_rel, 0)
   mean_val(1, p1 :) = data26_avg
   std_val(1, p1 :) = data26_std
-  mean_val(2, p1 :) = data45_avg
-  std_val(2, p1 :) = data45_std
-  mean_val(3, p1 :) = data60_avg
-  std_val(3, p1 :) = data60_std
-  mean_val(4, p1 :) = data85_avg
-  std_val(4, p1 :) = data85_std
+
+  if (dim_scen .gt. 1) then
+    data45_avg = dim_avg_n_Wrap(data45_rel, 0)
+    data45_std = dim_stddev_n_Wrap(data45_rel, 0)
+    mean_val(2, p1 :) = data45_avg
+    std_val(2, p1 :) = data45_std    
+  end if
+  if (dim_scen .gt. 2) then
+    data60_avg = dim_avg_n_Wrap(data60_rel, 0)
+    data60_std = dim_stddev_n_Wrap(data60_rel, 0)
+    mean_val(3, p1 :) = data60_avg
+    std_val(3, p1 :) = data60_std
+  end if
+  if (dim_scen .gt. 3) then
+    data85_avg = dim_avg_n_Wrap(data85_rel, 0)
+    data85_std = dim_stddev_n_Wrap(data85_rel, 0)
+    mean_val(4, p1 :) = data85_avg
+    std_val(4, p1 :) = data85_std
+  end if
 
   ;; check number of models for timeperiods in scenarios
   ;; if there are less than 5 models set to missing
