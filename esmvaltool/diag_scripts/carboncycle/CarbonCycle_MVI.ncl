@@ -35,23 +35,20 @@
 ;;#############################################################################
 load "./interface_data/ncl.interface"
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
-load "./interface_scripts/constants.ncl"
+load "./interface_scripts/interface.ncl"
 
-load "./diag_scripts/lib/ncl/latlon.ncl"
-load "./diag_scripts/lib/ncl/statistics.ncl"
-load "./diag_scripts/lib/ncl/regridding.ncl"
-load "./diag_scripts/lib/ncl/scaling.ncl"
-load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "./diag_scripts/shared/latlon.ncl"
+load "./diag_scripts/shared/statistics.ncl"
+load "./diag_scripts/shared/regridding.ncl"
+load "./diag_scripts/shared/scaling.ncl"
+load "./diag_scripts/shared/meta_data.ncl"
 
 load "./plot_scripts/ncl/scatterplot.ncl"
 
 begin
 
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
-    enter_msg(diag_script, "", 2)
+    enter_msg(diag_script, "")
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
@@ -86,10 +83,7 @@ begin
     diag_script_base = basename(diag_script)
 
     ;; Define file type
-    file_type = getenv("ESMValTool_output_file_type")
-    if(ismissing(file_type)) then
-        file_type = "ps"
-    end if
+    file_type = confic_user_info@output_file_type
 
     ;; Check required diag_script_info attributes
     req_atts = (/"grid", "region", "ref_model"/)
@@ -107,9 +101,8 @@ begin
     region = select_region(diag_script_info@region)
 
     ;; Output plot directory
-    plot_dir = getenv("ESMValTool_plot_dir")
-    output_dir = get_output_dir(plot_dir, diag_script_base)
-
+    output_dir = confic_user_info@plot_dir
+    
     ;; Set time range
     start_year = min(stringtoint(models@start_year))
     end_year = max(stringtoint(models@end_year))
@@ -431,6 +424,6 @@ begin
     delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)
 
-    leave_msg(diag_script, "", 2)
+    leave_msg(diag_script, "")
 
 end
