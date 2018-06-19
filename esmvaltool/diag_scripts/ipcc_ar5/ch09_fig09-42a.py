@@ -3,7 +3,7 @@
 
 """
 ###############################################################################
-flato13ipcc/fig9-42a.py
+ipcc_ar5/ch09_fig09-42a.py
 Author: Manuel Schlund (DLR, Germany)
 CRESCENDO project
 ###############################################################################
@@ -205,7 +205,7 @@ def main(cfg):
                            bbox_to_anchor=(1.05, 1.0), borderaxespad=0.0)
 
         # Save plot
-        filename = 'flato13_fig9-42a.' + cfg['output_file_type']
+        filename = 'ch09_fig09-42a.' + cfg['output_file_type']
         filepath = os.path.join(cfg['plot_dir'], filename)
         fig.savefig(filepath, additional_artists=[legend],
                     bbox_inches='tight', orientation='landscape')
