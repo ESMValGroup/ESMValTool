@@ -53,7 +53,7 @@ class TestSave(unittest.TestCase):
     def test_save_zlib(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], zlib=True)
+        paths = _io.save_cubes([cube], compress=True)
         loaded_cube = iris.load_cube(paths[0])
         self.assertTrue((cube.data == loaded_cube.data).all())
         self.assertTrue((cube.coord('latitude').points ==
