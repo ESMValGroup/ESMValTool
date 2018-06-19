@@ -72,7 +72,7 @@ preprocessors:
     fix_metadata: 
     depth_integration:
       coordz: depth
-      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
+#      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
     time_average:  
     
 

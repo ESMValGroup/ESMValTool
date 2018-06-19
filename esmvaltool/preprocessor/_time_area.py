@@ -190,7 +190,7 @@ def volume_average(mycube, coordz, coord1, coord2, ):
     
 
 # get the depth integration
-def depth_integration(mycube, coordz, new_units ):
+def depth_integration(mycube, coordz):
     """
     Determine the total sum over the vertical component.
 
