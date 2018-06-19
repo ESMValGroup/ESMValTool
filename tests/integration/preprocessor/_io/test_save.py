@@ -65,7 +65,6 @@ class TestSave(unittest.TestCase):
         handler.variables['sample']
         handler.close()
 
-
     def test_save_debug(self):
         """Test save on debug mode"""
         cube = self._create_sample_cube()
