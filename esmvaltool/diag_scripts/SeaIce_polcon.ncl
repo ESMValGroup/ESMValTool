@@ -52,7 +52,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "./interface_data/ncl.interface"
+;load "./interface_data/ncl.interface"
 load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/calc_seasonal.ncl"
