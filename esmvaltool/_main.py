@@ -4,6 +4,7 @@ http://www.esmvaltool.org
 
 CORE DEVELOPMENT TEAM AND CONTACTS:
   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
