@@ -85,7 +85,8 @@ diagnostics:
         legend_year_outside: true
         sort: true
         styleset: CMIP5
-        region: Global              
+        region: Global
+        grid: 2deg
       mvi_nh: &mvi_nh
         <<: *mvi_glob
         region: Norther Hemisphere                
