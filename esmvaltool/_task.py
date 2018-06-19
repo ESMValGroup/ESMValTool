@@ -1,6 +1,7 @@
 """ESMValtool task definition"""
 import contextlib
 import datetime
+import errno
 import logging
 import os
 import pprint
@@ -387,12 +388,21 @@ class DiagnosticTask(AbstractTask):
         rerun_msg += ' ' + ' '.join(cmd)
         logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            cwd=cwd,
-            env=env)
+        try:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=cwd,
+                env=env)
+        except OSError as exc:
+            if exc.errno == errno.ENOEXEC:
+                logger.error(
+                    "Diagnostic script has its executable bit set, but is "
+                    "not executable. To fix this run:\nchmod -x %s", cmd[0])
+                logger.error(
+                    "You may also need to fix this in the git repository.")
+            raise
 
         returncode = None
         last_line = ['']
