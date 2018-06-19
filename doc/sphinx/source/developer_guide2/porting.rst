@@ -84,7 +84,7 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``info_output(arg1, arg2, arg3)``               | ``log_info(arg1)`` if ``arg3=1``                    | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``info_output(arg1, arg2, arg3)``               | ``debug_info(arg1)`` if ``arg3>1``                  | all .ncl scripts |
+| ``info_output(arg1, arg2, arg3)``               | ``log_debug(arg1)`` if ``arg3>1``                   | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``verbosity = config_user_info@verbosity``      | remove this statement                               | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
@@ -120,6 +120,8 @@ The new ESMValTool version includes a completely revised interface, handling the
 | ``load diag_scripts/lib/ncl/styles/``           | ``load diag_scripts/shared/plot/styles``            | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load diag_scripts/shared/plot/misc_function.ncl`` | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                | some yml nmls    |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 
 The following changes shall also be considered:
