@@ -53,8 +53,8 @@ diagnostics:
 #      - {model: MPI-ESM-LR, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
 
 #    scripts:
-#      map_diff_each_model_ipcc12: &settings
-#        script: collins13ipcc/map_diff_each_model_ipcc12.ncl
+#      ch12_map_diff_each_model_fig12-9: &settings
+#        script: ipcc_ar5/ch12_map_diff_each_model_fig12-9.ncl
 #        projection: Robinson
 #        styleset: CMIP5
 #        max_vert: 9
@@ -116,8 +116,8 @@ diagnostics:
       - {model: MPI-ESM-LR,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2300}
 
     scripts:
-      ts_line_collins_ipcc_ch12: &ts_settings
-        script: collins13ipcc/ts_line_collins_ipcc_ch12.ncl
+      ch12_ts_line_mean_spread: &ts_settings
+        script: ipcc_ar5/ch12_ts_line_mean_spread.ncl
         styleset: CMIP5
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         syears: [1850, 2006, 2101]
@@ -126,3 +126,26 @@ diagnostics:
         end_ref_year: 2005
         label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
         ncdf: "tas_ts_line.nc"
+        diagscript: "ch12_ts_line_mean_spread"
+        title: "Global surface temperature change (~S~o~N~ C)"
+        colormap: ipcc_color_tseries.rgb
+        yaxis: "(~S~o~N~ C)"
+        ymin: -2
+        ymax: 12
+        model_nr: False
+
+  plot_ts_line:
+    description: Plot timeseries of multiple scenarios incl. spread
+    scripts:
+      ch12_plot_ts_line_mean_spread: &ts_plot_settings
+        script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+        ancestors: ['*/ch12_ts_line_mean_spread']
+        ncdf: "tas_ts_line.nc"
+        diagscript: "ch12_ts_line_mean_spread"
+        label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
+        title: "Global surface temperature change (~S~o~N~ C)"
+        colormap: ipcc_color_tseries.rgb
+        yaxis: "(~S~o~N~ C)"
+        ymin: -2
+        ymax: 12
+        model_nr: False

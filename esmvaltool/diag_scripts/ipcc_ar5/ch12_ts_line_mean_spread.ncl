@@ -284,7 +284,6 @@ begin
                model_info@model(imod) + " found in scenario " + \
                diag_script_info@scenarios(0) + \
                ", cannot calculate relative change.")
-      data26_rel(i26, :) = data3_glob@_FillValue
     end if
     delete(imod26)
 
@@ -318,7 +317,6 @@ begin
                  model_info@model(imod) + " found in scenario " + \
                  diag_script_info@scenarios(1) + \
                  ", cannot calculate relative change.")
-        data45_rel(i45, :) = data3_glob@_FillValue
       end if
       delete(imod45)
     end if
@@ -353,7 +351,6 @@ begin
                  model_info@model(imod) + " found in scenario " + \
                  diag_script_info@scenarios(2) + \
                  ", cannot calculate relative change.")
-        data60_rel(i60, :) = data3_glob@_FillValue
       end if
       delete(imod60)
     end if
@@ -388,7 +385,6 @@ begin
                  model_info@model(imod) + " found in scenario " + \
                  diag_script_info@scenarios(3) + \
                  ", cannot calculate relative change, set to missing.")
-        data85_rel(i85, :) = data3_glob@_FillValue
       end if
       delete(imod85)
     end if
