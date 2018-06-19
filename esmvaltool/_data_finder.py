@@ -60,7 +60,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, j):
+def replace_tags(path, variable, j=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -123,20 +123,16 @@ def get_input_dirname_template(variable, rootpath, drs):
     _drs = drs.get(project, 'default')
     input_dir = cfg['input_dir']
     if isinstance(input_dir, six.string_types):
-        dir2 = replace_tags(input_dir, variable, 0)
+        dir2 = replace_tags(input_dir, variable)
     elif _drs in input_dir:
-        try:
-            insts = cmip5_model2inst(variable['model'])
-        except KeyError as msg:
-            logger.debug('CMIP5 model2inst: %s', msg)
-            insts = 0
+        insts = cmip5_model2inst(variable['model'])
         dirs2 = []
         if isinstance(insts, list):
             for j in range(len(insts)):
                 dir2 = replace_tags(input_dir[_drs], variable, j)
                 dirs2.append(dir2)
         else:
-            dir2 = replace_tags(input_dir[_drs], variable, 0)
+            dir2 = replace_tags(input_dir[_drs], variable)
             dirs2.append(dir2)
     else:
         raise KeyError(
@@ -187,7 +183,7 @@ def _get_filename(variable, drs):
             raise KeyError(
                 'drs {} for {} project not specified for input_file '
                 'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable, 0)
+    filename = replace_tags(input_file, variable)
     return filename
 
 
@@ -237,7 +233,7 @@ def get_output_file(variable, preproc_dir):
     outfile = os.path.join(
         preproc_dir,
         '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        replace_tags(cfg['output_file'], variable, 0) + '.nc')
+        replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
