@@ -1,15 +1,10 @@
 """Python example diagnostic."""
-import inspect
 import logging
 import os
 import sys
 
 import iris
-import iris.quickplot as qplt
 import matplotlib.pyplot as plt
-import yaml
-
-from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -27,7 +22,7 @@ def folder(name):
         name = name + '/'
     if os.path.exists(name) is False:
         os.makedirs(name)
-        logger.info('Making new directory:', name)
+        logger.info('Making new directory:' + str(name))
     return name
 
 

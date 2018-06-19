@@ -214,8 +214,6 @@ def depth_integration(mycube, coordz):
     Returns a cube 2D.
     """
 
-    from cf_units import Unit
-
     depth = mycube.coord(coordz)
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]  # 1D
 
@@ -248,9 +246,6 @@ def extract_slice(mycube, latitude=None, longitude=None):
     A range may also be extracted using a minimum and maximum
     value for latitude or longitude.
     """
-
-    from iris.analysis.trajectory import interpolate
-    import numpy as np
 
     second_coord = False
     lats = mycube.coord('latitude')

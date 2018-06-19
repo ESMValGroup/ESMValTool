@@ -1,5 +1,4 @@
 """Python example diagnostic."""
-import inspect
 import logging
 import os
 import sys
@@ -7,7 +6,6 @@ import sys
 import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
-import yaml
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -81,9 +79,6 @@ def mapPlots(
 
 def main(cfg):
     #####
-
-    input_files = diagtools.get_input_files(cfg)
-
     print('cfg:\tContents:')
     for k in cfg.keys():
         print('CFG:\t', k, '\t', cfg[k])
