@@ -26,6 +26,7 @@
 ;;    in order to have a consistent land mask for all models.
 ;;
 ;; Modification history
+;;    20180619-A_wenz_sa: adopted script to v2
 ;;    20151130-A_laue_ax: moved call to write_references to beginning of code
 ;;    20151104-A_righ_ma: graphic part moved to external plot_scripts.
 ;;    20151102-A_righ_ma: replacing area functions with ESMValTool functions.
@@ -36,6 +37,7 @@
 load "./interface_data/ncl.interface"
 
 load "./interface_scripts/interface.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
@@ -47,18 +49,18 @@ load "./plot_scripts/ncl/scatterplot.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@log_level
     enter_msg(diag_script, "")
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-    info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity)
+    info_output(diag_script + " (var: " + variables(0) + ")", verbosity)
+    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(models_info@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
 
-    ;; Read models data
+    ;; Read models_info data
     data = True
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
@@ -104,8 +106,8 @@ begin
     output_dir = confic_user_info@plot_dir
     
     ;; Set time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(models_info@start_year))
+    end_year = max(stringtoint(models_info@end_year))
     all_years = ispan(start_year, end_year, 1)
 
     ;; Regrid to destination grid
@@ -150,20 +152,20 @@ begin
     ;; Loop over models and regrid
     do imod = 0, dim_MOD - 1
 
-        info_output("Processing " + models@name(imod), verbosity, 1)
+        info_output("Processing " + models_info@name(imod), verbosity)
 
         ;; Extract model corresponding data
         var  = extract_data_extended(imod, var0, data, -1, 0, 0)
 
         ;; Computing annual mean
-        data_annual = time_operations(var, toint(models@start_year(imod)), \
-                                      toint(models@end_year(imod)), "average",\
+        data_annual = time_operations(var, toint(models_info@start_year(imod)), \
+                                      toint(models_info@end_year(imod)), "average",\
                                       "yearly", True)
 
         ;; Place array in model specific time range
-        idx1 = start_year - toint(models@start_year(imod))
+        idx1 = start_year - toint(models_info@start_year(imod))
         idx2 = dimsizes(all_years) - \
-            (end_year - toint(models@end_year(imod))) - 1
+            (end_year - toint(models_info@end_year(imod))) - 1
 
         ;; If lat and lon are 2D arrays, assume irregular grid
         if (dimsizes(dimsizes(var&lat)).ge.2 .and. \
@@ -177,7 +179,7 @@ begin
                 regrid_3D_to_rectilinear_grid(data_annual, var&lon, var&lat, \
                                               grid_resolution, "", True)
         end if
-        all_data_yearly&model = models@name
+        all_data_yearly&model = models_info@name
 
         ;; Cleaning up
         delete(var)
@@ -186,23 +188,23 @@ begin
     end do  ; end loop over models
 
     ;; Compute annual mean, MVI, trend
-    MVI_all_data&model = models@name
+    MVI_all_data&model = models_info@name
     MVI_all_data&lat = all_data_yearly&lat
     MVI_all_data&lon = all_data_yearly&lon
     MVI_all_data@_FillValue = 1.e20
 
-    Trend_all_data&model = models@name
+    Trend_all_data&model = models_info@name
     Trend_all_data&lat = all_data_yearly&lat
     Trend_all_data&lon = all_data_yearly&lon
     Trend_all_data@_FillValue = 1.e20
 
     ;; Determine reference model and compute MVI
-    ref_ind = ind(models@name.eq.diag_script_info@ref_model)
+    ref_ind = ind(models_info@name.eq.diag_script_info@ref_model)
     if (ismissing(ref_ind)) then
         error_msg("f", diag_script, "", "no adequate reference model provided")
     end if
 
-    info_output("Reference model: " + models@name(ref_ind), verbosity, 1)
+    info_output("Reference model: " + models_info@name(ref_ind), verbosity)
     reference = all_data_yearly(ref_ind, :, :, :)
     ref = dim_stddev_n(reference, 0)
     ref = where(ref.ne.0, ref, all_data_yearly@_FillValue)
@@ -251,7 +253,7 @@ begin
     all_annual_mean!1 = "lat"
     all_annual_mean!2 = "lon"
 
-    all_annual_mean&model = models@name
+    all_annual_mean&model = models_info@name
     all_annual_mean&lat = all_data_yearly&lat
     all_annual_mean&lon = all_data_yearly&lon
     all_annual_mean@units = all_data_yearly@units
@@ -259,15 +261,15 @@ begin
 
     Mean_var = new((/dim_MOD/), typeof(all_annual_mean))
     Mean_var!0 = "model"
-    Mean_var&model = models@name
+    Mean_var&model = models_info@name
 
     Trend_var = new((/dim_MOD/), typeof(all_annual_mean))
     Trend_var!0 = "model"
-    Trend_var&model = models@name
+    Trend_var&model = models_info@name
 
     MVI_var = new((/dim_MOD/), typeof(all_annual_mean))
     MVI_var!0 = "model"
-    MVI_var&model = models@name
+    MVI_var&model = models_info@name
 
     ;; Compute global area
     area = map_area(all_annual_mean&lat, all_annual_mean&lon)
@@ -333,7 +335,7 @@ begin
     end if
 
     ;; Optional output to NetCDF
-    if (getenv("ESMValTool_write_netcdf").eq."True") then
+    if (config_user_info@write_netcdf.eq."True") then
 
         ;; Mean
         new_path = get_output_dir(get_work_dir(), basename(diag_script))
@@ -379,7 +381,7 @@ begin
     data_arr!0 = "statistic"
     data_arr!1 = "models"
     data_arr&statistic = (/"mean", "linear trend", "MVI"/)
-    data_arr&models = models@name
+    data_arr&models = models_info@name
     data_arr@units = (/Mean_var@units, Trend_var@units, "1"/)
 
     ;; Set levels for the color coding
@@ -396,11 +398,7 @@ begin
     draw(plot)
     frame(wks)
     
-    ;; Attach Metadata to plot
-    xml_name = getenv("ESMValTool_xml_name")
-    suffix = get_file_suffix(xml_name, 0)
-    base_name = str_sub_str(xml_name, suffix, "")
-    
+    ;; Attach Metadata to plot    
     alltags = array_append_record(tags, region@DM_tag, 0)
     alltags := array_append_record(alltags,\
            (/"PT_scatter", "PT_zonal", "ST_mean", "ST_trend", \
@@ -408,18 +406,18 @@ begin
     caption =  "Scatterplot for multiyear average " + variables(0) + \
                " in x axis, its linear trend in y axis, and MVI." + \
                " Like Anav et al. Fig 1 bottom"
-    id = diag_script + "_" + base_name
-    climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+    id = diag_script
+    climofiles = new(dimsizes(models_info@name) * dimsizes(variables), string)
     do n_var = 0, dimsizes(variables) - 1
-        do imod = 0, dimsizes(models@name) - 1
-            climofiles(n_var * dimsizes(models@name) + imod) = \
+        do imod = 0, dimsizes(models_info@name) - 1
+            climofiles(n_var * dimsizes(models_info@name) + imod) = \
                         interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(n_var), field_types(n_var), imod)
         end do
     end do
     contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
-    ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models_info@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)

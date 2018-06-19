@@ -69,7 +69,7 @@ diagnostics:
         preprocessor: ppAtmos
         field: T2Ms
         mip: Amon
-        ref_model: CRU
+        reference_model: CRU
     additional_models:
       - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
       - {model: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -106,7 +106,7 @@ diagnostics:
 #        preprocessor: ppAtmos
 #        field: T2Ms
 #        mip: Amon
-#        ref_model: CRU
+#        reference_model: CRU
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -134,7 +134,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: JMA-TRANSCOM
+#        reference_model: JMA-TRANSCOM
 #    additional_models:
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -171,7 +171,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: MTE
+#        reference_model: MTE
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -198,7 +198,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: MTE
+#        reference_model: MTE
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -225,7 +225,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: LAI3gk
+#        reference_model: LAI3gk
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -253,7 +253,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: LAI3g
+#        reference_model: LAI3g
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -280,7 +280,7 @@ diagnostics:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: HWSD
+#        reference_model: HWSD
 #        additional_models:
 #          - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #          - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -291,7 +291,7 @@ diagnostics:
 #        preprocessor: ppAll
 #        field: T2Ms
 #        mip: Lmon
-#        ref_model: NDP
+#        reference_model: NDP
 #        additional_models:
 #          - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #          - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -341,7 +341,7 @@ diagnostics:
 #  DIAG_gradtasglob:
 #    description: Grading precalculations
 #    variables:
-#     - {model: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: tas,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocessor: ppGrading
 #    scripts:
 #      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
@@ -360,9 +360,9 @@ diagnostics:
 #  DIAG_gradprglob:
 #    description: Grading precalculations
 #    variables:
-#     - {model: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: pr,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -382,9 +382,9 @@ diagnostics:
 #  DIAG_gradGPPglob:
 #    description: Grading precalculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -402,9 +402,9 @@ diagnostics:
 #  DIAG_gradMTEglob:
 #    description: Grading calculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -422,9 +422,9 @@ diagnostics:
 #  DIAG_gradLAIglob:
 #    description: Grading precalculations
 #    variables:
-#     - {model: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+#     - {model: lai,  reference_model: LAI3g,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -443,9 +443,9 @@ diagnostics:
 #  DIAG_gradNBPglob:
 #    description: Grading precalculations
 #    variables:
-#      - {model: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+#      - {model: nbp,  reference_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -471,9 +471,9 @@ diagnostics:
 #  DIAG_gradtastrop:
 #    description: Grading precalculations
 #    variables:
-#     - {model: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: tas,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -493,9 +493,9 @@ diagnostics:
 #  DIAG_gradprtrop:
 #    description: Grading precalculations
 #    variables:
-#     - {model: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: pr,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -515,9 +515,9 @@ diagnostics:
 #  DIAG_gradGPPtrop:
 #    description: Grading precalculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -535,9 +535,9 @@ diagnostics:
 #  DIAG_gradMTEtrop:
 #    description: Grading calculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -555,9 +555,9 @@ diagnostics:
 #  DIAG_gradLAItrop:
 #    description: Grading precalculations
 #    variables:
-#     - {model: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+#     - {model: lai,  reference_model: LAI3g,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -576,9 +576,9 @@ diagnostics:
 #  DIAG_gradNBPtrop:
 #    description: Grading precalculations
 #    variables:
-#      - {model: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+#      - {model: nbp,  reference_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -603,9 +603,9 @@ diagnostics:
 #  DIAG_gradtasNH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: tas,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -625,9 +625,9 @@ diagnostics:
 #  DIAG_gradprNH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: pr,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -647,9 +647,9 @@ diagnostics:
 #  DIAG_gradGPPNH:
 #    description: Grading precalculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -667,9 +667,9 @@ diagnostics:
 #  DIAG_gradMTENH:
 #    description: Grading calculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -687,9 +687,9 @@ diagnostics:
 #  DIAG_gradLAINH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+#     - {model: lai,  reference_model: LAI3g,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -708,9 +708,9 @@ diagnostics:
 #  DIAG_gradNBPNH:
 #    description: Grading precalculations
 #    variables:
-#      - {model: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+#      - {model: nbp,  reference_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -735,9 +735,9 @@ diagnostics:
 #  DIAG_gradtasSH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: tas,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -757,9 +757,9 @@ diagnostics:
 #  DIAG_gradprSH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+#     - {model: pr,  reference_model: CRU,  mip: Amon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -779,9 +779,9 @@ diagnostics:
 #  DIAG_gradGPPSH:
 #    description: Grading precalculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -799,9 +799,9 @@ diagnostics:
 #  DIAG_gradMTESH:
 #    description: Grading calculations
 #    variables:
-#      - {model: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+#      - {model: gpp,  reference_model: MTE,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -819,9 +819,9 @@ diagnostics:
 #  DIAG_gradLAISH:
 #    description: Grading precalculations
 #    variables:
-#     - {model: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+#     - {model: lai,  reference_model: LAI3g,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
@@ -840,9 +840,9 @@ diagnostics:
 #  DIAG_gradNBPSH:
 #    description: Grading precalculations
 #    variables:
-#      - {model: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+#      - {model: nbp,  reference_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
 #    preprocess:
-#      target_grid:    ref_model
+#      target_grid:    reference_model
 #      regrid_scheme:  linear
 #      mask_fillvalue: True
 #    scripts:
