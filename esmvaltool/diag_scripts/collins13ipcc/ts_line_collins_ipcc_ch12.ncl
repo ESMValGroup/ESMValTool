@@ -281,104 +281,114 @@ begin
                model_info@model(imod) + " found in scenario " + \
                diag_script_info@scenarios(0) + \
                ", cannot calculate relative change.")
+      data26_rel(i26, :) = data3_glob@_FillValue
     end if
     delete(imod26)
 
-    imod45 = ind(model_info@model .eq. model_info@model(imod) .and. \
-		 model_info@exp .eq. diag_script_info@scenarios(1))
-    if (.not.all(ismissing(imod45))) then
-      if (dimsizes(imod45) .gt. 1) then
-        do ens = 0, dimsizes(imod45) - 1
-          A1 = read_data(imod45(ens), var0, field_type0)
-        end do
+    if (dim_scen .gt. 1) then
+      imod45 = ind(model_info@model .eq. model_info@model(imod) .and. \
+                   model_info@exp .eq. diag_script_info@scenarios(1))
+      if (.not.all(ismissing(imod45))) then
+        if (dimsizes(imod45) .gt. 1) then
+          do ens = 0, dimsizes(imod45) - 1
+            A1 = read_data(imod45(ens), var0, field_type0)
+          end do
+        else
+          A1 = read_data(imod45, var0, field_type0)
+        end if
+        data3 = time_operations(A1, -1, -1, "average", "yearly", True)
+        data3_glob = coswgt_areaave(data3)
+        dim_data3g = dimsizes(data3_glob)
+        if (dim_data3g .ne. nyearsp1) then
+          data45_rel(i45, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
+          data45_rel(i45, dim_data3g:) =  data3_glob@_FillValue
+        else
+          data45_rel(i45, :) = data3_glob - ref_data2(imod)
+        end if
+        i45 = i45 + 1
+        ;; clean up
+        delete(A1)
+        delete(data3)
+        delete(data3_glob)
       else
-        A1 = read_data(imod45, var0, field_type0)
+        log_info("No corresponding model ensemble for historial run " + \
+                 model_info@model(imod) + " found in scenario " + \
+                 diag_script_info@scenarios(1) + \
+                 ", cannot calculate relative change.")
+        data45_rel(i45, :) = data3_glob@_FillValue
       end if
-      data3 = time_operations(A1, -1, -1, "average", "yearly", True)
-      data3_glob = coswgt_areaave(data3)
-      dim_data3g = dimsizes(data3_glob)
-      if (dim_data3g .ne. nyearsp1) then
-        data45_rel(i45, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
-        data45_rel(i45, dim_data3g:) =  data3_glob@_FillValue
-      else
-        data45_rel(i45, :) = data3_glob - ref_data2(imod)
-      end if
-      i45 = i45 + 1
-      ;; clean up
-      delete(A1)
-      delete(data3)
-      delete(data3_glob)
-    else
-      log_info("No corresponding model ensemble for historial run " + \
-               model_info@model(imod) + " found in scenario " + \
-               diag_script_info@scenarios(1) +\
-               ", cannot calculate relative change.")      
+      delete(imod45)
     end if
-    delete(imod45)
+    
+    if (dim_scen .gt. 2) then
+      imod60 = ind(model_info@model .eq. model_info@model(imod) .and. \
+  		   model_info@exp .eq. diag_script_info@scenarios(2))
+      if (.not.all(ismissing(imod60))) then
+        if (dimsizes(imod60) .gt. 1) then
+          do ens = 0, dimsizes(imod60) - 1
+            A1 = read_data(imod60(ens), var0, field_type0)
+          end do
+        else
+  	  A1 = read_data(imod60, var0, field_type0)
+        end if
+        data3 = time_operations(A1, -1, -1, "average", "yearly", True)
+        data3_glob = coswgt_areaave(data3)
+        dim_data3g = dimsizes(data3_glob)
+        if (dim_data3g .ne. nyearsp1) then
+          data60_rel(i60, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
+          data60_rel(i60, dim_data3g :) =  data3_glob@_FillValue
+        else
+  	  data60_rel(i60, :) = data3_glob - ref_data2(imod)
+        end if
+        i60 = i60 + 1
+        ;; clean up
+        delete(A1)
+        delete(data3)
+        delete(data3_glob)
+      else
+        log_info("No corresponding model ensemble for historial run " + \
+                 model_info@model(imod) + " found in scenario " + \
+                 diag_script_info@scenarios(2) + \
+                 ", cannot calculate relative change.")
+        data60_rel(i60, :) = data3_glob@_FillValue
+      end if
+      delete(imod60)
+    end if
 
-    imod60 = ind(model_info@model .eq. model_info@model(imod) .and. \
-		 model_info@exp .eq. diag_script_info@scenarios(2))
-    if (.not.all(ismissing(imod60))) then
-      if (dimsizes(imod60) .gt. 1) then
-        do ens = 0, dimsizes(imod60) - 1
-          A1 = read_data(imod60(ens), var0, field_type0)
-        end do
+    if (dim_scen .gt. 3) then
+      imod85 = ind(model_info@model .eq. model_info@model(imod) .and. \
+                   model_info@exp .eq. diag_script_info@scenarios(3))
+      if (.not.all(ismissing(imod85))) then
+        if (dimsizes(imod85) .gt. 1) then
+          do ens = 0, dimsizes(imod85) - 1
+            A1 = read_data(imod85(ens), var0, field_type0)
+          end do
+        else
+          A1 = read_data(imod85, var0, field_type0)
+        end if
+        data3 = time_operations(A1, -1, -1, "average", "yearly", True)
+        data3_glob = coswgt_areaave(data3)
+        dim_data3g = dimsizes(data3_glob)
+        if (dim_data3g .ne. nyearsp1) then
+          data85_rel(i85, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
+          data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
+        else
+          data85_rel(i85, :) = data3_glob - ref_data2(imod)
+        end if
+        i85 = i85 + 1
+        ;; clean up
+        delete(A1)
+        delete(data3)
+        delete(data3_glob)
       else
-	A1 = read_data(imod60, var0, field_type0)
+        log_info("No corresponding model ensemble for historial run " + \
+                 model_info@model(imod) + " found in scenario " + \
+                 diag_script_info@scenarios(3) + \
+                 ", cannot calculate relative change, set to missing.")
+        data85_rel(i85, :) = data3_glob@_FillValue
       end if
-      data3 = time_operations(A1, -1, -1, "average", "yearly", True)
-      data3_glob = coswgt_areaave(data3)
-      dim_data3g = dimsizes(data3_glob)
-      if (dim_data3g .ne. nyearsp1) then
-        data60_rel(i60, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
-        data60_rel(i60, dim_data3g :) =  data3_glob@_FillValue
-      else
-	data60_rel(i60, :) = data3_glob - ref_data2(imod)
-      end if
-      i60 = i60 + 1
-      ;; clean up
-      delete(A1)
-      delete(data3)
-      delete(data3_glob)
-    else
-      log_info("No corresponding model ensemble for historial run " + \
-               model_info@model(imod) + " found in scenario " + \
-               diag_script_info@scenarios(2) + \
-               ", cannot calculate relative change.")            
+      delete(imod85)
     end if
-    delete(imod60)
-
-    imod85 = ind(model_info@model .eq. model_info@model(imod) .and. \
-		 model_info@exp .eq. diag_script_info@scenarios(3))
-    if (.not.all(ismissing(imod85))) then
-      if (dimsizes(imod85) .gt. 1) then
-        do ens = 0, dimsizes(imod85) - 1
-          A1 = read_data(imod85(ens), var0, field_type0)
-        end do
-      else
-        A1 = read_data(imod85, var0, field_type0)
-      end if
-      data3 = time_operations(A1, -1, -1, "average", "yearly", True)
-      data3_glob = coswgt_areaave(data3)
-      dim_data3g = dimsizes(data3_glob)
-      if (dim_data3g .ne. nyearsp1) then
-        data85_rel(i85, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
-        data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
-      else
-        data85_rel(i85, :) = data3_glob - ref_data2(imod)
-      end if
-      i85 = i85 + 1
-      ;; clean up
-      delete(A1)
-      delete(data3)
-      delete(data3_glob)
-    else
-      log_info("No corresponding model ensemble for historial run " + \
-               model_info@model(imod) + " found in scenario " + \
-               diag_script_info@scenarios(3) + \
-               ", cannot calculate relative change.")      
-    end if
-    delete(imod85)
   end do  ; imod
 
   ;; average and standard deviation over all models
