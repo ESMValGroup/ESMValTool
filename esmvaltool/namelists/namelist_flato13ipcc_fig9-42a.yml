@@ -107,5 +107,5 @@ diagnostics:
             # - {model: HadCRUT4,   project: OBS, type: ground, version: 1, start_year: 1950, end_year: 2005, tier: 2}
         scripts:
             fig9-42a:
-                script: flato13ipcc/fig9-42a.py
+                script: ipcc_ar5/ch09_fig09-42a.py
                 plot_ecs_regression: True
