@@ -85,7 +85,7 @@ def timecoord_to_float(times):
     return floattimes
 
 
-def add_legend_outside_right(plotDetails, ax1):
+def add_legend_outside_right(plotDetails, ax1, column_width=0.1):
     """
            Add a legend outside the plot, to the right.
            PlotDetails is a 2 level dict,
@@ -102,7 +102,7 @@ def add_legend_outside_right(plotDetails, ax1):
     ncols = int(legendSize / 25) + 1
     box = ax1.get_position()
     ax1.set_position(
-        [box.x0, box.y0, box.width * (1. - 0.1 * ncols), box.height])
+        [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
 
     # Add emply plots to dummy axis.
     for i in sorted(plotDetails.keys()):
