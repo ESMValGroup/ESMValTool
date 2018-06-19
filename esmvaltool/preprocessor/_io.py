@@ -99,7 +99,7 @@ def _save_cubes(cubes, **args):
     return filename
 
 
-def save_cubes(cubes, debug=False, step=None):
+def save_cubes(cubes, compress=False, debug=False, step=None):
     """Save iris cubes to the file specified in the _filename attribute."""
     paths = {}
     for cube in cubes:
@@ -122,7 +122,7 @@ def save_cubes(cubes, debug=False, step=None):
     for filename in paths:
         # _save_cubes(cubes=paths[filename], target=filename,
         #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename)
+        _save_cubes(cubes=paths[filename], target=filename, zlib=compress)
 
     return list(paths)
 

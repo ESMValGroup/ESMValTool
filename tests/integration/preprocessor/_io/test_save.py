@@ -6,6 +6,7 @@ import unittest
 import os
 import tempfile
 import numpy as np
+import netCDF4
 import iris
 from iris.cube import Cube
 from iris.coords import DimCoord
@@ -48,6 +49,22 @@ class TestSave(unittest.TestCase):
         self.assertTrue((cube.data == loaded_cube.data).all())
         self.assertTrue((cube.coord('latitude').points ==
                          loaded_cube.coord('latitude').points).all())
+
+    def test_save_zlib(self):
+        """Test save"""
+        cube = self._create_sample_cube()
+        paths = _io.save_cubes([cube], zlib=True)
+        loaded_cube = iris.load_cube(paths[0])
+        self.assertTrue((cube.data == loaded_cube.data).all())
+        self.assertTrue((cube.coord('latitude').points ==
+                         loaded_cube.coord('latitude').points).all())
+        handler = netCDF4.Dataset(paths[0], 'r')
+        self.assertTrue(handler.variables['sample'].filters()['zlib'])
+        self.assertTrue(handler.variables['sample'].filters()['shuffle'])
+        self.assertEqual(handler.variables['sample'].filters()['complevel'], 4)
+        handler.variables['sample']
+        handler.close()
+
 
     def test_save_debug(self):
         """Test save on debug mode"""
