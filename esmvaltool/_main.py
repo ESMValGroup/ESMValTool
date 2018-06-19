@@ -138,11 +138,11 @@ def process_namelist(namelist_file, config_user):
                       namelist_file)
 
     timestamp1 = datetime.datetime.utcnow()
-    timestamp_format = "%Y-%m-%d --  %H:%M:%S"
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
 
     logger.info(
-        "Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
-        __version__, timestamp1.strftime(timestamp_format))
+        "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
+       __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
     logger.info("NAMELIST   = %s", namelist_file)
@@ -173,7 +173,7 @@ def process_namelist(namelist_file, config_user):
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
     logger.info(
-        "Ending the Earth System Model Evaluation Tool v%s at time: %s",
+        "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp2.strftime(timestamp_format))
     logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
 
