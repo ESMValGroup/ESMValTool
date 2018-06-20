@@ -17,24 +17,23 @@ class TestNaming(unittest.TestCase):
 
         Files can not differ from a reserved name by the extension only
         """
-        RESERVED_NAMES = {'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3',
+        reserved_names = {'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3',
                           'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
                           'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6',
                           'LPT7', 'LPT8', 'LPT9'}
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             error_msg = 'Reserved name found at {}'.format(dirpath)
-            self.assertTrue(RESERVED_NAMES.isdisjoint(dirnames), error_msg)
-            self.assertTrue(RESERVED_NAMES.isdisjoint(filenames), error_msg)
+            self.assertTrue(reserved_names.isdisjoint(dirnames), error_msg)
+            self.assertTrue(reserved_names.isdisjoint(filenames), error_msg)
             without_extensions = (os.path.splitext(filename)[0]
                                   for filename in filenames)
-            self.assertTrue(RESERVED_NAMES.isdisjoint(without_extensions),
+            self.assertTrue(reserved_names.isdisjoint(without_extensions),
                             error_msg)
 
-    def test_avoid_names_differing_only_case(self):
+    def test_avoid_case_related_collisions(self):
         """
-        Check that there are no folder or files that only differ in the
-        capitalization
+        Check that there are no names differing only in the capitalization
 
         This includes folders differing from files
         """
