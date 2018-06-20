@@ -88,5 +88,5 @@ def quickplot(cube, filename, plot_type, **kwargs):
     plot_function = getattr(iris.quickplot, plot_type)
     fig = plt.figure()
     plot_function(cube, **kwargs)
-    plt.gca().coastlines()
+    # plt.gca().coastlines()
     fig.savefig(filename)
