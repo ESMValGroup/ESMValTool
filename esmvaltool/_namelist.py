@@ -482,7 +482,7 @@ def _get_input_fx_files(variable, config_user):
         fx_files[fx_var] = get_input_fx_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
-            drs=config_user['drs'], fx_var=fx_var)
+            drs=config_user['drs'])
         logger.info("Using fx input files for variable %s of model %s:\n%s",
                     variable['short_name'], variable['model'],
                     fx_files[fx_var])

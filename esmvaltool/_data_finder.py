@@ -195,6 +195,7 @@ def get_input_fx_filename(variable, rootpath, drs):
 
     This function should match the function get_input_filelist below.
     """
+    files = []
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
     for j, dirname_template in zip(range(len(dirname_templates)),
                                    dirname_templates):
@@ -280,7 +281,7 @@ def get_input_filelist(variable, rootpath, drs):
     return files
 
 
-def get_input_fx_filelist(variable, rootpath, drs, fx_var):
+def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
     fx_files = {}
