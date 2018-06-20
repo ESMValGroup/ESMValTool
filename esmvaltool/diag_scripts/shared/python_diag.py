@@ -100,7 +100,7 @@ class Variables(object):
         self._dict = {}
 
         # Add variables from cfg file
-        if (cfg is not None):
+        if cfg is not None:
             success = True
             if isinstance(cfg, dict):
                 data = cfg.get(INPUT_DATA)
@@ -117,21 +117,18 @@ class Variables(object):
                     success = False
             else:
                 success = False
-            if (not success):
-                logger.warning("{} is not a valid ".format(repr(cfg)) +
-                               "configuration file!")
+            if not success:
+                logger.warning("%s{} is not a valid configuration file!", cfg)
 
         # Add costum variables
         for name in names:
             attr = Variable(*names[name])
             self._add_to_dict(name, attr)
-        if (not self._dict):
+        if not self._dict:
             logger.warning("No variables found!")
 
     def __repr__(self):
-        """Representation of the class.
-
-        """
+        """Representation of the class."""
         return repr(self.short_names())
 
     def _add_to_dict(self, name, attr):
@@ -145,8 +142,8 @@ class Variables(object):
             All other information of the variable.
 
         """
-        if (name not in self._dict):
-            logger.debug("Added variable '{}' to collection".format(name))
+        if name not in self._dict:
+            logger.debug("Added variable '%s' to collection", name)
         setattr(self, name, name)
         setattr(self, name.upper(), attr)
         self._dict[name] = attr
@@ -225,7 +222,7 @@ class Models(object):
             Configuation dictionary of the namelist.
 
         """
-
+        self._iter_counter = 0
         self._paths = []
         self._data = {}
         success = True
@@ -234,7 +231,7 @@ class Models(object):
             if isinstance(input_data, dict):
                 for path in input_data:
                     model_info = input_data[path]
-                    if (not isinstance(model_info, dict)):
+                    if not isinstance(model_info, dict):
                         success = False
                         break
                     self._paths.append(path)
@@ -244,32 +241,26 @@ class Models(object):
                 success = False
         else:
             success = False
-        if (not success):
+        if not success:
             raise TypeError("{} is not a valid ".format(repr(cfg)) +
                             "configuration file")
         self._n_models = len(self._paths)
 
     def __repr__(self):
-        """Representation of the class.
-
-        """
+        """Representation of the class."""
         output = ''
         for path in self._models:
             output += repr(self._models[path]) + '\n'
         return output
 
     def __iter__(self):
-        """Allow iteration through class.
-
-        """
+        """Allow iteration through class."""
         self._iter_counter = 0
         return self
 
     def __next__(self):
-        """Allow iteration through class.
-
-        """
-        if (self._iter_counter >= self._n_models):
+        """Allow iteration through class."""
+        if self._iter_counter >= self._n_models:
             raise StopIteration()
         else:
             next_element = self._paths[self._iter_counter]
@@ -290,9 +281,8 @@ class Models(object):
             `exp=piControl` or `short_name=tas`.
 
         """
-        if (path in self._paths):
-            logger.warning("{} already exists! ".format(path) +
-                           "Overwriting old data.")
+        if path in self._paths:
+            logger.warning("%s already exists! Overwriting old data", path)
             self._paths.remove(path)
         self._paths.append(path)
         self._data[path] = data
@@ -318,27 +308,27 @@ class Models(object):
             `exp=piControl` or `short_name=tas`.
 
         """
-        if (model_path is not None):
-            if (model_path in self._paths):
+        if model_path is not None:
+            if model_path in self._paths:
                 self._data[model_path] += data
                 return None
             else:
-                logger.warning("{} is not a valid ".format(model_path) +
-                               "model path")
+                logger.warning("%s is not a valid model path", model_path)
                 return None
         paths = list(self._models)
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("Data could no be saved: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("Data could not be saved: %s does not match " +
+                           "any model", model_info)
             return None
-        if (len(paths) != 1):
-            logger.warning("Data could no be saved: " +
-                           "{} is ambiguous".format(model_info))
+        if len(paths) != 1:
+            logger.warning("Data could no be saved: %s is ambiguous",
+                           model_info)
             return None
         self._data[path] += data
+        return None
 
     def get_data(self, model_path=None, **model_info):
         """Access a model's data.
@@ -367,22 +357,21 @@ class Models(object):
             If data given by `model_info` is ambiguous.
 
         """
-        if (model_path is not None):
-            if (model_path in self._paths):
+        if model_path is not None:
+            if model_path in self._paths:
                 return self._data.get(model_path)
             else:
-                logger.warning("{} is not a valid ".format(model_path) +
-                               "model path")
+                logger.warning("%s is not a valid model path", model_path)
                 return None
         paths = list(self._models)
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No data could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
             return None
-        if (len(paths) > 1):
+        if len(paths) > 1:
             msg = 'Given model information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
@@ -411,9 +400,9 @@ class Models(object):
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No data could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
         paths = sorted(paths)
         return [self._data[path] for path in paths]
 
@@ -435,16 +424,14 @@ class Models(object):
             `exp` information of the given model.
 
         """
-        if (model_path in self._paths):
+        if model_path in self._paths:
             output = self._models[model_path].get(EXP)
-            if (output is None):
-                logger.warning("Model {} does not ".format(model_path) +
-                               "contain '{}' ".format(EXP) +
-                               "information")
+            if output is None:
+                logger.warning("Model %s does not contain '%s' information",
+                               model_path, EXP)
             return output
         else:
-            logger.warning("{} is not a valid ".format(model_path) +
-                           "model path")
+            logger.warning("%s is not a valid model path", model_path)
             return None
 
     def get_model(self, model_path):
@@ -465,16 +452,14 @@ class Models(object):
             `model` information of the given model.
 
         """
-        if (model_path in self._paths):
+        if model_path in self._paths:
             output = self._models[model_path].get(MODEL)
-            if (output is None):
-                logger.warning("Model {} does not ".format(model_path) +
-                               "contain '{}' ".format(MODEL) +
-                               "information")
+            if output is None:
+                logger.warning("Model %s does not contain '%s' information",
+                               model_path, MODEL)
             return output
         else:
-            logger.warning("{} is not a valid ".format(model_path) +
-                           "model path")
+            logger.warning("%s is not a valid model path", model_path)
             return None
 
     def get_model_info(self, model_path=None, **model_info):
@@ -504,22 +489,21 @@ class Models(object):
             If data given by `model_info` is ambiguous.
 
         """
-        if (model_path is not None):
-            if (model_path in self._paths):
+        if model_path is not None:
+            if model_path in self._paths:
                 return self._models.get(model_path)
             else:
-                logger.warning("{} is not a valid ".format(model_path) +
-                               "model path")
+                logger.warning("%s is not a valid model path", model_path)
                 return None
         paths = list(self._models)
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No data could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
             return None
-        if (len(paths) > 1):
+        if len(paths) > 1:
             msg = 'Given model information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
@@ -548,9 +532,9 @@ class Models(object):
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No data could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
         paths = sorted(paths)
         return [self._models[path] for path in paths]
 
@@ -583,11 +567,11 @@ class Models(object):
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No paths could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
             return None
-        if (len(paths) > 1):
+        if len(paths) > 1:
             msg = 'Given model information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
@@ -616,9 +600,9 @@ class Models(object):
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("No paths could be returned: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("No data could be returned: %s does not match " +
+                           "any model", model_info)
         paths = sorted(paths)
         return paths
 
@@ -640,16 +624,14 @@ class Models(object):
             `project` information of the given model.
 
         """
-        if (model_path in self._paths):
+        if model_path in self._paths:
             output = self._models[model_path].get(PROJECT)
-            if (output is None):
-                logger.warning("Model {} does not ".format(model_path) +
-                               "contain '{}' ".format(PROJECT) +
-                               "information")
+            if output is None:
+                logger.warning("Model %s does not contain '%s' information",
+                               model_path, MODEL)
             return output
         else:
-            logger.warning("{} is not a valid ".format(model_path) +
-                           "model path")
+            logger.warning("%s is not a valid model path", model_path)
             return None
 
     def get_short_name(self, model_path):
@@ -671,16 +653,14 @@ class Models(object):
             `short_name` information of the given model.
 
         """
-        if (model_path in self._paths):
+        if model_path in self._paths:
             output = self._models[model_path].get(SHORT_NAME)
-            if (output is None):
-                logger.warning("Model {} does not ".format(model_path) +
-                               "contain '{}' ".format(SHORT_NAME) +
-                               "information")
+            if output is None:
+                logger.warning("Model %s does not contain '%s' information",
+                               model_path, SHORT_NAME)
             return output
         else:
-            logger.warning("{} is not a valid ".format(model_path) +
-                           "model path")
+            logger.warning("%s is not a valid model path", model_path)
             return None
 
     def get_standard_name(self, model_path):
@@ -702,16 +682,14 @@ class Models(object):
             `standard_name` information of the given model.
 
         """
-        if (model_path in self._paths):
+        if model_path in self._paths:
             output = self._models[model_path].get(STANDARD_NAME)
-            if (output is None):
-                logger.warning("Model {} does not ".format(model_path) +
-                               "contain '{}' ".format(STANDARD_NAME) +
-                               "information")
+            if output is None:
+                logger.warning("Model %s does not contain '%s' information",
+                               model_path, STANDARD_NAME)
             return output
         else:
-            logger.warning("{} is not a valid ".format(model_path) +
-                           "model path")
+            logger.warning("%s is not a valid model path", model_path)
             return None
 
     def set_data(self, data, model_path=None, **model_info):
@@ -734,24 +712,24 @@ class Models(object):
             `exp=piControl` or `short_name=tas`.
 
         """
-        if (model_path is not None):
-            if (model_path in self._paths):
+        if model_path is not None:
+            if model_path in self._paths:
                 self._data[model_path] = data
                 return None
             else:
-                logger.warning("{} is not a valid ".format(model_path) +
-                               "model path")
+                logger.warning("%s is not a valid model path", model_path)
                 return None
+
         paths = list(self._models)
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if (not paths):
-            logger.warning("Data could no be saved: " +
-                           "{} does not match any model".format(model_info))
+        if not paths:
+            logger.warning("Data could no be saved: %s does not match any " +
+                           "model", model_info)
             return None
-        if (len(paths) != 1):
-            logger.warning("Data could no be saved: " +
-                           "{} is ambiguous".format(model_info))
+        if len(paths) != 1:
+            logger.warning("Data could no be saved: %s is ambiguous",
+                           model_info)
             return None
-        self._data[path] = data
+        self._data[paths[0]] = data

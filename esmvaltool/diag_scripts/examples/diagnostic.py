@@ -11,8 +11,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def main(cfg):
     """Compute the time average for each input model."""
-
-    # Load models and variables
     models = e.Models(cfg)
     variables = e.Variables(cfg)
     logger.debug("Found models: %s", models)
