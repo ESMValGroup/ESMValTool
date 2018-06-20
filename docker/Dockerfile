@@ -13,9 +13,6 @@ RUN apt-get update -y && apt-get install -y \
 RUN mkdir /src
 WORKDIR /src
 
-# create a new conda environment
-RUN conda create -y -n esmvaltool python=3
-
 # install environment packages
 RUN conda install -c conda-forge -c esmvalgroup -c birdhouse esmvaltool
 
