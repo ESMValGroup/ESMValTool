@@ -22,9 +22,14 @@
 ###############################################################################
 ---
 models:
-  - {model: ACCESS1-0,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: HadISST,  project: OBS,  type: reanaly, version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+  - {model: CanESM2,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2005}
+
+  - {model: CSIRO-Mk3-6-0,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2005}
+
+  - {model: HadCM3,          project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2005}
+
+  - {model: HadISST,  project: OBS,  type: reanaly, version: 20130524,  start_year: 2002,  end_year: 2005,  tier: 2}
 
   
 preprocessors:
@@ -34,6 +39,27 @@ preprocessors:
 
 
 diagnostics:
+  SeaIce_tsline_NH: 
+    description: Timeseries of Arctic sea ice area and extent
+    variables: 
+      sic:
+        preprocessor: noob
+        mip: OImon
+        field: T2Ms 
+#    additional_models:
+#      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+#      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+    scripts:
+      tsline:
+        script: SeaIce_tsline.ncl
+        region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        month: "9"            # A = annual mean, 3 = March, 9 = September
+        styleset: "CMIP5"     # "CMIP5", "DEFAULT"
+        multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
+        EMs_in_lg: False      # True: create legend label for each individual ensemble member
+        fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
+        legend_outside: False # Draw legend in extra plot
+        
   SeaIce_polcon_NH: 
     description: NH polar contour plot of Arctic sea ice concentration
     variables: 
