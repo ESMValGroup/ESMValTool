@@ -29,10 +29,12 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'basemap',
         'cartopy',
         'cdo',
-        'cf_units>=2.0.1',
+        'cf_units',
         'cython',
+        'iris==1.13',
         'matplotlib',
         'netCDF4',
         'numba',
@@ -42,6 +44,7 @@ REQUIREMENTS = {
         'pyyaml',
         'shapely',
         'six',
+        'stratify',
         'yamale',
     ],
     # Test dependencies

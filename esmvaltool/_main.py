@@ -4,6 +4,7 @@ http://www.esmvaltool.org
 
 CORE DEVELOPMENT TEAM AND CONTACTS:
   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
@@ -138,10 +139,10 @@ def process_namelist(namelist_file, config_user):
                       namelist_file)
 
     timestamp1 = datetime.datetime.utcnow()
-    timestamp_format = "%Y-%m-%d --  %H:%M:%S"
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
 
     logger.info(
-        "Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
+        "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
@@ -173,7 +174,7 @@ def process_namelist(namelist_file, config_user):
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
     logger.info(
-        "Ending the Earth System Model Evaluation Tool v%s at time: %s",
+        "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp2.strftime(timestamp_format))
     logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
 
