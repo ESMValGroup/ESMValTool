@@ -33,21 +33,21 @@ def determine_transect_str(cube):
 
 def transectsPlots(
         cfg,
-        md,
-        fn,
+        metadata,
+        filename,
 ):
     """
         This function makes a simple plot for an indivudual model.
         The cfg is the opened global config,
-        md is the metadata dictionairy
-        fn is the preprocessing model file.
+        metadata is the metadata dictionairy
+        filename is the preprocessing model file.
         """
     # Load cube and set up units
-    cube = iris.load_cube(fn)
-    cube = diagtools.bgc_units(cube, md['short_name'])
+    cube = iris.load_cube(filename)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multiModel = md['model'].find('MultiModel') > -1
+    multiModel = metadata['model'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
 
@@ -56,19 +56,19 @@ def transectsPlots(
 
     # Add title to plot
     title = ' '.join(
-        [md['model'], md['long_name'],
+        [metadata['model'], metadata['long_name'],
          determine_transect_str(cube)])
     plt.title(title)
 
     # Determine png filename:
     if multiModel:
         path = diagtools.folder(
-            cfg['plot_dir']) + os.path.basename(fn).replace(
+            cfg['plot_dir']) + os.path.basename(filename).replace(
                 '.nc', '_transect.png')
     else:
         path = diagtools.get_image_path(
             cfg,
-            md,
+            metadata,
             suffix='transect',
             image_extention='png',
         )
@@ -87,24 +87,24 @@ def main(cfg):
     for k in cfg.keys():
         print('CFG:\t', k, '\t', cfg[k])
 
-    for i, metadatafilename in enumerate(cfg['input_files']):
+    for index, metadata_filename in enumerate(cfg['input_files']):
         print(
             '\nmetadata filename:',
-            metadatafilename,
+            metadata_filename,
         )
 
-        metadata = diagtools.get_input_files(cfg, index=i)
-        for fn in sorted(metadata.keys()):
+        metadata = diagtools.get_input_files(cfg, index=index)
+        for filename in sorted(metadata.keys()):
 
             print('-----------------')
             print(
                 'model filenames:\t',
-                fn,
+                filename,
             )
 
             ######
             # Time series of individual model
-            transectsPlots(cfg, metadata[fn], fn)
+            transectsPlots(cfg, metadata[filename], filename)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')

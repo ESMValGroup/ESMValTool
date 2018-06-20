@@ -4,7 +4,6 @@ import os
 import sys
 import yaml
 
-import iris
 import matplotlib.pyplot as plt
 
 # This part sends debug statements to stdout
@@ -104,14 +103,14 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
         [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
 
     # Add emply plots to dummy axis.
-    for i in sorted(plot_details.keys()):
+    for index in sorted(plot_details.keys()):
 
         plt.plot(
             [], [],
-            c=plot_details[i]['c'],
-            lw=plot_details[i]['lw'],
-            ls=plot_details[i]['ls'],
-            label=plot_details[i]['label'])
+            c=plot_details[index]['c'],
+            lw=plot_details[index]['lw'],
+            ls=plot_details[index]['ls'],
+            label=plot_details[index]['label'])
 
     legd = ax1.legend(
         loc='center left',
@@ -123,7 +122,7 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
 
 
 def get_image_path(cfg,
-                   md,
+                   metadata,
                    prefix='',
                    suffix='',
                    image_extention='png',
@@ -136,13 +135,13 @@ def get_image_path(cfg,
         This produces a path to the final location of the image.
 
         The cfg is the opened global config,
-        md is the metadata dictionairy (for the individual model file)
+        metadata is the metadata dictionairy (for the individual model file)
         """
     #####
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
-    path += '_'.join([str(md[b]) for b in basenamelist])
+    path += '_'.join([str(metadata[b]) for b in basenamelist])
     if suffix:
         path += '_' + suffix
     path += '.' + image_extention
@@ -175,8 +174,8 @@ def make_cube_layer_dict(cube):
             cubes[''] = cube
         else:
             coord_dim = cube.coord_dims('depth')[0]
-            for l, layer in enumerate(depth.points):
-                slices = [slice(None) for i in cube.shape]
-                slices[coord_dim] = l
+            for layer_index, layer in enumerate(depth.points):
+                slices = [slice(None) for index in cube.shape]
+                slices[coord_dim] = layer_index
                 cubes[layer] = cube[tuple(slices)]
     return cubes

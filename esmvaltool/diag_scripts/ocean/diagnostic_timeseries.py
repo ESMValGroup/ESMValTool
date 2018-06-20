@@ -14,54 +14,54 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def time_series_plots(
+def make_time_series_plots(
         cfg,
-        md,
-        fn,
+        metadata,
+        filename,
 ):
     """
-        This function makes a simple plot for an indivudual model.
+    This function makes a simple plot for an indivudual model.
 
-        The cfg is the opened global config,
-        md is the metadata dictionairy
-        fn is the preprocessing model file.
-        """
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy
+    filename is the preprocessing model file.
+    """
     # Load cube and set up units
-    cube = iris.load_cube(fn)
-    cube = diagtools.bgc_units(cube, md['short_name'])
+    cube = iris.load_cube(filename)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multi_model = md['model'].find('MultiModel') > -1
+    multi_model = metadata['model'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
     # Making plots for each layer
-    for la, (layer, c) in enumerate(cubes.items()):
+    for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
 
         if multi_model:
-            qplt.plot(c, label=md['model'], ls=':')
+            qplt.plot(cube_layer, label=metadata['model'], ls=':')
         else:
-            qplt.plot(c, label=md['model'])
+            qplt.plot(cube_layer, label=metadata['model'])
 
         # Add title, legend to plots
-        title = ' '.join([md['model'], md['long_name']])
+        title = ' '.join([metadata['model'], metadata['long_name']])
         if layer:
             title = ' '.join(
                 [title, '(', layer,
-                 str(c.coords('depth')[0].units), ')'])
+                 str(cube_layer.coords('depth')[0].units), ')'])
         plt.title(title)
         plt.legend(loc='best')
 
         # Determine png filename:
         if multi_model:
             # path = diagtools.folder(
-            #     cfg['plot_dir']) + os.path.basename(fn).replace(
+            #     cfg['plot_dir']) + os.path.basename(filename).replace(
             #         '.nc', '_timeseries_' + str(l) + '.png')
             path = diagtools.get_image_path(
                 cfg,
-                md,
+                metadata,
                 prefix='MultiModel',
                 suffix='_'.join(['timeseries', str(layer)]),
                 image_extention='png',
@@ -74,8 +74,8 @@ def time_series_plots(
         else:
             path = diagtools.get_image_path(
                 cfg,
-                md,
-                suffix='timeseries_' + str(la),
+                metadata,
+                suffix='timeseries_' + str(layer_index),
                 image_extention='png',
             )
 
@@ -93,22 +93,22 @@ def multi_model_time_series(
         metadata,
 ):
     """
-        This method makes a time series plot showing several models.
+    This method makes a time series plot showing several models.
 
-        This function makes a simple plot for an indivudual model.
-        The cfg is the opened global config,
-        metadata is the metadata dictionairy.
-        """
+    This function makes a simple plot for an indivudual model.
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy.
+    """
 
     # Load the data for each layer as a separate cube
     model_cubes = {}
     layers = {}
-    for fn in sorted(metadata.keys()):
-        cube = iris.load_cube(fn)
-        cube = diagtools.bgc_units(cube, metadata[fn]['short_name'])
+    for filename in sorted(metadata.keys()):
+        cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
         cubes = diagtools.make_cube_layer_dict(cube)
-        model_cubes[fn] = cubes
-        for l, c in cubes.items():
+        model_cubes[filename] = cubes
+        for l, cube_layer in cubes.items():
             layers[l] = True
 
     # Make a plot for each layer
@@ -120,45 +120,45 @@ def multi_model_time_series(
         cmap = plt.cm.get_cmap('viridis')
 
         # Plot each file in the group
-        for i, fn in enumerate(sorted(metadata.keys())):
-            c = cmap(
-                (float(i) / (len(metadata.keys()) - 1.)
-                 ))  # - timefloats[0]) / (timefloats[-1] - timefloats[0]))
+        for index, filename in enumerate(sorted(metadata.keys())):
+            color = cmap(
+                (float(index) / (len(metadata.keys()) - 1.)
+                 ))
 
-            multi_model = metadata[fn]['model'].find('MultiModel') > -1
+            multi_model = metadata[filename]['model'].find('MultiModel') > -1
 
             if multi_model:
                 qplt.plot(
-                    model_cubes[fn][layer],
-                    c=c,
-                    # label=metadata[fn]['model'],
+                    model_cubes[filename][layer],
+                    c=color,
+                    # label=metadata[filename]['model'],
                     ls=':',
                     lw=2.,
                 )
-                plot_details[fn] = {
-                    'c': c,
+                plot_details[filename] = {
+                    'c': color,
                     'ls': ':',
                     'lw': 2.,
-                    'label': metadata[fn]['model']
+                    'label': metadata[filename]['model']
                 }
             else:
                 qplt.plot(
-                    model_cubes[fn][layer],
-                    c=c,
-                    # label=metadata[fn]['model'])
+                    model_cubes[filename][layer],
+                    c=color,
+                    # label=metadata[filename]['model'])
                     ls='-',
                     lw=2.,
                 )
-                plot_details[fn] = {
-                    'c': c,
+                plot_details[filename] = {
+                    'c': color,
                     'ls': '-',
                     'lw': 2.,
-                    'label': metadata[fn]['model']
+                    'label': metadata[filename]['model']
                 }
 
-            long_name = metadata[fn]['long_name']
+            long_name = metadata[filename]['long_name']
             if layer != '':
-                z_units = model_cubes[fn][layer].coords('depth')[0].units
+                z_units = model_cubes[filename][layer].coords('depth')[0].units
 
         # Add title, legend to plots
         title = long_name
@@ -171,7 +171,7 @@ def multi_model_time_series(
         if cfg['write_plots']:
             path = diagtools.get_image_path(
                 cfg,
-                metadata[fn],
+                metadata[filename],
                 prefix='MultipleModels_',
                 suffix='_'.join(['timeseries', str(layer)]),
                 image_extention='png',
@@ -193,36 +193,36 @@ def multi_model_time_series(
 
 def main(cfg):
     """
-        Main function to load the config file, and send it to the plot maker.
+    Main function to load the config file, and send it to the plot maker.
 
-        The cfg is the opened global config.
-        """
-    for i, metadata_filename in enumerate(cfg['input_files']):
+    The cfg is the opened global config.
+    """
+    for index, metadata_filename in enumerate(cfg['input_files']):
         print(
             '\nmetadata filename:',
             metadata_filename,
         )
 
-        metadata = diagtools.get_input_files(cfg, index=i)
+        metadatas = diagtools.get_input_files(cfg, index=index)
 
         #######
         # Multi model time series
         multi_model_time_series(
             cfg,
-            metadata,
+            metadatas,
         )
 
-        for fn in sorted(metadata.keys()):
+        for filename in sorted(metadatas.keys()):
 
             print('-----------------')
             print(
                 'model filenames:\t',
-                fn,
+                filename,
             )
 
             ######
             # Time series of individual model
-            time_series_plots(cfg, metadata[fn], fn)
+            make_time_series_plots(cfg, metadatas[filename], filename)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')

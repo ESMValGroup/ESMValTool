@@ -15,33 +15,33 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def map_plots(
+def make_map_plots(
         cfg,
-        md,
-        fn,
+        metadata,
+        filename,
 ):
     """
-        This function makes a simple map plot for an indivudual model.
+    This function makes a simple map plot for an indivudual model.
 
-        The cfg is the opened global config,
-        md is the metadata dictionairy
-        fn is the preprocessing model file.
-        """
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy
+    filename is the preprocessing model file.
+    """
     # Load cube and set up units
-    cube = iris.load_cube(fn)
-    cube = diagtools.bgc_units(cube, md['short_name'])
+    cube = iris.load_cube(filename)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multi_model = md['model'].find('MultiModel') > -1
+    multi_model = metadata['model'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
     # Making plots for each layer
-    for la, (layer, c) in enumerate(cubes.items()):
+    for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
 
-        qplt.contourf(c, 25)
+        qplt.contourf(cube_layer, 25)
 
         try:
             plt.gca().coastlines()
@@ -49,23 +49,23 @@ def map_plots(
             print('Not able to add coastlines')
 
         # Add title to plot
-        title = ' '.join([md['model'], md['long_name']])
+        title = ' '.join([metadata['model'], metadata['long_name']])
         if layer:
             title = ' '.join(
                 [title, '(', layer,
-                 str(c.coords('depth')[0].units), ')'])
+                 str(cube_layer.coords('depth')[0].units), ')'])
         plt.title(title)
 
         # Determine png filename:
         if multi_model:
             path = diagtools.folder(
-                cfg['plot_dir']) + os.path.basename(fn).replace(
-                    '.nc', '_map_' + str(la) + '.png')
+                cfg['plot_dir']) + os.path.basename(filename).replace(
+                    '.nc', '_map_' + str(layer_index) + '.png')
         else:
             path = diagtools.get_image_path(
                 cfg,
-                md,
-                suffix='map_' + str(la),
+                metadata,
+                suffix='map_' + str(layer_index),
                 image_extention='png',
             )
 
@@ -80,22 +80,22 @@ def map_plots(
 
 def main(cfg):
     """
-        Main function to load the config file, and send it to the plot maker.
+    Main function to load the config file, and send it to the plot maker.
 
-        The cfg is the opened global config.
-        """
+    The cfg is the opened global config.
+    """
     ####
     for k in cfg.keys():
         print('CFG:\t', k, '\t', cfg[k])
 
-    for i, metadatafilename in enumerate(cfg['input_files']):
+    for index, metadata_filename in enumerate(cfg['input_files']):
         print(
             '\nmetadata filename:',
-            metadatafilename,
+            metadata_filename,
         )
 
-        metadata = diagtools.get_input_files(cfg, index=i)
-        for filename in sorted(metadata.keys()):
+        metadatas = diagtools.get_input_files(cfg, index=index)
+        for filename in sorted(metadatas.keys()):
 
             print('-----------------')
             print(
@@ -105,7 +105,7 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            map_plots(cfg, metadata[filename], filename)
+            make_map_plots(cfg, metadatas[filename], filename)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')
