@@ -87,10 +87,7 @@ class TestSave(unittest.TestCase):
         paths = _io.save_cubes([cube], optimize_access='map')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
-        handler = netCDF4.Dataset(paths[0], 'r')
-        chunking = handler.variables['sample'].chunking()
-        handler.close()
-        self.assertListEqual([2, 2, 1], chunking)
+        self._check_chunks(paths, [2, 2, 1])
 
     def test_save_optimized_timeseries(self):
         """Test save"""
@@ -98,10 +95,7 @@ class TestSave(unittest.TestCase):
         paths = _io.save_cubes([cube], optimize_access='timeseries')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
-        handler = netCDF4.Dataset(paths[0], 'r')
-        chunking = handler.variables['sample'].chunking()
-        handler.close()
-        self.assertListEqual([1, 1, 2], chunking)
+        self._check_chunks(paths, [1, 1, 2])
 
     def test_save_optimized_lat(self):
         """Test save"""
@@ -109,10 +103,14 @@ class TestSave(unittest.TestCase):
         paths = _io.save_cubes([cube], optimize_access='latitude')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
+        expected_chunks = [2, 1, 1]
+        self._check_chunks(paths, expected_chunks)
+
+    def _check_chunks(self, paths, expected_chunks):
         handler = netCDF4.Dataset(paths[0], 'r')
         chunking = handler.variables['sample'].chunking()
         handler.close()
-        self.assertListEqual([2, 1, 1], chunking)
+        self.assertListEqual(expected_chunks, chunking)
 
     def test_save_optimized_lon_time(self):
         """Test save"""
@@ -120,10 +118,7 @@ class TestSave(unittest.TestCase):
         paths = _io.save_cubes([cube], optimize_access='longitude time')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
-        handler = netCDF4.Dataset(paths[0], 'r')
-        chunking = handler.variables['sample'].chunking()
-        handler.close()
-        self.assertListEqual([1, 2, 2], chunking)
+        self._check_chunks(paths, [1, 2, 2])
 
     def _compare_cubes(self, cube, loaded_cube):
         self.assertTrue((cube.data == loaded_cube.data).all())
