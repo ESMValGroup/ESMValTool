@@ -30,7 +30,7 @@ Modification history
 """
 
 
-from esmvaltool.diag_scripts.shared import *
+import esmvaltool.diag_scripts.shared as e
 
 import iris
 
@@ -48,26 +48,26 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
-    """
-    Arguments
-        cfg : Dictionary containing project information
+    """This is the main routine of the diagnostic.
 
-    Description
-        This is the main routine of the diagnostic.
-    """
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the namelist.
 
+    """
     ###########################################################################
     # Setup diagnostic
     ###########################################################################
 
     # Model data containers
-    MODELS = Models(cfg)
+    MODELS = e.Models(cfg)
     logging.info("Found models in namelist:\n{}".format(MODELS))
 
     # Variables
-    VARS = Variables(cfg)
+    VARS = e.Variables(cfg)
     logging.info("Found variables in namelist:\n{}".format(VARS))
-    ECS = Variable('ecs', 'ecs', 'equilibrium climate sensitivity', 'K')
+    ECS = e.Variable('ecs', 'ecs', 'equilibrium climate sensitivity', 'K')
     VARS.add_var(ecs=ECS)
 
     # Experiments
@@ -78,7 +78,7 @@ def main(cfg):
     PICONTROL_TEMP_MEAN = 'total temporal mean of piControl'
 
     # Matplotlib instance
-    style_file = plot.get_path_to_mpl_style('default.mplstyle')
+    style_file = e.plot.get_path_to_mpl_style('default.mplstyle')
     plt.style.use(style_file)
     fig, ax = plt.subplots()
 
@@ -91,18 +91,18 @@ def main(cfg):
         cube = iris.load(model_path, VARS.standard_names())[0]
 
         # Global mean
-        for coord in [cube.coord(LAT), cube.coord(LON)]:
+        for coord in [cube.coord(e.LAT), cube.coord(e.LON)]:
             if (not coord.has_bounds()):
                 coord.guess_bounds()
         area_weights = iris.analysis.cartography.area_weights(cube)
-        cube = cube.collapsed([LAT, LON], iris.analysis.MEAN,
+        cube = cube.collapsed([e.LAT, e.LON], iris.analysis.MEAN,
                               weights=area_weights)
 
         # Historical: total temporal mean; else: annual mean
         if (MODELS.get_exp(model_path) == HISTORICAL):
-            cube = cube.collapsed([TIME], iris.analysis.MEAN)
+            cube = cube.collapsed([e.TIME], iris.analysis.MEAN)
         else:
-            cube = cube.aggregated_by(YEAR, iris.analysis.MEAN)
+            cube = cube.aggregated_by(e.YEAR, iris.analysis.MEAN)
 
         MODELS.set_data(cube.data, model_path=model_path)
 
@@ -184,7 +184,7 @@ def main(cfg):
             data_tas_piC = MODELS.get_data(short_name=VARS.tas,
                                            exp=PICONTROL_TEMP_MEAN,
                                            model=model)
-            style = plot.get_model_style(model)
+            style = e.plot.get_model_style(model)
 
             # Plot
             ax.plot(data_ecs, data_tas_hist, linestyle='none',
@@ -220,7 +220,7 @@ def main(cfg):
 
     if (cfg['write_netcdf']):
         data_ecs = MODELS.get_data_list(short_name=VARS.ecs, exp=DIFF)
-        models = [model_info[MODEL_STR] for model_info in
+        models = [model_info[e.MODEL_STR] for model_info in
                   MODELS.get_model_info_list(short_name=VARS.ecs, exp=DIFF)]
         model_coord = iris.coords.AuxCoord(models, long_name='models')
         attr = {'created_by': 'ESMValTool version {}'.format(cfg['version']) +
@@ -240,5 +240,5 @@ def main(cfg):
 
 if __name__ == '__main__':
 
-    with run_diagnostic() as cfg:
+    with e.run_diagnostic() as cfg:
         main(cfg)
