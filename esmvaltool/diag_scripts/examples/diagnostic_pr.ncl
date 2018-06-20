@@ -53,7 +53,7 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  ; Fetch general parameters, set in namelist_MyDiag.yml, passed via
+  ; Fetch general parameters, set in recipe_example_ncl.yml, passed via
   ; environment variables by python code
   enter_msg(diag_script, "")
 

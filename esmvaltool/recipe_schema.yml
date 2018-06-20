@@ -1,14 +1,14 @@
-# Generic namelist Yamale schema definition.
+# Generic recipe Yamale schema definition.
 # See https://github.com/23andMe/Yamale for help.
 
 ---
-# Namelist schema
+# Recipe schema
 models: list(include('model'), required=False)
 preprocessors: map(map(), min=1)
 diagnostics: map(include('diagnostic'), required=False)
 
 ---
-# Namelist item definitions
+# Recipe item definitions
 model:
   model: str()
   project: str()

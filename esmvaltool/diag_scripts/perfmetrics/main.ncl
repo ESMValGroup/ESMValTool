@@ -65,7 +65,7 @@
 ;                        now stippling significant grid cells (old version:
 ;                        masking out non-significant values in gray)
 ;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
-;                        main namelist
+;                        recipe file
 ;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
 ;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;                        of the code.

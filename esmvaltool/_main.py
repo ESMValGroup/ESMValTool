@@ -39,7 +39,7 @@ from multiprocessing import cpu_count
 
 from . import __version__
 from ._config import configure_logging, read_config_user_file
-from ._namelist import read_namelist_file
+from ._recipe import read_recipe_file
 from ._task import resource_usage_logger
 
 # set up logging
@@ -71,8 +71,8 @@ def get_args():
         help="return ESMValTool's version number and exit")
     parser.add_argument(
         '-n',
-        '--namelist-file',
-        help='Path to the namelist file',
+        '--recipe-file',
+        help='Path to the recipe file',
         required=True)
     parser.add_argument(
         '-c',
@@ -95,8 +95,8 @@ def get_args():
 
 def main(args):
     """Define the `esmvaltool` program"""
-    namelist_file = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.namelist_file)))
+    recipe_file = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(args.recipe_file)))
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
 
@@ -104,8 +104,8 @@ def main(args):
     if not os.path.exists(config_file):
         print("ERROR: config file {} does not exist".format(config_file))
 
-    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
-    cfg = read_config_user_file(config_file, namelist_name)
+    recipe_name = os.path.splitext(os.path.basename(recipe_file))[0]
+    cfg = read_config_user_file(config_file, recipe_name)
 
     # Create run dir
     if os.path.exists(cfg['run_dir']):
@@ -128,15 +128,15 @@ def main(args):
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
-        process_namelist(namelist_file=namelist_file, config_user=cfg)
+        process_recipe(recipe_file=recipe_file, config_user=cfg)
     return cfg
 
 
-def process_namelist(namelist_file, config_user):
-    """Process namelist"""
-    if not os.path.isfile(namelist_file):
-        raise OSError(errno.ENOENT, "Specified namelist file does not exist",
-                      namelist_file)
+def process_recipe(recipe_file, config_user):
+    """Process recipe"""
+    if not os.path.isfile(recipe_file):
+        raise OSError(errno.ENOENT, "Specified recipe file does not exist",
+                      recipe_file)
 
     timestamp1 = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d %H:%M:%S"
@@ -146,7 +146,7 @@ def process_namelist(namelist_file, config_user):
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
-    logger.info("NAMELIST   = %s", namelist_file)
+    logger.info("RECIPE   = %s", recipe_file)
     logger.info("RUNDIR     = %s", config_user['run_dir'])
     logger.info("WORKDIR    = %s", config_user["work_dir"])
     logger.info("PREPROCDIR = %s", config_user["preproc_dir"])
@@ -161,22 +161,22 @@ def process_namelist(namelist_file, config_user):
         "memory for keeping this number of tasks in memory. In that case, "
         "try reducing 'max_parallel_tasks' in your user configuration file.")
 
-    # copy namelist to run_dir for future reference
-    shutil.copy2(namelist_file, config_user['run_dir'])
+    # copy recipe to run_dir for future reference
+    shutil.copy2(recipe_file, config_user['run_dir'])
 
-    # parse namelist
-    namelist = read_namelist_file(namelist_file, config_user)
-    logger.debug("Namelist summary:\n%s", namelist)
+    # parse recipe
+    recipe = read_recipe_file(recipe_file, config_user)
+    logger.debug("Recipe summary:\n%s", recipe)
 
     # run
-    namelist.run()
+    recipe.run()
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
     logger.info(
         "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp2.strftime(timestamp_format))
-    logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
+    logger.info("Time for running the recipe was: %s", timestamp2 - timestamp1)
 
     # Remind the user about reference/acknowledgement file
     out_refs = glob.glob(

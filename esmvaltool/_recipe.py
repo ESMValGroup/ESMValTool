@@ -1,4 +1,4 @@
-"""Namelist parser"""
+"""Recipe parser"""
 import copy
 import fnmatch
 import inspect
@@ -25,29 +25,29 @@ logger = logging.getLogger(__name__)
 TASKSEP = os.sep
 
 
-class NamelistError(Exception):
-    """Namelist contains an error."""
+class RecipeError(Exception):
+    """Recipe contains an error."""
 
 
-def read_namelist_file(filename, config_user, initialize_tasks=True):
-    """Read a namelist from file."""
-    raw_namelist = check_namelist(filename)
-    return Namelist(
-        raw_namelist, config_user, initialize_tasks, namelist_file=filename)
+def read_recipe_file(filename, config_user, initialize_tasks=True):
+    """Read a recipe from file."""
+    raw_recipe = check_recipe(filename)
+    return Recipe(
+        raw_recipe, config_user, initialize_tasks, recipe_file=filename)
 
 
 def check_ncl_version():
     """Check the NCL version"""
     ncl = which('ncl')
     if not ncl:
-        raise NamelistError("Namelist contains NCL scripts, but cannot find "
+        raise RecipeError("Recipe contains NCL scripts, but cannot find "
                             "an NCL installation.")
     try:
         cmd = [ncl, '-V']
         version = subprocess.check_output(cmd, universal_newlines=True)
     except subprocess.CalledProcessError:
         logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
-        raise NamelistError("Namelist contains NCL scripts, but your NCL "
+        raise RecipeError("Recipe contains NCL scripts, but your NCL "
                             "installation appears to be broken.")
 
     version = version.strip()
@@ -55,57 +55,57 @@ def check_ncl_version():
 
     major, minor = (int(i) for i in version.split('.')[:2])
     if major < 6 or (major == 6 and minor < 4):
-        raise NamelistError("NCL version 6.4 or higher is required to run "
-                            "a namelist containing NCL scripts.")
+        raise RecipeError("NCL version 6.4 or higher is required to run "
+                            "a recipe containing NCL scripts.")
 
 
-def check_namelist_with_schema(filename):
-    """Check if the namelist content matches schema."""
+def check_recipe_with_schema(filename):
+    """Check if the recipe content matches schema."""
     schema_file = os.path.join(
-        os.path.dirname(__file__), 'namelist_schema.yml')
-    logger.debug("Checking namelist against schema %s", schema_file)
-    namelist = yamale.make_data(filename)
+        os.path.dirname(__file__), 'recipe_schema.yml')
+    logger.debug("Checking recipe against schema %s", schema_file)
+    recipe = yamale.make_data(filename)
     schema = yamale.make_schema(schema_file)
-    yamale.validate(schema, namelist)
+    yamale.validate(schema, recipe)
 
 
-def check_namelist(filename):
-    """Check a namelist file and return it in raw form."""
+def check_recipe(filename):
+    """Check a recipe file and return it in raw form."""
     # Note that many checks can only be performed after the automatically
-    # computed entries have been filled in by creating a Namelist object.
-    check_namelist_with_schema(filename)
+    # computed entries have been filled in by creating a Recipe object.
+    check_recipe_with_schema(filename)
     with open(filename, 'r') as file:
-        raw_namelist = yaml.safe_load(file)
+        raw_recipe = yaml.safe_load(file)
 
     # TODO: add more checks?
-    check_preprocessors(raw_namelist['preprocessors'])
-    check_diagnostics(raw_namelist['diagnostics'])
-    return raw_namelist
+    check_preprocessors(raw_recipe['preprocessors'])
+    check_diagnostics(raw_recipe['diagnostics'])
+    return raw_recipe
 
 
 def check_preprocessors(preprocessors):
-    """Check preprocessors in namelist"""
+    """Check preprocessors in recipe"""
     preprocessor_functions = set(preprocessor.DEFAULT_ORDER)
     for name, settings in preprocessors.items():
         invalid_functions = set(settings) - preprocessor_functions
         if invalid_functions:
-            raise NamelistError(
+            raise RecipeError(
                 "Unknown function(s) {} in preprocessor {}, choose from: {}"
                 .format(invalid_functions, name, ', '.join(
                     preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
-    """Check diagnostics in namelist"""
+    """Check diagnostics in recipe"""
     for name, diagnostic in diagnostics.items():
         if 'scripts' not in diagnostic:
-            raise NamelistError("Missing scripts section in diagnostic {}"
+            raise RecipeError("Missing scripts section in diagnostic {}"
                                 .format(name))
         if diagnostic['scripts'] is None:
             continue
         for script_name, script in diagnostic['scripts'].items():
             if not script.get('script'):
-                raise NamelistError(
+                raise RecipeError(
                     "No script defined for script {} in diagnostic {}".format(
                         script_name, name))
 
@@ -117,7 +117,7 @@ def check_preprocessor_settings(settings):
     # TODO: Use the new Python 3 inspect API
     for step in settings:
         if step not in preprocessor.DEFAULT_ORDER:
-            raise NamelistError(
+            raise RecipeError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
                     step, ', '.join(preprocessor.DEFAULT_ORDER)))
         function = getattr(preprocessor, step)
@@ -126,7 +126,7 @@ def check_preprocessor_settings(settings):
         # Check for invalid arguments
         invalid_args = set(settings[step]) - set(args)
         if invalid_args:
-            raise NamelistError(
+            raise RecipeError(
                 "Invalid argument(s): {} encountered for preprocessor "
                 "function {}".format(', '.join(invalid_args), step))
         # Check for missing arguments
@@ -134,7 +134,7 @@ def check_preprocessor_settings(settings):
         end = None if defaults is None else -len(defaults)
         missing_args = set(args[:end]) - set(settings[step])
         if missing_args:
-            raise NamelistError(
+            raise RecipeError(
                 "Missing required argument(s) {} for preprocessor "
                 "function {}".format(missing_args, step))
         # Final sanity check in case the above fails to catch a mistake
@@ -151,17 +151,17 @@ def check_duplicate_models(models):
     checked_models_ = []
     for model in models:
         if model in checked_models_:
-            raise NamelistError(
+            raise RecipeError(
                 "Duplicate model {} in models section".format(model))
         checked_models_.append(model)
 
 
 def check_variable(variable, required_keys):
-    """Check variables as derived from namelist"""
+    """Check variables as derived from recipe"""
     required = set(required_keys)
     missing = required - set(variable)
     if missing:
-        raise NamelistError(
+        raise RecipeError(
             "Missing keys {} from variable {} in diagnostic {}".format(
                 missing, variable.get('short_name'),
                 variable.get('diagnostic')))
@@ -170,7 +170,7 @@ def check_variable(variable, required_keys):
 def check_data_availability(input_files, variable):
     """Check if the required input data is available"""
     if not input_files:
-        raise NamelistError("No input files found for variable {}"
+        raise RecipeError("No input files found for variable {}"
                             .format(variable))
 
     required_years = set(
@@ -182,7 +182,7 @@ def check_data_availability(input_files, variable):
 
     missing_years = required_years - available_years
     if missing_years:
-        raise NamelistError(
+        raise RecipeError(
             "No input data available for years {} in files {}".format(
                 ", ".join(str(year) for year in missing_years), input_files))
 
@@ -195,7 +195,7 @@ def _get_value(key, models):
         return values.pop()
 
     if len(values) > 1:
-        raise NamelistError("Ambigous values {} for property {}".format(
+        raise RecipeError("Ambigous values {} for property {}".format(
             values, key))
 
 
@@ -223,7 +223,7 @@ def _update_cmor_table(table, mip, short_name):
             var_info = cmor_table.get_variable(mip, short_name)
 
     if var_info is None:
-        raise NamelistError(
+        raise RecipeError(
             "Unable to load CMOR table '{}' for variable '{}' with mip '{}'"
             .format(table, short_name, mip))
 
@@ -258,7 +258,7 @@ def _special_name_to_model(variable, special_name):
     """Convert special names to model names."""
     if special_name in ('reference_model', 'alternative_model'):
         if special_name not in variable:
-            raise NamelistError(
+            raise RecipeError(
                 "Preprocessor {} uses {}, but {} is not defined for "
                 "variable {} of diagnostic {}".format(
                     variable['preprocessor'], special_name, special_name,
@@ -331,7 +331,7 @@ def _model_to_file(model, variables, config_user):
             check_data_availability(files, variable)
             return files[0]
 
-    raise NamelistError(
+    raise RecipeError(
         "Unable to find matching file for model {}".format(model))
 
 
@@ -557,7 +557,7 @@ def _check_multi_model_settings(all_settings):
             if result is None:
                 result = settings[step]
             elif result != settings[step]:
-                raise NamelistError(
+                raise RecipeError(
                     "Unable to combine differing multi-model settings "
                     "{} and {} for output file {}".format(
                         result, settings[step], filename))
@@ -601,7 +601,7 @@ def _get_preprocessor_task(variables,
     variable = variables[0]
     preproc_name = variable.get('preprocessor')
     if preproc_name not in profiles:
-        raise NamelistError(
+        raise RecipeError(
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile = copy.deepcopy(profiles[variable['preprocessor']])
@@ -665,21 +665,21 @@ def _get_preprocessor_task(variables,
     return task
 
 
-class Namelist(object):
-    """Namelist object"""
+class Recipe(object):
+    """Recipe object"""
 
     def __init__(self,
-                 raw_namelist,
+                 raw_recipe,
                  config_user,
                  initialize_tasks=True,
-                 namelist_file=None):
-        """Parse a namelist file into an object."""
+                 recipe_file=None):
+        """Parse a recipe file into an object."""
         self._cfg = config_user
-        self._namelist_file = os.path.basename(namelist_file)
-        self._preprocessors = raw_namelist['preprocessors']
-        self._support_ncl = self._need_ncl(raw_namelist['diagnostics'])
+        self._recipe_file = os.path.basename(recipe_file)
+        self._preprocessors = raw_recipe['preprocessors']
+        self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
-            raw_namelist['diagnostics'], raw_namelist.get('models', []))
+            raw_recipe['diagnostics'], raw_recipe.get('models', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     @staticmethod
@@ -697,8 +697,8 @@ class Namelist(object):
         return False
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_models):
-        """Define diagnostics in namelist"""
-        logger.debug("Retrieving diagnostics from namelist")
+        """Define diagnostics in recipe"""
+        logger.debug("Retrieving diagnostics from recipe")
 
         diagnostics = {}
 
@@ -793,7 +793,7 @@ class Namelist(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
-            settings['namelist'] = self._namelist_file
+            settings['recipe'] = self._recipe_file
             settings['version'] = __version__
             settings['script'] = script_name
             # Add output dirs to settings
@@ -829,7 +829,7 @@ class Namelist(object):
                         ancestor_ids = fnmatch.filter(diagnostic_tasks,
                                                       id_glob)
                         if not ancestor_ids:
-                            raise NamelistError(
+                            raise RecipeError(
                                 "Could not find any ancestors matching {}"
                                 .format(id_glob))
                         logger.debug("Pattern %s matches %s", id_glob,
@@ -839,8 +839,8 @@ class Namelist(object):
                     diagnostic_tasks[task_id].ancestors = ancestors
 
     def initialize_tasks(self):
-        """Define tasks in namelist"""
-        logger.info("Creating tasks from namelist")
+        """Define tasks in recipe"""
+        logger.info("Creating tasks from recipe")
         tasks = []
 
         diagnostic_tasks = {}
@@ -896,6 +896,6 @@ class Namelist(object):
         return '\n\n'.join(str(task) for task in self.tasks)
 
     def run(self):
-        """Run all tasks in the namelist."""
+        """Run all tasks in the recipe."""
         run_tasks(
             self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])

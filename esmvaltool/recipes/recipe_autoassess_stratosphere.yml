@@ -1,11 +1,11 @@
 #### summary 
-#### namelist that runs the Autoassess Stratorsphere assessment area diagnostic
+#### recipe that runs the Autoassess Stratorsphere assessment area diagnostic
 #### Version: 1 June 2018 
 #################
 #### Description:
 #################
 #The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
-#changed for ESMValTool to two models; the namelist can accomodate as many pairs of models to be compared as the 
+#changed for ESMValTool to two models; the recipe can accomodate as many pairs of models to be compared as the 
 #user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
 #(autoassess_stratosphere.py), the (control_model, exp_model) pair may vary accoding to the user's
 #needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the

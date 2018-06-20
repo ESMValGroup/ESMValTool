@@ -1,9 +1,9 @@
 ###############################################################################
-# namelist_perfmetrics_CMIP5.xml
+# recipe_perfmetrics_CMIP5.xml
 ---
 documentation:
   description: |
-    Namelist for plotting the performance metrics for the CMIP5 models,
+    Recipe for plotting the performance metrics for the CMIP5 models,
     including the "standard" ECVs as in Gleckler et al., plus some additional
     variables (like ozone, sea-ice, aerosol...)
 

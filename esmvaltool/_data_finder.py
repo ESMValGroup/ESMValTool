@@ -93,7 +93,7 @@ def replace_tags(path, variable):
             else:
                 raise KeyError(
                     "Model key {} must be specified for project {}, check "
-                    "your namelist entry".format(tag, variable['project']))
+                    "your recipe entry".format(tag, variable['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
 
