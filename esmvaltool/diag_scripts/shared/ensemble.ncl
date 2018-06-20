@@ -141,8 +141,8 @@ function multi_model_stats(idx[*]:integer,
 ; Return value
 ;    A field with target grid spatial dimensions (lat, lon) or
 ;    (plev, lat, lon), time coordinate, datasets coordinate.
-;    The "datasets" coordinate contains the strings from dataset_info@dataset and
-;    statistics.
+;    The "datasets" coordinate contains the strings from dataset_info@dataset
+;    and statistics.
 ;    Covers the overlapping time period of all datasets only.
 ;
 ; Description
@@ -246,7 +246,8 @@ begin
       ; implemented statistics, hardcoded positions
       stats = (/"model_mean", "stddev"/)
       nstats = dimsizes(stats)
-      var_grd&datasets = array_append_record(stats, dataset_info@dataset(idx), 0)
+      var_grd&datasets = \
+        array_append_record(stats, dataset_info@dataset(idx), 0)
 
       ; select return fields
       tmp = new(dimsizes(var_grd&datasets), integer)

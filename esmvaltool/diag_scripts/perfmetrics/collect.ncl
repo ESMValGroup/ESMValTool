@@ -97,14 +97,14 @@ begin
       dim_data = (/dimsizes(input_files), dim_temp(1), 2/)
       data_all = new(dim_data, float)
       data_all(0, :, :) = data_temp
-      data_all!1 = "datasets"
-      data_all&datasets = data_temp&datasets
+      data_all!1 = "models"
+      data_all&models = data_temp&models
     end if
 
     ; Make sure dataset coordinate is consistent
     consistent = False
-    if (dimsizes(data_temp&datasets).eq.dimsizes(data_all&datasets)) then
-      if (all(data_temp&datasets.eq.data_all&datasets)) then
+    if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) then
+      if (all(data_temp&models.eq.data_all&models)) then
         consistent = True
       end if
     end if
@@ -114,21 +114,21 @@ begin
       data_all(ii, :, :) = (/data_temp/)
       copy_VarCoords(data_temp, data_all(ii:ii, :, :))
     else
-      do imod2 = 0, dimsizes(data_temp&datasets) - 1
-        if (.not.any(data_temp&datasets(imod2).eq.data_all&datasets)) then
+      do imod2 = 0, dimsizes(data_temp&models) - 1
+        if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
           ; Append record for dataset(imod)
-          data_new = extend_var_at(data_all, 1, dimsizes(data_all&datasets))
-          data_new(ii, dimsizes(data_all&datasets), :) = \
+          data_new = extend_var_at(data_all, 1, dimsizes(data_all&models))
+          data_new(ii, dimsizes(data_all&models), :) = \
             (/data_temp(0, imod2, :)/)
-          data_new&datasets(dimsizes(data_all&datasets)) = \
-            (/data_temp&datasets(imod2)/)
+          data_new&models(dimsizes(data_all&models)) = \
+            (/data_temp&models(imod2)/)
           data_all := data_new
           delete(data_new)
         else
           ; Loop over datasets of data
-          do imod = 0, dimsizes(data_all&datasets) - 1
+          do imod = 0, dimsizes(data_all&models) - 1
             ; if no data dataset is similar to curreny entry, write data entry
-            if (data_all&datasets(imod).eq. data_temp&datasets(imod2)) then
+            if (data_all&models(imod).eq. data_temp&models(imod2)) then
                 data_all(ii, imod, :) = (/data_temp(0, imod2, :)/)
                 copy_VarCoords(data_temp(0:0, imod2, :), \
                                data_all(ii:ii, imod, :))
@@ -158,9 +158,9 @@ begin
   ; which are placed at the beginning
   if (isatt(diag_script_info, "sort")) then
     if (diag_script_info@sort) then
-      idx = ind(data_all&datasets.eq."MultiModelMean" .or. \
-                data_all&datasets.eq."MultiModelMedian")
-      pid = sort_alphabetically(data_all&datasets, idx, "begin")
+      idx = ind(data_all&models.eq."MultiModelMean" .or. \
+                data_all&models.eq."MultiModelMedian")
+      pid = sort_alphabetically(data_all&models, idx, "begin")
       if (dimsizes(dimsizes(data_all)).eq.3) then
         data_all := data_all(:, pid, :)
       else
@@ -176,7 +176,7 @@ begin
     data_all@res_tiMainString = diag_script_info@title
   end if
   if (diag_script_info@metric.eq."taylor") then
-    data_all@res_varLabels = data_all&datasets
+    data_all@res_varLabels = data_all&models
     data_all@res_caseLabels = data_all&diagnostics
   end if
 

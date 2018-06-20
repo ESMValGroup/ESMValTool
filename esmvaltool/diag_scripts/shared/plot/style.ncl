@@ -32,8 +32,8 @@ function unique_labels_min(prio: string)
 ;          priority for annotation (starting with highest).
 ;
 ; Return value
-;    A vector (string) with one element for each dataset_info@dataset -> each label
-;    contains the least possible attribute strings.
+;    A vector (string) with one element for each dataset_info@dataset -> each
+;    label contains the least possible attribute strings.
 ;
 ; Description
 ;    Builds the vector by looping over dataset_info@dataset.
@@ -67,7 +67,8 @@ begin
       do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
         index = ind(result .eq. unique(i))
         if (dimsizes(index) .gt. 1) then  ; More than one occurence
-          result(index) = result(index) + "_" + dataset_info@$prio(iprio)$(index)
+          result(index) = \
+            result(index) + "_" + dataset_info@$prio(iprio)$(index)
         end if
         delete(index)
       end do  ; Different labels
@@ -95,8 +96,8 @@ function unique_labels_all(prio:string)
 ;    Adds "_attribute" until prio is exhausted or until labels are unique.
 ;
 ; Return value
-;    A vector (string) with one element for each dataset_info@dataset -> all labels
-;    contain the same (least possible) number of attribute strings.
+;    A vector (string) with one element for each dataset_info@dataset -> all
+;    labels contain the same (least possible) number of attribute strings.
 ;
 ; Caveats
 ;    Uses dataset_info@*, which is available here anyway.
@@ -159,8 +160,8 @@ function project_style(info, flag)
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of dataset_info@dataset, with the stlye information
-;    for the given flag. The type depends on the flag.
+;    An array of the same size of dataset_info@dataset, with the stlye
+;    information for the given flag. The type depends on the flag.
 ;
 ; Description
 ;    Retruns style informations (annotations, colors, line dash patterns, line
@@ -349,14 +350,14 @@ function project_style_GO(flag:string)  ; FiX-ME move to style-file
 ; Arguments:
 ;    flag = string determining the type of array requested
 ; Return value: array of dimsizes(dataset_info@dataset)
-;  * Definition of plot attribs; Returns arrays of dimsizes(dataset_info@dataset)
-;  * flag = "colors": returns an array of colors (either RGB or named colors)
-;  * flag = "dashes": returns an array of dash styles (integer numbers)
-;  * flag = "thicks": returns an array of line thicknesses (numeric)
-;  * flag = "annots": returns an array of annotation strings
-;  * flag = "avgstd": returns an array of flags
-;                     0 -> (model) takes part in calculation of mean & stddev
-;                     1 -> (obs/reanalysis) does not take part
+;  Definition of plot attribs; Returns arrays of dimsizes(dataset_info@dataset)
+;  flag = "colors": returns an array of colors (either RGB or named colors)
+;  flag = "dashes": returns an array of dash styles (integer numbers)
+;  flag = "thicks": returns an array of line thicknesses (numeric)
+;  flag = "annots": returns an array of annotation strings
+;  flag = "avgstd": returns an array of flags
+;                   0 -> (model) takes part in calculation of mean & stddev
+;                   1 -> (obs/reanalysis) does not take part
 ; Description:
 ;    * Definition of plot attributes: type depending on flag
 ; Modification history:

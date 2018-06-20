@@ -64,7 +64,7 @@
 ;    20161019-A_laue_ax: changed plotting of t-test results:
 ;                        now stippling significant grid cells (old version:
 ;                        masking out non-significant values in gray)
-;    20160628-A_righ_ma: moving ref_dataset specification from cfg- files to
+;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
 ;                        recipe file
 ;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
 ;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -199,14 +199,15 @@ begin
     l_altern = True
     nobs = 2
     ref_inds = get_ref_dataset_idx(dataset_info, \
-                                 (/variable_info@reference_dataset, \
-                                   variable_info@alternative_dataset/))
+                                   (/variable_info@reference_dataset, \
+                                    variable_info@alternative_dataset/))
     ref_ind = ref_inds(0)
     alt_ind = ref_inds(1)
   else
     l_altern = False
     nobs = 1
-    ref_inds = get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
+    ref_inds = \
+      get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
     ref_ind = ref_inds
   end if
 
@@ -264,10 +265,10 @@ begin
     grading = new((/nmetrics, 1, ndatasets, nobs/), float)
     grading!0 = "metric"
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
-    grading!2 = "datasets"
+    grading!2 = "models"
     grading!3 = "reference"
     grading&diagnostics = var0_grade
-    grading&datasets = remove_index(datasetnames, ref_inds)
+    grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
@@ -277,11 +278,11 @@ begin
       ndatasets = dimsizes(datasetnames) - 1  ; always 1 reference dataset
       taylor = new((/1, ndatasets, 2/), float)
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
-      taylor!1 = "datasets"
+      taylor!1 = "models"
       taylor!2 = "statistic"
       taylor&diagnostics = var0_grade
       taylor&statistic = (/"stddev_ratio", "correlation"/)
-      taylor&datasets = remove_index(datasetnames, ref_ind)
+      taylor&models = remove_index(datasetnames, ref_ind)
     end if
 
     ; Define grading filename

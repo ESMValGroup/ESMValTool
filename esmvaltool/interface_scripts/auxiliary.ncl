@@ -101,14 +101,14 @@ end
 ; #############################################################################
 undef("check_min_max_datasets")
 procedure check_min_max_datasets(no_datasets[1]:integer,
-                               min_no_datasets[1]:integer,
-                               max_no_datasets[1]:integer,
-                               diag_script[1])
+                                 min_no_datasets[1]:integer,
+                                 max_no_datasets[1]:integer,
+                                 diag_script[1])
 ;
 ; Arguments
 ;    no_datasets: number of datasets.
-;    min_no_datasets: minimum no of datasets required for this diagnostic script.
-;    max_no_datasets: maximum no of datasets required for this diagnostic script.
+;    min_no_datasets: minimum no of datasets required for this diag script.
+;    max_no_datasets: maximum no of datasets required for this diagg script.
 ;    diag_script: name of diagnostic script.
 ;
 ; Description
@@ -1421,7 +1421,7 @@ end
 ; #############################################################################
 undef("get_ref_dataset_idx")
 function get_ref_dataset_idx(datasets[1]:logical,\
-                           dataset_ref_name:string)
+                             dataset_ref_name:string)
 ;
 ; Arguments
 ;    datasets: list of all datasets
@@ -1448,7 +1448,8 @@ begin
 
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
-    idx_ref(ii) = ind(dataset_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
+    idx_ref(ii) = \
+      ind(dataset_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")

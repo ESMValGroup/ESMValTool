@@ -50,7 +50,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_dataset = variable_info@reference_dataset
+    var_all@ref_model = variable_info@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -105,7 +105,8 @@ begin
     outfile = config_user_info@plot_dir + datasetnames(imod) + "-" + \
       datasetnames(ref_ind) + "_" + var0 + "_latlon_" + \
       diag_script_info@time_avg + "_Glob"
-    plot_var@res_tiMainString = datasetnames(imod) + " - " + datasetnames(ref_ind)
+    plot_var@res_tiMainString = \
+      datasetnames(imod) + " - " + datasetnames(ref_ind)
     if (isatt(diag_script_info, "t_test")) then
       plot_var@res_gsnLeftString = plot_var@res_gsnLeftString + " - " + \
         sprinti("%2i", toint(100 * diag_script_info@conf_level)) + "% c.l."
