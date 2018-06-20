@@ -16,8 +16,7 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
 
@@ -1520,20 +1519,20 @@ begin
 
   ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "models"
-    temp = models
+    ; Project_style evaluates metadata of variable "model_info"
+    temp = model_info
 
-    ; -> keep original "models" in "temp" and restore later
-    copy_VarMeta(models, temp)
-    delete(models)
+    ; -> keep original "model_info" in "temp" and restore later
+    copy_VarMeta(model_info, temp)
+    delete(model_info)
 
-    ; Use "models" to pass on attribute names
-    models = getvaratts(temp)  ; use "models" to pass on attribute names
-    do i = 0, dimsizes(models) - 1
+    ; Use "model_info" to pass on attribute names
+    model_info = getvaratts(temp)  ; use "model_info" to pass on attribute names
+    do i = 0, dimsizes(model_info) - 1
       ; Define all original attributes again, but empty
-      models@$models(i)$ = ""
+      model_info@$model_info(i)$ = ""
     end do
-    models@name = "model_mean"
+    model_info@name = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -1541,24 +1540,24 @@ begin
     thicks_mmm = project_style(diag_script_info, "thicks")
     annots_mmm = project_style(diag_script_info, "annots")
     avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(models)
-    models = temp  ; restore original "models"
-    copy_VarMeta(temp, models)
+    delete(model_info)
+    model_info = temp  ; restore original "model_info"
+    copy_VarMeta(temp, model_info)
     delete(temp)
   end if
 
   ; Highlight ESA OBS
-  do i = 0, dimsizes(models@name) - 1
-    if (models@name(i).eq."ESACCI-SSMI") then
+  do i = 0, dimsizes(model_info@model) - 1
+    if (model_info@model(i).eq."ESACCI-SSMI") then
       thicks(i) = 5 * thicks(i)
       dashes(i) = 0
-    else if (models@name(i).eq."ESACCI-AMSR") then
+    else if (model_info@model(i).eq."ESACCI-AMSR") then
       thicks(i) = 5 * thicks(i)
       dashes(i) = 1
-    else if (models@name(i).eq."NSIDC-NT") then
+    else if (model_info@model(i).eq."NSIDC-NT") then
       thicks(i) = 3 * thicks(i)
       dashes(i) = 2
-    else if (models@name(i).eq."NSIDC-BT") then
+    else if (model_info@model(i).eq."NSIDC-BT") then
       thicks(i) = 3 * thicks(i)
       dashes(i) = 12
     end if

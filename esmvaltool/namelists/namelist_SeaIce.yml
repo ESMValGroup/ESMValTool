@@ -55,6 +55,8 @@ diagnostics:
         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"            # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
+        range_option: 0       # 0 = use each model's whole time range as specified in namelist
+                              # 1 = use only intersection of all time ranges 
         multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
         EMs_in_lg: False      # True: create legend label for each individual ensemble member
         fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.

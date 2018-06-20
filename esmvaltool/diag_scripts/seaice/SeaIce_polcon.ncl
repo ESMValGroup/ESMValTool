@@ -92,7 +92,7 @@ begin
 
     ;; check field type
     plot_fields = (/"T2Ms"/)
-    ind_f = any(field_type0, plot_fields)
+    ind_f = any(field_type0.eq.plot_fields)
     if (all(ismissing(ind_f))) then
         error_msg("f", diag_script, "", "can't use field, " + fields)
     end if

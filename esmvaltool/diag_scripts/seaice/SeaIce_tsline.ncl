@@ -42,9 +42,9 @@ load "./interface_scripts/interface.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/style.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 load "./diag_scripts/shared/plot/xy_line.ncl"
 
@@ -55,7 +55,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -79,7 +79,7 @@ begin
 
     ;; Check field type
     plot_fields = (/"T2Ms"/)
-    ind_f = inlist(field_type0, plot_fields)
+    ind_f = any(field_type0.eq.plot_fields)
     if (all(ismissing(ind_f))) then
         error_msg("f", diag_script, "", "can't use field, " + field_type0)
     end if
@@ -129,7 +129,7 @@ begin
         annots_mmm = project_style(diag_script_info, "annots")
         avgstd_mmm = project_style(diag_script_info, "avgstd")
         delete(models)
-        models = temp   ; Restore original "models"
+        model_info = temp   ; Restore original "model_info"
         copy_VarMeta(temp, models)
         delete(temp)
     end if
@@ -151,7 +151,7 @@ begin
     val_area&month = int2dble(ispan(1, 12, 1))
 
     ;; Loop over models
-    do imod = 0, dimsizes(models@name) - 1
+    do imod = 0, dimsizes(model_info@model) - 1
 
         log_info("processing " + annots(imod) + \
                     "  ############################################")
@@ -165,7 +165,7 @@ begin
 
         ;; Further processing depends on whether var is on a lat-lon grid
         if(all(iscoord(var, (/"lat", "lon"/)))) then
-            log_info("SeaIce_ancyc.ncl: " + var0 + " is on a lat-lon grid")
+            log_info(diag_script + ": " + var0 + " is on a lat-lon grid")
             area_temp = map_area(var&lat, var&lon)
             ;; Make 2D to be compatible with irregular grid handling below
             area_lat = conform_dims(dimsizes(area_temp), var&lat, 0)
@@ -178,7 +178,7 @@ begin
                 area_temp@_FillValue = var@_FillValue
             end if
         else  ; Irregular grid
-            log_info("SeaIce_ancyc.ncl: var is not on a lat-lon grid")
+            log_info(diag_script + ": var is not on a lat-lon grid")
             ;; Get area data & lat-lon from another file
             ;; (model specific: ~/reformat_scripts folder)
             area_lon = extract_area(imod, data, "lon", var0)
@@ -191,8 +191,8 @@ begin
         end_year   = get_end_year(imod)
         if (diag_script_info@range_option.eq.0) then
             range = "different years (" + \
-                sprinti("%0.4i", min(toint(models@start_year))) + "-" + \
-                sprinti("%0.4i", max(toint(models@end_year))) + ")"
+                sprinti("%0.4i", min(toint(model_info@start_year))) + "-" + \
+                sprinti("%0.4i", max(toint(model_info@end_year))) + ")"
         else if (diag_script_info@range_option.eq.1) then
             range = sprinti("%0.4i", start_year) + " - " + \
                 sprinti("%0.4i", end_year)
@@ -392,8 +392,8 @@ begin
     ;; Reporting
 ;     climofiles = interface_get_inpaths(0) + "/" + \
 ;                      interface_get_infile(var0, field_type0, 0)
-;     if (dimsizes(models@name).gt.1) then
-;         do imod=1, dimsizes(models@name)-1
+;     if (dimsizes(model_info@model).gt.1) then
+;         do imod=1, dimsizes(model_info@model)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;             climofiles := array_append_record( climofiles, \
@@ -406,13 +406,13 @@ begin
 ;     caption = "Timeseries of sea ice extent. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
 ;     id = "#idSeaIceTslineExtent"
 ;     contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
-;     ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
+;     ESMValMD(plot_fname, alltags, caption, id, var0, model_info@model, climofiles, diag_script, contrib_authors)
 ;     delete([/plot_fname, alltags, caption, id/])
 ;     plot_fname = wks_area@fullname
 ;     alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
 ;     caption = "Timeseries of sea ice area. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
 ;     id = "#idSeaIceTslineArea"
-;     ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
+;     ESMValMD(plot_fname, alltags, caption, id, var0, model_info@model, climofiles, diag_script, contrib_authors)
 ;     delete([/plot_fname, alltags, caption, id/])
 
     log_info(">>>>>>>> Leaving " + diag_script)
