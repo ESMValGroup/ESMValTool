@@ -475,7 +475,6 @@ def _get_input_files(variable, config_user):
 
 def _get_input_fx_files(variable, config_user):
     """Get the input fx files for a single model"""
-
     fx_files = {}
     for fx_var in variable['fx_variable']:
         # Find the fx files
