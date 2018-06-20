@@ -35,46 +35,6 @@ FILLING = 'facecolor'
 INFORMATION = [MODEL, COLOR, DASH, THICKNESS, MARK, AVG_STD]
 
 
-def convert_mark(info):
-    """Convert numerical mark info to matplotlib mark."""
-    if info == '0':
-        return 'x'
-    elif info == '1':
-        return '.'
-    elif info == '2':
-        return '+'
-    elif info == '3':
-        return 'x'
-    elif info == '4':
-        return 'o'
-    elif info == '5':
-        return 'x'
-    elif info == '6':
-        return 's'
-    elif info == '7':
-        return '^'
-    elif info == '8':
-        return 'v'
-    elif info == '9':
-        return 'D'
-    elif info == '10':
-        return '<'
-    elif info == '11':
-        return '>'
-    elif info == '12':
-        return '*'
-    elif info == '13':
-        return 'h'
-    elif info == '14':
-        return '.'
-    elif info == '15':
-        return 'x'
-    elif info == '16':
-        return 'o'
-    else:
-        return 'o'
-
-
 def read_ncl_style(file_name):
     """Read ncl style file."""
     output = []
@@ -114,7 +74,25 @@ def read_ncl_style(file_name):
                         infos.update({FILLING: 'none'})
 
                     # Shape
-                    info = convert_mark(info)
+                    shape = {
+                        '0': 'x',
+                        '1': '.',
+                        '2': '+',
+                        '3': 'x',
+                        '4': 'o',
+                        '5': 'x',
+                        '6': 's',
+                        '7': '^',
+                        '8': 'v',
+                        '9': 'D',
+                        '10': '<',
+                        '11': '>',
+                        '12': '*',
+                        '13': 'h',
+                        '14': '.',
+                        '15': 'x',
+                        '16': 'o'}
+                    info = shape.get(info, 'o')
 
                 # Add information
                 infos.update({INFORMATION[idx]: info})
