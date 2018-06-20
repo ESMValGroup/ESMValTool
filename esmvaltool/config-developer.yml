@@ -17,28 +17,28 @@
 # Only the default drs is mandatory, the others are optional
 ###############################################################################
 PRIMAVERA:
-  input_dir: '[expid]/cmorfiles/CMIP/[institute]/[model]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
-  input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_[grid]_*.nc'
-  output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  input_dir: '[expid]/cmorfiles/CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
+  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   cmor_tables: '~/PycharmProjects/earthdiagnostics/earthdiagnostics/cmor_tables/primavera'
 
 CMIP6:
-  input_dir: 'CMIP/[institute]/[model]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
-  input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_[grid]_*.nc'
-  output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  input_dir: 'CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
+  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
 
 CMIP5:
   input_dir:
     default: '/'
-    BADC: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'
-    DKRZ: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/[latestversion]/[var]'
-    ETHZ: '[exp]/[mip]/[var]/[model]/[ensemble]/'
-    SMHI: '[model]/[ensemble]/[exp]/[freq]'
-    BSC: '[project]/[exp]/[model]'
-  input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_*'
-  output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+    BADC: '[institute]/[dataset]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'
+    DKRZ: '[institute]/[dataset]/[exp]/[freq]/[realm]/[mip]/[ensemble]/[latestversion]/[var]'
+    ETHZ: '[exp]/[mip]/[var]/[dataset]/[ensemble]/'
+    SMHI: '[dataset]/[ensemble]/[exp]/[freq]'
+    BSC: '[project]/[exp]/[dataset]'
+  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   institute:
     'HadGEM2-CC': 'MOHC'
     'HadGEM2-A': 'MOHC'
@@ -118,45 +118,45 @@ CMIP5:
 
 OBS:
   input_dir:
-    default: '[tier]/[model]'
-    BSC: '[type]/[institute]/[model]/[freq_folder]/[var][freq_base]'
+    default: '[tier]/[dataset]'
+    BSC: '[type]/[institute]/[dataset]/[freq_folder]/[var][freq_base]'
   input_file:
-    default: '[project]_[model]_[type]_[version]_[field]_[var]_*'
+    default: '[project]_[dataset]_[type]_[version]_[field]_[var]_*'
     BSC: '[var]_*.nc'
-  output_file: '[project]_[model]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
+  output_file: '[project]_[dataset]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 obs4mips:
   input_dir:
-    default: '[tier]/[model]'
-  input_file: '[var]_[model]_[level]_[version]_*'
-  output_file: '[project]_[model]_[level]_[version]_[field]_[var]_[start_year]-[end_year]'
+    default: '[tier]/[dataset]'
+  input_file: '[var]_[dataset]_[level]_[version]_*'
+  output_file: '[project]_[dataset]_[level]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 ana4mips:
   input_dir:
-    default: '[tier]/[model]'
-  input_file: '[var]_[mip]_[type]_[model]_*'
-  output_file: '[project]_[mip]_[type]_[model]_[field]_[var]_[start_year]-[end_year]'
+    default: '[tier]/[dataset]'
+  input_file: '[var]_[mip]_[type]_[dataset]_*'
+  output_file: '[project]_[mip]_[type]_[dataset]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 CCMVal1:
   input_dir:
-    default: '[exp]/[model]'
+    default: '[exp]/[dataset]'
   input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 CCMVal2:
   input_dir:
-    default: '[exp]/[model]'
+    default: '[exp]/[dataset]'
   input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 EMAC:
   input_dir:
-    default: '[model]'
+    default: '[dataset]'
   input_file: ''
-  output_file: '[model]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  output_file: '[dataset]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'

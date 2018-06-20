@@ -5,12 +5,12 @@
 #### Description:
 #################
 #The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
-#changed for ESMValTool to two models; the recipe can accomodate as many pairs of models to be compared as the 
+#changed for ESMValTool to two datasets; the recipe can accomodate as many pairs of datasets to be compared as the 
 #user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
 #(autoassess_stratosphere.py), the (control_model, exp_model) pair may vary accoding to the user's
 #needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the
-#time data is within the (start_year, end_year) specified in models: section. Preprocessing is basic and just
-#extracts levels and regrids onto the reference ERA-Interim model; this is done once.
+#time data is within the (start_year, end_year) specified in datasets: section. Preprocessing is basic and just
+#extracts levels and regrids onto the reference ERA-Interim dataset; this is done once.
 #################
 #### CAVEATS
 #################
@@ -19,10 +19,10 @@
 ###########################################################################################################
 ---
 
-models:
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {model: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -49,8 +49,8 @@ diagnostics:
         preprocessor: pp_aa_area
         mip: Amon
         field: T3M
-    additional_models:
-      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+    additional_datasets:
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:
       autoassess_strato_test_1: &autoassess_strato_test_1_settings
         script: autoassess/autoassess_stratosphere.py

@@ -6,7 +6,7 @@
 ; #############################################################################
 ;
 ; Description
-;    This script is a driver for averaging the input from the first model
+;    This script is a driver for averaging the input from the first dataset
 ;    over time and creating a global contour plot.
 ;    Output to NetCDF files is optional (controlled via diag_script_info)
 ;    Time averaging and plotting is done in separate routines.
@@ -63,9 +63,9 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
   ; above 'ncl.interface' file
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -83,8 +83,8 @@ end
 begin
 
   ; Get data and average time
-  imod = 0  ; get data from first model
-  log_debug("processing " + model_info@model(imod))
+  imod = 0  ; get data from first dataset
+  log_debug("processing " + dataset_info@datasetOB(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)

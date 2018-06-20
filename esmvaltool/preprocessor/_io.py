@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 GLOBAL_FILL_VALUE = 1e+20
 
-MODEL_KEYS = {
+DATASET_KEYS = {
     'mip',
 }
 VARIABLE_KEYS = {
-    'reference_model',
-    'alternative_model',
+    'reference_dataset',
+    'alternative_dataset',
 }
 
 
@@ -172,17 +172,17 @@ def _write_ncl_metadata(output_dir, metadata):
     input_file_info = {k: [v.get(k) for v in variables] for k in keys}
     info = {
         'input_file_info': input_file_info,
-        'model_info': {},
+        'dataset_info': {},
         'variable_info': {}
     }
 
-    # Split input_file_info into model and variable properties
-    # model keys and keys with non-identical values will be stored
-    # in model_info, the rest in variable_info
+    # Split input_file_info into dataset and variable properties
+    # dataset keys and keys with non-identical values will be stored
+    # in dataset_info, the rest in variable_info
     for key, values in input_file_info.items():
-        model_specific = any(values[0] != v for v in values)
-        if (model_specific or key in MODEL_KEYS) and key not in VARIABLE_KEYS:
-            info['model_info'][key] = values
+        dataset_specific = any(values[0] != v for v in values)
+        if (dataset_specific or key in DATASET_KEYS) and key not in VARIABLE_KEYS:
+            info['dataset_info'][key] = values
         else:
             # Select a value that is filled
             attribute_value = None

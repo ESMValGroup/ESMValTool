@@ -3,14 +3,14 @@
 
 ---
 # Recipe schema
-models: list(include('model'), required=False)
+datasets: list(include('dataset'), required=False)
 preprocessors: map(map(), min=1)
 diagnostics: map(include('diagnostic'), required=False)
 
 ---
 # Recipe item definitions
-model:
-  model: str()
+dataset:
+  dataset: str()
   project: str()
   start_year: int(min=1750, max=2250)
   end_year: int(min=1750, max=2250)
@@ -25,15 +25,15 @@ model:
 variable:
   field: str()
   preprocessor: str()
-  reference_model: str(required=False)
-  alternative_model: str(required=False)
+  reference_dataset: str(required=False)
+  alternative_dataset: str(required=False)
   mip: str(required=False)
 
 # TODO: add preprocessor item
 
 diagnostic:
   scripts: any(null(), map(include('script')))
-  additional_models: list(include('model'), required=False)
+  additional_datasets: list(include('dataset'), required=False)
   description: str(required=False)
   variables: map(include('variable'), required=False)
 

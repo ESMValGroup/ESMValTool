@@ -17,7 +17,7 @@ from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
-from .preprocessor._io import MODEL_KEYS, concatenate_callback
+from .preprocessor._io import DATASET_KEYS, concatenate_callback
 from .preprocessor._regrid import get_cmor_levels, get_reference_levels
 
 logger = logging.getLogger(__name__)
@@ -146,14 +146,14 @@ def check_preprocessor_settings(settings):
             raise
 
 
-def check_duplicate_models(models):
-    """Check for duplicate models."""
-    checked_models_ = []
-    for model in models:
-        if model in checked_models_:
+def check_duplicate_datasets(datasets):
+    """Check for duplicate datasets."""
+    checked_datasets_ = []
+    for dataset in datasets:
+        if dataset in checked_datasets_:
             raise RecipeError(
-                "Duplicate model {} in models section".format(model))
-        checked_models_.append(model)
+                "Duplicate dataset {} in datasets section".format(dataset))
+        checked_datasets_.append(dataset)
 
 
 def check_variable(variable, required_keys):
@@ -187,9 +187,9 @@ def check_data_availability(input_files, variable):
                 ", ".join(str(year) for year in missing_years), input_files))
 
 
-def _get_value(key, models):
-    """Get a value for key by looking at the other models."""
-    values = {model[key] for model in models if key in model}
+def _get_value(key, datasets):
+    """Get a value for key by looking at the other datasets."""
+    values = {dataset[key] for dataset in datasets if key in dataset}
 
     if len(values) == 1:
         return values.pop()
@@ -199,11 +199,11 @@ def _get_value(key, models):
             values, key))
 
 
-def _update_from_others(variable, keys, models):
-    """Get values for keys by copying from the other models."""
+def _update_from_others(variable, keys, datasets):
+    """Get values for keys by copying from the other datasets."""
     for key in keys:
         if key not in variable:
-            value = _get_value(key, models)
+            value = _get_value(key, datasets)
             if value is not None:
                 variable[key] = value
 
@@ -254,9 +254,9 @@ def _add_cmor_info(variable, override=False):
     check_variable(variable, required_keys=cmor_keys)
 
 
-def _special_name_to_model(variable, special_name):
-    """Convert special names to model names."""
-    if special_name in ('reference_model', 'alternative_model'):
+def _special_name_to_dataset(variable, special_name):
+    """Convert special names to dataset names."""
+    if special_name in ('reference_dataset', 'alternative_dataset'):
         if special_name not in variable:
             raise RecipeError(
                 "Preprocessor {} uses {}, but {} is not defined for "
@@ -269,16 +269,16 @@ def _special_name_to_model(variable, special_name):
 
 
 def _update_target_levels(variable, variables, settings, config_user):
-    """Replace the target levels model name with a filename if needed."""
+    """Replace the target levels dataset name with a filename if needed."""
     levels = settings.get('extract_levels', {}).get('levels')
     if not levels:
         return
 
-    levels = _special_name_to_model(variable, levels)
+    levels = _special_name_to_dataset(variable, levels)
 
-    # If levels is a model name, replace it by a dict with a 'model' entry
-    if any(levels == v['model'] for v in variables):
-        settings['extract_levels']['levels'] = {'model': levels}
+    # If levels is a dataset name, replace it by a dict with a 'dataset' entry
+    if any(levels == v['dataset'] for v in variables):
+        settings['extract_levels']['levels'] = {'dataset': levels}
         levels = settings['extract_levels']['levels']
 
     if not isinstance(levels, dict):
@@ -287,35 +287,35 @@ def _update_target_levels(variable, variables, settings, config_user):
     if 'cmor_table' in levels and 'coordinate' in levels:
         settings['extract_levels']['levels'] = get_cmor_levels(
             levels['cmor_table'], levels['coordinate'])
-    elif 'model' in levels:
-        if variable['model'] == levels['model']:
+    elif 'dataset' in levels:
+        if variable['dataset'] == levels['dataset']:
             del settings['extract_levels']
         else:
-            filename = _model_to_file(levels['model'], variables, config_user)
+            filename = _dataset_to_file(levels['dataset'], variables, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, coordinate)
 
 
 def _update_target_grid(variable, variables, settings, config_user):
-    """Replace the target grid model name with a filename if needed."""
+    """Replace the target grid dataset name with a filename if needed."""
     grid = settings.get('regrid', {}).get('target_grid')
     if not grid:
         return
 
-    grid = _special_name_to_model(variable, grid)
+    grid = _special_name_to_dataset(variable, grid)
 
-    if variable['model'] == grid:
+    if variable['dataset'] == grid:
         del settings['regrid']
-    elif any(grid == v['model'] for v in variables):
-        settings['regrid']['target_grid'] = _model_to_file(
+    elif any(grid == v['dataset'] for v in variables):
+        settings['regrid']['target_grid'] = _dataset_to_file(
             grid, variables, config_user)
 
 
-def _model_to_file(model, variables, config_user):
-    """Find the first file belonging to model."""
+def _dataset_to_file(dataset, variables, config_user):
+    """Find the first file belonging to dataset."""
     for variable in variables:
-        if variable['model'] == model:
+        if variable['dataset'] == dataset:
             files = get_input_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
@@ -332,36 +332,36 @@ def _model_to_file(model, variables, config_user):
             return files[0]
 
     raise RecipeError(
-        "Unable to find matching file for model {}".format(model))
+        "Unable to find matching file for dataset {}".format(dataset))
 
 
-def _limit_models(variables, profile, max_models=None):
-    """Try to limit the number of models to max_models."""
-    if not max_models:
+def _limit_datasets(variables, profile, max_datasets=None):
+    """Try to limit the number of datasets to max_datasets."""
+    if not max_datasets:
         return variables
 
-    logger.info("Limiting the number of models to %s", max_models)
+    logger.info("Limiting the number of datasets to %s", max_datasets)
 
-    required_models = (
+    required_datasets = (
         profile.get('extract_levels', {}).get('levels'),
         profile.get('regrid', {}).get('target_grid'),
-        variables[0].get('reference_model'),
-        variables[0].get('alternative_model'),
+        variables[0].get('reference_dataset'),
+        variables[0].get('alternative_dataset'),
     )
 
     limited = []
 
     for variable in variables:
-        if variable['model'] in required_models:
+        if variable['dataset'] in required_datasets:
             limited.append(variable)
 
     for variable in variables[::-1]:
-        if len(limited) >= max_models:
+        if len(limited) >= max_datasets:
             break
         if variable not in limited:
             limited.append(variable)
 
-    logger.info("Only considering %s", ', '.join(v['model'] for v in limited))
+    logger.info("Only considering %s", ', '.join(v['dataset'] for v in limited))
 
     return limited
 
@@ -395,7 +395,7 @@ def _get_default_settings(variable, config_user, derive=False):
     # Configure fixes
     fix = {
         'project': variable['project'],
-        'model': variable['model'],
+        'dataset': variable['dataset'],
         'short_name': variable['short_name'],
     }
     # File fixes
@@ -452,7 +452,7 @@ def _get_default_settings(variable, config_user, derive=False):
 
 
 def _get_input_files(variable, config_user):
-    """Get the input files for a single model"""
+    """Get the input files for a single dataset"""
     # Find input files locally.
     input_files = get_input_filelist(
         variable=variable,
@@ -464,8 +464,8 @@ def _get_input_files(variable, config_user):
     if config_user['synda_download'] and not input_files:
         input_files = synda_search(variable)
 
-    logger.info("Using input files for variable %s of model %s:\n%s",
-                variable['short_name'], variable['model'],
+    logger.info("Using input files for variable %s of dataset %s:\n%s",
+                variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
     check_data_availability(input_files, variable)
 
@@ -488,7 +488,7 @@ def _apply_preprocessor_settings(settings, profile_settings):
 
 
 def _update_multi_model_statistics(variables, settings, preproc_dir):
-    """Configure multi model statistics."""
+    """Configure multi dataset statistics."""
     if settings.get('multi_model_statistics', False):
         if settings['multi_model_statistics'] is True:
             settings['multi_model_statistics'] = {}
@@ -502,22 +502,22 @@ def _update_multi_model_statistics(variables, settings, preproc_dir):
             stat_settings['filenames'][statistic] = get_statistic_output_file(
                 variable, statistic, preproc_dir)
 
-        # Define models to exclude
-        exclude_models = set(stat_settings.get('exclude', {}))
-        for key in 'reference_model', 'alternative_model':
-            if key in exclude_models and key in variable:
-                exclude_models.remove(key)
-                exclude_models.add(variable[key])
+        # Define datasets to exclude
+        exclude_datasets = set(stat_settings.get('exclude', {}))
+        for key in 'reference_dataset', 'alternative_dataset':
+            if key in exclude_datasets and key in variable:
+                exclude_datasets.remove(key)
+                exclude_datasets.add(variable[key])
         exclude_files = {
             v['filename']
-            for v in variables if v['model'] in exclude_models
+            for v in variables if v['dataset'] in exclude_datasets
         }
-        logger.debug('Multimodel excludes files %s', exclude_files)
+        logger.debug('Multidataset excludes files %s', exclude_files)
         stat_settings['exclude'] = {'_filename': exclude_files}
 
 
 def _get_preprocessor_settings(variables, profile, config_user):
-    """Get preprocessor settings for a set of models."""
+    """Get preprocessor settings for a set of datasets."""
     all_settings = {}
     profile = copy.deepcopy(profile)
     _update_multi_model_statistics(variables, profile,
@@ -527,7 +527,7 @@ def _get_preprocessor_settings(variables, profile, config_user):
         derive = 'derive' in profile
         settings = _get_default_settings(variable, config_user, derive=derive)
         _apply_preprocessor_settings(settings, profile)
-        # if the target grid is a model name, replace it with a file name
+        # if the target grid is a dataset name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
         _update_target_levels(
             variable=variable,
@@ -547,7 +547,7 @@ def _get_preprocessor_settings(variables, profile, config_user):
 
 
 def _check_multi_model_settings(all_settings):
-    """Check that multi model settings are identical for all models."""
+    """Check that multi dataset settings are identical for all datasets."""
     multi_model_steps = (step for step in preprocessor.MULTI_MODEL_FUNCTIONS
                          if any(step in settings
                                 for settings in all_settings.values()))
@@ -558,7 +558,7 @@ def _check_multi_model_settings(all_settings):
                 result = settings[step]
             elif result != settings[step]:
                 raise RecipeError(
-                    "Unable to combine differing multi-model settings "
+                    "Unable to combine differing multi-dataset settings "
                     "{} and {} for output file {}".format(
                         result, settings[step], filename))
 
@@ -567,7 +567,7 @@ def _get_single_preprocessor_task(variables,
                                   profile,
                                   config_user,
                                   ancestors=None):
-    """Create preprocessor tasks for a set of models."""
+    """Create preprocessor tasks for a set of datasets."""
     # Configure preprocessor
     all_settings = _get_preprocessor_settings(
         variables=variables, profile=profile, config_user=config_user)
@@ -596,7 +596,7 @@ def _get_preprocessor_task(variables,
                            profiles,
                            config_user,
                            write_ncl_interface=False):
-    """Create preprocessor task(s) for a set of models."""
+    """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
     variable = variables[0]
     preproc_name = variable.get('preprocessor')
@@ -607,8 +607,8 @@ def _get_preprocessor_task(variables,
     profile = copy.deepcopy(profiles[variable['preprocessor']])
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
-    variables = _limit_models(variables, profile,
-                              config_user.get('max_models'))
+    variables = _limit_datasets(variables, profile,
+                              config_user.get('max_datasets'))
 
     # Create preprocessor task(s)
     derive_tasks = []
@@ -679,7 +679,7 @@ class Recipe(object):
         self._preprocessors = raw_recipe['preprocessors']
         self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
-            raw_recipe['diagnostics'], raw_recipe.get('models', []))
+            raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     @staticmethod
@@ -696,7 +696,7 @@ class Recipe(object):
                     return True
         return False
 
-    def _initialize_diagnostics(self, raw_diagnostics, raw_models):
+    def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
         """Define diagnostics in recipe"""
         logger.debug("Retrieving diagnostics from recipe")
 
@@ -709,7 +709,7 @@ class Recipe(object):
                 self._initialize_preprocessor_output(
                     name,
                     raw_diagnostic.get('variables', {}),
-                    raw_models + raw_diagnostic.get('additional_models', []))
+                    raw_datasets + raw_diagnostic.get('additional_datasets', []))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
@@ -717,41 +717,41 @@ class Recipe(object):
         return diagnostics
 
     @staticmethod
-    def _initialize_models(raw_models):
-        """Define models used by variable"""
-        models = copy.deepcopy(raw_models)
+    def _initialize_datasets(raw_datasets):
+        """Define datasets used by variable"""
+        datasets = copy.deepcopy(raw_datasets)
 
-        for model in models:
-            for key in model:
-                MODEL_KEYS.add(key)
+        for dataset in datasets:
+            for key in dataset:
+                DATASET_KEYS.add(key)
 
-        check_duplicate_models(models)
-        return models
+        check_duplicate_datasets(datasets)
+        return datasets
 
-    def _initialize_variables(self, raw_variable, raw_models):
-        """Define variables for all models."""
+    def _initialize_variables(self, raw_variable, raw_datasets):
+        """Define variables for all datasets."""
         # TODO: rename `variables` to `attributes` and store in dict
         # using filenames as keys?
         variables = []
 
-        models = self._initialize_models(
-            raw_models + raw_variable.pop('additional_models', []))
+        datasets = self._initialize_datasets(
+            raw_datasets + raw_variable.pop('additional_datasets', []))
 
-        for model in models:
+        for dataset in datasets:
             variable = copy.deepcopy(raw_variable)
-            variable.update(model)
+            variable.update(dataset)
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
             variables.append(variable)
 
         required_keys = {
-            'short_name', 'field', 'model', 'project', 'start_year',
+            'short_name', 'field', 'dataset', 'project', 'start_year',
             'end_year', 'preprocessor', 'diagnostic'
         }
 
         for variable in variables:
-            _update_from_others(variable, ['cmor_table', 'mip'], models)
+            _update_from_others(variable, ['cmor_table', 'mip'], datasets)
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
@@ -759,7 +759,7 @@ class Recipe(object):
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
-                                        raw_models):
+                                        raw_datasets):
         """Define variables in diagnostic"""
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
@@ -772,7 +772,7 @@ class Recipe(object):
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
             preprocessor_output[variable_name] = \
-                self._initialize_variables(raw_variable, raw_models)
+                self._initialize_variables(raw_variable, raw_datasets)
 
         return preprocessor_output
 

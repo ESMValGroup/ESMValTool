@@ -13,7 +13,7 @@
 ;    function esmf_conserve_wrapper
 ;    function rect2rect_interp
 ;    function plev_lat_interp
-;    function get_model_minus_ref
+;    function get_dataset_minus_ref
 ;    function esmf_conserve_wrapper_time
 ;    function regrid_3D_to_rectilinear_grid
 ;
@@ -35,7 +35,7 @@ function find_destination_grid(indexes[*]:integer,
                                opt[1]:string)
 ;
 ; Arguments
-;    indexes: a 1-D array of model indexes to be considered.
+;    indexes: a 1-D array of dataset indexes to be considered.
 ;    var: variable name.
 ;    field: field type.
 ;    opt: type of grid to be selected:
@@ -47,19 +47,19 @@ function find_destination_grid(indexes[*]:integer,
 ;    plev/lat/lon or lat/lon coordinates.
 ;
 ; Description:
-;    Given an array of models, returns the coordinates of the coarsest or
+;    Given an array of datasets, returns the coordinates of the coarsest or
 ;    finest grid, to be used as a destination grid in regridding routines.
 ;    For the vertical coordinate, the extent is considered as first priority
 ;    (to avoid loss of data).
-;    All models are expect to have the same rank and dimension sizes.
+;    All datasets are expect to have the same rank and dimension sizes.
 ;
 ; Caveats
 ;    The returned plev, lat, lon coordinates do not necessarily come from the
-;    same input model, i.e. it is possible to get latitude from one model
-;    longitude from another model.
+;    same input dataset, i.e. it is possible to get latitude from one dataset
+;    longitude from another dataset.
 ;
 ; Modification history
-;    20150113-A_gott_kl: check that all models have the same dimensions.
+;    20150113-A_gott_kl: check that all datasets have the same dimensions.
 ;    20150113-A_gott_kl: revised to allow data without lev or lon coordinate.
 ;    20140903-A_righ_ma: revised plev coordinate selection.
 ;    20140311-A_righ_ma: added plev coordinate.
@@ -98,7 +98,7 @@ begin
   ref_lat  = 1.d0
   ref_lon  = 1.d0
 
-  ; Loop over models, select coarsest/finest lat and lon
+  ; Loop over datasets, select coarsest/finest lat and lon
   ; Always use the finest in the vertical
   do mID = 0, dimsizes(indexes) - 1
 
@@ -122,13 +122,13 @@ begin
     end if
     flags = (/flag_plev, flag_lat, flag_lon/)
 
-        ; Check that all models have the same dimensions
+        ; Check that all datasets have the same dimensions
     if(mID.eq.0) then
       flags0 = flags
     else
       if(.not.all(flags.eq.flags0)) then
         error_msg("f", scriptname, funcname, \
-                  "all models must have same dimensions")
+                  "all datasets must have same dimensions")
       end if
     end if
 
@@ -143,7 +143,7 @@ begin
         lower_plev = max(tmp&plev)
         ref_plev = tmp&plev
         ref_nplev = dimsizes(ref_plev)
-        modelID_plev = mID
+        datasetID_plev = mID
       else if (d_up.lt.1.d-5 .and. d_lo.lt.1.d-5) then
         if (dimsizes(tmp&plev).gt.ref_nplev .and. opt.eq."finest") then
           delete(ref_plev)
@@ -151,7 +151,7 @@ begin
           lower_plev = max(tmp&plev)
           ref_plev = tmp&plev
           ref_nplev = dimsizes(ref_plev)
-          modelID_plev = mID
+          datasetID_plev = mID
         end if
         if (dimsizes(tmp&plev).lt.ref_nplev .and. opt.eq."coarsest") then
           delete(ref_plev)
@@ -159,7 +159,7 @@ begin
           lower_plev = max(tmp&plev)
           ref_plev = tmp&plev
           ref_nplev = dimsizes(ref_plev)
-          modelID_plev = mID
+          datasetID_plev = mID
         end if
       end if
       end if
@@ -174,7 +174,7 @@ begin
         delete(ref_lat)
         ref_lat = tmp&lat
         ref_nlat = dimsizes(ref_lat)
-        modelID_lat = mID
+        datasetID_lat = mID
       end if
     end if
 
@@ -185,12 +185,12 @@ begin
         delete(ref_lon)
         ref_lon = tmp&lon
         ref_nlon = dimsizes(ref_lon)
-        modelID_lon = mID
+        datasetID_lon = mID
       end if
     end if
     delete(tmp)
 
-  end do  ; models
+  end do  ; datasets
 
   ; Assemble target grid, depending on (non-)existence of dimensions
   if(flag_plev .and. flag_lat .and. flag_lon) then  ; plev, lat, lon
@@ -231,15 +231,15 @@ begin
 
   if(flag_plev) then
     grid&plev = ref_plev
-    grid@gridlev_mID = modelID_plev
+    grid@gridlev_mID = datasetID_plev
   end if
   if(flag_lat) then
     grid&lat = ref_lat
-    grid@gridlat_mID = modelID_lat
+    grid@gridlat_mID = datasetID_lat
   end if
   if(flag_lon) then
     grid&lon = ref_lon
-    grid@gridlon_mID = modelID_lon
+    grid@gridlon_mID = datasetID_lon
   end if
 
   leave_msg(scriptname, funcname)
@@ -553,9 +553,9 @@ begin
 end
 
 ; #############################################################################
-undef("get_model_minus_ref")
-function get_model_minus_ref(model[*][*]:numeric,
-                             ref[*][*]:numeric)
+undef("get_dataset_minus_ref")
+function get_dataset_minus_ref(dataset[*][*]:numeric,
+                               ref[*][*]:numeric)
 ;
 ; Arguments
 ;
@@ -571,46 +571,46 @@ function get_model_minus_ref(model[*][*]:numeric,
 ;
 ; Modification history
 ;
-local funcname, scriptname, model_grid_size, ref_grid_size, local_model, \
+local funcname, scriptname, dataset_grid_size, ref_grid_size, local_dataset, \
   local_ref, difference
 begin
 
-  funcname = "get_model_minus_ref"
+  funcname = "get_dataset_minus_ref"
   scriptname = "diag_scripts/shared/regridding.ncl"
   enter_msg(scriptname, funcname)
 
-  is_plev = any(isdim(model, "plev"))
-  model_grid_size = guestimate_average_grid_area(model)
+  is_plev = any(isdim(dataset, "plev"))
+  dataset_grid_size = guestimate_average_grid_area(dataset)
   ref_grid_size = guestimate_average_grid_area(ref)
-  dimmodel = dimsizes(model)
+  dimdataset = dimsizes(dataset)
   dimref = dimsizes(ref)
-  log_debug("get_model_minus_ref: dims are, model:" + dimmodel + \
+  log_debug("get_dataset_minus_ref: dims are, dataset:" + dimdataset + \
             ", ref" + dimref)
 
-  if (model_grid_size .gt. ref_grid_size) then
+  if (dataset_grid_size .gt. ref_grid_size) then
     if (is_plev) then
-      local_ref = plev_lat_interp(ref, model)
+      local_ref = plev_lat_interp(ref, dataset)
     else
-      local_ref = rect2rect_interp(ref, model)
+      local_ref = rect2rect_interp(ref, dataset)
     end if
-    local_model = model
+    local_dataset = dataset
     ; Copy meta data
-    difference = local_model
+    difference = local_dataset
   else
     if (is_plev) then
-      local_ref = plev_lat_interp(model, ref)
+      local_ref = plev_lat_interp(dataset, ref)
     else
-      local_model = rect2rect_interp(model, ref)
+      local_dataset = rect2rect_interp(dataset, ref)
     end if
     local_ref = ref
     ; Copy meta data
     difference = local_ref
   end if
-  dimmodel = dimsizes(local_model)
+  dimdataset = dimsizes(local_dataset)
   dimref = dimsizes(local_ref)
-  log_debug("get_model_minus_ref: dims are, model:" + dimmodel + \
+  log_debug("get_dataset_minus_ref: dims are, dataset:" + dimdataset + \
             ", ref" + dimref)
-  difference = local_model - local_ref
+  difference = local_dataset - local_ref
 
   leave_msg(scriptname, funcname)
   return(difference)
@@ -731,7 +731,7 @@ function regrid_3D_to_rectilinear_grid(data_in:numeric,
 ;    lon: array with longitudes
 ;    lat: array with latitudes
 ;    grid_resolution: grid resolution of destination grid
-;    filename: file name of model file
+;    filename: file name of dataset file
 ;    regular: defines grid type
 ;             True: rectilinear
 ;             False: curvilinear
@@ -781,7 +781,7 @@ begin
   nlat = dimx(1)
   nlon = dimx(2)
 
-  ; Convert models to SCRIP file.
+  ; Convert datasets to SCRIP file.
   temp = dim_sum_n(data_in, 0)  ; This is needed to create the mask
 
   ; Variables like LAI have a different distribution of NaNs
@@ -808,7 +808,7 @@ begin
     else
       error_msg("w", "regridding.ncl", funcname, \
                 "lat_vertices/lon_vertices not available for this " + \
-                "model, using ESMF estimated values")
+                "dataset, using ESMF estimated values")
     end if
     curvilinear_to_SCRIP(srcGridName, lat, lon, Opt)
   end if
@@ -854,7 +854,7 @@ begin
   ESMF_regrid_gen_weights(srcGridName, dstGridName, wgtFile, Opt)
   delete(Opt)
 
-  ; Interpolating models from original grid final grid
+  ; Interpolating datasets from original grid final grid
   Opt = True
   Opt@PrintTimings = False
   data_out = new((/ntime, dNLAT, dNLON/), typeof(data_in))

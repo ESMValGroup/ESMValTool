@@ -86,9 +86,9 @@ def get_args():
         help='Download input data using synda. This requires a working '
         'synda installation.')
     parser.add_argument(
-        '--max-models',
+        '--max-datasets',
         type=int,
-        help='Try to limit the number of models used to MAX_MODELS.')
+        help='Try to limit the number of datasets used to MAX_DATASETS.')
     args = parser.parse_args()
     return args
 
@@ -124,7 +124,7 @@ def main(args):
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     cfg['synda_download'] = args.synda_download
-    cfg['max_models'] = args.max_models
+    cfg['max_datasets'] = args.max_datasets
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):

@@ -109,10 +109,10 @@ def get_project_config(project):
     return CFG[project]
 
 
-def cmip5_model2inst(model):
-    """Return the institute given the model name in CMIP5."""
-    logger.debug("Retrieving institute for CMIP5 model %s", model)
-    return CFG['CMIP5']['institute'][model]
+def cmip5_dataset2inst(dataset):
+    """Return the institute given the dataset name in CMIP5."""
+    logger.debug("Retrieving institute for CMIP5 dataset %s", dataset)
+    return CFG['CMIP5']['institute'][dataset]
 
 
 def cmip5_mip2realm_freq(mip):

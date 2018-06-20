@@ -23,26 +23,26 @@ begin
                 " not compatible with plot_type cycle")
   end if
   end if
-  var_all!0 = "model"
+  var_all!0 = "dataset"
   var_all!2 = "statistic"
-  var_all&model = modelnames
+  var_all&dataset = datasetnames
   var_all&statistic = (/"mean", "stddev"/)
 
   ; Attach attributes
   var_all@var = var0
   var_all@diag_script = (/diag_script/)
   copy_VarAtts(diag_script_info, var_all)
-  var_all@ref_model = variable_info@reference_model
+  var_all@ref_dataset = variable_info@reference_dataset
 
-  ; Loop over models
+  ; Loop over datasets
   do imod = 0, dim_MOD - 1
 
-    log_debug("Processing " + modelnames(imod))
+    log_debug("Processing " + datasetnames(imod))
 
     ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + model_info@filename(imod)))
+    fname = basename(systemfunc("basename " + dataset_info@filename(imod)))
     fname = fname + "_" + basename(diag_script) + "_cycle"
     fname = fname + "_" + diag_script_info@time_avg
     if (isatt(diag_script_info, "level")) then
