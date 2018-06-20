@@ -1,4 +1,14 @@
-"""Python example diagnostic."""
+"""
+Diagnostic tools:
+
+This module contains several python tools used elsewhere by the ocean
+diagnostics package.
+
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
+Author: Lee de Mora (PML)
+    ledm@pml.ac.uk
+"""
 import logging
 import os
 import sys
@@ -28,7 +38,9 @@ def folder(name):
 
 def get_input_files(cfg, index=0):
     """
-    Get a dictionary with input files from metadata.yml files.
+    Loads input configuration file.
+
+    Get a dictionary with input files from the metadata.yml files.
     """
     metadata_file = cfg['input_files'][index]
     with open(metadata_file) as file:
@@ -68,7 +80,9 @@ def bgc_units(cube, name):
 
 def timecoord_to_float(times):
     """
-    Converts an iris time coordinate into a list of floats.
+    Converts from time coordinate into decimal time.
+
+    Takes an iris time coordinate and returns a list of floats.
     """
     dtimes = times.units.num2date(times.points)
     floattimes = []
@@ -84,16 +98,16 @@ def timecoord_to_float(times):
 
 def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     """
-       Add a legend outside the plot, to the right.
+    Add a legend outside the plot, to the right.
 
-       plot_details is a 2 level dict,
-       where the first level is some key (which is hidden)
-       and the 2nd level contains the keys:
-           'c': color
-           'lw': line width
-           'label': label for the legend.
-       ax1 is the axis where the plot was drawn.
-       """
+    plot_details is a 2 level dict,
+    where the first level is some key (which is hidden)
+    and the 2nd level contains the keys:
+        'c': color
+        'lw': line width
+        'label': label for the legend.
+    ax1 is the axis where the plot was drawn.
+    """
     #####
     # Create dummy axes:
     legendSize = len(plot_details.keys()) + 1
@@ -132,11 +146,11 @@ def get_image_path(cfg,
                        'start_year', 'end_year'
                    ]):
     """
-        This produces a path to the final location of the image.
+    This produces a path to the final location of the image.
 
-        The cfg is the opened global config,
-        metadata is the metadata dictionairy (for the individual model file)
-        """
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy (for the individual model file)
+    """
     #####
     path = folder(cfg['plot_dir'])
     if prefix:
@@ -151,13 +165,13 @@ def get_image_path(cfg,
 
 def make_cube_layer_dict(cube):
     """
-        This method takes a cube and return a dictionairy
-        with a cube for each layer as it's own item. ie:
-          cubes[depth] = cube from specific layer
+    This method takes a cube and return a dictionairy
+    with a cube for each layer as it's own item. ie:
+       cubes[depth] = cube from specific layer
 
-        Also, cubes with no depth component are returns as:
-          cubes[''] = cube with no depth component.
-        """
+    Cubes with no depth component are returns as:
+      cubes[''] = cube with no depth component.
+    """
     #####
     # Check layering:
     depth = cube.coords('depth')

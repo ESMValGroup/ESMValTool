@@ -1,4 +1,28 @@
-"""Python example diagnostic."""
+"""
+Diagnostic transect:
+
+Diagnostic to produce png images of a transect.
+These plost show either latitude or longitude against depth, and the cube value
+is used as the colour scale.
+
+Note that this diagnostic assumes that the preprocessors do the bulk of the
+hard work, and that the cube received by this diagnostic (via the settings.yml
+and metadata.yml files) has no time component, and one of the latitude or
+longitude coordinates has been reduced to a single value.
+
+An approproate preprocessor for a 3D+time field would be:
+preprocessors:
+  prep_transect:
+    time_average:
+    extract_slice: # Atlantic Meridional Transect
+      latitude: [-50.,50.]
+      longitude: 332.
+
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
+Author: Lee de Mora (PML)
+        ledm@pml.ac.uk
+"""
 import logging
 import os
 import sys
@@ -16,38 +40,44 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def determine_transect_str(cube):
+    """
+    Determine Transect String
+
+    Takes a guess at a string to describe the transect.
+    """
     options = ['latitude', 'longitude']
-    for o in options:
-        coord = cube.coord(o)
+    for option in options:
+        coord = cube.coord(option)
         if len(coord.points) > 1:
             continue
         value = coord.points.mean()
-        if o == 'latitude':
+        if option == 'latitude':
             return str(value) + ' N'
-        if o == 'longitude':
+        if option == 'longitude':
             if value > 180.:
                 return str(value - 360.) + ' W'
             return str(value) + ' E'
     return ''
 
 
-def transectsPlots(
+def make_transects_plots(
         cfg,
         metadata,
         filename,
 ):
     """
-        This function makes a simple plot for an indivudual model.
-        The cfg is the opened global config,
-        metadata is the metadata dictionairy
-        filename is the preprocessing model file.
-        """
+    This function makes a simple plot of the transect for an indivudual model.
+
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy
+    filename is the preprocessing model file.
+    """
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multiModel = metadata['model'].find('MultiModel') > -1
+    multi_model = metadata['model'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
 
@@ -61,7 +91,7 @@ def transectsPlots(
     plt.title(title)
 
     # Determine png filename:
-    if multiModel:
+    if multi_model:
         path = diagtools.folder(
             cfg['plot_dir']) + os.path.basename(filename).replace(
                 '.nc', '_transect.png')
@@ -82,13 +112,14 @@ def transectsPlots(
 
 
 def main(cfg):
-    #####
-    print('cfg:\tContents:')
-    for k in cfg.keys():
-        print('CFG:\t', k, '\t', cfg[k])
+    """
+    Main function to load the config file, and send it to the plot maker.
 
+    The cfg is the opened global config.
+    """
+    #####
     for index, metadata_filename in enumerate(cfg['input_files']):
-        print(
+        logger.info(
             '\nmetadata filename:',
             metadata_filename,
         )
@@ -96,18 +127,17 @@ def main(cfg):
         metadata = diagtools.get_input_files(cfg, index=index)
         for filename in sorted(metadata.keys()):
 
-            print('-----------------')
-            print(
+            logger.info('-----------------')
+            logger.info(
                 'model filenames:\t',
                 filename,
             )
 
             ######
             # Time series of individual model
-            transectsPlots(cfg, metadata[filename], filename)
+            make_transects_plots(cfg, metadata[filename], filename)
 
-    logger.debug("\n\nThis works\n\n")
-    print('Success')
+    logger.info('Success')
 
 
 if __name__ == '__main__':

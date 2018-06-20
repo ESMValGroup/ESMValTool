@@ -1,4 +1,28 @@
-"""Python example diagnostic."""
+"""
+Diagnostic Maps:
+
+Diagnostic to produce png images of a map with coastlines from a cube.
+These plost show latitude vs longitude and the cube value is used as the colour
+scale.
+
+Note that this diagnostic assumes that the preprocessors do the bulk of the
+hard work, and that the cube received by this diagnostic (via the settings.yml
+and metadata.yml files) has no time component, a small number of depth layers,
+and a latitude and longitude coordinates.
+
+An approproate preprocessor for a 3D+time field would be:
+preprocessors:
+  prep_map:
+    extract_levels:
+      levels:  [100., ]
+      scheme: linear_extrap
+    time_average:
+
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
+Author: Lee de Mora (PML)
+        ledm@pml.ac.uk
+"""
 import logging
 import os
 import sys
@@ -46,7 +70,7 @@ def make_map_plots(
         try:
             plt.gca().coastlines()
         except AttributeError:
-            print('Not able to add coastlines')
+            logger.warning('Not able to add coastlines')
 
         # Add title to plot
         title = ' '.join([metadata['model'], metadata['long_name']])
@@ -84,12 +108,8 @@ def main(cfg):
 
     The cfg is the opened global config.
     """
-    ####
-    for k in cfg.keys():
-        print('CFG:\t', k, '\t', cfg[k])
-
     for index, metadata_filename in enumerate(cfg['input_files']):
-        print(
+        logger.info(
             '\nmetadata filename:',
             metadata_filename,
         )
@@ -97,8 +117,8 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
         for filename in sorted(metadatas.keys()):
 
-            print('-----------------')
-            print(
+            logger.info('-----------------')
+            logger.info(
                 'model filenames:\t',
                 filename,
             )
@@ -107,8 +127,7 @@ def main(cfg):
             # Time series of individual model
             make_map_plots(cfg, metadatas[filename], filename)
 
-    logger.debug("\n\nThis works\n\n")
-    print('Success')
+    logger.info('Success')
 
 
 if __name__ == '__main__':

@@ -1,3 +1,34 @@
+"""
+Diagnostic profile:
+
+Diagnostic to produce png images of the profile over time from a cube.
+These plost show cube value (ie temperature) on the x-axis, and depth/height
+on the y axis. The colour scale is the annual mean of the cube data.
+
+Note that this diagnostic assumes that the preprocessors do the bulk of the
+hard work, and that the cube received by this diagnostic (via the settings.yml
+and metadata.yml files) has a time component, and depth component, but no
+latitude or longitude coordinates.
+
+An approproate preprocessor for a 3D+time field would be:
+preprocessors:
+  prep_profile:
+    extract_volume:
+      long1: 0.
+      long2:  20.
+      lat1:  -30.
+      lat2:  30.
+      z_min: 0.
+      z_max: 3000.
+    average_region:
+      coord1: longitude
+      coord2: latitude
+
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
+Author: Lee de Mora (PML)
+        ledm@pml.ac.uk
+"""
 import logging
 import os
 import sys
@@ -111,7 +142,7 @@ def main(cfg):
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        print(
+        logger.info(
             '\nmetadata filename:',
             metadata_filename,
         )
@@ -119,8 +150,8 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
         for filename in sorted(metadatas.keys()):
 
-            print('-----------------')
-            print(
+            logger.info('-----------------')
+            logger.info(
                 'model filenames:\t',
                 filename,
             )
@@ -129,8 +160,7 @@ def main(cfg):
             # Time series of individual model
             make_profiles_plots(cfg, metadatas[filename], filename)
 
-    logger.debug("\n\nThis works\n\n")
-    print('Success')
+    logger.info('Success')
 
 
 if __name__ == '__main__':

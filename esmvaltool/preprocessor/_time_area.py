@@ -74,11 +74,11 @@ def area_slice(mycube, long1, long2, lat1, lat2):
 
 
 # slice cube over a restricted area (box)
-def volume_slice(mycube, long1, long2, lat1, lat2, z1, z2):
+def volume_slice(mycube, long1, long2, lat1, lat2, z_min, z_max):
     """
     Subset a cube on volume
 
-    Function that subsets a cube on a box (long1,long2,lat1,lat2,z1,z2)
+    Function that subsets a cube on a box (long1,long2,lat1,lat2,z_min,z_max)
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
@@ -94,14 +94,15 @@ def volume_slice(mycube, long1, long2, lat1, lat2, z1, z2):
         # the zero longitude ie, such as the Atlantic Ocean!
         sublon = iris.Constraint(
             longitude=lambda cell:
-                not ((float(long1) >= cell) * (cell >= float(long2))))
+            not (float(long1) >= cell) * (cell >= float(long2)))
     else:
         sublon = iris.Constraint(
-            longitude=lambda cell: float(long1) <= cell <= float(long2))
+                 longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
-        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
+             latitude=lambda cell: float(lat1) <= cell <= float(lat2))
 
-    subz = iris.Constraint(depth=lambda cell: float(z1) <= cell <= float(z2))
+    subz = iris.Constraint(
+           depth=lambda cell: float(z_min) <= cell <= float(z_max))
 
     region_subset = mycube.extract(sublon & sublat & subz)
     return region_subset
@@ -170,7 +171,6 @@ def area_average(mycube, coord1, coord2):
     return result
 
 
-# get the volume average
 def volume_average(
         mycube,
         coordz,
@@ -185,7 +185,6 @@ def volume_average(
 
     Returns a cube
     """
-
     import iris.analysis.cartography
     # CMOR ised data should already have bounds?
     #    mycube.coord(coord1).guess_bounds()
@@ -213,7 +212,7 @@ def depth_integration(mycube, coordz):
     Requires a 3D cube, and the name of the z coordinate.
     Returns a cube 2D.
     """
-
+    ####
     depth = mycube.coord(coordz)
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]  # 1D
 
@@ -242,11 +241,16 @@ def depth_integration(mycube, coordz):
 # extract along a constand latitude or longitude
 def extract_slice(mycube, latitude=None, longitude=None):
     """
-    Extract data along a constant latitude or longitude.
+    Extract data along a line of constant latitude or longitude.
+
     A range may also be extracted using a minimum and maximum
     value for latitude or longitude.
-    """
 
+    This function is not yet implemented for irregular arrays - instead
+    try the extract_trajectory function, but note that it is currently
+    very slow.
+    """
+    ####
     second_coord = False
     lats = mycube.coord('latitude')
     lons = mycube.coord('longitude')
@@ -268,11 +272,11 @@ def extract_slice(mycube, latitude=None, longitude=None):
     #####
     # Look for the first coordinate.
     if isinstance(latitude, float):
-        d = lats.nearest_neighbour_index(latitude)
+        coord_index = lats.nearest_neighbour_index(latitude)
         coord_dim = mycube.coord_dims('latitude')[0]
 
     if isinstance(longitude, float):
-        d = lons.nearest_neighbour_index(longitude)
+        coord_index = lons.nearest_neighbour_index(longitude)
         coord_dim = mycube.coord_dims('longitude')[0]
 
     #####
@@ -283,9 +287,8 @@ def extract_slice(mycube, latitude=None, longitude=None):
             raise ValueError(
                 'extract_slice: latitude slice has too many points: {}'.format(
                     latitude))
-        d1 = lats.nearest_neighbour_index(latitude[0])
-        d2 = lats.nearest_neighbour_index(latitude[1])
-        print('extract_slice(second_coord,', second_coord, d1, d2)
+        second_coord_min = lats.nearest_neighbour_index(latitude[0])
+        second_coord_max = lats.nearest_neighbour_index(latitude[1])
 
     if isinstance(longitude, list):
         second_coord = 'longitude'
@@ -293,18 +296,17 @@ def extract_slice(mycube, latitude=None, longitude=None):
             raise ValueError(
                 'extract_slice: longitude slice has too many points: {}'.
                 format(longitude))
-        d1 = lons.nearest_neighbour_index(longitude[0])
-        d2 = lons.nearest_neighbour_index(longitude[1])
-        print('extract_slice(second_coord,', second_coord, d1, d2)
+        second_coord_min = lons.nearest_neighbour_index(longitude[0])
+        second_coord_max = lons.nearest_neighbour_index(longitude[1])
 
     #####
     # Extracting the line of constant longitude/latitude
     slices = [slice(None) for i in mycube.shape]
-    slices[coord_dim] = d
+    slices[coord_dim] = coord_index
 
     if second_coord:
         coord_dim2 = mycube.coord_dims(second_coord)[0]
-        slices[coord_dim2] = slice(d1, d2)
+        slices[coord_dim2] = slice(second_coord_min, second_coord_max)
 
     newcube = mycube[tuple(slices)]
     print('extract_slice(slicess),', slices, newcube.shape,
@@ -313,10 +315,15 @@ def extract_slice(mycube, latitude=None, longitude=None):
 
 
 # extract along a trajectory
-def extract_trajectory(mycube, latitudes, longitudes, n):
+def extract_trajectory(mycube, latitudes, longitudes, number_points):
     """
     Extract data along a trajectory.
 
+    latitudes and longitudes are the pairs of coordinates for two points.
+    number_points is the number of points between the two points.
+
+    This version uses the expensive interpolate method, but it may be
+    necceasiry for irregular grids.
     """
     from iris.analysis.trajectory import interpolate
     import numpy as np
@@ -330,8 +337,8 @@ def extract_trajectory(mycube, latitudes, longitudes, n):
         minlat, maxlat = np.min(latitudes), np.max(latitudes)
         minlon, maxlon = np.min(longitudes), np.max(longitudes)
 
-        longitudes = np.linspace(minlat, maxlat, num=n)
-        latitudes = np.linspace(minlon, maxlon, num=n)
+        longitudes = np.linspace(minlat, maxlat, num=number_points)
+        latitudes = np.linspace(minlon, maxlon, num=number_points)
 
     points = [('latitude', latitudes), ('longitude', longitudes)]
     interpolated_cube = interpolate(mycube, points)  # Very slow!

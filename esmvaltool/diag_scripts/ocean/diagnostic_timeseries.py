@@ -1,3 +1,45 @@
+"""
+Diagnostic profile:
+
+Diagnostic to produce png images of the time development of a metric from
+cubes. These plost show time on the x-axis and cube value (ie temperature) on
+the y-axis.
+
+Two types of plots are produced: individual model timeseries plots and
+multi model time series plots. The inidivual plots show the results from a
+single cube, even if this is a mutli-model mean made by the _multimodel.py
+preproccessor. The multi model time series plots show several models
+on the same axes, where each model is represented by a different line colour.
+
+Note that this diagnostic assumes that the preprocessors do the bulk of the
+hard work, and that the cube received by this diagnostic (via the settings.yml
+and metadata.yml files) has a time component, no depth component, and no
+latitude or longitude coordinates.
+
+Some approproate preprocessors for a 3D+time field would be:
+
+preprocessors:
+  prep_timeseries_1:# For Global Volume Averaged
+    average_volume:
+      coord1: longitude
+      coord2: latitude
+      coordz: depth
+  prep_timeseries_2: # For Global surface Averaged
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_extrap
+    average_area:
+      coord1: longitude
+      coord2: latitude
+
+
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
+
+Author: Lee de Mora (PML)
+        ledm@pml.ac.uk
+"""
+
 import logging
 import os
 import sys
@@ -106,13 +148,14 @@ def multi_model_time_series(
     for filename in sorted(metadata.keys()):
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+
         cubes = diagtools.make_cube_layer_dict(cube)
         model_cubes[filename] = cubes
-        for l, cube_layer in cubes.items():
-            layers[l] = True
+        for layer in cubes.keys():
+            layers[layer] = True
 
     # Make a plot for each layer
-    for layer in layers:
+    for layer in layers.keys():
 
         long_name = ''
         z_units = ''
@@ -198,7 +241,7 @@ def main(cfg):
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        print(
+        logger.info(
             '\nmetadata filename:',
             metadata_filename,
         )
@@ -214,8 +257,8 @@ def main(cfg):
 
         for filename in sorted(metadatas.keys()):
 
-            print('-----------------')
-            print(
+            logger.info('-----------------')
+            logger.info(
                 'model filenames:\t',
                 filename,
             )
@@ -223,9 +266,7 @@ def main(cfg):
             ######
             # Time series of individual model
             make_time_series_plots(cfg, metadatas[filename], filename)
-
-    logger.debug("\n\nThis works\n\n")
-    print('Success')
+    logger.info('Success')
 
 
 if __name__ == '__main__':

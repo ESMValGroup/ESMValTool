@@ -157,8 +157,8 @@ preprocessors:
       long2:  30.
       lat1:   -80.
       lat2:   80. 
-      z1:      0.
-      z2:     100. 
+      z_min:      0.
+      z_max:     100. 
     average_volume:
       coord1: longitude
       coord2: latitude  
@@ -281,8 +281,8 @@ preprocessors:
       long2:  20.
       lat1:  -30.
       lat2:  30.
-      z1: 0.
-      z2: 100.
+      z_min: 0.
+      z_max: 100.
     average_region:          
       coord1: longitude
       coord2: latitude
