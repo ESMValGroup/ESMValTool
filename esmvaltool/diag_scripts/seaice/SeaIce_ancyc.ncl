@@ -1,12 +1,12 @@
 ;;#############################################################################
-;; TIMESERIES PLOTS FOR SEA ICE AREA AND EXTENT
+;; ANNUAL CYCLE PLOTS FOR SEA ICE AREA AND EXTENT
 ;;#############################################################################
 ;; Author: Daniel Senftleben (DLR, Germany)
 ;; ESMVal project
 ;;#############################################################################
 ;;
 ;; Description
-;;    Creates a timeseries (line) plot of sea ice area and extent.
+;;    Creates an annual cycle (line) plot of sea ice area and extent.
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;

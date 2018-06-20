@@ -39,8 +39,31 @@ preprocessors:
 
 
 diagnostics:
+  SeaIce_ancyc_NH: 
+    description: Annual cycle of Arctic sea ice area and extent
+    variables: 
+      sic:
+        preprocessor: noob
+        mip: OImon
+        field: T2Ms 
+#    additional_models:
+#      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+#      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+    scripts:
+      tsline:
+        script: seaice/SeaIce_ancyc.ncl
+        region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        month: "9"            # A = annual mean, 3 = March, 9 = September
+        styleset: "CMIP5"     # "CMIP5", "DEFAULT"
+        range_option: 0       # 0 = use each model's whole time range as specified in namelist
+                              # 1 = use only intersection of all time ranges 
+        multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
+        EMs_in_lg: False      # True: create legend label for each individual ensemble member
+        fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
+        legend_outside: False # Draw legend in extra plot
+
   SeaIce_tsline_NH: 
-    description: Timeseries of Arctic sea ice area and extent
+    description: Timeseries of September Arctic sea ice area and extent
     variables: 
       sic:
         preprocessor: noob
@@ -57,7 +80,7 @@ diagnostics:
         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
         range_option: 0       # 0 = use each model's whole time range as specified in namelist
                               # 1 = use only intersection of all time ranges 
-        multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
+        multi_model_mean: "y" # Plot multi-model mean & std dev ("y"/"n")
         EMs_in_lg: False      # True: create legend label for each individual ensemble member
         fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
         legend_outside: False # Draw legend in extra plot
