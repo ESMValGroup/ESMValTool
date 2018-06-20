@@ -138,6 +138,9 @@ authors:
     name: Little, Bill
     institute: MetOffice, UK
     email: bill.little 'at' metoffice.gov.uk
+  lore_ru: Lorenz, Ruth
+    institute: ETH Zurich, Switzerland
+    email: ruthlorenz 'at' env.ethz.ch
   maek_ja:
     name: Makela, Jarmo
   malo_er:
@@ -405,6 +408,7 @@ references:
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030, doi:10.1175/2008JCLI2731.1, 2009."
+  collins13ipcc: "Collins, M. et al., Long-term climate change: Projections, Commitments, and Irreversibility, in: Climate Change 2013: the Physical Science Basis, contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and New York, NY, USA (2013)"
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   duemenil00mpimr: "Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
   emmons00jgr: "Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000."

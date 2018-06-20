@@ -73,6 +73,7 @@ begin
   ; ###########################################
   write_references(diag_script, \  ; script name
                    "A_lore_ru", \  ; authors
+                   "", \  ; contributors
                    "D_collins13ipcc",    \  ; diag_references
                    "",          \  ; obs_references
                    "P_crescendo")   ; proj_references
