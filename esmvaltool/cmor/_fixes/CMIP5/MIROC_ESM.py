@@ -101,9 +101,6 @@ class allvars(Fix):
             if time.units.origin == 'days since 0000-01-01 00:00:00':
                 time.units = cf_units.Unit(
                     'days since 1849-01-01 00:00:00', calendar=calendar)
-            elif time.units.origin == 'days since 1-1-1':
-                time.units = cf_units.Unit(
-                    'days since 1850-01-01 00:00:00', calendar=calendar)
         except CoordinateNotFoundError:
             pass
 

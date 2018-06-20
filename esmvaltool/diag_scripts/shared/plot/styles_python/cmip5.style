@@ -1,0 +1,671 @@
+###############################################################################
+# PYTHON STYLE FILE
+# created by 'import_ncl_style.py'
+###############################################################################
+# This file defines plot attributes for certain models.
+#
+# Template:
+# [MODEL NAME]
+# color = #FFFFFF
+# dash = 0
+# thick = 1
+# mark = x
+# avgstd = 0
+# facecolor = none
+#
+# MODEL:     model name (same as given in the main namelist)
+# color:     hex RGB or RGBA string (e.g. #0F0FA1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      the dash pattern index lines, see
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# thick:     line thickness
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# facecolor: Color of the filling (none = no filling)
+###############################################################################
+
+[ACCESS1-0]
+color = #5B8ED2
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[ACCESS1-3]
+color = #5B8ED2
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[bcc-csm1-1]
+color = #94191E
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[bcc-csm1-1-m]
+color = #94191E
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[BNU-ESM]
+color = #C47900
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[CanCM4]
+color = #1E4C24
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[CanESM2]
+color = #1E4C24
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[CNRM-AM-PRE6]
+color = #1E4C24
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[CCSM4]
+color = #43B2D8
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[CESM1-BGC]
+color = #43B2D8
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[CESM1-CAM5]
+color = #43B2D8
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[CESM1-CAM5-1-FV2]
+color = #43B2D8
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[CESM1-FASTCHEM]
+color = #43B2D8
+dash = 3
+thick = 1
+mark = x
+avgstd = 0
+facecolor = none
+
+[CESM1-WACCM]
+color = #43B2D8
+dash = 4
+thick = 1
+mark = +
+avgstd = 0
+facecolor = none
+
+[CMCC-CESM]
+color = #E82023
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[CMCC-CM]
+color = #E82023
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[CMCC-CMS]
+color = #E82023
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[CNRM-CM5]
+color = #91D67E
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[CSIRO-Mk3-6-0]
+color = #F14B20
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[EC-EARTH]
+color = #7C63B8
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[FGOALS-g2]
+color = #F89A1C
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[FIO-ESM]
+color = #4DBB37
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[GFDL-CM2p1]
+color = #23366D
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[GFDL-CM3]
+color = #23366D
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[GFDL-ESM2G]
+color = #23366D
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[MPIESM-1-1]
+color = #23366D
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[GFDL-ESM2M]
+color = #23366D
+dash = 3
+thick = 1
+mark = x
+avgstd = 0
+facecolor = none
+
+[GISS-E2-H]
+color = #771D7B
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[GISS-E2-H-CC]
+color = #771D7B
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[GISS-E2-R]
+color = #771D7B
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[GISS-E2-R-CC]
+color = #771D7B
+dash = 3
+thick = 1
+mark = x
+avgstd = 0
+facecolor = none
+
+[HadCM3]
+color = #7A8B26
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[HadGEM2-AO]
+color = #7A8B26
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[HadGEM2-A]
+color = #7A8B26
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[HadGEM2-CC]
+color = #7A8B26
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[HadGEM2-ES]
+color = #7A8B26
+dash = 3
+thick = 1
+mark = x
+avgstd = 0
+facecolor = none
+
+[inmcm4]
+color = #A1252C
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[INMCM4]
+color = #A1252C
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[IPSL-CM5A-LR]
+color = #5B53AE
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[IPSL-CM5A-MR]
+color = #5B53AE
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[IPSL-CM5B-LR]
+color = #5B53AE
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[MIROC4h]
+color = #B85FB6
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[MIROC5]
+color = #B85FB6
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[MIROC-ESM]
+color = #B85FB6
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[MIROC-ESM-CHEM]
+color = #B85FB6
+dash = 3
+thick = 1
+mark = x
+avgstd = 0
+facecolor = none
+
+[MPI-ESM-LR]
+color = #5DA1A2
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[MPI-ESM-MR]
+color = #5DA1A2
+dash = 1
+thick = 1
+mark = s
+avgstd = 0
+facecolor = none
+
+[MPI-ESM-P]
+color = #5DA1A2
+dash = 2
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[MRI-CGCM3]
+color = #ADFF2F
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[MRI-ESM1]
+color = #ADFF2F
+dash = 1
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[NorESM1-M]
+color = #F13AA7
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = none
+
+[NorESM1-ME]
+color = #F13AA7
+dash = 1
+thick = 1
+mark = ^
+avgstd = 0
+facecolor = none
+
+[MultiModelMean]
+color = #FF0000
+dash = 0
+thick = 3
+mark = *
+avgstd = 1
+facecolor = none
+
+[MultiModelMedian]
+color = #0000FF
+dash = 0
+thick = 3
+mark = *
+avgstd = 1
+facecolor = none
+
+[NSIDC]
+color = #000000
+dash = 0
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[HadISST]
+color = #000000
+dash = 1
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[MOHC-HadISST]
+color = #000000
+dash = 1
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[AMSRE]
+color = #000000
+dash = 2
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[ERAINT]
+color = #000000
+dash = 3
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[NCEP]
+color = #000000
+dash = 4
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[TRMM-3B43-v7-0.25deg]
+color = #000000
+dash = 5
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[TRMM-L3]
+color = #000000
+dash = 5
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[CERES-SYN1deg]
+color = #000000
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = #000000
+
+[CMAP]
+color = #000000
+dash = 6
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[GPCP-1DD-V12]
+color = #000000
+dash = 7
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[MERRA]
+color = #000000
+dash = 8
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[ESACCI-AEROSOL]
+color = #000000
+dash = 0
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #000000
+
+[ESACCI-CLOUD]
+color = #FF0000
+dash = 0
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[MODIS]
+color = #00FF00
+dash = 0
+thick = 3
+mark = o
+avgstd = 1
+facecolor = #00FF00
+
+[NIWA]
+color = #000000
+dash = 1
+thick = 3
+mark = v
+avgstd = 1
+facecolor = none
+
+[BDBP]
+color = #000000
+dash = 1
+thick = 3
+mark = o
+avgstd = 1
+facecolor = none
+
+[IGAG/SPARC]
+color = #F89A1C
+dash = 0
+thick = 3
+mark = o
+avgstd = 0
+facecolor = #F89A1C
+
+[PATMOS]
+color = #0000FF
+dash = 0
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[CLARA-A2]
+color = #00FFFF
+dash = 0
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[ERA-Interim]
+color = #FFC800
+dash = 0
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[ESACCI-SSMI]
+color = #000000
+dash = 0
+thick = 4
+mark = x
+avgstd = 0
+facecolor = none
+
+[ESACCI-AMSR]
+color = #000000
+dash = 1
+thick = 4
+mark = x
+avgstd = 0
+facecolor = none
+
+[NSIDC-NT]
+color = #000000
+dash = 2
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[NSIDC-BT]
+color = #000000
+dash = 12
+thick = 3
+mark = x
+avgstd = 0
+facecolor = none
+
+[default]
+color = #000000
+dash = 0
+thick = 1
+mark = o
+avgstd = 0
+facecolor = #000000
