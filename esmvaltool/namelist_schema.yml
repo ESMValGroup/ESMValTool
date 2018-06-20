@@ -29,7 +29,7 @@ variable:
   alternative_model: str(required=False)
   mip: str(required=False)
   fx_mask: bool(required=False)
-  fx_variable: str(required=False)
+  fx_variable: list(required=False)
 
 # TODO: add preprocessor item
 

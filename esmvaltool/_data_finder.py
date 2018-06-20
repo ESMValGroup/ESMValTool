@@ -138,6 +138,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
     cfg = get_project_config(project)
 
+    dirs = []
     # Set the rootpath
     if project in rootpath:
         dir1 = rootpath[project]
@@ -160,9 +161,10 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
             .format(_drs, project))
 
     dirname_template = os.path.join(dir1, dir2)
-    dirname_template = os.path.join(os.path.dirname(dirname_template),
-                                    variable['fx_variable'])
-    return dirname_template
+    for fx_var in variable['fx_variable']:
+        dirs.append(os.path.join(os.path.dirname(dirname_template),
+                                 fx_var))
+    return dirs
 
 
 def get_input_filename(variable, rootpath, drs):
@@ -193,19 +195,23 @@ def get_input_fx_filename(variable, rootpath, drs):
 
     This function should match the function get_input_filelist below.
     """
-    dirname_template = get_input_fx_dirname_template(variable, rootpath, drs)
-    # Simulate a latest version if required
-    if '[latestversion]' in dirname_template:
-        part1, part2 = dirname_template.split('[latestversion]')
-        dirname = os.path.join(part1, 'latestversion', part2)
-    else:
-        dirname = dirname_template
+    dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
+    for j, dirname_template in zip(range(len(dirname_templates)),
+                                   dirname_templates):
+        # Simulate a latest version if required
+        if '[latestversion]' in dirname_template:
+            part1, part2 = dirname_template.split('[latestversion]')
+            dirname = os.path.join(part1, 'latestversion', part2)
+        else:
+            dirname = dirname_template
 
-    # Set the filename
-    filename = _get_fx_filename(variable, drs)
+        # Set the filename
+        filename = _get_fx_filename(variable, drs, j)
 
-    # Full path to files
-    return os.path.join(dirname, filename)
+        # Full path to files
+        files.append(os.path.join(dirname, filename))
+
+    return files
 
 
 def _get_filename(variable, drs):
@@ -225,7 +231,7 @@ def _get_filename(variable, drs):
     return filename
 
 
-def _get_fx_filename(variable, drs):
+def _get_fx_filename(variable, drs, j):
     project = variable['project']
     cfg = get_project_config(project)
 
@@ -240,7 +246,7 @@ def _get_fx_filename(variable, drs):
                 'in config-developer file'.format(_drs, project))
     filename = replace_tags(input_file, variable)
     breakdown = filename.split('_')
-    breakdown[0] = variable['fx_variable']
+    breakdown[0] = variable['fx_variable'][j]
     filename = '_'.join(breakdown)
     return filename
 
@@ -274,30 +280,33 @@ def get_input_filelist(variable, rootpath, drs):
     return files
 
 
-def get_input_fx_filelist(variable, rootpath, drs):
+def get_input_fx_filelist(variable, rootpath, drs, fx_var):
     """Return the full path to input files."""
-    dirname_template = get_input_fx_dirname_template(variable, rootpath, drs)
+    dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
+    fx_files = {}
 
-    # Find latest version if required
-    if '[latestversion]' in dirname_template:
-        part1, part2 = dirname_template.split('[latestversion]')
-        part2 = part2.lstrip(os.sep)
-        list_versions = os.listdir(part1)
-        list_versions.sort(reverse=True)
-        for version in list_versions:
-            dirname = os.path.join(part1, version, part2)
-            if os.path.isdir(dirname):
-                break
-    else:
-        dirname = dirname_template
+    for j, dirname_template in zip(range(len(dirname_templates)),
+                                   dirname_templates):
+        # Find latest version if required
+        if '[latestversion]' in dirname_template:
+            part1, part2 = dirname_template.split('[latestversion]')
+            part2 = part2.lstrip(os.sep)
+            list_versions = os.listdir(part1)
+            list_versions.sort(reverse=True)
+            for version in list_versions:
+                dirname = os.path.join(part1, version, part2)
+                if os.path.isdir(dirname):
+                    break
+        else:
+            dirname = dirname_template
 
-    # Set the filename glob
-    filename_glob = _get_fx_filename(variable, drs)
+        # Set the filename glob
+        filename_glob = _get_fx_filename(variable, drs, j)
 
-    # Find files
-    files = find_files(dirname, filename_glob)
+        # Find files
+        fx_files[variable['fx_variable'][j]] = find_files(dirname, filename_glob)[0]
 
-    return files
+    return fx_files
 
 
 def get_output_file(variable, preproc_dir):

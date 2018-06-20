@@ -476,14 +476,16 @@ def _get_input_files(variable, config_user):
 def _get_input_fx_files(variable, config_user):
     """Get the input fx files for a single model"""
 
-    # Find the fx files
-    fx_files = get_input_fx_filelist(
-        variable=variable,
-        rootpath=config_user['rootpath'],
-        drs=config_user['drs'])
-    logger.info("Using fx input files for variable %s of model %s:\n%s",
-                variable['short_name'], variable['model'],
-                '\n'.join(fx_files))
+    fx_files = {}
+    for fx_var in variable['fx_variable']:
+        # Find the fx files
+        fx_files[fx_var] = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'], fx_var=fx_var)
+        logger.info("Using fx input files for variable %s of model %s:\n%s",
+                    variable['short_name'], variable['model'],
+                    fx_files[fx_var])
 
     return fx_files
 
@@ -594,11 +596,6 @@ def _get_single_preprocessor_task(variables,
         input_files = [
             filename for variable in variables
             for filename in _get_input_files(variable, config_user)
-        ]
-        fx_files = [
-            filename for variable in variables
-            for filename in _get_input_fx_files(variable, config_user)
-            if variable['fx_mask']
         ]
 
     output_dir = os.path.dirname(variables[0]['filename'])
@@ -776,6 +773,7 @@ class Namelist(object):
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
+            variable['fx_files'] = _get_input_fx_files(variable, self._cfg)
 
         return variables
 
