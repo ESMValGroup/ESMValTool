@@ -3,14 +3,12 @@ import logging
 import os
 import shutil
 from itertools import groupby
-import traceback
 
 import iris
 import iris.exceptions
 import yaml
-import numpy as np
 
-from ..task import write_ncl_settings
+from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +77,6 @@ def concatenate(cubes):
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
-        logger.error(traceback.format_tb(ex.__traceback__))
         raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
 
 

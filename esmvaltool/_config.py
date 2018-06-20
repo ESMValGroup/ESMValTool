@@ -3,6 +3,7 @@ import datetime
 import logging
 import logging.config
 import os
+import time
 
 import yaml
 
@@ -23,6 +24,7 @@ def read_config_user_file(config_file, namelist_name):
         'output_file_type': 'ps',
         'output_dir': './output_dir',
         'save_intermediary_cubes': False,
+        'remove_preproc_dir': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
         'drs': {},
@@ -93,6 +95,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
                 handler['level'] = console_log_level.upper()
 
     logging.config.dictConfig(cfg)
+    logging.Formatter.converter = time.gmtime
 
     return log_files
 
