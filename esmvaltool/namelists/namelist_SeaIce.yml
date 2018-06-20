@@ -51,7 +51,7 @@ diagnostics:
 #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
     scripts:
       tsline:
-        script: SeaIce_tsline.ncl
+        script: seaice/SeaIce_tsline.ncl
         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"            # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
@@ -72,7 +72,7 @@ diagnostics:
 #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
     scripts:
       polcon:
-        script: SeaIce_polcon.ncl
+        script: seaice/SeaIce_polcon.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"

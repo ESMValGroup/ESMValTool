@@ -378,7 +378,6 @@ begin
 ;         end do
 ;     end if
 
-    log_info(" gs " + outfile + " &")
 
     log_info(">>>>>>>> Leaving " + diag_script)
 
