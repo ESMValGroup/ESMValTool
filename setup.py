@@ -13,11 +13,8 @@ import re
 import sys
 
 from setuptools import Command, setup
-from setuptools.command.install import install as _install
 
 from esmvaltool._version import __version__
-
-from R.install_r_dependencies import main as _get_r_dependencies
 
 PACKAGES = [
     'esmvaltool',
@@ -192,14 +189,6 @@ class RunLinter(CustomCommand):
 
         sys.exit(errno)
 
-class RInstallCommand(_install):
-    """Custom post-installation for installation mode."""
-    def run(self):
-        # _install.run(self)
-        # install r related packages
-        _get_r_dependencies()
-
-
 with open('README.md') as readme:
     setup(
         name='ESMValTool',
@@ -229,10 +218,10 @@ with open('README.md') as readme:
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+                'installrscripts = esmvaltool.utils.installrscripts.installrscripts:main',
             ],
         },
         cmdclass={
-            'installr': RInstallCommand,
             'test': RunTests,
             'lint': RunLinter,
         },
