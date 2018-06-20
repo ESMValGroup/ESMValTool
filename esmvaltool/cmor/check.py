@@ -1,7 +1,4 @@
-"""
-Module for checking iris cubes against their CMOR definitions
-
-"""
+"""Module for checking iris cubes against their CMOR definitions"""
 import logging
 
 import cf_units
