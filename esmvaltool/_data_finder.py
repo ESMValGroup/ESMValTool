@@ -11,7 +11,8 @@ import re
 
 import six
 
-from ._config import cmip5_mip2realm_freq, cmip5_model2inst, get_project_config
+from ._config import cmip5_mip2realm_freq, cmip5_dataset2inst, \
+    get_project_config
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ def replace_tags(path, variable, j=None):
                 replacewith = str(variable[tag])
             else:
                 if tag == 'institute':
-                    replacewith = cmip5_model2inst(variable['model'])
+                    replacewith = cmip5_dataset2inst(variable['dataset'])
                 elif tag == 'freq':
                     replacewith = cmip5_mip2realm_freq(variable['mip'])[1]
                 elif tag == 'realm':
@@ -86,15 +87,15 @@ def replace_tags(path, variable, j=None):
             continue
         elif tag == 'tier':
             replacewith = ''.join(('Tier', str(variable['tier'])))
-        elif tag == 'model':
-            replacewith = variable['model']
-        else:  # all other cases use the corresponding model dictionary key
+        elif tag == 'dataset':
+            replacewith = variable['dataset']
+        else:  # all other cases use the corresponding dataset dictionary key
             if tag in variable:
                 replacewith = str(variable[tag])
             else:
                 raise KeyError(
-                    "Model key {} must be specified for project {}, check "
-                    "your namelist entry".format(tag, variable['project']))
+                    "Dataset key {} must be specified for project {}, check "
+                    "your recipe entry".format(tag, variable['project']))
 
         if not isinstance(replacewith, list):
             path = path.replace('[' + tag + ']', replacewith)

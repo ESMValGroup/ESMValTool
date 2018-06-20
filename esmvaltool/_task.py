@@ -15,7 +15,7 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-MODEL_KEYS = {
+DATASET_KEYS = {
     'mip',
 }
 

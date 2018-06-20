@@ -24,7 +24,7 @@ To install in development mode, follow these instructions.
 - Install in development mode: `pip install -e .[develop]`
 - Test that your installation was succesful by running `esmvaltool -h`.
 - Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
-- Available namelists are located in the directory `esmvaltool/namelists`.
+- Available recipes are located in the directory `esmvaltool/recipes`.
 
 ### Running tests
 Go to the directory where the repository is cloned and run `./setup.py test`. Tests will also be run automatically by CircleCI.
