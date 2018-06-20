@@ -84,7 +84,7 @@ begin
 
   ; Get data and average time
   imod = 0  ; get data from first dataset
-  log_debug("processing " + dataset_info@datasetOB(imod))
+  log_debug("processing " + dataset_info@dataset(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
