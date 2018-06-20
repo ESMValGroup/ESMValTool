@@ -10,7 +10,8 @@ import re
 
 import six
 
-from ._config import cmip5_mip2realm_freq, cmip5_dataset2inst, get_project_config
+from ._config import cmip5_mip2realm_freq, cmip5_dataset2inst, \
+    get_project_config
 
 logger = logging.getLogger(__name__)
 

@@ -181,7 +181,8 @@ def _write_ncl_metadata(output_dir, metadata):
     # in dataset_info, the rest in variable_info
     for key, values in input_file_info.items():
         dataset_specific = any(values[0] != v for v in values)
-        if (dataset_specific or key in DATASET_KEYS) and key not in VARIABLE_KEYS:
+        if (dataset_specific or key in DATASET_KEYS) and \
+                key not in VARIABLE_KEYS:
             info['dataset_info'][key] = values
         else:
             # Select a value that is filled

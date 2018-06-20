@@ -41,14 +41,14 @@ def check_ncl_version():
     ncl = which('ncl')
     if not ncl:
         raise RecipeError("Recipe contains NCL scripts, but cannot find "
-                            "an NCL installation.")
+                          "an NCL installation.")
     try:
         cmd = [ncl, '-V']
         version = subprocess.check_output(cmd, universal_newlines=True)
     except subprocess.CalledProcessError:
         logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
         raise RecipeError("Recipe contains NCL scripts, but your NCL "
-                            "installation appears to be broken.")
+                          "installation appears to be broken.")
 
     version = version.strip()
     logger.info("Found NCL version %s", version)
@@ -56,7 +56,7 @@ def check_ncl_version():
     major, minor = (int(i) for i in version.split('.')[:2])
     if major < 6 or (major == 6 and minor < 4):
         raise RecipeError("NCL version 6.4 or higher is required to run "
-                            "a recipe containing NCL scripts.")
+                          "a recipe containing NCL scripts.")
 
 
 def check_recipe_with_schema(filename):
@@ -100,7 +100,7 @@ def check_diagnostics(diagnostics):
     for name, diagnostic in diagnostics.items():
         if 'scripts' not in diagnostic:
             raise RecipeError("Missing scripts section in diagnostic {}"
-                                .format(name))
+                              .format(name))
         if diagnostic['scripts'] is None:
             continue
         for script_name, script in diagnostic['scripts'].items():
@@ -171,7 +171,7 @@ def check_data_availability(input_files, variable):
     """Check if the required input data is available"""
     if not input_files:
         raise RecipeError("No input files found for variable {}"
-                            .format(variable))
+                          .format(variable))
 
     required_years = set(
         range(variable['start_year'], variable['end_year'] + 1))
@@ -291,7 +291,8 @@ def _update_target_levels(variable, variables, settings, config_user):
         if variable['dataset'] == levels['dataset']:
             del settings['extract_levels']
         else:
-            filename = _dataset_to_file(levels['dataset'], variables, config_user)
+            filename = \
+                _dataset_to_file(levels['dataset'], variables, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, coordinate)
@@ -361,7 +362,8 @@ def _limit_datasets(variables, profile, max_datasets=None):
         if variable not in limited:
             limited.append(variable)
 
-    logger.info("Only considering %s", ', '.join(v['dataset'] for v in limited))
+    logger.info("Only considering %s", \
+                ', '.join(v['dataset'] for v in limited))
 
     return limited
 
@@ -608,7 +610,7 @@ def _get_preprocessor_task(variables,
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
     variables = _limit_datasets(variables, profile,
-                              config_user.get('max_datasets'))
+                                config_user.get('max_datasets'))
 
     # Create preprocessor task(s)
     derive_tasks = []
@@ -709,7 +711,8 @@ class Recipe(object):
                 self._initialize_preprocessor_output(
                     name,
                     raw_diagnostic.get('variables', {}),
-                    raw_datasets + raw_diagnostic.get('additional_datasets', []))
+                    raw_datasets + \
+                    raw_diagnostic.get('additional_datasets', []))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
