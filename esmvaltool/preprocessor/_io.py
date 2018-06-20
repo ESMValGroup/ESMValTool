@@ -120,7 +120,40 @@ def _save_cubes(cubes, **args):
 
 def save_cubes(cubes, optimize_access=None,
                compress=False, debug=False, step=None):
-    """Save iris cubes to the file specified in the _filename attribute."""
+    """
+    Save iris cubes to file
+
+    Path is taken from the _filename attributte in the code.
+
+    Parameters
+    ----------
+    cubes: iterable of iris.cube.Cube
+        Data cubes to be saved
+
+    optimize_access: str
+        Set internal NetCDF chunking to favour a reading scheme
+
+        Values can be map or timeseries, which improve performance when
+        reading the file one map or time series at a time.
+        Users can also provide a coordinate or a list of coordinates. In that
+        case the better performance will be avhieved by loading all the values
+        in that coordinate at a time
+
+    compress: bool, optional
+        Use NetCDF internal compression.
+
+    debug: bool, optional
+        Inform the function if this save is an intermediate save
+
+    step: int, optional
+        Number of the preprocessor step.
+
+        Only used if debug is True
+
+    Returns
+    -------
+
+    """
     paths = {}
     for cube in cubes:
         if '_filename' not in cube.attributes:
