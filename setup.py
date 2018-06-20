@@ -13,8 +13,11 @@ import re
 import sys
 
 from setuptools import Command, setup
+from setuptools.command.install import install as _install
 
 from esmvaltool._version import __version__
+
+from R.install_r_dependencies import main as _get_r_dependencies
 
 PACKAGES = [
     'esmvaltool',
@@ -46,6 +49,7 @@ REQUIREMENTS = {
         'six',
         'stratify',
         'yamale',
+        'rpy2==2.8.6',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
@@ -59,7 +63,7 @@ REQUIREMENTS = {
         'pytest-cov',
         'pytest-html',
         'pytest-metadata>=1.5.1',
-        'rpy2'
+        'rpy2==2.8.6',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
@@ -188,6 +192,13 @@ class RunLinter(CustomCommand):
 
         sys.exit(errno)
 
+class RInstallCommand(_install):
+    """Custom post-installation for installation mode."""
+    def run(self):
+        # _install.run(self)
+        # install r related packages
+        _get_r_dependencies()
+
 
 with open('README.md') as readme:
     setup(
@@ -221,6 +232,7 @@ with open('README.md') as readme:
             ],
         },
         cmdclass={
+            'installr': RInstallCommand,
             'test': RunTests,
             'lint': RunLinter,
         },
