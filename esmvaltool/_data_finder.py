@@ -149,7 +149,6 @@ def get_input_filename(variable, rootpath, drs):
 
     This function should match the function get_input_filelist below.
     """
-    all_files = []
     dirname_templates = get_input_dirname_template(variable, rootpath, drs)
     for dirname_template in dirname_templates:
         # Simulate a latest version if required
@@ -166,8 +165,7 @@ def get_input_filename(variable, rootpath, drs):
                 '*') + "{start_year}01-{end_year}12.nc".format(**variable)
 
         # Full path to files
-        all_files.append(os.path.join(dirname, filename))
-    return all_files
+        return os.path.join(dirname, filename)
 
 
 def _get_filename(variable, drs):
@@ -218,12 +216,9 @@ def get_input_filelist(variable, rootpath, drs):
         # Select files within the required time interval
         files = select_files(files, variable['start_year'],
                              variable['end_year'])
-        all_files.append(files)
+        all_files.extend(files)
 
-    files = list(set([fi for sfi in all_files for fi in sfi]))
-    files = [fi for fi in files if os.path.isfile(fi)]
-
-    return files
+    return all_files
 
 
 def get_output_file(variable, preproc_dir):
