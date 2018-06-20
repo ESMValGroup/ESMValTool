@@ -28,6 +28,8 @@ variable:
   reference_model: str(required=False)
   alternative_model: str(required=False)
   mip: str(required=False)
+  fx_mask: bool(required=False)
+  fx_variable: str(required=False)
 
 # TODO: add preprocessor item
 

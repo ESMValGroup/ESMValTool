@@ -132,6 +132,39 @@ def get_input_dirname_template(variable, rootpath, drs):
     return dirname_template
 
 
+def get_input_fx_dirname_template(variable, rootpath, drs):
+    """Return a template of the full path to input directory."""
+    project = variable['project']
+
+    cfg = get_project_config(project)
+
+    # Set the rootpath
+    if project in rootpath:
+        dir1 = rootpath[project]
+    elif 'default' in rootpath:
+        dir1 = rootpath['default']
+    else:
+        raise KeyError(
+            'default rootpath must be specified in config-user file')
+
+    # Set the drs
+    _drs = drs.get(project, 'default')
+    input_dir = cfg['fx_dir']
+    if isinstance(input_dir, six.string_types):
+        dir2 = replace_tags(input_dir, variable)
+    elif _drs in input_dir:
+        dir2 = replace_tags(input_dir[_drs], variable)
+    else:
+        raise KeyError(
+            'drs {} for {} project not specified in config-developer file'
+            .format(_drs, project))
+
+    dirname_template = os.path.join(dir1, dir2)
+    dirname_template = os.path.join(os.path.dirname(dirname_template),
+                                    variable['fx_variable'])
+    return dirname_template
+
+
 def get_input_filename(variable, rootpath, drs):
     """Simulate a path to input file.
 
@@ -155,6 +188,26 @@ def get_input_filename(variable, rootpath, drs):
     return os.path.join(dirname, filename)
 
 
+def get_input_fx_filename(variable, rootpath, drs):
+    """Simulate a path to input file.
+
+    This function should match the function get_input_filelist below.
+    """
+    dirname_template = get_input_fx_dirname_template(variable, rootpath, drs)
+    # Simulate a latest version if required
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
+        dirname = os.path.join(part1, 'latestversion', part2)
+    else:
+        dirname = dirname_template
+
+    # Set the filename
+    filename = _get_fx_filename(variable, drs)
+
+    # Full path to files
+    return os.path.join(dirname, filename)
+
+
 def _get_filename(variable, drs):
     project = variable['project']
     cfg = get_project_config(project)
@@ -169,6 +222,26 @@ def _get_filename(variable, drs):
                 'drs {} for {} project not specified for input_file '
                 'in config-developer file'.format(_drs, project))
     filename = replace_tags(input_file, variable)
+    return filename
+
+
+def _get_fx_filename(variable, drs):
+    project = variable['project']
+    cfg = get_project_config(project)
+
+    input_file = cfg['fx_file']
+    _drs = drs.get(project, 'default')
+    if not isinstance(input_file, six.string_types):
+        if _drs in input_file:
+            input_file = input_file[_drs]
+        else:
+            raise KeyError(
+                'drs {} for {} project not specified for input_file '
+                'in config-developer file'.format(_drs, project))
+    filename = replace_tags(input_file, variable)
+    breakdown = filename.split('_')
+    breakdown[0] = variable['fx_variable']
+    filename = '_'.join(breakdown)
     return filename
 
 
@@ -197,6 +270,32 @@ def get_input_filelist(variable, rootpath, drs):
 
     # Select files within the required time interval
     files = select_files(files, variable['start_year'], variable['end_year'])
+
+    return files
+
+
+def get_input_fx_filelist(variable, rootpath, drs):
+    """Return the full path to input files."""
+    dirname_template = get_input_fx_dirname_template(variable, rootpath, drs)
+
+    # Find latest version if required
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
+        part2 = part2.lstrip(os.sep)
+        list_versions = os.listdir(part1)
+        list_versions.sort(reverse=True)
+        for version in list_versions:
+            dirname = os.path.join(part1, version, part2)
+            if os.path.isdir(dirname):
+                break
+    else:
+        dirname = dirname_template
+
+    # Set the filename glob
+    filename_glob = _get_fx_filename(variable, drs)
+
+    # Find files
+    files = find_files(dirname, filename_glob)
 
     return files
 
