@@ -62,11 +62,11 @@ def main(cfg):
 
     # Model data containers
     MODELS = e.Models(cfg)
-    logging.info("Found models in namelist:\n{}".format(MODELS))
+    logging.debug("Found models in namelist:\n{}".format(MODELS))
 
     # Variables
     VARS = e.Variables(cfg)
-    logging.info("Found variables in namelist:\n{}".format(VARS))
+    logging.debug("Found variables in namelist:\n{}".format(VARS))
     ECS = e.Variable('ecs', 'ecs', 'equilibrium climate sensitivity', 'K')
     VARS.add_var(ecs=ECS)
 
@@ -136,7 +136,7 @@ def main(cfg):
                          short_name=VARS.ecs, exp=DIFF, model=model)
 
         # Plot ECS regression if desired
-        if (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
+        if (cfg[e.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
 
             # Plot data
             ax.plot(data_tas, data_rtmt, linestyle='none',
@@ -165,8 +165,8 @@ def main(cfg):
                     transform=ax.transAxes)
 
             # Save plot
-            filename = model + '.' + cfg['output_file_type']
-            filepath = os.path.join(cfg['plot_dir'], filename)
+            filename = model + '.' + cfg[e.OUTPUT_FILE_TYPE]
+            filepath = os.path.join(cfg[e.PLOT_DIR], filename)
             fig.savefig(filepath, bbox_inches='tight', orientation='landscape')
             logger.info("Writing {}".format(filepath))
             ax.cla()
@@ -175,7 +175,7 @@ def main(cfg):
     # Plot data
     ###########################################################################
 
-    if (cfg['write_plots']):
+    if (cfg[e.WRITE_PLOTS]):
         for model_path in MODELS.get_path_list(short_name=VARS.ecs, exp=DIFF):
             model = MODELS.get_model(model_path)
             data_ecs = MODELS.get_data(model_path=model_path)
@@ -206,8 +206,8 @@ def main(cfg):
                            ncol=2)
 
         # Save plot
-        filename = 'ch09_fig09-42a.' + cfg['output_file_type']
-        filepath = os.path.join(cfg['plot_dir'], filename)
+        filename = 'ch09_fig09-42a.' + cfg[e.OUTPUT_FILE_TYPE]
+        filepath = os.path.join(cfg[e.PLOT_DIR], filename)
         fig.savefig(filepath, additional_artists=[legend],
                     bbox_inches='tight', orientation='landscape')
         logger.info("Writing {}".format(filepath))
@@ -218,13 +218,13 @@ def main(cfg):
     # Write nc file
     ###########################################################################
 
-    if (cfg['write_netcdf']):
+    if (cfg[e.WRITE_NETCDF]):
         data_ecs = MODELS.get_data_list(short_name=VARS.ecs, exp=DIFF)
-        models = [model_info[e.MODEL_STR] for model_info in
+        models = [model_info[e.MODEL] for model_info in
                   MODELS.get_model_info_list(short_name=VARS.ecs, exp=DIFF)]
         model_coord = iris.coords.AuxCoord(models, long_name='models')
-        attr = {'created_by': 'ESMValTool version {}'.format(cfg['version']) +
-                              ', diagnostic {}'.format(cfg['script']),
+        attr = {'created_by': 'ESMValTool version {}'.format(cfg[e.VERSION]) +
+                              ', diagnostic {}'.format(cfg[e.SCRIPT]),
                 'creation_date': datetime.utcnow().isoformat(' ') + ' UTC'}
         cube = iris.cube.Cube(data_ecs, long_name=VARS.ECS.long_name,
                               var_name=VARS.ecs, units=VARS.ECS.units,
@@ -233,7 +233,7 @@ def main(cfg):
 
         # Save file
         filename = VARS.ecs + '.nc'
-        filepath = os.path.join(cfg['work_dir'], filename)
+        filepath = os.path.join(cfg[e.WORK_DIR], filename)
         iris.save(cube, filepath)
         logger.info("Writing {}".format(filepath))
 
