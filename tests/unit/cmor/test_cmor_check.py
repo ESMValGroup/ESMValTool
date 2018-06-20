@@ -181,7 +181,7 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def test_rank_with_aux_coords(self):
-        """Check succeeds even if a required coordinate is an aux coord"""
+        """Check succeeds even if a required coordinate is an AUX.txt coord"""
         iris.util.demote_dim_coord_to_aux_coord(self.cube, 'latitude')
         self._check_cube()
 
