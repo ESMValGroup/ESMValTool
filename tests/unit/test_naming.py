@@ -8,6 +8,7 @@ class TestNaming(unittest.TestCase):
     """Test naming of files and folders"""
 
     def setUp(self):
+        """Prepare tests"""
         folder = os.path.join(__file__, '..', '..', '..')
         self.esmvaltool_folder = os.path.abspath(folder)
 
