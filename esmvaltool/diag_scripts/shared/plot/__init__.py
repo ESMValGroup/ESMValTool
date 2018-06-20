@@ -3,10 +3,14 @@
 import matplotlib
 matplotlib.use('Agg')  # noqa
 
-from ._plot import *
+from ._plot import (
+    get_path_to_mpl_style,
+    get_model_style,
+    quickplot,
+)
 
 __all__ = [
     'get_path_to_mpl_style',
     'get_model_style',
-    'quickplot'
+    'quickplot',
 ]
