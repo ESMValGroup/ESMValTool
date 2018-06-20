@@ -189,10 +189,13 @@ def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     all_files = []
     dirname_templates = get_input_dirname_template(variable, rootpath, drs)
+    valid_dirs = []
 
     for dirname_template in dirname_templates:
         # Find latest version if required
-        if '[latestversion]' in dirname_template:
+        if not '[latestversion]' in dirname_template:
+            valid_dirs.append(dirname_template)
+        else:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
             if os.path.exists(part1):
@@ -201,17 +204,15 @@ def get_input_filelist(variable, rootpath, drs):
                 for version in list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
+                        valid_dirs.append(dirname)
                         break
-            else:
-                dirname = ''
-        else:
-            dirname = dirname_template
 
-        # Set the filename glob
-        filename_glob = _get_filename(variable, drs)
+    # Set the filename glob
+    filename_glob = _get_filename(variable, drs)
 
+    for dir_name in valid_dirs:
         # Find files
-        files = find_files(dirname, filename_glob)
+        files = find_files(dir_name, filename_glob)
 
         # Select files within the required time interval
         files = select_files(files, variable['start_year'],
