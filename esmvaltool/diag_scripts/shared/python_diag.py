@@ -22,36 +22,43 @@ logger = logging.getLogger(__name__)
 
 
 # Global variables relevant for all diagnostics
-TIME = 'time'
-YEAR = 'year'
-MONTH = 'month_number'
-DAY_Y = 'day_of_year'
 DAY_M = 'day_of_month'
+DAY_Y = 'day_of_year'
+HEIGHT = 'height'
 LAT = 'latitude'
 LON = 'longitude'
-HEIGHT = 'height'
+MONTH = 'month_number'
+TIME = 'time'
+YEAR = 'year'
 
-EXP_STR = 'exp'
-MODEL_STR = 'model'
-OBS_STR = 'OBS'
-PROJECT_STR = 'project'
-SHORT_NAME_STR = 'short_name'
+EXP = 'exp'
+LONG_NAME = 'long_name'
+MODEL = 'model'
+OBS = 'OBS'
+PROJECT = 'project'
+SHORT_NAME = 'short_name'
+STANDARD_NAME = 'standard_name'
+UNITS = 'units'
+
+OUTPUT_FILE_TYPE = 'output_file_type'
+PLOT_DIR = 'plot_dir'
+SCRIPT = 'script'
+VERSION = 'version'
+WORK_DIR = 'work_dir'
+WRITE_NETCDF = 'write_netcdf'
+WRITE_PLOTS = 'write_plots'
 
 
 # Variables for the following classes
-DEFAULT_INFO_STR = 'not_specified'
-INPUT_DATA_STR = 'input_data'
-VAR_LONG_NAME_STR = 'long_name'
-VAR_SHORT_NAME_STR = 'short_name'
-VAR_STD_NAME_STR = 'standard_name'
-VAR_UNITS_STR = 'units'
+DEFAULT_INFO = 'not_specified'
+INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
-Variable = collections.namedtuple('Variable', [VAR_SHORT_NAME_STR,
-                                               VAR_STD_NAME_STR,
-                                               VAR_LONG_NAME_STR,
-                                               VAR_UNITS_STR])
+Variable = collections.namedtuple('Variable', [SHORT_NAME,
+                                               STANDARD_NAME,
+                                               LONG_NAME,
+                                               UNITS])
 
 
 class Variables(object):
@@ -96,15 +103,15 @@ class Variables(object):
         if (cfg is not None):
             success = True
             if isinstance(cfg, dict):
-                data = cfg.get(INPUT_DATA_STR)
+                data = cfg.get(INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
-                        name = info.get(VAR_SHORT_NAME_STR, DEFAULT_INFO_STR)
+                        name = info.get(SHORT_NAME, DEFAULT_INFO)
                         attr = Variable(
                             name,
-                            info.get(VAR_STD_NAME_STR, DEFAULT_INFO_STR),
-                            info.get(VAR_LONG_NAME_STR, DEFAULT_INFO_STR),
-                            info.get(VAR_UNITS_STR, DEFAULT_INFO_STR))
+                            info.get(STANDARD_NAME, DEFAULT_INFO),
+                            info.get(LONG_NAME, DEFAULT_INFO),
+                            info.get(UNITS, DEFAULT_INFO))
                         self._add_to_dict(name, attr)
                 else:
                     success = False
@@ -177,7 +184,7 @@ class Variables(object):
             List of all `standard_names`.
 
         """
-        return [getattr(self._dict[name], VAR_STD_NAME_STR) for
+        return [getattr(self._dict[name], STANDARD_NAME) for
                 name in self._dict]
 
 
@@ -223,7 +230,7 @@ class Models(object):
         self._data = {}
         success = True
         if isinstance(cfg, dict):
-            input_data = cfg.get(INPUT_DATA_STR)
+            input_data = cfg.get(INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
                     model_info = input_data[path]
@@ -429,10 +436,11 @@ class Models(object):
 
         """
         if (model_path in self._paths):
-            output = self._models[model_path].get(EXP_STR)
+            output = self._models[model_path].get(EXP)
             if (output is None):
                 logger.warning("Model {} does not ".format(model_path) +
-                               "contain 'exp' information")
+                               "contain '{}' ".format(EXP) +
+                               "information")
             return output
         else:
             logger.warning("{} is not a valid ".format(model_path) +
@@ -458,10 +466,11 @@ class Models(object):
 
         """
         if (model_path in self._paths):
-            output = self._models[model_path].get(MODEL_STR)
+            output = self._models[model_path].get(MODEL)
             if (output is None):
                 logger.warning("Model {} does not ".format(model_path) +
-                               "contain 'model' information")
+                               "contain '{}' ".format(MODEL) +
+                               "information")
             return output
         else:
             logger.warning("{} is not a valid ".format(model_path) +
@@ -632,10 +641,11 @@ class Models(object):
 
         """
         if (model_path in self._paths):
-            output = self._models[model_path].get(PROJECT_STR)
+            output = self._models[model_path].get(PROJECT)
             if (output is None):
                 logger.warning("Model {} does not ".format(model_path) +
-                               "contain 'project' information")
+                               "contain '{}' ".format(PROJECT) +
+                               "information")
             return output
         else:
             logger.warning("{} is not a valid ".format(model_path) +
@@ -662,10 +672,42 @@ class Models(object):
 
         """
         if (model_path in self._paths):
-            output = self._models[model_path].get(SHORT_NAME_STR)
+            output = self._models[model_path].get(SHORT_NAME)
             if (output is None):
                 logger.warning("Model {} does not ".format(model_path) +
-                               "contain 'short_name' information")
+                               "contain '{}' ".format(SHORT_NAME) +
+                               "information")
+            return output
+        else:
+            logger.warning("{} is not a valid ".format(model_path) +
+                           "model path")
+            return None
+
+    def get_standard_name(self, model_path):
+        """Access a model's `standard_name`.
+
+        Notes
+        -----
+        If the `model_info` does not contain a `standard_name` value, returns
+        None.
+
+        Parameters
+        ----------
+        model_path : str
+            Path to the dataset
+
+        Returns
+        -------
+        str
+            `standard_name` information of the given model.
+
+        """
+        if (model_path in self._paths):
+            output = self._models[model_path].get(STANDARD_NAME)
+            if (output is None):
+                logger.warning("Model {} does not ".format(model_path) +
+                               "contain '{}' ".format(STANDARD_NAME) +
+                               "information")
             return output
         else:
             logger.warning("{} is not a valid ".format(model_path) +
