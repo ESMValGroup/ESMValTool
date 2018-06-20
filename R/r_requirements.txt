@@ -1,2 +1,3 @@
 # List of R packages to be installed by setup.R
+lintr
 ncdf4
