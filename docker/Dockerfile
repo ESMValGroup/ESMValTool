@@ -9,10 +9,6 @@ RUN apt-get update -y && apt-get install -y \
     curl \
     unzip
 
-# create directory for downloaded files
-RUN mkdir /src
-WORKDIR /src
-
 # install environment packages
 RUN conda install -c conda-forge -c esmvalgroup -c birdhouse esmvaltool
 
