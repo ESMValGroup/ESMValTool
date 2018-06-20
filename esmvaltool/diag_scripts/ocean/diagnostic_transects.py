@@ -44,7 +44,7 @@ def transectsPlots(
         """
     # Load cube and set up units
     cube = iris.load_cube(fn)
-    cube = diagtools.sensibleUnits(cube, md['short_name'])
+    cube = diagtools.bgc_units(cube, md['short_name'])
 
     # Is this data is a multi-model dataset?
     multiModel = md['model'].find('MultiModel') > -1

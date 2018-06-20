@@ -2,6 +2,7 @@
 import logging
 import os
 import sys
+import yaml
 
 import iris
 import matplotlib.pyplot as plt
@@ -13,9 +14,9 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def folder(name):
     """
-        This snippet takes a string, makes the folder and the string.
-        It also accepts lists of strings.
-        """
+    This snippet takes a string, makes the folder and the string.
+    It also accepts lists of strings.
+    """
     if isinstance(name, list):
         name = '/'.join(name)
     if name[-1] != '/':
@@ -27,14 +28,16 @@ def folder(name):
 
 
 def get_input_files(cfg, index=0):
-    """Get a dictionary with input files from metadata.yml files."""
+    """
+    Get a dictionary with input files from metadata.yml files.
+    """
     metadata_file = cfg['input_files'][index]
     with open(metadata_file) as file:
         metadata = yaml.safe_load(file)
     return metadata
 
 
-def sensibleUnits(cube, name):
+def bgc_units(cube, name):
     """
     Convert the cubes into some friendlier units for the range of
     values typically seen in BGC.
@@ -66,7 +69,7 @@ def sensibleUnits(cube, name):
 
 def timecoord_to_float(times):
     """
-       converts an iris time coordinate into a list of floats.
+    Converts an iris time coordinate into a list of floats.
     """
     dtimes = times.units.num2date(times.points)
     floattimes = []
@@ -80,34 +83,35 @@ def timecoord_to_float(times):
     return floattimes
 
 
-def add_legend_outside_right(plotDetails, ax1, column_width=0.1):
+def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     """
-           Add a legend outside the plot, to the right.
-           PlotDetails is a 2 level dict,
-           where the first level is some key (which is hidden)
-           and the 2nd level contains the keys:
-               'c': color
-               'lw': line width
-               'label': label for the legend.
-           ax1 is the axis where the plot was drawn.
-        """
+       Add a legend outside the plot, to the right.
+
+       plot_details is a 2 level dict,
+       where the first level is some key (which is hidden)
+       and the 2nd level contains the keys:
+           'c': color
+           'lw': line width
+           'label': label for the legend.
+       ax1 is the axis where the plot was drawn.
+       """
     #####
     # Create dummy axes:
-    legendSize = len(plotDetails.keys()) + 1
+    legendSize = len(plot_details.keys()) + 1
     ncols = int(legendSize / 25) + 1
     box = ax1.get_position()
     ax1.set_position(
         [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
 
     # Add emply plots to dummy axis.
-    for i in sorted(plotDetails.keys()):
+    for i in sorted(plot_details.keys()):
 
         plt.plot(
             [], [],
-            c=plotDetails[i]['c'],
-            lw=plotDetails[i]['lw'],
-            ls=plotDetails[i]['ls'],
-            label=plotDetails[i]['label'])
+            c=plot_details[i]['c'],
+            lw=plot_details[i]['lw'],
+            ls=plot_details[i]['ls'],
+            label=plot_details[i]['label'])
 
     legd = ax1.legend(
         loc='center left',
@@ -130,10 +134,11 @@ def get_image_path(cfg,
                    ]):
     """
         This produces a path to the final location of the image.
+
         The cfg is the opened global config,
         md is the metadata dictionairy (for the individual model file)
         """
-
+    #####
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
@@ -150,10 +155,11 @@ def make_cube_layer_dict(cube):
         This method takes a cube and return a dictionairy
         with a cube for each layer as it's own item. ie:
           cubes[depth] = cube from specific layer
+
         Also, cubes with no depth component are returns as:
           cubes[''] = cube with no depth component.
         """
-
+    #####
     # Check layering:
     depth = cube.coords('depth')
     cubes = {}

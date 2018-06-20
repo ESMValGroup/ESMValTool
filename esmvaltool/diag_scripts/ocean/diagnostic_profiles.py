@@ -1,4 +1,3 @@
-"""Python example diagnostic."""
 import logging
 import os
 import sys
@@ -16,55 +15,60 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def determine_profiles_str(cube):
+    """
+        Determines a string from the cube, to describe the profile.
+        """
     options = ['latitude', 'longitude']
-    for o in options:
-        coord = cube.coord(o)
+    for option in options:
+        coord = cube.coord(option)
         if len(coord.points) > 1:
             continue
         value = coord.points.mean()
-        if o == 'latitude':
+        if option == 'latitude':
             return str(value) + ' N'
-        if o == 'longitude':
+        if option == 'longitude':
             if value > 180.:
                 return str(value - 360.) + ' W'
             return str(value) + ' E'
     return ''
 
 
-def profilesPlots(
+def profiles_plots(
         cfg,
         md,
         fn,
 ):
     """
-        This function makes a simple plot for an indivudual model.
+        This function makes a simple profile plot for an individual model.
+
         The cfg is the opened global config,
         md is the metadata dictionairy
         fn is the preprocessing model file.
         """
     # Load cube and set up units
     cube = iris.load_cube(fn)
-    cube = diagtools.sensibleUnits(cube, md['short_name'])
+    cube = diagtools.bgc_units(cube, md['short_name'])
 
     # Make annual means from:
     cube = cube.aggregated_by('year', iris.analysis.MEAN)
 
     # Is this data is a multi-model dataset?
-    multiModel = md['model'].find('MultiModel') > -1
+    multi_model = md['model'].find('MultiModel') > -1
 
     #
     times = cube.coord('time')
-    timefloats = diagtools.timecoord_to_float(times)
+    time_floats = diagtools.timecoord_to_float(times)
 
     cmap = plt.cm.get_cmap('jet')
 
-    plotDetails = {}
-    for t, time in enumerate(timefloats):
+    plot_details = {}
+    for time_index, time in enumerate(time_floats):
 
-        c = cmap((time - timefloats[0]) / (timefloats[-1] - timefloats[0]))
+        c = cmap((time - time_floats[0]) / (time_floats[-1] - time_floats[0]))
 
-        qplt.plot(cube[t, :], cube[t, :].coord('depth'), c=c)
-        plotDetails[t] = {'c': c, 'ls': '-', 'lw': 1, 'label': str(int(time))}
+        qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'), c=c)
+        plot_details[time_index] = {'c': c, 'ls': '-', 'lw': 1,
+                                    'label': str(int(time))}
 
     # Add title to plot
     title = ' '.join([
@@ -74,10 +78,10 @@ def profilesPlots(
     plt.title(title)
 
     # Add Legend outside right.
-    diagtools.add_legend_outside_right(plotDetails, plt.gca())
+    diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     # Determine png filename:
-    if multiModel:
+    if multi_model:
         path = diagtools.folder(
             cfg['plot_dir']) + os.path.basename(fn).replace(
                 '.nc', '_profile.png')
@@ -98,11 +102,11 @@ def profilesPlots(
 
 
 def main(cfg):
-    #####
-    print('cfg:\tContents:')
-    for k in cfg.keys():
-        print('CFG:\t', k, '\t', cfg[k])
+    """
+        Main function to load the config file, and send it to the plot maker.
 
+        The cfg is the opened global config.
+        """
     for i, metadatafilename in enumerate(cfg['input_files']):
         print(
             '\nmetadata filename:',
@@ -120,7 +124,7 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            profilesPlots(cfg, metadata[fn], fn)
+            profiles_plots(cfg, metadata[fn], fn)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')

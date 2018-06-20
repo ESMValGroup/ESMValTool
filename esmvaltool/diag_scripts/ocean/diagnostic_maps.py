@@ -15,29 +15,30 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def mapPlots(
+def map_plots(
         cfg,
         md,
         fn,
 ):
     """
-        This function makes a simple plot for an indivudual model.
+        This function makes a simple map plot for an indivudual model.
+
         The cfg is the opened global config,
         md is the metadata dictionairy
         fn is the preprocessing model file.
         """
     # Load cube and set up units
     cube = iris.load_cube(fn)
-    cube = diagtools.sensibleUnits(cube, md['short_name'])
+    cube = diagtools.bgc_units(cube, md['short_name'])
 
     # Is this data is a multi-model dataset?
-    multiModel = md['model'].find('MultiModel') > -1
+    multi_model = md['model'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
     # Making plots for each layer
-    for l, (layer, c) in enumerate(cubes.items()):
+    for la, (layer, c) in enumerate(cubes.items()):
         layer = str(layer)
 
         qplt.contourf(c, 25)
@@ -56,15 +57,15 @@ def mapPlots(
         plt.title(title)
 
         # Determine png filename:
-        if multiModel:
+        if multi_model:
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(fn).replace(
-                    '.nc', '_map_' + str(l) + '.png')
+                    '.nc', '_map_' + str(la) + '.png')
         else:
             path = diagtools.get_image_path(
                 cfg,
                 md,
-                suffix='map_' + str(l),
+                suffix='map_' + str(la),
                 image_extention='png',
             )
 
@@ -78,8 +79,12 @@ def mapPlots(
 
 
 def main(cfg):
-    #####
-    print('cfg:\tContents:')
+    """
+        Main function to load the config file, and send it to the plot maker.
+
+        The cfg is the opened global config.
+        """
+    ####
     for k in cfg.keys():
         print('CFG:\t', k, '\t', cfg[k])
 
@@ -90,17 +95,17 @@ def main(cfg):
         )
 
         metadata = diagtools.get_input_files(cfg, index=i)
-        for fn in sorted(metadata.keys()):
+        for filename in sorted(metadata.keys()):
 
             print('-----------------')
             print(
                 'model filenames:\t',
-                fn,
+                filename,
             )
 
             ######
             # Time series of individual model
-            mapPlots(cfg, metadata[fn], fn)
+            map_plots(cfg, metadata[filename], filename)
 
     logger.debug("\n\nThis works\n\n")
     print('Success')
