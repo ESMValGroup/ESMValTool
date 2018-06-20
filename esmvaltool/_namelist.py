@@ -460,13 +460,6 @@ def _get_input_files(variable, config_user):
         rootpath=config_user['rootpath'],
         drs=config_user['drs'])
 
-    if variable['fx_mask']:
-        # Find the fx files
-        fx_files = get_input_fx_filelist(
-            variable=variable,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
-
     # Set up downloading using synda if requested.
     # Do not download if files are already available locally.
     if config_user['synda_download'] and not input_files:
@@ -475,13 +468,24 @@ def _get_input_files(variable, config_user):
     logger.info("Using input files for variable %s of model %s:\n%s",
                 variable['short_name'], variable['model'],
                 '\n'.join(input_files))
-    if variable['fx_mask']:
-        logger.info("Using fx input files for variable %s of model %s:\n%s",
-                    variable['short_name'], variable['model'],
-                    '\n'.join(fx_files))
     check_data_availability(input_files, variable)
 
-    return input_files, fx_files
+    return input_files
+
+
+def _get_input_fx_files(variable, config_user):
+    """Get the input fx files for a single model"""
+
+    # Find the fx files
+    fx_files = get_input_fx_filelist(
+        variable=variable,
+        rootpath=config_user['rootpath'],
+        drs=config_user['drs'])
+    logger.info("Using fx input files for variable %s of model %s:\n%s",
+                variable['short_name'], variable['model'],
+                '\n'.join(fx_files))
+
+    return fx_files
 
 
 def _apply_preprocessor_settings(settings, profile_settings):
@@ -589,11 +593,11 @@ def _get_single_preprocessor_task(variables,
     if not ancestors:
         input_files = [
             filename for variable in variables
-            for filename in _get_input_files(variable, config_user)[0]
+            for filename in _get_input_files(variable, config_user)
         ]
         fx_files = [
             filename for variable in variables
-            for filename in _get_input_files(variable, config_user)[1]
+            for filename in _get_input_fx_files(variable, config_user)
             if variable['fx_mask']
         ]
 
