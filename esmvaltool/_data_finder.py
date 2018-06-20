@@ -193,7 +193,7 @@ def get_input_filelist(variable, rootpath, drs):
 
     for dirname_template in dirname_templates:
         # Find latest version if required
-        if not '[latestversion]' in dirname_template:
+        if '[latestversion]' not in dirname_template:
             valid_dirs.append(dirname_template)
         else:
             part1, part2 = dirname_template.split('[latestversion]')
