@@ -41,7 +41,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def determine_transect_str(cube):
     """
-    Determine Transect String
+    Determine the Transect String
 
     Takes a guess at a string to describe the transect.
     """
@@ -66,7 +66,7 @@ def make_transects_plots(
         filename,
 ):
     """
-    This function makes a simple plot of the transect for an indivudual model.
+    Make a simple plot of the transect for an indivudual model.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy
@@ -113,14 +113,14 @@ def make_transects_plots(
 
 def main(cfg):
     """
-    Main function to load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot maker.
 
     The cfg is the opened global config.
     """
     #####
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
-            '\nmetadata filename:',
+            'metadata filename:\t%s',
             metadata_filename,
         )
 
@@ -129,7 +129,7 @@ def main(cfg):
 
             logger.info('-----------------')
             logger.info(
-                'model filenames:\t',
+                'model filenames:\t%s',
                 filename,
             )
 

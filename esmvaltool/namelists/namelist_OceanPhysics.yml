@@ -245,7 +245,7 @@ preprocessors:
     extract_trajectory:
       latitudes: [-5., 5.,]
       longitudes: [332.,332.]
-      n: 4              # VERY SLOW with high numbers!
+      number_points: 4              # VERY SLOW with high numbers!
      
   prep_transect_2: # For extracting a transect
     fix_data:

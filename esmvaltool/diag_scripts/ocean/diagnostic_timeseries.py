@@ -62,7 +62,7 @@ def make_time_series_plots(
         filename,
 ):
     """
-    This function makes a simple plot for an indivudual model.
+    Make a simple plot for an indivudual model.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy
@@ -135,7 +135,7 @@ def multi_model_time_series(
         metadata,
 ):
     """
-    This method makes a time series plot showing several models.
+    Make a time series plot showing several models.
 
     This function makes a simple plot for an indivudual model.
     The cfg is the opened global config,
@@ -157,7 +157,7 @@ def multi_model_time_series(
     # Make a plot for each layer
     for layer in layers.keys():
 
-        long_name = ''
+        title = ''
         z_units = ''
         plot_details = {}
         cmap = plt.cm.get_cmap('viridis')
@@ -168,9 +168,7 @@ def multi_model_time_series(
                 (float(index) / (len(metadata.keys()) - 1.)
                  ))
 
-            multi_model = metadata[filename]['model'].find('MultiModel') > -1
-
-            if multi_model:
+            if metadata[filename]['model'].find('MultiModel') > -1:
                 qplt.plot(
                     model_cubes[filename][layer],
                     c=color,
@@ -199,12 +197,11 @@ def multi_model_time_series(
                     'label': metadata[filename]['model']
                 }
 
-            long_name = metadata[filename]['long_name']
+            title = metadata[filename]['long_name']
             if layer != '':
                 z_units = model_cubes[filename][layer].coords('depth')[0].units
 
         # Add title, legend to plots
-        title = long_name
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
@@ -236,14 +233,14 @@ def multi_model_time_series(
 
 def main(cfg):
     """
-    Main function to load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot maker.
 
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
-            '\nmetadata filename:',
-            metadata_filename,
+            'metadata filename:\t%s',
+            metadata_filename
         )
 
         metadatas = diagtools.get_input_files(cfg, index=index)
@@ -259,7 +256,7 @@ def main(cfg):
 
             logger.info('-----------------')
             logger.info(
-                'model filenames:\t',
+                'model filenames:\t%s',
                 filename,
             )
 

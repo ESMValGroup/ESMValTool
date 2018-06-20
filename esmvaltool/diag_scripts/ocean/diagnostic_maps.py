@@ -45,7 +45,7 @@ def make_map_plots(
         filename,
 ):
     """
-    This function makes a simple map plot for an indivudual model.
+    Make a simple map plot for an individual model.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy
@@ -104,13 +104,13 @@ def make_map_plots(
 
 def main(cfg):
     """
-    Main function to load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot maker.
 
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
-            '\nmetadata filename:',
+            'metadata filename:\t%s',
             metadata_filename,
         )
 
@@ -119,7 +119,7 @@ def main(cfg):
 
             logger.info('-----------------')
             logger.info(
-                'model filenames:\t',
+                'model filenames:\t%s',
                 filename,
             )
 

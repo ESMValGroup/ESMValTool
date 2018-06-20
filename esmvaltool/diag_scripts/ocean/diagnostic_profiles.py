@@ -47,7 +47,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def determine_profiles_str(cube):
     """
-    Determines a string from the cube, to describe the profile.
+    Determine a string from the cube, to describe the profile.
     """
     options = ['latitude', 'longitude']
     for option in options:
@@ -70,7 +70,7 @@ def make_profiles_plots(
         filename,
 ):
     """
-    This function makes a simple profile plot for an individual model.
+    Make a simple profile plot for an individual model.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy
@@ -137,14 +137,14 @@ def make_profiles_plots(
 
 def main(cfg):
     """
-    Main function to load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot maker.
 
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
-            '\nmetadata filename:',
-            metadata_filename,
+            'metadata filename:\t%s',
+            metadata_filename
         )
 
         metadatas = diagtools.get_input_files(cfg, index=index)
@@ -152,7 +152,7 @@ def main(cfg):
 
             logger.info('-----------------')
             logger.info(
-                'model filenames:\t',
+                'model filenames:\t%s',
                 filename,
             )
 

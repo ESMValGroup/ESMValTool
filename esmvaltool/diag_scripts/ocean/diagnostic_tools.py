@@ -23,8 +23,8 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def folder(name):
     """
-    This snippet takes a string, makes the folder and the string.
-    It also accepts lists of strings.
+    Take a string or a list of strings, convert it to a directory style,
+    then make the folder and the string.
     """
     if isinstance(name, list):
         name = '/'.join(name)
@@ -32,7 +32,7 @@ def folder(name):
         name = name + '/'
     if os.path.exists(name) is False:
         os.makedirs(name)
-        logger.info('Making new directory:' + str(name))
+        logger.info('Making new directory:\t%s' + str(name))
     return name
 
 
@@ -43,8 +43,8 @@ def get_input_files(cfg, index=0):
     Get a dictionary with input files from the metadata.yml files.
     """
     metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as file:
-        metadata = yaml.safe_load(file)
+    with open(metadata_file) as input_file:
+        metadata = yaml.safe_load(input_file)
     return metadata
 
 
@@ -71,7 +71,7 @@ def bgc_units(cube, name):
 
     if new_units != '':
         logger.info(' '.join(
-            ["Changing units from ",
+            ["Changing units from",
              str(cube.units), 'to', new_units]))
         cube.convert_units(new_units)
 
@@ -80,7 +80,7 @@ def bgc_units(cube, name):
 
 def timecoord_to_float(times):
     """
-    Converts from time coordinate into decimal time.
+    Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
     """
@@ -146,7 +146,7 @@ def get_image_path(cfg,
                        'start_year', 'end_year'
                    ]):
     """
-    This produces a path to the final location of the image.
+    Produce a path to the final location of the image.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy (for the individual model file)
@@ -165,7 +165,7 @@ def get_image_path(cfg,
 
 def make_cube_layer_dict(cube):
     """
-    This method takes a cube and return a dictionairy
+    Take a cube and return a dictionairy
     with a cube for each layer as it's own item. ie:
        cubes[depth] = cube from specific layer
 
