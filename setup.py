@@ -59,6 +59,7 @@ REQUIREMENTS = {
         'pytest-cov',
         'pytest-html',
         'pytest-metadata>=1.5.1',
+        'rpy2'
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
