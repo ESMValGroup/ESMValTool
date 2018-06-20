@@ -488,3 +488,4 @@ class CMIP5Info(object):
 
 
 CMOR_TABLES = _read_cmor_tables()
+"""dict of str, obj: CMOR info objects"""
