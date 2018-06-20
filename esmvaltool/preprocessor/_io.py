@@ -83,6 +83,8 @@ def concatenate(cubes):
 def _save_cubes(cubes, **args):
     """Save iris cube to file."""
     filename = args['target']
+    optimize_accesss = args['optimize_access']
+    del args['optimize_access']
 
     dirname = os.path.dirname(filename)
     if not os.path.exists(dirname):
@@ -94,12 +96,30 @@ def _save_cubes(cubes, **args):
                      "The cube is probably unchanged.", cubes, filename)
     else:
         logger.debug("Saving cubes %s to %s", cubes, filename)
+        if optimize_accesss:
+            cube = cubes[0]
+            if optimize_accesss == 'map':
+                dims = set(cube.coord_dims('latitude') +
+                           cube.coord_dims('longitude'))
+            elif optimize_accesss == 'timeseries':
+                dims = set(cube.coord_dims('time'))
+            else:
+                dims = tuple()
+                for coord_dims in (cube.coord_dims(dimension) for dimension
+                                   in optimize_accesss.split(' ')):
+                    dims += coord_dims
+                dims = set(dims)
+
+            args['chunksizes'] = tuple(length if index in dims else 1
+                                       for index, length
+                                       in enumerate(cube.shape))
         iris.save(cubes, **args)
 
     return filename
 
 
-def save_cubes(cubes, compress=False, debug=False, step=None):
+def save_cubes(cubes, optimize_access=None,
+               compress=False, debug=False, step=None):
     """Save iris cubes to the file specified in the _filename attribute."""
     paths = {}
     for cube in cubes:
@@ -122,7 +142,8 @@ def save_cubes(cubes, compress=False, debug=False, step=None):
     for filename in paths:
         # _save_cubes(cubes=paths[filename], target=filename,
         #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename, zlib=compress)
+        _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
+                    optimize_access=optimize_access)
 
     return list(paths)
 
