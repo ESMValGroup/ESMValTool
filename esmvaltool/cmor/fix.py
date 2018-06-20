@@ -11,7 +11,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     return filename
 
 
-def fix_metadata(cube, short_name, project, dataset, cmor_table=None, 
+def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
                  mip=None):
     """Apply fixes to the metadata of the cube."""
     for fix in Fix.get_fixes(

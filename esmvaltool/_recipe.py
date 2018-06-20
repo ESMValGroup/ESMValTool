@@ -362,7 +362,7 @@ def _limit_datasets(variables, profile, max_datasets=None):
         if variable not in limited:
             limited.append(variable)
 
-    logger.info("Only considering %s", \
+    logger.info("Only considering %s",
                 ', '.join(v['dataset'] for v in limited))
 
     return limited
@@ -711,7 +711,7 @@ class Recipe(object):
                 self._initialize_preprocessor_output(
                     name,
                     raw_diagnostic.get('variables', {}),
-                    raw_datasets + \
+                    raw_datasets +
                     raw_diagnostic.get('additional_datasets', []))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))

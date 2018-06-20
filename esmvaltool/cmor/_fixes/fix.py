@@ -91,7 +91,7 @@ class Fix(object):
         coordinate) and VARIABLE (which should be use for fixes for the
         specific variable).
 
-        Project, dataset and variable names will have '-' replaced by '_' 
+        Project, dataset and variable names will have '-' replaced by '_'
         before checking because it is not possible to use the character '-' in
         python names.
 
