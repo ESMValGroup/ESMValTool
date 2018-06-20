@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Script to convert nvl style files to python style files.
 
-
 Example
 -------
 The script is simply called by::
@@ -36,7 +35,47 @@ FILLING = 'facecolor'
 INFORMATION = [MODEL, COLOR, DASH, THICKNESS, MARK, AVG_STD]
 
 
-def read_style(file_name):
+def convert_mark(info):
+    """Convert numerical mark info to matplotlib mark."""
+    if info == '0':
+        return 'x'
+    elif info == '1':
+        return '.'
+    elif info == '2':
+        return '+'
+    elif info == '3':
+        return 'x'
+    elif info == '4':
+        return 'o'
+    elif info == '5':
+        return 'x'
+    elif info == '6':
+        return 's'
+    elif info == '7':
+        return '^'
+    elif info == '8':
+        return 'v'
+    elif info == '9':
+        return 'D'
+    elif info == '10':
+        return '<'
+    elif info == '11':
+        return '>'
+    elif info == '12':
+        return '*'
+    elif info == '13':
+        return 'h'
+    elif info == '14':
+        return '.'
+    elif info == '15':
+        return 'x'
+    elif info == '16':
+        return 'o'
+    else:
+        return 'o'
+
+
+def read_ncl_style(file_name):
     """Read ncl style file."""
     output = []
     with open(file_name, 'r') as file:
@@ -54,9 +93,9 @@ def read_style(file_name):
 
             # Read information
             infos = {}
-            for i in range(len(line)):
-                info = line[i].strip()
-                option = INFORMATION[i]
+            for (idx, line_elem) in enumerate(line):
+                info = line_elem.strip()
+                option = INFORMATION[idx]
 
                 # Convert color to hex string
                 if option == COLOR:
@@ -75,45 +114,10 @@ def read_style(file_name):
                         infos.update({FILLING: 'none'})
 
                     # Shape
-                    if info == '0':
-                        info = 'x'
-                    elif info == '1':
-                        info = '.'
-                    elif info == '2':
-                        info = '+'
-                    elif info == '3':
-                        info = 'x'
-                    elif info == '4':
-                        info = 'o'
-                    elif info == '5':
-                        info = 'x'
-                    elif info == '6':
-                        info = 's'
-                    elif info == '7':
-                        info = '^'
-                    elif info == '8':
-                        info = 'v'
-                    elif info == '9':
-                        info = 'D'
-                    elif info == '10':
-                        info = '<'
-                    elif info == '11':
-                        info = '>'
-                    elif info == '12':
-                        info = '*'
-                    elif info == '13':
-                        info = 'h'
-                    elif info == '14':
-                        info = '.'
-                    elif info == '15':
-                        info = 'x'
-                    elif info == '16':
-                        info = 'o'
-                    else:
-                        info = 'o'
+                    info = convert_mark(info)
 
                 # Add information
-                infos.update({INFORMATION[i]: info})
+                infos.update({INFORMATION[idx]: info})
             output.append(infos)
 
     return output
@@ -127,17 +131,17 @@ def write_config_file(model_infos, file_name):
         file.write(header)
 
         # Write model styles
-        for model_infos in model_infos:
+        for model_info in model_infos:
             file.write("\n")
             for info in INFORMATION:
                 if info == MODEL:
-                    file.write("[{0}]\n".format(model_infos[info]))
+                    file.write("[{0}]\n".format(model_info[info]))
                 else:
-                    file.write("{0} = {1}\n".format(info, model_infos[info]))
-            file.write("{0} = {1}\n".format(FILLING, model_infos[FILLING]))
+                    file.write("{0} = {1}\n".format(info, model_info[info]))
+            file.write("{0} = {1}\n".format(FILLING, model_info[FILLING]))
 
 
 # Execute script if called directly
 if __name__ == '__main__':
-    styles = read_style(INPUT_FILE)
-    write_config_file(styles, OUTPUT_FILE)
+    STYLES = read_ncl_style(INPUT_FILE)
+    write_config_file(STYLES, OUTPUT_FILE)

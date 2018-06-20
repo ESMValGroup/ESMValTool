@@ -312,9 +312,8 @@ class Models(object):
             if model_path in self._paths:
                 self._data[model_path] += data
                 return None
-            else:
-                logger.warning("%s is not a valid model path", model_path)
-                return None
+            logger.warning("%s is not a valid model path", model_path)
+            return None
         paths = list(self._models)
         for info in model_info:
             paths = [path for path in paths if
@@ -327,7 +326,7 @@ class Models(object):
             logger.warning("Data could no be saved: %s is ambiguous",
                            model_info)
             return None
-        self._data[path] += data
+        self._data[paths[0]] += data
         return None
 
     def get_data(self, model_path=None, **model_info):
@@ -733,3 +732,4 @@ class Models(object):
                            model_info)
             return None
         self._data[paths[0]] = data
+        return None
