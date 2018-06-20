@@ -84,9 +84,10 @@ begin
   ; ###########################################
   write_references(diag_script, \  ; script name
                    "A_lore_ru", \  ; authors
+                   "", \  ; contributors
                    "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
+                   "", \  ; obs_references
+                   "P_crescendo")     ; proj_references
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", \
@@ -98,7 +99,7 @@ begin
   if (isatt(diag_script_info, "plot_type")) then
     file_type = diag_script_info@plot_type
   else
-    file_type = "PDF"
+    file_type = "pdf"
   end if
 
   ; Basename of diag_script
@@ -506,14 +507,14 @@ begin
   runs@var = "nr"
   runs@var_long_name = "number of model runs per scenario and period"
   runs@var_units     = 1
-  log_debug(" Variable summary of runs" + \
-            "(runs): " + runs)
+  log_debug(" Variable summary of runs (runs): " + runs)
 
   ; ###########################################
   ; # Output to netCDF                        #
   ; ###########################################
-  to_plot@ncdf = diag_script_info@ncdf
-  ncdf_file = work_dir + "/" + diag_script_info@ncdf
+  to_plot@ncdf = var0 + "_ts_line" + syears(0) + "-" + eyears(nperiods - 1) + \
+                 ".nc"
+  ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)

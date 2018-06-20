@@ -72,6 +72,7 @@ begin
   ; ###########################################
   write_references(diag_script, \  ; script name
                    "A_lore_ru", \  ; authors
+                   "", \  ; contributors
                    "D_collins13ipcc",    \  ; diag_references
                    "",          \  ; obs_references
                    "P_crescendo")   ; proj_references
@@ -85,7 +86,7 @@ begin
   if (isatt(diag_script_info, "plot_type")) then
     file_type = diag_script_info@plot_type
   else
-    file_type = "PDF"
+    file_type = "pdf"
   end if
 
   ; Basename of diag_script
@@ -99,8 +100,9 @@ begin
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)  ; Needed?
 
-  diagscript = diag_script_info@diagscript
-  netcdf_dir = work_dir
+  input_files = diag_script_info@input_files + "/" + \
+                var0 + "_ts_line_" + syears(0) + "-" + \
+                eyears(nperiods - 1) + ".nc"
 end
 
 begin
@@ -128,25 +130,24 @@ begin
   ; ###########################################
   ; # Get data                                #
   ; ###########################################
-  datapath = netcdf_dir + "/" + diag_script_info@ncdf
-  to_plot = ncdf_read(datapath, var0)
+  ; start and end years of timeperiods
+  syears = diag_script_info@syears
+  eyears = diag_script_info@eyears
+  nperiods = dimsizes(syears)
+
+  to_plot = ncdf_read(input_files, var0)
   log_debug(to_plot)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
     runs = ncdf_read(datapath, "nr")
   end if
 
-  ; start and end years of timeperiods
-  syears = diag_script_info@syears
-  eyears = diag_script_info@eyears
-  nperiods = dimsizes(syears)
-
   dims_data = (dimsizes(to_plot&metric) - 1) / 3
 
   ; ###########################################
   ; *********** PLOTTING ************
   ; Create plot variables
-  outfile = var0 + "_" + syears(0) + "_" + eyears(nperiods - 1)
+  outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
   wks = get_wks(0, diagscript, outfile)
   if(isatt(diag_script_info, "colormap")) then
     colormap_file = "./diag_scripts/shared/plot/rgb/" + \
