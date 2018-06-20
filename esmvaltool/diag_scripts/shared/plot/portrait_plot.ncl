@@ -5,6 +5,7 @@
 ; Check the header of each routine for documentation.
 ;
 ;    function portrait_plot
+;    function circle_plot
 ; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
@@ -596,6 +597,253 @@ begin
         end if
         ypos = ypos + height
     end do
+    draw(plot)
+    frame(wks)
+
+    leave_msg(scriptname, funcname)
+    return(plot)
+end
+
+;##############################################################################
+
+undef("circle_plot")
+function circle_plot(wks_in[1],
+                     source,
+                     varname[1]: string,
+                     ensname[1]: string)
+;;
+;; Arguments
+;;    wks_in: workstations (graphic object or default will be used).
+;;    source: data to be plotted or a NetCDF filename with data.
+;;    varname: variable name in the file.
+;;
+;; Source prototype:
+;;    source = (nmod, 2)
+;;    source!0 = models
+;;    source!1 = statistic
+;;    source(:, 0) = SMPI
+;;    source(:, 1) = 95% conf radius
+;;
+;; Return value:
+;;    A graphic variable.
+;;
+;; Caveats
+;;
+;; Modification history:
+;;    20170424-A_gier_be: written.
+;;
+local funcname, scriptname, verbosity, wks, wks_in, data, source, res, atts, \
+    base, varname
+begin
+
+    funcname = "circle_plot"
+    scriptname = "plot_scripts/ncl/portrait_plot.ncl"
+    enter_msg(scriptname, funcname)
+
+    ;; Get data, either directly or via netCDF file
+    if(typeof(source) .eq. "string") then
+        data = ncdf_read(source, varname)
+    else
+        data = source
+        copy_VarMeta(source, data)
+    end if
+
+    ;; Use -999 as fill value (easier to display as text)
+    data@_FillValue = -999.
+
+    ;; Retrieve basic metadata from data
+    defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
+    if (any(varname.eq.defaults)) then
+        performance_index = att2var(data, "var")
+        diag_script = att2var(data, "diag_script")
+    else
+        performance_index = varname
+    end if
+
+    print(data)
+
+    ;; Check if a valid wks has been provided, otherwise invoke default
+    wks = get_wks(wks_in, diag_script, performance_index)
+
+    ;; Make list of markers for different projects
+    symbols_1 = (/"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", \
+                  "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", \
+                  "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", \
+                  "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", \
+                  "S", "T", "U", "V", "X", "Y", "Z"/)
+
+    ;; Greek alphabet
+    symbols_2 = "~F5~"+ symbols_1 + "~F~"
+
+    n_projects = 1
+    x_min = 0.38		; was on x_min = 0.01
+    x_max = max(data(:,0) + data(:,1)) + 0.25
+    y_max = n_projects + 2
+    y_min = n_projects - 2
+
+    ;; Default resources
+    res = True
+    res@xyXStyle = "Log"
+    res@gsnDraw  = False
+    res@gsnFrame = False
+    res@tmBorderThicknessF = False
+    res@tmXBBorderOn = False
+    res@tmXTBorderOn = False
+    res@tmYLBorderOn = False
+    res@tmYRBorderOn = False
+    res@tmXBOn = False
+    res@tmXTOn = False
+    res@tmYLOn = False
+    res@tmYROn = False
+    res@trXMinF = x_min
+    res@trXMaxF = x_max
+    res@trYMinF = y_min
+    res@trYMaxF = y_max
+    res@vpXF = 0.1
+    res@vpWidthF = 0.9
+    res@vpYF = 1.0
+    res@vpHeightF = 0.4
+    res@tiXAxisString = "I~S~2"
+    res@tiXAxisOffsetYF = 0.1
+
+    res_lines = True
+    res_lines@gsLineDashPattern = 0.
+    res_lines@gsLineThicknessF = 2.    ;; was res_lines@gsLineThicknessF = 5.
+    res_lines@tfPolyDrawOrder = "PreDraw"
+
+    res_circles = True
+    res_circles@gsEdgesOn = True
+    res_circles@gsEdgeThicknessF = 1.5
+
+    res_text = True
+    res_text@txFontHeightF = 0.02
+
+    res_marker = True
+    res_marker@gsMarkerSizeF = 0.02     ;; was res_marker@gsMarkerSizeF = 0.05
+    res_marker@gsMarkerIndex = 1
+    res_marker@gsMarkerColor = "black"
+    res_marker@tfPolyDrawOrder = "Draw"
+    res_marker@txFontHeightF = 0.015
+    res_marker@txFontThicknessF = 2
+
+    ;plot = gsn_blank_plot(wks, res)
+    ;;; Draw baseline
+    ;plot@$unique_string("dum")$ = gsn_add_polyline(wks, plot, (/0, x_max/), \
+    ;                                                      (/1, 1/), res_lines)
+    plot               = gsn_csm_xy (wks, (/x_min, x_max/), (/1., 1./), res)
+	;; Draw baseline
+    plot@$unique_string("dum")$ = gsn_add_polyline(wks, plot, (/x_min, x_max/), \
+                                                          (/1., 1./), res_lines)
+
+    ;; Draw ticks on baseline
+    x_ticks = ispan(toint(x_min*10), toint(x_max*10), 1)*0.1
+    ;;x_big_ticks = ispan(toint(x_min*10), toint(x_max*10), 5)*0.1
+    x_big_ticks = ispan(0, toint(x_max*10), 5)*0.1
+    x_numbers = ispan(toint(x_min)+1, toint(x_max), 1)
+
+    do ticks = 0, dimsizes(x_ticks) - 1        
+        plot@$unique_string("dum")$ = gsn_add_polyline(wks, plot, \
+                   (/x_ticks(ticks), x_ticks(ticks)/), (/0.95, 1.05/), res_lines)  ;; was (/0.9, 1.1/)
+    end do
+
+    do ticks = 0, dimsizes(x_big_ticks) - 1        
+        plot@$unique_string("dum")$ = gsn_add_polyline(wks, plot, \
+          (/x_big_ticks(ticks), x_big_ticks(ticks)/), (/0.85, 1.15/), res_lines)   ;; was (/0.75, 1.25/)
+    end do
+
+    do ticks = 0, dimsizes(x_numbers)-1
+        plot@$unique_string("dum")$ = gsn_add_text(wks, plot, \
+        tostring(x_numbers(ticks)), x_numbers(ticks), 0.2, res_text)
+    end do
+
+    ;; Add models as circles, transform x-coords into ndc space
+    ;; to keep circles in log
+    n = 50  ; nr of points to draw circle with
+    do imod = 0, dimsizes(data&models) - 1
+        x_in = (/data(imod, 0), data(imod, 0) + data(imod, 1),\
+                                                 data(imod, 0)/)
+        y_in = (/1., 1., 1.26/)
+        x_ndc = new(3, float)
+        y_ndc = new(3, float)
+        datatondc(plot, x_in, y_in, x_ndc, y_ndc)
+        mod_r = x_ndc(1) - x_ndc(0)
+        x_1 = fspan(-mod_r, mod_r, n)
+        y_1 = sqrt(mod_r^2 - x_1^2)
+        x = array_append_record(x_1, x_1(::-1), 0)
+        y = array_append_record(y_1, -y_1(::-1), 0)
+        x = x + x_ndc(0)
+        y = y + y_ndc(0)
+        if data&models(imod).eq."multi-model-mean" then
+		    print("In loop")
+            res_circles@gsFillColor = "black"
+            res_circles@gsFillOpacityF = 0.8
+        else
+            res_circles@gsFillColor = "orange"
+            res_circles@gsFillOpacityF = 0.3
+        end if
+        gsn_polygon_ndc(wks, x, y, res_circles)
+        gsn_polymarker_ndc(wks, x_ndc(0), y_ndc(0), res_marker)
+        delete([/mod_r, x_1, y_1, x, y, x_ndc, y_ndc, x_in, y_in/])
+    end do
+
+    ;; Plot average I^2 and Project name
+    ;; Multi Model Mean at the end
+;    avg_smpi = avg(data(:dimsizes(data&models)-2,0))
+    ;sig_smpi = stddev(data(:dimsizes(data&models)-2,0))
+    ;conf_smpi = cdft_t(0.975, (dimsizes(data&models) -1) * \
+    ;                 sig_smpi / sqrt(dimsizes(data&models)))
+    ;; INTERIM SIGMA
+;    conf_smpi = avg(data(:dimsizes(data&models)-2,1));/ sqrt(dimsizes(data&models))
+    x_in = (/1., 1./)          ; arbitrary value; only used for the coordinate system transformation
+    y_in = (/1., 1./)
+    x_ndc = new(2, float)
+    y_ndc = new(2, float)
+    datatondc(plot, x_in, y_in, x_ndc, y_ndc)
+;    mod_r = x_ndc(1) - x_ndc(0)
+;    x_1 = fspan(-mod_r, mod_r, n)
+;    y_1 = sqrt(mod_r^2 - x_1^2)
+;    x = array_append_record(x_1, x_1(::-1), 0)
+;    y = array_append_record(y_1, -y_1(::-1), 0)
+;    x = x + x_ndc(0)
+;    y = y + y_ndc(0)
+;    res_marker@gsMarkerColor = "grey"
+;    res_circles@gsFillColor = "grey"
+;    res_circles@gsFillOpacityF = 0.8
+;    gsn_polygon_ndc(wks, x, y, res_circles)
+;    gsn_polymarker_ndc(wks, x_ndc(0), y_ndc(0), res_marker)
+    res_text@txJust = "CenterLeft"
+    gsn_text_ndc(wks, ensname, 0.01, y_ndc(0), res_text)
+    delete([/x_in, y_in, x_ndc, y_ndc/])
+
+    ; Text symbols after all circles are drawn, in case they fall inside
+    x_in = data(:, 0)
+    y_in = new(dimsizes(data(:,0)), float)
+    ;y_in(:) = 1.4 
+    y_in(:) = max(data(:,1)) + 1.5
+    x_ndc = new(dimsizes(data(:,0)), float)
+    y_ndc = new(dimsizes(data(:,0)), float)
+    datatondc(plot, x_in, y_in, x_ndc, y_ndc)
+
+    do imod = 0, dimsizes(data&models) - 1        
+        gsn_text_ndc(wks, symbols_2(imod), x_ndc(imod), y_ndc(imod), res_marker)
+    end do
+    delete([/x_in, y_in, x_ndc, y_ndc/])
+
+    ;; Draw legend
+    txres = True
+    txres@txFontHeightF = 0.015
+    txres@txJust = "CenterLeft"
+    ypos = fspan(0.55, 0.1, 20)
+    half = toint(dimsizes(data&models)/2)
+    do imod = 0, half
+        gsn_text_ndc(wks, symbols_2(imod) + ": " + \
+                  data&models(imod), 0.01, ypos(imod), txres)
+    end do
+    do imod = half + 1, dimsizes(data&models) - 1        
+        gsn_text_ndc(wks, symbols_2(imod) + ": " + \
+               data&models(imod), 0.3, ypos(imod - half - 1), txres)
+    end do
+
     draw(plot)
     frame(wks)
 

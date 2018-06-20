@@ -341,14 +341,15 @@ begin
                              diag_script_info@normalization(met))
         end do
       end if
+      print(smpi)
 
       ; Special case, SMPI normalization
       if (diag_script_info@metric(met).eq."SMPI") then
-        ens_idx = new(dimsizes(smpi&model), integer)
+        ens_idx = new(dimsizes(smpi&models), integer)
         do ii = 0, dimsizes(ens_idx) - 1
           loc_idx = ind(model_info@model.eq.smpi&models(ii))
           ; Select only the models of the specified project
-          if (model_info@project(loc_idx).ne.normalization(met)) then
+          if (model_info@project(loc_idx).ne.diag_script_info@normalization(met)) then
             ens_idx(ii) = ens_idx@_FillValue
           else
             ens_idx(ii) = ii
@@ -361,10 +362,9 @@ begin
         end if
         ens_idx := ens_idx(ind(.not.ismissing(ens_idx)))
         ; Apply normalization
-        do iboot = 0, dimsizes(smpi&bootstrap_member) - 1
+        do iboot = 0, dimsizes(smpi&bootstrap_member)-1
           smpi(iboot, :) = smpi(iboot, :) / avg(smpi(iboot, ens_idx))
         end do
-
       end if
 
       ; Reduce dimensionality if no alternative model
@@ -373,23 +373,48 @@ begin
         delete(metric@reference)
       end if
 
-      ; Attach attributes to the results
-      metric@title = diag_script_info@metric(met) + " metric"
-      metric@long_name = \
-        "Grading table of metric " + diag_script_info@metric(met)
-      metric@metric = diag_script_info@metric(met)
-      metric@diag_script = (/diag_script/)
-      metric@var = "grade"
-      metric@region = location
-      metric@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
-      do imod = 0, dimsizes(model_info@model) - 1
-        num_climo = "climofile_" + imod
-        metric@$num_climo$ = input_file_info@filename(imod)
-      end do
-      metric@ncdf_dir = ncdf_dir(met)
+      if diag_script_info@metric.eq."SMPI" then
+        ; Attach attributes to results
+        smpi@title = "metrics"
+        smpi@long_name = "1 variable's Performance Index for " + \
+                                 "the Single Model Performance Index"
+        ;val_smpi@metric = diag_script_info@metric
+        smpi@diag_script = (/diag_script/)
+        smpi@var = "performance_index"
+        smpi@invar = var0
+        smpi@region = location
+	smpi@ensemble_name = diag_script_info@normalization(met)
+        smpi@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
+        do imod = 0, dimsizes(model_info@model) - 1
+          num_climo = "climofile_" + imod
+          smpi@$num_climo$ = input_file_info@filename(imod)
+        end do
+        smpi@ncdf_dir = ncdf_dir(met)
+        
+        ; Write NetCDF output
+        ncdf_outfile = ncdf_write(smpi, smpi@ncdf_dir)
 
-      ; Write NetCDF output
-      ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+      else
+
+        ; Attach attributes to the results
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+            "Grading table of metric " + diag_script_info@metric(met)
+        metric@metric = diag_script_info@metric(met)
+        metric@diag_script = (/diag_script/)
+        metric@var = "grade"
+        metric@region = location
+        metric@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
+        do imod = 0, dimsizes(model_info@model) - 1
+          num_climo = "climofile_" + imod
+          metric@$num_climo$ = input_file_info@filename(imod)
+        end do
+        metric@ncdf_dir = ncdf_dir(met)
+        
+        ; Write NetCDF output
+        ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+
+      end if
 
       ; Write results of temporary grading list
       temp_dir = config_user_info@work_dir + "/" + \

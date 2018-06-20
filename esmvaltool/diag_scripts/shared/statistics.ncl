@@ -1497,17 +1497,37 @@ begin
         end do
         if (all(bootvect(:).eq.bootvect(0))) then
           error_msg("f", scriptname, funcname, \
-                    "Number of years to small for bootstrapping. Abort.")
+                    "Number of years too small for bootstrapping. Abort.")
         end if
-        obs = ref(bootvect, :, :)
-        mod1D = ndtooned(dim_avg_n(var, 0))
-        ref1D = ndtooned(dim_avg_n(obs, 0))
-        sig1D = ndtooned(dim_stddev_n_Wrap(obs, 0))
-        sig1D@_FillValue = default_fillvalue(typeof(sig1D))
-        sig1D = where(sig1D.eq.0, sig1D@_FillValue, sig1D)
-        out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D)^2 \
-                                            / sig1D^2, wgt1d, 1)
       end if
+      obs = ref(bootvect, :, :)
+      mod1D = ndtooned(dim_avg_n(var, 0))
+      ref1D = ndtooned(dim_avg_n(obs, 0))
+      sig1D = ndtooned(dim_stddev_n_Wrap(obs, 0))
+      sig1D@_FillValue = default_fillvalue(typeof(sig1D))
+      sig1D = where(sig1D.eq.0, sig1D@_FillValue, sig1D)
+
+      delete(weights)
+      delete(wgt1d)
+      if (isdim(obs, "lon").and.isdim(obs, "lat")) then
+        weights = map_area(obs&lat, obs&lon)
+      else if (isdim(obs, "plev").and.isdim(obs, "lat")) then
+        areas = map_area(obs&lat, (/1.0, 2.0/))
+        nlev = dimsizes(obs&plev)
+        ptop = obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
+        delta_p = dpres_plevel(obs&plev, 101325., ptop, 0)
+        weights = new((/dimsizes(obs&plev), dimsizes(obs&lat)/), float)
+        wdims = dimsizes(weights)
+        weights = conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
+      else
+        error_msg("f", diag_script, "", "Ups. This should not happen. Unknown dimensions in variable obs.")
+      end if
+      end if
+
+      wgt1d = ndtooned(weights)
+      out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D)^2 \
+                                            / sig1D^2, wgt1d, 1)
+      
     end do
     leave_msg(scriptname, funcname)
     return(out)
