@@ -59,10 +59,10 @@ class TestSave(unittest.TestCase):
         self.assertTrue((cube.coord('latitude').points ==
                          loaded_cube.coord('latitude').points).all())
         handler = netCDF4.Dataset(paths[0], 'r')
-        self.assertTrue(handler.variables['sample'].filters()['zlib'])
-        self.assertTrue(handler.variables['sample'].filters()['shuffle'])
-        self.assertEqual(handler.variables['sample'].filters()['complevel'], 4)
-        handler.variables['sample']
+        sample_filters = handler.variables['sample'].filters()
+        self.assertTrue(sample_filters['zlib'])
+        self.assertTrue(sample_filters['shuffle'])
+        self.assertEqual(sample_filters['complevel'], 4)
         handler.close()
 
     def test_save_debug(self):
