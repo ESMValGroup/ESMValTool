@@ -13,27 +13,28 @@ from .check import _get_cmor_checker
 
 def fix_file(filename, short_name, project, dataset, output_dir):
     """
-    Apply fixes to the netCDF files
+    Fix files before ESMValTool can load them
 
-    This allow fixing errors that prevent loading or can not be fixed
-    in the cube.
+    This fixes are only for issues that prevent iris to load the files or
+    that are not possible after the cube is generated
 
-    Parameters:
-    -----------
-    cube: iris.cube.Cube
-        Data cube to fix
-    short_name: basestring
-        Short name of the variable to fix
-    project: basestring
-    dataset: basestring
-    cmor_table: basestring or None
-    mip: basestring or None
+    Original files are not overwritten.
 
-    Returns:
-    --------
-    path:
-        Filename to the fixed file. If no fix has been applied
-        it will be the original
+    Parameters
+    ----------
+    filename: str
+        Path to the original file
+    short_name: str
+        Variable's short name
+    project: str
+    dataset:str
+    output_dir: str
+        Output directory for fixed files
+
+    Returns
+    -------
+    str:
+        Path to the fixed file
 
     """
     for fix in Fix.get_fixes(
@@ -42,28 +43,40 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     return filename
 
 
-def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
-                 mip=None):
+def fix_metadata(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """
-    Apply fixes to the metadata of the cube.
+    Fix cube metadata if fixes add present and check it anyway
 
-    This fixes will not cause the data to be loaded on memory
+    This method collect all the relevant fixes for a given variable, applies
+    them and check the resultant cube (or the original if no fixes were
+    needed) metadata to ensure that it complies with the standards of its
+    project CMOR tables
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     cube: iris.cube.Cube
-        Data cube to fix
-    short_name: basestring
-        Short name of the variable to fix
-    project: basestring
-    dataset: basestring
-    cmor_table: basestring or None
-    mip: basestring or None
+        Cube to fix
+    short_name; str
+        Variable's short name
+    project: str
 
-    Returns:
-    --------
+    dataset: str
+
+    cmor_table: str, optional
+        CMOR tables to use for the check, if available
+
+    mip: str, optional
+        Variable's MIP, if available
+
+    Returns
+    -------
     iris.cube.Cube:
-        Fixed cube. If no fixes were applied, returns the original cube
+        Fixed and checked cube
+
+    Raises
+    ------
+    CMORCheckError:
+        If the checker detects errors in the metadata that it can not fix
 
     """
     for fix in Fix.get_fixes(
@@ -82,26 +95,41 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
 
 def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """
-    Apply fixes to the metadata of the cube.
+    Fix cube data if fixes add present and check it anyway
 
-    Fixes at this step require the data to be loaded onto memory,
-    but the returned cube can be lazy loaded if no fixes were applied.
+    This method assumes that metadata is already fixed and checked
 
-    Parameters:
-    -----------
+    This method collect all the relevant fixes for a given variable, applies
+    them and check the resultant cube (or the original if no fixes were
+    needed) metadata to ensure that it complies with the standards of its
+    project CMOR tables
+
+    Parameters
+    ----------
     cube: iris.cube.Cube
-        Data cube to fix
-    short_name: basestring
-        Short name of the variable to fix
-    project: basestring
-    dataset: basestring
-    cmor_table: basestring or None
-    mip: basestring or None
+        Cube to fix
+    short_name; str
+        Variable's short name
+    project: str
 
-    Returns:
-    --------
-    iris.cube.Cube
-        Fixed cube. If no fixes were applied, returns the original cube
+    dataset: str
+
+    cmor_table: str, optional
+        CMOR tables to use for the check, if available
+
+    mip: str, optional
+        Variable's MIP, if available
+
+    Returns
+    -------
+    iris.cube.Cube:
+        Fixed and checked cube
+
+    Raises
+    ------
+    CMORCheckError:
+        If the checker detects errors in the data that it can not fix
+
     """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
