@@ -1,5 +1,6 @@
 """Data finder module for the ESMValTool."""
 # Authors:
+# Bouwe Andela (eScience, NL - b.andela@esciencecenter.nl)
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
@@ -59,7 +60,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable):
+def replace_tags(path, variable, j=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -95,8 +96,11 @@ def replace_tags(path, variable):
                     "Model key {} must be specified for project {}, check "
                     "your namelist entry".format(tag, variable['project']))
 
-        path = path.replace('[' + tag + ']', replacewith)
-
+        if not isinstance(replacewith, list):
+            path = path.replace('[' + tag + ']', replacewith)
+        else:
+            path = [path.replace('[' + tag + ']', dkrz_place)
+                    for dkrz_place in replacewith][j]
     return path
 
 
@@ -121,13 +125,21 @@ def get_input_dirname_template(variable, rootpath, drs):
     if isinstance(input_dir, six.string_types):
         dir2 = replace_tags(input_dir, variable)
     elif _drs in input_dir:
-        dir2 = replace_tags(input_dir[_drs], variable)
+        insts = cmip5_model2inst(variable['model'])
+        dirs2 = []
+        if isinstance(insts, list):
+            for j in range(len(insts)):
+                dir2 = replace_tags(input_dir[_drs], variable, j)
+                dirs2.append(dir2)
+        else:
+            dir2 = replace_tags(input_dir[_drs], variable)
+            dirs2.append(dir2)
     else:
         raise KeyError(
             'drs {} for {} project not specified in config-developer file'
             .format(_drs, project))
 
-    dirname_template = os.path.join(dir1, dir2)
+    dirname_template = [os.path.join(dir1, dir_2) for dir_2 in dirs2]
 
     return dirname_template
 
@@ -137,22 +149,23 @@ def get_input_filename(variable, rootpath, drs):
 
     This function should match the function get_input_filelist below.
     """
-    dirname_template = get_input_dirname_template(variable, rootpath, drs)
-    # Simulate a latest version if required
-    if '[latestversion]' in dirname_template:
-        part1, part2 = dirname_template.split('[latestversion]')
-        dirname = os.path.join(part1, 'latestversion', part2)
-    else:
-        dirname = dirname_template
+    dirname_templates = get_input_dirname_template(variable, rootpath, drs)
+    for dirname_template in dirname_templates:
+        # Simulate a latest version if required
+        if '[latestversion]' in dirname_template:
+            part1, part2 = dirname_template.split('[latestversion]')
+            dirname = os.path.join(part1, 'latestversion', part2)
+        else:
+            dirname = dirname_template
 
-    # Set the filename
-    filename = _get_filename(variable, drs)
-    if filename.endswith('*'):
-        filename = filename.rstrip(
-            '*') + "{start_year}01-{end_year}12.nc".format(**variable)
+        # Set the filename
+        filename = _get_filename(variable, drs)
+        if filename.endswith('*'):
+            filename = filename.rstrip(
+                '*') + "{start_year}01-{end_year}12.nc".format(**variable)
 
-    # Full path to files
-    return os.path.join(dirname, filename)
+        # Full path to files
+        return os.path.join(dirname, filename)
 
 
 def _get_filename(variable, drs):
@@ -174,31 +187,39 @@ def _get_filename(variable, drs):
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    dirname_template = get_input_dirname_template(variable, rootpath, drs)
+    all_files = []
+    dirname_templates = get_input_dirname_template(variable, rootpath, drs)
+    valid_dirs = []
 
-    # Find latest version if required
-    if '[latestversion]' in dirname_template:
-        part1, part2 = dirname_template.split('[latestversion]')
-        part2 = part2.lstrip(os.sep)
-        list_versions = os.listdir(part1)
-        list_versions.sort(reverse=True)
-        for version in list_versions:
-            dirname = os.path.join(part1, version, part2)
-            if os.path.isdir(dirname):
-                break
-    else:
-        dirname = dirname_template
+    for dirname_template in dirname_templates:
+        # Find latest version if required
+        if '[latestversion]' not in dirname_template:
+            valid_dirs.append(dirname_template)
+        else:
+            part1, part2 = dirname_template.split('[latestversion]')
+            part2 = part2.lstrip(os.sep)
+            if os.path.exists(part1):
+                list_versions = os.listdir(part1)
+                list_versions.sort(reverse=True)
+                for version in list_versions:
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        valid_dirs.append(dirname)
+                        break
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
 
-    # Find files
-    files = find_files(dirname, filename_glob)
+    for dir_name in valid_dirs:
+        # Find files
+        files = find_files(dir_name, filename_glob)
 
-    # Select files within the required time interval
-    files = select_files(files, variable['start_year'], variable['end_year'])
+        # Select files within the required time interval
+        files = select_files(files, variable['start_year'],
+                             variable['end_year'])
+        all_files.extend(files)
 
-    return files
+    return all_files
 
 
 def get_output_file(variable, preproc_dir):
