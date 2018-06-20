@@ -31,8 +31,9 @@ Convert xml to yml
 
 In ESMValTool v2.0, the namelist (now recipe) is written in yaml format (`Yet Another Markup Language format <http://www.yaml.org/>`_). It may be useful to activate the yaml syntax highlighting for the editor in use. This improves the readability of the recipe file and facilitates the editing, especially concerning the indentations which are essential in this format (like in python). Instructions can be easily found online, for example for `emacs <https://www.emacswiki.org/emacs/YamlMode>`_ and `vim <http://www.vim.org/scripts/script.php?script_id=739>`_.
 
+A xml2yml converter is available in ``esmvaltool/utils/xml2yml/``, please refer to the corresponding README file for detailed instructions on how to use it.
 
-The yaml recipe can now be edited and tested, starting with a few models and one diagnostics and proceed gradually. The recipe file ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
+Once the recipe is converted, a first attempt to run it can be done, possibly starting with a few datasets and one diagnostics and proceed gradually. The recipe file ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
 
 Create a copy of the diag script in v2.0
 ========================================
@@ -58,14 +59,14 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``xml``                                         | ``yml``                                             | all scripts      |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(0)``                             | ``variable_info@reference_model``                   | all .ncl scripts |
+| ``var_attr_ref(0)``                             | ``variable_info@reference_dataset``                 | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(1)``                             | ``variable_info@alternative_model``                 | all .ncl scripts |
+| ``var_attr_ref(1)``                             | ``variable_info@alternative_dataset``               | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models``                                      | ``model_info`` or ``input_file_info``               | all .ncl scripts |
+| ``models``                                      | ``dataset_info`` or ``input_file_info``             | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models@name``                                 | ``model_info@model`` or                             | all .ncl scripts |
-|                                                 | ``input_file_info@model``                           |                  |
+| ``models@name``                                 | ``dataset_info@dataset`` or                         | all .ncl scripts |
+|                                                 | ``input_file_info@dataset``                         |                  |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``verbosity``                                   | ``config_user_info@log_level``                      | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
@@ -112,13 +113,21 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load diag_scripts/shared/plot/misc_function.ncl`` | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                | some yml nmls    |
+| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                | some yml recipes |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``check_min_max_models``                        | ``check_min_max_datasets``                          | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``get_ref_model_idx``                           | ``get_ref_dataset_idx``                             | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``get_model_minus_ref``                         | ``get_dataset_minus_ref``                           | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 
 The following changes shall also be considered:
 
+- namelists are now called recipes and collected in ``esmvaltool/recipes``;
+- models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
+- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``dataset_info`` and ``input_file_info`` logicals and their attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics shall be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they shall go in ``shared/``);
 - upper case characters shall be avoided in script names.
@@ -164,7 +173,7 @@ The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference
 
 This file can be opened with ``ncview`` to visually inspect the differences.
 
-In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. At this stage, it is essential to test all models in the recipe and not just a subset of them.
+In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. At this stage, it is essential to test all datasets in the recipe and not just a subset of them.
 
 It is also recommended to compare the graphical output (this may be necessary if the ported diagnostic does not produce a NetCDF output). For this comparison, the PostScript format shall be chosen (it can be set in the user configuration file). Two PostScript files can be compared with standard ``diff`` command in Linux:
 
@@ -177,14 +186,13 @@ but it is very unlikely to produce no differences, therefore visual inspection o
 Clean the code
 ==============
 
-Before submitting a pull request, the code shall be cleaned to adhere to the coding standard, which are somehow stricter in v2.0. For python code, this check is performed automatically on GitHub (CircleCI and Codacy). For NCL code, this is still done manually and considers the following guidelines:
+Before submitting a pull request, the code shall be cleaned to adhere to the coding standard, which are somehow stricter in v2.0. This check is performed automatically on GitHub (CircleCI and Codacy) when opening a pull request on the public repository. A code-style checker (``nclcodestyle``) is available in the tool to check NCL scripts and installed alongside the tool itself. When checking NCL code style, the following should be considered in addition to the warning issued by the style checker:
 
-- code syntax shall be checked using ``/util/ncl-checker/pep8.py <diag>.ncl`` and all reported warnings shall be fixed;
 - two-space instead of four-space indentation is now adopted for NCL as per NCL standard;
-- ``load`` statements for NCL standard libraries shall be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
-- the description of diagnostic- and variable-specific settings shall be moved from the header of the diagnostic script to the recipe, since the settings are now defined there (see above);
-- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
-- for error and warning statments, the ``error_msg`` function shall be used, which automatically include an exit statement.
+- ``load`` statements for NCL standard libraries should be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
+- the description of diagnostic- and variable-specific settings can be moved from the header of the diagnostic script to the recipe, since the settings are now defined there (see above);
+- NCL ``print`` and ``printVarSummary`` statements must be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
+- for error and warning statments, the ``error_msg`` function can be used, which automatically include an exit statement.
 
 Open a pull request
 ===================
