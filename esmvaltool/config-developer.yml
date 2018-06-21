@@ -40,7 +40,7 @@ CMIP5:
   input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
   fx_dir:
     default: '/'
-    BADC: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[var]'
+    BADC: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/latest/[var]'
     DKRZ: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[var]'
     ETHZ: '[exp]/fx/[var]/[dataset]/r0i0p0'
   fx_file: '[var]_fx_[dataset]_[exp]_r0i0p0.nc'
