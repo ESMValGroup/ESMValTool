@@ -28,7 +28,6 @@ variable:
   reference_dataset: str(required=False)
   alternative_dataset: str(required=False)
   mip: str(required=False)
-  fx_mask: bool(required=False)
   fx_variable: list(required=False)
 
 # TODO: add preprocessor item
