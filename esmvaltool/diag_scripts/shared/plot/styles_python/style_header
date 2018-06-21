@@ -1,17 +1,17 @@
 ###############################################################################
 # PYTHON STYLE FILE
-# created by 'import_ncl_style.py'
+# created by 'convert_ncl_style.py'
 ###############################################################################
 # This file defines plot attributes for certain models.
 #
 # Template:
-# [MODEL NAME]
-# color = #FFFFFF
-# dash = 0
-# thick = 1
-# mark = x
-# avgstd = 0
-# facecolor = none
+# DATASET
+#   color: #FFFFFF
+#   dash: 0
+#   thick: 1
+#   mark: x
+#   avgstd: 0
+#   facecolor: none
 #
 # MODEL:     model name (same as given in the main namelist)
 # color:     hex RGB or RGBA string (e.g. #0F0FA1), see
@@ -29,3 +29,4 @@
 #            (usually 0 for models, 1 for observations/reanalysis)
 # facecolor: Color of the filling (none = no filling)
 ###############################################################################
+

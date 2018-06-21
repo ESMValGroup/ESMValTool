@@ -1,7 +1,7 @@
 """Common plot functions."""
-import configparser
 import logging
 import os
+import yaml
 
 import iris.quickplot
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ def get_path_to_mpl_style(style_file):
     return filepath
 
 
-def get_model_style(model, style_file='cmip5.style'):
+def get_model_style(model, style_file='cmip5.yml'):
     """Retrieve the style information for the given model."""
     # Default path
     base_dir = os.path.dirname(__file__)
@@ -30,8 +30,8 @@ def get_model_style(model, style_file='cmip5.style'):
     # Check if style_file is valid
     filepath = os.path.join(default_dir, style_file)
     if os.path.isfile(filepath):
-        styleconfig = configparser.ConfigParser()
-        styleconfig.read(filepath)
+        with open(filepath, 'r') as infile:
+            style = yaml.safe_load(infile)
     else:
         raise IOError("Invalid input: could not open style file " +
                       "'{}'".format(filepath))
@@ -40,35 +40,30 @@ def get_model_style(model, style_file='cmip5.style'):
     # Check if file has entry for unknown model
     default_model = 'default'
     options = ['color', 'dash', 'thick', 'mark', 'avgstd', 'facecolor']
-    if not styleconfig.has_section(default_model):
+    if default_model not in style:
         raise IOError("Style file '{}' does not ".format(filepath) +
                       "contain default information for unknown models")
     for option in options:
-        if not styleconfig.has_option(default_model, option):
+        if option not in style[default_model]:
             raise IOError("Style file '{}' ".format(filepath) +
                           "does not contain '{}' ".format(option) +
                           "default information for unknown models")
 
+    # Check if model is available
+    if not style.get(model):
+        logger.warning("Model '%s' not found in style file, using default " +
+                       "entry", model)
+        return style[default_model]
+
     # Get compulsory information
-    style = {}
     for option in options:
-        if styleconfig.has_option(model, option):
-            style.update({option: styleconfig.get(model, option)})
-        else:
+        if option not in style[model]:
             logger.warning("No style information '%s' found for model '%s', " +
                            "using default value for unknown models",
                            option, model)
-            style.update({option: styleconfig.get(default_model, option)})
+            style[model].update({option: style[default_model][option]})
 
-    # Get additional information
-    if styleconfig.has_section(model):
-        for option in styleconfig.options(model):
-            style.update({option: styleconfig.get(model, option)})
-    else:
-        logger.warning("No style information for model '%s' available",
-                       model)
-
-    return style
+    return style[model]
 
 
 def quickplot(cube, filename, plot_type, **kwargs):

@@ -6,21 +6,24 @@ Example
 -------
 The script is simply called by::
 
-    $ python import_ncl_style.py
+    $ python convert_ncl_style.py
 
 Global attributes
 -----------------
 INPUT_FILE : str
     Path to the ncl style file.
 OUTPUT_FILE : str
-    Path to the new python style file.
+    Path to the new python style file (yaml format)
 
 """
 
 
+import yaml
+
+
 # Global variables
 INPUT_FILE = '../styles/cmip5.style'
-OUTPUT_FILE = 'cmip5.style'
+OUTPUT_FILE = 'cmip5.yml'
 HEADER_FILE = 'style_header'
 MODEL = 'model'
 COLOR = 'color'
@@ -95,28 +98,26 @@ def read_ncl_style(file_name):
                 infos.update({INFORMATION[idx]: info})
             output.append(infos)
 
-    return output
+    # Convert list to dictionary
+    output_dict = {}
+    for info in output:
+        model =info[MODEL]
+        del info[MODEL]
+        output_dict[model] = info
+
+    return output_dict
 
 
-def write_config_file(model_infos, file_name):
+def write_yml_file(model_infos, file_name):
     """Write configuration file."""
-    with open(file_name, 'w') as file:
+    with open(file_name, 'w') as outfile:
         with open(HEADER_FILE, 'r') as header_file:
             header = header_file.read()
-        file.write(header)
-
-        # Write model styles
-        for model_info in model_infos:
-            file.write("\n")
-            for info in INFORMATION:
-                if info == MODEL:
-                    file.write("[{0}]\n".format(model_info[info]))
-                else:
-                    file.write("{0} = {1}\n".format(info, model_info[info]))
-            file.write("{0} = {1}\n".format(FILLING, model_info[FILLING]))
+        outfile.write(header)
+        yaml.dump(model_infos, outfile, default_flow_style=False)
 
 
 # Execute script if called directly
 if __name__ == '__main__':
     STYLES = read_ncl_style(INPUT_FILE)
-    write_config_file(STYLES, OUTPUT_FILE)
+    write_yml_file(STYLES, OUTPUT_FILE)
