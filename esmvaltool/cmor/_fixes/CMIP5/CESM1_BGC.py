@@ -100,6 +100,7 @@ class allvars(Fix):
 
         """
         time = cube.coord('time')
-        time.units = Unit('days since 1850-01-01 00:00:00',
-                          time.units.calendar)
+        if time.units.name == 'day since 1-01-01 00:00:00.000000 UTC':
+            time.units = Unit('days since 1850-01-01 00:00:00',
+                              time.units.calendar)
         return cube
