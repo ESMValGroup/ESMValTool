@@ -71,12 +71,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
+;  write_references(diag_script, \  ; script name
+;                   "A_lore_ru", \  ; authors
+;                   "", \  ; contributors
+;                   "D_collins13ipcc",    \  ; diag_references
+;                   "",          \  ; obs_references
+;                   "P_crescendo")   ; proj_references
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"experiment", "time_avg"/))
