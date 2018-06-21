@@ -89,7 +89,7 @@ def make_map_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='map_' + str(layer_index)+'.png',
+                suffix='map_' + str(layer_index) + '.png',
             )
 
         # Saving files:
