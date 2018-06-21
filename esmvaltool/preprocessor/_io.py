@@ -83,8 +83,7 @@ def concatenate(cubes):
 def _save_cubes(cubes, **args):
     """Save iris cube to file."""
     filename = args['target']
-    optimize_accesss = args['optimize_access']
-    del args['optimize_access']
+    optimize_accesss = args.pop('optimize_access')
 
     dirname = os.path.dirname(filename)
     if not os.path.exists(dirname):
@@ -118,8 +117,8 @@ def _save_cubes(cubes, **args):
     return filename
 
 
-def save_cubes(cubes, optimize_access=None,
-               compress=False, debug=False, step=None):
+def save(cubes, optimize_access=None,
+         compress=False, debug=False, step=None):
     """
     Save iris cubes to file
 

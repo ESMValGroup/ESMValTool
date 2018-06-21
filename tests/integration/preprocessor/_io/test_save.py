@@ -50,14 +50,14 @@ class TestSave(unittest.TestCase):
     def test_save(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube])
+        paths = _io.save([cube])
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
 
     def test_save_zlib(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], compress=True)
+        paths = _io.save([cube], compress=True)
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
         handler = netCDF4.Dataset(paths[0], 'r')
@@ -70,7 +70,7 @@ class TestSave(unittest.TestCase):
     def test_save_debug(self):
         """Test save on debug mode"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], debug=True)
+        paths = _io.save([cube], debug=True)
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
 
@@ -79,12 +79,12 @@ class TestSave(unittest.TestCase):
         cube = self._create_sample_cube()
         del cube.attributes['_filename']
         with self.assertRaises(ValueError):
-            _io.save_cubes([cube])
+            _io.save([cube])
 
     def test_save_optimized_map(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], optimize_access='map')
+        paths = _io.save([cube], optimize_access='map')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
         self._check_chunks(paths, [2, 2, 1])
@@ -92,7 +92,7 @@ class TestSave(unittest.TestCase):
     def test_save_optimized_timeseries(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], optimize_access='timeseries')
+        paths = _io.save([cube], optimize_access='timeseries')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
         self._check_chunks(paths, [1, 1, 2])
@@ -100,7 +100,7 @@ class TestSave(unittest.TestCase):
     def test_save_optimized_lat(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], optimize_access='latitude')
+        paths = _io.save([cube], optimize_access='latitude')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
         expected_chunks = [2, 1, 1]
@@ -115,7 +115,7 @@ class TestSave(unittest.TestCase):
     def test_save_optimized_lon_time(self):
         """Test save"""
         cube = self._create_sample_cube()
-        paths = _io.save_cubes([cube], optimize_access='longitude time')
+        paths = _io.save([cube], optimize_access='longitude time')
         loaded_cube = iris.load_cube(paths[0])
         self._compare_cubes(cube, loaded_cube)
         self._check_chunks(paths, [1, 2, 2])

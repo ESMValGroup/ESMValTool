@@ -7,8 +7,7 @@ from iris.cube import Cube
 from .._task import AbstractTask
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, extract_metadata, load_cubes, save_cubes as save, \
-    concatenate
+from ._io import cleanup, extract_metadata, load_cubes, save, concatenate
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
