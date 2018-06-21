@@ -76,7 +76,7 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None, mip=None):
     Raises
     ------
     CMORCheckError:
-        If the checker detects errors in the metadata that it can not fix
+        If the checker detects errors in the metadata that it can not fix.
 
     """
     for fix in Fix.get_fixes(
@@ -128,7 +128,7 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     Raises
     ------
     CMORCheckError:
-        If the checker detects errors in the data that it can not fix
+        If the checker detects errors in the data that it can not fix.
 
     """
     for fix in Fix.get_fixes(

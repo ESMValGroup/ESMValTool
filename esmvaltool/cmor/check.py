@@ -154,7 +154,7 @@ class CMORCheck(object):
         ------
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
-            raises as soon as an error if defected. If set to False, it perform
+            raises as soon as an error is defected. If set to False, it perform
             all checks and then raises.
 
         """
