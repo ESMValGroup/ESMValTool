@@ -105,8 +105,7 @@ def make_time_series_plots(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer)]),
-                image_extention='png',
+                suffix='_'.join(['timeseries', str(layer)+'.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -117,8 +116,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index),
-                image_extention='png',
+                suffix='timeseries_' + str(layer_index)+'.png',
             )
 
         # Saving files:
@@ -141,7 +139,7 @@ def multi_model_time_series(
     The cfg is the opened global config,
     metadata is the metadata dictionairy.
     """
-
+    ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
     layers = {}
@@ -166,7 +164,7 @@ def multi_model_time_series(
         for index, filename in enumerate(sorted(metadata.keys())):
             color = cmap(
                 (float(index) / (len(metadata.keys()) - 1.)
-                 ))
+                ))
 
             if metadata[filename]['model'].find('MultiModel') > -1:
                 qplt.plot(
@@ -213,8 +211,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer)]),
-                image_extention='png',
+                suffix='_'.join(['timeseries', str(layer)+'.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'

@@ -10,7 +10,7 @@ import iris
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
+def time_slice(mycube, yr1, mo1, dy1, yr2, mo2, dy2):
     """
     Slice cube on time
 
@@ -25,19 +25,19 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     import datetime
     time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
-        if d1 > 30:
-            d1 = 30
-        if d2 > 30:
-            d2 = 30
-    my_date1 = datetime.datetime(int(yr1), int(mo1), int(d1))
-    my_date2 = datetime.datetime(int(yr2), int(mo2), int(d2))
+        if dy1 > 30:
+            dy1 = 30
+        if dy2 > 30:
+            dy2 = 30
+    my_date1 = datetime.datetime(int(yr1), int(mo1), int(dy1))
+    my_date2 = datetime.datetime(int(yr2), int(mo2), int(dy2))
 
-    t1 = time_units.date2num(my_date1)
-    t2 = time_units.date2num(my_date2)
+    time1 = time_units.date2num(my_date1)
+    time2 = time_units.date2num(my_date2)
     # TODO replace the block below for when using iris 2.0
     # my_constraint = iris.Constraint(time=lambda t: (
-    #     t1 < time_units.date2num(t.point) < t2))
-    my_constraint = iris.Constraint(time=lambda t: (t1 < t.point < t2))
+    #     time1 < time_units.date2num(t.point) < time2))
+    my_constraint = iris.Constraint(time=lambda t: (time1 < t.point < time2))
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
@@ -82,7 +82,6 @@ def volume_slice(mycube, long1, long2, lat1, lat2, z_min, z_max):
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
-
     # Converts Negative longitudes to 0 -> 360. standard
     if long1 < 0.:
         long1 += 360.
@@ -97,12 +96,12 @@ def volume_slice(mycube, long1, long2, lat1, lat2, z_min, z_max):
             not (float(long1) >= cell) * (cell >= float(long2)))
     else:
         sublon = iris.Constraint(
-                 longitude=lambda cell: float(long1) <= cell <= float(long2))
+            longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
-             latitude=lambda cell: float(lat1) <= cell <= float(lat2))
+        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
 
     subz = iris.Constraint(
-           depth=lambda cell: float(z_min) <= cell <= float(z_max))
+        depth=lambda cell: float(z_min) <= cell <= float(z_max))
 
     region_subset = mycube.extract(sublon & sublat & subz)
     return region_subset
@@ -160,8 +159,6 @@ def area_average(mycube, coord1, coord2):
     usually 'longitude' and 'latitude' but depends on the cube);
     Returns a cube
     """
-
-    import iris.analysis.cartography
     # CMOR ised data should already have bounds?
     #    mycube.coord(coord1).guess_bounds()
     #    mycube.coord(coord2).guess_bounds()
@@ -171,12 +168,7 @@ def area_average(mycube, coord1, coord2):
     return result
 
 
-def volume_average(
-        mycube,
-        coordz,
-        coord1,
-        coord2,
-):
+def volume_average(mycube, coordz, coord1, coord2,):
     """
     Determine the area average.
 
@@ -185,7 +177,6 @@ def volume_average(
 
     Returns a cube
     """
-    import iris.analysis.cartography
     # CMOR ised data should already have bounds?
     #    mycube.coord(coord1).guess_bounds()
     #    mycube.coord(coord2).guess_bounds()
@@ -287,8 +278,8 @@ def extract_slice(mycube, latitude=None, longitude=None):
             raise ValueError(
                 'extract_slice: latitude slice has too many points: {}'.format(
                     latitude))
-        second_coord_min = lats.nearest_neighbour_index(latitude[0])
-        second_coord_max = lats.nearest_neighbour_index(latitude[1])
+        second_coord_range = [lats.nearest_neighbour_index(latitude[0]),
+                              lats.nearest_neighbour_index(latitude[1])]
 
     if isinstance(longitude, list):
         second_coord = 'longitude'
@@ -296,8 +287,8 @@ def extract_slice(mycube, latitude=None, longitude=None):
             raise ValueError(
                 'extract_slice: longitude slice has too many points: {}'.
                 format(longitude))
-        second_coord_min = lons.nearest_neighbour_index(longitude[0])
-        second_coord_max = lons.nearest_neighbour_index(longitude[1])
+        second_coord_range = [lons.nearest_neighbour_index(longitude[0]),
+                              lons.nearest_neighbour_index(longitude[1])]
 
     #####
     # Extracting the line of constant longitude/latitude
@@ -306,12 +297,10 @@ def extract_slice(mycube, latitude=None, longitude=None):
 
     if second_coord:
         coord_dim2 = mycube.coord_dims(second_coord)[0]
-        slices[coord_dim2] = slice(second_coord_min, second_coord_max)
-
-    newcube = mycube[tuple(slices)]
-    print('extract_slice(slicess),', slices, newcube.shape,
-          ('was', mycube.shape))
-    return newcube
+        slices[coord_dim2] = slice(second_coord_range[0],
+                                   second_coord_range[1])
+    mycube = mycube[tuple(slices)]
+    return mycube
 
 
 # extract along a trajectory
@@ -353,7 +342,6 @@ def seasonal_mean(mycube):
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
-    import iris.coord_categorisation
     iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
     iris.coord_categorisation.add_season_year(
         mycube, 'time', name='season_year')

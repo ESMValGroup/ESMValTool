@@ -48,6 +48,8 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def determine_profiles_str(cube):
     """
     Determine a string from the cube, to describe the profile.
+    
+    Used in image titles, descriptions and filenames.
     """
     options = ['latitude', 'longitude']
     for option in options:
@@ -123,8 +125,7 @@ def make_profiles_plots(
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='profile',
-            image_extention='png',
+            suffix='profile.png',
         )
 
     # Saving files:

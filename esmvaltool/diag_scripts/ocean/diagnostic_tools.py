@@ -23,8 +23,11 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def folder(name):
     """
+    Make a directory out of a string or list or strings.
+    
     Take a string or a list of strings, convert it to a directory style,
-    then make the folder and the string.
+    then make the folder and the string. 
+    Returns folder string and final character is always '/'.
     """
     if isinstance(name, list):
         name = '/'.join(name)
@@ -32,13 +35,13 @@ def folder(name):
         name = name + '/'
     if os.path.exists(name) is False:
         os.makedirs(name)
-        logger.info('Making new directory:\t%s' + str(name))
+        logger.info('Making new directory:\t%s', str(name))
     return name
 
 
 def get_input_files(cfg, index=0):
     """
-    Loads input configuration file.
+    Load input configuration file.
 
     Get a dictionary with input files from the metadata.yml files.
     """
@@ -50,10 +53,11 @@ def get_input_files(cfg, index=0):
 
 def bgc_units(cube, name):
     """
-    Convert the cubes into some friendlier units for the range of
-    values typically seen in BGC.
+    Convert the cubes into some friendlier units.
+    
+    This is because many CMIP standard units are not the standard units 
+    used by the BGC community (ie, Celsius is prefered over Kelvin, etc.) 
     """
-
     new_units = ''
 
     if name in ['tos', 'thetao']:
@@ -86,12 +90,14 @@ def timecoord_to_float(times):
     """
     dtimes = times.units.num2date(times.points)
     floattimes = []
-    daysperyear = 365.25
-    for dt in dtimes:
-        floattime = dt.year + dt.dayofyr / daysperyear + dt.hour / (
+    for dtime in dtimes:
+        # TODO: it would be better to have a calendar dependent
+        # value for daysperyear, as this is not accurate for 360 day calendars.
+        daysperyear = 365.25
+        floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
-        if dt.minute:
-            floattime += dt.minute / (24. * 60. * daysperyear)
+        if dtime.minute:
+            floattime += dtime.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
     return floattimes
 
@@ -110,8 +116,8 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     """
     #####
     # Create dummy axes:
-    legendSize = len(plot_details.keys()) + 1
-    ncols = int(legendSize / 25) + 1
+    legend_size = len(plot_details.keys()) + 1
+    ncols = int(legend_size / 25) + 1
     box = ax1.get_position()
     ax1.set_position(
         [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
@@ -137,9 +143,8 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
 
 def get_image_path(cfg,
                    metadata,
-                   prefix='',
-                   suffix='',
-                   image_extention='png',
+                   prefix='diag',
+                   suffix='image',
                    basenamelist=[
                        'project', 'model', 'mip', 'exp', 'ensemble', 'field',
                        'short_name', 'preprocessor', 'diagnostic',
@@ -158,19 +163,25 @@ def get_image_path(cfg,
     path += '_'.join([str(metadata[b]) for b in basenamelist])
     if suffix:
         path += '_' + suffix
-    path += '.' + image_extention
+        
+    image_extention = '.png'    
+    if path.find(image_extention) == -1:
+        path += image_extention
+    
     logger.info("Image path will be: %s", path)
     return path
 
 
 def make_cube_layer_dict(cube):
     """
-    Take a cube and return a dictionairy
-    with a cube for each layer as it's own item. ie:
-       cubes[depth] = cube from specific layer
+    Take a cube and return a dictionairy layer:cube
+    
+    Each item in the dict is a layer with a separate cube for each layer.
+    ie:
+        cubes[depth] = cube from specific layer
 
     Cubes with no depth component are returns as:
-      cubes[''] = cube with no depth component.
+        cubes[''] = cube with no depth component.
     """
     #####
     # Check layering:

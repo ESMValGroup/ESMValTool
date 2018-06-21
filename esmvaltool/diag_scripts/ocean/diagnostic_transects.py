@@ -99,8 +99,7 @@ def make_transects_plots(
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='transect',
-            image_extention='png',
+            suffix='transect.png',
         )
 
     # Saving files:
