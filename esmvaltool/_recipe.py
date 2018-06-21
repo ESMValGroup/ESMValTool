@@ -764,9 +764,9 @@ class Recipe(object):
                     variable=variable,
                     rootpath=self._cfg['rootpath'],
                     drs=self._cfg['drs'])
-                logger.info("Using fx input files for variable %s of dataset %s:\n%s",
-                    variable['short_name'], variable['dataset'],
-                    variable['fx_files'])
+                logger.info("Using fx files for var %s of dataset %s:\n%s",
+                            variable['short_name'], variable['dataset'],
+                            variable['fx_files'])
 
         return variables
 

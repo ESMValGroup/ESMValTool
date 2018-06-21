@@ -170,7 +170,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
-    dirs2 = []
     for fx_ind in range(len(variable['fx_variable'])):
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(input_dir, variable, i=fx_ind)
@@ -182,8 +181,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                 .format(_drs, project))
 
         dirname_template = os.path.join(dir1, dir2)
-        #dirs.append(os.path.join(os.path.dirname(dirname_template),
-        #                         fx_var))
         dirs.append(dirname_template)
 
     return dirs
