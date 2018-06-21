@@ -19,6 +19,14 @@
 library(tools)
 library(yaml)
 
+# get path to script and source subroutines (if needed)
+args <- commandArgs(trailingOnly = FALSE)
+file.arg.name <- "--file="
+script.name <- sub(file.arg.name, "", args[grep(file.arg.name, args)])
+script.dirname <- dirname(script.name)
+#source(paste0(script.dirname,"/subroutine.r"))
+print(paste0("source ",script.dirname,"/subroutine.r"))
+
 # read settings and metadata files (assuming one variable only)
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
