@@ -193,7 +193,7 @@ function extract_area(index[1]:integer,
 ; Modification history:
 ;    2013????-A_gott_kl: written.
 ;
-local funcname, scriptname, cn, cnt, modelfile, fm, val
+local funcname, scriptname, cn, cnt, datasetfile, fm, val
 begin
 
   funcname = "extract_area"
@@ -205,10 +205,10 @@ begin
   ; 'dictkeys' is loaded from 'interface_data/ncl.interface'
 ;  cn = interface_get_dictkeys(parent_var, index)
 ;  cnt = cn + "_filepath"
-;  modelfile = data_pointer@$cnt$
-modelfile = data_pointer@filename(index) ;!!!workaround
+;  datasetfile = data_pointer@$cnt$
+datasetfile = data_pointer@filename(index) ;!!!workaround
   print("modelfile = " + modelfile)
-  fm = addfile(modelfile, "r")
+  fm = addfile(datasetfile, "r")
   val = fm->$requested_param$   ; Fetch entire variable, including metadata
 
   leave_msg(scriptname, funcname)
@@ -770,7 +770,7 @@ begin
     out_field = field
 
     ; Get lat-lon from another file
-    ; (model specific: ~/reformat_scripts folder)
+    ; (dataset specific: ~/reformat_scripts folder)
     area_lon = extract_area(index, data_pointer, "lon", var)
     area_lat = extract_area(index, data_pointer, "lat", var)
 
@@ -799,7 +799,7 @@ function cdo_remapdis(var[1]:string,
 ;    var          = name of the variable
 ;    field        = a numeric array of rank 2 (lon, lat) or
 ;                   rank 3 (time, lon, lat), higher ranks not tested yet
-;    index        = index of current model in data_pointer
+;    index        = index of current dataset in data_pointer
 ;    data_pointer = see interface_scripts/data_handling.ncl
 ;    dst_grid     = path to file containing destination grid information
 ;    opt          = unused

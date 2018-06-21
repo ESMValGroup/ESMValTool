@@ -49,7 +49,7 @@ begin
 
   ; Check array boundaries first
   if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
-    error_msg("f", scriptname, funcname, "model index out of range")
+    error_msg("f", scriptname, funcname, "dataset index out of range")
   end if
 
   infile = input_file_info@filename(index)
@@ -83,7 +83,7 @@ begin
   end if
 
   ; Read attributes and write info to log-file
-  inquire_and_save_fileinfo(infile, input_file_info@model(index), variable)
+  inquire_and_save_fileinfo(infile, input_file_info@dataset(index), variable)
 
   ; Read data
   data = fin->$variable$
