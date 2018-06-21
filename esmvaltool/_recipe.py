@@ -474,22 +474,6 @@ def _get_input_files(variable, config_user):
     return input_files
 
 
-def _get_input_fx_files(variable, config_user):
-    """Get the input fx files for a single dataset"""
-    fx_files = {}
-    for fx_var in variable['fx_variable']:
-        # Find the fx files
-        fx_files[fx_var] = get_input_fx_filelist(
-            variable=variable,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
-        logger.info("Using fx input files for variable %s of dataset %s:\n%s",
-                    variable['short_name'], variable['dataset'],
-                    fx_files[fx_var])
-
-    return fx_files
-
-
 def _apply_preprocessor_settings(settings, profile_settings):
     """Apply settings from preprocessor profile."""
     for step, args in profile_settings.items():
@@ -776,8 +760,13 @@ class Recipe(object):
                                                    self._cfg['preproc_dir'])
             if 'fx_variable' in variable.keys():
                 # Get the fx files
-                variable['fx_files'] = _get_input_fx_files(variable,
-                                                           self._cfg)
+                variable['fx_files'] = get_input_fx_filelist(
+                    variable=variable,
+                    rootpath=self._cfg['rootpath'],
+                    drs=self._cfg['drs'])
+                logger.info("Using fx input files for variable %s of dataset %s:\n%s",
+                    variable['short_name'], variable['dataset'],
+                    variable['fx_files'])
 
         return variables
 
