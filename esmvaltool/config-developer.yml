@@ -127,6 +127,10 @@ OBS:
   input_file:
     default: '[project]_[dataset]_[type]_[version]_[field]_[var]_*'
     BSC: '[var]_*.nc'
+  fx_dir:
+    default: '[tier]/[dataset]'
+  fx_file:
+    default: '[project]_[dataset]_[type]_fx_[var].nc'
   output_file: '[project]_[dataset]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
