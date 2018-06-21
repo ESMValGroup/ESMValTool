@@ -15,8 +15,8 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     """
     Fix files before ESMValTool can load them
 
-    This fixes are only for issues that prevent iris to load the files or
-    that are not possible after the cube is generated
+    This fixes are only for issues that prevent iris from loading the cube or
+    that cannot be fixed after the cube is loaded.
 
     Original files are not overwritten.
 
@@ -45,12 +45,12 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 
 def fix_metadata(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """
-    Fix cube metadata if fixes add present and check it anyway
+    Fix cube metadata if fixes are required and check it anyway
 
-    This method collect all the relevant fixes for a given variable, applies
-    them and check the resultant cube (or the original if no fixes were
+    This method collects all the relevant fixes for a given variable, applies
+    them and checks the resulting cube (or the original if no fixes were
     needed) metadata to ensure that it complies with the standards of its
-    project CMOR tables
+    project CMOR tables.
 
     Parameters
     ----------
@@ -99,8 +99,8 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
 
     This method assumes that metadata is already fixed and checked
 
-    This method collect all the relevant fixes for a given variable, applies
-    them and check the resultant cube (or the original if no fixes were
+    This method collects all the relevant fixes for a given variable, applies
+    them and checks resulting cube (or the original if no fixes were
     needed) metadata to ensure that it complies with the standards of its
     project CMOR tables
 

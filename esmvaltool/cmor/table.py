@@ -296,7 +296,7 @@ class CoordinateInfo(JsonInfo):
         """
         Out name
 
-        This is the name of the variable inside the file
+        This is the name of the variable in the file
         """
         self.var_name = ""
         """Short name"""
@@ -307,9 +307,9 @@ class CoordinateInfo(JsonInfo):
         self.requested = []
         """Values requested"""
         self.valid_min = ""
-        """Minimum admitted value"""
+        """Minimum allowed value"""
         self.valid_max = ""
-        """Maximum admitted value"""
+        """Maximum allowed value"""
 
     def read_json(self, json_data):
         """

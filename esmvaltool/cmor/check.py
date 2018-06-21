@@ -89,7 +89,7 @@ class CMORCheck(object):
         ------
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
-            raises as soon as an error if defected. If set to False, it perform
+            raises as soon as an error is defected. If set to False, it perform
             all checks and then raises.
 
         """
@@ -546,7 +546,7 @@ def cmor_check_metadata(cube, cmor_table, mip, short_name):
 
     Parameters:
     ----------
-    cube: iris,cube.Cube
+    cube: iris.cube.Cube
         Data cube to check
     cmor_table: basestring
         CMOR definitions to use
@@ -567,9 +567,9 @@ def cmor_check_data(cube, cmor_table, mip, short_name):
 
     The checks performed at this step require the data in memory
 
-    Parameters:
+    Parameters
     ----------
-    cube: iris,cube.Cube
+    cube: iris.cube.Cube
         Data cube to check
     cmor_table: basestring
         CMOR definitions to use
@@ -592,7 +592,7 @@ def cmor_check(cube, cmor_table, mip, short_name):
 
     Parameters:
     ----------
-    cube: iris,cube.Cube
+    cube: iris.cube.Cube
         Data cube to check
     cmor_table: basestring
         CMOR definitions to use
