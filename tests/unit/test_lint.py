@@ -74,3 +74,29 @@ def test_nclcodestyle():
         """))
 
     assert success, "Your NCL code does not follow our formatting standards."
+
+
+def test_r_lint():
+    """Test R lint"""
+    from rpy2.robjects.packages import importr
+
+    lintr = importr('lintr')
+
+    check_paths = [
+        'esmvaltool',
+        'tests',
+    ]
+    root_folder = os.path.abspath(os.path.join(__file__, '..', '..', '..'))
+
+    has_errors = False
+
+    for path in check_paths:
+        for dirpath, _, filenames in os.walk(os.path.join(root_folder, path)):
+            for filename in filenames:
+                if os.path.splitext(filename)[1].lower() == '.r':
+                    errors = lintr.lint(os.path.join(dirpath, filename))
+                    for error in errors:
+                        print(str(error)[0:-1])
+                        has_errors = True
+    assert not has_errors, 'Your R code does not follow our R standards'
+
