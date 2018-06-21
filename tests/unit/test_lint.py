@@ -90,11 +90,14 @@ def test_r_lint():
 
     has_errors = False
 
+    linters = lintr.with_defaults()
+
     for path in check_paths:
         for dirpath, _, filenames in os.walk(os.path.join(root_folder, path)):
             for filename in filenames:
                 if os.path.splitext(filename)[1].lower() == '.r':
-                    errors = lintr.lint(os.path.join(dirpath, filename))
+                    errors = lintr.lint(os.path.join(dirpath, filename),
+                                        linters)
                     for error in errors:
                         print(str(error)[0:-1])
                         has_errors = True
