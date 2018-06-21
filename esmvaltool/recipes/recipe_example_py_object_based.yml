@@ -1,8 +1,9 @@
 ---
 
-models:
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+datasets:
+  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
 
@@ -11,7 +12,7 @@ preprocessors:
       levels: 85000
       scheme: nearest
     regrid:
-      target_grid: reference_model
+      target_grid: reference_dataset
       scheme: linear
     multi_model_statistics:
       span: overlap
@@ -19,7 +20,7 @@ preprocessors:
 
   preprocessor2:
     regrid:
-      target_grid: reference_model
+      target_grid: reference_dataset
       scheme: linear
     multi_model_statistics:
       span: overlap
@@ -33,12 +34,11 @@ diagnostics:
       ta:
         preprocessor: preprocessor1
         field: T3M
-        reference_model: MPI-ESM-LR
+        reference_dataset: ERA-Interim
       pr:
         preprocessor: preprocessor2
         field: T2Ms
-        # reference_model: ERA-Interim
-        reference_model: MPI-ESM-LR
+        reference_dataset: ERA-Interim
     scripts:
       script1a:
         script: examples/diagnostic_object_based.py
@@ -56,9 +56,9 @@ diagnostics:
       tas:
         preprocessor: preprocessor2
         field: T2Ms
-        additional_models:
-          - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-        reference_model: MPI-ESM-LR
+        additional_datasets:
+          - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+        reference_dataset: MPI-ESM-LR
     scripts:
       script2:
         script: examples/diagnostic_object_based.py
