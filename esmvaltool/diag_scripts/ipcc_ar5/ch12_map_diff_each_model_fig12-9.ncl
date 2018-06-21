@@ -3,32 +3,6 @@
 ; Author: Ruth Lorenz (ETH, Switzerland)
 ; CRESCENDO project
 ; #############################################################################
-;
-; Description
-;    Annual or seasonal mean change in one RCP for each model in namelist,
-;    e.g. one ensemble of each model in RCP4.5 as in Fig. 12.9 in IPCC CH12
-;    e.g. 2081-2100 with respect to 1986-2005, as defined in namelist
-;
-; Required diag_script_info attributes (diagnostics specific)
-;    time_avg: annual or seasonal values to average over? (e.g. "annualclim")
-;    experiment: experiment used in namelist (e.g. rcp45)
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    title: Figure title
-;    max_vert: maximum number of plots in vertical
-;    max_hori: maximum number of plots in horizontal
-;    colormap: specify colormap for contour plots
-;    explicit_cn_levels: explicit levels for all contour plots
-;    span: boolean to decide if span whole colormap (default = False)
-;
-; Required variable_info attributes (variable specific)
-;    long_name: long name of variable
-;    units: variable units
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
 ; Caveats
 ;    All models are on different grids, so not possible to fill in all data
 ;    into one array, therefore for each model read hist and rcp after each
@@ -36,6 +10,7 @@
 ;    in namelist which exist for both, historical and rcp.
 ;
 ; Modification history
+;    20181806-A_lore_ru: ported to version2
 ;    20171002-A_lore_ru: Added tags for searching
 ;    20160428-A_lore_ru: adapted to ESMValTool
 ;    20130501-A_sedl_ja: written for IPCC AR5.
@@ -61,9 +36,9 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
   ; above 'interface.ncl' file
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -115,13 +90,13 @@ begin
   ; ###########################################
   ; # Get data and average time               #
   ; ###########################################
-  ; Set model indexes
+  ; Set dataset indexes
   modidx = ispan(0, dim_MOD / 2 - 1, 1)
-  ; get data from first model
+  ; get data from first dataset
   imod = modidx(0)  ; NCL array indicies start from zero
-  log_debug("processing " + model_info@model(imod) + "_" \
-            + model_info@exp(imod) + "_" \
-            + model_info@ensemble(imod))
+  log_debug("processing " + dataset_info@dataset(imod) + "_" \
+            + dataset_info@exp(imod) + "_" \
+            + dataset_info@ensemble(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
@@ -159,10 +134,10 @@ begin
     end if
     climofiles = input_file_info@filename(imod)
 
-    idx_rcp = find_model_index(model_info@model(imod), model_info@model, \
+    idx_rcp = find_model_index(dataset_info@dataset(imod), dataset_info@dataset, \
                                diag_script_info@experiment, \
-                               model_info@exp, model_info@ensemble(imod), \
-                               model_info@ensemble, 0)
+                               dataset_info@exp, dataset_info@ensemble(imod), \
+                               dataset_info@ensemble, 0)
     A1 = read_data(idx_rcp, var0, field_type0)
     data3 = time_operations(A1, -1, -1, "average", \
                             diag_script_info@time_avg, True)
@@ -200,8 +175,8 @@ begin
     ; ###########################################
     ; Optional output (controlled by diag_script_info)
     if (isatt(diag_script_info, "ncdf")) then
-      to_plot@ncdf = work_dir + "/" + model_info@model(imod) + \
-                     model_info@ensemble(imod) + diag_script_info@ncdf
+      to_plot@ncdf = work_dir + "/" + dataset_info@dataset(imod) + \
+                     dataset_info@ensemble(imod) + diag_script_info@ncdf
       to_plot@ncdf_existing = "overwrite"
       ; Function in ~/interface_scripts/auxiliary.ncl
       ncdf_outfile = ncdf_write(to_plot, to_plot@ncdf)
@@ -247,30 +222,30 @@ begin
       end if
       maps = new(nmap, graphic)  ; collect individual maps in a graphic array
     end if
-    to_plot@res_tiMainString = model_info@model(imod)
+    to_plot@res_tiMainString = dataset_info@dataset(imod)
     to_plot@res_tiMainFontHeightF = 0.035
-    if model_info@model(imod) .eq. "GISS-E2-R" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p1" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-R" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p1" then
       to_plot@res_tiMainString = "GISS-E2-R-P1"
     end if
-    if model_info@model(imod) .eq. "GISS-E2-R" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p2" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-R" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p2" then
       to_plot@res_tiMainString = "GISS-E2-R-P2"
     end if
-    if model_info@model(imod) .eq. "GISS-E2-R" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p3" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-R" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p3" then
       to_plot@res_tiMainString = "GISS-E2-R-P3"
     end if
-    if model_info@model(imod) .eq. "GISS-E2-H" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p1" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-H" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p1" then
       to_plot@res_tiMainString = "GISS-E2-H-P1"
     end if
-    if model_info@model(imod) .eq. "GISS-E2-H" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p2" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-H" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p2" then
       to_plot@res_tiMainString = "GISS-E2-H-P2"
     end if
-    if model_info@model(imod) .eq. "GISS-E2-H" .and. \
-      model_info@ensemble(imod) .eq. "r1i1p3" then
+    if dataset_info@dataset(imod) .eq. "GISS-E2-H" .and. \
+      dataset_info@ensemble(imod) .eq. "r1i1p3" then
       to_plot@res_tiMainString = "GISS-E2-H-P3"
     end if
     to_plot@res_gsnRightString = ""
@@ -325,17 +300,17 @@ begin
 ;# add tags
   ;alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
   ;caption = "Surface change in " + variable_info@long_name + " in " + \
-  ;          model_info@start_year(idx_rcp) + "-" + \
-;	    model_info@end_year(idx_rcp) + " displayed as anomalies with " + \
-;	    "respect to " + model_info@start_year(0) + "-" + \
-;	    model_info@end_year(0) + " for " + model_info@exp(idx_rcp) + \
+  ;          dataset_info@start_year(idx_rcp) + "-" + \
+;	    dataset_info@end_year(idx_rcp) + " displayed as anomalies with " + \
+;	    "respect to " + dataset_info@start_year(0) + "-" + \
+;	    dataset_info@end_year(0) + " for " + dataset_info@exp(idx_rcp) + \
 ;	    " from one ensemble member of each of the concentration" + \
 ;           " driven models available in the CMIP5 archive. " + \
 ;           "Similar to Figure 12.9 of Collins et al. (2013)."
 ;  id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
 ;  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
 
-  ;ESMValMD(outfile, alltags, caption, id, variables(0), model_info@model, \
+  ;ESMValMD(outfile, alltags, caption, id, variables(0), dataset_info@dataset, \
   ;         climofiles, diag_script, contrib_authors)
 
 ;  delete([/alltags, caption, id, climofiles/])
