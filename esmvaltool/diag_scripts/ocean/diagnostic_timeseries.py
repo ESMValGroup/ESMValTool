@@ -105,7 +105,7 @@ def make_time_series_plots(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer)+'.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -116,7 +116,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index) + '.png',
+                suffix='timeseries_' + str(layer_index)+'.png',
             )
 
         # Saving files:
@@ -210,7 +210,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer)+'.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
