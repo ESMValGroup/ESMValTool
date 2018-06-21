@@ -1,0 +1,35 @@
+###############################################################################
+# namelist_example_r.xml
+#
+# Description
+# Namelist for example diagnostic written in R
+#
+# Authors
+# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
+# 
+# This namelist is part of the ESMValTool
+#
+###############################################################################
+---
+
+models:
+  - {model: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
+
+preprocessors:
+  preproc:
+    extract_levels: false
+
+diagnostics:
+  example:
+    description: Example diagnostic written in R 
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_model: "EC-Earth"
+        mip: day
+        field: T2Ds
+    scripts:
+      main:
+        script: examples/diagnostic.r
+        parameter1:   1    # example parameter
+
