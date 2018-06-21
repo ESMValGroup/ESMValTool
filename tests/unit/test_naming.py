@@ -57,6 +57,6 @@ class TestNaming(unittest.TestCase):
         """
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             self.assertFalse([True for name in filenames + dirnames
-                              if ('namelist' in name.lower())],
+                              if 'namelist' in name.lower()],
                              'Namelist reference found at {0}. '
                              'Please use "recipe" instead'.format(dirpath))
