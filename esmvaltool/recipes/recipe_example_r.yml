@@ -12,8 +12,8 @@
 ###############################################################################
 ---
 
-models:
-  - {model: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
+datasets:
+  - {dataset: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   preproc:
@@ -25,7 +25,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        reference_model: "EC-Earth"
+        reference_dataset: "EC-Earth"
         mip: day
         field: T2Ds
     scripts:

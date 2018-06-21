@@ -21,16 +21,8 @@ library(yaml)
 
 # get path to script and source subroutines (if needed)
 diag_scripts_dir <- Sys.getenv("diag_scripts")
-print(diag_scripts_dir)
-
-print(Sys.getenv())
-# do the same reading arguments
-args <- commandArgs(trailingOnly = FALSE)
-file.arg.name <- "--file="
-script.name <- sub(file.arg.name, "", args[grep(file.arg.name, args)])
-script.dirname <- dirname(script.name)
-#source(paste0(script.dirname,"/subroutine.r"))
-print(paste0("source ",script.dirname,"/subroutine.r"))
+# source paste0(diag_scripts_dir,"/subroutine.r")
+print(paste0("source ",diag_scripts_dir,"/subroutine.r"))
 
 # read settings and metadata files (assuming one variable only)
 args <- commandArgs(trailingOnly = TRUE)
@@ -52,8 +44,8 @@ dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(metadata, '[[', 'model'))
-reference_model=unname(sapply(metadata, '[[', 'reference_model'))[1]
+models_name=unname(sapply(metadata, '[[', 'dataset'))
+reference_model=unname(sapply(metadata, '[[', 'reference_dataset'))[1]
 models_start_year=unname(sapply(metadata, '[[', 'start_year'))
 models_end_year=unname(sapply(metadata, '[[', 'end_year'))
 models_experiment=unname(sapply(metadata, '[[', 'exp'))
