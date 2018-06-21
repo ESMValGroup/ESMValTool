@@ -476,7 +476,7 @@ def _get_input_files(variable, config_user):
 
 
 def _get_input_fx_files(variable, config_user):
-    """Get the input fx files for a single model"""
+    """Get the input fx files for a single dataset"""
     fx_files = {}
     for fx_var in variable['fx_variable']:
         # Find the fx files
@@ -484,8 +484,8 @@ def _get_input_fx_files(variable, config_user):
             variable=variable,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
-        logger.info("Using fx input files for variable %s of model %s:\n%s",
-                    variable['short_name'], variable['model'],
+        logger.info("Using fx input files for variable %s of dataset %s:\n%s",
+                    variable['short_name'], variable['dataset'],
                     fx_files[fx_var])
 
     return fx_files
