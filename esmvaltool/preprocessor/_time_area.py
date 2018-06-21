@@ -229,7 +229,6 @@ def depth_integration(mycube, coordz):
     return result
 
 
-# extract along a constand latitude or longitude
 def extract_slice(mycube, latitude=None, longitude=None):
     """
     Extract data along a line of constant latitude or longitude.
@@ -242,7 +241,8 @@ def extract_slice(mycube, latitude=None, longitude=None):
     very slow.
     """
     ####
-    second_coord = False
+    coord_dim2 = False
+    second_coord_range = False
     lats = mycube.coord('latitude')
     lons = mycube.coord('longitude')
 
@@ -273,7 +273,7 @@ def extract_slice(mycube, latitude=None, longitude=None):
     #####
     # Look for the second coordinate.
     if isinstance(latitude, list):
-        second_coord = 'latitude'
+        coord_dim2 = mycube.coord_dims('latitude')[0]
         if len(latitude) > 2:
             raise ValueError(
                 'extract_slice: latitude slice has too many points: {}'.format(
@@ -282,7 +282,7 @@ def extract_slice(mycube, latitude=None, longitude=None):
                               lats.nearest_neighbour_index(latitude[1])]
 
     if isinstance(longitude, list):
-        second_coord = 'longitude'
+        coord_dim2 = mycube.coord_dims('longitude')[0]
         if len(longitude) > 2:
             raise ValueError(
                 'extract_slice: longitude slice has too many points: {}'.
@@ -295,12 +295,10 @@ def extract_slice(mycube, latitude=None, longitude=None):
     slices = [slice(None) for i in mycube.shape]
     slices[coord_dim] = coord_index
 
-    if second_coord:
-        coord_dim2 = mycube.coord_dims(second_coord)[0]
+    if second_coord_range:
         slices[coord_dim2] = slice(second_coord_range[0],
                                    second_coord_range[1])
-    mycube = mycube[tuple(slices)]
-    return mycube
+    return mycube[tuple(slices)]
 
 
 # extract along a trajectory

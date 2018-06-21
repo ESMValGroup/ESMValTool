@@ -145,11 +145,7 @@ def get_image_path(cfg,
                    metadata,
                    prefix='diag',
                    suffix='image',
-                   basenamelist=[
-                       'project', 'model', 'mip', 'exp', 'ensemble', 'field',
-                       'short_name', 'preprocessor', 'diagnostic',
-                       'start_year', 'end_year'
-                   ]):
+                   basenamelist='default',):
     """
     Produce a path to the final location of the image.
 
@@ -157,6 +153,12 @@ def get_image_path(cfg,
     metadata is the metadata dictionairy (for the individual model file)
     """
     #####
+    if default == 'default':
+        basenamelist = [
+                        'project', 'model', 'mip', 'exp', 'ensemble', 'field',
+                        'short_name', 'preprocessor', 'diagnostic',
+                        'start_year', 'end_year', ]
+
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
