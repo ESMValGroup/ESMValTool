@@ -61,7 +61,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, j=None):
+def replace_tags(path, variable, j=None, i=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -71,6 +71,8 @@ def replace_tags(path, variable, j=None):
 
         if tag == 'var':
             replacewith = variable['short_name']
+        elif tag == 'fx_var':
+            replacewith = variable['fx_variable'][i]
         elif tag == 'field':
             replacewith = variable['field']
         elif tag in ('institute', 'freq', 'realm'):
@@ -168,19 +170,22 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
-    if isinstance(input_dir, six.string_types):
-        dir2 = replace_tags(input_dir, variable)
-    elif _drs in input_dir:
-        dir2 = replace_tags(input_dir[_drs], variable)
-    else:
-        raise KeyError(
-            'drs {} for {} project not specified in config-developer file'
-            .format(_drs, project))
+    dirs2 = []
+    for fx_ind in range(len(variable['fx_variable'])):
+        if isinstance(input_dir, six.string_types):
+            dir2 = replace_tags(input_dir, variable, i=fx_ind)
+        elif _drs in input_dir:
+            dir2 = replace_tags(input_dir[_drs], variable, i=fx_ind)
+        else:
+            raise KeyError(
+                'drs {} for {} project not specified in config-developer file'
+                .format(_drs, project))
 
-    dirname_template = os.path.join(dir1, dir2)
-    for fx_var in variable['fx_variable']:
-        dirs.append(os.path.join(os.path.dirname(dirname_template),
-                                 fx_var))
+        dirname_template = os.path.join(dir1, dir2)
+        #dirs.append(os.path.join(os.path.dirname(dirname_template),
+        #                         fx_var))
+        dirs.append(dirname_template)
+
     return dirs
 
 
@@ -263,10 +268,7 @@ def _get_fx_filename(variable, drs, j):
             raise KeyError(
                 'drs {} for {} project not specified for input_file '
                 'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable)
-    breakdown = filename.split('_')
-    breakdown[0] = variable['fx_variable'][j]
-    filename = '_'.join(breakdown)
+    filename = replace_tags(input_file, variable, i=j)
     return filename
 
 
@@ -331,7 +333,6 @@ def get_input_fx_filelist(variable, rootpath, drs):
         filename_glob = _get_fx_filename(variable, drs, j)
 
         # Find files
-        # Returns a list of files per fx_variable; could be empty
         fx_files[variable['fx_variable'][j]] = find_files(dirname,
                                                           filename_glob)
 
