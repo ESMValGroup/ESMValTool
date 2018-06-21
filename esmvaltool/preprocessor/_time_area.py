@@ -10,7 +10,7 @@ import iris
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, yr1, mo1, dy1, yr2, mo2, dy2):
+def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     """
     Slice cube on time
 
@@ -25,12 +25,12 @@ def time_slice(mycube, yr1, mo1, dy1, yr2, mo2, dy2):
     import datetime
     time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
-        if dy1 > 30:
-            dy1 = 30
-        if dy2 > 30:
-            dy2 = 30
-    my_date1 = datetime.datetime(int(yr1), int(mo1), int(dy1))
-    my_date2 = datetime.datetime(int(yr2), int(mo2), int(dy2))
+        if d1 > 30:
+            d1 = 30
+        if d2 > 30:
+            d2 = 30
+    my_date1 = datetime.datetime(int(yr1), int(mo1), int(d1))
+    my_date2 = datetime.datetime(int(yr2), int(mo2), int(d2))
 
     time1 = time_units.date2num(my_date1)
     time2 = time_units.date2num(my_date2)
