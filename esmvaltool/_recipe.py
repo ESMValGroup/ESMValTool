@@ -679,6 +679,8 @@ class Recipe(object):
         self._cfg = config_user
         self._recipe_file = os.path.basename(recipe_file)
         self._preprocessors = raw_recipe['preprocessors']
+        if 'default' not in self._preprocessors:
+            self._preprocessors['default'] = {}
         self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
@@ -773,7 +775,8 @@ class Recipe(object):
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_name
             raw_variable['diagnostic'] = diagnostic_name
-            raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
+            raw_variable['preprocessor'] = str(raw_variable.get('preprocessor',
+                                                                'default'))
             preprocessor_output[variable_name] = \
                 self._initialize_variables(raw_variable, raw_datasets)
 
