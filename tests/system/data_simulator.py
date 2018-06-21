@@ -11,7 +11,7 @@ from dummydata.model3 import Model3
 
 from esmvaltool._config import read_config_user_file
 from esmvaltool._data_finder import get_input_filename
-from esmvaltool._namelist import read_namelist_file
+from esmvaltool._recipe import read_recipe_file
 
 
 def write_data_file(short_name, filename, field, start_year, end_year):
@@ -48,11 +48,11 @@ def write_data_file(short_name, filename, field, start_year, end_year):
         **kwargs)
 
 
-def simulate_input_data(namelist_file, config_user_file=None):
-    """Simulate data for variables defined in namelist"""
+def simulate_input_data(recipe_file, config_user_file=None):
+    """Simulate data for variables defined in recipe"""
     if config_user_file:
         user_config = read_config_user_file(
-            config_file=config_user_file, namelist_name='')
+            config_file=config_user_file, recipe_name='')
     else:
         user_config = {
             'rootpath': {
@@ -61,12 +61,12 @@ def simulate_input_data(namelist_file, config_user_file=None):
             'drs': {},
         }
 
-    namelist = read_namelist_file(
-        namelist_file, user_config, initialize_tasks=False)
+    recipe = read_recipe_file(
+        recipe_file, user_config, initialize_tasks=False)
 
     start_time = time.time()
 
-    for diagnostic in namelist.diagnostics.values():
+    for diagnostic in recipe.diagnostics.values():
         np.random.seed(0)
         for variables in diagnostic['variables'].values():
             for variable in variables:
@@ -94,4 +94,4 @@ def simulate_input_data(namelist_file, config_user_file=None):
 
 if __name__ == '__main__':
     for path in sys.argv[1:]:
-        simulate_input_data(namelist_file=path, config_user_file=None)
+        simulate_input_data(recipe_file=path, config_user_file=None)

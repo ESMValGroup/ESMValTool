@@ -15,7 +15,7 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-MODEL_KEYS = {
+DATASET_KEYS = {
     'mip',
 }
 
@@ -395,15 +395,17 @@ class DiagnosticTask(AbstractTask):
 
         cmd = list(self.cmd)
         cwd = None
-        env = self.settings.pop('env', None)
-        if env:
-            env = {str(k): str(v) for k, v in env.items()}
+        env = None
 
         settings_file = self.write_settings()
 
+        if not self.script.lower().endswith('.py'):
+            env = dict(os.environ)
+            env['diag_scripts'] = os.path.join(
+                os.path.dirname(__file__), 'diag_scripts')
+
         if is_ncl_script:
             cwd = os.path.dirname(__file__)
-            env = dict(os.environ)
             env['settings'] = settings_file
         else:
             cmd.append(settings_file)
