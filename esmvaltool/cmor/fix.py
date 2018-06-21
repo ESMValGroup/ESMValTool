@@ -95,14 +95,14 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None, mip=None):
 
 def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """
-    Fix cube data if fixes add present and check it anyway
+    Fix cube data if fixes add present and check it anyway.
 
-    This method assumes that metadata is already fixed and checked
+    This method assumes that metadata is already fixed and checked.
 
     This method collects all the relevant fixes for a given variable, applies
     them and checks resulting cube (or the original if no fixes were
     needed) metadata to ensure that it complies with the standards of its
-    project CMOR tables
+    project CMOR tables.
 
     Parameters
     ----------
