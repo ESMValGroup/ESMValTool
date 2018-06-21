@@ -330,8 +330,13 @@ def get_input_fx_filelist(variable, rootpath, drs):
         filename_glob = _get_fx_filename(variable, drs, j)
 
         # Find files
-        fx_files[variable['fx_variable'][j]] = find_files(dirname,
-                                                          filename_glob)
+        fx_file_list = find_files(dirname, filename_glob)
+        if len(fx_file_list) > 0:
+            # Grab the first file only; fx vars should have a single file
+            fx_files[variable['fx_variable'][j]] = fx_file_list[0]
+        else:
+            # No files
+            fx_files[variable['fx_variable'][j]] = ''
 
     return fx_files
 
