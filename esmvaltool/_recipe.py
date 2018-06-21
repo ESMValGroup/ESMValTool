@@ -11,7 +11,6 @@ import yaml
 
 from . import __version__, preprocessor
 from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_input_fx_filename,
                            get_output_file, get_start_end_year,
                            get_statistic_output_file, get_input_fx_filelist)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
