@@ -19,14 +19,6 @@ preprocessors:
       span: overlap
       statistics: [mean, median]
 
-  preprocessor2:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-
 diagnostics:
 
   diagnostic1:
@@ -39,7 +31,6 @@ diagnostics:
         additional_datasets:
           - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
       pr:
-        preprocessor: preprocessor2
         field: T2Ms
         reference_dataset: ERA-Interim
     scripts:
