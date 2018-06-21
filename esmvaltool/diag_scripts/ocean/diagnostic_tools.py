@@ -150,13 +150,13 @@ def get_image_path(cfg,
     Produce a path to the final location of the image.
 
     The cfg is the opened global config,
-    metadata is the metadata dictionairy (for the individual model file)
+    metadata is the metadata dictionairy (for the individual dataset file)
     """
     #####
-    if default == 'default':
+    if basenamelist == 'default':
         basenamelist = [
-                        'project', 'model', 'mip', 'exp', 'ensemble', 'field',
-                        'short_name', 'preprocessor', 'diagnostic',
+                        'project', 'dataset', 'mip', 'exp', 'ensemble',
+                        'field', 'short_name', 'preprocessor', 'diagnostic',
                         'start_year', 'end_year', ]
 
     path = folder(cfg['plot_dir'])

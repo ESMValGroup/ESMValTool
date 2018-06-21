@@ -77,7 +77,7 @@ def make_transects_plots(
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['model'].find('MultiModel') > -1
+    multi_model = metadata['dataset'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
 
@@ -86,7 +86,7 @@ def make_transects_plots(
 
     # Add title to plot
     title = ' '.join(
-        [metadata['model'], metadata['long_name'],
+        [metadata['dataset'], metadata['long_name'],
          determine_transect_str(cube)])
     plt.title(title)
 

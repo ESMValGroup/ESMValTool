@@ -73,7 +73,7 @@ def make_time_series_plots(
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['model'].find('MultiModel') > -1
+    multi_model = metadata['dataset'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
@@ -83,12 +83,12 @@ def make_time_series_plots(
         layer = str(layer)
 
         if multi_model:
-            qplt.plot(cube_layer, label=metadata['model'], ls=':')
+            qplt.plot(cube_layer, label=metadata['dataset'], ls=':')
         else:
-            qplt.plot(cube_layer, label=metadata['model'])
+            qplt.plot(cube_layer, label=metadata['dataset'])
 
         # Add title, legend to plots
-        title = ' '.join([metadata['model'], metadata['long_name']])
+        title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer:
             title = ' '.join(
                 [title, '(', layer,
@@ -165,11 +165,11 @@ def multi_model_time_series(
             color = cmap(
                 (float(index) / (len(metadata.keys()) - 1.)))
 
-            if metadata[filename]['model'].find('MultiModel') > -1:
+            if metadata[filename]['dataset'].find('MultiModel') > -1:
                 qplt.plot(
                     model_cubes[filename][layer],
                     c=color,
-                    # label=metadata[filename]['model'],
+                    # label=metadata[filename]['dataset'],
                     ls=':',
                     lw=2.,
                 )
@@ -177,13 +177,13 @@ def multi_model_time_series(
                     'c': color,
                     'ls': ':',
                     'lw': 2.,
-                    'label': metadata[filename]['model']
+                    'label': metadata[filename]['dataset']
                 }
             else:
                 qplt.plot(
                     model_cubes[filename][layer],
                     c=color,
-                    # label=metadata[filename]['model'])
+                    # label=metadata[filename]['dataset'])
                     ls='-',
                     lw=2.,
                 )
@@ -191,7 +191,7 @@ def multi_model_time_series(
                     'c': color,
                     'ls': '-',
                     'lw': 2.,
-                    'label': metadata[filename]['model']
+                    'label': metadata[filename]['dataset']
                 }
 
             title = metadata[filename]['long_name']

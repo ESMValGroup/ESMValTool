@@ -33,32 +33,32 @@
 ###############################################################################
 ---
 
-models:
-# working models
-  - {model: CanESM2,      project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+datasets:
+# working datasets
+  - {dataset: CanESM2,      project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {dataset: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {dataset: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {dataset: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {dataset: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
 #####
-# models with Errors right now (June 2018):
+# datasets with Errors right now (June 2018):
 
 # Problem with latitude > 90.
-  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
-  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+  - {dataset: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+  - {dataset: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
 
 ###
 # Problem with times
-#  - {model: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
 # Unstructured grids                 
-#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
-#  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {model: ACCESS1-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}  
-#  - {model: ACCESS1-3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
+#  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: ACCESS1-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}  
+#  - {dataset: ACCESS1-3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
 
 

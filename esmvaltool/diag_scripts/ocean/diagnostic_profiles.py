@@ -86,7 +86,7 @@ def make_profiles_plots(
     cube = cube.aggregated_by('year', iris.analysis.MEAN)
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['model'].find('MultiModel') > -1
+    multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
     times = cube.coord('time')
@@ -108,7 +108,7 @@ def make_profiles_plots(
 
     # Add title to plot
     title = ' '.join([
-        metadata['model'],
+        metadata['dataset'],
         metadata['long_name'],
     ])
     plt.title(title)

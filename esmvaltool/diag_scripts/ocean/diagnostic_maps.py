@@ -56,7 +56,7 @@ def make_map_plots(
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['model'].find('MultiModel') > -1
+    multi_model = metadata['dataset'].find('MultiModel') > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
@@ -73,7 +73,7 @@ def make_map_plots(
             logger.warning('Not able to add coastlines')
 
         # Add title to plot
-        title = ' '.join([metadata['model'], metadata['long_name']])
+        title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer:
             title = ' '.join(
                 [title, '(', layer,
