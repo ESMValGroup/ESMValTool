@@ -14,14 +14,15 @@ This is the development branch for version 2 of ESMValTool. To get started devel
 ### Getting started
 To install in development mode, follow these instructions.
 - [Download and install conda](https://conda.io/docs/user-guide/install/linux.html)
+- If using (t)csh shell, do not prepend the installation path (`<prefix>`) to the environment variable PATH (as recommended by the installation procedure), but add `source <prefix>/etc/profile.d/conda.csh` to the `.cshrc`/`.tcshrc` file instead
 - Update conda: `conda update -y conda`
 - Create a conda environment: `conda create -y -n esmvaltool python=3`
-- Activate the esmvaltool environment: `source activate esmvaltool`
+- Activate the esmvaltool environment: `source activate esmvaltool` (or `conda activate esmvaltool` if using (t)csh shell)
 - Clone the ESMValTool github repository: `git clone git@github.com/ESMValGroup/ESMValTool`
 - Go to the esmvaltool directory: `cd ESMValTool`
 - Check out the version 2 development branch: `git checkout version2_development`
 - Update the esmvaltool conda environment `conda env update`
-- Install in development mode: `pip install -e .[develop]`
+- Install in development mode: `pip install -e .[develop]` (or `pip install -e '.[develop]'` if using (t)csh shell)
 - Test that your installation was succesful by running `esmvaltool -h`.
 - Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
 - Available recipes are located in the directory `esmvaltool/recipes`.
