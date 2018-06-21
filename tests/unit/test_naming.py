@@ -32,7 +32,7 @@ class TestNaming(unittest.TestCase):
             self.assertTrue(reserved_names.isdisjoint(without_extensions),
                             error_msg)
 
-    def test_avoid_case_related_collisions(self):
+    def test_avoid_casing_collisions(self):
         """
         Check that there are no names differing only in the capitalization
 
