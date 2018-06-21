@@ -21,18 +21,14 @@ def get_path_to_mpl_style(style_file):
     return filepath
 
 
-def get_model_style(model, style_file='default'):
+def get_model_style(model, style_file='cmip5.style'):
     """Retrieve the style information for the given model."""
     # Default path
     base_dir = os.path.dirname(__file__)
     default_dir = os.path.join(base_dir, 'styles_python')
-    default_file = 'cmip5.style'
 
     # Check if style_file is valid
-    if style_file == 'default':
-        filepath = os.path.join(default_dir, default_file)
-    else:
-        filepath = os.path.join(default_dir, style_file)
+    filepath = os.path.join(default_dir, style_file)
     if os.path.isfile(filepath):
         styleconfig = configparser.ConfigParser()
         styleconfig.read(filepath)

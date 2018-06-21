@@ -262,10 +262,50 @@ class Models(object):
         """Allow iteration through class."""
         if self._iter_counter >= self._n_models:
             raise StopIteration()
-        else:
-            next_element = self._paths[self._iter_counter]
-            self._iter_counter += 1
-            return next_element
+        next_element = self._paths[self._iter_counter]
+        self._iter_counter += 1
+        return next_element
+
+    def _is_valid_path(self, path):
+        """Check if path is in class.
+
+        Parameters
+        ----------
+        path : str
+            Path to be tested.
+
+        Returns
+        -------
+        bool
+            True if valid path, False if not.
+
+        """
+        if path in self._paths:
+            return True
+        logger.warning("%s is not a valid model path", path)
+        return False
+
+    def _extract_paths(self, model_info):
+        """Get all paths matching a given `model_info`.
+
+        Parameters
+        ----------
+        model_info : dict
+            Description of the desired models.
+
+        Returns
+        -------
+        list
+            All matching paths.
+
+        """
+        paths = list(self._models)
+        for info in model_info:
+            paths = [path for path in paths if
+                     self._models[path].get(info) == model_info[info]]
+        if not path:
+            logger.warning("%s does not match any model", model_info)
+        return sorted(paths)
 
     def add_model(self, path, data=None, **model_info):
         """Add model to class.
@@ -309,20 +349,14 @@ class Models(object):
 
         """
         if model_path is not None:
-            if model_path in self._paths:
+            if self._is_valid_path(model_path):
                 self._data[model_path] += data
                 return None
-            logger.warning("%s is not a valid model path", model_path)
             return None
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+        paths = self._extract_paths(model_info)
         if not paths:
-            logger.warning("Data could not be saved: %s does not match " +
-                           "any model", model_info)
             return None
-        if len(paths) != 1:
+        if len(paths) > 1:
             logger.warning("Data could no be saved: %s is ambiguous",
                            model_info)
             return None
@@ -357,18 +391,11 @@ class Models(object):
 
         """
         if model_path is not None:
-            if model_path in self._paths:
+            if self._is_valid_path(model_path):
                 return self._data.get(model_path)
-            else:
-                logger.warning("%s is not a valid model path", model_path)
-                return None
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+            return None
+        paths = self._extract_paths(model_info)
         if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
             return None
         if len(paths) > 1:
             msg = 'Given model information is ambiguous'
@@ -395,14 +422,7 @@ class Models(object):
             Data of the selected models.
 
         """
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
-        if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
-        paths = sorted(paths)
+        paths = self._extract_paths(model_info)
         return [self._data[path] for path in paths]
 
     def get_exp(self, model_path):
@@ -423,15 +443,13 @@ class Models(object):
             `exp` information of the given model.
 
         """
-        if model_path in self._paths:
+        if self._is_valid_path(model_path):
             output = self._models[model_path].get(EXP)
             if output is None:
                 logger.warning("Model %s does not contain '%s' information",
                                model_path, EXP)
             return output
-        else:
-            logger.warning("%s is not a valid model path", model_path)
-            return None
+        return None
 
     def get_model(self, model_path):
         """Access a model's `model`.
@@ -451,15 +469,13 @@ class Models(object):
             `model` information of the given model.
 
         """
-        if model_path in self._paths:
+        if self._is_valid_path(model_path):
             output = self._models[model_path].get(MODEL)
             if output is None:
                 logger.warning("Model %s does not contain '%s' information",
                                model_path, MODEL)
             return output
-        else:
-            logger.warning("%s is not a valid model path", model_path)
-            return None
+        return None
 
     def get_model_info(self, model_path=None, **model_info):
         """Access a model's information.
@@ -489,18 +505,11 @@ class Models(object):
 
         """
         if model_path is not None:
-            if model_path in self._paths:
+            if self._is_valid_path(model_path):
                 return self._models.get(model_path)
-            else:
-                logger.warning("%s is not a valid model path", model_path)
-                return None
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+            return None
+        paths = self._extract_paths(model_info)
         if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
             return None
         if len(paths) > 1:
             msg = 'Given model information is ambiguous'
@@ -527,14 +536,7 @@ class Models(object):
             Information dictionaries of the selected models.
 
         """
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
-        if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
-        paths = sorted(paths)
+        paths = self._extract_paths(model_info)
         return [self._models[path] for path in paths]
 
     def get_path(self, **model_info):
@@ -562,13 +564,8 @@ class Models(object):
             If data given by `model_info` is ambiguous.
 
         """
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+        paths = self._extract_paths(model_info)
         if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
             return None
         if len(paths) > 1:
             msg = 'Given model information is ambiguous'
@@ -595,14 +592,7 @@ class Models(object):
             Paths of the selected models.
 
         """
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
-        if not paths:
-            logger.warning("No data could be returned: %s does not match " +
-                           "any model", model_info)
-        paths = sorted(paths)
+        paths = self._extract_paths(model_info)
         return paths
 
     def get_project(self, model_path):
@@ -623,15 +613,13 @@ class Models(object):
             `project` information of the given model.
 
         """
-        if model_path in self._paths:
+        if self._is_valid_path(model_path):
             output = self._models[model_path].get(PROJECT)
             if output is None:
                 logger.warning("Model %s does not contain '%s' information",
                                model_path, MODEL)
             return output
-        else:
-            logger.warning("%s is not a valid model path", model_path)
-            return None
+        return None
 
     def get_short_name(self, model_path):
         """Access a model's `short_name`.
@@ -652,15 +640,13 @@ class Models(object):
             `short_name` information of the given model.
 
         """
-        if model_path in self._paths:
+        if self._is_valid_path(model_path):
             output = self._models[model_path].get(SHORT_NAME)
             if output is None:
                 logger.warning("Model %s does not contain '%s' information",
                                model_path, SHORT_NAME)
             return output
-        else:
-            logger.warning("%s is not a valid model path", model_path)
-            return None
+        return None
 
     def get_standard_name(self, model_path):
         """Access a model's `standard_name`.
@@ -681,15 +667,13 @@ class Models(object):
             `standard_name` information of the given model.
 
         """
-        if model_path in self._paths:
+        if self._is_valid_path(model_path):
             output = self._models[model_path].get(STANDARD_NAME)
             if output is None:
                 logger.warning("Model %s does not contain '%s' information",
                                model_path, STANDARD_NAME)
             return output
-        else:
-            logger.warning("%s is not a valid model path", model_path)
-            return None
+        return None
 
     def set_data(self, data, model_path=None, **model_info):
         """Set element as a model's data.
@@ -712,20 +696,12 @@ class Models(object):
 
         """
         if model_path is not None:
-            if model_path in self._paths:
+            if self._is_valid_path(model_path):
                 self._data[model_path] = data
                 return None
-            else:
-                logger.warning("%s is not a valid model path", model_path)
-                return None
-
-        paths = list(self._models)
-        for info in model_info:
-            paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+            return None
+        paths = self._extract_paths(model_info)
         if not paths:
-            logger.warning("Data could no be saved: %s does not match any " +
-                           "model", model_info)
             return None
         if len(paths) != 1:
             logger.warning("Data could no be saved: %s is ambiguous",

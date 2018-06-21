@@ -18,9 +18,6 @@ OUTPUT_FILE : str
 """
 
 
-import numpy as np
-
-
 # Global variables
 INPUT_FILE = '../styles/cmip5.style'
 OUTPUT_FILE = 'cmip5.style'
@@ -62,8 +59,8 @@ def read_ncl_style(file_name):
                     color = info.split(',')
                     info = '#'
                     for col in color:
-                        col = np.int(col.strip())
-                        info += format(col, '02X')
+                        col = hex(int(col.strip()))
+                        info += col[2:]
 
                 # Convert mark index to matplotlib marker
                 if option == MARK:
