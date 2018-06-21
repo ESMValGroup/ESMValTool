@@ -43,7 +43,8 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     return filename
 
 
-def fix_metadata(cube, short_name, project, dataset, cmor_table=None, mip=None):
+def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
+                 mip=None):
     """
     Fix cube metadata if fixes are required and check it anyway
 
