@@ -119,7 +119,7 @@ def calc_lwp(cubes):
 
     Liquid water path is calculated by subtracting clivi (ice water) from clwvi
     (condensed water path).
-    Note: Some models output the variable "clwvi" which only contains lwp. In
+    Note: Some datasets output the variable "clwvi" which only contains lwp. In
     these cases, the input clwvi cube is just returned.
 
     Arguments
@@ -136,20 +136,20 @@ def calc_lwp(cubes):
     clivi_cube = cubes.extract_strict(
         Constraint(name='atmosphere_cloud_ice_content'))
 
-    model = clwvi_cube.attributes.get('model_id')
+    dataset = clwvi_cube.attributes.get('model_id')
     project = clwvi_cube.attributes.get('project_id')
-    # Should we check that the model/project_id are the same on both cubes?
+    # Should we check that the model_id/project_id are the same on both cubes?
 
-    bad_models = [
+    bad_datasets = [
         'CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS',
         'IPSL-CM5A-MR', 'IPSL-CM5A-LR', 'IPSL-CM5B-LR', 'CCSM4',
         'IPSL-CM5A-MR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC-ESM',
         'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR', 'MPI-ESM-P'
     ]
-    if ((project in ["CMIP5", "CMIP5_ETHZ"] and model in bad_models)
-            or (project == 'OBS' and model == 'UWisc')):
-        logger.info("Assuming that variable clwvi from %s model %s "
-                    "contains only liquid water", project, model)
+    if ((project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets)
+            or (project == 'OBS' and dataset == 'UWisc')):
+        logger.info("Assuming that variable clwvi from %s dataset %s "
+                    "contains only liquid water", project, dataset)
         lwp_cube = clwvi_cube
     else:
         lwp_cube = clwvi_cube - clivi_cube

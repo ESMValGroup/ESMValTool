@@ -402,7 +402,7 @@ begin
 
   ; Plot mean of differences of first and second data set, first
   ; interpolate to the reference data set grid (conservative interpolation)
-  diff_model_ref = get_model_minus_ref(curr, ref)
+  diff_model_ref = get_dataset_minus_ref(curr, ref)
 
   plot_settings@type = "diff"
   plot_settings@skip_default_title = True
@@ -491,7 +491,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -634,7 +634,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -883,7 +883,7 @@ begin
   plot_settings@idx = idx_mod
 
   ; Interpolate to reference grid for pattern correlation calculation
-  diff_model_ref = get_model_minus_ref(speed, speed_ref)
+  diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
 
   statistics = True
   statistics = \
@@ -918,9 +918,9 @@ begin
   ; Plot mean of differnces of first and second data set, first
   ; interpolate to the reference data set grid (bilinear interpolation)
 
-  diff_model_ref = get_model_minus_ref(speed, speed_ref)
-  diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
-  diff_model_va_ref = get_model_minus_ref(va, va_ref)
+  diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
+  diff_model_ua_ref = get_dataset_minus_ref(ua, ua_ref)
+  diff_model_va_ref = get_dataset_minus_ref(va, va_ref)
 
   main_title = "(2) - (1)"
   res = panel_three_by_one(res, 2)  ; Update resource for third plot
@@ -1025,7 +1025,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   var1 = variables(1)
@@ -1312,7 +1312,7 @@ begin
     statistics = compute_stat((/"yrs"/), valid_statistics, curr, dummy_array)
     if (plot_settings@type .eq. "diff") then
       statistics = compute_stat((/"rmse"/), valid_statistics, curr, ref)
-      diff_model_ref = get_model_minus_ref(curr, ref)
+      diff_model_ref = get_dataset_minus_ref(curr, ref)
       delete(curr)
       curr = diff_model_ref
       delete(diff_model_ref)
@@ -1483,7 +1483,7 @@ begin
 
   ; Which model goes where on each page?
   figure_panel_placement = new((/sum(figures_per_page)/), integer)
-  place_models_on_pages(model_info, plot_settings@idx_ref, \
+  place_models_on_pages(dataset_info, plot_settings@idx_ref, \
                         figures_per_page, model_panel_placement, \
                         figure_panel_placement)
 
@@ -1806,9 +1806,9 @@ begin
       statistics = compute_stat((/"rmse"/), valid_statistics, speed, speed_ref)
 
       ; ua/va/speed field interpolation
-      diff_model_ref = get_model_minus_ref(speed, speed_ref)
-      diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
-      diff_model_va_ref = get_model_minus_ref(va, va_ref)
+      diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
+      diff_model_ua_ref = get_dataset_minus_ref(ua, ua_ref)
+      diff_model_va_ref = get_dataset_minus_ref(va, va_ref)
       delete(speed)
       speed = diff_model_ref
       delete(ua)
@@ -1957,7 +1957,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2004,7 +2004,7 @@ begin
 
   ; Which model goes where on each page?
   figure_panel_placement = new((/sum(figures_per_page)/), integer)
-  place_models_on_pages(model_info, \
+  place_models_on_pages(dataset_info, \
                         plot_settings@idx_ref, \
                         figures_per_page, \
                         model_panel_placement, \
@@ -2165,7 +2165,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2242,7 +2242,7 @@ begin
   ; Plot loop
   ; ---------
   do idx_mod = 0, dim_MOD - 1
-    labels(idx_mod) = model_info@model(idx_mod)
+    labels(idx_mod) = dataset_info@dataset(idx_mod)
     res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
     ; Shift plot to the right and draw/redraw
@@ -2348,7 +2348,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2414,7 +2414,7 @@ begin
       ; Define all original attributes again, but empty
       models@$models(i)$ = ""
     end do
-    model_info@model = "model_mean"
+    dataset_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -2531,7 +2531,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2574,8 +2574,8 @@ begin
   end if
 
   ; Determine time range
-  start_year = min(stringtoint(model_info@start_year))
-  end_year = max(stringtoint(model_info@end_year))
+  start_year = min(stringtoint(dataset_info@start_year))
+  end_year = max(stringtoint(dataset_info@end_year))
 
   ; Select attributes
   annots = project_style(diag_script_info, "annots")
@@ -2665,7 +2665,7 @@ begin
   scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(model_info@name)
+  dim_MOD = dimsizes(dataset_info@name)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2706,8 +2706,8 @@ begin
   plot = new((/dim_MOD/), graphic)
 
   ; Determine time range
-  start_year = min(stringtoint(model_info@start_year))
-  end_year = max(stringtoint(model_info@end_year))
+  start_year = min(stringtoint(dataset_info@start_year))
+  end_year = max(stringtoint(dataset_info@end_year))
 
   ; Select attributes
   annots = project_style(diag_script_info, "annots")
@@ -2741,9 +2741,9 @@ begin
     models = getvaratts(temp)  ; use "models" to pass on attribute names
     do i = 0, dimsizes(models) - 1
       ; Define all original attributes again, but empty
-      model_info@$models(i)$ = ""
+      dataset_info@$models(i)$ = ""
     end do
-    model_info@model = "model_mean"
+    dataset_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")

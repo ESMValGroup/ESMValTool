@@ -7,8 +7,8 @@ cubes have (TIME-LAT-LON) or (TIME-PLEV-LAT-LON)
 dimensions; and obviously consistent units.
 
 It operates on different (time) spans:
-- full: computes stats on full model time;
-- overlap: computes common time overlap between models;
+- full: computes stats on full dataset time;
+- overlap: computes common time overlap between datasets;
 
 """
 
@@ -91,7 +91,7 @@ def _compute_statistic(datas, name):
             if fixed_data is not None:
                 plev_check.append(fixed_data)
 
-        # check for nr models
+        # check for nr datasets
         if len(plev_check) > 1:
             plev_check = np.ma.array(plev_check)
             statistic[j] = statistic_function(plev_check, axis=0)
@@ -142,7 +142,7 @@ def _put_in_cube(template_cube, cube_data, stat_name,
             stats_cube.add_aux_coord(template_cube.coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
 
-    metadata = {'model': 'MultiModel' + stat_name.title(),
+    metadata = {'dataset': 'MultiModel' + stat_name.title(),
                 'filename': file_name}
     metadata_template = yaml.safe_load(template_cube.attributes['metadata'])
     for attr in ('short_name', 'standard_name', 'long_name', 'units', 'field',
@@ -324,7 +324,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     ]
 
     if len(selection) < 2:
-        logger.info("Single model in list: will not compute statistics.")
+        logger.info("Single dataset in list: will not compute statistics.")
         return cubes
 
     # unify units
@@ -334,7 +334,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     interval = _get_overlap(selection)
     if interval is None:
         logger.info("Time overlap between cubes is none or a single point.")
-        logger.info("check models: will not compute statistics.")
+        logger.info("check datasets: will not compute statistics.")
         return cubes
 
     time_unit = selection[0].coord('time').units.name
@@ -343,7 +343,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     files = []
     if span == 'overlap':
         logger.debug("Using common time overlap between "
-                     "models to compute statistics.")
+                     "datasets to compute statistics.")
 
         # assemble data
         for stat_name in statistics:
