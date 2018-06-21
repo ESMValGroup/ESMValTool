@@ -306,7 +306,7 @@ data@filename = model_info@filename
                 if (var0.eq."sit") then
                     error_msg("w", diag_script, "", "For sea ice thickness," + \
                               " grid min and max values " + \
-                              " should be specified in the cfg file.")
+                              " should be specified in the configuration.")
                 end if
             end if
             if (isatt(diag_script_info, "grid_max")) then

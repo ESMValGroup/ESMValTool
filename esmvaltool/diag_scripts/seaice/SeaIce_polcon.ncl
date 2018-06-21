@@ -61,7 +61,6 @@ load "./diag_scripts/shared/plot/aux_plotting.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
-    verbosity = config_user_info@log_level
     log_info("<<<<<<<< Entering " + diag_script)
     log_info("++++++++++++++++++++++++++++++++++++++++++")
     log_info(diag_script + " (var: " + variables(0) + ")")
@@ -196,8 +195,8 @@ begin
                  "  #####################################")
 
         ;; see ./interface_scripts/data_handling.ncl
+        var = read_data(imod, var0, field_type0)
         if (var0.eq."sic") then
-            var = read_data(imod, var0, field_type0)
             if (var@units.eq."%") then
                 var = var / 100.  ; Subsequent code works fine without rescaling
                 var@units = "%/100"  ; But annotation is hardcoded for %/100
