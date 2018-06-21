@@ -43,3 +43,14 @@ class TestNaming(unittest.TestCase):
                              len({name.lower() for name
                                   in filenames + dirnames}),
                              'Colliding names found at {0}'.format(dirpath))
+
+    def test_no_namelist(self):
+        """
+        Check that there are no namelist references in file and folder names
+
+        This will help us to avoid bad merges with stale branches
+        """
+        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            self.assertFalse([True for name in filenames + dirnames
+                              if ('namelist' in name.lower())],
+                             'Namelist reference found at {0}'.format(dirpath))
