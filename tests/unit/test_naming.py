@@ -24,7 +24,10 @@ class TestNaming(unittest.TestCase):
                           'LPT7', 'LPT8', 'LPT9'}
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
-            error_msg = 'Reserved name found at {}'.format(dirpath)
+            error_msg = 'Reserved windows name found at {}.' \
+                        ' Please rename it ' \
+                        '(Windows reserved names are: {})' \
+                        ''.format(dirpath, ','.join(reserved_names))
             self.assertTrue(reserved_names.isdisjoint(dirnames), error_msg)
             self.assertTrue(reserved_names.isdisjoint(filenames), error_msg)
             without_extensions = (os.path.splitext(filename)[0]
@@ -42,7 +45,9 @@ class TestNaming(unittest.TestCase):
             self.assertEqual(len(filenames) + len(dirnames),
                              len({name.lower() for name
                                   in filenames + dirnames}),
-                             'Colliding names found at {0}'.format(dirpath))
+                             'Colliding names found at {0}. Please do not '
+                             'use names that only differ in '
+                             'capitalization'.format(dirpath))
 
     def test_no_namelist(self):
         """
@@ -53,4 +58,5 @@ class TestNaming(unittest.TestCase):
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             self.assertFalse([True for name in filenames + dirnames
                               if ('namelist' in name.lower())],
-                             'Namelist reference found at {0}'.format(dirpath))
+                             'Namelist reference found at {0}. '
+                             'Please use "recipe" instead'.format(dirpath))
