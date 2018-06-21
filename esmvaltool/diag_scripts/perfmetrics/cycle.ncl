@@ -7,6 +7,8 @@
 procedure perfmetrics_ptype_script()
 begin
 
+  ;load "./diag_scripts/shared/meta_data.ncl"
+
   ; Define output array
   if (diag_script_info@time_avg.eq."seasonalclim") then
     var_all = new((/dim_MOD, 4, 2/), float)
@@ -153,5 +155,7 @@ begin
   frame(wks)
 
   log_info(" gv " + outfile + "." + file_type)
+
+  ESMValMD("outfile.png", "caption", (/"stat1","stat2"/), "domain", "plottype", "diag_des", (/"author1","author2"/), (/"ref1","ref2"/))
 
 end

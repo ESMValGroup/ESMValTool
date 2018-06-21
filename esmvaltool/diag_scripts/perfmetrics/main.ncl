@@ -95,6 +95,8 @@ load "./diag_scripts/shared/plot/xy_line.ncl"
 load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
+load "./diag_scripts/shared/meta_data.ncl"
+
 begin
 
   enter_msg(diag_script, "")
