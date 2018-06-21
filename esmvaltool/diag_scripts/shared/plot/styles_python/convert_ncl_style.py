@@ -101,7 +101,7 @@ def read_ncl_style(file_name):
     # Convert list to dictionary
     output_dict = {}
     for info in output:
-        model =info[MODEL]
+        model = info[MODEL]
         del info[MODEL]
         output_dict[model] = info
 
