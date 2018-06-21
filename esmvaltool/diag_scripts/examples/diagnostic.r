@@ -20,8 +20,12 @@ library(tools)
 library(yaml)
 
 # get path to script and source subroutines (if needed)
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+print(diag_scripts_dir)
+
+print(Sys.getenv())
+# do the same reading arguments
 args <- commandArgs(trailingOnly = FALSE)
-print(args)
 file.arg.name <- "--file="
 script.name <- sub(file.arg.name, "", args[grep(file.arg.name, args)])
 script.dirname <- dirname(script.name)
