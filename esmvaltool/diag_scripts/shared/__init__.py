@@ -12,7 +12,7 @@ from .python_diag import (
     YEAR,
     EXP,
     LONG_NAME,
-    MODEL,
+    DATASET,
     OBS,
     PROJECT,
     SHORT_NAME,
@@ -27,7 +27,7 @@ from .python_diag import (
     WRITE_PLOTS,
     Variable,
     Variables,
-    Models,
+    Datasets,
 )
 
 __all__ = [
@@ -41,7 +41,7 @@ __all__ = [
     'YEAR',
     'EXP',
     'LONG_NAME',
-    'MODEL',
+    'DATASET',
     'OBS',
     'PROJECT',
     'SHORT_NAME',
@@ -56,7 +56,7 @@ __all__ = [
     'WRITE_PLOTS',
     'Variable',
     'Variables',
-    'Models',
+    'Datasets',
     'get_cfg',
     'plot',
     'run_diagnostic',

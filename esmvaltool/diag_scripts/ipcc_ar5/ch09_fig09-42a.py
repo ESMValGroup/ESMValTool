@@ -52,20 +52,20 @@ def main(cfg):
     Parameters
     ----------
     cfg : dict
-        Configuration dictionary of the namelist.
+        Configuration dictionary of the recipe.
 
     """
     ###########################################################################
     # Setup diagnostic
     ###########################################################################
 
-    # Model data containers
-    MODELS = e.Models(cfg)
-    logging.debug("Found models in namelist:\n{}".format(MODELS))
+    # Dataset data containers
+    DATASETS = e.Datasets(cfg)
+    logging.debug("Found datasets in recipe:\n{}".format(DATASETS))
 
     # Variables
     VARS = e.Variables(cfg)
-    logging.debug("Found variables in namelist:\n{}".format(VARS))
+    logging.debug("Found variables in recipe:\n{}".format(VARS))
     ECS = e.Variable('ecs', 'ecs', 'equilibrium climate sensitivity', 'K')
     VARS.add_var(ecs=ECS)
 
@@ -85,9 +85,9 @@ def main(cfg):
     # Read data
     ###########################################################################
 
-    # Create iris cube for each model
-    for model_path in MODELS:
-        cube = iris.load(model_path, VARS.standard_names())[0]
+    # Create iris cube for each dataset
+    for dataset_path in DATASETS:
+        cube = iris.load(dataset_path, VARS.standard_names())[0]
 
         # Global mean
         for coord in [cube.coord(e.LAT), cube.coord(e.LON)]:
@@ -98,12 +98,12 @@ def main(cfg):
                               weights=area_weights)
 
         # Historical: total temporal mean; else: annual mean
-        if MODELS.get_exp(model_path) == HISTORICAL:
+        if DATASETS.get_exp(dataset_path) == HISTORICAL:
             cube = cube.collapsed([e.TIME], iris.analysis.MEAN)
         else:
             cube = cube.aggregated_by(e.YEAR, iris.analysis.MEAN)
 
-        MODELS.set_data(cube.data, model_path=model_path)
+        DATASETS.set_data(cube.data, dataset_path=dataset_path)
 
     ###########################################################################
     # Process data
@@ -111,28 +111,28 @@ def main(cfg):
 
     # Substract piControl experiment from abrupt4xCO2 experiment and add total
     # temporal mean of piControl
-    for model_path in MODELS.get_path_list(exp=PICONTROL):
-        model = MODELS.get_model(model_path)
-        short_name = MODELS.get_short_name(model_path)
-        data = MODELS.get_data(model_path=model_path)
-        data_diff = MODELS.get_data(short_name=short_name, exp=ABRUPT4XCO2,
-                                    model=model) - data
-        MODELS.add_model(short_name+DIFF+model, data_diff,
-                         short_name=short_name, exp=DIFF, model=model)
-        MODELS.add_model(short_name+PICONTROL_TEMP_MEAN+model, np.mean(data),
-                         short_name=short_name, exp=PICONTROL_TEMP_MEAN,
-                         model=model)
+    for dataset_path in DATASETS.get_path_list(exp=PICONTROL):
+        dataset = DATASETS.get_dataset(dataset_path)
+        short_name = DATASETS.get_short_name(dataset_path)
+        data = DATASETS.get_data(dataset_path=dataset_path)
+        data_diff = DATASETS.get_data(short_name=short_name, exp=ABRUPT4XCO2,
+                                      dataset=dataset) - data
+        DATASETS.add_dataset(short_name+DIFF+dataset, data_diff,
+                             short_name=short_name, exp=DIFF, dataset=dataset)
+        DATASETS.add_dataset(short_name+PICONTROL_TEMP_MEAN+dataset,
+                             np.mean(data), short_name=short_name,
+                             exp=PICONTROL_TEMP_MEAN, dataset=dataset)
 
     # Calculate ECS (cf. Andrews et al. 2015)
-    for model_path in MODELS.get_path_list(short_name=VARS.tas, exp=DIFF):
-        model = MODELS.get_model(model_path)
-        data_tas = MODELS.get_data(model_path=model_path)
-        data_rtmt = MODELS.get_data(short_name=VARS.rtmt, exp=DIFF,
-                                    model=model)
+    for dataset_path in DATASETS.get_path_list(short_name=VARS.tas, exp=DIFF):
+        dataset = DATASETS.get_dataset(dataset_path)
+        data_tas = DATASETS.get_data(dataset_path=dataset_path)
+        data_rtmt = DATASETS.get_data(short_name=VARS.rtmt, exp=DIFF,
+                                      dataset=dataset)
         reg_stats = stats.linregress(data_tas, data_rtmt)
         data_ecs = -reg_stats.intercept / (2*reg_stats.slope)
-        MODELS.add_model(short_name+DIFF+model+VARS.ecs, data_ecs,
-                         short_name=VARS.ecs, exp=DIFF, model=model)
+        DATASETS.add_dataset(short_name+DIFF+dataset+VARS.ecs, data_ecs,
+                             short_name=VARS.ecs, exp=DIFF, dataset=dataset)
 
         # Plot ECS regression if desired
         if cfg[e.WRITE_PLOTS] and cfg.get('plot_ecs_regression'):
@@ -148,7 +148,7 @@ def main(cfg):
             ax.plot(x_reg, y_reg, color='k', linestyle='-')
 
             # Options
-            ax.set_title(model)
+            ax.set_title(dataset)
             ax.set_xlabel(VARS.TAS.standard_name + " / " + VARS.TAS.units)
             ax.set_ylabel(VARS.RTMT.standard_name + " / " + VARS.RTMT.units)
             ax.set_xlim(0.0, 7.0)
@@ -164,7 +164,7 @@ def main(cfg):
                     transform=ax.transAxes)
 
             # Save plot
-            filename = model + '.' + cfg[e.OUTPUT_FILE_TYPE]
+            filename = dataset + '.' + cfg[e.OUTPUT_FILE_TYPE]
             filepath = os.path.join(cfg[e.PLOT_DIR], filename)
             fig.savefig(filepath, bbox_inches='tight', orientation='landscape')
             logger.info("Writing {}".format(filepath))
@@ -175,28 +175,29 @@ def main(cfg):
     ###########################################################################
 
     if cfg[e.WRITE_PLOTS]:
-        for model_path in MODELS.get_path_list(short_name=VARS.ecs, exp=DIFF):
-            model = MODELS.get_model(model_path)
-            data_ecs = MODELS.get_data(model_path=model_path)
-            data_tas_hist = MODELS.get_data(short_name=VARS.tas,
-                                            exp=HISTORICAL, model=model)
-            data_tas_piC = MODELS.get_data(short_name=VARS.tas,
-                                           exp=PICONTROL_TEMP_MEAN,
-                                           model=model)
-            style = e.plot.get_model_style(model)
+        for dataset_path in \
+                DATASETS.get_path_list(short_name=VARS.ecs, exp=DIFF):
+            dataset = DATASETS.get_dataset(dataset_path)
+            data_ecs = DATASETS.get_data(dataset_path=dataset_path)
+            data_tas_hist = DATASETS.get_data(short_name=VARS.tas,
+                                              exp=HISTORICAL, dataset=dataset)
+            data_tas_piC = DATASETS.get_data(short_name=VARS.tas,
+                                             exp=PICONTROL_TEMP_MEAN,
+                                             dataset=dataset)
+            style = e.plot.get_dataset_style(dataset)
 
             # Plot
             ax.plot(data_ecs, data_tas_hist, linestyle='none',
                     markeredgecolor=style['color'],
                     markerfacecolor=style['facecolor'],
-                    marker=style['mark'], markersize=10, label=model)
+                    marker=style['mark'], markersize=10, label=dataset)
             ax.plot(data_ecs, data_tas_piC, linestyle='none',
                     markeredgecolor=style['color'],
                     markerfacecolor=style['facecolor'],
-                    marker=style['mark'], markersize=6, label='_'+model)
+                    marker=style['mark'], markersize=6, label='_'+dataset)
 
         # Options
-        ax.set_title("GMSAT vs. ECS for CMIP5 models")
+        ax.set_title("GMSAT vs. ECS for CMIP5 datasets")
         ax.set_xlabel(VARS.ECS.standard_name + " / " + VARS.ECS.units)
         ax.set_ylabel(VARS.TAS.standard_name + " / " + VARS.TAS.units)
         ax.set_xlim(1.5, 5.0)
@@ -218,17 +219,18 @@ def main(cfg):
     ###########################################################################
 
     if cfg[e.WRITE_NETCDF]:
-        data_ecs = MODELS.get_data_list(short_name=VARS.ecs, exp=DIFF)
-        models = [model_info[e.MODEL] for model_info in
-                  MODELS.get_model_info_list(short_name=VARS.ecs, exp=DIFF)]
-        model_coord = iris.coords.AuxCoord(models, long_name='models')
+        data_ecs = DATASETS.get_data_list(short_name=VARS.ecs, exp=DIFF)
+        datasets = [dataset_info[e.DATASET] for dataset_info in
+                    DATASETS.get_dataset_info_list(short_name=VARS.ecs,
+                                                   exp=DIFF)]
+        dataset_coord = iris.coords.AuxCoord(datasets, long_name='models')
         attr = {'created_by': 'ESMValTool version {}'.format(cfg[e.VERSION]) +
                               ', diagnostic {}'.format(cfg[e.SCRIPT]),
                 'creation_date': datetime.utcnow().isoformat(' ') + ' UTC'}
         cube = iris.cube.Cube(data_ecs, long_name=VARS.ECS.long_name,
                               var_name=VARS.ecs, units=VARS.ECS.units,
                               attributes=attr)
-        cube.add_aux_coord(model_coord, 0)
+        cube.add_aux_coord(dataset_coord, 0)
 
         # Save file
         filename = VARS.ecs + '.nc'

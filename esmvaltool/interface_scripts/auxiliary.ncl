@@ -6,7 +6,7 @@
 ;
 ; Contents:
 ;    procedure copy_VarCoords_l1
-;    procedure check_min_max_models
+;    procedure check_min_max_datasets
 ;    function tstep
 ;    function get_ncdf_name
 ;    function get_ncdf_dir
@@ -27,7 +27,7 @@
 ;    procedure set_default_att
 ;    function filter_attrs
 ;    procedure write_ignore_warnings
-;    function get_ref_model_idx
+;    function get_ref_dataset_idx
 ;
 ; #############################################################################
 
@@ -99,20 +99,20 @@ begin
 end
 
 ; #############################################################################
-undef("check_min_max_models")
-procedure check_min_max_models(no_models[1]:integer,
-                               min_no_models[1]:integer,
-                               max_no_models[1]:integer,
-                               diag_script[1])
+undef("check_min_max_datasets")
+procedure check_min_max_datasets(no_datasets[1]:integer,
+                                 min_no_datasets[1]:integer,
+                                 max_no_datasets[1]:integer,
+                                 diag_script[1])
 ;
 ; Arguments
-;    no_models: number of models.
-;    min_no_models: minimum no of models required for this diagnostic script.
-;    max_no_models: maximum no of models required for this diagnostic script.
+;    no_datasets: number of datasets.
+;    min_no_datasets: minimum no of datasets required for this diag script.
+;    max_no_datasets: maximum no of datasets required for this diagg script.
 ;    diag_script: name of diagnostic script.
 ;
 ; Description
-;    Checks if sufficient number of models are present for the given
+;    Checks if sufficient number of datasets are present for the given
 ;    diagnostic, tries to abort with a intelligible message.
 ;
 ; Caveats
@@ -124,20 +124,20 @@ procedure check_min_max_models(no_models[1]:integer,
 local funcname, scriptname
 begin
 
-  funcname = "check_min_max_models"
+  funcname = "check_min_max_datasets"
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  if (no_models .lt. min_no_models) then
+  if (no_datasets .lt. min_no_datasets) then
     error_msg("f", scriptname, funcname,\
-              "Too few models (=" + no_models + ") for " + diag_script \
-              + ". Mininum is " + min_no_models)
+              "Too few datasets (=" + no_datasets + ") for " + diag_script \
+              + ". Mininum is " + min_no_datasets)
   end if
 
-  if (no_models .gt. max_no_models) then
+  if (no_datasets .gt. max_no_datasets) then
     error_msg("f", scriptname, funcname,\
-              "Too many models (=" + no_models + ") for " + diag_script \
-              + ". Maximum is " + max_no_models)
+              "Too many datasets (=" + no_datasets + ") for " + diag_script \
+              + ". Maximum is " + max_no_datasets)
   end if
 
   leave_msg(scriptname, funcname)
@@ -1419,16 +1419,16 @@ begin
 end
 
 ; #############################################################################
-undef("get_ref_model_idx")
-function get_ref_model_idx(models[1]:logical,\
-                           model_ref_name:string)
+undef("get_ref_dataset_idx")
+function get_ref_dataset_idx(datasets[1]:logical,\
+                             dataset_ref_name:string)
 ;
 ; Arguments
-;    models: list of all models
-;    model_ref_name: reference model name, possibly two, separated by comma
+;    datasets: list of all datasets
+;    dataset_ref_name: reference dataset name, possibly two, separated by comma
 ;
 ; Description
-;    Fetches the reference model index in model_info@model
+;    Fetches the reference dataset index in dataset_info@dataset
 ;
 ; Caveats
 ;
@@ -1440,18 +1440,19 @@ function get_ref_model_idx(models[1]:logical,\
 local funcname, scriptname, nrefs, idx_ref
 begin
 
-  funcname = "get_ref_model_idx"
+  funcname = "get_ref_dataset_idx"
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  nrefs = dimsizes(model_ref_name)
+  nrefs = dimsizes(dataset_ref_name)
 
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
-    idx_ref(ii) = ind(model_info@model.eq.str_squeeze(model_ref_name(ii)))
+    idx_ref(ii) = \
+      ind(dataset_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
-      error_msg("f", scriptname, funcname, "reference model " + \
-                model_ref_name(ii) + " not found in the models list")
+      error_msg("f", scriptname, funcname, "reference dataset " + \
+                dataset_ref_name(ii) + " not found in the datasets list")
     end if
   end do
 

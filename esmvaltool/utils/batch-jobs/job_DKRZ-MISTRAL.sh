@@ -15,7 +15,7 @@
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
 
 # Input arguments
-NML=namelist_perfmetrics_CMIP5.yml
+RECIPE=recipe_perfmetrics_CMIP5.yml
 CONFIG=config-user.yml
 
 # Set environment
@@ -26,4 +26,4 @@ ESMVALPATH = # e.g. /home/ESMValTool/esmvaltool
 # Changes below this line should not be required
 export PATH=$PATH:$CONDAPATH/bin/
 conda info --envs
-$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/namelists/$NML
+$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/recipes/$RECIPE

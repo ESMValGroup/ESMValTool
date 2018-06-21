@@ -21,8 +21,8 @@ def get_path_to_mpl_style(style_file):
     return filepath
 
 
-def get_model_style(model, style_file='cmip5.yml'):
-    """Retrieve the style information for the given model."""
+def get_dataset_style(dataset, style_file='cmip5.yml'):
+    """Retrieve the style information for the given dataset."""
     # Default path
     base_dir = os.path.dirname(__file__)
     default_dir = os.path.join(base_dir, 'styles_python')
@@ -35,35 +35,35 @@ def get_model_style(model, style_file='cmip5.yml'):
     else:
         raise IOError("Invalid input: could not open style file " +
                       "'{}'".format(filepath))
-    logger.debug("Using style file %s for model %s", filepath, model)
+    logger.debug("Using style file %s for dataset %s", filepath, dataset)
 
-    # Check if file has entry for unknown model
-    default_model = 'default'
+    # Check if file has entry for unknown dataset
+    default_dataset = 'default'
     options = ['color', 'dash', 'thick', 'mark', 'avgstd', 'facecolor']
-    if default_model not in style:
+    if default_dataset not in style:
         raise IOError("Style file '{}' does not ".format(filepath) +
-                      "contain default information for unknown models")
+                      "contain default information for unknown datasets")
     for option in options:
-        if option not in style[default_model]:
+        if option not in style[default_dataset]:
             raise IOError("Style file '{}' ".format(filepath) +
                           "does not contain '{}' ".format(option) +
-                          "default information for unknown models")
+                          "default information for unknown datasets")
 
-    # Check if model is available
-    if not style.get(model):
-        logger.warning("Model '%s' not found in style file, using default " +
-                       "entry", model)
-        return style[default_model]
+    # Check if dataset is available
+    if not style.get(dataset):
+        logger.warning("Dataset '%s' not found in style file, using default " +
+                       "entry", dataset)
+        return style[default_dataset]
 
     # Get compulsory information
     for option in options:
-        if option not in style[model]:
-            logger.warning("No style information '%s' found for model '%s', " +
-                           "using default value for unknown models",
-                           option, model)
-            style[model].update({option: style[default_model][option]})
+        if option not in style[dataset]:
+            logger.warning("No style information '%s' found for dataset " +
+                           "'%s', using default value for unknown datasets",
+                           option, dataset)
+            style[dataset].update({option: style[default_dataset][option]})
 
-    return style[model]
+    return style[dataset]
 
 
 def quickplot(cube, filename, plot_type, **kwargs):

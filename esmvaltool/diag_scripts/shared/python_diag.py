@@ -5,14 +5,14 @@ Example
 Import and use these basic classes by e.g.::
 
     import esmvaltool.diag_scripts.shared as e
-    models = e.Models(cfg)
+    datasets = e.Datasets(cfg)
 
 Notes
 -----
 An example diagnostic using these classes is given in
 `diag_scripts/examples/diagnostic.py`
 
-            if self._is_valid_path(model_path):
+            if self._is_valid_path(dataset_path):
 """
 
 
@@ -34,7 +34,7 @@ YEAR = 'year'
 
 EXP = 'exp'
 LONG_NAME = 'long_name'
-MODEL = 'model'
+DATASET = 'dataset'
 OBS = 'OBS'
 PROJECT = 'project'
 SHORT_NAME = 'short_name'
@@ -63,13 +63,13 @@ Variable = collections.namedtuple('Variable', [SHORT_NAME,
 
 
 class Variables(object):
-    """Class to easily access a namelist's variables.
+    """Class to easily access a recipe's variables.
 
     This class is designed to easily access variables in the diagnostic script.
 
     Examples
     --------
-    Get all variables of a namelist configuration `cfg`::
+    Get all variables of a recipe configuration `cfg`::
 
         vars = Variables(cfg)
 
@@ -92,7 +92,7 @@ class Variables(object):
         Parameters
         ----------
         cfg : dict, optional
-            Configuation dictionary of the namelist.
+            Configuation dictionary of the recipe.
         **names : tuple or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
             `Variable_object` can be given as tuple or Variable.
@@ -121,7 +121,7 @@ class Variables(object):
             if not success:
                 logger.warning("%s is not a valid configuration file!", cfg)
         if not self._dict:
-            logger.warning("Empty namelist configuration: the automatic " +
+            logger.warning("Empty recipe configuration: the automatic " +
                            "import of variables does not work for chained " +
                            "scripts (using 'ancestors' key)")
 
@@ -190,41 +190,41 @@ class Variables(object):
                 name in self._dict]
 
 
-class Models(object):
-    """Class to easily access a namelist's datasets
+class Datasets(object):
+    """Class to easily access a recipe's datasets
 
     This class is designed to easily access datasets in the diagnostic script.
 
     Examples
     --------
-    Get all variables of a namelist configuration `cfg`::
+    Get all variables of a recipe configuration `cfg`::
 
-        models = Models(cfg)
+        datasets = Datasets(cfg)
 
-    Access data of a model with path `path`::
+    Access data of a dataset with path `path`::
 
-        models.get_data(model_path=path)
+        datasets.get_data(dataset_path=path)
 
-    Access model information of the model::
+    Access dataset information of the dataset::
 
-        models.get_model_info(model_path=path)
+        datasets.get_dataset_info(dataset_path=path)
 
-    Access the data of all models with `exp=piControl'::
+    Access the data of all datasets with `exp=piControl'::
 
-        models.get_data_list(exp=piControl)
+        datasets.get_data_list(exp=piControl)
 
     """
 
     def __init__(self, cfg):
-        """Load models.
+        """Load datasets.
 
-        Load all datasets of the namelist and store them in three internal
-        dictionaries/lists (`self._paths`, `self._data` and `self._models`).
+        Load all datasets of the recipe and store them in three internal
+        dictionaries/lists (`self._paths`, `self._data` and `self._datasets`).
 
         Parameters
         ----------
         cfg : dict, optional
-            Configuation dictionary of the namelist.
+            Configuation dictionary of the recipe.
 
         """
         self._iter_counter = 0
@@ -235,13 +235,13 @@ class Models(object):
             input_data = cfg.get(INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
-                    model_info = input_data[path]
-                    if not isinstance(model_info, dict):
+                    dataset_info = input_data[path]
+                    if not isinstance(dataset_info, dict):
                         success = False
                         break
                     self._paths.append(path)
                     self._data[path] = None
-                self._models = input_data
+                self._datasets = input_data
             else:
                 success = False
         else:
@@ -249,17 +249,17 @@ class Models(object):
         if not success:
             raise TypeError("{} is not a valid ".format(repr(cfg)) +
                             "configuration file")
-        self._n_models = len(self._paths)
+        self._n_datasets = len(self._paths)
         if not self._paths:
-            logger.warning("No models found!")
-            logger.warning("Note: the automatic import of models does not " +
+            logger.warning("No datasets found!")
+            logger.warning("Note: the automatic import of datasets does not " +
                            "work for chained scripts (using 'ancestors' key)")
 
     def __repr__(self):
         """Representation of the class."""
         output = ''
-        for path in self._models:
-            output += repr(self._models[path]) + '\n'
+        for path in self._datasets:
+            output += repr(self._datasets[path]) + '\n'
         return output
 
     def __iter__(self):
@@ -269,7 +269,7 @@ class Models(object):
 
     def __next__(self):
         """Allow iteration through class."""
-        if self._iter_counter >= self._n_models:
+        if self._iter_counter >= self._n_datasets:
             raise StopIteration()
         next_element = self._paths[self._iter_counter]
         self._iter_counter += 1
@@ -291,16 +291,16 @@ class Models(object):
         """
         if path in self._paths:
             return True
-        logger.warning("%s is not a valid model path", path)
+        logger.warning("%s is not a valid dataset path", path)
         return False
 
-    def _extract_paths(self, model_info):
-        """Get all paths matching a given `model_info`.
+    def _extract_paths(self, dataset_info):
+        """Get all paths matching a given `dataset_info`.
 
         Parameters
         ----------
-        model_info : dict
-            Description of the desired models.
+        dataset_info : dict
+            Description of the desired datasets.
 
         Returns
         -------
@@ -308,25 +308,25 @@ class Models(object):
             All matching paths.
 
         """
-        paths = list(self._models)
-        for info in model_info:
+        paths = list(self._datasets)
+        for info in dataset_info:
             paths = [path for path in paths if
-                     self._models[path].get(info) == model_info[info]]
+                     self._datasets[path].get(info) == dataset_info[info]]
         if not paths:
-            logger.warning("%s does not match any model", model_info)
+            logger.warning("%s does not match any dataset", dataset_info)
         return sorted(paths)
 
-    def add_model(self, path, data=None, **model_info):
-        """Add model to class.
+    def add_dataset(self, path, data=None, **dataset_info):
+        """Add dataset to class.
 
         Parameters
         ----------
         path : str
             (Unique) path to the dataset.
         data, optional
-            Arbitrary object to be save as data for the model.
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+            Arbitrary object to be saved as data for the dataset.
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         """
@@ -335,85 +335,85 @@ class Models(object):
             self._paths.remove(path)
         self._paths.append(path)
         self._data[path] = data
-        self._models[path] = model_info
+        self._datasets[path] = dataset_info
 
-    def add_to_data(self, data, model_path=None, **model_info):
-        """Add element to a model's data.
+    def add_to_data(self, data, dataset_path=None, **dataset_info):
+        """Add element to a dataset's data.
 
         Notes
         -----
-        Either `model_path` or a unique `model_info` description have to be
+        Either `dataset_path` or a unique `dataset_info` description have to be
         given. Prints warning and does nothing if given information is
         ambiguous.
 
         Parameters
         ----------
         data
-            Element to be added to the model's data.
-        model_path : str, optional
+            Element to be added to the dataset's data.
+        dataset_path : str, optional
             Path to the dataset
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         """
-        if model_path is not None:
-            if self._is_valid_path(model_path):
-                self._data[model_path] += data
+        if dataset_path is not None:
+            if self._is_valid_path(dataset_path):
+                self._data[dataset_path] += data
                 return None
             return None
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         if not paths:
             return None
         if len(paths) > 1:
             logger.warning("Data could no be saved: %s is ambiguous",
-                           model_info)
+                           dataset_info)
             return None
         self._data[paths[0]] += data
         return None
 
-    def get_data(self, model_path=None, **model_info):
-        """Access a model's data.
+    def get_data(self, dataset_path=None, **dataset_info):
+        """Access a dataset's data.
 
         Notes
         -----
-        Either `model_path` or a unique `model_info` description have to be
+        Either `dataset_path` or a unique `dataset_info` description have to be
         given. Fails when given information is ambiguous.
 
         Parameters
         ----------
-        model_path : str, optional
+        dataset_path : str, optional
             Path to the dataset
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         data_object
-            Data of the selected model
+            Data of the selected dataset
 
         Raises
         ------
         RuntimeError
-            If data given by `model_info` is ambiguous.
+            If data given by `dataset_info` is ambiguous.
 
         """
-        if model_path is not None:
-            if self._is_valid_path(model_path):
-                return self._data.get(model_path)
+        if dataset_path is not None:
+            if self._is_valid_path(dataset_path):
+                return self._data.get(dataset_path)
             return None
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         if not paths:
             return None
         if len(paths) > 1:
-            msg = 'Given model information is ambiguous'
+            msg = 'Given dataset information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
         return self._data[paths[0]]
 
-    def get_data_list(self, **model_info):
-        """Access the models' data in a list.
+    def get_data_list(self, **dataset_info):
+        """Access the datasets' data in a list.
 
         Notes
         -----
@@ -421,113 +421,113 @@ class Models(object):
 
         Parameters
         ----------
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         list
-            Data of the selected models.
+            Data of the selected datasets.
 
         """
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         return [self._data[path] for path in paths]
 
-    def get_exp(self, model_path):
-        """Access a model's `exp`.
+    def get_exp(self, dataset_path):
+        """Access a dataset's `exp`.
 
         Notes
         -----
-        If the `model_info` does not contain an `exp` value, returns None.
+        If the `dataset_info` does not contain an `exp` value, returns None.
 
         Parameters
         ----------
-        model_path : str
+        dataset_path : str
             Path to the dataset
 
         Returns
         -------
         str
-            `exp` information of the given model.
+            `exp` information of the given dataset.
 
         """
-        if self._is_valid_path(model_path):
-            output = self._models[model_path].get(EXP)
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(EXP)
             if output is None:
-                logger.warning("Model %s does not contain '%s' information",
-                               model_path, EXP)
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, EXP)
             return output
         return None
 
-    def get_model(self, model_path):
-        """Access a model's `model`.
+    def get_dataset(self, dataset_path):
+        """Access a dataset's `dataset`.
 
         Notes
         -----
-        If the `model_info` does not contain a `model` value, returns None.
+        If the `dataset_info` does not contain a `dataset` value, returns None.
 
         Parameters
         ----------
-        model_path : str
+        dataset_path : str
             Path to the dataset
 
         Returns
         -------
         str
-            `model` information of the given model.
+            `dataset` information of the given dataset.
 
         """
-        if self._is_valid_path(model_path):
-            output = self._models[model_path].get(MODEL)
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(DATASET)
             if output is None:
-                logger.warning("Model %s does not contain '%s' information",
-                               model_path, MODEL)
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, DATASET)
             return output
         return None
 
-    def get_model_info(self, model_path=None, **model_info):
-        """Access a model's information.
+    def get_dataset_info(self, dataset_path=None, **dataset_info):
+        """Access a dataset's information.
 
         Notes
         -----
-        Either `model_path` or a unique `model_info` description have to be
+        Either `dataset_path` or a unique `dataset_info` description have to be
         given. Fails when given information is ambiguous.
 
         Parameters
         ----------
-        model_path : str, optional
+        dataset_path : str, optional
             Path to the dataset
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         dict
-            All model information.
+            All dataset information.
 
         Raises
         ------
         RuntimeError
-            If data given by `model_info` is ambiguous.
+            If data given by `dataset_info` is ambiguous.
 
         """
-        if model_path is not None:
-            if self._is_valid_path(model_path):
-                return self._models.get(model_path)
+        if dataset_path is not None:
+            if self._is_valid_path(dataset_path):
+                return self._datasets.get(dataset_path)
             return None
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         if not paths:
             return None
         if len(paths) > 1:
-            msg = 'Given model information is ambiguous'
+            msg = 'Given dataset information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
-        return self._models[paths[0]]
+        return self._datasets[paths[0]]
 
-    def get_model_info_list(self, **model_info):
-        """Access models information in a list.
+    def get_dataset_info_list(self, **dataset_info):
+        """Access datasets information in a list.
 
         Notes
         -----
@@ -535,55 +535,55 @@ class Models(object):
 
         Parameters
         ----------
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         list
-            Information dictionaries of the selected models.
+            Information dictionaries of the selected datasets.
 
         """
-        paths = self._extract_paths(model_info)
-        return [self._models[path] for path in paths]
+        paths = self._extract_paths(dataset_info)
+        return [self._datasets[path] for path in paths]
 
-    def get_path(self, **model_info):
-        """Access a model's path
+    def get_path(self, **dataset_info):
+        """Access a dataset's path
 
         Notes
         -----
-        A unique `model_info` description has to be given. Fails when given
+        A unique `dataset_info` description has to be given. Fails when given
         information is ambiguous.
 
         Parameters
         ----------
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         str
-            Path of the selected model.
+            Path of the selected dataset.
 
         Raises
         ------
         RuntimeError
-            If data given by `model_info` is ambiguous.
+            If data given by `dataset_info` is ambiguous.
 
         """
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         if not paths:
             return None
         if len(paths) > 1:
-            msg = 'Given model information is ambiguous'
+            msg = 'Given dataset information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
         return paths[0]
 
-    def get_path_list(self, **model_info):
-        """Access models paths in a list.
+    def get_path_list(self, **dataset_info):
+        """Access datasets paths in a list.
 
         Notes
         -----
@@ -591,130 +591,130 @@ class Models(object):
 
         Parameters
         ----------
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
         list
-            Paths of the selected models.
+            Paths of the selected datasets.
 
         """
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         return paths
 
-    def get_project(self, model_path):
-        """Access a model's `project`.
+    def get_project(self, dataset_path):
+        """Access a dataset's `project`.
 
         Notes
         -----
-        If the `model_info` does not contain a `project` value, returns None.
+        If the `dataset_info` does not contain a `project` value, returns None.
 
         Parameters
         ----------
-        model_path : str
+        dataset_path : str
             Path to the dataset
 
         Returns
         -------
         str
-            `project` information of the given model.
+            `project` information of the given dataset.
 
         """
-        if self._is_valid_path(model_path):
-            output = self._models[model_path].get(PROJECT)
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(PROJECT)
             if output is None:
-                logger.warning("Model %s does not contain '%s' information",
-                               model_path, MODEL)
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, PROJECT)
             return output
         return None
 
-    def get_short_name(self, model_path):
-        """Access a model's `short_name`.
+    def get_short_name(self, dataset_path):
+        """Access a dataset's `short_name`.
 
         Notes
         -----
-        If the `model_info` does not contain a `short_name` value, returns
+        If the `dataset_info` does not contain a `short_name` value, returns
         None.
 
         Parameters
         ----------
-        model_path : str
+        dataset_path : str
             Path to the dataset
 
         Returns
         -------
         str
-            `short_name` information of the given model.
+            `short_name` information of the given dataset.
 
         """
-        if self._is_valid_path(model_path):
-            output = self._models[model_path].get(SHORT_NAME)
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(SHORT_NAME)
             if output is None:
-                logger.warning("Model %s does not contain '%s' information",
-                               model_path, SHORT_NAME)
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, SHORT_NAME)
             return output
         return None
 
-    def get_standard_name(self, model_path):
-        """Access a model's `standard_name`.
+    def get_standard_name(self, dataset_path):
+        """Access a dataset's `standard_name`.
 
         Notes
         -----
-        If the `model_info` does not contain a `standard_name` value, returns
+        If the `dataset_info` does not contain a `standard_name` value, returns
         None.
 
         Parameters
         ----------
-        model_path : str
+        dataset_path : str
             Path to the dataset
 
         Returns
         -------
         str
-            `standard_name` information of the given model.
+            `standard_name` information of the given dataset.
 
         """
-        if self._is_valid_path(model_path):
-            output = self._models[model_path].get(STANDARD_NAME)
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(STANDARD_NAME)
             if output is None:
-                logger.warning("Model %s does not contain '%s' information",
-                               model_path, STANDARD_NAME)
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, STANDARD_NAME)
             return output
         return None
 
-    def set_data(self, data, model_path=None, **model_info):
-        """Set element as a model's data.
+    def set_data(self, data, dataset_path=None, **dataset_info):
+        """Set element as a dataset's data.
 
         Notes
         -----
-        Either `model_path` or a unique `model_info` description have to be
+        Either `dataset_path` or a unique `dataset_info` description have to be
         given. Prints warning and does nothing if given information is
         ambiguous.
 
         Parameters
         ----------
         data
-            Element to be set as the model's data.
-        model_path : str, optional
+            Element to be set as the dataset's data.
+        dataset_path : str, optional
             Path to the dataset
-        **model_info, optional
-            Keyword arguments describing the model, e.g. `model=CanESM2`,
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         """
-        if model_path is not None:
-            if self._is_valid_path(model_path):
-                self._data[model_path] = data
+        if dataset_path is not None:
+            if self._is_valid_path(dataset_path):
+                self._data[dataset_path] = data
                 return None
             return None
-        paths = self._extract_paths(model_info)
+        paths = self._extract_paths(dataset_info)
         if not paths:
             return None
         if len(paths) != 1:
             logger.warning("Data could no be saved: %s is ambiguous",
-                           model_info)
+                           dataset_info)
             return None
         self._data[paths[0]] = data
         return None

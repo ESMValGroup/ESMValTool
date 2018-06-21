@@ -25,14 +25,14 @@ import yaml
 INPUT_FILE = '../styles/cmip5.style'
 OUTPUT_FILE = 'cmip5.yml'
 HEADER_FILE = 'style_header'
-MODEL = 'model'
+DATASET = 'dataset'
 COLOR = 'color'
 DASH = 'dash'
 THICKNESS = 'thick'
 MARK = 'mark'
 AVG_STD = 'avgstd'
 FILLING = 'facecolor'
-INFORMATION = [MODEL, COLOR, DASH, THICKNESS, MARK, AVG_STD]
+INFORMATION = [DATASET, COLOR, DASH, THICKNESS, MARK, AVG_STD]
 
 
 def read_ncl_style(file_name):
@@ -101,20 +101,20 @@ def read_ncl_style(file_name):
     # Convert list to dictionary
     output_dict = {}
     for info in output:
-        model = info[MODEL]
-        del info[MODEL]
-        output_dict[model] = info
+        dataset = info[DATASET]
+        del info[DATASET]
+        output_dict[dataset] = info
 
     return output_dict
 
 
-def write_yml_file(model_infos, file_name):
+def write_yml_file(dataset_infos, file_name):
     """Write configuration file."""
     with open(file_name, 'w') as outfile:
         with open(HEADER_FILE, 'r') as header_file:
             header = header_file.read()
         outfile.write(header)
-        yaml.dump(model_infos, outfile, default_flow_style=False)
+        yaml.dump(dataset_infos, outfile, default_flow_style=False)
 
 
 # Execute script if called directly

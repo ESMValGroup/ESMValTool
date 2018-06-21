@@ -2,7 +2,7 @@
 # PYTHON STYLE FILE
 # created by 'convert_ncl_style.py'
 ###############################################################################
-# This file defines plot attributes for certain models.
+# This file defines plot attributes for certain datasets.
 #
 # Template:
 # DATASET
@@ -13,7 +13,7 @@
 #   avgstd: 0
 #   facecolor: none
 #
-# MODEL:     model name (same as given in the main namelist)
+# DATASET:   dataset name (same as given in the main recipe)
 # color:     hex RGB or RGBA string (e.g. #0F0FA1), see
 #            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
 #            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB

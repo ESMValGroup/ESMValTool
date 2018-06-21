@@ -10,16 +10,16 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
-    """Compute the time average for each input model."""
-    models = e.Models(cfg)
+    """Compute the time average for each input dataset."""
+    datasets = e.Datasets(cfg)
     variables = e.Variables(cfg)
-    logger.debug("Found models: %s", models)
+    logger.debug("Found datasets: %s", datasets)
     logger.debug("Found variables: %s", variables)
 
-    for path in models:
-        logger.info("Processing variable %s from model %s",
-                    models.get_standard_name(path),
-                    models.get_model(path))
+    for path in datasets:
+        logger.info("Processing variable %s from dataset %s",
+                    datasets.get_standard_name(path),
+                    datasets.get_dataset(path))
 
         logger.debug("Loading %s", path)
         cube = iris.load_cube(path)

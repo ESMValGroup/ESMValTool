@@ -3,18 +3,19 @@ from ._fixes.fix import Fix
 from .check import _get_cmor_checker
 
 
-def fix_file(filename, short_name, project, model, output_dir):
+def fix_file(filename, short_name, project, dataset, output_dir):
     """Fix errors that prevent loading or can not be fixed in the cube."""
     for fix in Fix.get_fixes(
-            project=project, model=model, variable=short_name):
+            project=project, dataset=dataset, variable=short_name):
         filename = fix.fix_file(filename, output_dir)
     return filename
 
 
-def fix_metadata(cube, short_name, project, model, cmor_table=None, mip=None):
+def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
+                 mip=None):
     """Apply fixes to the metadata of the cube."""
     for fix in Fix.get_fixes(
-            project=project, model=model, variable=short_name):
+            project=project, dataset=dataset, variable=short_name):
         cube = fix.fix_metadata(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
@@ -27,10 +28,10 @@ def fix_metadata(cube, short_name, project, model, cmor_table=None, mip=None):
     return cube
 
 
-def fix_data(cube, short_name, project, model, cmor_table=None, mip=None):
+def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     """Apply fixes to the data of the cube."""
     for fix in Fix.get_fixes(
-            project=project, model=model, variable=short_name):
+            project=project, dataset=dataset, variable=short_name):
         cube = fix.fix_data(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
