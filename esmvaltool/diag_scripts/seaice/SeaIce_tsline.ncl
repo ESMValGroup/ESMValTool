@@ -28,15 +28,16 @@
 ;;    CMOR units expected: areacello in m2, sic in %
 ;;
 ;; Modification history
-;;    20160906-A_senf_da: added option to fill polar observation hole
-;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;;    20180620-A_senf_da: Ported to ESMValTool v2
+;;    20160906-A_senf_da: Added option to fill polar observation hole
+;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
 ;;                        of the code
-;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
+;;    20150325-A_laue_ax: Modified reference tags used for acknowledgements
 ;;                        (projects, observations, etc)
-;;    20140312-A_righ_ma: adapted to new time_operations structure.
-;;    20140129-A_senf_da: modularized to fit to new structure.
-;;    20130419-A_gott_kl: implemented into ./diag_scripts.
-;;    20130405-A_gott_kl: implemented.
+;;    20140312-A_righ_ma: Adapted to new time_operations structure.
+;;    20140129-A_senf_da: Modularized to fit to new structure.
+;;    20130419-A_gott_kl: Implemented into ./diag_scripts.
+;;    20130405-A_gott_kl: Implemented.
 ;;
 ;;#############################################################################
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"

@@ -23,79 +23,108 @@
 ---
 models:
 
-  - {model: CanESM2,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {model: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: CSIRO-Mk3-6-0,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {model: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: HadCM3,          project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {model: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: HadISST,  project: OBS,  type: reanaly, version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+  - {model: HadISST,        project: OBS,    type: reanaly,   version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
 
   
 preprocessors:
-  noob:
+  pp_noop:
     {}
-
+  pp_regrid:
+    regrid:
+      target_grid: 1x1
+      scheme: linear  # area_weighted
 
 
 diagnostics:
-  SeaIce_ancyc_NH: 
-    description: Annual cycle of Arctic sea ice area and extent
-    variables: 
-      sic:
-        preprocessor: noob
-        mip: OImon
-        field: T2Ms 
-#    additional_models:
-#      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
-#      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
-    scripts:
-      tsline:
-        script: seaice/SeaIce_ancyc.ncl
-        region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"            # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"     # "CMIP5", "DEFAULT"
-        range_option: 0       # 0 = use each model's whole time range as specified in namelist
-                              # 1 = use only intersection of all time ranges 
-        multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
-        EMs_in_lg: False      # True: create legend label for each individual ensemble member
-        fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
+#   SeaIce_ancyc_NH: 
+#     description: Annual cycle of Arctic sea ice area and extent
+#     variables: 
+#       sic:
+#         preprocessor: pp_noop
+#         mip: OImon
+#         field: T2Ms 
+# #    additional_models:
+# #      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+# #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+#     scripts:
+#       tsline:
+#         script: seaice/SeaIce_ancyc.ncl
+#         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+#         month: "9"            # A = annual mean, 3 = March, 9 = September
+#         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
+#         range_option: 0       # 0 = use each model's whole time range as specified in namelist
+#                               # 1 = use only intersection of all time ranges 
+#         multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
+#         EMs_in_lg: False      # True: create legend label for each individual ensemble member
+#         fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
 
-  SeaIce_tsline_NH:
-    description: Timeseries of September Arctic sea ice area and extent
-    variables: 
-      sic:
-        preprocessor: noob
-        mip: OImon
-        field: T2Ms 
-#    additional_models:
-#      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
-#      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
-    scripts:
-      tsline:
-        script: seaice/SeaIce_tsline.ncl
-        region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"            # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"     # "CMIP5", "DEFAULT"
-        range_option: 0       # 0 = use each model's whole time range as specified in namelist
-                              # 1 = use only intersection of all time ranges 
-        multi_model_mean: "y" # Plot multi-model mean & std dev ("y"/"n")
-        EMs_in_lg: False      # True: create legend label for each individual ensemble member
-        fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
+#   SeaIce_tsline_NH:
+#     description: Timeseries of September Arctic sea ice area and extent
+#     variables: 
+#       sic:
+#         preprocessor: pp_noop
+#         mip: OImon
+#         field: T2Ms 
+# #    additional_models:
+# #      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+# #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+#     scripts:
+#       tsline:
+#         script: seaice/SeaIce_tsline.ncl
+#         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+#         month: "9"            # A = annual mean, 3 = March, 9 = September
+#         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
+#         range_option: 0       # 0 = use each model's whole time range as specified in namelist
+#                               # 1 = use only intersection of all time ranges 
+#         multi_model_mean: "y" # Plot multi-model mean & std dev ("y"/"n")
+#         EMs_in_lg: False      # True: create legend label for each individual ensemble member
+#         fill_pole_hole: True  # True: Fill polar hole in data with sic = 1.
         
-  SeaIce_polcon_NH: 
-    description: NH polar contour plot of Arctic sea ice concentration
+#   SeaIce_polcon_NH: 
+#     description: NH polar contour plot of Arctic sea ice concentration
+#     variables: 
+#       sic:
+#         preprocessor: pp_noop
+#         mip: OImon
+#         field: T2Ms 
+# #    additional_models:
+# #      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+# #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
+#     scripts:
+#       polcon:
+#         script: seaice/SeaIce_polcon.ncl
+#         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+#         month: "9"          # A = annual mean, 3 = March, 9 = September
+#         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
+#         range_option: 1     # 0 = use each model's whole time range as specified in namelist
+#                             # 1 = use only intersection of all time ranges 
+#         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
+#         max_vert: 1         # max allowed number of rows on a panel page (vertical)
+#         max_hori: 1         # max allowed number of columns on a panel page (horizontal)
+#         max_lat: -50.       # Antarctic plotted from -90° up to this latitude
+#         min_lat: 60.        # Arctic plotted from 90° up to this latitude
+#         #PanelTop: 0.99     # tune down to get full title of uppermost panel row (default 0.99)
+
+  SeaIce_polcon_diff_NH: 
+    description: NH polar contour difference plot of Arctic sea ice concentration
     variables: 
       sic:
-        preprocessor: noob
+        preprocessor: pp_regrid
         mip: OImon
         field: T2Ms 
+        reference_model: HadISST
 #    additional_models:
 #      - {model: NSIDC-NT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
 #      - {model: NSIDC-BT,  project: OBS,  type: sat,  version: NH,  start_year: 1979,  end_year: 2005,  tier: 2}      # fx file: /obspath/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  ?!
     scripts:
-      polcon:
-        script: seaice/SeaIce_polcon.ncl
+      polcon_diff:
+        script: seaice/SeaIce_polcon_diff.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
@@ -107,7 +136,7 @@ diagnostics:
         max_lat: -50.       # Antarctic plotted from -90° up to this latitude
         min_lat: 60.        # Arctic plotted from 90° up to this latitude
         #PanelTop: 0.99     # tune down to get full title of uppermost panel row (default 0.99)
-
+        multi_model_mean: False
 
   # DIAG_SH:
   #   description: Set of NH sic timeline, contour and difference plots

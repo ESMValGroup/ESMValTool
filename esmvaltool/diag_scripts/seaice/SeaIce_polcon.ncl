@@ -1,5 +1,5 @@
 ;;#############################################################################
-;; POLAR-STEREOGRAPHIC CONTOUR PLOTS OF SEA ICE AREA
+;; POLAR-STEREOGRAPHIC CONTOUR PLOTS OF SEA ICE CONCENTRATION AND THCKNESS
 ;;#############################################################################
 ;; Author: Daniel Senftleben (DLR, Germany)
 ;; ESMVal project
@@ -7,8 +7,8 @@
 ;;
 ;; Description
 ;;    Uses original grid (no regridding).
-;;    Draws sea ice concentration color coded and a red contour line at 0.15
-;;    (extent).
+;;    Draws color coded sea ice concentration and a red contour line at 0.15
+;;    (extent), or sea ice thickness.
 ;;    Panels multiple plots: starts a new page after max_vert*max_hori
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
@@ -33,6 +33,8 @@
 ;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
 ;;
 ;; Modification history
+;;    20180621-A_senf_da: Ported to ESMValTool v2
+;;    20180516-A_senf_da: Adapted to sea ice thicknes (sit)
 ;;    20170512-A_senf_da: Added reporting
 ;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
 ;;                        of the code
@@ -49,15 +51,12 @@
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-;load "./interface_data/ncl.interface"
 load "./interface_scripts/interface.ncl"
 
-;load "./diag_scripts/calc_seasonal.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
-;load "./diag_scripts/shared/meta_data.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
@@ -136,22 +135,6 @@ begin
     ;; open the workstation
     wks = get_wks(0, diag_script, name_string)
 
-    ;; Set contour parameters
-    grid_min    =  0.   ; default
-    grid_max    =  1.   ; default
-    grid_step   =  0.1  ; default
-    if (isatt(diag_script_info, "grid_min")) then
-        grid_min = tofloat(diag_script_info@grid_min)
-    end if
-    if (isatt(diag_script_info, "grid_max")) then
-        grid_max = tofloat(diag_script_info@grid_max)
-    end if
-    if (isatt(diag_script_info, "grid_step")) then
-        grid_step = tofloat(diag_script_info@grid_step)
-    end if
-    nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
-    cnLevels = fspan(grid_min, grid_max, nsteps)
-
     ;; Define color table
     ;; "WhiteBlue", "BlueWhiteOrangeRed", "BlueYellowRed" ;"BlWhRe"
     if (isatt(diag_script_info, "colormap")) then
@@ -213,10 +196,12 @@ begin
                  "  #####################################")
 
         ;; see ./interface_scripts/data_handling.ncl
-        var = read_data(imod, var0, field_type0)
-        if (var@units.eq."%") then
-            var = var / 100.  ; Subsequent code works fine without rescaling
-            var@units = "%/100"  ; But annotation is hardcoded for %/100
+        if (var0.eq."sic") then
+            var = read_data(imod, var0, field_type0)
+            if (var@units.eq."%") then
+                var = var / 100.  ; Subsequent code works fine without rescaling
+                var@units = "%/100"  ; But annotation is hardcoded for %/100
+            end if
         end if
 
         ;; Show units in title (default False)
@@ -285,6 +270,26 @@ begin
 
         ;; resources to be passed to plot routine
         ; as attributes to var_ann with prefix "res_"
+        ;; Set contour parameters
+        grid_min  = 0.   ; default
+        if (var0.eq."sic") then
+            grid_max  = 1.   ; default
+            grid_step = 0.1  ; default
+        else
+            grid_max  = round(max(var_ann), 0)
+            grid_step = (grid_max - grid_min) / 10.
+        end if        
+        if (isatt(diag_script_info, "grid_min")) then
+            grid_min = tofloat(diag_script_info@grid_min)
+        end if
+        if (isatt(diag_script_info, "grid_max")) then
+            grid_max = tofloat(diag_script_info@grid_max)
+        end if
+        if (isatt(diag_script_info, "grid_step")) then
+            grid_step = tofloat(diag_script_info@grid_step)
+        end if
+        nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
+        cnLevels = fspan(grid_min, grid_max, nsteps)
         var_ann@res_lbLabelBarOn          = lblBarOn    ; individual bars
         var_ann@res_cnLevelSelectionMode  = "ExplicitLevels"
         var_ann@res_cnLevels              = cnLevels

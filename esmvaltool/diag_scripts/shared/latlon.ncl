@@ -203,9 +203,10 @@ begin
   ; 'cn' is the basic building block for the keys used in
   ; the 'data_pointer' dictionary
   ; 'dictkeys' is loaded from 'interface_data/ncl.interface'
-  cn = interface_get_dictkeys(parent_var, index)
-  cnt = cn + "_filepath"
-  modelfile = data_pointer@$cnt$
+;  cn = interface_get_dictkeys(parent_var, index)
+;  cnt = cn + "_filepath"
+;  modelfile = data_pointer@$cnt$
+modelfile = data_pointer@filename(index) ;!!!workaround
   print("modelfile = " + modelfile)
   fm = addfile(modelfile, "r")
   val = fm->$requested_param$   ; Fetch entire variable, including metadata
