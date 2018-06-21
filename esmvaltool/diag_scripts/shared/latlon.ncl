@@ -206,7 +206,7 @@ begin
 ;  cn = interface_get_dictkeys(parent_var, index)
 ;  cnt = cn + "_filepath"
 ;  datasetfile = data_pointer@$cnt$
-datasetfile = data_pointer@filename(index) ;!!!workaround
+datasetfile = data_pointer@filename(index) ;!!!fix-me
   print("modelfile = " + modelfile)
   fm = addfile(datasetfile, "r")
   val = fm->$requested_param$   ; Fetch entire variable, including metadata

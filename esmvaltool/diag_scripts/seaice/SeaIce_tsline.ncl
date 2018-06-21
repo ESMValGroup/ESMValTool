@@ -58,7 +58,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -108,8 +108,8 @@ begin
     end if
 
     ;; Determine time range
-    start_year = min(stringtoint(model_info@start_year))
-    end_year = max(stringtoint(model_info@end_year))
+    start_year = min(stringtoint(dataset_info@start_year))
+    end_year = max(stringtoint(dataset_info@end_year))
     all_years = ispan(start_year, end_year, 1)
 
     ;; Select attributes
@@ -140,17 +140,17 @@ begin
         + sprinti("%0.4i", end_year)
 
 ;   start processing ##########################################
-    ;; Array for collecting sea-ice extent for all models
+    ;; Array for collecting sea-ice extent for all datasets
     val_ext = new((/dimsizes(annots), end_year - start_year + 1/), float)
     val_ext!1 = "time"
     val_ext&time = int2dble(all_years)
 
-    ;; Array for collecting sea-ice area for all models
+    ;; Array for collecting sea-ice area for all datasets
     val_area = new((/dimsizes(annots), end_year - start_year + 1/), float)
     val_area!1 = "time"
     val_area&time = int2dble(all_years)
 
-    ;; Prepare calculation of standard deviation of models
+    ;; Prepare calculation of standard deviation of datasets
     if (diag_script_info@multi_model_mean .eq. "y") then
         val_ext_stddev = new((/4, end_year - start_year + 1/), float)
         val_area_stddev = new((/4, end_year - start_year + 1/), float)
@@ -159,7 +159,7 @@ begin
         val_area_stddev = 0
     end if
 
-    ;; Loop over models
+    ;; Loop over datasets
     do imod = 0, dimsizes(annots) - 1
 
         log_info("processing " + annots(imod) + \
@@ -192,15 +192,15 @@ begin
                         "sic is not on a lat-lon grid")
 
             ;; Get area data & lat-lon from another file
-            ;; (model specific: ~/reformat_scripts folder)
+            ;; (dataset specific: ~/reformat_scripts folder)
             area_lon = extract_area(imod, data, "lon", var0)
             area_lat = extract_area(imod, data, "lat", var0)
             area_temp = extract_area(imod, data, "areacello", var0)
         end if
 
         ;; Time axis
-        sic_temp = time_operations(sic, toint(model_info@start_year(imod)),\
-                                   toint(model_info@end_year(imod)), \
+        sic_temp = time_operations(sic, toint(dataset_info@start_year(imod)),\
+                                   toint(dataset_info@end_year(imod)), \
                                    "extract", "", 0)
         sic_temp!0 = "time"
         delete(sic)
@@ -274,12 +274,12 @@ begin
         ;; Calculate weighted annual mean or select month
         if (diag_script_info@month .eq. "A") then    ; weighted annual mean
             sic_ann_ext  = time_operations(sic_ext, \
-                                           toint(model_info@start_year(imod)), \
-                                           toint(model_info@end_year(imod)), \
+                                           toint(dataset_info@start_year(imod)), \
+                                           toint(dataset_info@end_year(imod)), \
                                            "average", "yearly", True)
             sic_ann_area = time_operations(sic_area, \
-                                           toint(model_info@start_year(imod)),\
-                                           toint(model_info@end_year(imod)), \
+                                           toint(dataset_info@start_year(imod)),\
+                                           toint(dataset_info@end_year(imod)), \
                                            "average", "yearly", True)
         else    ; select month
             month = toint(diag_script_info@month)
@@ -302,8 +302,8 @@ begin
         delete(temp)
 
         ;; Put into global array
-        ia = toint(model_info@start_year(imod)) - start_year
-        ie = toint(model_info@end_year(imod)) - start_year
+        ia = toint(dataset_info@start_year(imod)) - start_year
+        ie = toint(dataset_info@end_year(imod)) - start_year
         val_ext(imod, ia:ie) = tofloat(sic_sum_ext)
         val_area(imod, ia:ie) = tofloat(sic_sum_area)
 
@@ -312,7 +312,7 @@ begin
 
     end do  ; imod
 
-    ;; Calculate standard deviation of models
+    ;; Calculate standard deviation of datasets
     if (diag_script_info@multi_model_mean .eq. "y") then
         ;; See style_$project$.ncl for which data shall
         ;; be included in the statistics

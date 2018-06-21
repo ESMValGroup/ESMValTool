@@ -66,7 +66,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -119,12 +119,12 @@ begin
     ;; including path via wks@fullname
     if (diag_script_info@range_option .eq. 1) then
         name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", max(toint(model_info@start_year))) + "-" \
-            + sprinti("%0.4i", min(toint(model_info@end_year)))
+            "_" + sprinti("%0.4i", max(toint(dataset_info@start_year))) + "-" \
+            + sprinti("%0.4i", min(toint(dataset_info@end_year)))
     else if (diag_script_info@range_option .eq. 0) then
         name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", min(toint(model_info@start_year))) + "-"\
-            + sprinti("%0.4i", max(toint(model_info@end_year)))
+            "_" + sprinti("%0.4i", min(toint(dataset_info@start_year))) + "-"\
+            + sprinti("%0.4i", max(toint(dataset_info@end_year)))
     else
         error_msg("f", diag_script, "", "range_option not set correctly, " + \
                   "must be 1 or 0")
@@ -188,7 +188,7 @@ begin
     end if
 
 ;   start processing ##########################################
-    ;; loop over models
+    ;; loop over datasets
     do imod = 0, dimsizes(annots) - 1
 
         log_info("processing " + annots(imod) + \
@@ -238,7 +238,7 @@ begin
         else  ; Irregular grid
             log_info("SeaIce_polcon.ncl: var is not on a lat-lon grid")
             ;; Get lat - lon from another file
-            ;; (model specific: ~/reformat_scripts folder)
+            ;; (dataset specific: ~/reformat_scripts folder)
             area_lon = extract_area(imod, data, "lon", var0)
             area_lat = extract_area(imod, data, "lat", var0)
         end if
@@ -331,8 +331,8 @@ begin
 ;         id = "#idSeaIcePolcon"
 ;         climofiles = interface_get_inpaths(0) + "/" + \
 ;                      interface_get_infile(var0, field_type0, 0)
-;         if (dimsizes(model_info@model).gt.1) then
-;             do imod=1, dimsizes(model_info@model)-1
+;         if (dimsizes(dataset_info@dataset).gt.1) then
+;             do imod=1, dimsizes(dataset_info@dataset)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;                 climofiles := array_append_record( climofiles, \
@@ -342,7 +342,7 @@ begin
 ;         end if
 ;         contrib_authors = (/"A_gott_kl", "A_senf_da"/)
 ;         ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                  model_info@model, climofiles, diag_script, contrib_authors)
+;                  dataset_info@dataset, climofiles, diag_script, contrib_authors)
 ;     else  ; Multiple files, each with its own sequence number
 ;         ; Split wks@fullname to later add number sequence before '.png'
 ;         plotname_split = str_split(wks@fullname, ".")
@@ -357,28 +357,28 @@ begin
 ;                          plotname_split(dimsizes(plotname_split)-1)
 ;             id = "#idSeaIcePolcon" + seq_num
 ;             if (ipage.ne.num_pages) then
-;                 ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+;                 ind_datasets_shown = ispan( (ipage-1)*nvert*nhori, \
 ;                                           ipage*nvert*nhori-1, 1 )
 ;             else
-;                 ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+;                 ind_datasets_shown = ispan( (ipage-1)*nvert*nhori, \
 ;                                           dimsizes(plots)-1, 1 )
 ;             end if
-;             climofiles = interface_get_inpaths(ind_models_shown(0)) + "/" + \
-;                 interface_get_infile(var0, field_type0, ind_models_shown(0))
-;             if (dimsizes(ind_models_shown).gt.1) then
-;                 do imod=1, dimsizes(ind_models_shown)-1
+;             climofiles = interface_get_inpaths(ind_datasets_shown(0)) + "/" + \
+;                 interface_get_infile(var0, field_type0, ind_datasets_shown(0))
+;             if (dimsizes(ind_datasets_shown).gt.1) then
+;                 do imod=1, dimsizes(ind_datasets_shown)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;                     climofiles := array_append_record( climofiles, \
-;                         interface_get_inpaths(ind_models_shown(imod)) + "/" + \
+;                         interface_get_inpaths(ind_datasets_shown(imod)) + "/" + \
 ;                         interface_get_infile(var0, field_type0, \
-;                                              ind_models_shown(imod)), 0 )
+;                                              ind_datasets_shown(imod)), 0 )
 ;                 end do
 ;             end if
 ;             contrib_authors = (/"A_gott_kl", "A_senf_da"/) 
 ;             ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                      model_info@model(ind_models_shown), climofiles, diag_script, contrib_authors)
-;             delete([/seq_num, plot_fname, id, ind_models_shown, climofiles/])
+;                      dataset_info@dataset(ind_datasets_shown), climofiles, diag_script, contrib_authors)
+;             delete([/seq_num, plot_fname, id, ind_datasets_shown, climofiles/])
 ;         end do
 ;     end if
 

@@ -21,13 +21,13 @@
 # This namelist is part of the ESMValTool
 ###############################################################################
 ---
-models:
+datasets:
 
-  - {model: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
-  - {model: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
   
 preprocessors:
@@ -47,15 +47,15 @@ diagnostics:
         preprocessor: pp_noop
         mip: OImon
         field: T2Ms 
-        additional_models:
-          - {model: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+        additional_datasets:
+          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       tsline:
         script: seaice/SeaIce_ancyc.ncl
         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"            # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
-        range_option: 0       # 0 = use each model's whole time range as specified in namelist
+        range_option: 0       # 0 = use each dataset's whole time range as specified in namelist
                               # 1 = use only intersection of all time ranges 
         multi_model_mean: "n" # Plot multi-model mean & std dev ("y"/"n")
         EMs_in_lg: False      # True: create legend label for each individual ensemble member
@@ -68,15 +68,15 @@ diagnostics:
         preprocessor: pp_noop
         mip: OImon
         field: T2Ms 
-        additional_models:
-          - {model: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+        additional_datasets:
+          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       tsline:
         script: seaice/SeaIce_tsline.ncl
         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"            # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"     # "CMIP5", "DEFAULT"
-        range_option: 0       # 0 = use each model's whole time range as specified in namelist
+        range_option: 0       # 0 = use each dataset's whole time range as specified in namelist
                               # 1 = use only intersection of all time ranges 
         multi_model_mean: "y" # Plot multi-model mean & std dev ("y"/"n")
         EMs_in_lg: False      # True: create legend label for each individual ensemble member
@@ -89,15 +89,15 @@ diagnostics:
         preprocessor: pp_noop
         mip: OImon
         field: T2Ms 
-        additional_models:
-          - {model: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+        additional_datasets:
+          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       polcon:
         script: seaice/SeaIce_polcon.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each model's whole time range as specified in namelist
+        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
                             # 1 = use only intersection of all time ranges 
         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
         max_vert: 1         # max allowed number of rows on a panel page (vertical)
@@ -112,16 +112,16 @@ diagnostics:
         preprocessor: pp_regrid
         mip: OImon
         field: T2Ms 
-        reference_model: HadISST
-        additional_models:
-          - {model: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+        reference_dataset: HadISST
+        additional_datasets:
+          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       polcon_diff:
         script: seaice/SeaIce_polcon_diff.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each model's whole time range as specified in namelist
+        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
                             # 1 = use only intersection of all time ranges 
         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
         max_vert: 1         # max allowed number of rows on a panel page (vertical)
@@ -137,15 +137,15 @@ diagnostics:
         preprocessor: pp_noop
         mip: OImon
         field: T2Ms 
-#        additional models:
-#          - {model: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
+#        additional datasets:
+#          - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       polcon:
         script: seaice/SeaIce_polcon.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each model's whole time range as specified in namelist
+        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
                             # 1 = use only intersection of all time ranges 
         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
         max_vert: 1         # max allowed number of rows on a panel page (vertical)
@@ -160,16 +160,16 @@ diagnostics:
         preprocessor: pp_regrid
         mip: OImon
         field: T2Ms 
-        reference_model: CanESM2
-#       additional_models:
-#          - {model: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
+        reference_dataset: CanESM2
+#       additional_datasets:
+#          - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       polcon_diff:
         script: seaice/SeaIce_polcon_diff.ncl
         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"          # A = annual mean, 3 = March, 9 = September
         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each model's whole time range as specified in namelist
+        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
                             # 1 = use only intersection of all time ranges 
         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
         max_vert: 1         # max allowed number of rows on a panel page (vertical)
@@ -179,5 +179,3 @@ diagnostics:
         grid_min: -2.
         grid_max: 2.
         multi_model_mean: False
-
-

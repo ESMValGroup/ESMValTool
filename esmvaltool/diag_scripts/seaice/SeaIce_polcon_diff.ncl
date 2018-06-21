@@ -7,7 +7,7 @@
 ;; Description
 ;;    Transfers all data to a common 1°x1° Gaussian grid
 ;;    Draws contour maps of absolute difference in sea ice concentration between
-;;      all models and the specified reference model (e.g., observations)
+;;      all datasets and the specified reference dataset (e.g., observations)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -16,7 +16,7 @@
 ;;    region: region to be plotted ("Arctic" or "Antarctic")
 ;;    contour_extent: optionally draw a red contour line at 0.15
 ;;    max_lat, min_lat: plot ranges for SH & NH
-;;    ref_model: reference model as specified by annots
+;;    ref_dataset: reference dataset as specified by annots
 ;;    range_option: select specific or intersecting time range
 ;;    target_grid: path to destination grid description file for 'cdo remapdis'
 ;;    scheme: interpolation scheme for regridder
@@ -29,7 +29,7 @@
 ;;    colormap: NCL colour map name
 ;;    PanelLabelBar: use single label bar per page
 ;;    showunits: display units in figure title
-;;    multi_model_mean: only plot multi-model-mean minus ref_model
+;;    multi_model_mean: only plot multi-model-mean minus ref_dataset
 ;;
 ;; Caveats
 ;;    No masking of the apparent line of missing data between the two grid
@@ -73,7 +73,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -120,12 +120,12 @@ begin
     ;; Specify additional elements for file name
     if (diag_script_info@range_option .eq. 1) then
         name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", max(toint(model_info@start_year))) + "-"\
-            + sprinti("%0.4i", min(toint(model_info@end_year)))
+            "_" + sprinti("%0.4i", max(toint(dataset_info@start_year))) + "-"\
+            + sprinti("%0.4i", min(toint(dataset_info@end_year)))
     else if (diag_script_info@range_option .eq. 0) then
         name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", min(toint(model_info@start_year))) + "-"\
-            + sprinti("%0.4i", max(toint(model_info@end_year)))
+            "_" + sprinti("%0.4i", min(toint(dataset_info@start_year))) + "-"\
+            + sprinti("%0.4i", max(toint(dataset_info@end_year)))
     else
         error_msg("f", diag_script, "", "range_option not set correctly, " + \
                   "must be 1 or 0")
@@ -178,16 +178,16 @@ begin
     end if
 
 ;   start processing ##########################################
-    ;; Check if reference model is available in annots
-    iref = get_ref_model_idx(model_info, variable_info@reference_model)
-    ;; ref_model not properly defined -> issue a list of valid strings
+    ;; Check if reference dataset is available in annots
+    iref = get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
+    ;; ref_dataset not properly defined -> issue a list of valid strings
     if (ismissing(iref)) then
-        error_msg("f", diag_script, "", "diag_script_info@ref_model = " + \
-                  diag_script_info@ref_model + " is not valid.")
-    else if (dimsizes(iref).ne.1) then  ; Ref_model is ambiguous
-        error_msg("f", diag_script, "", "diag_script_info@ref_model = " + \
-                  diag_script_info@ref_model + " is ambiguous")
-    else  ; Put reference model in first position to
+        error_msg("f", diag_script, "", "diag_script_info@ref_dataset = " + \
+                  diag_script_info@ref_dataset + " is not valid.")
+    else if (dimsizes(iref).ne.1) then  ; Ref_dataset is ambiguous
+        error_msg("f", diag_script, "", "diag_script_info@ref_dataset = " + \
+                  diag_script_info@ref_dataset + " is ambiguous")
+    else  ; Put reference dataset in first position to
           ; have it available for subsequent comparisons
         nannots = dimsizes(annots)
         ref_first = ispan(0, nannots - 1, 1)  ; Only valid if iref = 0
@@ -202,10 +202,10 @@ begin
     end if
     end if
 
-    ;; Loop over models
+    ;; Loop over datasets
     do iannots = 0, dimsizes(annots) - 1
 
-        ;; Make sure to start with reference model
+        ;; Make sure to start with reference dataset
         imod = ref_first(iannots)
 
         log_info("processing " + annots(imod) \
@@ -227,7 +227,7 @@ begin
 
         ;; Get 2d lat & lon coordinates
 data = True ; !!! work around for extract_data function
-data@filename = model_info@filename
+data@filename = dataset_info@filename
         var = make_latlon2D(var0, imod, data, var_raw)
         delete(var_raw)
 
@@ -249,27 +249,27 @@ data@filename = model_info@filename
         copy_VarMeta(var_ann, var_tmp)
         delete(var_ann)
 
-        ;; Just keep ref_model OR plot difference to ref_model
-        if (iannots .eq. 0) then  ; ref_model -> keep, but don't plot
+        ;; Just keep ref_dataset OR plot difference to ref_dataset
+        if (iannots .eq. 0) then  ; ref_dataset -> keep, but don't plot
 
             var_ref = var_tmp
             copy_VarMeta(var_tmp, var_ref)
             delete(var_tmp)
 
-        else  ; plot difference to ref_model
+        else  ; plot difference to ref_dataset
 
             if (MMM) then
-                if (.not.isdefined("all_models")) then
-                    all_models = new((/dimsizes(annots), \
+                if (.not.isdefined("all_datasets")) then
+                    all_datasets = new((/dimsizes(annots), \
                                        dimsizes(var_tmp&lat), \
                                        dimsizes(var_tmp&lon)/), \
                                       typeof(var_tmp))
-                    all_models!0 = "models"
+                    all_datasets!0 = "datasets"
                 end if
-                all_models(iannots, :, :) = var_tmp
+                all_datasets(iannots, :, :) = var_tmp
                 delete(var_tmp)
                 if (iannots.eq.dimsizes(annots) - 1) then
-                    var_tmp := dim_avg_n_Wrap(all_models, 0)
+                    var_tmp := dim_avg_n_Wrap(all_datasets, 0)
                 else
                     continue
                 end if
@@ -282,7 +282,7 @@ data@filename = model_info@filename
                 var_tmp@_FillValue = var_ref@_FillValue
             end if
 
-            ;; Difference to ref_model
+            ;; Difference to ref_dataset
             var = var_tmp - var_ref
             copy_VarMeta(var_tmp, var)
             var = where(ismissing(var_ref), var_ref@_FillValue, var)
@@ -335,12 +335,12 @@ data@filename = model_info@filename
 
             ;; Define diag-specific resources to be passed to plot routine
             if (MMM) then
-                title_model = "MMM"
+                title_dataset = "MMM"
             else
-                title_model = annots(imod)
+                title_dataset = annots(imod)
             end if
-            var@res_tiMainString          = title_model + " - " + \
-                                            variable_info@reference_model
+            var@res_tiMainString          = title_dataset + " - " + \
+                                            variable_info@reference_dataset
             var@res_gsnRightString        = var@units
             var@res_lbLabelBarOn          = lblBarOn  ; individual bars
             var@res_cnLevelSelectionMode  = "ManualLevels"  ; "ExplicitLevels"
@@ -366,7 +366,7 @@ data@filename = model_info@filename
             ;; Clean up
             delete(var)
 
-        end if  ; ref_model?
+        end if  ; ref_dataset?
 
         if (fileexists("./PET0.RegridWeightGen.Log")) then
             system("rm ./PET0.RegridWeightGen.Log")
@@ -381,23 +381,23 @@ data@filename = model_info@filename
 
     if (MMM) then
         outfile = panelling(wks, plots(dimsizes(plots)-1), nvert, nhori, pres)
-        model_string = "multi-model-mean"
+        dataset_string = "multi-model-mean"
     else
         outfile = panelling(wks, plots, nvert, nhori, pres)
-        model_string = "CMIP model"
+        dataset_string = "CMIP dataset"
     end if
 
     ;; Reporting
 ;     alltags = array_append_record(tags, (/"DM_polar", "PT_polar", \
 ;                                           "ST_mean"/), 0)
-;     caption = "Polar-stereographic contour map of difference in sea ice concentration between " + model_string + " and " + diag_script_info@ref_model  + ". TODO: Problem with OBS* classes - climofile not passed correctly. for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
+;     caption = "Polar-stereographic contour map of difference in sea ice concentration between " + dataset_string + " and " + diag_script_info@ref_dataset  + ". TODO: Problem with OBS* classes - climofile not passed correctly. for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
 ;     if (npages.eq.1 .or. MMM) then  ; only 1 file: no sequence number added
 ;         plot_fname = wks@fullname
 ;         id = "#idSeaIcePolcon"
 ;         climofiles = interface_get_inpaths(0) + "/" + \
 ;                      interface_get_infile(var0, field_type0, 0)
-;         if (dimsizes(model_info@model).gt.1) then
-;             do imod=1, dimsizes(model_info@model)-1
+;         if (dimsizes(dataset_info@dataset).gt.1) then
+;             do imod=1, dimsizes(dataset_info@dataset)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;                 climofiles := array_append_record( climofiles, \
@@ -407,7 +407,7 @@ data@filename = model_info@filename
 ;         end if
 ;         contrib_authors = (/"A_gott_kl", "A_senf_da"/)
 ;         ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                  model_info@model, climofiles, diag_script, contrib_authors)
+;                  dataset_info@dataset, climofiles, diag_script, contrib_authors)
 ;     else  ; Multiple files, each with its own sequence number
 ;         ; Split wks@fullname to later add number sequence before '.png'
 ;         plotname_split = str_split(wks@fullname, ".")
@@ -422,31 +422,31 @@ data@filename = model_info@filename
 ;                          plotname_split(dimsizes(plotname_split)-1)
 ;             id = "#idSeaIcePolcon" + seq_num
 ;             if (ipage.ne.npages) then
-;                 ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+;                 ind_datasets_shown = ispan( (ipage-1)*nvert*nhori, \
 ;                                           ipage*nvert*nhori-1, 1 )
 ;             else
-;                 ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+;                 ind_datasets_shown = ispan( (ipage-1)*nvert*nhori, \
 ;                                           dimsizes(plots)-1, 1 )
 ;             end if
-;             ind_ref_model = ind(model_info@model .eq. diag_script_info@ref_model)
-;             ind_models_shown_exclref = ind_models_shown( get1Dindex_Collapse( \
-;                                        ind_models_shown, ind_ref_model) )
-;             climofiles = interface_get_inpaths(ind_ref_model) + "/" + \
-;                          interface_get_infile(var0, field_type0, ind_ref_model)
-;             do imod=0, dimsizes(ind_models_shown)-1
+;             ind_ref_dataset = ind(dataset_info@dataset .eq. diag_script_info@ref_dataset)
+;             ind_datasets_shown_exclref = ind_datasets_shown( get1Dindex_Collapse( \
+;                                        ind_datasets_shown, ind_ref_dataset) )
+;             climofiles = interface_get_inpaths(ind_ref_dataset) + "/" + \
+;                          interface_get_infile(var0, field_type0, ind_ref_dataset)
+;             do imod=0, dimsizes(ind_datasets_shown)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;                 climofiles := array_append_record( climofiles, \
-;                     interface_get_inpaths(ind_models_shown_exclref(imod)) + \
+;                     interface_get_inpaths(ind_datasets_shown_exclref(imod)) + \
 ;                     "/" + interface_get_infile(var0, field_type0, \
-;                     ind_models_shown_exclref(imod)), 0 )
+;                     ind_datasets_shown_exclref(imod)), 0 )
 ;             end do
 ;             contrib_authors = (/"A_gott_kl", "A_senf_da"/)
 ;             ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                      model_info@model(ind_models_shown), climofiles, diag_script, \
+;                      dataset_info@dataset(ind_datasets_shown), climofiles, diag_script, \
 ;                      contrib_authors)
-;             delete([/ seq_num, plot_fname, id, ind_models_shown, \
-;                       ind_models_shown_exclref, climofiles /])
+;             delete([/ seq_num, plot_fname, id, ind_datasets_shown, \
+;                       ind_datasets_shown_exclref, climofiles /])
 ;         end do
 ;     end if
 

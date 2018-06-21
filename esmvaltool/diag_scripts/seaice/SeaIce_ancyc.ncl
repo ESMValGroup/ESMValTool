@@ -56,7 +56,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -108,20 +108,20 @@ begin
     avgstd = project_style(diag_script_info, "avgstd")
     ;; Select colors and other plotting attributes for multi-model mean
     if (diag_script_info@multi_model_mean .eq. "y") then
-        ;; project_style evaluates metadata of variable "models"
-        temp = model_info
+        ;; project_style evaluates metadata of variable "datasets"
+        temp = dataset_info
 
-        ;; -> keep original "models" in "temp" and restore later
-        copy_VarMeta(model_info, temp)
-        delete(model_info)
+        ;; -> keep original "datasets" in "temp" and restore later
+        copy_VarMeta(dataset_info, temp)
+        delete(dataset_info)
 
-        ;; Use "models" to pass on attribute names
-        models = getvaratts(temp)
-        do i = 0, dimsizes(models) - 1
+        ;; Use "datasets" to pass on attribute names
+        datasets = getvaratts(temp)
+        do i = 0, dimsizes(datasets) - 1
             ;; Define all original attributes again, but empty
-            models@$models(i)$ = ""
+            datasets@$datasets(i)$ = ""
         end do
-        models@model = "model_mean"
+        datasets@dataset = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
@@ -129,9 +129,9 @@ begin
         thicks_mmm = project_style(diag_script_info, "thicks")
         annots_mmm = project_style(diag_script_info, "annots")
         avgstd_mmm = project_style(diag_script_info, "avgstd")
-        delete(models)
-        model_info = temp   ; Restore original "model_info"
-        copy_VarMeta(temp, models)
+        delete(datasets)
+        dataset_info = temp   ; Restore original "dataset_info"
+        copy_VarMeta(temp, datasets)
         delete(temp)
     end if
 
@@ -141,18 +141,18 @@ begin
     outfile_area = "area_" + var0 + "_" + diag_script_info@region
 
     ;; Start processing
-    ;; Array for collecting sea-ice extent for all models
+    ;; Array for collecting sea-ice extent for all datasets
     val_ext = new((/dimsizes(annots), 12/), float)
     val_ext!1 = "month"
     val_ext&month = int2dble(ispan(1, 12, 1))
 
-    ;; Array for collecting sea-ice area for all models
+    ;; Array for collecting sea-ice area for all datasets
     val_area = new((/dimsizes(annots), 12/), float)
     val_area!1 = "month"
     val_area&month = int2dble(ispan(1, 12, 1))
 
-    ;; Loop over models
-    do imod = 0, dimsizes(model_info@model) - 1
+    ;; Loop over datasets
+    do imod = 0, dimsizes(dataset_info@dataset) - 1
 
         log_info("processing " + annots(imod) + \
                     "  ############################################")
@@ -181,7 +181,7 @@ begin
         else  ; Irregular grid
             log_info(diag_script + ": var is not on a lat-lon grid")
             ;; Get area data & lat-lon from another file
-            ;; (model specific: ~/reformat_scripts folder)
+            ;; (dataset specific: ~/reformat_scripts folder)
             area_lon = extract_area(imod, data, "lon", var0)
             area_lat = extract_area(imod, data, "lat", var0)
             area_temp = extract_area(imod, data, "areacello", var0)
@@ -192,8 +192,8 @@ begin
         end_year   = get_end_year(imod)
         if (diag_script_info@range_option.eq.0) then
             range = "different years (" + \
-                sprinti("%0.4i", min(toint(model_info@start_year))) + "-" + \
-                sprinti("%0.4i", max(toint(model_info@end_year))) + ")"
+                sprinti("%0.4i", min(toint(dataset_info@start_year))) + "-" + \
+                sprinti("%0.4i", max(toint(dataset_info@end_year))) + ")"
         else if (diag_script_info@range_option.eq.1) then
             range = sprinti("%0.4i", start_year) + " - " + \
                 sprinti("%0.4i", end_year)
@@ -297,7 +297,7 @@ begin
 
     end do  ; imod
 
-    ;; Calculate standard deviation of models
+    ;; Calculate standard deviation of datasets
     if (diag_script_info@multi_model_mean .ne. "y") then
         ;; define anyway, because fields are needed as parameters for xy_line
         val_ext_stddev  = 0
@@ -393,8 +393,8 @@ begin
     ;; Reporting
 ;     climofiles = interface_get_inpaths(0) + "/" + \
 ;                      interface_get_infile(var0, field_type0, 0)
-;     if (dimsizes(model_info@model).gt.1) then
-;         do imod=1, dimsizes(model_info@model)-1
+;     if (dimsizes(dataset_info@dataset).gt.1) then
+;         do imod=1, dimsizes(dataset_info@dataset)-1
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
 ;;      already returns path + file! Reason yet unknown.
 ;             climofiles := array_append_record( climofiles, \
@@ -407,13 +407,13 @@ begin
 ;     caption = "Timeseries of sea ice extent. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
 ;     id = "#idSeaIceTslineExtent"
 ;     contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
-;     ESMValMD(plot_fname, alltags, caption, id, var0, model_info@model, climofiles, diag_script, contrib_authors)
+;     ESMValMD(plot_fname, alltags, caption, id, var0, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 ;     delete([/plot_fname, alltags, caption, id/])
 ;     plot_fname = wks_area@fullname
 ;     alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
 ;     caption = "Timeseries of sea ice area. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
 ;     id = "#idSeaIceTslineArea"
-;     ESMValMD(plot_fname, alltags, caption, id, var0, model_info@model, climofiles, diag_script, contrib_authors)
+;     ESMValMD(plot_fname, alltags, caption, id, var0, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 ;     delete([/plot_fname, alltags, caption, id/])
 
     log_info(">>>>>>>> Leaving " + diag_script)
