@@ -12,6 +12,7 @@ Notes
 An example diagnostic using these classes is given in
 `diag_scripts/examples/diagnostic.py`
 
+            if self._is_valid_path(model_path):
 """
 
 
@@ -118,7 +119,11 @@ class Variables(object):
             else:
                 success = False
             if not success:
-                logger.warning("%s{} is not a valid configuration file!", cfg)
+                logger.warning("%s is not a valid configuration file!", cfg)
+        if not self._dict:
+            logger.warning("Empty namelist configuration: the automatic " +
+                           "import of variables does not work for chained " +
+                           "scripts (using 'ancestors' key)")
 
         # Add costum variables
         for name in names:
@@ -245,6 +250,10 @@ class Models(object):
             raise TypeError("{} is not a valid ".format(repr(cfg)) +
                             "configuration file")
         self._n_models = len(self._paths)
+        if not self._paths:
+            logger.warning("No models found!")
+            logger.warning("Note: the automatic import of models does not " +
+                           "work for chained scripts (using 'ancestors' key)")
 
     def __repr__(self):
         """Representation of the class."""

@@ -1,5 +1,4 @@
 """Python example diagnostic using general object-based functions."""
-from pprint import pprint
 import logging
 import os
 
@@ -16,8 +15,6 @@ def main(cfg):
     variables = e.Variables(cfg)
     logger.debug("Found models: %s", models)
     logger.debug("Found variables: %s", variables)
-
-    pprint(cfg)
 
     for path in models:
         logger.info("Processing variable %s from model %s",
