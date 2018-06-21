@@ -303,7 +303,7 @@ class Models(object):
         for info in model_info:
             paths = [path for path in paths if
                      self._models[path].get(info) == model_info[info]]
-        if not path:
+        if not paths:
             logger.warning("%s does not match any model", model_info)
         return sorted(paths)
 
