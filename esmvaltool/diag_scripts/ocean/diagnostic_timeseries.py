@@ -163,8 +163,7 @@ def multi_model_time_series(
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata.keys())):
             color = cmap(
-                (float(index) / (len(metadata.keys()) - 1.)
-                ))
+                (float(index) / (len(metadata.keys()) - 1.)))
 
             if metadata[filename]['model'].find('MultiModel') > -1:
                 qplt.plot(

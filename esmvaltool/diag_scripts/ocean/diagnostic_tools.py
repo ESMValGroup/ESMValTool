@@ -24,9 +24,9 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def folder(name):
     """
     Make a directory out of a string or list or strings.
-    
+
     Take a string or a list of strings, convert it to a directory style,
-    then make the folder and the string. 
+    then make the folder and the string.
     Returns folder string and final character is always '/'.
     """
     if isinstance(name, list):
@@ -54,9 +54,9 @@ def get_input_files(cfg, index=0):
 def bgc_units(cube, name):
     """
     Convert the cubes into some friendlier units.
-    
-    This is because many CMIP standard units are not the standard units 
-    used by the BGC community (ie, Celsius is prefered over Kelvin, etc.) 
+
+    This is because many CMIP standard units are not the standard units
+    used by the BGC community (ie, Celsius is prefered over Kelvin, etc.)
     """
     new_units = ''
 
@@ -163,11 +163,11 @@ def get_image_path(cfg,
     path += '_'.join([str(metadata[b]) for b in basenamelist])
     if suffix:
         path += '_' + suffix
-        
-    image_extention = '.png'    
+
+    image_extention = '.png'
     if path.find(image_extention) == -1:
         path += image_extention
-    
+
     logger.info("Image path will be: %s", path)
     return path
 
@@ -175,7 +175,7 @@ def get_image_path(cfg,
 def make_cube_layer_dict(cube):
     """
     Take a cube and return a dictionairy layer:cube
-    
+
     Each item in the dict is a layer with a separate cube for each layer.
     ie:
         cubes[depth] = cube from specific layer
