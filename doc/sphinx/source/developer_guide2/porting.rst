@@ -1,47 +1,39 @@
 .. _porting:
 
-****************************************************
-Porting namelists and diagnostics to ESMValTool v2.0
-****************************************************
+**************************************************************
+Porting namelists (recipes) and diagnostics to ESMValTool v2.0
+**************************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``version2_development``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``version2_development``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
 In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <http://www.esmvaltool.org/download/Righi_ESMValTool2-TechnicalOverview.pdf>`_).
 
 Create a github issue
 =====================
 
-Create an issue in the public repository to keep track of your work and inform other developers. See an example `here <https://github.com/ESMValGroup/ESMValTool/issues/293>`_. Use the following title for the issue: "PORTING <namelist> into v2.0".
+Create an issue in the public repository to keep track of your work and inform other developers. See an example `here <https://github.com/ESMValGroup/ESMValTool/issues/293>`_. Use the following title for the issue: "PORTING <recipe> into v2.0".
 Do not forget to assign it to yourself.
 
 Create your own branch
 ======================
 
-A dedicated branch shall be created from ``version2_development`` for each namelist to be ported.
+A dedicated branch shall be created from ``version2_development`` for each namelist (recipe) to be ported.
 
 .. code-block:: bash
 
     git checkout version2_development
-    git checkout -b REFACTORING_<namelist>
+    git checkout -b version2_<recipe>
 
 ``version2_development`` contains only v2.0 under the ``./esmvaltool/`` directory. 
 
 Convert xml to yml
 ==================
 
-In ESMValTool v2.0, the main namelist (hereafter *"the namelist"*) is written in yaml format (`Yet Another Markup Language format <http://www.yaml.org/>`_). It may be useful to activate the yaml syntax highlighting for the editor in use. This improves the readability of the namelist file and facilitates the editing, especially concerning the indentations which are essential in this format (like in python). Instructions can be easily found online, for example for `emacs <https://www.emacswiki.org/emacs/YamlMode>`_ and `vim <http://www.vim.org/scripts/script.php?script_id=739>`_.
+In ESMValTool v2.0, the namelist (now recipe) is written in yaml format (`Yet Another Markup Language format <http://www.yaml.org/>`_). It may be useful to activate the yaml syntax highlighting for the editor in use. This improves the readability of the recipe file and facilitates the editing, especially concerning the indentations which are essential in this format (like in python). Instructions can be easily found online, for example for `emacs <https://www.emacswiki.org/emacs/YamlMode>`_ and `vim <http://www.vim.org/scripts/script.php?script_id=739>`_.
 
-For most of the ESMValTool v1.0 namelists, a very first draft in yml format has already been created and is available in ./nml/. This can be used as a starting point, but keeping in mind that it has been created at a very early stage of v2.0 development and it will certainly need further changes.
+A xml2yml converter is available in ``esmvaltool/utils/xml2yml/``, please refer to the corresponding README file for detailed instructions on how to use it.
 
-The namelist file in yml shall first be moved to the esmvaltool/ directory where the v2.0 is being developed:
-
-.. code-block:: bash
-
-    mv ./esmvaltool/namelists/tobeported/<namelist>.yml ./esmvaltool/namelists/<namelist>.yml
-
-This will help to keep track of which namelists have been already ported to the new version. Note that the namelist directory is now called ``namelists``. Such a draft may not be available for all namelist, in this case the yml namelist must be created from scratch. It is also possible to ignore the available draft version and create a new namelist from scratch anyway if preferred.
-
-The yaml namelist can now be edited and tested, starting with a few models and one diagnostics and proceed gradually. The namelist file ``./esmvaltool/namelists/namelist_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
+Once the recipe is converted, a first attempt to run it can be done, possibly starting with a few datasets and one diagnostics and proceed gradually. The recipe file ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
 
 Create a copy of the diag script in v2.0
 ========================================
@@ -67,14 +59,14 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``xml``                                         | ``yml``                                             | all scripts      |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(0)``                             | ``variable_info@reference_model``                   | all .ncl scripts |
+| ``var_attr_ref(0)``                             | ``variable_info@reference_dataset``                 | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(1)``                             | ``variable_info@alternative_model``                 | all .ncl scripts |
+| ``var_attr_ref(1)``                             | ``variable_info@alternative_dataset``               | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models``                                      | ``model_info`` or ``input_file_info``               | all .ncl scripts |
+| ``models``                                      | ``dataset_info`` or ``input_file_info``             | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models@name``                                 | ``model_info@model`` or                             | all .ncl scripts |
-|                                                 | ``input_file_info@model``                           |                  |
+| ``models@name``                                 | ``dataset_info@dataset`` or                         | all .ncl scripts |
+|                                                 | ``input_file_info@dataset``                         |                  |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``verbosity``                                   | ``config_user_info@log_level``                      | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
@@ -121,36 +113,46 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load diag_scripts/shared/plot/misc_function.ncl`` | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                | some yml recipes |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``check_min_max_models``                        | ``check_min_max_datasets``                          | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``get_ref_model_idx``                           | ``get_ref_dataset_idx``                             | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
+| ``get_model_minus_ref``                         | ``get_dataset_minus_ref``                           | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------+------------------+
 
 The following changes shall also be considered:
 
+- namelists are now called recipes and collected in ``esmvaltool/recipes``;
+- models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
+- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``dataset_info`` and ``input_file_info`` logicals and their attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics shall be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they shall go in ``shared/``);
 - upper case characters shall be avoided in script names.
 
-As for the namelist, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
+As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
 
 Move preprocessing from the diagnostic script to the backend
 ============================================================
 
 Many operations previously performed by the diagnostic scripts, are now included in the backend, including level extraction, regridding, masking, and multi-model statistics. If the diagnostics to be ported contains code performing any of such operations, the corresponding code has to be removed from the diagnostic script and the respective backend functionality shall be used instead.
 
-The backend operations are fully controlled by the ``preprocessors`` section in the namelist. Here, a number of preprocessor sets can be defined, with different options for each of the operations. The sets defined in this section are applied in the ``diagnostics`` section to preprocess a given variable.
+The backend operations are fully controlled by the ``preprocessors`` section in the recipe. Here, a number of preprocessor sets can be defined, with different options for each of the operations. The sets defined in this section are applied in the ``diagnostics`` section to preprocess a given variable.
 
 It is recommended to proceed step by step, porting and testing each operation separately before proceeding with the next one. A useful setting in the user configuration file (``config-private.yml``) called ``write_intermediary_cube`` allows writing out the variable field after each preprocessing step, thus facilitating the comparison with the old version (e.g., after CMORization, level selection, after regridding, etc.). The CMORization step of the new backend exactly corresponds to the operation performed by the old backend (and stored in the ``climo`` directory, now called ``preprec``): this shall be the very first step to be checked, by simply comparing the intermediary file produced by the new backend after CMORization with the output of the old backend in the ``climo`` directorsy (see "Testing" below for instructions).
 
-The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the namelist which is being ported makes use of derived variables, the corresponding calculation must be ported from the ``./variable_defs/<variable>.ncl`` file to ``./esmvaltool/preprocessor/_derive.py``.
+The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the recipe which is being ported makes use of derived variables, the corresponding calculation must be ported from the ``./variable_defs/<variable>.ncl`` file to ``./esmvaltool/preprocessor/_derive.py``.
 
 Note that the Python library ``esmval_lib``, containing the ``ESMValProject`` class is no longer available in version 2. Most functionalities have been moved to the new preprocessor. If you miss a feature, please open an issue on github [https://github.com/ESMValGroup/ESMValTool/issues].
 
-Move diagnostic- and variable-specific settings to the namelist
+Move diagnostic- and variable-specific settings to the recipe
 ===============================================================
 
-In the new version, all settings are centralized in the namelist, completely replacing the diagnostic-specific settings in ``./nml/cfg_files/`` (passed as ``diag_script_info`` to the diagnostic scripts) and the variable-specific settings in ``variable_defs/<variable>.ncl`` (passed as ``variable_info``). There is also no distinction anymore between diagnostic- and variable-specific settings: they are collectively defined in the ``scripts`` dictionary of each diagnostic in the namelist and passed as ``diag_script_info`` attributes by the new ESMValTool interface. Note that the ``variable_info`` logical still exists, but it is used to pass variable information as given in the corresponding dictionary of the namelist.
+In the new version, all settings are centralized in the recipe, completely replacing the diagnostic-specific settings in ``./nml/cfg_files/`` (passed as ``diag_script_info`` to the diagnostic scripts) and the variable-specific settings in ``variable_defs/<variable>.ncl`` (passed as ``variable_info``). There is also no distinction anymore between diagnostic- and variable-specific settings: they are collectively defined in the ``scripts`` dictionary of each diagnostic in the recipe and passed as ``diag_script_info`` attributes by the new ESMValTool interface. Note that the ``variable_info`` logical still exists, but it is used to pass variable information as given in the corresponding dictionary of the recipe.
 
-Test the namelist/diagnostic in the new version
+Test the recipe/diagnostic in the new version
 ===============================================
 
 Once complete, the porting of the diagnostic script can be tested. Most of the diagnostic script allows writing the output in a NetCDF file before calling the plotting routine. This output can be used to check whether the results of v1.0 are correctly reproduced. As a reference for v1.0, it is recommended to use the development branch.
@@ -171,7 +173,7 @@ The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference
 
 This file can be opened with ``ncview`` to visually inspect the differences.
 
-In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. At this stage, it is essential to test all models in the namelist and not just a subset of them.
+In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. At this stage, it is essential to test all datasets in the recipe and not just a subset of them.
 
 It is also recommended to compare the graphical output (this may be necessary if the ported diagnostic does not produce a NetCDF output). For this comparison, the PostScript format shall be chosen (it can be set in the user configuration file). Two PostScript files can be compared with standard ``diff`` command in Linux:
 
@@ -184,14 +186,13 @@ but it is very unlikely to produce no differences, therefore visual inspection o
 Clean the code
 ==============
 
-Before submitting a pull request, the code shall be cleaned to adhere to the coding standard, which are somehow stricter in v2.0. For python code, this check is performed automatically on GitHub (CircleCI and Codacy). For NCL code, this is still done manually and considers the following guidelines:
+Before submitting a pull request, the code shall be cleaned to adhere to the coding standard, which are somehow stricter in v2.0. This check is performed automatically on GitHub (CircleCI and Codacy) when opening a pull request on the public repository. A code-style checker (``nclcodestyle``) is available in the tool to check NCL scripts and installed alongside the tool itself. When checking NCL code style, the following should be considered in addition to the warning issued by the style checker:
 
-- code syntax shall be checked using ``/util/ncl-checker/pep8.py <diag>.ncl`` and all reported warnings shall be fixed;
 - two-space instead of four-space indentation is now adopted for NCL as per NCL standard;
-- ``load`` statements for NCL standard libraries shall be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
-- the description of diagnostic- and variable-specific settings shall be moved from the header of the diagnostic script to the main namelist, since the settings are now defined there (see above);
-- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
-- for error and warning statments, the ``error_msg`` function shall be used, which automatically include an exit statement.
+- ``load`` statements for NCL standard libraries should be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
+- the description of diagnostic- and variable-specific settings can be moved from the header of the diagnostic script to the recipe, since the settings are now defined there (see above);
+- NCL ``print`` and ``printVarSummary`` statements must be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
+- for error and warning statments, the ``error_msg`` function can be used, which automatically include an exit statement.
 
 Open a pull request
 ===================

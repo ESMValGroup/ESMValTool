@@ -20,14 +20,14 @@ procedure write_header(s_open:string,
 ;    20160713-A_laue_ax: updated ESMValTool reference
 ;    20150630-A_laue_ax: written.
 ;
-local funcname, scriptname, namelist, version
+local funcname, scriptname, recipe, version
 begin
 
   funcname = "write_header"
   scriptname = "interface_scripts/logging.ncl"
 
-  ; Namelist in use
-  namelist = diag_script_info@namelist
+  ; Recipe in use
+  recipe = diag_script_info@recipe
 
   ; ESMValTool version
   version = diag_script_info@version
@@ -40,7 +40,7 @@ begin
          " +++++++++++++" + s_close)
   system(s_open + hline + s_close)
   system(s_open + "" + s_close)
-  system(s_open + "Namelist file: " + namelist + s_close)
+  system(s_open + "Recipe file: " + recipe + s_close)
   system(s_open + "Creation date: `date`" + s_close)
   system(s_open + "ESMValTool version: " + version + s_close)
   system(s_open + "Host name: " + getenv("HOST") + s_close)

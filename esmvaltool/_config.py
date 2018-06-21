@@ -3,13 +3,14 @@ import datetime
 import logging
 import logging.config
 import os
+import time
 
 import yaml
 
 logger = logging.getLogger(__name__)
 
 
-def read_config_user_file(config_file, namelist_name):
+def read_config_user_file(config_file, recipe_name):
     """Read config user file and store settings in a dictionary."""
     with open(config_file, 'r') as file:
         cfg = yaml.safe_load(file)
@@ -42,9 +43,9 @@ def read_config_user_file(config_file, namelist_name):
         cfg['rootpath'][key] = os.path.abspath(
             os.path.expanduser(cfg['rootpath'][key]))
 
-    # insert a directory date_time_namelist_usertag in the output paths
+    # insert a directory date_time_recipe_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    new_subdir = '_'.join((namelist_name, now))
+    new_subdir = '_'.join((recipe_name, now))
     cfg['output_dir'] = os.path.join(cfg['output_dir'], new_subdir)
 
     # create subdirectories
@@ -94,6 +95,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
                 handler['level'] = console_log_level.upper()
 
     logging.config.dictConfig(cfg)
+    logging.Formatter.converter = time.gmtime
 
     return log_files
 
@@ -107,10 +109,10 @@ def get_project_config(project):
     return CFG[project]
 
 
-def cmip5_model2inst(model):
-    """Return the institute given the model name in CMIP5."""
-    logger.debug("Retrieving institute for CMIP5 model %s", model)
-    return CFG['CMIP5']['institute'][model]
+def cmip5_dataset2inst(dataset):
+    """Return the institute given the dataset name in CMIP5."""
+    logger.debug("Retrieving institute for CMIP5 dataset %s", dataset)
+    return CFG['CMIP5']['institute'][dataset]
 
 
 def cmip5_mip2realm_freq(mip):

@@ -4,7 +4,7 @@
 # This file defines the plot attributes for the CCMVal2 models.
 # Mostly based on CCMValTool definitions.
 #
-# MODEL NAME: must be the same as given in the main namelist.
+# MODEL NAME: must be the same as given in the main recipe.
 # COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
 #        or a RGBA code (size 4) with the last element indicating the opacity
 #        on a 0-1 scale (0 = transparent, 1 = full), see

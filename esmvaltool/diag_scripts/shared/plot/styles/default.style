@@ -3,7 +3,7 @@
 ###############################################################################
 # This file defines the plot attributes for the DEFAULT case.
 #
-# MODEL NAME: must be the same as given in the main namelist. The "default"
+# MODEL NAME: must be the same as given in the main recipe. The "default"
 #             entry is assigned to all models not in the list. Alternatively,
 #             wildcards "*" can be given and models not in the list will be
 #             assigned to them in the given order.

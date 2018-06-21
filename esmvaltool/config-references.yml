@@ -1,7 +1,7 @@
-# Full list of authors and references for the currently implemented 
-# diagnostics. 
+# Full list of authors and references for the currently implemented
+# diagnostics.
 #
-# Add new entries alphabetically (for authors) or at the end of the 
+# Add new entries alphabetically (for authors) or at the end of the
 # respective lists. Do not change the current entries!
 #
 
@@ -11,24 +11,44 @@ authors:
     name: Eyring, Veronika
     institute: DLR, Germany
     email: veronika.eyring 'at' dlr.de
+  ande_bo:
+    name: Andela, Bouwe
+    institute: NLESC, Netherlands
+    email: b.andela 'at' esciencecenter.nl
+  broe_bj:
+    name: Broetz, Bjoern
+    institute: DLR, Germany
+    email: bjoern.broetz 'at' dlr.de
+  dros_ni:
+    name: Drost, Niels
+    institute: NLESC, Netherlands
+    email: n.drost 'at' esciencecenter.nl
+  kold_ni:
+    name: Koldunov, Nikolay
+    institute: AWI, Germany
+    email: nikolay.koldunov 'at' awi.de
   laue_ax:
     name: Lauer, Axel
     institute: DLR, Germany
     email: axel.lauer 'at' dlr.de
+  muel_bn:
+    name: Mueller, Benjamin
+    institute: LMU, Germany
+    email: b.mueller 'at' iggf.geo.uni-muenchen.de
+  pred_va:
+    name: Predoi, Valeriu
+    institute: URead, UK
+    email: valeriu.predoi 'at' ncas.ac.uk
   righ_ma:
     name: Righi, Mattia
     institute: DLR, Germany
     email: mattia.righi 'at' dlr.de
-  eval_ma:
-    name: Evaldsson, Martin
-    institute: SMHI, Sweden
-    email: martin.evaldsson 'at' smhi.se
-  loew_al:
-    name: Loew, Alexander
-    institute: LMU, Germany
-    email: alexander.loew 'at' lmu.de
+  vega_ja:
+    name: Vegas-Regidor, Javier
+    institute: BSC, Spain
+    email: javier.vegas 'at' bsc.es
 ### Development team
-  anav_al: 
+  anav_al:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
     email: a.anav 'at' exeter.ac.uk
@@ -142,16 +162,13 @@ authors:
     name: Dalvi, Mohit
     institute: MetOffice, UK
     email: mohit.dalvi 'at' metoffice.gov.uk
-  muel_bn:
-    name: Mueller, Benjamin
-    institute: LMU, Germany
   niku_gr:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
     email: grigory.nikulin 'at' smhi.se
   nobr_pa:
     name: Nobre, Paulo
-    institute: INPE, Brazil 
+    institute: INPE, Brazil
   oliv_ar:
     name: Oliveira, Arildo
     institute: INPE, Brazil
@@ -319,7 +336,7 @@ authors:
   john_ma:
     name: Johnston, Marston
     institute: SMHI, Sweden
-    email: shejo284 'at' gmail.com 
+    email: shejo284 'at' gmail.com
   klin_ca:
     name: Klinger, Carolin
     institute: DLR, Germany
