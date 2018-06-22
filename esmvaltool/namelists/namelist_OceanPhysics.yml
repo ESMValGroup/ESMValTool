@@ -252,7 +252,7 @@ preprocessors:
     fix_data:
     fix_metadata:
     time_average:
-    extract_slice: # Pacific Equator
+    extract_transect: # Pacific Equator
       latitude: 0.
       longitude: [120., 300.]
                            
@@ -260,7 +260,7 @@ preprocessors:
     fix_data:
     fix_metadata:
     time_average:
-    extract_slice: # Atlantic Meridional Transect
+    extract_transect: # Atlantic Meridional Transect
       latitude: [-50.,50.]  
       longitude: 332.
       
