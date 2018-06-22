@@ -14,7 +14,7 @@ from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
     cmor_check_metadata
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
-from ._time_pp import time_average as time_average
+from ._time_pp import time_average
 from ._time_pp import seasonal_mean
 from ._time_pp import time_slice as extract_time
 from ._area_pp import area_slice as extract_region
