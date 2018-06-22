@@ -72,7 +72,7 @@ def replace_tags(path, variable, j=None, i=None):
         if tag == 'var':
             replacewith = variable['short_name']
         elif tag == 'fx_var':
-            replacewith = variable['fx_variable'][i]
+            replacewith = variable['fx_files'][i]
         elif tag == 'field':
             replacewith = variable['field']
         elif tag in ('institute', 'freq', 'realm'):
@@ -170,7 +170,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
-    for fx_ind in range(len(variable['fx_variable'])):
+    for fx_ind in range(len(variable['fx_files'])):
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(input_dir, variable, i=fx_ind)
         elif _drs in input_dir:
@@ -333,10 +333,10 @@ def get_input_fx_filelist(variable, rootpath, drs):
         fx_file_list = find_files(dirname, filename_glob)
         if fx_file_list:
             # Grab the first file only; fx vars should have a single file
-            fx_files[variable['fx_variable'][j]] = fx_file_list[0]
+            fx_files[variable['fx_files'][j]] = fx_file_list[0]
         else:
             # No files
-            fx_files[variable['fx_variable'][j]] = ''
+            fx_files[variable['fx_files'][j]] = ''
 
     return fx_files
 

@@ -758,7 +758,7 @@ class Recipe(object):
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
-            if 'fx_variable' in variable.keys():
+            if 'fx_files' in variable:
                 # Get the fx files
                 variable['fx_files'] = get_input_fx_filelist(
                     variable=variable,
