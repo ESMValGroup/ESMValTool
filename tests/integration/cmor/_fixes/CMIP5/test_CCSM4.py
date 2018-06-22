@@ -4,7 +4,7 @@ import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CCSM4 import rlut, rlutcs
+from esmvaltool.cmor._fixes.CMIP5.CCSM4 import rlut, rlutcs, so
 
 
 class TestsRlut(unittest.TestCase):
@@ -47,3 +47,13 @@ class TestsRlutcs(unittest.TestCase):
         self.assertTrue(np.all(latitude.bounds == np.array([[0.0000, 1.0000],
                                                             [1.0000, 2.0000]
                                                             ])))
+
+
+class TestSo(unittest.TestCase):
+    def setUp(self):
+        self.cube = Cube([1, 2], var_name='so', units='1.0')
+        self.fix = so()
+
+    def test_fix_metadata(self):
+        cube = self.fix.fix_metadata(self.cube)
+        self.assertTrue('1e-3', cube.units.name)
