@@ -152,11 +152,12 @@ preprocessors:
   prep_timeseries_7: # For regional volume averaged (at the surface)
     fix_data:
     fix_metadata:
-    extract_volume:
+    extract_region:
       long1:  -80.
       long2:  30.
       lat1:   -80.
       lat2:   80. 
+    extract_volume:
       z_min:      0.
       z_max:     100. 
     average_volume:
@@ -276,11 +277,12 @@ preprocessors:
   prep_profile_2: # For a regional profile
     fix_data:     
     fix_metadata: 
-    extract_volume:
+    extract_region:
       long1: 0.
       long2:  20.
       lat1:  -30.
       lat2:  30.
+    extract_volume:
       z_min: 0.
       z_max: 100.
     average_region:          

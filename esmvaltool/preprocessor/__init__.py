@@ -14,16 +14,16 @@ from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
     cmor_check_metadata
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
-from ._time_area import volume_average as average_volume
-from ._time_area import area_average as average_region
-from ._time_area import time_average as time_average
-from ._time_area import area_slice as extract_region
-from ._time_area import time_slice as extract_time
-from ._time_area import volume_slice as extract_volume
-from ._time_area import extract_trajectory as extract_trajectory
-from ._time_area import extract_slice as extract_slice
-from ._time_area import depth_integration as depth_integration
-from ._time_area import seasonal_mean
+from ._time_pp import time_average as time_average
+from ._time_pp import seasonal_mean
+from ._time_pp import time_slice as extract_time
+from ._area_pp import area_slice as extract_region
+from ._area_pp import area_average as average_region
+from ._volume_pp import volume_slice as extract_volume
+from ._volume_pp import extract_trajectory as extract_trajectory
+from ._volume_pp import extract_transect as extract_transect
+from ._volume_pp import depth_integration as depth_integration
+from ._volume_pp import volume_average as average_volume
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ __all__ = [
     'extract_region',
     'extract_volume',
     'extract_trajectory',
-    'extract_slice',
+    'extract_transect',
     # Grid-point operations
     'depth_integration',
     'average_region',
