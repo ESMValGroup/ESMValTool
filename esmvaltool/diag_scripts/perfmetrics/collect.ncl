@@ -93,7 +93,6 @@ begin
         data_all_smpi = new(dim_data_smpi, float)
         delete(dim_data_smpi)
         data_all_smpi(0, :, :) = data_temp_smpi
-                    
         data_all_smpi!0 = "vars"
         data_all_smpi!1 = "bootstrap_member"
         data_all_smpi!2 = "models"
@@ -106,7 +105,8 @@ begin
 
     ; Make sure model coordinate is consistent
       consistent = False
-      if (dimsizes(data_temp_smpi&models).eq.dimsizes(data_all_smpi&models)) then
+      if (dimsizes(data_temp_smpi&models).eq. \
+         dimsizes(data_all_smpi&models)) then
         if (all(data_temp_smpi&models.eq.data_all_smpi&models)) then
           consistent = True
         end if
@@ -116,36 +116,34 @@ begin
       if (consistent) then
         data_all_smpi(ii, :, :) = (/data_temp_smpi/)
         copy_VarCoords(data_temp_smpi, data_all_smpi(ii, :, :))
-;                        copy_VarCoords(data_temp_smpi, data_all_smpi(ii:ii, :, :))
       else
-                        ;; Loop over models in new data entry
+      ; Loop over models in new data entry
         do imod_temp = 0, dimsizes(data_temp_smpi&models) - 1
-                            ;; If current model is not already part
-                            ;; of the model coordinate
+        ; If current model is not already part of the model coordinate
           if (.not.any(data_temp_smpi&models(imod_temp) .eq. \
-            data_all_smpi&models)) then
-                                ;; Append record for model(imod)
+              data_all_smpi&models)) then
+            ; Append record for model(imod)
             data_new = extend_var_at(data_all_smpi, 2, \
-            dimsizes(data_all_smpi&models))
+                                     dimsizes(data_all_smpi&models))
             data_new(ii, :, dimsizes(data_all_smpi&models)) = \
-            (/data_temp_smpi(0, :, imod_temp)/)
+              (/data_temp_smpi(0, :, imod_temp)/)
             data_new&models(dimsizes(data_all_smpi&models)) = \
-            (/data_temp_smpi&models(imod_temp)/)
+              (/data_temp_smpi&models(imod_temp)/)
             delete(data_all_smpi)
             data_all_smpi = data_new
             delete(data_new)
             else
-                                ;; Loop over models of data
+              ; Loop over models of data
               do imod = 0, dimsizes(data_all_smpi&models) - 1
-                                    ;; if new data model is identical to current
-                                    ;; entry, write data entry
+                ; if new data model is identical to current
+                ; entry, write data entry
                 if (data_all_smpi&models(imod).eq. \
-                  data_temp_smpi&models(imod_temp)) then
+                    data_temp_smpi&models(imod_temp)) then
                   data_all_smpi(ii, :, imod) = \
-                  (/data_temp_smpi(0, :, imod_temp)/)
+                    (/data_temp_smpi(0, :, imod_temp)/)
                   copy_VarCoords( \
-                  data_temp_smpi(0:0, :, imod_temp), \
-                  data_all_smpi(ii:ii, :, imod))
+                    data_temp_smpi(0:0, :, imod_temp), \
+                    data_all_smpi(ii:ii, :, imod))
                 end if
               end do
             end if
@@ -157,15 +155,14 @@ begin
           num_climo_all = "climofile_" + (i_climo_cnt + iclim)
           data_all_smpi@$num_climo_all$ = data_temp_smpi@$num_climo$
         end do
-        
+
         i_climo_cnt = i_climo_cnt + toint(data_temp_smpi@num_climofiles)
-        
+
         vars(ii) = data_temp_smpi@invar
         delete(data_temp_smpi)
 
-      else      ;Metric not SMPI
+      else      ; Metric not SMPI
       data_temp = ncdf_read(curr_file, "grade")
-
 
       ; Change to 3 dimensional
       if (dimsizes(dimsizes(data_temp)).eq.2) then
@@ -206,9 +203,9 @@ begin
             ; Append record for model(imod)
             data_new = extend_var_at(data_all, 1, dimsizes(data_all&models))
             data_new(ii, dimsizes(data_all&models), :) = \
-                 (/data_temp(0, imod2, :)/)
+              (/data_temp(0, imod2, :)/)
             data_new&models(dimsizes(data_all&models)) = \
-                 (/data_temp&models(imod2)/)
+              (/data_temp&models(imod2)/)
             data_all := data_new
             delete(data_new)
           else
@@ -218,14 +215,14 @@ begin
               if (data_all&models(imod).eq. data_temp&models(imod2)) then
                 data_all(ii, imod, :) = (/data_temp(0, imod2, :)/)
                 copy_VarCoords(data_temp(0:0, imod2, :), \
-                     data_all(ii:ii, imod, :))
+                               data_all(ii:ii, imod, :))
               end if
             end do
           end if
         end do
       end if
       delete(data_temp)
-    end if ; metric distinction end 1
+    end if  ; metric distinction end 1
   end do
 
   if diag_script_info@metric.eq."SMPI" then
@@ -234,13 +231,14 @@ begin
 
     data_all_smpi@num_climofiles = i_climo_cnt
 
-    ;; Check for incomplete array, SMPI only for models with all vars
+    ; Check for incomplete array, SMPI only for models with all vars
     if any(ismissing(data_all_smpi)) then
       do ivar = 0, dimsizes(data_all_smpi&vars) - 1
         do ii = 0, dimsizes(data_all_smpi&models) - 1
           if all(ismissing(data_all_smpi(ivar, :, ii))) then
             if (isvar("miss_mods")) then
-              newmm = array_append_record(miss_mod, data_all_smpi&models(ii), 0)
+              newmm = array_append_record(miss_mod, \
+                                          data_all_smpi&models(ii), 0)
               delete(miss_mod)
               miss_mod = newmm
               delete(newmm)
@@ -257,10 +255,9 @@ begin
           missing_mods = True
         end if
       end do
-      ; would currently give an error due to index 0 being missing values in bootstraps
       if (isvar("missing_mods")) then
         error_msg("f", diag_script, "", "SMPI only supported for" \
-                          + " models containing all variables")
+                  + " models containing all variables")
       end if
     end if
 
@@ -274,7 +271,6 @@ begin
     data_smpi!0 = "models"
     data_smpi&models = data_all_smpi&models
     data_smpi(:, 0) = (/i2mean(0, :)/)  ; clim. mean
-    ;;sig_smpi = dim_stddev_n_Wrap(data_all_smpi, 0)
 
     i5 = toint(0.05 * nboot)
     i95 = toint(0.95 * nboot)
@@ -288,12 +284,9 @@ begin
 
     data_smpi!1 = "statistic"
     data_smpi&statistic = (/"SMPI", "95_conf"/)
-    ;work_dir = config_user_info@work_dir
-    ;xml_name = getenv("ESMValTool_xml_name")
-    ;suffix = get_file_suffix(xml_name, 0)
-    name = "test";str_sub_str(xml_name, suffix, "")
+    name = ""  ; str_sub_str(xml_name, suffix, "")
     data_smpi@ncdf_dir = config_user_info@work_dir + "/" + \
-    name + "_SMPI.nc"
+      name + "_SMPI.nc"
     data_smpi@diag_script = diag_script
     data_smpi@var = "SMPI"
     data_smpi@ensemble_name = data_all_smpi@ensemble_name
@@ -301,11 +294,11 @@ begin
     system("mkdir -p " + config_user_info@work_dir)
     ncdf_outfile = ncdf_write(data_smpi, data_smpi@ncdf_dir)
 
-    ;; Sort models in alphabetical order (exclude MMM and set to end)
+    ; Sort models in alphabetical order (exclude MMM and set to end)
 
     pid = sort_alphabetically(data_smpi&models, \
-          ind(data_smpi&models.eq."Mean-model".or. \
-          data_smpi&models.eq."Median-model"), "end")
+                              ind(data_smpi&models.eq."Mean-model".or. \
+                                  data_smpi&models.eq."Median-model"), "end")
     tmp = data_smpi(pid, :)
     tmp&models = data_smpi&models(pid)
     delete(data_smpi)
@@ -321,12 +314,12 @@ begin
 
     ; Create outfile directory
     system("mkdir -p " + config_user_info@plot_dir)
-    diags = "test"    
+    diags = "test"
 
     ; Define outfile name
     outfile_plot = config_user_info@plot_dir + diags + "_SMPI"
 
-  else  ;if metric not SMPI
+  else  ; if metric not SMPI
 
     ; Reduce size if all entries have only one reference
     if (all(ismissing(data_all(:, :, 1)))) then
@@ -347,7 +340,7 @@ begin
     if (isatt(diag_script_info, "sort")) then
       if (diag_script_info@sort) then
         idx = ind(data_all&models.eq."MultiModelMean" .or. \
-              data_all&models.eq."MultiModelMedian")
+                  data_all&models.eq."MultiModelMedian")
         pid = sort_alphabetically(data_all&models, idx, "begin")
         if (dimsizes(dimsizes(data_all)).eq.3) then
           data_all := data_all(:, pid, :)
@@ -357,7 +350,7 @@ begin
         delete(pid)
       end if
     end if
-    
+
     ; Attach plotting options
     copy_VarAtts(diag_script_info, data_all)
     if (isatt(diag_script_info, "title")) then
@@ -372,7 +365,7 @@ begin
     system("mkdir -p " + config_user_info@plot_dir)
     if (dimsizes(data_all&diagnostics).gt.1) then
       diags = data_all&diagnostics(0) + "_to_" + \
-      data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
+              data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
     else
       diags = str_concat(data_all&diagnostics)
     end if
@@ -383,18 +376,19 @@ begin
       outfile_plot = outfile_plot + "_" + data_all@metric
     end if
   end if
-  
+
   ; Create workspace
   wks = gsn_open_wks(file_type, outfile_plot)
   if (diag_script_info@metric.eq."taylor") then
     wks@legendfile = outfile_plot + "_legend"
   end if
-  
-    ; Call plotting function
+
+  ; Call plotting function
   if (diag_script_info@metric.eq."taylor") then
     plot = taylor_plot(wks, data_all, "grade")
   else if (diag_script_info@metric.eq."SMPI") then
-    plot = circle_plot(wks, data_smpi, "performance_index", data_smpi@ensemble_name)
+    plot = circle_plot(wks, data_smpi, "performance_index", \
+                       data_smpi@ensemble_name)
   else
     plot = portrait_plot(wks, data_all, "grade")
   end if
