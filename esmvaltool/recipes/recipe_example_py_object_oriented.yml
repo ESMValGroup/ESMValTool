@@ -41,11 +41,11 @@ diagnostics:
         reference_dataset: ERA-Interim
     scripts:
       script1a:
-        script: examples/diagnostic_object_based.py
+        script: examples/diagnostic_object_oriented.py
         quickplot:
           plot_type: pcolormesh
       script1b:
-        script: examples/diagnostic_object_based.py
+        script: examples/diagnostic_object_oriented.py
         ancestors: ['script1a']
         quickplot:
           plot_type: contour
@@ -61,6 +61,6 @@ diagnostics:
         reference_dataset: MPI-ESM-LR
     scripts:
       script2:
-        script: examples/diagnostic_object_based.py
+        script: examples/diagnostic_object_oriented.py
         quickplot:
           plot_type: contourf
