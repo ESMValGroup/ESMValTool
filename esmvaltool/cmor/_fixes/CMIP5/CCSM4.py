@@ -30,12 +30,12 @@ class rlut(Fix):
 
 class rlutcs(rlut):
     """Fixes for rlut"""
+
     pass
 
 
 class so(Fix):
     """Fixes for so"""
-    # pass
 
     def fix_metadata(self, cube):
         """

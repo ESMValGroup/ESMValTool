@@ -8,7 +8,10 @@ from esmvaltool.cmor._fixes.CMIP5.CCSM4 import rlut, rlutcs, so
 
 
 class TestsRlut(unittest.TestCase):
+    """Test for rlut fixes"""
+
     def setUp(self):
+        """Prepare tests"""
         self.cube = Cube([1, 2], var_name='rlut')
         self.cube.add_dim_coord(DimCoord([0.50001, 1.499999],
                                          standard_name='latitude',
@@ -19,6 +22,7 @@ class TestsRlut(unittest.TestCase):
         self.fix = rlut()
 
     def test_fix_metadata(self):
+        """Check that latitudes values are rounded"""
         cube = self.fix.fix_metadata(self.cube)
 
         latitude = cube.coord('latitude')
@@ -29,7 +33,10 @@ class TestsRlut(unittest.TestCase):
 
 
 class TestsRlutcs(unittest.TestCase):
+    """Test for rlutcs fixes"""
+
     def setUp(self):
+        """Prepare tests"""
         self.cube = Cube([1, 2], var_name='rlut')
         self.cube.add_dim_coord(DimCoord([0.50001, 1.499999],
                                          standard_name='latitude',
@@ -40,6 +47,7 @@ class TestsRlutcs(unittest.TestCase):
         self.fix = rlutcs()
 
     def test_fix_metadata(self):
+        """Check that latitudes values are rounded"""
         cube = self.fix.fix_metadata(self.cube)
 
         latitude = cube.coord('latitude')
@@ -50,10 +58,14 @@ class TestsRlutcs(unittest.TestCase):
 
 
 class TestSo(unittest.TestCase):
+    """Tests for so fixes"""
+
     def setUp(self):
+        """Prepare tests"""
         self.cube = Cube([1, 2], var_name='so', units='1.0')
         self.fix = so()
 
     def test_fix_metadata(self):
+        """Checks that units are changed to the correct value"""
         cube = self.fix.fix_metadata(self.cube)
-        self.assertTrue('1e-3', cube.units.name)
+        self.assertEqual('1e-3', cube.units.name)
