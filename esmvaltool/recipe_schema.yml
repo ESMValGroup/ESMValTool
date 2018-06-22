@@ -4,7 +4,7 @@
 ---
 # Recipe schema
 datasets: list(include('dataset'), required=False)
-preprocessors: map(map(), min=1)
+preprocessors: map(map(), required=False)
 diagnostics: map(include('diagnostic'), required=False)
 
 ---
@@ -24,7 +24,7 @@ dataset:
 
 variable:
   field: str()
-  preprocessor: str()
+  preprocessor: str(required=False)
   reference_dataset: str(required=False)
   alternative_dataset: str(required=False)
   mip: str(required=False)

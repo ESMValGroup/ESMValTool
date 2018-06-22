@@ -159,6 +159,12 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.units = 'days'
         self._check_cube()
 
+    def test_check_with_psu_units(self):
+        """Test check succeds for a good cube with psu units"""
+        self.var_info.units = 'psu'
+        self.cube = self.get_cube(self.var_info)
+        self._check_cube()
+
     def test_check_with_positive(self):
         self.var_info.positive = 'up'
         self.cube = self.get_cube(self.var_info)
@@ -444,13 +450,21 @@ class TestCMORCheck(unittest.TestCase):
 
         var_data = (numpy.ones(len(coords) * [20], 'f') *
                     (valid_min + (valid_max - valid_min) / 2))
+
+        if var_info.units == 'psu':
+            units = None
+            attributes = {'invalid_units': 'psu'}
+        else:
+            units = var_info.units
+            attributes = None
+
         cube = iris.cube.Cube(
             var_data,
             standard_name=var_info.standard_name,
             long_name=var_info.long_name,
             var_name=var_info.short_name,
-            units=var_info.units,
-            attributes=None,
+            units=units,
+            attributes=attributes,
         )
         if var_info.positive:
             cube.attributes['positive'] = var_info.positive
