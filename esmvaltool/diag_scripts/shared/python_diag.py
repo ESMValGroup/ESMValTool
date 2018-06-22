@@ -13,6 +13,7 @@ An example diagnostic using these classes is given in
 `diag_scripts/examples/diagnostic.py`
 
             if self._is_valid_path(dataset_path):
+
 """
 
 
@@ -121,8 +122,8 @@ class Variables(object):
             if not success:
                 logger.warning("%s is not a valid configuration file!", cfg)
         if not self._dict:
-            logger.warning("Empty recipe configuration: the automatic " +
-                           "import of variables does not work for chained " +
+            logger.warning("Empty recipe configuration: the automatic "
+                           "import of variables does not work for chained "
                            "scripts (using 'ancestors' key)")
 
         # Add costum variables
@@ -137,7 +138,7 @@ class Variables(object):
         return repr(self.short_names())
 
     def _add_to_dict(self, name, attr):
-        """Internal method to add a variable to class.
+        """Add variable to class (internal method).
 
         Parameters
         ----------
@@ -174,6 +175,7 @@ class Variables(object):
         -------
         list
             List of all `short_names`.
+
         """
         return list(self._dict)
 
@@ -252,7 +254,7 @@ class Datasets(object):
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
-            logger.warning("Note: the automatic import of datasets does not " +
+            logger.warning("Note: the automatic import of datasets does not "
                            "work for chained scripts (using 'ancestors' key)")
 
     def __repr__(self):
