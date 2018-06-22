@@ -8,9 +8,9 @@ Annex A -- More tables
 .. _tab_direc_struc:
 
 +-------------------------------------------------------------------------------+
-| *Namelists*                                                                   |
+| *Recipes*                                                                     |
 +-------------------------------+-----------------------------------------------+
-| nml/namelist_XyZ.xml          | Namelists for specifying general parameters,  |
+| recipes/recipe_XyZ.xml        | Recipes for specifying general parameters,    |
 |                               | input data and diagnostics to run.            |
 +-------------------------------+-----------------------------------------------+
 
@@ -35,7 +35,7 @@ Annex A -- More tables
 |                               | flow                                          |
 +-------------------------------+-----------------------------------------------+
 | diag_scripts/                 | Directory containing all diagnostics called   |
-|                               | by the namelists. Supporting routines are     |
+|                               | by the recipes. Supporting routines are       |
 | - MyDiag.ncl                  | placed in "diag_scripts/lib" under the        |
 | - SeaIce_polcon.ncl           | subdirectory corresponding to the programming |
 | - SAMonsoon.ncl               | language used (NCL, Python, R).               |
@@ -65,7 +65,7 @@ Annex A -- More tables
 |   - ...                       |                                               |
 |                               |                                               |
 | - ... for other languages     |                                               |
-| (e.g., R)                     |                                               |
+|   (e.g., R)                   |                                               |
 +-------------------------------+-----------------------------------------------+
 
 .. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
@@ -85,7 +85,7 @@ Annex A -- More tables
 |   - plotting2.py              |                                               |
 |                               |                                               |
 | - ... for other languages     |                                               |
-| (e.g., R)                     |                                               |
+|    (e.g., R)                  |                                               |
 +-------------------------------+-----------------------------------------------+
 | interface_data/               | Inter-process communication, e.g., between    |
 |                               | Python and NCL/R, is done by sourcing NCL/R   |
@@ -96,7 +96,7 @@ Annex A -- More tables
 | interface_scripts/            | Routines called from the workflow manager     |
 |                               | script "main.py", mainly used to handle the   |
 |                               | control flow of the tool, e.g., parsing       |
-|                               | namelists, updating temporary files in the    |
+|                               | recipes, updating temporary files in the      |
 |                               | folder interface_data/, etc).                 |
 +-------------------------------+-----------------------------------------------+
 
@@ -143,19 +143,6 @@ Annex A -- More tables
 |                               | procedure, called by the default, the         |
 |                               | ECEARTH- and the EMAC-specific routines.      |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/recognized_  | Provides a list of possible alternative units |
-| units.dat                     | to the CMOR standard and the corresponding    |
-|                               | conversion factor. Can be extended by the     |
-|                               | user.                                         |
-+-------------------------------+-----------------------------------------------+
-| reformat_scripts/recognized_  | Provides a list of possible alternative       |
-| vars.dat                      | variable names to the CMOR standard           |
-|                               | names. Can be extended by the user.           |
-+-------------------------------+-----------------------------------------------+
-| reformat_scripts/variable_    | Declaration of variables, variable specific   |
-| defs/                         | attributes and calculation of derived         |
-|                               | variables                                     |
-+-------------------------------+-----------------------------------------------+
 
 .. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
 
@@ -163,13 +150,13 @@ Annex A -- More tables
 | *Data folders*                                                                |
 +-------------------------------+-----------------------------------------------+
 |                               | The data folders are specified in             |
-|                               | nml/namelist_*, and thus may be different     |
+|                               | recipes/recipe_*, and thus may be different   |
 |                               | from the defaults given here. These folders   |
 |                               | contain the output generated by the ESMValTool|
 |                               | and are created on the fly if needed. Note    |
 |                               | that these folders do not need to be in       |
 |                               | the same directory as the source code. They   |
-|                               | can be arbitrarily specified  in the namelist |
+|                               | can be arbitrarily specified  in the recipe   |
 |                               | as path relative to the root path. Using      |
 |                               | symbolic links is another option  to separate |
 |                               | the actual data from the code.                |
@@ -194,7 +181,7 @@ Workflow of reformat routines
 
 The reformat_default_main.ncl script sets the global variables as defined in reformat.py (input and output paths, variable name and field, model name and ensemble, etc.) and then performs a list of operations calling various functions and procedures defined in reformat_default_func.ncl. The workflow is as follows:
 
-* find grid type: the data can be defined on a standard rectilinear grid or on an irregular grid. In the latter case, the script does not modify the grid properties and additionally attaches the area field (the area weights) for the irregular grid to the output file. The location of the area file is typically defined as an entry in the namelist, for example by using the project class CMIP5_gridfile where the final entry is the full path to the area file, see :numref:`tab_proj_spec`.
+* find grid type: the data can be defined on a standard rectilinear grid or on an irregular grid. In the latter case, the script does not modify the grid properties and additionally attaches the area field (the area weights) for the irregular grid to the output file. The location of the area file is typically defined as an entry in the recipe, for example by using the project class CMIP5_gridfile where the final entry is the full path to the area file, see :numref:`tab_proj_spec`.
 * read variable: the selected variable is read from the input file. If the variable is not found, the reading function checks for possible alternative variable names (as specified in recognized_vars.dat), before issuing an error message.
 * apply project- and model-specific fixes: if a fixing procedure is found in the fixes/ directory for the selected project and model, it is called at this point in order to apply the user-defined corrections to the data.
 * create time-series: the variable is read for the selected time range (start_year-end_year) and a time-series is created.

@@ -19,8 +19,8 @@ https://www.git-scm.com/doc.
 ..    :align:   center
 .. note::
    .. figure::  /figures/Attention.png
-   The OPEN ESMValTool repository is located at https://github.com/ESMValGroup/ESMValTool.
-   The PRIVATE ESMValTool repository for the ESMValTool development team is located at https://github.com/ESMValGroup/ESMValTool-private
+      The OPEN ESMValTool repository is located at https://github.com/ESMValGroup/ESMValTool.
+      The PRIVATE ESMValTool repository for the ESMValTool development team is located at https://github.com/ESMValGroup/ESMValTool-private
 
 There are two ESMValTool GitHub repositories available:
 
@@ -198,7 +198,7 @@ developments (>2 weeks).
 * Click on the button create *FEATURE BRANCH*
 * Select the *"DEVELOPMENT" BRANCH* and create a new feature branch for the diagnostic/feature you want to implement. Please follow the following naming convention for your new *FEATURE BRANCH*: <Project>_<myfeature>.
 
-.. figure::  ./figures/git_branch_2.png
+.. figure::  /figures/git_branch_2.png
 
 * Click the button “Clone or Download” and copy the URL shown there
 * Open a terminal window and go to the folder where you would like to store your local copy of the ESMValTool source
@@ -295,7 +295,7 @@ General do-s and don't-s
 * Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables from memory immediately. If possible, separate diagnostic calculations from plotting routines.
 * Consider reusing or extending existing code (see plotting functions, general calculations). General-purpose code can be found in diag_scripts/lib/ and in plot_scripts/.
 * Comment all switches and parameters including a list of all possible settings/options in the header section of your code.
-* Use templates for namelists and diagnostics to ensure proper documentation (see :numref:`std_nml`).
+* Use templates for namelists and diagnostics to ensure proper documentation.
 * Keep your development branch updated regularly with the master/development branch.
 
 **Don't-s**
@@ -303,19 +303,3 @@ General do-s and don't-s
 * Do not use other programming languages than the ones currently supported (NCL, Python, R). If you want to use a programming language not yet used, please contact the ESMValTool core development team.
 * Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
 * Do not use hard-coded pathnames or filenames.
-
-.. _wiki:
-
-ESMValTool development team wiki
-================================
-
-The latest information on the ESMValTool and diagnostics under development can be found on the wiki of the OPEN
-and PRIVATE GitHub repository:
-
-* OPEN GitHub repository: https://github.com/ESMValGroup/ESMValTool/wiki
-* PRIVATE GitHub repository: https://github.com/ESMValGroup/ESMValTool-private/wiki
-
-All users and developers are strongly encouraged to frequently check the ESMValTool wiki for new information,
-contact data or observational data. Please contact the ESMValTool Core Development Team for access to the wiki
-(see :numref:`core_dev_team`).
-

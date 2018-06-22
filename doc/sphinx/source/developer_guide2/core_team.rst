@@ -23,13 +23,14 @@ Core development team
   ESMValTool Core PI and Developer: contact for requests to use the ESMValTool and for collaboration with the
   development team, access to the PRIVATE GitHub repository (see :numref:`annex_b`)
 
-* Alfred-Wegener-Institute Bremerhaven (AWI), Germany (overseeing EU Horizon 2020 APPLICATE and TRR181 ESMValTool work)
-* Barcelona Computing Center (BSC), Spain (overseeing EU Horizon 2020 PRIMAVERA ESMValTool work)
-* Ludwig Maximilian University of Munich, Germany (overseeing EU Horizon 2020 CRESCENDO ESMValTool work)
+* Alfred-Wegener-Institute Bremerhaven (AWI), Germany
+* Barcelona Computing Center (BSC), Spain
+* Ludwig Maximilian University of Munich, Germany
+* Netherlands E-Science Center, Netherlands
 * University of Reading, United Kingdom
 
 Contacts for specific diagnostic sets are the respective authors, as listed in the corresponding diagnostic
-documentation (including the ESMValTool development team wiki) and in the source code.
+documentation and in the source code.
 
 Pull requests
 =============
@@ -46,9 +47,9 @@ requests integration of a diagnostics set into the *development branch* (see :nu
 
 #. Check that the developer submits a **standard recipe** that calls a set of diagnostics / metrics
 
-#. Check that the related documentation on the ESMValTool development team wiki is compliant with **documentation templates for diagnostics and metrics sets** (see :numref:`std_nml`).
+#. Check that the related documentation  is compliant with **documentation templates for diagnostics and metrics sets** (see :numref:`std_nml`).
 
-#. Check that the code follows **coding rules and standard** (see section :numref:`rules`).
+#. Check that the code follows **coding rules and standard**
 
 #. Check that a **recipe** is provided for **automated testing** that runs on 2-3 models and a small set of observations/reference model/idealized data.
 
@@ -57,7 +58,7 @@ requests integration of a diagnostics set into the *development branch* (see :nu
 
 #. Check that also the **full set of observations** is provided that allows a sophisticated scientific application of the (full) standard recipe.
 
-#. Check that the **observations are documented** on the ESMValTool development team wiki and that a reformat routine is available in case the original source is not in CMOR standard.
+#. Check that the **observations are documented**  and that a reformat routine is available in case the original source is not in CMOR standard.
 
 #. Run the **automated testing** with all available diagnostics.
 
@@ -68,7 +69,7 @@ Responsibilities of ESMValTool developers
 
 1. Accept the **ESMValTool license agreement / terms of use** (see http://www.esmvaltool.org/license.html).
 
-2. Provide documentation on the ESMValTool developmet team wiki that is compliant with **documentation templates for diagnostics and metrics sets**.
+2. Provide documentation on the  that is compliant with **documentation templates for diagnostics and metrics sets**.
 
 3. Provide well documented code that follows the **coding rules and standards**.
 
@@ -77,12 +78,11 @@ Responsibilities of ESMValTool developers
    **Scientific analysis**
 
    * Provide the code **for all diagnostics and metrics** that are called.
-   * Standard recipe running on (if possible) all CMIP5 models and corresponding plots that are produced (for the
-   * wiki and the user's guide).
+   * Standard recipe running on (if possible) all CMIP5 models and corresponding plots that are produced
    * Provide the **full set of observations** that allows a sophisticated scientific application of the full standard recipe list (indicate source and if applicable license issues).
-   * Provide **documentation for the observations** on the ESMValTool development team wiki and a reformat routine if the original source does not follow the CMOR standard.
+   * Provide **documentation for the observations** and a reformat routine if the original source does not follow the CMOR standard.
 
-   **Automated testing (see :numref:`auto_test`)**
+   **Automated testing
 
    * Provide the **code for automated testing** for the diagnostic set that should be integrated into the
    * *DEVELOPMENT BRANCH* (see section :numref:`annex_b`).
