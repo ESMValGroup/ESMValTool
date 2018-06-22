@@ -68,4 +68,4 @@ class TestSo(unittest.TestCase):
     def test_fix_metadata(self):
         """Checks that units are changed to the correct value"""
         cube = self.fix.fix_metadata(self.cube)
-        self.assertEqual('1e-3', cube.units.name)
+        self.assertEqual('1e3', cube.units.origin)
