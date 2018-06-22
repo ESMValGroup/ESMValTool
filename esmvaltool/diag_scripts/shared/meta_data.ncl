@@ -11,6 +11,7 @@
 
 load "interface_scripts/logging.ncl"
 load "interface_scripts/interface.ncl"
+load "interface_scripts/auxiliary.ncl"
 
 ;;#############################################################################
 undef("ESMValMD")
@@ -21,7 +22,8 @@ procedure ESMValMD(outfile:string,
                    plottype:string,
                    diag_des:string,
                    diag_authors[*]:string,
-                   diag_refs[*]:string)
+                   diag_refs[*]:string,
+                   infiles[*]:string)
 ;;
 ;; Arguments
 ;;    outfile: file name of the figure (including path)
@@ -48,44 +50,53 @@ begin
     enter_msg(scriptname, funcname)
 
     file_des = "#provenance information coming from the diagnostic"
-    str0 = "outfile: " + outfile 
-    str1 = "caption: " + caption
+    str0 = systemfunc("basename " + outfile) 
+    str1 = "    caption: " + caption
     n = dimsizes(statistics)
     str2 = new(n+1, string)
-    str2(0) = "statistics: "
+    str2(0) = "    statistics: "
     do i = 0, n-1
-        str2(i+1) = "  - " + statistics(i) 
+        str2(i+1) = "      - " + statistics(i) 
     end do
-    str3 = "domain: " + domain 
-    str4 = "plottype: " + plottype
-    str5 = "diag_description: " + diag_des
+    str3 = "    domain: " + domain 
+    str4 = "    plottype: " + plottype
+    str5 = "    diag_description: " + diag_des
     n = dimsizes(diag_authors)
     str6 = new(n+1, string)
-    str6(0) = "diag_authors: "
+    str6(0) = "    diag_authors: "
     do i = 0, n-1
-        str6(i+1) = "  - " + diag_authors(i) 
+        str6(i+1) = "      - " + diag_authors(i) 
     end do
     n = dimsizes(diag_refs)
     str7 = new(n+1, string)
-    str7(0) = "diag_references: "
+    str7(0) = "    diag_references: "
     do i = 0, n-1
-        str7(i+1) = "  - " + diag_refs(i) 
+        str7(i+1) = "      - " + diag_refs(i) 
+    end do
+    n = dimsizes(infiles)
+    str8 = new(n+1, string)
+    str8(0) = "    input_files: "
+    do i = 0, n-1
+        str8(i+1) = "      - ???" 
+        ;str8(i+1) = "      - " + infiles(i) 
     end do
 
-    str := array_append_record(str6,str7,0) 
+    str := array_append_record(str7,str8,0) 
+    str := array_append_record(str6,str,0) 
     str := array_append_record(str5,str,0) 
     str := array_append_record(str4,str,0) 
     str := array_append_record(str3,str,0) 
     str := array_append_record(str2,str,0) 
     str := array_append_record(str1,str,0) 
     str := array_append_record(str0,str,0) 
-    str := array_append_record(file_des,str,0) 
+    ;str := array_append_record(file_des,str,0) 
 
+    ;str_key = [/basenaeoutfile/]
     str_list = [/str/]
 
-    ;yaml_file = config_user_info@plot_dir + outfile + "_diag_prov.yml"
     yaml_file = outfile + "_diag_prov.yml"
-    write_table(yaml_file, "w", str_list, "%s %s %s %s %s %s %s %s")
+    ;write_table(yaml_file, "a", str_key, "%s")
+    write_table(yaml_file, "a", str_list, "%s %s %s %s %s %s %s %s")
     delete(str)
 
     log_info(" write meta data to " + yaml_file)

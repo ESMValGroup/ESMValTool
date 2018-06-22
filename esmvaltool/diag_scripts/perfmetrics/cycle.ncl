@@ -165,6 +165,6 @@ begin
             +"reference dataset. It also calculates grading and taylor metrics."
   authors = (/"righ_ma","fran_fr","eyri_ve","gott_kl"/)
   references = (/"righi15gmd","gleckler08jgr"/)
-  ESMValMD(outfile, caption, statistics, domain, plottype, diag_des, authors, references)
+  ESMValMD(outfile+"."+file_type, caption, statistics, domain, plottype, diag_des, authors, references, "infiles")
 
 end
