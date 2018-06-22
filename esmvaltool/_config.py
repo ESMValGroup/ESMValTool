@@ -37,16 +37,6 @@ def read_config_user_file(config_file, recipe_name):
                            "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
-    if cfg['compress_netcdf']:
-        logger.warning("You have enabled NetCDF compression."
-                       "Accesing partially the files can be much "
-                       "slower than expected if your access pattern does not "
-                       "match their internal pattern. "
-                       "Make sure to specify the expected access pattern in "
-                       "the recipe."
-                       "If the problem persists, try disabling NetCDF "
-                       "compression.")
-
     # expand ~ to /home/username in directory names and normalize paths
     cfg['output_dir'] = os.path.abspath(os.path.expanduser(cfg['output_dir']))
 
