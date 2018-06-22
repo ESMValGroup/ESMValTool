@@ -82,3 +82,13 @@ test-reports/
 doc/sphinx/source/diag_scripts/**
 doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
+
+# Data files
+*.nc
+*.nc4
+*.grb
+*.grib
+*.RData
+*.Rdata
+*.rdata
+*.pkl

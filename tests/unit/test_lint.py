@@ -60,7 +60,8 @@ def test_nclcodestyle():
         ', '.join(check_paths)))
 
     style = nclcodestyle.StyleGuide()
-
+    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    check_paths = [os.path.join(package_root, path) for path in check_paths]
     success = style.check_files(check_paths).total_errors == 0
 
     if not success:
