@@ -31,7 +31,8 @@ class rlut(Fix):
 class rlutcs(rlut):
     """Fixes for rlut"""
     pass
-    
+
+
 class so(Fix):
     """Fixes for so"""
     # pass
@@ -54,4 +55,3 @@ class so(Fix):
         cube.units = '1e3'
 
         return cube
-
