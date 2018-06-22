@@ -21,7 +21,7 @@ Core development team
 * Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik der Atmosphäre, Germany (PI)
 
   ESMValTool Core PI and Developer: contact for requests to use the ESMValTool and for collaboration with the
-  development team, access to the PRIVATE GitHub repository (see :numref:`annex_b`)
+  development team, access to the PRIVATE GitHub repository.
 
 * Alfred-Wegener-Institute Bremerhaven (AWI), Germany
 * Barcelona Computing Center (BSC), Spain
