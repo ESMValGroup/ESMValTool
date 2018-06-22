@@ -90,8 +90,8 @@ def check_preprocessors(preprocessors):
         if invalid_functions:
             raise RecipeError(
                 "Unknown function(s) {} in preprocessor {}, choose from: {}"
-                .format(invalid_functions, name, ', '.join(
-                    preprocessor.DEFAULT_ORDER)))
+                .format(invalid_functions, name,
+                        ', '.join(preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
@@ -140,8 +140,9 @@ def check_preprocessor_settings(settings):
         try:
             inspect.getcallargs(function, None, **settings[step])
         except TypeError:
-            logger.error("Wrong preprocessor function arguments in "
-                         "function '%s'", step)
+            logger.error(
+                "Wrong preprocessor function arguments in "
+                "function '%s'", step)
             raise
 
 
@@ -758,6 +759,8 @@ class Recipe(object):
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
             if 'fx_files' in variable:
+                for fx_file in variable['fx_files']:
+                    DATASET_KEYS.add(fx_file)
                 # Get the fx files
                 variable['fx_files'] = get_input_fx_filelist(
                     variable=variable,
