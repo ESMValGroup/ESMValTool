@@ -36,59 +36,17 @@ Pull requests
 =============
 
 This section describes the general workflow of how new diagnostics are integrated into the ESMValTool and the
-responsibilities of the developer contribution to the ESMValTool. *For technical details on how to work with the
-version controlled repository for the ESMValTool source code see* :numref:`annex_b`.
+responsibilities of the developer contribution to the ESMValTool. To be written for v2.
 
 Workflow core development team
 ------------------------------
 
 The following workflow followed by the ESMValTool core development team takes place whenever a developer
-requests integration of a diagnostics set into the *development branch* (see :numref:`annex_b`):
+requests integration of a diagnostics set into the *development branch*.
 
-#. Check that the developer submits a **standard recipe** that calls a set of diagnostics / metrics
-
-#. Check that the related documentation  is compliant with **documentation templates for diagnostics and metrics sets** (see :numref:`std_nml`).
-
-#. Check that the code follows **coding rules and standard**
-
-#. Check that a **recipe** is provided for **automated testing** that runs on 2-3 models and a small set of observations/reference model/idealized data.
-
-   * Verify that such a **reduced and small set of observations/reference model/idealized data** is delivered for each diagnostic that is called by the standard recipe.
-   * Verify that an **example plot + netCDF for automated testing** created with this reduced data set is provided for each diagnostic that is called by the standard recipe as a reference.
-
-#. Check that also the **full set of observations** is provided that allows a sophisticated scientific application of the (full) standard recipe.
-
-#. Check that the **observations are documented**  and that a reformat routine is available in case the original source is not in CMOR standard.
-
-#. Run the **automated testing** with all available diagnostics.
-
-#. Iterate with developer(s) on points 1-7 until the above items are fulfilled and the reference plots for all standard recipes included in the *DEVELOPMENT BRANCH* (see :numref:`annex_b`) can be reproduced.
+To be written for v2.
 
 Responsibilities of ESMValTool developers
 -----------------------------------------
 
-1. Accept the **ESMValTool license agreement / terms of use** (see http://www.esmvaltool.org/license.html).
-
-2. Provide documentation on the  that is compliant with **documentation templates for diagnostics and metrics sets**.
-
-3. Provide well documented code that follows the **coding rules and standards**.
-
-4. **For each pull request** to implement a diagnostic set into the *DEVELOPMENT BRANCH* (see :numref:`annex_b`).
-
-   **Scientific analysis**
-
-   * Provide the code **for all diagnostics and metrics** that are called.
-   * Standard recipe running on (if possible) all CMIP5 models and corresponding plots that are produced
-   * Provide the **full set of observations** that allows a sophisticated scientific application of the full standard recipe list (indicate source and if applicable license issues).
-   * Provide **documentation for the observations** and a reformat routine if the original source does not follow the CMOR standard.
-
-   **Automated testing
-
-   * Provide the **code for automated testing** for the diagnostic set that should be integrated into the
-   * *DEVELOPMENT BRANCH* (see section :numref:`annex_b`).
-   * Provide a **recipe for automated testing**.
-   * Provide a **reduced and small set of observations/reference model/idealized data** for each diagnostic that is called by the testing recipe.
-   * Provide **NetCDF + example plots for automated testing** based on the reduced data set and the standard recipe as a reference.
-
-5. **Name a contact person** providing (scientific) support for your diagnostics.
-
+To be written.
