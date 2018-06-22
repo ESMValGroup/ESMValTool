@@ -31,3 +31,27 @@ class rlut(Fix):
 class rlutcs(rlut):
     """Fixes for rlut"""
     pass
+    
+class so(Fix):
+    """Fixes for so"""
+    # pass
+
+    def fix_metadata(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.units = '1e3'
+
+        return cube
+
