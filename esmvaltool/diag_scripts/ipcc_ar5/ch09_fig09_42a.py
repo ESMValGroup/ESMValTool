@@ -38,6 +38,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared as e
+import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -62,7 +63,7 @@ def calculate_ecs(cfg, datasets, variables):
                              dataset=dataset)
 
         # Plot ECS regression if desired
-        if not (cfg[e.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
+        if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
             continue
 
         # Plot data
@@ -83,7 +84,7 @@ def calculate_ecs(cfg, datasets, variables):
                         variables.RTMT.units)
         axes.set_xlim(0.0, 7.0)
         axes.set_ylim(-2.0, 10.0)
-        axes.axeshline(linestyle='dotted', c='black')
+        axes.axhline(linestyle='dotted', c='black')
         axes.text(0.05, 0.05,
                   "r = {:.2f}".format(reg_stats.rvalue),
                   transform=axes.transAxes)
@@ -94,8 +95,8 @@ def calculate_ecs(cfg, datasets, variables):
                   transform=axes.transAxes)
 
         # Save plot
-        filepath = os.path.join(cfg[e.PLOT_DIR],
-                                dataset + '.' + cfg[e.OUTPUT_FILE_TYPE])
+        filepath = os.path.join(cfg[n.PLOT_DIR],
+                                dataset + '.' + cfg[n.OUTPUT_FILE_TYPE])
         fig.savefig(filepath, bbox_inches='tight', orientation='landscape')
         logger.info("Writing %s", filepath)
         axes.cla()
@@ -104,7 +105,7 @@ def calculate_ecs(cfg, datasets, variables):
 
 def plot_data(cfg, datasets, variables):
     """Plot data."""
-    if not cfg[e.WRITE_PLOTS]:
+    if not cfg[n.WRITE_PLOTS]:
         return None
 
     # Setup matplotlib
@@ -144,8 +145,8 @@ def plot_data(cfg, datasets, variables):
                          ncol=2)
 
     # Save plot
-    filename = 'ch09_fig09-42a.' + cfg[e.OUTPUT_FILE_TYPE]
-    filepath = os.path.join(cfg[e.PLOT_DIR], filename)
+    filename = 'ch09_fig09-42a.' + cfg[n.OUTPUT_FILE_TYPE]
+    filepath = os.path.join(cfg[n.PLOT_DIR], filename)
     fig.savefig(filepath, additional_artists=[legend],
                 bbox_inches='tight', orientation='landscape')
     logger.info("Writing %s", filepath)
@@ -156,15 +157,15 @@ def plot_data(cfg, datasets, variables):
 
 def write_data(cfg, datasets, variables):
     """Write netcdf file."""
-    if cfg[e.WRITE_PLOTS]:
+    if cfg[n.WRITE_PLOTS]:
         data_ecs = datasets.get_data_list(short_name=variables.ecs, exp=DIFF)
-        models = [dataset_info[e.DATASET] for dataset_info in
+        models = [dataset_info[n.DATASET] for dataset_info in
                   datasets.get_dataset_info_list(short_name=variables.ecs,
                                                  exp=DIFF)]
         dataset_coord = iris.coords.AuxCoord(models, long_name='models')
         time_now = datetime.datetime.utcnow().isoformat(' ') + 'UTC'
-        attr = {'created_by': 'ESMValTool version {}'.format(cfg[e.VERSION]) +
-                              ', diagnostic {}'.format(cfg[e.SCRIPT]),
+        attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
+                              ', diagnostic {}'.format(cfg[n.SCRIPT]),
                 'creation_date': time_now}
         cube = iris.cube.Cube(data_ecs, long_name=variables.ECS.long_name,
                               var_name=variables.ecs,
@@ -172,7 +173,7 @@ def write_data(cfg, datasets, variables):
         cube.add_aux_coord(dataset_coord, 0)
 
         # Save file
-        filepath = os.path.join(cfg[e.WORK_DIR], variables.ecs + '.nc')
+        filepath = os.path.join(cfg[n.WORK_DIR], variables.ecs + '.nc')
         iris.save(cube, filepath)
         logger.info("Writing %s", filepath)
 
@@ -223,18 +224,18 @@ def main(cfg):
         cube = iris.load(dataset_path, var.standard_names())[0]
 
         # Global mean
-        for coord in [cube.coord(e.LAT), cube.coord(e.LON)]:
+        for coord in [cube.coord(n.LAT), cube.coord(n.LON)]:
             if not coord.has_bounds():
                 coord.guess_bounds()
         area_weights = iris.analysis.cartography.area_weights(cube)
-        cube = cube.collapsed([e.LAT, e.LON], iris.analysis.MEAN,
+        cube = cube.collapsed([n.LAT, n.LON], iris.analysis.MEAN,
                               weights=area_weights)
 
         # Historical: total temporal mean; else: annual mean
         if data.get_exp(dataset_path) == HISTORICAL:
-            cube = cube.collapsed([e.TIME], iris.analysis.MEAN)
+            cube = cube.collapsed([n.TIME], iris.analysis.MEAN)
         else:
-            cube = cube.aggregated_by(e.YEAR, iris.analysis.MEAN)
+            cube = cube.aggregated_by(n.YEAR, iris.analysis.MEAN)
 
         data.set_data(cube.data, dataset_path=dataset_path)
 
@@ -247,13 +248,13 @@ def main(cfg):
     for dataset_path in data.get_path_list(exp=PICONTROL):
         dataset = data.get_dataset(dataset_path)
         short_name = data.get_short_name(dataset_path)
-        data = data.get_data(dataset_path=dataset_path)
+        new_data = data.get_data(dataset_path=dataset_path)
         data_diff = data.get_data(short_name=short_name, exp=ABRUPT4XCO2,
-                                  dataset=dataset) - data
+                                  dataset=dataset) - new_data
         data.add_dataset(short_name + DIFF + dataset, data_diff,
                          short_name=short_name, exp=DIFF, dataset=dataset)
         data.add_dataset(short_name + PICONTROL_TEMP_MEAN + dataset,
-                         np.mean(data), short_name=short_name,
+                         np.mean(new_data), short_name=short_name,
                          exp=PICONTROL_TEMP_MEAN, dataset=dataset)
 
     # Calculate ECS (cf. Andrews et al. 2015)

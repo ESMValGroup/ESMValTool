@@ -25,7 +25,7 @@ preprocessors:
 
 diagnostics:
 
-    fig9-42a:
+    fig09-42a:
         description: ECS vs. GMSAT.
         variables:
             tas:
@@ -92,6 +92,6 @@ diagnostics:
             - {dataset: MPI-ESM-LR,    project: CMIP5, exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
 
         scripts:
-            fig9-42a:
-                script: ipcc_ar5/ch09_fig09-42a.py
+            fig09-42a:
+                script: ipcc_ar5/ch09_fig09_42a.py
                 plot_ecs_regression: True
