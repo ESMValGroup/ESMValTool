@@ -18,7 +18,7 @@
 ;    label_hi: add upper triange for values outside range
 ;    cm_interval: min and max color of the color table
 ;    cm_reverse: reverse color table
-;    sort: sort models in alphabetic order (excluding MMM)
+;    sort: sort datasets in alphabetic order (excluding MMM)
 ;    title: plot title
 ;    scale_font: scaling factor applied to the default font size
 ;    disp_values: switch on/off the grading values on the plot
@@ -103,7 +103,7 @@ begin
 
       end if
 
-    ; Make sure model coordinate is consistent
+    ; Make sure dataset coordinate is consistent
       consistent = False
       if (dimsizes(data_temp_smpi&models).eq. \
          dimsizes(data_all_smpi&models)) then
@@ -117,12 +117,12 @@ begin
         data_all_smpi(ii, :, :) = (/data_temp_smpi/)
         copy_VarCoords(data_temp_smpi, data_all_smpi(ii, :, :))
       else
-      ; Loop over models in new data entry
+      ; Loop over datasets in new data entry
         do imod_temp = 0, dimsizes(data_temp_smpi&models) - 1
-        ; If current model is not already part of the model coordinate
+        ; If current dataset is not already part of the model coordinate
           if (.not.any(data_temp_smpi&models(imod_temp) .eq. \
               data_all_smpi&models)) then
-            ; Append record for model(imod)
+            ; Append record for dataset(imod)
             data_new = extend_var_at(data_all_smpi, 2, \
                                      dimsizes(data_all_smpi&models))
             data_new(ii, :, dimsizes(data_all_smpi&models)) = \
@@ -133,9 +133,9 @@ begin
             data_all_smpi = data_new
             delete(data_new)
             else
-              ; Loop over models of data
+              ; Loop over datasets of data
               do imod = 0, dimsizes(data_all_smpi&models) - 1
-                ; if new data model is identical to current
+                ; if new dataset is identical to current
                 ; entry, write data entry
                 if (data_all_smpi&models(imod).eq. \
                     data_temp_smpi&models(imod_temp)) then
@@ -175,7 +175,7 @@ begin
 
       end if
 
-      ; Create array for collecting all models
+      ; Create array for collecting all datasets
       if (.not.isdefined("data_all")) then
         dim_temp = dimsizes(data_temp)
         dim_data = (/dimsizes(input_files), dim_temp(1), 2/)
@@ -200,7 +200,7 @@ begin
       else
         do imod2 = 0, dimsizes(data_temp&models) - 1
           if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
-            ; Append record for model(imod)
+            ; Append record for dataset(imod)
             data_new = extend_var_at(data_all, 1, dimsizes(data_all&models))
             data_new(ii, dimsizes(data_all&models), :) = \
               (/data_temp(0, imod2, :)/)
@@ -209,9 +209,9 @@ begin
             data_all := data_new
             delete(data_new)
           else
-            ; Loop over models of data
+            ; Loop over datasets of data
             do imod = 0, dimsizes(data_all&models) - 1
-              ; if no data model is similar to curreny entry, write data entry
+              ; if no data dataset is similar to curreny entry, write data entry
               if (data_all&models(imod).eq. data_temp&models(imod2)) then
                 data_all(ii, imod, :) = (/data_temp(0, imod2, :)/)
                 copy_VarCoords(data_temp(0:0, imod2, :), \
@@ -231,7 +231,7 @@ begin
 
     data_all_smpi@num_climofiles = i_climo_cnt
 
-    ; Check for incomplete array, SMPI only for models with all vars
+    ; Check for incomplete array, SMPI only for datasets with all vars
     if any(ismissing(data_all_smpi)) then
       do ivar = 0, dimsizes(data_all_smpi&vars) - 1
         do ii = 0, dimsizes(data_all_smpi&models) - 1
@@ -249,7 +249,7 @@ begin
         end do
         if (isvar("miss_mods")) then
           log_info("Variable " + data_all_smpi&vars(ivar) \
-                   + " is missing Model(s) " \
+                   + " is missing dataset(s) " \
                    + str_join(miss_mods, ", "))
           delete(miss_mods)
           missing_mods = True
@@ -257,7 +257,7 @@ begin
       end do
       if (isvar("missing_mods")) then
         error_msg("f", diag_script, "", "SMPI only supported for" \
-                  + " models containing all variables")
+                  + " datasets containing all variables")
       end if
     end if
 
@@ -294,7 +294,7 @@ begin
     system("mkdir -p " + config_user_info@work_dir)
     ncdf_outfile = ncdf_write(data_smpi, data_smpi@ncdf_dir)
 
-    ; Sort models in alphabetical order (exclude MMM and set to end)
+    ; Sort datasets in alphabetical order (exclude MMM and set to end)
 
     pid = sort_alphabetically(data_smpi&models, \
                               ind(data_smpi&models.eq."Mean-model".or. \
@@ -335,7 +335,7 @@ begin
       delete(data_all@reference)
     end if
 
-    ; Sort models in alphabetical order, excluding multi-model mean/median
+    ; Sort datasets in alphabetical order, excluding multi-model mean/median
     ; which are placed at the beginning
     if (isatt(diag_script_info, "sort")) then
       if (diag_script_info@sort) then

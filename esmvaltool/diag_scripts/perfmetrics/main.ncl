@@ -7,7 +7,7 @@
 ;    Calculates and (optionally) plots annual/seasonal cycles, zonal means,
 ;    lat-lon fields and time-lat-lon fields from input T3M or T2Ms data.
 ;    The calculated fields can be also plotted as difference w.r.t. a given
-;    reference model. It also calculates grading and taylor metrics.
+;    reference dataset. It also calculates grading and taylor metrics.
 ;    Input data have to be regridded to a common grid in the preprocessor.
 ;
 ; Required diag_script_info attributes
@@ -65,7 +65,7 @@
 ;                        now stippling significant grid cells (old version:
 ;                        masking out non-significant values in gray)
 ;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
-;                        main namelist
+;                        recipe file
 ;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
 ;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;                        of the code.
@@ -102,7 +102,7 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -189,32 +189,33 @@ begin
         diag_script_info@range_option.eq.0) then
       error_msg("f", diag_script, "", "Currently Single Model " + \
                 "Performance Index is only supported for time periods of " + \
-                "the same length for all models and observations")
+                "the same length for all datasets")
     end if
 
   end if
 
-  ; Unique names for models
-  modelnames = project_style(diag_script_info, "annots")
+  ; Unique names for datasets
+  datasetnames = project_style(diag_script_info, "annots")
 
-  ; Check for reference model definition
-  if (variable_info@reference_model.eq."None") then
-    error_msg("f", diag_script, "", "no reference model is specified")
+  ; Check for reference dataset definition
+  if (variable_info@reference_dataset.eq."None") then
+    error_msg("f", diag_script, "", "no reference dataset is specified")
   end if
 
-  ; Set index of the reference (and alternative) model
-  if (isatt(variable_info, "alternative_model")) then
+  ; Set index of the reference (and alternative) dataset
+  if (isatt(variable_info, "alternative_dataset")) then
     l_altern = True
     nobs = 2
-    ref_inds = get_ref_model_idx(model_info, \
-                                 (/variable_info@reference_model, \
-                                   variable_info@alternative_model/))
+    ref_inds = get_ref_dataset_idx(dataset_info, \
+                                   (/variable_info@reference_dataset, \
+                                    variable_info@alternative_dataset/))
     ref_ind = ref_inds(0)
     alt_ind = ref_inds(1)
   else
     l_altern = False
     nobs = 1
-    ref_inds = get_ref_model_idx(model_info, variable_info@reference_model)
+    ref_inds = \
+      get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
     ref_ind = ref_inds
   end if
 
@@ -267,39 +268,39 @@ begin
     ; Define grading arrays
     nmetrics = dimsizes(diag_script_info@metric)
     ncdf_dir = new(nmetrics, string)
-    nmodels = dimsizes(modelnames) - nobs
+    ndatasets = dimsizes(datasetnames) - nobs
 
-    grading = new((/nmetrics, 1, nmodels, nobs/), float)
+    grading = new((/nmetrics, 1, ndatasets, nobs/), float)
     grading!0 = "metric"
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
     grading!2 = "models"
     grading!3 = "reference"
     grading&diagnostics = var0_grade
-    grading&models = remove_index(modelnames, ref_inds)
+    grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
-      grading&reference = modelnames(ref_inds)
+      grading&reference = datasetnames(ref_inds)
     end if
 
     ; Special case Taylor
     if (any(diag_script_info@metric.eq."taylor")) then
-      nmodels = dimsizes(modelnames) - 1  ; always 1 reference model
-      taylor = new((/1, nmodels, 2/), float)
+      ndatasets = dimsizes(datasetnames) - 1  ; always 1 reference dataset
+      taylor = new((/1, ndatasets, 2/), float)
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
       taylor!1 = "models"
       taylor!2 = "statistic"
       taylor&diagnostics = var0_grade
       taylor&statistic = (/"stddev_ratio", "correlation"/)
-      taylor&models = remove_index(modelnames, ref_ind)
+      taylor&models = remove_index(datasetnames, ref_ind)
     end if
 
     ; Special case SMPI
     if (any(diag_script_info@metric.eq."SMPI")) then
-      nmodels = dimsizes(modelnames) - 1  ; always 1 reference model
+      nmodels = dimsizes(datasetnames) - 1  ; always 1 reference model
       smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nmodels/), float)
       smpi!0 = "bootstrap_member"
       smpi!1 = "models"
       smpi&bootstrap_member = ispan(0, diag_script_info@smpi_n_bootstrap, 1)
-      smpi&models = remove_index(modelnames, ref_ind)
+      smpi&models = remove_index(datasetnames, ref_ind)
     end if
 
     ; Define grading filename
@@ -346,9 +347,9 @@ begin
       if (diag_script_info@metric(met).eq."SMPI") then
         ens_idx = new(dimsizes(smpi&models), integer)
         do ii = 0, dimsizes(ens_idx) - 1
-          loc_idx = ind(model_info@model.eq.smpi&models(ii))
-          ; Select only the models of the specified project
-          if (model_info@project(loc_idx).ne. \
+          loc_idx = ind(dataset_info@dataset.eq.smpi&models(ii))
+          ; Select only the datasets of the specified project
+          if (dataset_info@project(loc_idx).ne. \
               diag_script_info@normalization(met)) then
             ens_idx(ii) = ens_idx@_FillValue
           else
@@ -356,7 +357,7 @@ begin
           end if
         end do
         if (all(ismissing(ens_idx))) then
-          error_msg("f", diag_script, "", "No models for the selected " + \
+          error_msg("f", diag_script, "", "No datasets for the selected " + \
                     "normalization (" + diag_script_info@normalization(met) + \
                     ") found")
         end if
@@ -367,7 +368,7 @@ begin
         end do
       end if
 
-      ; Reduce dimensionality if no alternative model
+      ; Reduce dimensionality if no alternative dataset
       if (.not.l_altern .and. diag_script_info@metric(met).ne."taylor") then
         metric := metric(:, :, 0)
         delete(metric@reference)
@@ -384,8 +385,8 @@ begin
         smpi@invar = var0
         smpi@region = location
         smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
-        do imod = 0, dimsizes(model_info@model) - 1
+        smpi@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
+        do imod = 0, dimsizes(dataset_info@mdataset) - 1
           num_climo = "climofile_" + imod
           smpi@$num_climo$ = input_file_info@filename(imod)
         end do
@@ -404,8 +405,8 @@ begin
         metric@diag_script = (/diag_script/)
         metric@var = "grade"
         metric@region = location
-        metric@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
-        do imod = 0, dimsizes(model_info@model) - 1
+        metric@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
+        do imod = 0, dimsizes(dataset_info@dataset) - 1
           num_climo = "climofile_" + imod
           metric@$num_climo$ = input_file_info@filename(imod)
         end do

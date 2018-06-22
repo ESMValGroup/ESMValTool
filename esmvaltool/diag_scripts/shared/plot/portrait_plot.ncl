@@ -33,8 +33,8 @@ function portrait_plot(wks_in[1],
 ;    source!1 = models
 ;
 ;    source = (ndiag, nmod, nref)
-;    source(:,:,0) = reference model
-;    source(:,:,1) = alternative model (optional)
+;    source(:,:,0) = reference dataset
+;    source(:,:,1) = alternative dataset (optional)
 ;    source!0 = diagnostics
 ;    source!1 = models
 ;

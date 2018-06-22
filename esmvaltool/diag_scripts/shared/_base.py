@@ -5,6 +5,7 @@ import logging
 import os
 import shutil
 import sys
+import time
 
 import yaml
 
@@ -46,6 +47,13 @@ def run_diagnostic():
         action='store_true',
     )
     parser.add_argument(
+        '-i',
+        '--ignore-existing',
+        help=("Force running the script, even if output files exists."
+              "(useful when re-running the script, use at your own risk)"),
+        action='store_true',
+    )
+    parser.add_argument(
         '-l',
         '--log-level',
         help=("Set the log-level"),
@@ -61,6 +69,7 @@ def run_diagnostic():
 
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
+    logging.Formatter.converter = time.gmtime
     logging.getLogger().setLevel(cfg['log_level'].upper())
 
     # Read input metadata
@@ -83,15 +92,18 @@ def run_diagnostic():
             for output_directory in existing:
                 logger.info("Removing %s", output_directory)
                 shutil.rmtree(output_directory)
-        else:
+        elif not args.ignore_existing:
             logger.error(
                 "Script will abort to prevent accidentally overwriting your "
                 "data in these directories:\n%s\n"
-                "Use -f or --force to force emptying the output directories.",
-                '\n'.join(existing))
+                "Use -f or --force to force emptying the output directories "
+                "or use -i or --ignore-existing to ignore existing output "
+                "directories.", '\n'.join(existing))
 
     for output_directory in output_directories:
         logger.info("Creating %s", output_directory)
+        if args.ignore_existing and os.path.exists(output_directory):
+            continue
         os.makedirs(output_directory)
 
     yield cfg

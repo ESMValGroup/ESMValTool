@@ -1,0 +1,41 @@
+# Generic recipe Yamale schema definition.
+# See https://github.com/23andMe/Yamale for help.
+
+---
+# Recipe schema
+datasets: list(include('dataset'), required=False)
+preprocessors: map(map(), required=False)
+diagnostics: map(include('diagnostic'), required=False)
+
+---
+# Recipe item definitions
+dataset:
+  dataset: str()
+  project: str()
+  start_year: int(min=1750, max=2250)
+  end_year: int(min=1750, max=2250)
+  ensemble: str(required=False)
+  exp: str(required=False)
+  mip: str(required=False)
+  realm: str(required=False)
+  shift: str(required=False)
+  tier: int(min=1, max=3, required=False)
+  type: str(required=False)
+
+variable:
+  field: str()
+  preprocessor: str(required=False)
+  reference_dataset: str(required=False)
+  alternative_dataset: str(required=False)
+  mip: str(required=False)
+
+# TODO: add preprocessor item
+
+diagnostic:
+  scripts: any(null(), map(include('script')))
+  additional_datasets: list(include('dataset'), required=False)
+  description: str(required=False)
+  variables: map(include('variable'), required=False)
+
+script:
+  script: str()
