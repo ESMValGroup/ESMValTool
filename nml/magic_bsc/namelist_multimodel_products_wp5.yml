@@ -1,0 +1,75 @@
+###############################################################################
+# nameslist_multimodel_products.yml
+#
+# Description
+# Namelist to compute the ensemble mean anomaly and the ensemble
+# variance and agreement and plot the results as maps and time series.
+#
+# Authors
+# Nicolaur Manubens (BSC)
+# Alasdair Hunter (BSC)
+#
+#
+# Project
+# KNMI Magic
+#
+# Reference
+# Manubens, Nicolau, Louis-Philippe Caron, Alasdair Hunter, Omar Bellprat,
+# Eleftheria Exarchou, Neven S. Fučkar, Javier Garcia-Serrano et al.
+# "An R package for climate forecast verification." Environmental
+# Modelling & Software 103 (2018): 29-42.
+#
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+latlon_roi: (/latmin,latmax,lonmin,lonmax/)
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      long1: -10
+      long2: 50
+      lat1: 27
+      lat2: 70
+
+diagnostics:
+  anomaly_agreement:
+    description: Calculate multi-member anomalies and their spread/agreement.
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: Amon
+        field: T2M
+    scripts:
+      main:
+        script: magic_bsc/multimodel_products.r #(in diag_scripts)
+
+        #Specify datasets to be used for computing climatology and anomaly
+        climatology_class: historical
+        anomaly_class: historical
+
+        climatology_start_year: 2000
+        climatology_end_year: 2002
+
+        anomaly_start_year: 2000
+        anomaly_end_year: 2002
+        #Parameters for Season() function
+        moninf: 6   #If this is null, then the monthly anomalies will be computed
+        monsup: 8
+        agreement_threshold: 80
+        #Time series plot options
+        running_mean: 5 #Length of running mean to use for the time series plot
+
+        # Timeseries plot
+        time_series_plot: maxmin # Either mean or maxmin (plot the mean with/without shading between the max and min.

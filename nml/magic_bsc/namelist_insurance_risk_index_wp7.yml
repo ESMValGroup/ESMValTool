@@ -1,0 +1,60 @@
+###############################################################################
+# namelist_insurance_risk_index.yml
+#
+# Description
+# Namelist for computing the standardized ETCCDI indices which are used in
+#the Actuaries Climate Risk Index.
+
+#
+# Authors
+# Alasdair Hunter (BSC, Spain)
+# Nicolau Manubens (BSC, Spain)
+# Louis-Philippe  (BSC, Spain)
+#
+# Project
+# C3S Magic
+#
+# Reference
+# http://actuariesclimateindex.org/home/
+#
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
+ # - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+
+latlon_roi: (/latmin,latmax,lonmin,lonmax/)
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: IPSL-CM5A-LR
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      long1: 0
+      long2: 40
+      lat1: 30
+      lat2: 50
+
+
+diagnostics:
+  risk_index:
+    description: Calculate insurance risk indices.
+    variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+        field: T2M
+
+    scripts:
+      main:
+        script: magic_bsc/insurance_index.r #(in diag_scripts)
+
+        metric: tx90p
+
+

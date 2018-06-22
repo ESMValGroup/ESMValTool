@@ -1,0 +1,70 @@
+###############################################################################
+# namelist_modes_of_variability.yml
+#
+# Description
+# Tool to compute the RMSE between the observed and modelled patterns of 
+# variability obtained through classification and their relative relative bias 
+#(percentage) in the frequency of occurrence and the persistence of each mode.
+#
+#
+# Authors
+# Verónica Torralba
+# Neven Fuckar
+# Nicola Cortesi
+# Virginie Guemas
+# Alasdair Hunter
+# Nicolau Manubens
+#
+# Project
+# KNMI Magic
+#
+# Reference
+# Fučkar, Neven S., Virginie Guemas, Nathaniel C. Johnson, François Massonnet, 
+# and Francisco J. Doblas-Reyes. "Clusters of interannual sea ice variability in 
+# the northern hemisphere." Climate Dynamics 47, no. 5-6 (2016): 1527-1543.
+# 
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+ 
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+diagnostics:
+  weather_regime:
+    description: Compute modes of variability.
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: Amon
+        field: T2M
+    scripts:
+      main:
+        script: magic_bsc/weather_regime.r #(in diag_scripts)
+        
+        #Region considered
+        lat_max: 81
+        lat_min: 27
+        lon_max: 45
+        lon_min: 274.5
+
+        #Start and end periods for the historical and projection periods
+        start_historical: "1960-01-01"
+        end_historical: "1991-12-01"
+        start_projection: "1960-01-01"
+        end_projection: "1991-12-01"
+
+        #Regime parameters
+        ncenters: 4
+        cluster_method: "kmeans"
+        EOFS: "FALSE"
+

@@ -1,0 +1,67 @@
+###############################################################################
+# namelist_bsc_magic_wp6.yml
+#
+# Description
+# Namelist for computing seasonal means or running avergaes,
+# combining indices from multiple models and computing area averages.
+#
+# Authors
+# A Hunter (BSC)
+# N Manubens (BSC)
+#
+# Project
+# KNMI Magic
+#
+#
+#
+#
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+ # - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2060}
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+diagnostics:
+  anomaly_agreement:
+    description: Combine indices and/or compute area weighted averages.
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: Amon
+        field: T2M
+    scripts:
+      main:
+        script: magic_bsc/bsc_wp6.r #(in diag_scripts)
+
+        #Region for the area weights, if no weighting is required set all
+        #variables to NULL
+        lat_max: 70
+        lat_min: 27
+        lon_max: 50
+        lon_min: 5
+
+
+        ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
+        weights: "equal"
+
+        # Compute running mean?
+        running_mean: 3 #3
+
+        #Or compute seasons? (NOTE: cant compute both running means and seasons):
+        moninf: NULL  # First month
+        monsup: NULL  # Last month
+
+        # Multi-year average?
+        multi_year_average: FALSE
