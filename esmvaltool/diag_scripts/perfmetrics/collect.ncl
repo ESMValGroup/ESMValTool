@@ -211,7 +211,7 @@ begin
           else
             ; Loop over datasets of data
             do imod = 0, dimsizes(data_all&models) - 1
-              ; if no data dataset is similar to curreny entry, write data entry
+              ; if no dataset is similar to curreny entry, write data entry
               if (data_all&models(imod).eq. data_temp&models(imod2)) then
                 data_all(ii, imod, :) = (/data_temp(0, imod2, :)/)
                 copy_VarCoords(data_temp(0:0, imod2, :), \

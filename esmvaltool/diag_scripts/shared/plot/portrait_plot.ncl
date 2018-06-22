@@ -660,8 +660,6 @@ begin
         performance_index = varname
     end if
 
-    print(data)
-
     ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, performance_index)
 

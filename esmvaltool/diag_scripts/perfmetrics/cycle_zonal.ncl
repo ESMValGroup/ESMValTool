@@ -7,7 +7,7 @@
 procedure perfmetrics_ptype_script()
 begin
 
-  ; Set model indexes, with reference and alternative models first
+  ; Set dataset indexes, with reference and alternative datasets first
   modidx = ispan(0, dim_MOD - 1, 1)
   if (l_altern) then
     modidx := array_append_record( \
@@ -17,17 +17,17 @@ begin
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
   end if
 
-  ; Loop over models
+  ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
 
     imod = modidx(ii)
 
-    log_debug("Processing " + modelnames(imod))
+    log_debug("Processing " + datasetnames(imod))
 
     ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + model_info@filename(imod)))
+    fname = basename(systemfunc("basename " + dataset_info@filename(imod)))
     fname = fname + "_" + basename(diag_script) + "_cycle_latlon"
     fname = fname + "_" + diag_script_info@time_avg
     if (isatt(diag_script_info, "level")) then
@@ -64,7 +64,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info@reference_model
+    var_all@ref_model = variable_info@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -75,12 +75,12 @@ begin
       continue
     end if
 
-    ; Store reference model
+    ; Store reference dataset
     if (imod.eq.ref_ind) then
       var_ref = var_all
     end if
 
-    ; Store alternative model
+    ; Store alternative dataset
     if (l_altern) then
       if (imod.eq.alt_ind) then
         var_alt = var_all
@@ -91,7 +91,7 @@ begin
     do met = 0, nmetrics - 1
 
       if (diag_script_info@metric(met).eq."taylor") then
-        locidx = ind(modelnames(imod).eq.taylor&models)
+        locidx = ind(datasetnames(imod).eq.taylor&models)
         if (ismissing(locidx)) then
           continue
         end if
@@ -102,7 +102,7 @@ begin
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
       else if (diag_script_info@metric(met).eq."SMPI") then
-        locidx = ind(modelnames(imod).eq.smpi&models)
+        locidx = ind(datasetnames(imod).eq.smpi&models)
         if (ismissing(locidx)) then
           continue
         end if
@@ -110,7 +110,7 @@ begin
           (/calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                              "SMPI")/)
       else
-        locidx = ind(modelnames(imod).eq.grading&models)
+        locidx = ind(datasetnames(imod).eq.grading&models)
         if (ismissing(locidx)) then
           continue
         end if

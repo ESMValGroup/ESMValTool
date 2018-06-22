@@ -386,7 +386,7 @@ begin
         smpi@region = location
         smpi@ensemble_name = diag_script_info@normalization(met)
         smpi@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
-        do imod = 0, dimsizes(dataset_info@mdataset) - 1
+        do imod = 0, dimsizes(dataset_info@dataset) - 1
           num_climo = "climofile_" + imod
           smpi@$num_climo$ = input_file_info@filename(imod)
         end do

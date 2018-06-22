@@ -103,7 +103,7 @@ begin
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
       else if (diag_script_info@metric(met).eq."SMPI") then
-        locidx = ind(modelnames(imod).eq.smpi&models)
+        locidx = ind(datasetnames(imod).eq.smpi&models)
         if (ismissing(locidx)) then
           continue
         end if
