@@ -448,7 +448,8 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save_cubes'] = {}
+    settings['save'] = {
+        'compress': config_user['compress_netcdf']}
 
     return settings
 
