@@ -83,7 +83,8 @@ begin
 
     str_list = [/str/]
 
-    yaml_file = config_user_info@plot_dir + outfile + "_diag_prov.yml"
+    ;yaml_file = config_user_info@plot_dir + outfile + "_diag_prov.yml"
+    yaml_file = outfile + "_diag_prov.yml"
     write_table(yaml_file, "w", str_list, "%s %s %s %s %s %s %s %s")
     delete(str)
 

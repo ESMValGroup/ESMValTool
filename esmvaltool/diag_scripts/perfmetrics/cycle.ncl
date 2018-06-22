@@ -154,6 +154,17 @@ begin
 
   log_info(" gv " + outfile + "." + file_type)
 
-  ESMValMD("outfile", "caption", (/"stat1","stat2"/), "domain", "plottype", "diag_des", (/"author1","author2"/), (/"ref1","ref2"/))
+  ;collect meta-data and call ESMValMD function
+  caption = "Cycle plot of variable: " + var0
+  statistics = (/"mean","rmsd"/)
+  domain = "global"
+  plottype = "seas"
+  diag_des = "Calculates and (optionally) plots annual/seasonal cycles, zonal means, " \
+            +"lat-lon fields and time-lat-lon fields from input T3M or T2Ms data. " \
+            +"The calculated fields can be also plotted as difference w.r.t. a given " \
+            +"reference dataset. It also calculates grading and taylor metrics."
+  authors = (/"righ_ma","fran_fr","eyri_ve","gott_kl"/)
+  references = (/"righi15gmd","gleckler08jgr"/)
+  ESMValMD(outfile, caption, statistics, domain, plottype, diag_des, authors, references)
 
 end
