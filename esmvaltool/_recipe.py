@@ -11,8 +11,8 @@ import yaml
 
 from . import __version__, preprocessor
 from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_output_file, get_start_end_year,
-                           get_statistic_output_file, get_input_fx_filelist)
+                           get_input_fx_filelist, get_output_file,
+                           get_start_end_year, get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor._derive import get_required
@@ -61,8 +61,7 @@ def check_ncl_version():
 
 def check_recipe_with_schema(filename):
     """Check if the recipe content matches schema."""
-    schema_file = os.path.join(
-        os.path.dirname(__file__), 'recipe_schema.yml')
+    schema_file = os.path.join(os.path.dirname(__file__), 'recipe_schema.yml')
     logger.debug("Checking recipe against schema %s", schema_file)
     recipe = yamale.make_data(filename)
     schema = yamale.make_schema(schema_file)

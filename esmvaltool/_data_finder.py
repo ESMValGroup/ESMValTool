@@ -11,8 +11,8 @@ import re
 
 import six
 
-from ._config import cmip5_mip2realm_freq, cmip5_dataset2inst, \
-    get_project_config
+from ._config import (cmip5_dataset2inst, cmip5_mip2realm_freq,
+                      get_project_config)
 
 logger = logging.getLogger(__name__)
 
@@ -102,8 +102,10 @@ def replace_tags(path, variable, j=None, i=None):
         if not isinstance(replacewith, list):
             path = path.replace('[' + tag + ']', replacewith)
         else:
-            path = [path.replace('[' + tag + ']', dkrz_place)
-                    for dkrz_place in replacewith][j]
+            path = [
+                path.replace('[' + tag + ']', dkrz_place)
+                for dkrz_place in replacewith
+            ][j]
     return path
 
 
@@ -217,8 +219,8 @@ def get_input_fx_filename(variable, rootpath, drs):
     """
     files = []
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    for j, dirname_template in zip(range(len(dirname_templates)),
-                                   dirname_templates):
+    for j, dirname_template in zip(
+            range(len(dirname_templates)), dirname_templates):
         # Simulate a latest version if required
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
@@ -311,8 +313,8 @@ def get_input_fx_filelist(variable, rootpath, drs):
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
     fx_files = {}
 
-    for j, dirname_template in zip(range(len(dirname_templates)),
-                                   dirname_templates):
+    for j, dirname_template in zip(
+            range(len(dirname_templates)), dirname_templates):
         # Find latest version if required
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
