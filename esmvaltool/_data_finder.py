@@ -338,7 +338,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
             fx_files[variable['fx_files'][j]] = fx_file_list[0]
         else:
             # No files
-            fx_files[variable['fx_files'][j]] = ''
+            fx_files[variable['fx_files'][j]] = None
 
     return fx_files
 
