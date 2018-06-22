@@ -91,8 +91,8 @@ def timecoord_to_float(times):
     dtimes = times.units.num2date(times.points)
     floattimes = []
     for dtime in dtimes:
-        # TODO: it would be better to have a calendar dependent
-        # value for daysperyear, as this is not accurate for 360 day calendars.
+        # TODO: it would be better to have a calendar dependent value
+        # for daysperyear, as this is not accurate for 360 day calendars.
         daysperyear = 365.25
         floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
@@ -154,8 +154,7 @@ def get_image_path(cfg,
     """
     #####
     if basenamelist == 'default':
-        basenamelist = [
-                        'project', 'dataset', 'mip', 'exp', 'ensemble',
+        basenamelist = ['project', 'dataset', 'mip', 'exp', 'ensemble',
                         'field', 'short_name', 'preprocessor', 'diagnostic',
                         'start_year', 'end_year', ]
 

@@ -51,7 +51,6 @@ def area_slice(mycube, long1, long2, lat1, lat2):
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
-
     # Converts Negative longitudes to 0 -> 360. standard
     if long1 < 0.:
         long1 += 360.
@@ -260,36 +259,21 @@ def extract_slice(mycube, latitude=None, longitude=None):
             'extract_slice: Can\'t reduce lat and lon at the same time'
         )
 
-    #####
-    # Look for the first coordinate.
-    if isinstance(latitude, float):
-        coord_index = lats.nearest_neighbour_index(latitude)
-        coord_dim = mycube.coord_dims('latitude')[0]
 
-    if isinstance(longitude, float):
-        coord_index = lons.nearest_neighbour_index(longitude)
-        coord_dim = mycube.coord_dims('longitude')[0]
+    for dim_name, dim_cut, coord in zip(['latitude','longitude'],
+        [latitude,longitude],[lats,lons]):
+        #####
+        # Look for the first coordinate.        
+        if isinstance(dim_cut, float):
+            coord_index = lats.nearest_neighbour_index(dim_cut)
+            coord_dim = mycube.coord_dims(dim_name)[0]
 
-    #####
-    # Look for the second coordinate.
-    if isinstance(latitude, list):
-        coord_dim2 = mycube.coord_dims('latitude')[0]
-        if len(latitude) > 2:
-            raise ValueError(
-                'extract_slice: latitude slice has too many points: {}'.format(
-                    latitude))
-        second_coord_range = [lats.nearest_neighbour_index(latitude[0]),
-                              lats.nearest_neighbour_index(latitude[1])]
-
-    if isinstance(longitude, list):
-        coord_dim2 = mycube.coord_dims('longitude')[0]
-        if len(longitude) > 2:
-            raise ValueError(
-                'extract_slice: longitude slice has too many points: {}'.
-                format(longitude))
-        second_coord_range = [lons.nearest_neighbour_index(longitude[0]),
-                              lons.nearest_neighbour_index(longitude[1])]
-
+        #####
+        # Look for the second coordinate.
+        if isinstance(dim_cut, list):
+            coord_dim2 = mycube.coord_dims(dim_name)[0]
+            second_coord_range = [coord.nearest_neighbour_index(dim_cut[0]),
+                              coord.nearest_neighbour_index(dim_cut[1])]
     #####
     # Extracting the line of constant longitude/latitude
     slices = [slice(None) for i in mycube.shape]
@@ -299,6 +283,8 @@ def extract_slice(mycube, latitude=None, longitude=None):
         slices[coord_dim2] = slice(second_coord_range[0],
                                    second_coord_range[1])
     return mycube[tuple(slices)]
+
+
 
 
 # extract along a trajectory

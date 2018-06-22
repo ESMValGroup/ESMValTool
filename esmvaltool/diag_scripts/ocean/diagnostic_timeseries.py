@@ -105,7 +105,7 @@ def make_time_series_plots(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer)+'.png']),
+                suffix='_'.join(['timeseries', str(layer) + '.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -116,7 +116,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index)+'.png',
+                suffix='timeseries_' + str(layer_index) + '.png',
             )
 
         # Saving files:
@@ -149,11 +149,11 @@ def multi_model_time_series(
 
         cubes = diagtools.make_cube_layer_dict(cube)
         model_cubes[filename] = cubes
-        for layer in cubes.keys():
+        for layer in cubes:
             layers[layer] = True
 
     # Make a plot for each layer
-    for layer in layers.keys():
+    for layer in layers:
 
         title = ''
         z_units = ''
@@ -161,7 +161,7 @@ def multi_model_time_series(
         cmap = plt.cm.get_cmap('viridis')
 
         # Plot each file in the group
-        for index, filename in enumerate(sorted(metadata.keys())):
+        for index, filename in enumerate(sorted(metadata)):
             color = cmap(
                 (float(index) / (len(metadata.keys()) - 1.)))
 
@@ -210,7 +210,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer)+'.png']),
+                suffix='_'.join(['timeseries', str(layer) + '.png']),
                 basenamelist=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
