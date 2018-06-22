@@ -2,7 +2,7 @@
 from . import names
 from . import plot
 from ._base import get_cfg, run_diagnostic
-from .python_diag import Variable, Variables, Datasets
+from ._diag import Variable, Variables, Datasets
 
 __all__ = [
     'names',
