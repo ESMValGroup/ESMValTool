@@ -18,7 +18,6 @@ from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
-    'doc',  # install doc/MASTER_authors-refs-acknow.txt
 ]
 
 REQUIREMENTS = {
