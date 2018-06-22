@@ -5,6 +5,7 @@ import os
 import iris
 
 import esmvaltool.diag_scripts.shared as e
+import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -25,17 +26,17 @@ def main(cfg):
         cube = iris.load_cube(path)
 
         logger.debug("Running example computation")
-        cube = cube.collapsed(e.TIME, iris.analysis.MEAN)
+        cube = cube.collapsed(n.TIME, iris.analysis.MEAN)
 
         name = os.path.splitext(os.path.basename(path))[0] + '_mean'
-        if cfg[e.WRITE_NETCDF]:
-            filepath = os.path.join(cfg[e.WORK_DIR], name + '.nc')
+        if cfg[n.WRITE_NETCDF]:
+            filepath = os.path.join(cfg[n.WORK_DIR], name + '.nc')
             logger.debug("Saving analysis results to %s", filepath)
             iris.save(cube, target=filepath)
 
-        if cfg[e.WRITE_PLOTS] and cfg.get('quickplot'):
-            filepath = os.path.join(cfg[e.PLOT_DIR],
-                                    name + '.' + cfg[e.OUTPUT_FILE_TYPE])
+        if cfg[n.WRITE_PLOTS] and cfg.get('quickplot'):
+            filepath = os.path.join(cfg[n.PLOT_DIR],
+                                    name + '.' + cfg[n.OUTPUT_FILE_TYPE])
             logger.debug("Plotting analysis results to %s", filepath)
             e.plot.quickplot(cube, filename=filepath, **cfg['quickplot'])
 

@@ -19,47 +19,21 @@ An example diagnostic using these classes is given in
 import collections
 import logging
 
+from . import names as n
+
 logger = logging.getLogger(__name__)
 
 
-# Global variables relevant for all diagnostics
-DAY_M = 'day_of_month'
-DAY_Y = 'day_of_year'
-HEIGHT = 'height'
-LAT = 'latitude'
-LON = 'longitude'
-MONTH = 'month_number'
-TIME = 'time'
-YEAR = 'year'
-
-EXP = 'exp'
-LONG_NAME = 'long_name'
-DATASET = 'dataset'
-OBS = 'OBS'
-PROJECT = 'project'
-SHORT_NAME = 'short_name'
-STANDARD_NAME = 'standard_name'
-UNITS = 'units'
-
-OUTPUT_FILE_TYPE = 'output_file_type'
-PLOT_DIR = 'plot_dir'
-SCRIPT = 'script'
-VERSION = 'version'
-WORK_DIR = 'work_dir'
-WRITE_NETCDF = 'write_netcdf'
-WRITE_PLOTS = 'write_plots'
-
-
-# Variables for the following classes
+# Global variables
 DEFAULT_INFO = 'not_specified'
 INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
-Variable = collections.namedtuple('Variable', [SHORT_NAME,
-                                               STANDARD_NAME,
-                                               LONG_NAME,
-                                               UNITS])
+Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
+                                               n.STANDARD_NAME,
+                                               n.LONG_NAME,
+                                               n.UNITS])
 
 
 class Variables(object):
@@ -107,12 +81,12 @@ class Variables(object):
                 data = cfg.get(INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
-                        name = info.get(SHORT_NAME, DEFAULT_INFO)
+                        name = info.get(n.SHORT_NAME, DEFAULT_INFO)
                         attr = Variable(
                             name,
-                            info.get(STANDARD_NAME, DEFAULT_INFO),
-                            info.get(LONG_NAME, DEFAULT_INFO),
-                            info.get(UNITS, DEFAULT_INFO))
+                            info.get(n.STANDARD_NAME, DEFAULT_INFO),
+                            info.get(n.LONG_NAME, DEFAULT_INFO),
+                            info.get(n.UNITS, DEFAULT_INFO))
                         self._add_to_dict(name, attr)
                 else:
                     success = False
@@ -186,7 +160,7 @@ class Variables(object):
             List of all `standard_names`.
 
         """
-        return [getattr(self._dict[name], STANDARD_NAME) for
+        return [getattr(self._dict[name], n.STANDARD_NAME) for
                 name in self._dict]
 
 
@@ -453,10 +427,10 @@ class Datasets(object):
 
         """
         if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(EXP)
+            output = self._datasets[dataset_path].get(n.EXP)
             if output is None:
                 logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, EXP)
+                               dataset_path, n.EXP)
             return output
         return None
 
@@ -479,10 +453,10 @@ class Datasets(object):
 
         """
         if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(DATASET)
+            output = self._datasets[dataset_path].get(n.DATASET)
             if output is None:
                 logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, DATASET)
+                               dataset_path, n.DATASET)
             return output
         return None
 
@@ -623,10 +597,10 @@ class Datasets(object):
 
         """
         if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(PROJECT)
+            output = self._datasets[dataset_path].get(n.PROJECT)
             if output is None:
                 logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, PROJECT)
+                               dataset_path, n.PROJECT)
             return output
         return None
 
@@ -650,10 +624,10 @@ class Datasets(object):
 
         """
         if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(SHORT_NAME)
+            output = self._datasets[dataset_path].get(n.SHORT_NAME)
             if output is None:
                 logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, SHORT_NAME)
+                               dataset_path, n.SHORT_NAME)
             return output
         return None
 
@@ -677,10 +651,10 @@ class Datasets(object):
 
         """
         if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(STANDARD_NAME)
+            output = self._datasets[dataset_path].get(n.STANDARD_NAME)
             if output is None:
                 logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, STANDARD_NAME)
+                               dataset_path, n.STANDARD_NAME)
             return output
         return None
 
