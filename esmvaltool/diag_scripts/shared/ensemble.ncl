@@ -393,7 +393,7 @@ function find_model_index(model_name :string,
 ;;    models_tot: all model names to look in, models@name.
 ;;    exp_name : experiment to match up
 ;;    experiment: experiments to look for matching models in,
-;;                models@experiment .
+;;                dataset_info@exp.
 ;;    ens_name : ensemble to match up,
 ;;    ensemble : ensembles to look for match in, models@ensemble
 ;;    opt: not used yet, set to 0

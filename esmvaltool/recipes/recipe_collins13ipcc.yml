@@ -142,3 +142,72 @@ diagnostics:
         #ts_maxlat: # maximum latitude if not global e.g.(/90/)
         #ts_minlon: # minimum longitude if not global e.g.(/0/)
         #ts_maxlon: # maximum longitude if not global e.g.(/360/)
+
+  IAV_calc_tas:
+    description: Calculate temperature IAV for stippling significance
+    themes:
+      - varmodes
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: preproc_IAV
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      #- {dataset: ACCESS1-0,        project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 300,  end_year: 799}
+      #- {dataset: ACCESS1-3,        project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 250,  end_year: 749}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1,    end_year: 500}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1,    end_year: 400}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1450, end_year: 2008}
+      - {dataset: CanESM2,          project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2015, end_year: 3010}
+
+    scripts:
+      IAV_calc: &IAV_settings
+        script: ipcc_ar5/ch12_calc_IAV_for_stipp_and_hatch.ncl
+        # Required attributes:
+        styleset: CMIP5
+        time_avg: annualclim    # Time average ('opt' argument of time_operations.ncl), if seasonalclim seasons needed
+        #seasons: [0, 1, 2, 3]
+        # Optional attributes:
+        periodlength: 20.
+
+  ###  Mean variable change in one RCP for multi model mean ###
+  tas_change_mmm:
+    description: Air temperature change for RCPs, periods, significance as maps.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: preprocessor_1
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: ACCESS1-3,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+
+      - {dataset: ACCESS1-0,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: ACCESS1-3,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+
+    scripts:
+      ch12_calc_map_diff_mmm_tas: &tas_map_settings
+        script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
+        # Required attributes:
+        ancestors: ['IAV_calc_tas/IAV_calc']
+        scenarios: [rcp45]      #list with scenarios to be included
+        periods: [2081]         #list with start years of periods to be included
+        time_avg: annualclim  #seasonal or annual means
+        projection: Robinson   # map projection, any valid ncl projection  
+        label: ["2081-2100"]   # labels on top of each panel, e.g. scenario + rcp, loop to plot is seasons, scenarios, periods, needed to write
+        # Optional attributes:
+        #seasons:   # list with seasons index to be included if averagetime is "seasonalclim" (required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
+        #iavmode:   # use IAV data from multi-model mean calculated by IAV_mmm_for_stippandhatch_ipcc12.ncl or include identical models to the ones plotted calculated for each model on native grid with IAV_for_stippandhatch_ipcc12.ncl default if not given is mmm, otherwise set iavmode = "each"
+        #grid:
+        #percent: #0 or 1, difference in percent = 1, default = 0
+

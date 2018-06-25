@@ -62,9 +62,9 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ;  'models', 'variables' and 'field_types' are fetched from the
+  ;  'datasets', 'variables' and 'field_types' are fetched from the
   ;  above 'ncl.interface' file
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -82,7 +82,6 @@ begin
   req_atts = (/"time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 end
-
 
 begin
   ; Basename of diag_script
@@ -114,11 +113,11 @@ begin
   ; ###########################################
   ; # Get data and average time               #
   ; ###########################################
-  ; get data from first model
+  ; get data from first dataset
   imod = 0  ; NCL array indicies start from zero
-  log_debug("processing " + model_info@model(imod) + "_"\
-            + model_info@exp(imod) + "_" \
-            + model_info@ensemble(imod))
+  log_debug("processing " + dataset_info@dataset(imod) + "_"\
+            + dataset_info@exp(imod) + "_" \
+            + dataset_info@ensemble(imod))
   outfile = "IAV_mmm_piControl_" + field_type0 + "_" \
             + var0 + "_" + diag_script_info@time_avg + \
             ".nc"
@@ -348,7 +347,7 @@ begin
   if (isatt(variable_info, "units")) then
     IAV_mmm@var_units     = variable_info@units
   end if
-  IAV_mmm@comment = "models included in mmm are " + model_info@model
+  IAV_mmm@comment = "models included in mmm are " + dataset_info@dataset
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
 end
