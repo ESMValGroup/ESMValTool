@@ -8,6 +8,7 @@ from ._plot import (
     get_dataset_style,
     quickplot,
     multi_dataset_scatterplot,
+    scatterplot,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     'get_dataset_style',
     'quickplot',
     'multi_dataset_scatterplot',
+    'scatterplot',
 ]

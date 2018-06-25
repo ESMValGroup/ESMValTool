@@ -166,7 +166,7 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
             raise ValueError("Invalild input: {} need to have ".format(msg) +
                              "the same size")
     except TypeError:
-        raise TypeError("x_data, y_data and datasets have to be "
+        raise TypeError("x_data, y_data, datasets and plot_kwargs have to be "
                         "array-like")
 
     # Create matplotlib instances
@@ -179,14 +179,109 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
         # Plot
         axes.plot(x_data[idx], y_data[idx],
-                  linestyle='none',
                   markeredgecolor=style['color'],
                   markerfacecolor=style['facecolor'],
                   marker=style['mark'],
-                  **kwargs.get('plot_kwargs', empty_dict)[idx])
+                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
     # Costumize plot
     legend = _costumize_plot(axes, **kwargs)
+
+    # Save plot
+    fig.savefig(filepath, additional_artists=[legend],
+                **kwargs.get('save_kwargs', {}))
+    logger.info("Writing %s", filepath)
+    plt.close()
+
+
+def scatterplot(x_data, y_data, filepath, **kwargs):
+    """Plot a multi dataset scatterplot.
+
+    Notes
+    -----
+    Allowed keyword arguments::
+
+        plot_kwargs : array-like, optional
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
+        mpl_style_file : str, optional
+            Path to the matplotlib style file.
+        title : str, optional
+            Title of the plot.
+        xlabel : str, optional
+            x label of the plot.
+        ylabel : str, optional
+            y label of the plot.
+        xlim : tuple, optional
+            x boundaries of the plot.
+        ylim : tuple, optional
+            y boundaries of the plot.
+        legend_kwargs : dict, optional
+            Keyword arguments for the legend of the plot.
+        save_kwargs : dict, optional
+            Keyword arguments for saving the plot.
+        text_kwargs : dict, optional
+            Keyword arguments to write text to the plot.
+
+    Parameters
+    ----------
+    x_data : array-like
+        x data of each dataset.
+    y_data : array-like
+        y data of each dataset.
+    filepath : str
+        Path to which plot is written.
+    **kwargs
+        Keyword arguments.
+
+    """
+    # Allowed kwargs
+    allowed_kwargs = [
+        'plot_kwargs',
+        'mpl_style_file',
+        'title',
+        'xlabel',
+        'ylabel',
+        'xlim',
+        'ylim',
+        'legend_kwargs',
+        'save_kwargs',
+        'text_kwargs',
+    ]
+    for kwarg in kwargs:
+        if kwarg not in allowed_kwargs:
+            raise TypeError("{} is not a valid keyword argument".format(kwarg))
+
+    # Check parameters
+    try:
+        empty_dict = [{} for _ in x_data]
+        msg = ''
+        if len(x_data) != len(y_data):
+            msg = "x_data and y_data"
+        if len(x_data) != \
+                len(kwargs.get('plot_kwargs', x_data)):
+            msg = "x_data and plot_kwargs"
+        if msg:
+            raise ValueError("Invalild input: {} need to have ".format(msg) +
+                             "the same size")
+    except TypeError:
+        raise TypeError("x_data, y_data and plot_kwargs have to be array-like")
+
+    # Create matplotlib instances
+    plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
+    fig, axes = plt.subplots()
+
+    # Plot data
+    for (idx, x_vals) in enumerate(x_data):
+        axes.plot(x_vals, y_data[idx],
+                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
+
+    # Costumize plot
+    legend = _costumize_plot(axes, **kwargs)
+
+    # Text
+    for text in kwargs.get('text_kwargs', []):
+        axes.text(text.get('x', 0.0), text.get('y', 0.0),
+                  text.get('text', ''), transform=axes.transAxes)
 
     # Save plot
     fig.savefig(filepath, additional_artists=[legend],
