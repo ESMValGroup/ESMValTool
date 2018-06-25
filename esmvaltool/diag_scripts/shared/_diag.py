@@ -6,13 +6,12 @@ Import and use these basic classes by e.g.::
 
     import esmvaltool.diag_scripts.shared as e
     datasets = e.Datasets(cfg)
+    variables = e.Variables(cfg)
 
 Notes
 -----
 An example diagnostic using these classes is given in
-`diag_scripts/examples/diagnostic.py`
-
-            if self._is_valid_path(dataset_path):
+`diag_scripts/examples/diagnostic_object_oriented.py`.
 
 """
 
@@ -167,7 +166,7 @@ class Variables(object):
 
 
 class Datasets(object):
-    """Class to easily access a recipe's datasets
+    """Class to easily access a recipe's datasets.
 
     This class is designed to easily access datasets in the diagnostic script.
 
@@ -367,7 +366,7 @@ class Datasets(object):
         Returns
         -------
         data_object
-            Data of the selected dataset
+            Data of the selected dataset.
 
         Raises
         ------
@@ -420,7 +419,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str
-            Path to the dataset
+            Path to the dataset.
 
         Returns
         -------
@@ -446,7 +445,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str
-            Path to the dataset
+            Path to the dataset.
 
         Returns
         -------
@@ -473,7 +472,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str, optional
-            Path to the dataset
+            Path to the dataset.
         **dataset_info, optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
@@ -525,7 +524,7 @@ class Datasets(object):
         return [self._datasets[path] for path in paths]
 
     def get_path(self, **dataset_info):
-        """Access a dataset's path
+        """Access a dataset's path.
 
         Notes
         -----
@@ -590,7 +589,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str
-            Path to the dataset
+            Path to the dataset.
 
         Returns
         -------
@@ -617,7 +616,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str
-            Path to the dataset
+            Path to the dataset.
 
         Returns
         -------
@@ -644,7 +643,7 @@ class Datasets(object):
         Parameters
         ----------
         dataset_path : str
-            Path to the dataset
+            Path to the dataset.
 
         Returns
         -------
@@ -674,7 +673,7 @@ class Datasets(object):
         data
             Element to be set as the dataset's data.
         dataset_path : str, optional
-            Path to the dataset
+            Path to the dataset.
         **dataset_info, optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
