@@ -28,6 +28,7 @@ variable:
   reference_dataset: str(required=False)
   alternative_dataset: str(required=False)
   mip: str(required=False)
+  fx_files: list(required=False)
 
 # TODO: add preprocessor item
 

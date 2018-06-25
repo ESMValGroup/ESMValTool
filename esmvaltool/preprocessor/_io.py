@@ -223,6 +223,14 @@ def _write_ncl_metadata(output_dir, metadata):
     # dicts, so convert to dict of lists.
     keys = sorted({k for v in variables for k in v})
     input_file_info = {k: [v.get(k) for v in variables] for k in keys}
+    fx_file_list = input_file_info.pop('fx_files', None)
+    if fx_file_list:
+        for fx_files in fx_file_list:
+            for key in fx_files:
+                if key not in input_file_info:
+                    input_file_info[key] = []
+                input_file_info[key].append(fx_files[key])
+
     info = {
         'input_file_info': input_file_info,
         'dataset_info': {},
