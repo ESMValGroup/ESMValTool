@@ -17,17 +17,64 @@ from iris.util import rolling_window
 logger = logging.getLogger(__name__)
 
 
-def mask_landocean(cube, land_mask=None, ocean_mask=None):
-    """Mask land or ocean"""
-    if land_mask or ocean_mask:
-        raise NotImplementedError
+def _get_fx_mask(fx_data, fx_option):
+    """Build a 50 percent land or ocean mask"""
+    inmask = np.zeros_like(fx_data, bool)
+    if fx_option == 'land':
+        # Mask land out
+        inmask[fx_data <= 50.] = False
+        inmask[fx_data > 50.] = True
+    elif fx_option == 'ocean':
+        # Mask ocean out
+        inmask[fx_data <= 50.] = True
+        inmask[fx_data > 50.] = False
+    return inmask
 
 
-def fx_mask(mycube, fx):
-    """Reweighting function"""
-    masked_cube = mycube.copy()
-    masked_cube.data = mycube.data * fx.data / 100.
-    return masked_cube
+def _apply_fx_mask(fx_mask, var_data):
+    """Apply the fx mask"""
+    var_mask = np.zeros(var_data.shape, bool)
+
+    # TIME-LAT-LON
+    if len(var_data.shape) == 3.:
+        for i in range(var_data.shape[0]):
+            var_mask[i, :] = fx_mask
+
+    # TIME-PLEV-LAT-LON
+    elif len(var_data.shape) == 4.:
+        for i in range(var_data.shape[0]):
+            for j in range(var_data.shape[1]):
+                var_mask[i, j, :] = fx_mask
+
+    # Aplly mask accross
+    if np.ma.is_masked(var_data):
+        var_mask |= var_data.mask
+
+    # Build the new masked data
+    var_data = np.ma.array(var_data,
+                           mask=var_mask,
+                           fill_value=1e+20)
+
+    return var_data
+
+
+def mask_landocean(cube, fx_file, fx_option):
+    """Apply a land/ocean mask"""
+    # fx_option is either 'land' or 'ocean'
+
+    if fx_file:
+        # Try loading; some files are broken
+        try:
+            fx_cube = iris.load_cube(fx_file)
+            landocean_mask = _get_fx_mask(fx_cube.data,
+                                          fx_option)
+            cube.data = _apply_fx_mask(landocean_mask,
+                                       cube.data)
+        except iris.exceptions.TranslationError as msg:
+            logger.warning('Could not load fx file !')
+            logger.warning(msg)
+
+    return cube
 
 
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):

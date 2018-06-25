@@ -451,6 +451,12 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['save'] = {
         'compress': config_user['compress_netcdf']}
 
+    # Configure ingestion of landocean masks
+    if variable.get('fx_files'):
+        settings['mask_landocean'] = {
+            'fx_file': variable['fx_files']['sftlf']
+        }
+
     return settings
 
 

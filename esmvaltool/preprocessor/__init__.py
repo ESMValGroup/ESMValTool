@@ -40,10 +40,11 @@ __all__ = [
     'fix_data',
     # Level extraction
     'extract_levels',
+    # Mask landocean (fx)
+    'mask_landocean',
     # Regridding
     'regrid',
-    # Masking
-    'mask_landocean',
+    # Masking missing values
     'mask_fillvalues',
     # Region selection
     'extract_region',
