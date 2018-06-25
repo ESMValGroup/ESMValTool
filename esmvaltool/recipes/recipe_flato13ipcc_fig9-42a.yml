@@ -95,3 +95,16 @@ diagnostics:
             fig09-42a:
                 script: ipcc_ar5/ch09_fig09_42a.py
                 plot_ecs_regression: True
+                plot_name: 'ch09_fig09-42a'
+                title: GMSAT vs. ECS for CMIP5 models
+                xlabel: ECS / K
+                ylabel: GMSAT / K
+                xlim: [1.5, 5.0]
+                legend:
+                  loc: center left
+                  bbox_to_anchor: [1.05, 0.5]
+                  borderaxespad: 0.0
+                  ncol: 2
+                save:
+                  bbox_inches: tight
+                  orientation: landscape
