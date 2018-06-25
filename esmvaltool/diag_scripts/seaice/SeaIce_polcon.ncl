@@ -1,53 +1,53 @@
-;;#############################################################################
-;; POLAR-STEREOGRAPHIC CONTOUR PLOTS OF SEA ICE CONCENTRATION AND THCKNESS
-;;#############################################################################
-;; Author: Daniel Senftleben (DLR, Germany)
-;; ESMVal project
-;;#############################################################################
-;;
-;; Description
-;;    Uses original grid (no regridding).
-;;    Draws color coded sea ice concentration and a red contour line at 0.15
-;;    (extent), or sea ice thickness.
-;;    Panels multiple plots: starts a new page after max_vert*max_hori
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    month: selected month or annual mean.
-;;    region: region to be plotted ( "Arctic" or "Antarctic").
-;;    contour_extent: optionally draw a red contour line at 0.15.
-;;    max_lat, min_lat: plot ranges for SH & NH.
-;;    range_option: select specific or intersecting time range.
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;    max_vert, max_hori: allowed dimensions of a panel page
-;;                        (number of plots per column/row)
-;;    PanelTop: tune to get full title of uppermost row (1 = no top margin)
-;;    grid_min, grid_max, grid_step: min, max and step size for color scale
-;;    colormap: NCL colour map name
-;;    PanelLabelBar: use single label bar per page
-;;    showunits: display units in figure title
-;;
-;; Caveats
-;;    no masking of the apparent line of missing data between the two grid
-;;    poles yet (for a workaround, see
-;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
-;;
-;; Modification history
-;;    20180621-A_senf_da: Ported to ESMValTool v2
-;;    20180516-A_senf_da: Adapted to sea ice thicknes (sit)
-;;    20170512-A_senf_da: Added reporting
-;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
-;;                        of the code
-;;    20150605-A_vanu_be: Additional attributes for more formatting control
-;;    20150325-A_laue_ax: Modified reference tags used for acknowledgements
-;;                        (projects, observations, etc)
-;;    20140623-A_senf_da: res now passed to plot script as attributes of var.
-;;    20140312-A_righ_ma: Adapted to new time_operations structure.
-;;    20131216-A_vanu_be: Generalized a bit so it can plot other vars.
-;;    20131212-A_senf_da: Modularized to fit into new structure.
-;;    20130604-A_gott_kl: Implemented.
-;;
-;;#############################################################################
+; #############################################################################
+; POLAR-STEREOGRAPHIC CONTOUR PLOTS OF SEA ICE CONCENTRATION AND THCKNESS
+; #############################################################################
+; Author: Daniel Senftleben (DLR, Germany)
+; ESMVal project
+; #############################################################################
+;
+; Description
+;    Uses original grid (no regridding).
+;    Draws color coded sea ice concentration and a red contour line at 0.15
+;    (extent), or sea ice thickness.
+;    Panels multiple plots: starts a new page after max_vert*max_hori
+;
+; Required diag_script_info attributes (diagnostics specific)
+;    month: selected month or annual mean.
+;    region: region to be plotted ( "Arctic" or "Antarctic").
+;    contour_extent: optionally draw a red contour line at 0.15.
+;    max_lat, min_lat: plot ranges for SH & NH.
+;    range_option: select specific or intersecting time range.
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;    max_vert, max_hori: allowed dimensions of a panel page
+;                        (number of plots per column/row)
+;    PanelTop: tune to get full title of uppermost row (1 = no top margin)
+;    grid_min, grid_max, grid_step: min, max and step size for color scale
+;    colormap: NCL colour map name
+;    PanelLabelBar: use single label bar per page
+;    showunits: display units in figure title
+;
+; Caveats
+;    no masking of the apparent line of missing data between the two grid
+;    poles yet (for a workaround, see
+;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
+;
+; Modification history
+;    20180621-A_senf_da: Ported to ESMValTool v2
+;    20180516-A_senf_da: Adapted to sea ice thicknes (sit)
+;    20170512-A_senf_da: Added reporting
+;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
+;                        of the code
+;    20150605-A_vanu_be: Additional attributes for more formatting control
+;    20150325-A_laue_ax: Modified reference tags used for acknowledgements
+;                        (projects, observations, etc)
+;    20140623-A_senf_da: res now passed to plot script as attributes of var.
+;    20140312-A_righ_ma: Adapted to new time_operations structure.
+;    20131216-A_vanu_be: Generalized a bit so it can plot other vars.
+;    20131212-A_senf_da: Modularized to fit into new structure.
+;    20130604-A_gott_kl: Implemented.
+;
+; #############################################################################
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
@@ -61,290 +61,287 @@ load "./diag_scripts/shared/plot/aux_plotting.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
-    log_info("<<<<<<<< Entering " + diag_script)
-    log_info("++++++++++++++++++++++++++++++++++++++++++")
-    log_info(diag_script + " (var: " + variables(0) + ")")
-    log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info("<<<<<<<< Entering " + diag_script)
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(dataset_info@dataset)
-    dim_VAR = dimsizes(variables)
-    var0 = variables(0)
-    field_type0 = field_types(0)
+  dim_MOD = dimsizes(dataset_info@dataset)
+  dim_VAR = dimsizes(variables)
+  var0 = variables(0)
+  field_type0 = field_types(0)
 
-    ;; References Information
-    write_references(diag_script,   \  ; script name
-                     "A_gott_kl",   \  ; authors
-                     "A_senf_da",   \  ; contributors
-                     "D_0001",      \  ; diag_references
-                     "",            \  ; obs_references
-                     (/"P_embrace", "P_climval"/))   ; proj_acknowledgements
+  ; References Information
+  write_references(diag_script,   \  ; script name
+                   "A_gott_kl",   \  ; authors
+                   "A_senf_da",   \  ; contributors
+                   "D_0001",      \  ; diag_references
+                   "",            \  ; obs_references
+                   (/"P_embrace", "P_climval"/))   ; proj_acknowledgements
 end
 
 
 begin
-    ;; Get environment variables
-    file_type = config_user_info@output_file_type
-    if(ismissing(file_type)) then
-        file_type = "PS"
+  ; Get environment variables
+  file_type = config_user_info@output_file_type
+  if(ismissing(file_type)) then
+    file_type = "PS"
+  end if
+
+  ; check field type
+  plot_fields = (/"T2Ms"/)
+  ind_f = any(field_type0.eq.plot_fields)
+  if (all(ismissing(ind_f))) then
+    error_msg("f", diag_script, "", "can't use field, " + fields)
+  end if
+  delete(plot_fields)
+  delete(ind_f)
+
+  ; prepare annotation
+  annots = project_style(diag_script_info, "annots")
+  smonths = (/"January", "February", "March", "April", \
+              "May", "June", "July", "August", \
+              "September", "October", "November", "December"/)
+  i2months = (/"01", "02", "03", "04", "05", "06",\
+               "07", "08", "09", "10", "11", "12"/)
+
+  ; output file name
+  if (diag_script_info@month .eq. "A") then
+    i2month = "annual"
+  else
+    i2month = smonths(toint(diag_script_info@month) - 1)
+  end if
+
+  ; *** prepare plotting ***
+  ; Specify additional elemens for file name
+  ; function get_wks transfers full output file name
+  ; including path via wks@fullname
+  if (diag_script_info@range_option .eq. 1) then
+    name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
+      "_" + sprinti("%0.4i", max(toint(dataset_info@start_year))) + "-" \
+      + sprinti("%0.4i", min(toint(dataset_info@end_year)))
+  else if (diag_script_info@range_option .eq. 0) then
+    name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
+      "_" + sprinti("%0.4i", min(toint(dataset_info@start_year))) + "-"\
+      + sprinti("%0.4i", max(toint(dataset_info@end_year)))
+  else
+    error_msg("f", diag_script, "", "range_option not set correctly, " + \
+              "must be 1 or 0")
+  end if
+  end if
+
+  ; open the workstation
+  wks = get_wks(0, diag_script, name_string)
+
+  ; Define color table
+  ; "WhiteBlue", "BlueWhiteOrangeRed", "BlueYellowRed" ;"BlWhRe"
+  if (isatt(diag_script_info, "colormap")) then
+    colormap = diag_script_info@colormap
+    gsn_define_colormap(wks, colormap)
+    ColorStart = 2
+    ColorEnd = -1
+  else
+    colormap = "WhiteBlue"
+    gsn_define_colormap(wks, "WhiteBlue")
+    gsn_reverse_colormap(wks)            ; Reverse the color map.
+    colors = gsn_retrieve_colormap(wks)  ; retrieve color map for editing
+    colors(3, :) = (/1., 0., 0./)  ; red
+    colors(4, :) = (/0., 0., 1./)  ; blue
+    colors(5, :) = (/1., 1., 1./)  ; black
+    gsn_define_colormap(wks, colors)
+    ColorStart = 10
+    ColorEnd = 240
+  end if
+
+  ; panel parameters
+  nvert = 1  ; default
+  nhori = 1  ; default
+  if (isatt(diag_script_info, "max_vert")) then
+    ; Maximum allowed number of plots per page (vertical)
+    nvert = toint(diag_script_info@max_vert)
+  end if
+  if (isatt(diag_script_info, "max_hori")) then
+    ; Maximum allowed number of plots per page (horizontal)
+    nhori = toint(diag_script_info@max_hori)
+  end if
+  npages = toint(ceil(tofloat(dimsizes(annots)) / tofloat(nvert * nhori)))
+
+  ; individual label bar (default) or 1 per panel
+  lblBarOn = True
+  PanelLabelBar = False
+  if (isatt(diag_script_info, "PanelLabelBar")) then
+    ; turn on panel label bar?
+    if (diag_script_info@PanelLabelBar) then
+      lblBarOn = False
+      PanelLabelBar = True
+    end if
+  end if
+
+  ; define array for collecting plots
+  if (npages .gt. 1) then
+    ; size of all stamps is identical only if every page
+    ; contains the same number of plots
+    plots = new(npages * nvert * nhori, graphic)
+  else
+    plots = new(dimsizes(annots), graphic)
+  end if
+
+  ; Start processing ##########################################
+  ; loop over datasets
+  do imod = 0, dimsizes(annots) - 1
+
+    log_info("processing " + annots(imod) + \
+             "  #####################################")
+
+    ; See ./interface_scripts/data_handling.ncl
+    var = read_data(imod, var0, field_type0)
+    if (var0.eq."sic") then
+      if (var@units.eq."%") then
+        var = var / 100.     ; Subsequent code works fine without rescaling,
+        var@units = "%/100"  ; but annotation is hardcoded for %/100
+      end if
     end if
 
-    ;; check field type
-    plot_fields = (/"T2Ms"/)
-    ind_f = any(field_type0.eq.plot_fields)
-    if (all(ismissing(ind_f))) then
-        error_msg("f", diag_script, "", "can't use field, " + fields)
+    ; Show units in title (default False)
+    strUnits = ""
+    if (isatt(diag_script_info, "showunits")) then
+      strUnits = " (" + var@units + ")"
     end if
-    delete(plot_fields)
-    delete(ind_f)
 
-    ;; prepare annotation
-    annots = project_style(diag_script_info, "annots")
-    smonths = (/"January", "February", "March", "April", \
-                "May", "June", "July", "August", \
-                "September", "October", "November", "December"/)
+    ; Get 2d lat & lon coordinates (see e.g.
+    ; http://www.ncl.ucar.edu/Applications/Scripts/ice_3.ncl),
+    ; but attach them later
+    if(all(iscoord(var, (/"lat", "lon"/)))) then
+      log_info("SeaIce_polcon.ncl: var is on a lat-lon grid")
+      temp = var(time|:, lon|:, lat|:)  ; order coordinates
+      delete(var)
+      var = temp
+      delete(temp)
+      area_temp = map_area(var&lat, var&lon)  ; Create 2d lat & lon
 
-    i2months = (/"01", "02", "03", "04", "05", "06",\
-                "07", "08", "09", "10", "11", "12"/)
+      ; Make 2D to be compatible with irregular grid handling below
+      area_lat = conform_dims((/dimsizes(var&lon), dimsizes(var&lat)/), \
+                              var&lat, 1)
+      area_lon = conform_dims((/dimsizes(var&lon), dimsizes(var&lat)/), \
+                              var&lon, 0)
+      area_lat!0 = "i"
+      area_lat&i = var&lon
+      area_lat!1 = "j"
+      area_lat&j = var&lat
+      var!1 = "i"
+      var!2 = "j"
+      copy_VarMeta(area_lat, area_lon)
+      delete(area_temp)
+    else  ; Irregular grid
+      log_info("SeaIce_polcon.ncl: var is not on a lat-lon grid")
+      ; Get lat - lon from another file
+      ; (dataset specific: ~/reformat_scripts folder)
+      area_lon = extract_area(imod, data, "lon", var0)
+      area_lat = extract_area(imod, data, "lat", var0)
+    end if
+    var@lat2d = area_lat
+    var@lon2d = area_lon
 
-    ;; output file name
-    if (diag_script_info@month .eq. "A") then
-        i2month = "annual"
+    ; time axis
+    start_year = get_start_year(imod)
+    end_year   = get_end_year(imod)
+    if (diag_script_info@month.eq."A") then
+      var_ann = time_operations(var, start_year, end_year, \
+                                "average", "annualclim", True)
     else
-        i2month = smonths(toint(diag_script_info@month) - 1)
+      var_ann = time_operations(var, start_year, end_year, \
+                                "average", diag_script_info@month, True)
     end if
+    range = start_year + " - " + end_year
 
-    ;;*** prepare plotting ***
-    ;; Specify additional elemens for file name
-    ;; function get_wks transfers full output file name
-    ;; including path via wks@fullname
-    if (diag_script_info@range_option .eq. 1) then
-        name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", max(toint(dataset_info@start_year))) + "-" \
-            + sprinti("%0.4i", min(toint(dataset_info@end_year)))
-    else if (diag_script_info@range_option .eq. 0) then
-        name_string = var0 + "_" + diag_script_info@region + "_" + i2month + \
-            "_" + sprinti("%0.4i", min(toint(dataset_info@start_year))) + "-"\
-            + sprinti("%0.4i", max(toint(dataset_info@end_year)))
+    ; Some attributes for area plot
+    if diag_script_info@month .eq. "A" then  ; weighted annual mean
+      var_ann@units = "annual mean " + range
+    else  ; select a month
+      imon = stringtofloat(diag_script_info@month)
+      var_ann@units = smonths(floattoint(imon) - 1) + " mean " + range
+    end if
+    var_ann@long_name = diag_script_info@region + " " + var@long_name + \
+      strUnits
+
+    ; Resources to be passed to plot routine
+    ; as attributes to var_ann with prefix "res_"
+    ; Set contour parameters
+    grid_min  = 0.   ; default
+    if (var0.eq."sic") then
+      grid_max  = 1.   ; default
+      grid_step = 0.1  ; default
     else
-        error_msg("f", diag_script, "", "range_option not set correctly, " + \
-                  "must be 1 or 0")
+      grid_max  = round(max(var_ann), 0)
+      grid_step = (grid_max - grid_min) / 10.
     end if
+    if (isatt(diag_script_info, "grid_min")) then
+      grid_min = tofloat(diag_script_info@grid_min)
     end if
-
-    ;; open the workstation
-    wks = get_wks(0, diag_script, name_string)
-
-    ;; Define color table
-    ;; "WhiteBlue", "BlueWhiteOrangeRed", "BlueYellowRed" ;"BlWhRe"
-    if (isatt(diag_script_info, "colormap")) then
-        colormap = diag_script_info@colormap
-        gsn_define_colormap(wks, colormap)
-        ColorStart = 2
-        ColorEnd = -1
-    else
-        colormap = "WhiteBlue"
-        gsn_define_colormap(wks, "WhiteBlue")
-        gsn_reverse_colormap(wks)            ; Reverse the color map.
-        colors = gsn_retrieve_colormap(wks)  ; retrieve color map for editing
-        colors(3, :) = (/1., 0., 0./)  ; red
-        colors(4, :) = (/0., 0., 1./)  ; blue
-        colors(5, :) = (/1., 1., 1./)  ; black
-        gsn_define_colormap(wks, colors)
-        ColorStart = 10
-        ColorEnd = 240
+    if (isatt(diag_script_info, "grid_max")) then
+      grid_max = tofloat(diag_script_info@grid_max)
     end if
-
-    ;; panel parameters
-    nvert = 1  ; default
-    nhori = 1  ; default
-    if (isatt(diag_script_info, "max_vert")) then
-        ;; Maximum allowed number of plots per page (vertical)
-        nvert = toint(diag_script_info@max_vert)
+    if (isatt(diag_script_info, "grid_step")) then
+      grid_step = tofloat(diag_script_info@grid_step)
     end if
-    if (isatt(diag_script_info, "max_hori")) then
-        ;; Maximum allowed number of plots per page (horizontal)
-        nhori = toint(diag_script_info@max_hori)
-    end if
-    npages = toint(ceil(tofloat(dimsizes(annots)) / tofloat(nvert * nhori)))
+    nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
+    cnLevels = fspan(grid_min, grid_max, nsteps)
+    var_ann@res_lbLabelBarOn          = lblBarOn    ; individual bars
+    var_ann@res_cnLevelSelectionMode  = "ExplicitLevels"
+    var_ann@res_cnLevels              = cnLevels
+    var_ann@res_gsnSpreadColors       = True        ; use full colormap
+    var_ann@res_gsnSpreadColorStart   = ColorStart  ; color to start
+    var_ann@res_gsnSpreadColorEnd     = ColorEnd    ; color to end
+    var_ann@res_cnLinesOn             = False
+    var_ann@res_cnLineLabelsOn        = False
+    var_ann@res_tiMainString          = annots(imod)
+    var_ann@res_gsnRightString        = var_ann@units
+    var_ann@res_gsnDraw               = False       ; Draw and Frame is
+    var_ann@res_gsnFrame              = False       ; called in panelling
 
-    ;; individual label bar (default) or 1 per panel
-    lblBarOn = True
-    PanelLabelBar = False
-    if (isatt(diag_script_info, "PanelLabelBar")) then
-        ;; turn on panel label bar?
-        if (diag_script_info@PanelLabelBar) then
-            lblBarOn = False
-            PanelLabelBar = True
-        end if
-    end if
+    ; Pass additional meta data
+    var_ann@diag_script = (/diag_script/)
 
-    ;; define array for collecting plots
-    if (npages .gt. 1) then
-        ;; size of all stamps is identical only if every page
-        ;; contains the same number of plots
-        plots = new(npages * nvert * nhori, graphic)
-    else
-        plots = new(dimsizes(annots), graphic)
-    end if
+    ; Draw the plot
+    plots(imod) = contour_map_polar(wks, var_ann, variables(0))
 
-;   start processing ##########################################
-    ;; loop over datasets
-    do imod = 0, dimsizes(annots) - 1
+    ; Clean up
+    delete(var)
+    delete(area_lon)
+    delete(area_lat)
+    delete(var_ann)
 
-        log_info("processing " + annots(imod) + \
-                 "  #####################################")
+  end do  ; imod
 
-        ;; see ./interface_scripts/data_handling.ncl
-        var = read_data(imod, var0, field_type0)
-        if (var0.eq."sic") then
-            if (var@units.eq."%") then
-                var = var / 100.  ; Subsequent code works fine without rescaling
-                var@units = "%/100"  ; But annotation is hardcoded for %/100
-            end if
-        end if
+  ; Draw the panel
+  pres = True
+  pres@gsnPanelLabelBar = PanelLabelBar  ; 1 bar per panel?
+  outfile = panelling(wks, plots, nvert, nhori, pres)
 
-        ;; Show units in title (default False)
-        strUnits = ""
-        if (isatt(diag_script_info, "showunits")) then
-            strUnits = " (" + var@units + ")"
-        end if
-
-        ;; get 2d lat & lon coordinates (see e.g.
-        ;; http://www.ncl.ucar.edu/Applications/Scripts/ice_3.ncl),
-        ;; but attach them later
-        if(all(iscoord(var, (/"lat", "lon"/)))) then
-            log_info("SeaIce_polcon.ncl: var is on a lat-lon grid")
-            ;; order coordinates
-            temp = var(time|:, lon|:, lat|:)
-            delete(var)
-            var = temp
-            delete(temp)
-            ;; create 2d lat & lon
-            area_temp = map_area(var&lat, var&lon)
-
-            ;; make 2D to be compatible with irregular grid handling below
-            area_lat = conform_dims((/dimsizes(var&lon), dimsizes(var&lat)/), \
-                                    var&lat, 1)
-            area_lon = conform_dims((/dimsizes(var&lon), dimsizes(var&lat)/), \
-                                    var&lon, 0)
-            area_lat!0 = "i"
-            area_lat&i = var&lon
-            area_lat!1 = "j"
-            area_lat&j = var&lat
-            var!1 = "i"
-            var!2 = "j"
-            copy_VarMeta(area_lat, area_lon)
-            delete(area_temp)
-        else  ; Irregular grid
-            log_info("SeaIce_polcon.ncl: var is not on a lat-lon grid")
-            ;; Get lat - lon from another file
-            ;; (dataset specific: ~/reformat_scripts folder)
-            area_lon = extract_area(imod, data, "lon", var0)
-            area_lat = extract_area(imod, data, "lat", var0)
-        end if
-        var@lat2d = area_lat
-        var@lon2d = area_lon
-
-        ;; time axis
-        start_year = get_start_year(imod)
-        end_year   = get_end_year(imod)
-        if (diag_script_info@month.eq."A") then
-            var_ann = time_operations(var, start_year, end_year, \
-                                      "average", "annualclim", True)
-        else
-            var_ann = time_operations(var, start_year, end_year, \
-                                      "average", diag_script_info@month, True)
-        end if
-        range = start_year + " - " + end_year
-
-        ;; Some attributes for area plot
-        if diag_script_info@month .eq. "A" then  ; weighted annual mean
-            var_ann@units = "annual mean " + range
-        else  ; select a month
-            imon = stringtofloat(diag_script_info@month)
-            var_ann@units = smonths(floattoint(imon) - 1) + " mean " + range
-        end if
-        var_ann@long_name = diag_script_info@region + " " + var@long_name + \
-                            strUnits
-
-        ;; resources to be passed to plot routine
-        ; as attributes to var_ann with prefix "res_"
-        ;; Set contour parameters
-        grid_min  = 0.   ; default
-        if (var0.eq."sic") then
-            grid_max  = 1.   ; default
-            grid_step = 0.1  ; default
-        else
-            grid_max  = round(max(var_ann), 0)
-            grid_step = (grid_max - grid_min) / 10.
-        end if        
-        if (isatt(diag_script_info, "grid_min")) then
-            grid_min = tofloat(diag_script_info@grid_min)
-        end if
-        if (isatt(diag_script_info, "grid_max")) then
-            grid_max = tofloat(diag_script_info@grid_max)
-        end if
-        if (isatt(diag_script_info, "grid_step")) then
-            grid_step = tofloat(diag_script_info@grid_step)
-        end if
-        nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
-        cnLevels = fspan(grid_min, grid_max, nsteps)
-        var_ann@res_lbLabelBarOn          = lblBarOn    ; individual bars
-        var_ann@res_cnLevelSelectionMode  = "ExplicitLevels"
-        var_ann@res_cnLevels              = cnLevels
-        var_ann@res_gsnSpreadColors       = True        ; use full colormap
-        var_ann@res_gsnSpreadColorStart   = ColorStart  ; color to start
-        var_ann@res_gsnSpreadColorEnd     = ColorEnd    ; color to end
-        var_ann@res_cnLinesOn             = False
-        var_ann@res_cnLineLabelsOn        = False
-        var_ann@res_tiMainString          = annots(imod)
-        var_ann@res_gsnRightString        = var_ann@units
-        var_ann@res_gsnDraw               = False       ; Draw and Frame is
-        var_ann@res_gsnFrame              = False       ; called in panelling
-
-        ; pass additional meta data
-        var_ann@diag_script = (/diag_script/)
-
-        ;; draw the plot
-        plots(imod) = contour_map_polar(wks, var_ann, variables(0))
-
-        ;; clean up
-        delete(var)
-        delete(area_lon)
-        delete(area_lat)
-        delete(var_ann)
-
-    end do  ; imod
-
-    ;; Draw the panel
-    pres = True
-    pres@gsnPanelLabelBar = PanelLabelBar  ; 1 bar per panel?
-    outfile = panelling(wks, plots, nvert, nhori, pres)
-
-    ;; Reporting
-;     alltags = array_append_record(tags, (/"DM_polar", "PT_polar", \
-;                                           "ST_mean"/), 0)
-;     caption = "Polar-stereographic contour map of sea ice concentration."
-;     num_pages = ceil( dimsizes(plots) / (tofloat(nvert*nhori)) ) ; = # of files
-;     if (num_pages.eq.1) then  ; only 1 file: no sequence number added
-;         plot_fname = wks@fullname
-;         id = "#idSeaIcePolcon"
-;         climofiles = interface_get_inpaths(0) + "/" + \
-;                      interface_get_infile(var0, field_type0, 0)
-;         if (dimsizes(dataset_info@dataset).gt.1) then
-;             do imod=1, dimsizes(dataset_info@dataset)-1
-;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
-;;      already returns path + file! Reason yet unknown.
-;                 climofiles := array_append_record( climofiles, \
-;                     interface_get_inpaths(imod) + "/" + \
-;                     interface_get_infile(var0, field_type0, imod), 0 )
-;             end do
-;         end if
-;         contrib_authors = (/"A_gott_kl", "A_senf_da"/)
-;         ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                  dataset_info@dataset, climofiles, diag_script, contrib_authors)
-;     else  ; Multiple files, each with its own sequence number
-;         ; Split wks@fullname to later add number sequence before '.png'
+  ; Reporting
+; alltags = array_append_record(tags, (/"DM_polar", "PT_polar", \
+;                                       "ST_mean"/), 0)
+; caption = "Polar-stereographic contour map of sea ice concentration."
+; num_pages = ceil( dimsizes(plots) / (tofloat(nvert*nhori)) ) ; = # of files
+; if (num_pages.eq.1) then  ; only 1 file: no sequence number added
+;   plot_fname = wks@fullname
+;   id = "#idSeaIcePolcon"
+;   climofiles = interface_get_inpaths(0) + "/" + \
+;     interface_get_infile(var0, field_type0, 0)
+;   if (dimsizes(dataset_info@dataset).gt.1) then
+;     do imod=1, dimsizes(dataset_info@dataset)-1
+;     ; TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile
+;     ; already returns path + file! Reason yet unknown.
+;       climofiles := array_append_record( climofiles, \
+;         interface_get_inpaths(imod) + "/" + \
+;         interface_get_infile(var0, field_type0, imod), 0 )
+;      end do
+;    end if
+;    contrib_authors = (/"A_gott_kl", "A_senf_da"/)
+;    ESMValMD(plot_fname, alltags, caption, id, var0, \
+;             dataset_info@dataset, climofiles, diag_script, contrib_authors)
+;    else  ; Multiple files, each with its own sequence number
+;    ; Split wks@fullname to later add number sequence before '.png'
 ;         plotname_split = str_split(wks@fullname, ".")
 ;         plotname = ""
 ;         do isplit=0, dimsizes(plotname_split)-2  ; reassemble except '.png'
@@ -363,26 +360,26 @@ begin
 ;                 ind_datasets_shown = ispan( (ipage-1)*nvert*nhori, \
 ;                                           dimsizes(plots)-1, 1 )
 ;             end if
-;             climofiles = interface_get_inpaths(ind_datasets_shown(0)) + "/" + \
-;                 interface_get_infile(var0, field_type0, ind_datasets_shown(0))
+;          climofiles = interface_get_inpaths(ind_datasets_shown(0)) + "/" + \
+;            interface_get_infile(var0, field_type0, ind_datasets_shown(0))
 ;             if (dimsizes(ind_datasets_shown).gt.1) then
 ;                 do imod=1, dimsizes(ind_datasets_shown)-1
-;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
-;;      already returns path + file! Reason yet unknown.
+; TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile
+;      already returns path + file! Reason yet unknown.
 ;                     climofiles := array_append_record( climofiles, \
-;                         interface_get_inpaths(ind_datasets_shown(imod)) + "/" + \
+;                     interface_get_inpaths(ind_datasets_shown(imod)) + "/" + \
 ;                         interface_get_infile(var0, field_type0, \
 ;                                              ind_datasets_shown(imod)), 0 )
 ;                 end do
 ;             end if
-;             contrib_authors = (/"A_gott_kl", "A_senf_da"/) 
+;             contrib_authors = (/"A_gott_kl", "A_senf_da"/)
 ;             ESMValMD(plot_fname, alltags, caption, id, var0, \
-;                      dataset_info@dataset(ind_datasets_shown), climofiles, diag_script, contrib_authors)
-;             delete([/seq_num, plot_fname, id, ind_datasets_shown, climofiles/])
+;                      dataset_info@dataset(ind_datasets_shown), \
+;                      climofiles, diag_script, contrib_authors)
+;           delete([/seq_num, plot_fname, id, ind_datasets_shown, climofiles/])
 ;         end do
 ;     end if
 
-
-    log_info(">>>>>>>> Leaving " + diag_script)
+  log_info(">>>>>>>> Leaving " + diag_script)
 
 end
