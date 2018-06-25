@@ -527,13 +527,26 @@ begin
       log_debug(" Keeping existing " + outfile + " with suffix ." + sysdate)
     else if (existing .eq. "append") then
       ncdf = addfile(outfile, "w")
+      dimNames = getvardims(data)
+      filevardef(ncdf, varname, typeof(data), dimNames)
+      dim_dim = dimsizes(dimNames)
+      ; Copy attributes associated with each variable to the file
+      do i = 0, dim_dim - 1
+        ; No attribute assignment to variable if no attributes are available
+        if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
+          filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
+        end if
+      end do
+      filevarattdef(ncdf, varname, data)
     else
       system("rm -f " + outfile)
       ncdf = addfile(outfile, "c")
+      ncdf = ncdf_define(ncdf, data)
     end if
     end if
   else  ; Outfile does not exist yet
     ncdf = addfile(outfile, "c")
+    ncdf = ncdf_define(ncdf, data)
   end if
 
   ; Write to netCDF
@@ -541,7 +554,6 @@ begin
 ;    ncdf->$varname$ = data
   ; Option 2: write with explicit file definition
   dimNames = getvardims(data)
-  ncdf = ncdf_define(ncdf, data)
   do i = 0, dimsizes(dimNames) - 1
     if (typeof(data&$dimNames(i)$).eq."string") then
       ; Convert string array to two dimensional character array
