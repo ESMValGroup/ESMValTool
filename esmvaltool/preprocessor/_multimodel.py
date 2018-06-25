@@ -21,7 +21,7 @@ import iris
 import numpy as np
 import yaml
 
-from ._io import save_cubes
+from ._io import save
 
 logger = logging.getLogger(__name__)
 
@@ -356,7 +356,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
                                                    time_bounds)
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            save([cube_of_stats])
             files.append(filename)
 
     elif span == 'full':
@@ -373,7 +373,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
                                                 time_bounds)
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            save([cube_of_stats])
             files.append(filename)
 
     cubes.extend(files)

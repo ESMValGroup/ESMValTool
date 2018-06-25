@@ -11,8 +11,8 @@ import yaml
 
 from . import __version__, preprocessor
 from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_output_file, get_start_end_year,
-                           get_statistic_output_file)
+                           get_input_fx_filelist, get_output_file,
+                           get_start_end_year, get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor._derive import get_required
@@ -61,8 +61,7 @@ def check_ncl_version():
 
 def check_recipe_with_schema(filename):
     """Check if the recipe content matches schema."""
-    schema_file = os.path.join(
-        os.path.dirname(__file__), 'recipe_schema.yml')
+    schema_file = os.path.join(os.path.dirname(__file__), 'recipe_schema.yml')
     logger.debug("Checking recipe against schema %s", schema_file)
     recipe = yamale.make_data(filename)
     schema = yamale.make_schema(schema_file)
@@ -452,7 +451,8 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save_cubes'] = {}
+    settings['save'] = {
+        'compress': config_user['compress_netcdf']}
 
     return settings
 
@@ -764,6 +764,17 @@ class Recipe(object):
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
+            if 'fx_files' in variable:
+                for fx_file in variable['fx_files']:
+                    DATASET_KEYS.add(fx_file)
+                # Get the fx files
+                variable['fx_files'] = get_input_fx_filelist(
+                    variable=variable,
+                    rootpath=self._cfg['rootpath'],
+                    drs=self._cfg['drs'])
+                logger.info("Using fx files for var %s of dataset %s:\n%s",
+                            variable['short_name'], variable['dataset'],
+                            variable['fx_files'])
 
         return variables
 

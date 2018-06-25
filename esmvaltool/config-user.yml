@@ -17,6 +17,8 @@ exit_on_warning: false
 output_file_type: pdf
 # Destination directory
 output_dir: ./esmvaltool_output
+# Use netCDF compression true/[false]
+compress_netcdf: false
 # Save intermediary cubes in the preprocessor true/[false]
 save_intermediary_cubes: false
 # Remove the preproc dir if all fine
