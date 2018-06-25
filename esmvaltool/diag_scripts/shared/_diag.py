@@ -409,58 +409,6 @@ class Datasets(object):
         paths = self._extract_paths(dataset_info)
         return [self._data[path] for path in paths]
 
-    def get_exp(self, dataset_path):
-        """Access a dataset's `exp`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain an `exp` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset.
-
-        Returns
-        -------
-        str
-            `exp` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.EXP)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.EXP)
-            return output
-        return None
-
-    def get_dataset(self, dataset_path):
-        """Access a dataset's `dataset`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `dataset` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset.
-
-        Returns
-        -------
-        str
-            `dataset` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.DATASET)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.DATASET)
-            return output
-        return None
-
     def get_dataset_info(self, dataset_path=None, **dataset_info):
         """Access a dataset's information.
 
@@ -502,7 +450,7 @@ class Datasets(object):
         return self._datasets[paths[0]]
 
     def get_dataset_info_list(self, **dataset_info):
-        """Access datasets information in a list.
+        """Access dataset's information in a list.
 
         Notes
         -----
@@ -522,6 +470,60 @@ class Datasets(object):
         """
         paths = self._extract_paths(dataset_info)
         return [self._datasets[path] for path in paths]
+
+    def get_info(self, key, dataset_path):
+        """Access a 'dataset_info`'s `key`.
+
+        Notes
+        -----
+        If the `dataset_info` does not contain the `key`, returns None.
+
+        Parameters
+        ----------
+        key : str
+            Desired dictionary key.
+        dataset_path : str
+            Path to the dataset.
+
+        Returns
+        -------
+        str
+            `key` information of the given dataset.
+
+        """
+        if self._is_valid_path(dataset_path):
+            output = self._datasets[dataset_path].get(key)
+            if output is None:
+                logger.warning("Dataset %s does not contain '%s' information",
+                               dataset_path, key)
+            return output
+        return None
+
+    def get_info_list(self, key, **dataset_info):
+        """Access `dataset_info`'s `key` values.
+
+        Notes
+        -----
+        The returned data is sorted alphabetically respective to the `paths`.
+
+        Parameters
+        ----------
+        **dataset_info, optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
+            `exp=piControl` or `short_name=tas`.
+
+        Returns
+        -------
+        list
+            `key` information of the selected datasets.
+
+        """
+        paths = self._extract_paths(dataset_info)
+        output = [self._datasets[path].get(key) for path in paths]
+        if None in output:
+            logger.warning("One or more datasets do not containt '%s' "
+                           "information", key)
+        return output
 
     def get_path(self, **dataset_info):
         """Access a dataset's path.
@@ -558,7 +560,7 @@ class Datasets(object):
         return paths[0]
 
     def get_path_list(self, **dataset_info):
-        """Access datasets paths in a list.
+        """Access dataset's paths in a list.
 
         Notes
         -----
@@ -578,86 +580,6 @@ class Datasets(object):
         """
         paths = self._extract_paths(dataset_info)
         return paths
-
-    def get_project(self, dataset_path):
-        """Access a dataset's `project`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `project` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset.
-
-        Returns
-        -------
-        str
-            `project` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.PROJECT)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.PROJECT)
-            return output
-        return None
-
-    def get_short_name(self, dataset_path):
-        """Access a dataset's `short_name`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `short_name` value, returns
-        None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset.
-
-        Returns
-        -------
-        str
-            `short_name` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.SHORT_NAME)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.SHORT_NAME)
-            return output
-        return None
-
-    def get_standard_name(self, dataset_path):
-        """Access a dataset's `standard_name`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `standard_name` value, returns
-        None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset.
-
-        Returns
-        -------
-        str
-            `standard_name` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.STANDARD_NAME)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.STANDARD_NAME)
-            return output
-        return None
 
     def set_data(self, data, dataset_path=None, **dataset_info):
         """Set element as a dataset's data.
