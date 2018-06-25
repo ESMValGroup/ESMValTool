@@ -9,8 +9,22 @@ import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
-def get_path_to_mpl_style(style_file):
+def _costumize_plot(axes, **kwargs):
+    """Costumize a matplotlib plot."""
+    axes.set_title(kwargs.get('title', ''))
+    axes.set_xlabel(kwargs.get('xlabel', ''))
+    axes.set_ylabel(kwargs.get('ylabel', ''))
+    axes.set_xlim(*kwargs.get('xlim', []))
+    axes.set_ylim(*kwargs.get('ylim', []))
+    if kwargs.get('legend_kwargs') is not None:
+        return axes.legend(**kwargs['legend_kwargs'])
+    return None
+
+
+def get_path_to_mpl_style(style_file=None):
     """Get path to matplotlib style file."""
+    if style_file is None:
+        style_file = 'default.mplstyle'
     if not isinstance(style_file, str):
         raise TypeError("Invalid input: {} is not ".format(style_file) +
                         "a string")
@@ -21,9 +35,11 @@ def get_path_to_mpl_style(style_file):
     return filepath
 
 
-def get_dataset_style(dataset, style_file='cmip5.yml'):
+def get_dataset_style(dataset, style_file=None):
     """Retrieve the style information for the given dataset."""
     # Default path
+    if style_file is None:
+        style_file = 'cmip5.yml'
     base_dir = os.path.dirname(__file__)
     default_dir = os.path.join(base_dir, 'styles_python')
 
@@ -74,3 +90,106 @@ def quickplot(cube, filename, plot_type, **kwargs):
     plot_function(cube, **kwargs)
     # plt.gca().coastlines()
     fig.savefig(filename)
+
+
+def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
+    """Plot a multi dataset scatterplot.
+
+    Notes
+    -----
+    Allowed keyword arguments::
+
+        plot_kwargs : array-like, optional
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
+        mpl_style_file : str, optional
+            Path to the matplotlib style file.
+        dataset_style_file : str, optional
+            Path to the dataset styles file.
+        title : str, optional
+            Title of the plot.
+        xlabel : str, optional
+            x label of the plot.
+        ylabel : str, optional
+            y label of the plot.
+        xlim : tuple, optional
+            x boundaries of the plot.
+        ylim : tuple, optional
+            y boundaries of the plot.
+        legend_kwargs : dict, optional
+            Keyword arguments for the legend of the plot.
+        save_kwargs : dict, optional
+            Keyword arguments for saving the plot.
+
+    Parameters
+    ----------
+    x_data : array-like
+        x data of each dataset.
+    y_data : array-like
+        y data of each dataset.
+    datasets : array-like
+        Names of the datasets.
+    filepath : str
+        Path to which plot is written.
+    **kwargs
+        Keyword arguments.
+
+    """
+    # Allowed kwargs
+    allowed_kwargs = [
+        'plot_kwargs',
+        'mpl_style_file',
+        'dataset_style_file',
+        'title',
+        'xlabel',
+        'ylabel',
+        'xlim',
+        'ylim',
+        'legend_kwargs',
+        'save_kwargs',
+    ]
+    for kwarg in kwargs:
+        if kwarg not in allowed_kwargs:
+            raise TypeError("{} is not a valid keyword argument".format(kwarg))
+
+    # Check parameters
+    try:
+        empty_dict = [{} for _ in x_data]
+        msg = ''
+        if len(x_data) != len(y_data):
+            msg = "x_data and y_data"
+        if len(x_data) != len(datasets):
+            msg = "x_data and datasets"
+        if len(x_data) != \
+                len(kwargs.get('plot_kwargs', x_data)):
+            msg = "x_data and plot_kwargs"
+        if msg:
+            raise ValueError("Invalild input: {} need to have ".format(msg) +
+                             "the same size")
+    except TypeError:
+        raise TypeError("x_data, y_data and datasets have to be "
+                        "array-like")
+
+    # Create matplotlib instances
+    plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
+    fig, axes = plt.subplots()
+
+    # Plot data
+    for (idx, dataset) in enumerate(datasets):
+        style = get_dataset_style(dataset, kwargs.get('dataset_styles_file'))
+
+        # Plot
+        axes.plot(x_data[idx], y_data[idx],
+                  linestyle='none',
+                  markeredgecolor=style['color'],
+                  markerfacecolor=style['facecolor'],
+                  marker=style['mark'],
+                  **kwargs.get('plot_kwargs', empty_dict)[idx])
+
+    # Costumize plot
+    legend = _costumize_plot(axes, **kwargs)
+
+    # Save plot
+    fig.savefig(filepath, additional_artists=[legend],
+                **kwargs.get('save_kwargs', {}))
+    logger.info("Writing %s", filepath)
+    plt.close()
