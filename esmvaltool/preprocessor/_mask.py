@@ -142,52 +142,41 @@ def cube_shape(mycube):
     return region
 
 
-def maskgeometry(shapefilename, att, argv):
-    """
-    Mask for a specific geometry
-
-    This function takes in a shapefile shapefilename
-    and creates a specific geometry based on a set of conditions
-    on contour attributes att is argv e.g.
-    contour.attributes['name'] == 'land_mass'
-    """
+def _get_geometry_from_shp(shapefilename):
+    """Get the mask geometry out from a shapefile"""
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
-    contours = reader.records()
-    contour_polygons, = [
-        contour.geometry for contour in contours
-        if contour.attributes[att] == argv
-    ]
-    main_geom = sorted(contour_polygons.geoms, key=lambda geom: geom.area)[-1]
+    main_geom = [contour for contour in reader.geometries()][0]
     return main_geom
 
 
-def mask_2d(mycube, geom):
+def _mask_with_shp(cube, region):
     """
-    Mask any 2D geometry
+    Apply a mask from a shapefile geometry extracted with
 
-    This function masks off any given 2D geometry geom
-    and keeps only the values that fall in geom, nulling
-    everything else in mycube
-    WARNING: as of now this function works with cubes that have time as coord
-    it is adusted to save time and loop over only lon-lat points
+    _get_geometry_from_shp function
     """
-    from shapely.geometry import Point
-    ccube = mycube.collapsed('time', iris.analysis.MEAN)
-    mask = np.ones(ccube.data.shape)
-    p = -1
-    for i in np.ndindex(ccube.data.shape):
-        if i[0] != p:
-            print(i[0], end=' ')
-            p = i[0]
-        this_cube = ccube[i]
-        this_lat = this_cube.coord('latitude').points[0]
-        this_lon = this_cube.coord('longitude').points[0] - 360
-        this_point = Point(this_lon, this_lat)
-        mask[i] = this_point.within(geom)
+    from shapely.geometry import MultiPoint
 
-    mycube.data = mycube.data * mask
-    return mycube
+    # Create a mask for the data
+    mask = np.ones(cube.shape, dtype=bool)
+
+    # Create a set of x,y points from the cube
+    x, y = np.meshgrid(cube.coord(axis='X').points,
+                       cube.coord(axis='Y').points)
+    lat_lon_points = np.vstack([x.flat, y.flat])
+    points = MultiPoint(lat_lon_points.T)
+
+    # Find all points within the region of interest (a Shapely geometry)
+    indices = [i for i, p in enumerate(points) if region.contains(p)]
+
+    # Then apply the mask
+    if isinstance(cube.data, np.ma.MaskedArray):
+        cube.data.mask &= mask
+    else:
+        cube.data = np.ma.masked_array(cube.data, mask)
+
+    return cube
 
 
 def polygon_shape(xlist, ylist):
