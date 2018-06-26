@@ -44,13 +44,13 @@ def calculate_ecs(cfg, datasets, variables):
     for dataset_path in \
             datasets.get_path_list(short_name=variables.tas, exp=DIFF):
         dataset = datasets.get_info(n.DATASET, dataset_path)
-        data_tas = datasets.get_data(dataset_path=dataset_path)
+        data_tas = datasets.get_data(dataset_path)
         data_rtmt = datasets.get_data(short_name=variables.rtmt, exp=DIFF,
                                       dataset=dataset)
-        reg_stats = stats.linregress(data_tas, data_rtmt)
-        data_ecs = -reg_stats.intercept / (2 * reg_stats.slope)
+        reg = stats.linregress(data_tas, data_rtmt)
         datasets.add_dataset(variables.ecs + DIFF + dataset,
-                             data_ecs, short_name=variables.ecs, exp=DIFF,
+                             -reg.intercept / (2 * reg.slope),
+                             short_name=variables.ecs, exp=DIFF,
                              dataset=dataset)
 
         # Plot ECS regression if desired
@@ -65,30 +65,29 @@ def calculate_ecs(cfg, datasets, variables):
 
         # Regression line
         x_reg = np.linspace(-1.0, 8.0, 2)
-        y_reg = reg_stats.slope * x_reg + reg_stats.intercept
+        y_reg = reg.slope * x_reg + reg.intercept
         reg_plot_kwargs = {'color': 'k', 'linestyle': '-'}
 
         # Plot data
+        text = 'r = {:.2f}, '.format(reg.rvalue) + \
+               r'$\alpha$ = {:.2f}, '.format(-reg.slope) + \
+               'F = {:.2f}, '.format(reg.intercept) + \
+               'ECS = {:.2f}'.format(-reg.intercept / (2 * reg.slope))
         e.plot.scatterplot(
             [data_tas, x_reg],
             [data_rtmt, y_reg],
             filepath,
             plot_kwargs=[plot_kwargs, reg_plot_kwargs],
-            title=dataset,
-            xlabel=variables.tas + " / " + variables.TAS.units,
-            ylabel=variables.rtmt + " / " + variables.RTMT.units,
-            xlim=(0.0, 7.0),
-            ylim=(-2.0, 10.0),
             save_kwargs=cfg.get('save'),
-            text_kwargs=[{'x': 0.05,
-                          'y': 0.05,
-                          'text': "r = {:.2f}".format(reg_stats.rvalue)},
-                         {'x': 0.05,
-                          'y': 0.9,
-                          'text': r"$\alpha$ = " +
-                                  "{:.2f},  ".format(-reg_stats.slope) +
-                                  "F = {:.2f},  ".format(reg_stats.intercept) +
-                                  "ECS = {:.2f}".format(data_ecs)}])
+            axes_functions={'set_title': dataset,
+                            'set_xlabel': (variables.tas + " / " +
+                                           variables.TAS.units),
+                            'set_ylabel': (variables.rtmt + " / " +
+                                           variables.RTMT.units),
+                            'set_xlim': [0.0, 7.0],
+                            'set_ylim': [-2.0, 10.0],
+                            'text': {'args': [0.05, 0.9, text],
+                                     'kwargs': {'transform': 'transAxes'}}})
 
 
 def plot_data(cfg, datasets, variables):
@@ -131,12 +130,8 @@ def plot_data(cfg, datasets, variables):
         dataset_names,
         filepath,
         plot_kwargs=plot_kwargs,
-        title=cfg.get('title'),
-        xlabel=cfg.get('xlabel'),
-        ylabel=cfg.get('ylabel'),
-        xlim=cfg.get('xlim'),
-        legend_kwargs=cfg.get('legend'),
-        save_kwargs=cfg.get('save'))
+        save_kwargs=cfg.get('save'),
+        axes_functions=cfg.get('axes_functions'))
     return None
 
 
@@ -221,7 +216,7 @@ def main(cfg):
         else:
             cube = cube.aggregated_by(n.YEAR, iris.analysis.MEAN)
 
-        data.set_data(cube.data, dataset_path=dataset_path)
+        data.set_data(cube.data, dataset_path)
 
     ###########################################################################
     # Process data
@@ -232,7 +227,7 @@ def main(cfg):
     for dataset_path in data.get_path_list(exp=PICONTROL):
         dataset = data.get_info(n.DATASET, dataset_path)
         short_name = data.get_info(n.SHORT_NAME, dataset_path)
-        new_data = data.get_data(dataset_path=dataset_path)
+        new_data = data.get_data(dataset_path)
         data_diff = data.get_data(short_name=short_name, exp=ABRUPT4XCO2,
                                   dataset=dataset) - new_data
         data.add_dataset(short_name + DIFF + dataset, data_diff,
