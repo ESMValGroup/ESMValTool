@@ -10,11 +10,6 @@
 ;
 ; #############################################################################
 
-; Global variables to save the names of all files read by "read_data"
-gFilesRead0 = new(10000, string)
-gNFiles0 = 0
-
-; #############################################################################
 undef("read_data")
 function read_data(index[1]:integer,
                    variable[1]:string,
@@ -76,15 +71,6 @@ begin
     error_msg("f", scriptname, funcname, "variable " + variable + \
               "is not in the file")
   end if
-
-  ; Add to the list of read in files for traceability/provenance log
-  if (gNFiles0.lt.dimsizes(gFilesRead0)) then
-    gFilesRead0(gNFiles0) = infile
-    gNFiles0 = gNFiles0 + 1
-  end if
-
-  ; Read attributes and write info to log-file
-  inquire_and_save_fileinfo(infile, input_file_info@dataset(index), variable)
 
   ; Read data
   data = fin->$variable$
@@ -162,15 +148,6 @@ begin
     error_msg("f", scriptname, funcname, "variable " + variable + \
               "is not in the file")
   end if
-
-  ; Add to the list of read in files for traceability/provenance log
-  if (gNFiles0.lt.dimsizes(gFilesRead0)) then
-    gFilesRead0(gNFiles0) = infile
-    gNFiles0 = gNFiles0 + 1
-  end if
-
-  ; Read attributes and write info to log-file
-  inquire_and_save_fileinfo(infile, input_file_info@dataset(index), variable)
 
   ; Read data
   data = fin->$variable$
