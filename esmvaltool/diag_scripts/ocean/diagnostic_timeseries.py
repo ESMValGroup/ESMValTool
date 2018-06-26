@@ -61,11 +61,11 @@ def timeplot(cube, **kwargs ): # color,linestyle,label):
 
     Needed because iris version 1.13 fails due to the time axis.
     """
-    if iris.__version__ < '2.1':
+    if iris.__version__ > '2.0':
         qplt.plot(cube, kwargs ) #label=label, ls=linestyle, c = color)
     else:
         times = diagtools.timecoord_to_float(cube.coord('time'))
-        pyplot.plot(times,cube.points,  kwargs) #label=label, ls=linestyle, c = color)
+        plt.plot(times,cube.data,  **kwargs) #label=label, ls=linestyle, c = color)
         
 
 def make_time_series_plots(
