@@ -55,6 +55,18 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
+def timeplot(cube, **kwargs ): # color,linestyle,label):
+    """
+    Make a time series plot
+
+    Needed because iris version 1.13 fails due to the time axis.
+    """
+    if iris.__version__ < '2.1':
+        qplt.plot(cube, kwargs ) #label=label, ls=linestyle, c = color)
+    else:
+        times = diagtools.timecoord_to_float(cube.coord('time'))
+        pyplot.plot(times,cube.points,  kwargs) #label=label, ls=linestyle, c = color)
+        
 
 def make_time_series_plots(
         cfg,
@@ -83,9 +95,9 @@ def make_time_series_plots(
         layer = str(layer)
 
         if multi_model:
-            qplt.plot(cube_layer, label=metadata['dataset'], ls=':')
+            timeplot(cube_layer, label=metadata['dataset'], ls=':')
         else:
-            qplt.plot(cube_layer, label=metadata['dataset'])
+            timeplot(cube_layer, label=metadata['dataset'])
 
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
@@ -166,7 +178,7 @@ def multi_model_time_series(
                 (float(index) / (len(metadata.keys()) - 1.)))
 
             if metadata[filename]['dataset'].find('MultiModel') > -1:
-                qplt.plot(
+                timeplot(
                     model_cubes[filename][layer],
                     c=color,
                     # label=metadata[filename]['dataset'],
@@ -180,7 +192,7 @@ def multi_model_time_series(
                     'label': metadata[filename]['dataset']
                 }
             else:
-                qplt.plot(
+                timeplot(
                     model_cubes[filename][layer],
                     c=color,
                     # label=metadata[filename]['dataset'])
