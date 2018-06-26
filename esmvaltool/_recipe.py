@@ -453,9 +453,14 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Configure ingestion of landocean masks
     if variable.get('fx_files'):
-        settings['mask_landocean'] = {
-            'fx_file': variable['fx_files']['sftlf']
-        }
+        if 'sftlf' in variable['fx_files'].keys():
+            settings['mask_landocean'] = {
+                'fx_file': variable['fx_files']['sftlf']
+            }
+        # add more file options here with elif
+        # else: return an empty value
+        else:
+            settings['mask_landocean'] = {'fx_file': None}
 
     return settings
 

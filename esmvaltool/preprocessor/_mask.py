@@ -58,16 +58,16 @@ def _apply_fx_mask(fx_mask, var_data):
     return var_data
 
 
-def mask_landocean(cube, fx_file, fx_option):
+def mask_landocean(cube, fx_file, mask_off):
     """Apply a land/ocean mask"""
-    # fx_option is either 'land' or 'ocean'
+    # mask_off: is either 'land' or 'ocean'
 
     if fx_file:
-        # Try loading; some files are broken
+        # Try loading; some files may be broken
         try:
             fx_cube = iris.load_cube(fx_file)
             landocean_mask = _get_fx_mask(fx_cube.data,
-                                          fx_option)
+                                          mask_off)
             cube.data = _apply_fx_mask(landocean_mask,
                                        cube.data)
         except iris.exceptions.TranslationError as msg:
