@@ -100,7 +100,7 @@ function read_fx_data(index[1]:integer,
 ;    logical defined in the <variable>_info.ncl file automatically generated
 ;    by the preprocessor and stored in the preproc/<preproc_id>/ subdirectory.
 ;    Unlike read_data, this function does not exit on error if the input file
-;    is not found. This is to provide more flexibility to the calling 
+;    is not found. This is to provide more flexibility to the calling
 ;    diagnostic
 ;
 ; Caveats
