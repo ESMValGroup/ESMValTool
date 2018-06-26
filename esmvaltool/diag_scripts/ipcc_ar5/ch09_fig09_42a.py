@@ -18,7 +18,10 @@ Description
 Configuration options
 ---------------------
     plot_ecs_regression : Switch to plot the linear regressions needed for the
-                          ECS calculations
+                          ECS calculations.
+    plot_name           : Name of plot file.
+    save                : Keyword arguments for the fig.saveplot() function.
+    axes_functions      : Plot appearance functions.
 
 ###############################################################################
 
