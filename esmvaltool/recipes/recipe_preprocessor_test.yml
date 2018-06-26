@@ -15,7 +15,7 @@ preprocessors:
       # levels: {dataset: ERA-Interim, coordinate: air_pressure}
       scheme: linear
     mask_landocean:
-      mask_off: land #if land, will mask land off
+      mask_out: land #if land, will mask land off
     regrid:
       target_grid: ERA-Interim
       scheme: linear
