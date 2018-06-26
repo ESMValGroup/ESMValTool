@@ -9,16 +9,33 @@ import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
-def _costumize_plot(axes, **kwargs):
-    """Costumize a matplotlib plot."""
-    axes.set_title(kwargs.get('title', ''))
-    axes.set_xlabel(kwargs.get('xlabel', ''))
-    axes.set_ylabel(kwargs.get('ylabel', ''))
-    axes.set_xlim(*kwargs.get('xlim', []))
-    axes.set_ylim(*kwargs.get('ylim', []))
-    if kwargs.get('legend_kwargs') is not None:
-        return axes.legend(**kwargs['legend_kwargs'])
-    return None
+def _process_axes_functions(axes, axes_functions):
+    """Process axes functions of the form `axes.functions(*args, **kwargs)."""
+    if axes_functions is None:
+        return None
+    output = None
+    for (func, attr) in axes_functions.items():
+        axes_function = getattr(axes, func)
+
+        # Simple functions (argument directly given)
+        if not isinstance(attr, dict):
+            try:
+                out = axes_function(*attr)
+            except TypeError:
+                out = axes_function(attr)
+        else:
+            args = attr.get('args', [])
+            kwargs = attr.get('kwargs', {})
+
+            # Process 'transform' kwargs
+            if 'transform' in kwargs:
+                kwargs['transform'] = getattr(axes, kwargs['transform'])
+            out = axes_function(*args, **kwargs)
+
+        # Return legend if possible
+        if func == 'legend':
+            output = out
+    return output
 
 
 def get_path_to_mpl_style(style_file=None):
@@ -99,26 +116,16 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     -----
     Allowed keyword arguments::
 
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
         mpl_style_file : str, optional
             Path to the matplotlib style file.
         dataset_style_file : str, optional
             Path to the dataset styles file.
-        title : str, optional
-            Title of the plot.
-        xlabel : str, optional
-            x label of the plot.
-        ylabel : str, optional
-            y label of the plot.
-        xlim : tuple, optional
-            x boundaries of the plot.
-        ylim : tuple, optional
-            y boundaries of the plot.
-        legend_kwargs : dict, optional
-            Keyword arguments for the legend of the plot.
+        plot_kwargs : array-like, optional
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
         save_kwargs : dict, optional
             Keyword arguments for saving the plot.
+        axes_functions : dict, optional
+            Arbitrary functions for axes, i.e. `axes.function(*args, **kwargs)`
 
     Parameters
     ----------
@@ -136,16 +143,11 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     """
     # Allowed kwargs
     allowed_kwargs = [
-        'plot_kwargs',
         'mpl_style_file',
         'dataset_style_file',
-        'title',
-        'xlabel',
-        'ylabel',
-        'xlim',
-        'ylim',
-        'legend_kwargs',
+        'plot_kwargs',
         'save_kwargs',
+        'axes_functions',
     ]
     for kwarg in kwargs:
         if kwarg not in allowed_kwargs:
@@ -185,7 +187,7 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
     # Costumize plot
-    legend = _costumize_plot(axes, **kwargs)
+    legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
     fig.savefig(filepath, additional_artists=[legend],
@@ -201,26 +203,14 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     -----
     Allowed keyword arguments::
 
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
         mpl_style_file : str, optional
             Path to the matplotlib style file.
-        title : str, optional
-            Title of the plot.
-        xlabel : str, optional
-            x label of the plot.
-        ylabel : str, optional
-            y label of the plot.
-        xlim : tuple, optional
-            x boundaries of the plot.
-        ylim : tuple, optional
-            y boundaries of the plot.
-        legend_kwargs : dict, optional
-            Keyword arguments for the legend of the plot.
+        plot_kwargs : array-like, optional
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
         save_kwargs : dict, optional
             Keyword arguments for saving the plot.
-        text_kwargs : dict, optional
-            Keyword arguments to write text to the plot.
+        axes_functions : dict, optional
+            Arbitrary functions for axes, i.e. `axes.function(*args, **kwargs)`
 
     Parameters
     ----------
@@ -236,16 +226,10 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     """
     # Allowed kwargs
     allowed_kwargs = [
-        'plot_kwargs',
         'mpl_style_file',
-        'title',
-        'xlabel',
-        'ylabel',
-        'xlim',
-        'ylim',
-        'legend_kwargs',
+        'plot_kwargs',
         'save_kwargs',
-        'text_kwargs',
+        'axes_functions',
     ]
     for kwarg in kwargs:
         if kwarg not in allowed_kwargs:
@@ -276,12 +260,7 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
     # Costumize plot
-    legend = _costumize_plot(axes, **kwargs)
-
-    # Text
-    for text in kwargs.get('text_kwargs', []):
-        axes.text(text.get('x', 0.0), text.get('y', 0.0),
-                  text.get('text', ''), transform=axes.transAxes)
+    legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
     fig.savefig(filepath, additional_artists=[legend],
