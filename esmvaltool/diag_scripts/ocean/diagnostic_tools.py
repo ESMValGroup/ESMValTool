@@ -145,7 +145,7 @@ def get_image_path(cfg,
                    metadata,
                    prefix='diag',
                    suffix='image',
-                   basenamelist='default',):
+                   metadata_id_list='default',):
     """
     Produce a path to the final location of the image.
 
@@ -153,15 +153,15 @@ def get_image_path(cfg,
     metadata is the metadata dictionairy (for the individual dataset file)
     """
     #####
-    if basenamelist == 'default':
-        basenamelist = ['project', 'dataset', 'mip', 'exp', 'ensemble',
-                        'field', 'short_name', 'preprocessor', 'diagnostic',
-                        'start_year', 'end_year', ]
+    if metadata_id_list == 'default':
+        metadata_id_list = ['project', 'dataset', 'mip', 'exp', 'ensemble',
+                            'field', 'short_name', 'preprocessor',
+                            'diagnostic', 'start_year', 'end_year', ]
 
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
-    path += '_'.join([str(metadata[b]) for b in basenamelist])
+    path += '_'.join([str(metadata[b]) for b in metadata_id_list])
     if suffix:
         path += '_' + suffix
 

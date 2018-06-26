@@ -55,18 +55,19 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-def timeplot(cube, **kwargs ): # color,linestyle,label):
+
+def timeplot(cube, **kwargs):
     """
     Make a time series plot
 
     Needed because iris version 1.13 fails due to the time axis.
     """
     if iris.__version__ > '2.0':
-        qplt.plot(cube, kwargs ) #label=label, ls=linestyle, c = color)
+        qplt.plot(cube, kwargs)
     else:
         times = diagtools.timecoord_to_float(cube.coord('time'))
-        plt.plot(times,cube.data,  **kwargs) #label=label, ls=linestyle, c = color)
-        
+        plt.plot(times, cube.data, **kwargs)
+
 
 def make_time_series_plots(
         cfg,
@@ -118,7 +119,7 @@ def make_time_series_plots(
                 metadata,
                 prefix='MultiModel',
                 suffix='_'.join(['timeseries', str(layer) + '.png']),
-                basenamelist=[
+                metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
                 ],
@@ -223,7 +224,7 @@ def multi_model_time_series(
                 metadata[filename],
                 prefix='MultipleModels_',
                 suffix='_'.join(['timeseries', str(layer) + '.png']),
-                basenamelist=[
+                metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
                 ],
