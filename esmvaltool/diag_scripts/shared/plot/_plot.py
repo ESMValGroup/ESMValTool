@@ -23,6 +23,8 @@ def _process_axes_functions(axes, axes_functions):
                 out = axes_function(*attr)
             except TypeError:
                 out = axes_function(attr)
+
+        # More complicated functions (args and kwargs given)
         else:
             args = attr.get('args', [])
             kwargs = attr.get('kwargs', {})
@@ -121,11 +123,12 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
         dataset_style_file : str, optional
             Path to the dataset styles file.
         plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
         save_kwargs : dict, optional
             Keyword arguments for saving the plot.
         axes_functions : dict, optional
-            Arbitrary functions for axes, i.e. `axes.function(*args, **kwargs)`
+            Arbitrary functions for axes, i.e.
+            `axes.function(*args, **kwargs)`.
 
     Parameters
     ----------
@@ -139,6 +142,16 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
         Path to which plot is written.
     **kwargs
         Keyword arguments.
+
+    Raises
+    ------
+    TypeError
+        - A non-valid keyword argument is given.
+        - `x_data`, `y_data`, `datasets` or (if given) `plot_kwargs` are not
+           array-like.
+    ValueError
+        `x_data`, `y_data`, `datasets` or `plot_kwargs` do not have the same
+         size.
 
     """
     # Allowed kwargs
@@ -206,11 +219,12 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         mpl_style_file : str, optional
             Path to the matplotlib style file.
         plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.)
+            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
         save_kwargs : dict, optional
             Keyword arguments for saving the plot.
         axes_functions : dict, optional
-            Arbitrary functions for axes, i.e. `axes.function(*args, **kwargs)`
+            Arbitrary functions for axes, i.e.
+            `axes.function(*args, **kwargs)`.
 
     Parameters
     ----------
@@ -222,6 +236,14 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         Path to which plot is written.
     **kwargs
         Keyword arguments.
+
+    Raises
+    ------
+    TypeError
+        - A non-valid keyword argument is given.
+        - `x_data`, `y_data` or (if given) `plot_kwargs` are not array-like.
+    ValueError
+        `x_data`, `y_data` or `plot_kwargs` do not have the same size.
 
     """
     # Allowed kwargs

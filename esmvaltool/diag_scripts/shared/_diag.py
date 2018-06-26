@@ -293,7 +293,7 @@ class Datasets(object):
         ------
         RuntimeError
             If data given by `dataset_info` is ambiguous and
-            `fail_when_ambiguous` is set to True.
+            `fail_when_ambiguous` is set to `True`.
 
         """
         paths = list(self._datasets)

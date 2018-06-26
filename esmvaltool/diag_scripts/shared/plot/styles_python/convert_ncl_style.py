@@ -13,7 +13,7 @@ Global attributes
 INPUT_FILE : str
     Path to the ncl style file.
 OUTPUT_FILE : str
-    Path to the new python style file (yaml format).
+    Path to the new python style file (yml format).
 
 """
 
@@ -38,6 +38,82 @@ FILLING = 'facecolor'
 INFORMATION = [DATASET, COLOR, DASH, THICKNESS, MARK, AVG_STD]
 
 
+def read_line(line):
+    """Read line of the ncl style file."""
+    # Read information
+    info_dict = {}
+    for (idx, line_elem) in enumerate(line):
+        info = line_elem.strip()
+        option = INFORMATION[idx]
+
+        # Convert color to hex string
+        if option == COLOR:
+            color = info.split(',')
+            info = '#'
+            for col in color:
+                col = "{:02x}".format(int(col))
+                info += col
+
+        # Convert mark index to matplotlib marker
+        elif option == MARK:
+            # Filling
+            if info == '16':
+                info_dict.update({FILLING: info_dict[COLOR]})
+            else:
+                info_dict.update({FILLING: 'none'})
+
+            # Shape
+            shape = {
+                '0': 'x',
+                '1': '.',
+                '2': '+',
+                '3': 'x',
+                '4': 'o',
+                '5': 'x',
+                '6': 's',
+                '7': '^',
+                '8': 'v',
+                '9': 'D',
+                '10': '<',
+                '11': '>',
+                '12': '*',
+                '13': 'h',
+                '14': '.',
+                '15': 'x',
+                '16': 'o'}
+            info = shape.get(info, 'o')
+
+        # Convert dash index to matplotlib dash marker
+        elif option == DASH:
+            dash = {
+                '0': '-',
+                '1': '--',
+                '2': ':',
+                '3': '-.',
+                '4': '-.',
+                '5': '--',
+                '6': '--',
+                '7': '-.',
+                '8': '-.',
+                '9': '-.',
+                '10': '-.',
+                '11': '--',
+                '12': '--',
+                '13': '--',
+                '14': '--',
+                '15': '--',
+                '16': '--'}
+            info = dash.get(info, '-')
+
+        # Convert str to int
+        elif (option == AVG_STD or option == THICKNESS):
+            info = int(info)
+
+        # Add information
+        info_dict.update({INFORMATION[idx]: info})
+    return info_dict
+
+
 def read_ncl_style(file_name):
     """Read ncl style file."""
     output = []
@@ -54,78 +130,8 @@ def read_ncl_style(file_name):
             if len(line) != len(INFORMATION):
                 continue
 
-            # Read information
-            info_dict = {}
-            for (idx, line_elem) in enumerate(line):
-                info = line_elem.strip()
-                option = INFORMATION[idx]
-
-                # Convert color to hex string
-                if option == COLOR:
-                    color = info.split(',')
-                    info = '#'
-                    for col in color:
-                        col = "{:02x}".format(int(col))
-                        info += col
-
-                # Convert mark index to matplotlib marker
-                if option == MARK:
-                    # Filling
-                    if info == '16':
-                        info_dict.update({FILLING: info_dict[COLOR]})
-                    else:
-                        info_dict.update({FILLING: 'none'})
-
-                    # Shape
-                    shape = {
-                        '0': 'x',
-                        '1': '.',
-                        '2': '+',
-                        '3': 'x',
-                        '4': 'o',
-                        '5': 'x',
-                        '6': 's',
-                        '7': '^',
-                        '8': 'v',
-                        '9': 'D',
-                        '10': '<',
-                        '11': '>',
-                        '12': '*',
-                        '13': 'h',
-                        '14': '.',
-                        '15': 'x',
-                        '16': 'o'}
-                    info = shape.get(info, 'o')
-
-                # Convert dash index to matplotlib dash marker
-                if option == DASH:
-                    dash = {
-                        '0': '-',
-                        '1': '--',
-                        '2': ':',
-                        '3': '-.',
-                        '4': '-.',
-                        '5': '--',
-                        '6': '--',
-                        '7': '-.',
-                        '8': '-.',
-                        '9': '-.',
-                        '10': '-.',
-                        '11': '--',
-                        '12': '--',
-                        '13': '--',
-                        '14': '--',
-                        '15': '--',
-                        '16': '--'}
-                    info = dash.get(info, '-')
-
-                # Convert str to int
-                if (option == AVG_STD or option == THICKNESS):
-                    info = int(info)
-
-                # Add information
-                info_dict.update({INFORMATION[idx]: info})
-            output.append(info_dict)
+            # Read line
+            output.append(read_line(line))
 
     # Convert list to dictionary
     output_dict = {}
