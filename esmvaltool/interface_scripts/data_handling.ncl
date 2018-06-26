@@ -6,6 +6,7 @@
 ;
 ; Contents:
 ;    function read_data
+;    function read_fx_data
 ;
 ; #############################################################################
 
@@ -64,6 +65,92 @@ begin
   if (input_file_info@field(index) .ne. field_type) then
     error_msg("f", scriptname, funcname, "requested field type " + \
               field_type + " does not match")
+  end if
+
+  ; Open file
+  log_info("Reading in file = " + infile)
+  fin = addfile(infile, "r")
+
+  ; Check that variable is in the file
+  if (.not. isfilevar(fin, variable)) then
+    error_msg("f", scriptname, funcname, "variable " + variable + \
+              "is not in the file")
+  end if
+
+  ; Add to the list of read in files for traceability/provenance log
+  if (gNFiles0.lt.dimsizes(gFilesRead0)) then
+    gFilesRead0(gNFiles0) = infile
+    gNFiles0 = gNFiles0 + 1
+  end if
+
+  ; Read attributes and write info to log-file
+  inquire_and_save_fileinfo(infile, input_file_info@dataset(index), variable)
+
+  ; Read data
+  data = fin->$variable$
+
+  leave_msg(scriptname, funcname)
+  return(data)
+
+end
+
+
+; #############################################################################
+undef("read_fx_data")
+function read_fx_data(index[1]:integer,
+                      variable[1]:string)
+;
+; Arguments
+;    index: index to current input file as defined in the <variable>_info.ncl
+;           file in the preproc directory of the current variable
+;    variable: name of the fx variable to read
+;
+; Return value
+;    The actual data array with all metadata or a missing value if the fx
+;    variable is not found
+;
+; Description
+;    Retrieve the fx variable data and metadata based on the input_file_info
+;    logical defined in the <variable>_info.ncl file automatically generated
+;    by the preprocessor and stored in the preproc/<preproc_id>/ subdirectory.
+;    Unlike read_data, this function does not exit on error if the input file
+;    is not found. This is to provide more flexibility to the calling 
+;    diagnostic
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;   20180526_A-righ_ma: written.
+;
+local funcname, scriptname, infile, fin
+begin
+
+  funcname = "read_fx_data"
+  scriptname = "interface_scripts/data_handling.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Check array boundaries first
+  if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
+    error_msg("f", scriptname, funcname, "dataset index out of range")
+  end if
+
+  if (.not.isatt(input_file_info, variable)) then
+    error_msg("f", scriptname, funcname, "input path for fx variable " + \
+              variable + " not found in the interface file, please add " + \
+              "the required fx variable to the recipe")
+  end if
+
+  infile = input_file_info@$variable$(index)
+
+  ; Return missing if variable not available
+  if (infile.eq."None") then
+    error_msg("w", scriptname, funcname, "fx variable " + variable + \
+              " not found for dataset " + dataset_info@dataset(index))
+    out = new(1, float)
+    out = default_fillvalue(typeof(out))
+    return(out)
   end if
 
   ; Open file
