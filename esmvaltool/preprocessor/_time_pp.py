@@ -34,10 +34,12 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 
     time1 = time_units.date2num(my_date1)
     time2 = time_units.date2num(my_date2)
-    # TODO replace the block below for when using iris 2.0
-    # my_constraint = iris.Constraint(time=lambda t: (
-    #     time1 < time_units.date2num(t.point) < time2))
-    my_constraint = iris.Constraint(time=lambda t: (time1 < t.point < time2))
+    if iris.__version__ < '2.1':
+        my_constraint = iris.Constraint(time=lambda t: (
+            time1 < time_units.date2num(t.point) < time2))    
+    else:
+        my_constraint = iris.Constraint(time=lambda t: (time1 < t.point < time2))
+
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
