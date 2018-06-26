@@ -204,7 +204,7 @@ class Datasets(object):
         Raises
         ------
         TypeError
-            If recipe configuration file is not valid.
+            If recipe configuration dictionary is not valid.
 
         """
         self._iter_counter = 0
