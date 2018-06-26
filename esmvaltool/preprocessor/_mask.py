@@ -162,14 +162,14 @@ def _mask_with_shp(cube, region):
     mask = np.ones(cube.shape, dtype=bool)
 
     # Create a set of x,y points from the cube
-    x, y = np.meshgrid(cube.coord(axis='X').points,
-                       cube.coord(axis='Y').points)
-    lat_lon_points = np.vstack([x.flat, y.flat])
+    x_p, y_p = np.meshgrid(cube.coord(axis='X').points,
+                           cube.coord(axis='Y').points)
+    lat_lon_points = np.vstack([x_p.flat, y_p.flat])
     points = MultiPoint(lat_lon_points.T)
 
     # Find all points within the region of interest (a Shapely geometry)
     indices = [i for i, p in enumerate(points) if region.contains(p)]
-    mask[np.unravel_index(indices, (len(x), len(y)))] = False
+    mask[:, :, np.unravel_index(indices, (len(x_p), len(y_p)))] = False
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
