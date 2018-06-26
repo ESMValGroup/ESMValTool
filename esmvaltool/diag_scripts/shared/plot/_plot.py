@@ -40,6 +40,23 @@ def _process_axes_functions(axes, axes_functions):
     return output
 
 
+def _check_size_of_parameters(*args):
+    """Check if the size of (array-like) args is identical."""
+    if len(args) < 2:
+        logger.warning("Less than two arguments given, comparing not possible")
+        return None
+    arg_0 = args[0]
+    for arg in args:
+        try:
+            if len(arg_0) != len(arg):
+                raise ValueError("Invalild input: array-like parameters need "
+                                 "to have the same size")
+        except TypeError:
+            raise TypeError("Invalid input: some parameters are not "
+                            "array-like")
+    return None
+
+
 def get_path_to_mpl_style(style_file=None):
     """Get path to matplotlib style file."""
     if style_file is None:
@@ -167,22 +184,9 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
             raise TypeError("{} is not a valid keyword argument".format(kwarg))
 
     # Check parameters
-    try:
-        empty_dict = [{} for _ in x_data]
-        msg = ''
-        if len(x_data) != len(y_data):
-            msg = "x_data and y_data"
-        if len(x_data) != len(datasets):
-            msg = "x_data and datasets"
-        if len(x_data) != \
-                len(kwargs.get('plot_kwargs', x_data)):
-            msg = "x_data and plot_kwargs"
-        if msg:
-            raise ValueError("Invalild input: {} need to have ".format(msg) +
-                             "the same size")
-    except TypeError:
-        raise TypeError("x_data, y_data, datasets and plot_kwargs have to be "
-                        "array-like")
+    _check_size_of_parameters(x_data, y_data, datasets,
+                              kwargs.get('plot_kwargs', x_data))
+    empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
@@ -258,19 +262,9 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
             raise TypeError("{} is not a valid keyword argument".format(kwarg))
 
     # Check parameters
-    try:
-        empty_dict = [{} for _ in x_data]
-        msg = ''
-        if len(x_data) != len(y_data):
-            msg = "x_data and y_data"
-        if len(x_data) != \
-                len(kwargs.get('plot_kwargs', x_data)):
-            msg = "x_data and plot_kwargs"
-        if msg:
-            raise ValueError("Invalild input: {} need to have ".format(msg) +
-                             "the same size")
-    except TypeError:
-        raise TypeError("x_data, y_data and plot_kwargs have to be array-like")
+    _check_size_of_parameters(x_data, y_data,
+                              kwargs.get('plot_kwargs', x_data))
+    empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
