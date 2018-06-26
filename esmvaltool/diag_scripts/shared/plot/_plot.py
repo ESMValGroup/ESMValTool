@@ -49,7 +49,7 @@ def _check_size_of_parameters(*args):
     for arg in args:
         try:
             if len(arg_0) != len(arg):
-                raise ValueError("Invalild input: array-like parameters need "
+                raise ValueError("Invalid input: array-like parameters need "
                                  "to have the same size")
         except TypeError:
             raise TypeError("Invalid input: some parameters are not "
