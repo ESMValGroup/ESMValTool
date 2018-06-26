@@ -169,6 +169,7 @@ def _mask_with_shp(cube, region):
 
     # Find all points within the region of interest (a Shapely geometry)
     indices = [i for i, p in enumerate(points) if region.contains(p)]
+    mask[np.unravel_index(indices, (len(x), len(y)))] = False
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
