@@ -7,7 +7,9 @@ and geographical area eslection
 
 from __future__ import print_function
 
+import os
 import logging
+import inspect
 
 import iris
 import numpy as np
@@ -61,6 +63,13 @@ def _apply_fx_mask(fx_mask, var_data):
 def mask_landocean(cube, fx_file, mask_out):
     """Apply a land/ocean mask"""
     # mask_out: is either 'land' or 'ocean'
+    # Dict to store the Natural Earth masks
+    cwd = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    shapefiles = {
+        'land': os.path.join(cwd, 'ne_masks/ne_10m_land.shp'),
+        'ocean': os.path.join(cwd, 'ne_masks/ne_10m_ocean.shp')
+    }
 
     if fx_file:
         # Try loading; some files may be broken
@@ -73,11 +82,17 @@ def mask_landocean(cube, fx_file, mask_out):
         except iris.exceptions.TranslationError as msg:
             logger.warning('Could not load fx file !')
             logger.warning(msg)
+            logger.warning('Will use Natural Earth mask instead')
+            cube = _mask_with_shp(cube, shapefiles[mask_out])
+    else:
+        # Mask with Natural Earth (NE) files
+        logger.info('Masking with %s file', shapefiles[mask_out])
+        cube = _mask_with_shp(cube, shapefiles[mask_out])
 
     return cube
 
 
-def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
+def masked_cube_simple(mycube, slicevar, v_min, v_max, threshold):
     """
     Mask function 1 -- simple cube cropping
 
@@ -93,24 +108,22 @@ def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
         cubeslice = mycube.extract(
             iris.Constraint(
                 coord_values={
-                    coord.standard_name: lambda cell: v1 <= cell.point <= v2
-                }))
+                    coord.standard_name:
+                    lambda cell: v_min <= cell.point <= v_max}))
         if cubeslice is not None:
             masked_cubeslice = cubeslice.copy()
             masked_cubeslice.data = ma.masked_greater(cubeslice.data,
                                                       threshold)
-            print('Masking cube keeping only what is in between %f and %f' %
-                  (v1, v2))
             return masked_cubeslice
         else:
-            print('NOT masking the cube')
+            logger.info('NOT masking the cube')
             return mycube
     else:
-        print('Variable is not a cube dimension, leaving cube untouched')
+        logger.info('Var is not a cube dimension, leaving cube untouched')
         return mycube
 
 
-def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
+def masked_cube_lonlat(mycube, lonlat_list, threshold):
     """
     Mask function 2 -- simple cube cropping on (min,max) lon,lat
 
@@ -119,6 +132,7 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
 
     """
     import numpy.ma as ma
+    lon1, lon2, lat1, lat2 = lonlat_list
     cubeslice = mycube.extract(
         iris.Constraint(
             longitude=lambda v: lon1 <= v.point <= lon2,
@@ -133,43 +147,36 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
         return mycube
 
 
-def cube_shape(mycube):
-    """Function that converts a cube into a shapely MultiPoint geometry"""
-    import shapely.geometry as sg
-    lon = mycube.coord('longitude')
-    lat = mycube.coord('latitude')
-    region = sg.MultiPoint(list(zip(lon.points.flat, lat.points.flat)))
-    return region
-
-
 def _get_geometry_from_shp(shapefilename):
     """Get the mask geometry out from a shapefile"""
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
+    # Index 0 grabs the lowest resolution mask (no zoom)
     main_geom = [contour for contour in reader.geometries()][0]
     return main_geom
 
 
-def _mask_with_shp(cube, region):
-    """
-    Apply a mask from a shapefile geometry extracted with
+def _mask_with_shp(cube, shapefilename):
+    """Apply a Natural Earth land/ocean mask"""
+    import shapely.vectorized as shp_vect
 
-    _get_geometry_from_shp function
-    """
-    from shapely.geometry import MultiPoint
+    # Create the region
+    region = _get_geometry_from_shp(shapefilename)
 
     # Create a mask for the data
     mask = np.ones(cube.shape, dtype=bool)
 
     # Create a set of x,y points from the cube
-    x_p, y_p = np.meshgrid(cube.coord(axis='X').points,
-                           cube.coord(axis='Y').points)
-    lat_lon_points = np.vstack([x_p.flat, y_p.flat])
-    points = MultiPoint(lat_lon_points.T)
+    # 1D regular grids
+    if cube.coord(axis='X').points.ndim < 2:
+        x_p, y_p = np.meshgrid(cube.coord(axis='X').points,
+                               cube.coord(axis='Y').points)
+    # 2D irregular grids
+    else:
+        x_p, y_p = cube.coord(axis='X').points, cube.coord(axis='Y').points
 
-    # Find all points within the region of interest (a Shapely geometry)
-    indices = [i for i, p in enumerate(points) if region.contains(p)]
-    mask[:, :, np.unravel_index(indices, (len(x_p), len(y_p)))] = False
+    # Build mask with vectorization
+    mask[:, :] = shp_vect.contains(region, x_p - 180, y_p)
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
@@ -189,8 +196,8 @@ def polygon_shape(xlist, ylist):
     """
     from shapely.geometry import Polygon
     poly = Polygon(xlist, ylist)
-    x, y = poly.exterior.coords.xy
-    return poly, x, y
+    x_p, y_p = poly.exterior.coords.xy
+    return poly, x_p, y_p
 
 
 """
@@ -286,11 +293,11 @@ def window_counts(mycube, value_threshold, window_size, pctile):
 
     # if one wants to print the whole array
     # np.set_printoptions(threshold=np.nan)
-    r = counts_windowed_cube.data.flatten()
-    meanr = np.mean(r)
-    stdr = np.std(r)
-    prcr = np.percentile(r, pctile)
-    return r, meanr, stdr, prcr
+    r_p = counts_windowed_cube.data.flatten()
+    meanr = np.mean(r_p)
+    stdr = np.std(r_p)
+    prcr = np.percentile(r_p, pctile)
+    return r_p, meanr, stdr, prcr
 
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
