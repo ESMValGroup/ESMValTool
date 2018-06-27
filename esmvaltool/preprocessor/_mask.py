@@ -66,9 +66,10 @@ def mask_landocean(cube, fx_file, mask_out):
     # Dict to store the Natural Earth masks
     cwd = os.path.dirname(
         os.path.abspath(inspect.getfile(inspect.currentframe())))
+    # ne_10m_land is fast; ne_10m_ocean is very slow
     shapefiles = {
         'land': os.path.join(cwd, 'ne_masks/ne_10m_land.shp'),
-        'ocean': os.path.join(cwd, 'ne_masks/ne_10m_ocean.shp')
+        'ocean': os.path.join(cwd, 'ne_masks/ne_50m_ocean.shp')
     }
 
     if fx_file:
@@ -165,8 +166,6 @@ def _mask_with_shp(cube, shapefilename):
 
     # Create a mask for the data
     mask = np.zeros(cube.shape, dtype=bool)
-    mask1 = np.ones(cube.shape, dtype=bool)  # left hander
-    mask2 = np.ones(cube.shape, dtype=bool)  # right hander
 
     # Create a set of x,y points from the cube
     # 1D regular grids
@@ -177,15 +176,14 @@ def _mask_with_shp(cube, shapefilename):
     else:
         x_p, y_p = cube.coord(axis='X').points, cube.coord(axis='Y').points
 
+    # Wrap around longitude coordinate to match data
+    x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
+
     # Build mask with vectorization
     if len(cube.data.shape) == 3:
-        mask1[:] = shp_vect.contains(region, x_p, y_p)
-        mask2[:] = shp_vect.contains(region, x_p - 360., y_p)
+        mask[:] = shp_vect.contains(region, x_p_180, y_p)
     elif len(cube.data.shape) == 4:
-        mask1[:, :] = shp_vect.contains(region, x_p, y_p)
-        mask2[:, :] = shp_vect.contains(region, x_p - 360., y_p)
-    mask |= mask1
-    mask |= mask2
+        mask[:, :] = shp_vect.contains(region, x_p_180, y_p)
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
