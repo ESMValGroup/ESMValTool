@@ -77,10 +77,9 @@ def depth_integration(mycube, coordz):
     )
     result.rename('Depth_integrated_' + str(mycube.name()))
 
-    # This doesn't work:
-    # Not able to change units on cube.
+    # result.units = Unit('m') * result.units # This doesn't work:
+    # TODO: Change units on cube to reflect 2D concentration (not 3D)
     # Waiting for news from iris community.
-    # result.units = Unit('m') * result.units
     return result
 
 
