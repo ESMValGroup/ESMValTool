@@ -176,7 +176,10 @@ def _mask_with_shp(cube, shapefilename):
         x_p, y_p = cube.coord(axis='X').points, cube.coord(axis='Y').points
 
     # Build mask with vectorization
-    mask[:, :] = shp_vect.contains(region, x_p - 180, y_p)
+    if len(cube.data.shape) == 3:
+        mask[:] = shp_vect.contains(region, x_p - 180, y_p)
+    elif len(cube.data.shape) == 4:
+        mask[:, :] = shp_vect.contains(region, x_p - 180, y_p)
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
