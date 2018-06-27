@@ -164,7 +164,9 @@ def _mask_with_shp(cube, shapefilename):
     region = _get_geometry_from_shp(shapefilename)
 
     # Create a mask for the data
-    mask = np.ones(cube.shape, dtype=bool)
+    mask = np.zeros(cube.shape, dtype=bool)
+    mask1 = np.ones(cube.shape, dtype=bool)  # left hander
+    mask2 = np.ones(cube.shape, dtype=bool)  # right hander
 
     # Create a set of x,y points from the cube
     # 1D regular grids
@@ -177,14 +179,17 @@ def _mask_with_shp(cube, shapefilename):
 
     # Build mask with vectorization
     if len(cube.data.shape) == 3:
-        # no wraparound so no need to x_p - 180
-        mask[:] = shp_vect.contains(region, x_p, y_p)
+        mask1[:] = shp_vect.contains(region, x_p, y_p)
+        mask2[:] = shp_vect.contains(region, x_p - 360., y_p)
     elif len(cube.data.shape) == 4:
-        mask[:, :] = shp_vect.contains(region, x_p, y_p)
+        mask1[:, :] = shp_vect.contains(region, x_p, y_p)
+        mask2[:, :] = shp_vect.contains(region, x_p - 360., y_p)
+    mask |= mask1
+    mask |= mask2
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
-        cube.data.mask &= mask
+        cube.data.mask |= mask
     else:
         cube.data = np.ma.masked_array(cube.data, mask)
 
