@@ -1,4 +1,4 @@
-"""CMOR checker for Iris cubes"""
+"""Module for checking iris cubes against their CMOR definitions"""
 import logging
 
 import cf_units
@@ -89,7 +89,7 @@ class CMORCheck(object):
         ------
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
-            raises as soon as an error if defected. If set to False, it perform
+            raises as soon as an error is detected. If set to False, it perform
             all checks and then raises.
 
         """
@@ -115,7 +115,7 @@ class CMORCheck(object):
         Raises
         ------
         CMORCheckError:
-            If there are errors reported.
+            If any errors were reported before calling this method.
 
         """
         if self.has_errors():
@@ -154,16 +154,17 @@ class CMORCheck(object):
         ------
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
-            raises as soon as an error if defected. If set to False, it perform
-            all checks and the raises.
+            raises as soon as an error is detected. If set to False, it perform
+            all checks and then raises.
 
         """
         if logger is None:
             logger = logging.getLogger(__name__)
 
         if self._cmor_var.units:
-            if str(self._cube.units) != self._cmor_var.units:
-                self._cube.convert_units(self._cmor_var.units)
+            units = self._get_efective_units()
+            if str(self._cube.units) != units:
+                self._cube.convert_units(units)
 
         self._check_data_range()
         self._check_coords_data()
@@ -189,8 +190,14 @@ class CMORCheck(object):
                     self._cmor_var.standard_name, self._cube.standard_name)
 
         # Check units
+        if self._cube.attributes.get('invalid_units', '').lower() == 'psu':
+            self._cube.units = '1.0'
+            del self._cube.attributes['invalid_units']
+
         if self._cmor_var.units:
-            if not self._cube.units.is_convertible(self._cmor_var.units):
+            units = self._get_efective_units()
+
+            if not self._cube.units.is_convertible(units):
                 self.report_error('Variable {0} units () can not be '
                                   'converted to {2}', self._cube.var_name,
                                   self._cmor_var.units, self._cube.units)
@@ -200,10 +207,26 @@ class CMORCheck(object):
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
-                if self._cube.attributes[attr] != attr_value:
+                if attr not in self._cube.attributes:
+                    # It is usually missing in CMIP5 data, so we only report
+                    # a warning in that case
+                    if self._cmor_var.table_type == 'CMIP5':
+                        self.report_warning('{}: attribute {} not present',
+                                            self._cube.var_name, attr)
+                    else:
+                        self.report_error('{}: attribute {} not present',
+                                          self._cube.var_name, attr)
+                elif self._cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
                                       self._cube.attributes[attr])
+
+    def _get_efective_units(self):
+        if self._cmor_var.units.lower() == 'psu':
+            units = '1.0'
+        else:
+            units = self._cmor_var.units
+        return units
 
     def _check_data_range(self):
         # Check data is not less than valid_min
@@ -233,14 +256,7 @@ class CMORCheck(object):
     def _check_dim_names(self):
         for (axis, coordinate) in self._cmor_var.coordinates.items():
             if coordinate.generic_level:
-                var_name = 'generic_level'
-                if self._cube.coords(axis, dim_coords=True):
-                    cube_coord = self._cube.coord(axis, dim_coords=True)
-                    if not cube_coord.standard_name:
-                        self.report_error(self._does_msg, var_name,
-                                          'have standard_name')
-                else:
-                    self.report_error(self._does_msg, var_name, 'exist')
+                continue
             else:
                 try:
                     cube_coord = self._cube.coord(var_name=coordinate.out_name)
@@ -385,7 +401,8 @@ class CMORCheck(object):
                 cf_units.Unit(
                     'days since 1950-01-01 00:00:00',
                     calendar=coord.units.calendar))
-            coord.units = cf_units.Unit(coord.units.name, coord.units.calendar)
+            simplified_cal = self._simplify_calendars(coord.units.calendar)
+            coord.units = cf_units.Unit(coord.units.name, simplified_cal)
 
         tol = 0.001
         intervals = {
@@ -417,6 +434,22 @@ class CMORCheck(object):
                 msg = '{}: Frequency {} does not match input data'
                 self.report_error(msg, var_name, self.frequency)
                 break
+
+    CALENDARS = [
+        ['gregorian', 'standard'],
+        ['proleptic_gregorian'],
+        ['365_day', 'noleap'],
+        ['366_day', 'all_leap'],
+        ['360_day'],
+        ['julian'],
+        ['none'],
+    ]
+
+    @staticmethod
+    def _simplify_calendars(calendar):
+        for calendar_type in CMORCheck.CALENDARS:
+            if calendar in calendar_type:
+                return calendar_type[0]
 
     def has_errors(self):
         """
@@ -520,21 +553,69 @@ def _get_cmor_checker(table,
 
 
 def cmor_check_metadata(cube, cmor_table, mip, short_name):
-    """Check if metadata conforms to CMOR."""
+    """
+    Check if metadata conforms to variable's CMOR definiton.
+
+    None of the checks at this step will force the cube to load the data
+
+    Parameters:
+    ----------
+    cube: iris.cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_metadata()
     return cube
 
 
 def cmor_check_data(cube, cmor_table, mip, short_name):
-    """Check if data conforms to CMOR."""
+    """
+    Check if data conforms to variable's CMOR definiton.
+
+    The checks performed at this step require the data in memory
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_data()
     return cube
 
 
 def cmor_check(cube, cmor_table, mip, short_name):
-    """Check if cube conforms to CMOR."""
+    """
+    Check if cube conforms to variable's CMOR definiton.
+
+    Equivalent to calling cmor_check_metadata and cmor_check_data consecutively
+
+    Parameters:
+    ----------
+    cube: iris.cube.Cube
+        Data cube to check
+    cmor_table: basestring
+        CMOR definitions to use
+    mip:
+        Variable's mip
+    short_name: basestring
+        Variable's short name
+
+    """
     cmor_check_metadata(cube, cmor_table, mip, short_name)
     cmor_check_data(cube, cmor_table, mip, short_name)
     return cube
