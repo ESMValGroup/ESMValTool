@@ -1,11 +1,11 @@
-#### summary 
+#### summary
 #### recipe that runs the Autoassess Stratorsphere assessment area diagnostic
-#### Version: 1 June 2018 
+#### Version: 1 June 2018
 #################
 #### Description:
 #################
 #The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
-#changed for ESMValTool to two datasets; the recipe can accomodate as many pairs of datasets to be compared as the 
+#changed for ESMValTool to two datasets; the recipe can accomodate as many pairs of datasets to be compared as the
 #user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
 #(autoassess_stratosphere.py), the (control_model, exp_model) pair may vary accoding to the user's
 #needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the
@@ -58,7 +58,7 @@ diagnostics:
         area: Stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [ERA-Interim]
+        obs_datasets: [ERA-Interim]
         start: 1997/12/01
         end: 2002/12/01
       autoassess_strato_test_2: &autoassess_strato_test_2_settings
@@ -67,7 +67,7 @@ diagnostics:
         area: Stratosphere
         control_model: MPI-ESM-LR
         exp_model: inmcm4
-        obs_models: [ERA-Interim]
+        obs_datasets: [ERA-Interim]
         start: 1997/12/01
         end: 2002/12/01
 
@@ -78,7 +78,7 @@ diagnostics:
         <<: *autoassess_strato_test_1_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [ERA-Interim]
+        obs_datasets: [ERA-Interim]
         script: autoassess/plot_autoassess_stratosphere.py
         ancestors: ['*/autoassess_strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
@@ -90,7 +90,7 @@ diagnostics:
         <<: *autoassess_strato_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
-        obs_models: [ERA-Interim]
+        obs_datasets: [ERA-Interim]
         script: autoassess/plot_autoassess_stratosphere.py
         ancestors: ['*/autoassess_strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"

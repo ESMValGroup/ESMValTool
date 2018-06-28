@@ -2,8 +2,8 @@
 # namelist_modes_of_variability.yml
 #
 # Description
-# Tool to compute the RMSE between the observed and modelled patterns of 
-# variability obtained through classification and their relative relative bias 
+# Tool to compute the RMSE between the observed and modelled patterns of
+# variability obtained through classification and their relative relative bias
 #(percentage) in the frequency of occurrence and the persistence of each mode.
 #
 #
@@ -19,18 +19,18 @@
 # KNMI Magic
 #
 # Reference
-# Fučkar, Neven S., Virginie Guemas, Nathaniel C. Johnson, François Massonnet, 
-# and Francisco J. Doblas-Reyes. "Clusters of interannual sea ice variability in 
+# Fučkar, Neven S., Virginie Guemas, Nathaniel C. Johnson, François Massonnet,
+# and Francisco J. Doblas-Reyes. "Clusters of interannual sea ice variability in
 # the northern hemisphere." Climate Dynamics 47, no. 5-6 (2016): 1527-1543.
-# 
+#
 #
 # This namelist is part of the ESMValTool
 ###############################################################################
 ---
 
-models:
-  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
- 
+datasets:
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+
 preprocessors:
   preproc:
     regrid:
@@ -50,7 +50,7 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/weather_regime.r #(in diag_scripts)
-        
+
         #Region considered
         lat_max: 81
         lat_min: 27

@@ -20,10 +20,10 @@
 ###############################################################################
 ---
 
-models:
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 1990}
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+datasets:
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 1990}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:

@@ -22,9 +22,9 @@
 ###############################################################################
 ---
 
-models:
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
+datasets:
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
  # - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)

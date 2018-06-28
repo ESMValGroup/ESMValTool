@@ -20,9 +20,9 @@
 ###############################################################################
 ---
 
-models:
+datasets:
  # - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2060}
-  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 
 preprocessors:

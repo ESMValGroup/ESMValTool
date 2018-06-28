@@ -2,7 +2,7 @@
 # namelist_toymodel.yml
 #
 # Description
-# Namelist for generating synthetic observations based on the model presented 
+# Namelist for generating synthetic observations based on the model presented
 # in Weigel et al. (2008) QJRS with an extension to consider non-stationary
 # (2008) QJRS with an extension to consider non-stationary distributions
 # distributions prescribing a linear trend. The toymodel allows to
@@ -15,9 +15,9 @@
 # C3S Magic
 #
 # Reference
-# Weigel, Andreas P., M. A. Liniger, and C. Appenzeller. "Can multi‐model 
-# combination really enhance the prediction skill of probabilistic ensemble 
-# forecasts?." Quarterly Journal of the Royal Meteorological Society 134, 
+# Weigel, Andreas P., M. A. Liniger, and C. Appenzeller. "Can multi‐model
+# combination really enhance the prediction skill of probabilistic ensemble
+# forecasts?." Quarterly Journal of the Royal Meteorological Society 134,
 # no. 630 (2008): 241-260.
 #
 #
@@ -25,8 +25,8 @@
 ###############################################################################
 ---
 
-models:
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+datasets:
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
@@ -56,8 +56,8 @@ diagnostics:
       main:
         script: magic_bsc/toymodel.r #(in diag_scripts)
         alpha: 0.1
-        beta: 0.3 
+        beta: 0.3
         gamma: 1
         number_of_members: 10
-        
+
 

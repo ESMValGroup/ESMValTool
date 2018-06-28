@@ -21,9 +21,9 @@
 ###############################################################################
 ---
 
-models:
-  - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
- 
+datasets:
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
+
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
