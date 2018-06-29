@@ -56,10 +56,6 @@ __all__ = [
     'extract_volume',
     'extract_trajectory',
     'extract_transect',
-    # Grid-point operations
-    'depth_integration',
-    'average_region',
-    'average_volume',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
@@ -67,6 +63,10 @@ __all__ = [
     # 'diurnal_cycle': diurnal_cycle,
     'seasonal_mean',
     'multi_model_statistics',
+    # Grid-point operations
+    'depth_integration',
+    'average_region',
+    'average_volume',
     'time_average',
     'cmor_check_data',
     # Save to file
