@@ -37,15 +37,19 @@ def global_atmos_mass_conservation(run):
 
     # calculate ATMOSPHERIC MASS METRIC
     # read atmospheric dry mass and mass data
+
     # VPREDOI
-    # temporarily replacing these crazy variables with standard ones
-    # so I can test the code flow
+    # temporarily replacing var 'dry' and 'wet'
+
+    # atmosphere_mass_per_unit_area - atmosphere_mass_content_of_water
     # dry = load_run_ss(run, 'annual', 'm01s30i403')
+
     # TOTAL COLUMN DRY MASS  RHO GRID
     # wet = load_run_ss(run, 'annual', 'atmosphere_mass_per_unit_area')
     # m01s30i404
-    dry = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
-    wet = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
+
+    dry = load_run_ss(run, 'annual', 'precipitation_flux')
+    wet = load_run_ss(run, 'annual', 'precipitation_flux')
 
     # calculating global means
     # Get time series of global means:

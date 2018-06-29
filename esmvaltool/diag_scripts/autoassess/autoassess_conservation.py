@@ -112,12 +112,13 @@ def main(cfg):
             if os.path.basename(ofile).split('_')[1] == obs
         ] for obs in cfg['obs_models']]
         for obs_file_group in group_files:
-            cubes_list_obs = iris.load(obs_file_group)
-            cubes_list_obs_path = os.path.join(
-                os.path.dirname(obs_file_group[0]),
-                os.path.basename(obs_file_group[0]).split('_')[1] +
-                '_tropical_area_avg.nc')
-            iris.save(cubes_list_obs, cubes_list_obs_path)
+            if obs_file_group:
+                cubes_list_obs = iris.load(obs_file_group)
+                cubes_list_obs_path = os.path.join(
+                    os.path.dirname(obs_file_group[0]),
+                    os.path.basename(obs_file_group[0]).split('_')[1] +
+                    '_tropical_area_avg.nc')
+                iris.save(cubes_list_obs, cubes_list_obs_path)
     args['--out-dir'] = cfg['plot_dir']
     args['--data-dir'] = cfg['work_dir']
     args['--tmp-dir'] = tmp_dir

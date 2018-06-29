@@ -33,23 +33,22 @@ def fluxes_submodel(run, stash_f, f_mult):
     # read data:
     try:
         for (i, stash) in enumerate(stash_f):
-            # VPREDOI
-            # need the correct files
-            # ppfy = load_run_ss(run, 'annual', stash)
-            ppfy = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
 
-            ppfy *= f_mult[i]
+            # VPREDOI
+            # ppfy = load_run_ss(run, 'annual', stash)
+            # need to convert from stash to actual name !!!
+            ppfy = load_run_ss(run, 'annual', 'surface_runoff_flux')
+
+            # VPREDOI
+            # this fails unless using the correct variables
+            # ppfy *= f_mult[i].data
+
             # Calculate global mean, time series of global values
             ppfyg = area_average(
                 ppfy, weighted=True, aggregator=iris.analysis.SUM)
             # multi-year mean of global values
             ppfy_total = ppfyg.collapsed('time', iris.analysis.MEAN)
-
-            # VPREDOI
-            # reducing the dim; this should not be done
-            # in the real diag
-            # fval[i] = ppfy_total.data/1.0e9  # TODO magic number
-            fval[i] = ppfy_total.data[i] / 1.0e9  # TODO magic number
+            fval[i] = ppfy_total.data/1.0e9  # TODO magic number
 
         fval[-1] = fval.sum()
 

@@ -65,45 +65,50 @@ def atmos_energy_budget(run):
 
         # Seasonal means of energy fluxes:
         # m01s01i207: incoming SW rad flux (TOA)
-        # swin   = load_run_ss(run, 'seasonal', 'toa_incoming_shortwave_flux')
+        # CMOR: rsdt, exact long name
+        swin = load_run_ss(run, 'seasonal', 'toa_incoming_shortwave_flux')
+
         # m01s01i208: outgoing SW rad flux (TOA)
-        # swout  = load_run_ss(run, 'seasonal', 'toa_outgoing_shortwave_flux')
+        # CMOR: rsut, exact name
+        swout = load_run_ss(run, 'seasonal', 'toa_outgoing_shortwave_flux')
         # m01s01i201: net down surface SW flux
-        # sw = load_run_ss(run, 'seasonal',
-        #                  'surface_net_downward_shortwave_flux')
+        # CMOR: rsds, surface_downwelling_shortwave_flux_in_air
+        # orig diag name: surface_net_downward_shortwave_flux
+        sw = load_run_ss(run, 'seasonal',
+                         'surface_downwelling_shortwave_flux_in_air')
         # m01s02i201: net down surface LW flux
-        # lw = load_run_ss(run, 'seasonal',
-        #                  'surface_net_downward_longwave_flux')
+        # CMOR: rlds, surface_downwelling_longwave_flux_in_air
+        # orig diag name: surface_net_downward_longwave_flux
+        lw = load_run_ss(run, 'seasonal',
+                         'surface_downwelling_longwave_flux_in_air')
         # m01s03i332: TOA outgoing LW rad
-        # olr = load_run_ss(run, 'seasonal', 'toa_outgoing_longwave_flux')
+        # CMOR: rlut, exact name
+        olr = load_run_ss(run, 'seasonal', 'toa_outgoing_longwave_flux')
         # m01s03i217: surface heat flux"
-        # sh  = load_run_ss(run, 'seasonal',
-        #                   'surface_upward_sensible_heat_flux')
+        # CMOR: hfss, exact name
+        sh = load_run_ss(run, 'seasonal',
+                         'surface_upward_sensible_heat_flux')
         # m01s05i215: total snowfall rate
-        # snow   = load_run_ss(run, 'seasonal', 'snowfall_flux')
+        # CMOR: prsn, exact name
+        snow = load_run_ss(run, 'seasonal', 'snowfall_flux')
+
         # m01s05i216: total precipitation rate
-        # precip = load_run_ss(run, 'seasonal', 'precipitation_flux')
+        # CMOR: pr, exact name
+        precip = load_run_ss(run, 'seasonal', 'precipitation_flux')
+
         # energy correction
         # en_cor = load_run_ss(run, 'seasonal', 'm01s30i419')
         # swin, swout, sw, lw, olr, sh, snow, precip, en_cor = \
         # remove_forecast_period([swin, swout,
         #                         sw, lw, olr, sh, snow, precip, en_cor])
 
-        # VPREDOI
-        # temporarily replacing these crazy variables with standard ones
-        # so I can test the code flow
-        cvt = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192)
-        gr = cvt
-        ke = cvt
-        swin = cvt
-        swout = cvt
-        sw = cvt
-        lw = cvt
-        olr = cvt
-        sh = cvt
-        snow = cvt
-        precip = cvt
-        en_cor = cvt
+        # VPREDOI TODO
+        # temporarily replacing missing variables with pr
+        # cvt, gr, ke, en_cor missing
+        cvt = load_run_ss(run, 'monthly', 'precipitation_flux', lbproc=192)
+        gr = cvt  # missing
+        ke = cvt  # missing
+        en_cor = cvt  # missing
 
         # calculate global budgets
 
@@ -141,17 +146,13 @@ def atmos_energy_budget(run):
         # energy flux into atmosphere = radTOA - SH +
         # Lc * precip + Lf * snowfall
         toa = swing - swoutg - olrg
-        # VPREDOI
-        # using same variable, units go crazy
-        # diab_heat = toa - swg - lwg + shg + precipg * lc + snowg * lf
-        diab_heat = toa - swg - lwg + shg + precipg + snowg
+        diab_heat = toa - swg - lwg + shg + precipg * lc + snowg * lf
 
         # Remove time bounds of cube with time
         # average data to allow arithmetics
         # with cube containing instantaneous time points
         diab_heat.coord('time').bounds = None
-        # VPREDOI
-        # again this is bad if units differ
+        # VPREDOI TODO use this instead when units match
         # err_en = ch_en - diab_heat
         err_en = ch_en
         ecorrection = np.mean(en_corg.data)
@@ -172,12 +173,10 @@ def atmos_energy_budget(run):
             ecorrection)  # TODO unit from cube?
 
         top_ax = plt.subplot(2, 1, 1)
-        # VPREDOI
-        # flatten datas
         titl1 = 'Change in total energy over 3 months'
         plt.plot(
             x,
-            ch_en.data.flatten(),
+            ch_en.data,
             linewidth=2,
             color='black',
             label='E(end)-E(start)')
@@ -185,19 +184,19 @@ def atmos_energy_budget(run):
         #          label='E added to atmos from fluxes')
         plt.plot(
             x,
-            ch_ke.data.flatten(),
+            ch_ke.data,
             linewidth=2,
             color='blue',
             label='Change in KE')
         plt.plot(
             x,
-            ch_cvt.data.flatten(),
+            ch_cvt.data,
             linewidth=2,
             color='green',
             label='Change in cvT')
         plt.plot(
             x,
-            ch_gr.data.flatten(),
+            ch_gr.data,
             linewidth=2,
             color='purple',
             label='Change in gr')
@@ -212,9 +211,7 @@ def atmos_energy_budget(run):
 
         bottom_ax = plt.subplot(2, 1, 2)
         titl1 = 'Error in energy conservation over 3 month periods ' + expid
-        # VPREDOI
-        # flatten again
-        plt.plot(x, err_en.data.flatten(), linewidth=2, color='black')
+        plt.plot(x, err_en.data, linewidth=2, color='black')
         plt.xlim([0, err_en.data.size])
         plt.ylim([np.min(err_en.data) * 1.5, np.max(err_en.data) * 1.5])
         plt.title(titl1)

@@ -758,6 +758,9 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
+            # Temporary fix to allow for mixed-mip recipes
+            if 'mip' in raw_variable.keys():
+                variable['mip'] = raw_variable['mip']
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])

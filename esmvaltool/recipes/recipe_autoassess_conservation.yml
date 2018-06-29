@@ -15,37 +15,65 @@
 ---
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
 
 preprocessors:
   pp_aa_area:
-    extract_levels:
-      levels: [100000., 50000., 10000., 7000., 5000., 3000., 1000.]
-      scheme: nearest
+    # this diag suite does not need plev selection
+    # do not implement it since most of the vars dont
+    # have plevs
     regrid:
-      target_grid: ERA-Interim
+      target_grid: MPI-ESM-LR
       scheme: linear
 
 diagnostics:
   aa_cons:
     description: Autoassess test diag for Conservation.
+    # identified by 28 June 2018: [rsdt, rsut, rsds?, rlds?, rlut, hfss, prsn, pr]
     variables:
-      ta:
+      rsdt:
         preprocessor: pp_aa_area
         mip: Amon
         field: T3M
-      ua:
+      rsut:
         preprocessor: pp_aa_area
         mip: Amon
         field: T3M
-      hus:
+      rsds:
         preprocessor: pp_aa_area
         mip: Amon
         field: T3M
-    additional_datasets:
-      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      rlds:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      rlut:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      hfss:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      prsn:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      pr:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      mrros:
+        preprocessor: pp_aa_area
+        mip: Lmon
+        field: T2Ms
+    ##################
+    # No OBS for now
+    #additional_datasets:
+    #  - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+    ##################
     scripts:
       autoassess_cons_test_1: &autoassess_cons_test_1_settings
         script: autoassess/autoassess_conservation.py
@@ -54,7 +82,9 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        start: 1997/12/01
+        # note that there is annual averaging done
+        # so dont choose a single year only
+        start: 1996/12/01
         end: 2002/12/01
         landocean_masks: '/home/users/valeriu/base_masks_autoassess' 
       autoassess_cons_test_2: &autoassess_cons_test_2_settings
@@ -64,7 +94,9 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        start: 1997/12/01
+        # note that there is annual averaging done
+        # so dont choose a single year only
+        start: 1996/12/01
         end: 2002/12/01
         landocean_masks: '/home/users/valeriu/base_masks_autoassess'
 

@@ -51,7 +51,7 @@ def is_seasonal(cube):
     """
 
     def is_season(bound):
-        time_span = td(hours=(bound[1] - bound[0]))
+        time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
     return all([is_season(bound) for bound in cube.coord('time').bounds])
@@ -61,7 +61,7 @@ def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
 
     def is_year(bound):
-        time_span = td(hours=(bound[1] - bound[0]))
+        time_span = td(days=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
     return all([is_year(bound) for bound in cube.coord('time').bounds])
@@ -113,6 +113,51 @@ def select_by_variable_name(cubes, variable_name):
     return cubes.extract(constraint)
 
 
+# get the seasonal mean
+def seasonal_mean(mycube):
+    """
+    Function to compute seasonal means with MEAN
+
+    Chunks time in 3-month periods and computes means over them;
+    Returns a cube
+    """
+    import iris.coord_categorisation
+    if 'clim_season' not in mycube.coords():
+        iris.coord_categorisation.add_season(mycube,
+                                             'time', name='clim_season')
+    if 'season_year' not in mycube.coords():
+        iris.coord_categorisation.add_season_year(mycube,
+                                                  'time', name='season_year')
+    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
+                                                iris.analysis.MEAN)
+
+    def spans_three_months(time):
+        """Check for three months"""
+        return (time.bound[1] - time.bound[0]) == 90  # days
+
+    three_months_bound = iris.Constraint(time=spans_three_months)
+    return annual_seasonal_mean.extract(three_months_bound)
+
+
+# get annual mean
+def annual_mean(mycube):
+    """
+    Function to compute annual mean with MEAN
+
+    Chunks time in 365-day periods and computes means over them;
+    Returns a cube
+    """
+    yr_mean = mycube.aggregated_by('year',
+                                   iris.analysis.MEAN)
+
+    def spans_year(time):
+        """Check for 12 months"""
+        return (time.bound[1] - time.bound[0]) == 365
+
+    t_bound = iris.Constraint(time=spans_year)
+    return yr_mean.extract(t_bound)
+
+
 def select_by_averaging_period(cubes, averaging_period):
     """
     Select subset from CubeList depending on averaging period.
@@ -131,9 +176,20 @@ def select_by_averaging_period(cubes, averaging_period):
         'seasonal': is_seasonal,
         'annual': is_yearly
     }
-    selected_cubes = [
-        cube for cube in cubes if select_period[averaging_period](cube)
-    ]
+    if averaging_period == 'seasonal':
+        selected_cubes = [
+            cube for cube in cubes
+            if select_period[averaging_period](seasonal_mean(cube))
+        ]
+    elif averaging_period == 'annual':
+        selected_cubes = [
+            cube for cube in cubes
+            if select_period[averaging_period](annual_mean(cube))
+        ]
+    else:
+        selected_cubes = [
+            cube for cube in cubes if select_period[averaging_period](cube)
+        ]
     return iris.cube.CubeList(selected_cubes)
 
 
