@@ -61,12 +61,12 @@ __all__ = [
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
-    'seasonal_mean',
     'multi_model_statistics',
     # Grid-point operations
     'depth_integration',
     'average_region',
     'average_volume',
+    'seasonal_mean',
     'time_average',
     'cmor_check_data',
     # Save to file
