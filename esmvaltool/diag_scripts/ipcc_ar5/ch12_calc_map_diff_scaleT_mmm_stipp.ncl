@@ -145,8 +145,8 @@ begin
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
-  ;printVarSummary(A0)
-  Fill = 1e20
+  Fill = default_fillvalue(typeof(A0))  ; 1e20
+
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
@@ -164,64 +164,77 @@ begin
 
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
-       iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
-                 dimsizes(A0&lon)/), typeof(A0), Fill)
-       copy_VarMeta(A0, iav)
+      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
+                dimsizes(A0&lon)/), typeof(A0), Fill)
+      copy_VarMeta(A0, iav)
     end if
   end if
 
   temp_avg = new((/dim_MOD/), typeof(A0), Fill)
   temp_avg!0 = "models"
-  ;temp_avg&models = dataset_info@dataset
+;  temp_avg&models = dataset_info@dataset
   data1 = new((/dim_MOD,  dim_seas, dimsizes(A0&lat), dimsizes(A0&lon)/), \
               typeof(A0), Fill)
   ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
   if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-    (dim_seas .ne. 4)) then
+      (dim_seas .ne. 4)) then
     tmp_seas = time_operations(A0, -1, -1, "average", \
-			       diag_script_info@time_avg, True)
-    data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
+                               diag_script_info@time_avg, True)
+    if (dim_seas .eq. 1) then
+      data1(imod, 0, :, :) = tmp_seas(diag_script_info@seasons, :, :)
+    else
+      data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
+    end if
+  else if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+           (dim_seas .eq. 4)) then
+    data1(imod, :, :, :) = time_operations(A0, -1, -1, "average", \
+                                           diag_script_info@time_avg, True)
   else
     data1(imod, 0, :, :) = time_operations(A0, -1, -1, "average", \
-			                   diag_script_info@time_avg, True)
-  end if
-
-    rad = (4.0 * atan(1.0) / 180.0)
-    do imod = 0, dim_MOD - 1
-      ; data = read_data(imod, var0, field_type0)
-      ; temp = read_data(imod, var1, field_type0)
-        if (imod .eq. 0) then
-            A0_temp = read_data(imod, var1, field_type0)
-            temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
-            latw = cos(data1&lat * rad)
-            temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
-            delete(A0)
-            delete(temp_tavg)
-            delete(latw)
-        else
-            A0_temp = read_data(imod, var1, field_type0)
-            temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
-            latw = cos(temp_tavg&lat * rad)
-            temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
-            A0 = read_data(imod, var0, field_type0)
-            ; Average over time,
-            ; function in ./diag_scripts/lib/ncl/statistics.ncl)
-            if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-                (dim_seas .ne. 4)) then
-                tmp_seas = time_operations(A0, -1, -1, "average", \
                                            diag_script_info@time_avg, True)
-                data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
-                delete(tmp_seas)
-            else
-                data1(imod, 0, :, :) = time_operations(A0, -1, -1, "average", \
-                  diag_script_info@time_avg, True)
-            end if
-            delete(temp_tavg)
-            delete(latw)
+  end if
+  end if
+rad = (4.0 * atan(1.0) / 180.0)
+  do imod = 0, dim_MOD - 1
+    A0_temp = read_data(imod, var1, field_type0)
+    temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
+    latw = cos(data1&lat * rad)
+    temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
+    delete(temp_tavg)
+    delete(latw)
+    if (imod .ne. 0) then
+      A0_temp = read_data(imod, var1, field_type0)
+      temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
+      latw = cos(temp_tavg&lat * rad)
+      temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
+      A0 = read_data(imod, var0, field_type0)
+      ; Average over time,
+      ; function in ./diag_scripts/lib/ncl/statistics.ncl)
+      if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+          (dim_seas .ne. 4)) then
+        tmp_seas = time_operations(A0, -1, -1, "average", \
+                                   diag_script_info@time_avg, True)
+        if (dim_seas .eq. 1) then
+          data1(imod, 0, :, :) = tmp_seas(diag_script_info@seasons, :, :)
+        else
+          data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
         end if
-    end do
-    delete(imod)
-  printVarSummary(data1)
+        delete(tmp_seas)
+      else if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+               (dim_seas .eq. 4)) then
+        data1(imod, :, :, :) = time_operations(A0, -1, -1, "average", \
+                                               diag_script_info@time_avg, True)
+      else
+        data1(imod, 0, :, :) = time_operations(A0, -1, -1, "average", \
+                                               diag_script_info@time_avg, True)
+      end if
+      end if
+    end if
+    delete(A0_temp)
+    delete(A0)
+  end do
+  delete(imod)
+
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
@@ -229,15 +242,15 @@ begin
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
 
-  to_plot = new((/dim_per * dim_seas, dimsizes(A0&lat), \
-                 dimsizes(A0&lon)/), typeof(A0), Fill)
+  to_plot = new((/dim_per * dim_seas, dimsizes(data1&lat), \
+                 dimsizes(data1&lon)/), typeof(data1), Fill)
   if (isatt(diag_script_info, "percent")) then
     percent = diag_script_info@percent
   else
     percent = 0
   end if
-  to_plot_signif = new((/dim_per * dim_seas,  dimsizes(A0&lat), \
-                        dimsizes(A0&lon)/), typeof(A0), Fill)
+  to_plot_signif = new((/dim_per * dim_seas,  dimsizes(data1&lat), \
+                        dimsizes(data1&lon)/), typeof(data1), Fill)
     ; do in backend once working
     ; if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
     ;     ; read mask to mask data where not defined (ocean and ice)
@@ -248,8 +261,8 @@ begin
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
-      diff_rcp_scal = new((/dim_scen, dimsizes(A0&lat), \
-                           dimsizes(A0&lon)/), typeof(data1), Fill)
+      diff_rcp_scal = new((/dim_scen, dimsizes(data1&lat), \
+                           dimsizes(data1&lon)/), typeof(data1), Fill)
       do rcp = 0, dim_scen - 1  ; loop over rcps
         idx_rcp = ind((dataset_info@exp .eq. diag_script_info@scenarios(rcp)) \
                       .and. (dataset_info@start_year .eq. \
@@ -275,8 +288,8 @@ begin
           error_msg("f", diag_script, "", \
                     "Only one model found, multi-model needs at least two.")
         end if
-        var_diff_scal = new((/dim_mod, dimsizes(A0&lat), \
-                             dimsizes(A0&lon)/), typeof(data1), Fill)
+        var_diff_scal = new((/dim_mod, dimsizes(data1&lat), \
+                             dimsizes(data1&lon)/), typeof(data1), Fill)
         do imod = 0, dim_mod - 1
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
@@ -300,8 +313,11 @@ begin
         if rcp .eq. 0 then
           var_diff_scal_all_mod = var_diff_scal
         else
+          tmp_scal_all_mod = var_diff_scal_all_mod
+          delete(var_diff_scal_all_mod)
           var_diff_scal_all_mod = \
-            array_append_record(var_diff_scal_all_mod, var_diff_scal, 0)
+            array_append_record(tmp_scal_all_mod, var_diff_scal, 0)
+          delete(tmp_scal_all_mod)
         end if
         delete(idx_hist)
         delete(idx_rcp)
@@ -317,8 +333,8 @@ begin
       log_debug("loop over all lat, lons")
       ind_95 = tointeger(floor(0.95 * ndiff) - 1)
       perc95 = new(dimsizes(ind_95), float)
-      do ilat = 0, dimsizes(A0&lat) - 1
-        do ilon = 0, dimsizes(A0&lon) - 1
+      do ilat = 0, dimsizes(data1&lat) - 1
+        do ilon = 0, dimsizes(data1&lon) - 1
           index = ind_95(ilat, ilon)
           perc95(ilat, ilon) = diff_sort(index(0), ilat, ilon)
         end do
@@ -330,14 +346,15 @@ begin
         to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
       end if
       i = i + 1
+      delete(var_diff_scal_all_mod)
     end do  ; per
   end do  ; seas
   to_plot!0 = "panel"
   to_plot&panel = diag_script_info@label
   to_plot!1 = "lat"
-  to_plot&lat = A0&lat
+  to_plot&lat = data1&lat
   to_plot!2 = "lon"
-  to_plot&lon = A0&lon
+  to_plot&lon = data1&lon
 
   if (percent .eq. 1) then
     to_plot@units     = "% per ~F35~J~F~C"
@@ -406,11 +423,14 @@ begin
   ; ###########################################
   ; # Output to netCDF               #
   ; ###########################################
-  to_plot@ncdf = diag_script_base + "_sig.nc"
+  to_plot@ncdf = variable_info@diagnostic + ".nc"
   ncdf_file = work_dir + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   ncdf_file@existing = "append"
   ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)
+
+  ; copy preproc info file to work dir
+  system("cp " + diag_script_info@input_files + " " + work_dir)
 end
