@@ -60,6 +60,14 @@ authors:
     name: Bock, Lisa
     institute: DLR, Germany
     email: lisa.bock 'at' dlr.de
+  bojo_dr:
+    name: Bojovic, Dragana
+    institute: BSC, Spain
+    email: dragana.bojovic 'at' bsc.es
+  caro_lo:
+    name: Caron, Louis-Philippe
+    institute: BSC, Spain
+    email: louis-philippe.caron 'at' bsc.es
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -106,6 +114,10 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     email: nils.hempelmann 'at' ipsl.jussieu.fr
+  hunt_al:
+    name: Hunter, Alasdair
+    institute: BSC, Spain
+    email: alasdair.hunter 'at' bsc.es
   hutj_ro:
     name: Hutjes, Ronald
     institute: Univ. of Wageningen, NL
@@ -138,6 +150,10 @@ authors:
     name: Little, Bill
     institute: MetOffice, UK
     email: bill.little 'at' metoffice.gov.uk
+  llor_ll:
+    name: Lledó, Llorenç
+    institute: BSC, Spain
+    email: llorenç.lledo 'at' bsc.es
   maek_ja:
     name: Makela, Jarmo
   malo_er:
@@ -155,6 +171,10 @@ authors:
     name: Martin, Gill
     institute: MetOffice, UK
     email: gill.martin 'at' metoffice.gov.uk
+  manu_ni:
+    name: Manubens, Nicolau
+    institute: BSC, Spain
+    email: nicolau.manubens 'at' bsc.es
   mell_fe:
     name: Mello, Felipe
     institute: INPE, Brazil
@@ -169,6 +189,10 @@ authors:
   nobr_pa:
     name: Nobre, Paulo
     institute: INPE, Brazil
+  gonz_nu:
+    name: González-Reviriego, Nube
+    institute: BSC, Spain
+    email: nube.gonzalez 'at' bsc.es
   oliv_ar:
     name: Oliveira, Arildo
     institute: INPE, Brazil

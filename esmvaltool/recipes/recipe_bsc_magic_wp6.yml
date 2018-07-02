@@ -1,27 +1,17 @@
-###############################################################################
-# namelist_bsc_magic_wp6.yml
-#
-# Description
-# Namelist for computing seasonal means or running avergaes,
-# combining indices from multiple models and computing area averages.
-#
-# Authors
-# A Hunter (BSC)
-# N Manubens (BSC)
-#
-# Project
-# KNMI Magic
-#
-#
-#
-#
-#
-# This namelist is part of the ESMValTool
-###############################################################################
----
+documentation:
+  description: |
+    Recipe for for computing seasonal means or running avergaes,
+    combining indices from multiple models and computing area averages
+
+  authors:
+    - hunt_al
+    - manu_ni
+
+  projects:
+    - c3s-magic
 
 datasets:
- # - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2060}
+#  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2060}
   - {dataset: bcc-csm1-1,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 
