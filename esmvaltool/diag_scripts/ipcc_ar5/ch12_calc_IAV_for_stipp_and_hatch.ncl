@@ -118,9 +118,6 @@ begin
   log_debug("processing " + dataset_info@dataset(imod) + "_"\
             + dataset_info@exp(imod) + "_" \
             + dataset_info@ensemble(imod))
-  outfile = "IAV_mmm_piControl_" + field_type0 + "_" \
-            + var0 + "_" + diag_script_info@time_avg + \
-            ".nc"
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
@@ -128,6 +125,7 @@ begin
   ; Check dimensions
   dims = getvardims(A0)
   rank = dimsizes(dims)
+  print(rank)
   if (dimsizes(dims) .lt. 3) then
     error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
               "need 3 or 4")
@@ -162,17 +160,23 @@ begin
 
   Fill = default_fillvalue(typeof(A0))
   if (rank .eq. 3) then
+    data1 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
+                 dimsizes(A0&lon)/), typeof(A0), Fill)
     IAV_mmm = new((/dim_seas, dimsizes(A0&lat), \
-                  dimsizes(A0&lon)/), typeof(A0), Fill)
+                   dimsizes(A0&lon)/), typeof(A0), Fill)
   else if (rank .eq. 4) then
+    data1 = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
+                 dimsizes(A0&lat), dimsizes(A0&lon)/), \
+                typeof(A0), Fill)
     IAV_mmm = new((/dim_seas, dimsizes(A0&$lev_name$), \
-                  dimsizes(A0&lat), dimsizes(A0&lon)/),\
+                   dimsizes(A0&lat), dimsizes(A0&lon)/), \
                   typeof(A0), Fill)
   end if
   end if
-
+;  printVarSummary(IAV_mmm)
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
+      delete(A0)
       A0 = read_data(imod, var0, field_type0)
       dims = getvardims(A0)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
@@ -274,19 +278,12 @@ begin
         end if
       end do
       data_dtr = dtrend_quadratic_msg_n(data_tmp, False, False, 0)
-      data1 = dim_stddev_n(data_dtr, 0)
       if (rank .eq. 3) then
-        data1!1 = lat_name
-        data1!2 = lon_name
+        data1(imod, :, :, :) = dim_stddev_n(data_dtr, 0)
       else if (rank .eq. 4) then
-        data1!1 = lev_name
-        data1&$lev_name$ = data_tmp&$lev_name$
-        data1!2 = lat_name
-        data1!3 = lon_name
+        data1(imod, :, :, :, :) = dim_stddev_n(data_dtr, 0)
       end if
       end if
-      data1&$lat_name$ = data_tmp&$lat_name$
-      data1&$lon_name$ = data_tmp&$lon_name$
       delete(start_yrs)
       delete(data_tmp)
       delete(data_dtr)
@@ -294,60 +291,100 @@ begin
         delete(deseas_data)
       end if
     else
-      data1 = interannual_variability(A0, new_start_yr, end_yr_int, \
-                                      diag_script_info@time_avg) \
+      data1_tmp = interannual_variability(A0, new_start_yr, end_yr_int, \
+                                          diag_script_info@time_avg)
 ;                                      , "quadratic")
+      if (rank .eq. 3) then
+        data1(imod, :, :, :) = data1_tmp
+      else if (rank .eq. 4) then
+        data1(imod, :, :, :, :) = data1_tmp
+      end if
+      end if
     end if
     delete(start_yr)
     delete(end_yr)
-    delete(A0)
     delete(time)
-  end do  ; imod
-  ; ###########################################
-  ; # Calculate multi-model mean of IAV       #
-  ; ###########################################
-  do s = 0, dim_seas - 1
-    if (rank .eq. 3) then
-      IAV_mmm(s, :, :) = \
-        rm_single_dims(data1(s, :, :) * sqrt(2.))
-    else if (rank .eq. 4) then
-      IAV_mmm(s, :, :, :) = \
-        rm_single_dims(data1(s, :, :, :) * sqrt(2.))
-    end if
-    end if
-  end do
-  if (rank .eq. 3) then
-    IAV_mmm!0 = "season"
-    IAV_mmm!1 = "lat"
-    IAV_mmm!2 = "lon"
-  else if (rank .eq. 4) then
-    IAV_mmm!0 = "season"
-    IAV_mmm!1 = lev_name
-    IAV_mmm&$lev_name$ = data1&$lev_name$
-    IAV_mmm!2 = "lat"
-    IAV_mmm!3 = "lon"
-  end if
-  end if
-  if (isatt(diag_script_info, "seasons")) then
-    IAV_mmm&season = (/ispan(0, dim_seas - 1, 1)/)
-  else
-    IAV_mmm&season = (/0/)
-  end if
-  IAV_mmm&lat = data1&lat
-  IAV_mmm&lon = data1&lon
 
-  ; ###########################################
-  ; # Output to netCDF                        #
-  ; ###########################################
-  IAV_mmm@diag_script = (/diag_script/)
-  IAV_mmm@var = "iav"
-  if (isatt(variable_info, "long_name")) then
-    IAV_mmm@var_long_name = "iav of " + variable_info@long_name
+    if ((isatt(diag_script_info, "iavmode")) .and. \
+        (diag_script_info@iavmode .eq. "each")) then
+      outfile = "IAV_" + dataset_info@exp(imod) + "_" + \
+        dataset_info@dataset(imod) +\
+        "_" + dataset_info@ensemble(imod) + "_" + field_type0 + "_" + \
+        var0 + "_" + diag_script_info@time_avg + ".nc"
+      file_exist = isfilepresent(outfile)
+      if (file_exist .and. diag_script_info@overwrite .eq. False) then
+        continue
+      end if
+      ; ###########################################
+      ; # Output to netCDF                        #
+      ; ###########################################
+      data1@diag_script = (/diag_script/)
+      data1@var = "iav"
+      if (isatt(variable_info, "long_name")) then
+        data1@var_long_name = "iav of " + variable_info@long_name
+      end if
+      if (isatt(variable_info, "units")) then
+        data1@var_units     = variable_info@units
+      end if
+      ; Function in ~/interface_scripts/auxiliary.ncl
+      ncdf_outfile = ncdf_write(data1, work_dir + outfile)
+      delete(data1)
+    end if
+  end do  ; imod
+
+  if ((.not. isatt(diag_script_info, "iavmode")) .or. \
+      (diag_script_info@iavmode .ne. "each")) then
+    ; ###########################################
+    ; # Calculate multi-model mean of IAV       #
+    ; ###########################################
+    do s = 0, dim_seas - 1
+      if (rank .eq. 3) then
+        IAV_mmm(s, :, :) = \
+          rm_single_dims(dim_avg_n(data1(:, s, :, :), 0) * sqrt(2.))
+      else if (rank .eq. 4) then
+        IAV_mmm(s, :, :, :) = \
+          rm_single_dims(dim_avg_n(data1(:, s, :, :, :), 0) * sqrt(2.))
+      end if
+      end if
+    end do
+
+    if (rank .eq. 3) then
+      IAV_mmm!0 = "season"
+      IAV_mmm!1 = "lat"
+      IAV_mmm!2 = "lon"
+    else if (rank .eq. 4) then
+      IAV_mmm!0 = "season"
+      IAV_mmm!1 = lev_name
+      IAV_mmm&$lev_name$ = A0&$lev_name$
+      IAV_mmm!2 = "lat"
+      IAV_mmm!3 = "lon"
+    end if
+    end if
+    if (isatt(diag_script_info, "seasons")) then
+      IAV_mmm&season = (/ispan(0, dim_seas - 1, 1)/)
+    else
+      IAV_mmm&season = (/0/)
+    end if
+    IAV_mmm&lat = A0&lat
+    IAV_mmm&lon = A0&lon
+
+    ; ###########################################
+    ; # Output to netCDF                        #
+    ; ###########################################
+    outfile = "IAV_mmm_piControl_" + field_type0 + "_" \
+      + var0 + "_" + diag_script_info@time_avg + ".nc"
+
+    IAV_mmm@diag_script = (/diag_script/)
+    IAV_mmm@var = "iav"
+    if (isatt(variable_info, "long_name")) then
+      IAV_mmm@var_long_name = "iav of " + variable_info@long_name
+    end if
+    if (isatt(variable_info, "units")) then
+      IAV_mmm@var_units     = variable_info@units
+    end if
+    IAV_mmm@comment = "models included in mmm are " + dataset_info@dataset
+    printVarSummary(IAV_mmm)
+    ; Function in ~/interface_scripts/auxiliary.ncl
+    ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
   end if
-  if (isatt(variable_info, "units")) then
-    IAV_mmm@var_units     = variable_info@units
-  end if
-  IAV_mmm@comment = "models included in mmm are " + dataset_info@dataset
-  ; Function in ~/interface_scripts/auxiliary.ncl
-  ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
 end
