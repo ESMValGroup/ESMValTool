@@ -27,12 +27,13 @@ def folder(name):
 
     Take a string or a list of strings, convert it to a directory style,
     then make the folder and the string.
-    Returns folder string and final character is always '/'.
+    Returns folder string and final character is always os.sep. ('/')
     """
+    sep = os.sep
     if isinstance(name, list):
-        name = '/'.join(name)
-    if name[-1] != '/':
-        name = name + '/'
+        name = os.sep.join(name)
+    if name[-1] != sep:
+        name = name + sep
     if os.path.exists(name) is False:
         os.makedirs(name)
         logger.info('Making new directory:\t%s', str(name))

@@ -1,21 +1,21 @@
 ###############################################################################
 # recipe_GlobalOcean.yml
-# 
+#
 # Description
 # Diagnostics to support the evaluation of ocean biogeochemical cycles at
 # global scales.  Implemented routines produce time series lines and contour
 # plots (for climatological distributions or inter-annual or inter-seasonal
 # variability) using either 2-D (surface) or 3-D (depth-resolving) ocean
 # variables
-# 
+#
 # Authors
 # Lee de Mora (PML, UK)
 # Oliver Andrews (UEA, UK)
 # Clare Enright (UEA, UK)
-# 
+#
 # Project
 # EMBRACE, UKESM
-# 
+#
 # Reference
 # Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90,
 # doi:10.5194/essd-6-69-2014 (2014)
@@ -28,38 +28,36 @@
 # (2013)
 # Takahashi, T. et al., Mar. Chem., 164, 95-125,
 # doi:10.1016/j.marchem.2014.06.004 (2014)
-# 
+#
 # This recipe is part of the ESMValTool
 ###############################################################################
 ---
 
 datasets:
-# working datasets
-  - {dataset: CanESM2,      project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {dataset: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {dataset: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {dataset: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {dataset: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # working datasets
+  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
-#####
-# datasets with Errors right now (June 2018):
+  # Problem with latitude > 90.
+  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
-# Problem with latitude > 90.
-  - {dataset: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
-  - {dataset: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+  #####
+  # Data with Errors right now -June 2018
+  ###
+  # Problem with times
+#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
-###
-# Problem with times
-#  - {dataset: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {dataset: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-# Unstructured grids                 
-#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
-#  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {dataset: ACCESS1-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}  
-#  - {dataset: ACCESS1-3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
+  # Unstructured grids
+#  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+#  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
 
 preprocessors:
@@ -67,171 +65,152 @@ preprocessors:
   # Time series preprocessors
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
-    fix_data:     
-    fix_metadata: 
-    average_region:               
+    average_region:
       coord1: longitude
       coord2: latitude
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-      
+
   prep_timeseries_2: # For specific levels of 3D fields
     fix_data:
-    fix_metadata:  
+    fix_metadata:
     extract_levels:
-      levels:  [0., 10., 100., 1000. , ]
-      scheme: linear_extrap              
-    average_region:               
+      levels: [0., 10., 100., 1000.]
+      scheme: linear_horizontal_extrapolate_vertical
+    average_region:
       coord1: longitude
       coord2: latitude
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-      
+
   prep_timeseries_3: # For regional fields
-    fix_data:
-    fix_metadata:
     extract_region:
-      long1:  -80.
-      long2:  30.
-      lat1:   -80.
-      lat2:   80.
-    average_region:               
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    average_region:
       coord1: longitude
       coord2: latitude
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-            
+
   prep_timeseries_4: # For regional fields at depth
-    fix_data:
-    fix_metadata:
     extract_levels:
-      levels:  [0., 10., 100., 1000. , ]
-      scheme: linear_extrap         
+      levels: [0., 10., 100., 1000.]
+      scheme: linear_horizontal_extrapolate_vertical
     extract_region:
-      long1:  -80.
-      long2:  30.
-      lat1:   -80.
-      lat2:   80.  
-    average_region:               
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    average_region:
       coord1: longitude
-      coord2: latitude    
+      coord2: latitude
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
 
   prep_timeseries_5: # For Global Volume Averaged
-    fix_data:
-    fix_metadata:
-    average_volume:               
+    average_volume:
       coord1: longitude
       coord2: latitude
       coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-            
+
   prep_timeseries_6: # For regional volume averaged
-    fix_data:
-    fix_metadata:
     extract_region:
-      long1:  -80.
-      long2:  30.
-      lat1:   -80.
-      lat2:   80.  
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
     average_volume:
       coord1: longitude
-      coord2: latitude  
-      coordz: depth                         
+      coord2: latitude
+      coordz: depth
     multi_model_statistics:
       span: overlap
-      statistics: [mean ]      
+      statistics: [mean ]
 
   prep_timeseries_7: # For regional volume averaged (at the surface)
     fix_data:
-    fix_metadata:
+    fix_metadata:  
     extract_region:
-      long1:  -80.
-      long2:  30.
-      lat1:   -80.
-      lat2:   80. 
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
     extract_volume:
-      z_min:      0.
-      z_max:     100. 
+      z_min: 0.
+      z_max: 100.
     average_volume:
       coord1: longitude
-      coord2: latitude  
-      coordz: depth                         
+      coord2: latitude
+      coordz: depth
     multi_model_statistics:
       span: overlap
-      statistics: [mean ]   
+      statistics: [mean ]
 
 
   # --------------------------------------------------
   # Map preprocessors - 2D fields
   # --------------------------------------------------
   prep_map_1: # For Global 2D fields
-    fix_metadata: 
-    fix_data:
     time_average:
-    
+
   prep_map_2: # For Global 2D fields with regridding
-    fix_metadata: 
     regrid:
       target_grid: 1x1
-      scheme: linear    
-    time_average:      
+      scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-      
+    time_average:
+
   prep_map_3: # For specific levels of 3D fields with regrid
-    fix_data:
-    fix_metadata:  
     extract_levels:
-      levels:  [0., 10., 100., 1000., ]
-      scheme: linear_extrap              
-    time_average:      
+      levels: [0., 10., 100., 1000.,]
+      scheme: linear_horizontal_extrapolate_vertical
+    time_average:
     regrid:
       target_grid: 1x1
-      scheme: linear      
+      scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-      
+
   prep_map_4: # For a specific region with regrid
-    fix_data:
-    fix_metadata:
     extract_region:
-      long1:  -80.
-      long2:   30.
-      lat1:   -80.
-      lat2:    80.
-    time_average:      
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    time_average:
     regrid:
       target_grid: 1x1
-      scheme: linear           
+      scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
-            
+
   prep_map_5: # For a specific region at depth levels,
-    fix_data:
-    fix_metadata:
     extract_levels:
-      levels:  [0., 10., 100., 1000., ]
-      scheme: linear_extrap
-    time_average:               
+      levels: [0., 10., 100., 1000.,]
+      scheme: linear_horizontal_extrapolate_vertical
+    time_average:
     extract_region:
-      long1:  -80.
-      long2:  30.
-      lat1:   -80.
-      lat2:   80.
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
     regrid:
       target_grid: 1x1
-      scheme: linear            
+      scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -240,127 +219,114 @@ preprocessors:
   # Transects preprocessors
   # --------------------------------------------------
   prep_transect_1: # For extracting along a trajectory
-    fix_data:
-    fix_metadata:
     time_average:
     extract_trajectory:
       latitudes: [-5., 5.,]
       longitudes: [332.,332.]
       number_points: 4              # VERY SLOW with high numbers!
-     
+
   prep_transect_2: # For extracting a transect
-    fix_data:
-    fix_metadata:
     time_average:
     extract_transect: # Pacific Equator
       latitude: 0.
       longitude: [120., 300.]
-                           
+
   prep_transect_3: # For extracting a transect
-    fix_data:
-    fix_metadata:
     time_average:
     extract_transect: # Atlantic Meridional Transect
-      latitude: [-50.,50.]  
+      latitude: [-50.,50.]
       longitude: 332.
-      
+
   # --------------------------------------------------
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_profile_1: # For a global profile
-    fix_data:     
-    fix_metadata: 
     average_region:
       coord1: longitude
-      coord2: latitude   
-      
+      coord2: latitude
+
   prep_profile_2: # For a regional profile
-    fix_data:     
-    fix_metadata: 
     extract_region:
-      long1: 0.
-      long2:  20.
-      lat1:  -30.
-      lat2:  30.
+      start_longitude: 0.
+      end_longitude: 20.
+      start_latitude: -30.
+      end_latitude: 30.
     extract_volume:
       z_min: 0.
       z_max: 100.
-    average_region:          
+    average_region:
       coord1: longitude
       coord2: latitude
-                  
+
   # --------------------------------------------------
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_depth_integration_1: # For a 2D map global profile
-    fix_data:     
-    fix_metadata: 
     depth_integration:
       coordz: depth
-    time_average:      
+    time_average:
 
-       
-     
+
 diagnostics:
   # --------------------------------------------------
   # Depth integrated diagnostics
-  # --------------------------------------------------  
+  # --------------------------------------------------
   diag_depthInt_1:
     description: Global Ocean Surface mean timeseries
-    variables:       
-      thetao: # Temperature ocean 
-        preprocessor: prep_depth_integration_1      
+    variables:
+      thetao: # Temperature ocean
+        preprocessor: prep_depth_integration_1
         field: TO3M
     scripts:
-      Global_Ocean_DepthIntegration_map: &Global_Ocean_DepthIntegration_map
+      Global_Ocean_DepthIntegration_map: 
         script: ocean/diagnostic_maps.py
-        
+
   # --------------------------------------------------
   # Time series diagnostics
-  # --------------------------------------------------  
+  # --------------------------------------------------
   diag_timeseries_1:
     description: Global Ocean Surface mean timeseries
-    variables:       
+    variables:
       tos: # Temperature ocean surface
-        preprocessor: prep_timeseries_1      
+        preprocessor: prep_timeseries_1
         field: TO2Ms
     scripts:
       Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        
+
   diag_timeseries_2:
     description: Global Ocean Depth Layers mean timeseries
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_2
         field: TO3M
     scripts:
       Global_Ocean_DepthLayers_mean_timeseries: &Global_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        
+
   diag_timeseries_3:
     description: Regional scale surface diagnostics
-    variables:       
+    variables:
       tos: # Temperature ocean surface
-        preprocessor: prep_timeseries_3      
-        field: TO2Ms             
+        preprocessor: prep_timeseries_3
+        field: TO2Ms
     scripts:
       Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        
+
   diag_timeseries_4:
     description: Regional scale diagnostics
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_4
         field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        
+
   diag_timeseries_5:
     description: Global Volume average diagnostics
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_5
         field: TO3M
@@ -370,32 +336,32 @@ diagnostics:
 
   diag_timeseries_6:
     description: Regional Volume average diagnostics
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_6
-        field: TO3M               
+        field: TO3M
     scripts:
       Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_7:
-    description: Regional Volume to 100m depth average diagnostics 
-    variables:       
+    description: Regional Volume to 100m depth average diagnostics
+    variables:
       thetao: # Temperature ocean 3D averaged over top 100m
         preprocessor: prep_timeseries_7
-        field: TO3M               
+        field: TO3M
     scripts:
       Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
-        
+
   # --------------------------------------------------
   # Map diagnostics
-  # --------------------------------------------------              
+  # --------------------------------------------------
   diag_map_1:
     description: Global Ocean Surface map
-    variables:       
+    variables:
       tos: # Temperature ocean surface
-        preprocessor: prep_map_1      
+        preprocessor: prep_map_1
         field: TO2Ms
     scripts:
       Global_Ocean_Surface_mean_map: &Global_Ocean_Surface_mean_map
@@ -403,37 +369,37 @@ diagnostics:
 
   diag_map_2:
     description: Global Ocean Surface regridded map
-    variables:       
+    variables:
       tos: # Temperature ocean surface
-        preprocessor: prep_map_2      
+        preprocessor: prep_map_2
         field: TO2Ms
     scripts:
       Global_Ocean_Surface_regrid_map: &Global_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
-                
+
   diag_map_3:
     description: Global Ocean Depth Layers regridded map
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_3
         field: TO3M
     scripts:
       Global_Ocean_DepthLayers_regrid_map: &Global_Ocean_DepthLayers_regrid_map
         script: ocean/diagnostic_maps.py
-       
+
   diag_map_4:
-    description: Regional scale surface regridded map 
-    variables:       
+    description: Regional scale surface regridded map
+    variables:
       tos: # Temperature ocean surface
-        preprocessor: prep_map_4      
-        field: TO2Ms             
+        preprocessor: prep_map_4
+        field: TO2Ms
     scripts:
       Regional_Ocean_Surface_regrid_map: &Regional_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
-        
+
   diag_map_5:
     description: Regional scale depth layers regridded map
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_5
         field: TO3M
@@ -443,21 +409,21 @@ diagnostics:
 
   # --------------------------------------------------
   # Transects diagnostics
-  # -------------------------------------------------- 
+  # --------------------------------------------------
   diag_transect_1:
     description: Extracting along a trajectory
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_1
         field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_regrid_transect: &Regional_Ocean_DepthLayers_regrid_transect
         script: ocean/diagnostic_transects.py
-                
+
 
   diag_transect_2:
     description: Extracting along a line with regridding and multimodle mean
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_2
         field: TO3M
@@ -467,36 +433,34 @@ diagnostics:
 
   diag_transect_3:
     description: Extracting along a line with regridding and multimodel mean
-    variables:       
+    variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_3
         field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect
         script: ocean/diagnostic_transects.py
-                                
+
 
   # --------------------------------------------------
   # Depth-profile diagnostics
-  # --------------------------------------------------  
+  # --------------------------------------------------
   diag_profile_1:
     description: Global Ocean mean profile
-    variables:       
+    variables:
       thetao: # Temperature ocean surface
-        preprocessor: prep_profile_1      
+        preprocessor: prep_profile_1
         field: TO3M
     scripts:
       Global_Ocean_mean_profile: &Global_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py
-        
+
   diag_profile_2:
     description: Regional Ocean mean profile
-    variables:       
+    variables:
       thetao: # Temperature ocean surface
-        preprocessor: prep_profile_2      
+        preprocessor: prep_profile_2
         field: TO3M
     scripts:
       Regional_Ocean_mean_profile: &Regional_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py
-        
-                                            

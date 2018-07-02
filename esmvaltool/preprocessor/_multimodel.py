@@ -116,7 +116,6 @@ def _put_in_cube(template_cube, cube_data, stat_name,
     lons = template_cube.coord('longitude')
 
     # no plevs
-
     if len(template_cube.shape) == 3:
         cspec = [(times, 0), (lats, 1), (lons, 2)]
     # plevs

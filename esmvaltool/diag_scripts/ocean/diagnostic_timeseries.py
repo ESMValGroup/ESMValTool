@@ -53,7 +53,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def timeplot(cube, **kwargs):
@@ -156,7 +155,7 @@ def multi_model_time_series(
     # Load the data for each layer as a separate cube
     model_cubes = {}
     layers = {}
-    for filename in sorted(metadata.keys()):
+    for filename in sorted(metadata):
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
@@ -175,10 +174,9 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
-            color = cmap(
-                (float(index) / (len(metadata.keys()) - 1.)))
+            color = cmap(index / (len(metadata) - 1.))
 
-            if metadata[filename]['dataset'].find('MultiModel') > -1:
+            if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
                     model_cubes[filename][layer],
                     c=color,

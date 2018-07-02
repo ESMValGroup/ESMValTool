@@ -8,41 +8,45 @@ import iris
 
 
 # slice cube over a restricted area (box)
-def area_slice(mycube, long1, long2, lat1, lat2):
+def area_slice(cube, start_longitude, end_longitude, start_latitude,
+               end_latitude):
     """
     Subset a cube on area
 
-    Function that subsets a cube on a box (long1,long2,lat1,lat2)
+    Function that subsets a cube on a box (start_longitude, end_longitude,
+    start_latitude, end_latitude)
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
     # Converts Negative longitudes to 0 -> 360. standard
-    if long1 < 0.:
-        long1 += 360.
-    if long2 < 0.:
-        long2 += 360.
+    if start_longitude < 0.:
+        start_longitude += 360.
+    if end_longitude < 0.:
+        end_longitude += 360.
 
-    if long2 < long1:
+    if end_longitude < start_longitude:
         # if you want to look at a region both sides of
         # the zero longitude ie, such as the Atlantic Ocean!
         sublon = iris.Constraint(
-            longitude=lambda cell: not ((float(long1) >= cell)
-                                        * (cell >= float(long2))))
+            longitude=lambda cell: not ((float(start_longitude) >= cell)
+                                        * (cell >= float(end_longitude))))
     else:
         sublon = iris.Constraint(
-            longitude=lambda cell: float(long1) <= cell <= float(long2))
+            longitude=lambda cell:
+                float(start_longitude) <= cell <= float(end_longitude))
     sublat = iris.Constraint(
-        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
-    region_subset = mycube.extract(sublon & sublat)
+        latitude=lambda cell:
+            float(start_latitude) <= cell <= float(end_latitude))
+    region_subset = cube.extract(sublon & sublat)
     return region_subset
 
 
 # get zonal means
-def zonal_means(mycube, coord1, mean_type):
+def zonal_means(cube, coordinate, mean_type):
     """
     Get zonal means
 
-    Function that returns zonal means along a coordinate coord1;
+    Function that returns zonal means along a coordinate `coordinate`;
     the type of mean is controlled by mean_type variable (string):
         'mean' -> MEAN
         'stdev' -> STD_DEV
@@ -50,11 +54,11 @@ def zonal_means(mycube, coord1, mean_type):
     Returns a cube
     """
     if mean_type == 'mean':
-        result = mycube.collapsed(coord1, iris.analysis.MEAN)
+        result = cube.collapsed(coordinate, iris.analysis.MEAN)
     elif mean_type == 'stdev':
-        result = mycube.collapsed(coord1, iris.analysis.STD_DEV)
+        result = cube.collapsed(coordinate, iris.analysis.STD_DEV)
     elif mean_type == 'variance':
-        result = mycube.collapsed(coord1, iris.analysis.VARIANCE)
+        result = cube.collapsed(coordinate, iris.analysis.VARIANCE)
     return result
 
 

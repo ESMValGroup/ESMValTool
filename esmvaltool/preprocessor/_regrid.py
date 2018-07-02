@@ -24,8 +24,7 @@ from numpy import ma
 from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
-_CELL_SPEC = re.compile(
-    r'''\A
+_CELL_SPEC = re.compile(r'''\A
                             \s*(?P<dx>\d+(\.\d+)?)\s*
                             x
                             \s*(?P<dy>\d+(\.\d+)?)\s*
@@ -54,7 +53,9 @@ horizontal_schemes = dict(
     unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest', 'nearest_extrap', 'linear_extrap']
+vertical_schemes = ['linear', 'nearest',
+                    'linear_horizontal_extrapolate_vertical',
+                    'nearest_horizontal_extrapolate_vertical']
 
 
 def _stock_cube(spec):
@@ -327,11 +328,11 @@ def vinterp(src_cube, levels, scheme):
 
     # This allows us to put level 0. to load the ocean surface.
     extrap_scheme = 'nan'
-    if scheme == 'nearest_extrap':
+    if scheme == 'nearest_horizontal_extrapolate_vertical':
         scheme = 'nearest'
         extrap_scheme = 'nearest'
 
-    if scheme == 'linear_extrap':
+    if scheme == 'linear_horizontal_extrapolate_vertical':
         scheme = 'linear'
         extrap_scheme = 'nearest'
 

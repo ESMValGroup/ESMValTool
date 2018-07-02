@@ -27,7 +27,8 @@ class Test(tests.Test):
             'esmvaltool.preprocessor._regrid._create_cube',
             return_value=self.created_cube)
         self.vinterp_schemes = ['linear', 'nearest',
-                                'nearest_extrap', 'linear_extrap']
+                                'linear_horizontal_extrapolate_vertical',
+                                'nearest_horizontal_extrapolate_vertical']
 
     def test_nop(self):
         cube = mock.sentinel.cube

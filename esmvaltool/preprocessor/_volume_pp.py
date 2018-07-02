@@ -23,7 +23,7 @@ def volume_slice(mycube, z_min, z_max):
     return region_subset
 
 
-def volume_average(mycube, coordz, coord1, coord2,):
+def volume_average(mycube, coordz, coord1, coord2):
     """
     Determine the area average.
 
