@@ -47,6 +47,5 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/capacity_factor.r #(in diag_scripts)
-
-       seasons: DJF
+        seasons: DJF
 

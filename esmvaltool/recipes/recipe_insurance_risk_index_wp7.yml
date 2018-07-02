@@ -25,7 +25,7 @@
 datasets:
   - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
   - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
- # - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
@@ -48,13 +48,9 @@ diagnostics:
     variables:
       tasmax:
         preprocessor: preproc
-        mip: day
         field: T2M
 
     scripts:
       main:
-        script: magic_bsc/insurance_index.r #(in diag_scripts)
-
+        script: magic_bsc/risk_index.r
         metric: tx90p
-
-
