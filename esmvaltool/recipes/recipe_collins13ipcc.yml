@@ -211,3 +211,55 @@ diagnostics:
         #grid:
         #percent: #0 or 1, difference in percent = 1, default = 0
 
+  ###  Change scaled by global average temperature change ##
+
+  tas_change_scaleT:
+    description: Multi-model mean change scaled by global T change map with significance
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: preproc_map
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: ACCESS1-3,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+
+      - {dataset: ACCESS1-0,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: ACCESS1-3,  project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+
+      - {dataset: ACCESS1-0,  project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: ACCESS1-3,  project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+
+    scripts:
+      ch12_calc_map_diff_scaleT_tas: &tas_scale_settings
+        script: ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
+        # Required attributes:
+        scenarios: [rcp45, rcp85]      #list with scenarios to be included
+        periods: [2041, 2081]         #list with start years of periods to be included
+        time_avg: seasonalclim  #seasonal or annual means
+        projection: Robinson   # map projection, any valid ncl projection  
+        label: ["2041-2080", "2081-2100"]   # labels on top of each panel, loop to plot is seasons, periods
+        # Optional attributes:
+        #seasons: [0, 2]  # list with seasons index to be included if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
+        #percent: # difference in percent? percent = 1, default = 0
+      ch12_plot_map_diff_scaleT_tas:
+        <<: *tas_scale_settings
+        script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+        ancestors: [tas_change_scaleT/ch12_calc_map_diff_scaleT_tas]
+        # Optional attributes:
+        sig: True # plot significance as stippling?
+        diff_levs: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] # use explicit levels for contour plot?
+        #colormap: "diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb" # use alternative colormap
+        #pltname: # an alternative name for the output plot, default is diagnostic + varname + time_avg
+        #max_vert: 2  # maximum number of plots in vertical
+        #max_hori: 2  # maximum number of plots in horizontal
