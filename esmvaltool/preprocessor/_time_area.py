@@ -43,6 +43,62 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     return cube_slice
 
 
+def extract_season(cube, season):
+    """
+    Slice cube to get only the data belonging to a specific season
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Original data
+    season: str
+        Season to extract. Available: DJF, MAM, JJA, SON
+    """
+    import iris.coord_categorisation
+    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
+    return season_cube
+
+
+def extract_month(mycube, month):
+    """
+    Slice cube to get only the data belonging to a specific month
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Original data
+    month: int
+        Month to extract as a number from 1 to 12
+    """
+    import iris.coord_categorisation
+    season_cube = mycube.extract(iris.Constraint(month_number=month))
+    return season_cube
+
+
+# get the seasonal mean
+def seasonal_mean(mycube):
+    """
+    Function to compute seasonal means with MEAN
+
+    Chunks time in 3-month periods and computes means over them;
+    Returns a cube
+    """
+    import iris.coord_categorisation
+    iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
+    iris.coord_categorisation.add_season_year(
+        mycube, 'time', name='season_year')
+    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
+                                                iris.analysis.MEAN)
+
+    def spans_three_months(time):
+        """Check for three months"""
+        return (time.bound[1] - time.bound[0]) == 2160
+
+    three_months_bound = iris.Constraint(time=spans_three_months)
+    return annual_seasonal_mean.extract(three_months_bound)
+
+
 # slice cube over a restricted area (box)
 def area_slice(mycube, long1, long2, lat1, lat2):
     """
