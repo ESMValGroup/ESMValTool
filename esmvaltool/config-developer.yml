@@ -37,7 +37,11 @@ CMIP5:
     ETHZ: '[exp]/[mip]/[var]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[freq]'
     BSC: '[project]/[exp]/[dataset]'
-  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
+    BSC2: '[exp]/[model]'
+    BSC3: '[exp]/[mip]/[var]/'
+  input_file:
+    default: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
+    BSC3: '[var]_*.nc'
   fx_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[fx_var]'
