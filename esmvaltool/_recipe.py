@@ -451,18 +451,25 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['save'] = {
         'compress': config_user['compress_netcdf']}
 
-    # Configure ingestion of landocean masks
-    if variable.get('fx_files'):
-        if 'sftlf' in variable['fx_files'].keys():
-            settings['mask_landocean'] = {
-                'fx_file': variable['fx_files']['sftlf']
-            }
-        # add more file options here with elif
-        # else: return an empty value
-        else:
-            settings['mask_landocean'] = {'fx_file': None}
-
     return settings
+
+
+def _update_fx_settings(settings, variable):
+    """Find and set the FX mask settings"""
+    if 'mask_landocean' in settings.keys():
+        # Configure ingestion of landocean masks
+        logger.debug('Getting FX mask settings now...')
+        if variable.get('fx_files'):
+            if 'sftlf' in variable['fx_files'].keys():
+                settings['mask_landocean']['fx_file'] = \
+                    variable['fx_files']['sftlf']
+            elif 'sftof' in variable['fx_files'].keys():
+                settings['mask_landocean']['fx_file'] = \
+                    variable['fx_files']['sftof']
+            # add more file options here with elif
+            # else: return an empty value
+            else:
+                settings['mask_landocean']['fx_file'] = None
 
 
 def _get_input_files(variable, config_user):
@@ -548,6 +555,8 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_fx_settings(settings=settings,
+                            variable=variable)
         _update_target_grid(
             variable=variable,
             variables=variables,

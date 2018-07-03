@@ -9,7 +9,6 @@ from __future__ import print_function
 
 import os
 import logging
-import inspect
 
 import iris
 import numpy as np
@@ -24,29 +23,18 @@ def _get_fx_mask(fx_data, fx_option):
     inmask = np.zeros_like(fx_data, bool)
     if fx_option == 'land':
         # Mask land out
-        inmask[fx_data <= 50.] = False
         inmask[fx_data > 50.] = True
     elif fx_option == 'ocean':
         # Mask ocean out
         inmask[fx_data <= 50.] = True
-        inmask[fx_data > 50.] = False
     return inmask
 
 
 def _apply_fx_mask(fx_mask, var_data):
     """Apply the fx mask"""
-    var_mask = np.zeros(var_data.shape, bool)
-
-    # TIME-LAT-LON
-    if len(var_data.shape) == 3.:
-        for i in range(var_data.shape[0]):
-            var_mask[i, :] = fx_mask
-
-    # TIME-PLEV-LAT-LON
-    elif len(var_data.shape) == 4.:
-        for i in range(var_data.shape[0]):
-            for j in range(var_data.shape[1]):
-                var_mask[i, j, :] = fx_mask
+    # Broadcast mask
+    var_mask = np.zeros_like(var_data, bool)
+    var_mask = np.broadcast_to(fx_mask, var_mask.shape).copy()
 
     # Aplly mask accross
     if np.ma.is_masked(var_data):
@@ -64,8 +52,7 @@ def mask_landocean(cube, fx_file, mask_out):
     """Apply a land/ocean mask"""
     # mask_out: is either 'land' or 'ocean'
     # Dict to store the Natural Earth masks
-    cwd = os.path.dirname(
-        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    cwd = os.path.dirname(__file__)
     # ne_10m_land is fast; ne_10m_ocean is very slow
     shapefiles = {
         'land': os.path.join(cwd, 'ne_masks/ne_10m_land.shp'),
