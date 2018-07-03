@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor._time_area.season_slice`."""
+"""Unit tests for :func:`esmvaltool.preprocessor._time_area.month_slice`."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -14,7 +14,10 @@ from esmvaltool.preprocessor._time_area import extract_month
 
 
 class Test(tests.Test):
+    """Tests for month_slice`."""
+
     def setUp(self):
+        """Prepare tests"""
         self.cube = Cube(np.arange(1, 25), var_name='co2', units='J')
         self.cube.add_dim_coord(
             iris.coords.DimCoord(
@@ -25,6 +28,7 @@ class Test(tests.Test):
         iris.coord_categorisation.add_month_number(self.cube, 'time')
 
     def test_get_january(self):
+        """Test january extraction"""
         sliced = extract_month(self.cube, 1)
         print(sliced)
         self.assertTrue((np.array([1, 1]) ==

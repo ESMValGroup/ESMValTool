@@ -51,6 +51,7 @@ start_year <- c(unlist(unname(start_year)))[1]
 end_year <- lapply(input_files_per_var, function(x) x$end_year)
 end_year <- c(unlist(unname(end_year)))[1]
 seasons <- params$seasons
+power_curves <- params$power_curves
 
 data <- Start(model = fullpath_filenames,
               var = var0,
@@ -78,25 +79,6 @@ time_dim <- which(names(dim(data)) == "time")
 
 # ratio <- ifelse(landmask > 50,1.39,1.29)
 
-##Subset the data based on the users selected season:
-dates <- attributes(data)$Variables$dat1$time
-time_dim <- which(names(dim(data)) == "time")
-
-dates <- as.PCICt(dates, cal = attributes(dates)$variables$time$calendar, format = "%Y%m%d")
-jdays <- as.numeric(strftime(dates, format = "%j"))
-if (seasons == "DJF") {
-  days <- c(c(335 : 365), c(1 : 59))
-} else if (seasons == "MAM") {
-  days <- c(60 : 151)
-} else if (seasons == "JJA") {
-  days <- c(152 : 243)
-} else {
-  days <- c(244 : 334)
-}
-index <- which(jdays %in% days)
-print("AA")
-print(dim(data))
-data <- Subset(data, along = time_dim, indices = index, drop = "non-selected")
 print("BB")
 print(dim(data))
 dims <- dim(data)
@@ -116,6 +98,16 @@ names(dim(data)) <- c("year", "day", "lat", "lon")
 #---------------------------
 # Load PC to use and compute CF for 6h values
 #---------------------------
+seas_data <- Mean1Dim(data,2)
+
+for (power_curve in power_curves){
+    pc = read_xml_pc(power_curve)
+    data_cf <- wind2CF(data,pc1)
+    dim(data_cf) <- dim(data)
+    seas_data_cf <- Mean1Dim(data_cf,2)
+
+}
+
 pc1 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp")
 pc2 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp")
 pc3 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp")
@@ -137,7 +129,7 @@ dim(data_cf5) <- dim(data)
 #---------------------------
 # Aggregate daily data to seasonal means
 #---------------------------
-seas_data <- Mean1Dim(data,2)
+
 seas_data_cf1 <- Mean1Dim(data_cf1,2)
 seas_data_cf2 <- Mean1Dim(data_cf2,2)
 seas_data_cf3 <- Mean1Dim(data_cf3,2)

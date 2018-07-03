@@ -35,6 +35,8 @@ preprocessors:
       long2: 40
       lat1: 27
       lat2: 70
+    extract_season:
+      season: djf
 
 diagnostics:
   capacity_factor:
@@ -47,5 +49,11 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/capacity_factor.r #(in diag_scripts)
-        seasons: DJF
+        power_curves:
+          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp
+          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp
+          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp
+          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V100_2.0MW.wtp
+          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V110_2.0MW.wtp
+
 
