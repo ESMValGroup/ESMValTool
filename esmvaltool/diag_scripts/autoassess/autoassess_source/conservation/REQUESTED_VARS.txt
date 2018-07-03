@@ -1,0 +1,74 @@
+This is a list of requested variables for the autoassess/concentration area and the their CMOR mapping equivalents
+-------------------------------------------------------------------------------------------------------------------
+
+1. m01s30i420: atmosphere_enthalpy_content
+   no CMOR equivalent
+   MISSING
+
+2. m01s30i421: atmosphere_potential_energy_content
+   Possible CMOR equivalent zg (CMIP5 Amon, equivalent 'geopotential_height', but units 'm') - derived?
+   MISSING
+
+3. m01s30i402: atmosphere_kinetic_energy_content
+   no CMOR equivalent
+   MISSING
+
+4. m01s01i207: incoming SW rad flux (TOA)
+   'toa_incoming_shortwave_flux'
+   CMOR: rsdt (CMIP5 Amon, exact name)
+   OK
+
+5. m01s01i208: outgoing SW rad flux (TOA)
+   'toa_outgoing_shortwave_flux'
+   CMOR: rsut (CMIP5 Amon, exact name)
+   OK
+
+6. m01s01i201: net down surface SW flux
+   'surface_net_downward_shortwave_flux'
+   CMOR: rsds (CIMP5 Amon: equivalent 'surface_downwelling_shortwave_flux_in_air')
+   TO CONFIRM
+
+7. m01s02i201: net down surface LW flux
+   'surface_net_downward_longwave_flux'
+   CMOR: rlds (CMIP5 Amon: equivalent 'surface_downwelling_longwave_flux_in_air')
+   TO CONFIRM
+
+8. m01s03i332: TOA outgoing LW rad
+   'toa_outgoing_longwave_flux'
+   CMOR: rlut (CMIP5 Amon, exact name)
+   OK
+
+9. m01s03i217: surface heat flux
+   'surface_upward_sensible_heat_flux'
+   CMOR: hfss (CMIP5 Amon, exact name)
+   OK
+
+10. m01s05i215: total snowfall rate
+    'snowfall_flux'
+    CMOR: prsn (CMIP5 Amon, exact name)
+    OK
+
+11. m01s05i216: total precipitation rate
+    'precipitation_flux'
+    CMOR: pr (CMIP5 Amon, exact name)
+    OK
+
+12. m01s30i419: atmosphere_energy_content
+    no CMOR equivalent
+    MISSING
+
+13. m0108i234: surface_runoff_flux
+    CMOR: mrros (CMIP5 Lmon, exact name)
+    OK
+
+14. m0108i235: subsurface_runoff_flux
+    no CMOR equivalent
+    MISSING
+
+15. m0108i245: no std name; approx. Inland basin runoff
+    no CMOR equivalent
+    MISSING
+
+16. m0126i004: water_flux_into_sea_water_from_rivers
+    no CMOR equivalent
+    MISSING
