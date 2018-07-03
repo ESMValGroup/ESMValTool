@@ -57,10 +57,7 @@ def read_line(line):
         # Convert mark index to matplotlib marker
         elif option == MARK:
             # Filling
-            if info == '16':
-                info_dict.update({FILLING: info_dict[COLOR]})
-            else:
-                info_dict.update({FILLING: 'none'})
+            info_dict[FILLING] = info_dict[COLOR] if info == '16' else 'none'
 
             # Shape
             shape = {
@@ -106,11 +103,11 @@ def read_line(line):
             info = dash.get(info, '-')
 
         # Convert str to int
-        elif (option == AVG_STD or option == THICKNESS):
+        elif option in (AVG_STD, THICKNESS):
             info = int(info)
 
         # Add information
-        info_dict.update({INFORMATION[idx]: info})
+        info_dict[option] = info
     return info_dict
 
 
@@ -148,7 +145,8 @@ def write_yml_file(dataset_info, file_name):
     with open(file_name, 'w') as outfile:
         with open(HEADER_FILE, 'r') as header_file:
             header = header_file.read()
-        outfile.write(header.format(OUTPUT_FILE, os.path.basename(__file__)))
+        outfile.write(header.format(output_file=OUTPUT_FILE,
+                                    script=os.path.basename(__file__)))
         yaml.dump(dataset_info, outfile, default_flow_style=False)
 
 

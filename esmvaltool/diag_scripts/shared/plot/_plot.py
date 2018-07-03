@@ -44,7 +44,7 @@ def _check_size_of_parameters(*args):
     """Check if the size of (array-like) args is identical."""
     if len(args) < 2:
         logger.warning("Less than two arguments given, comparing not possible")
-        return None
+        return
     arg_0 = args[0]
     for arg in args:
         try:
@@ -54,7 +54,7 @@ def _check_size_of_parameters(*args):
         except TypeError:
             raise TypeError("Invalid input: some parameters are not "
                             "array-like")
-    return None
+    return
 
 
 def get_path_to_mpl_style(style_file=None):
