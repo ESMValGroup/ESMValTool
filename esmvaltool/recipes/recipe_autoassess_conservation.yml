@@ -15,9 +15,9 @@
 ---
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
-  - {dataset: inmcm4,      project: CMIP5,  mip: Amon, Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
+  - {dataset: inmcm4,      project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2003}
 
 preprocessors:
   pp_aa_area:
