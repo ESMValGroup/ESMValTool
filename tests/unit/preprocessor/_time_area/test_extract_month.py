@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor._time_area.extract_month`."""
+"""Unit tests for extract_month preprocessor function."""
 
 from __future__ import absolute_import, division, print_function
 
