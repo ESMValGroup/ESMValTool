@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor._time_area.season_slice`."""
+"""Unit tests for :func:`esmvaltool.preprocessor._time_area.extract_season`."""
 
 from __future__ import absolute_import, division, print_function
 

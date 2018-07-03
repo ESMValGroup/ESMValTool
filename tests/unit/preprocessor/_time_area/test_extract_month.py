@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor._time_area.month_slice`."""
+"""Unit tests for :func:`esmvaltool.preprocessor._time_area.extract_month`."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -14,7 +14,7 @@ from esmvaltool.preprocessor._time_area import extract_month
 
 
 class Test(tests.Test):
-    """Tests for month_slice`."""
+    """Tests for extract_month`."""
 
     def setUp(self):
         """Prepare tests"""
