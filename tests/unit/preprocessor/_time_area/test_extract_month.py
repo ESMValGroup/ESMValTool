@@ -14,7 +14,7 @@ from esmvaltool.preprocessor._time_area import extract_month
 
 
 class Test(tests.Test):
-    """Unit test for :func:`esmvaltool.preprocessor._time_area.month_slice`."""
+    """Tests for month_slice`."""
 
     def setUp(self):
         """Prepare tests"""
