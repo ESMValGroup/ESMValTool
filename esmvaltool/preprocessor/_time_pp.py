@@ -7,6 +7,7 @@ averages; checks on data time frequencies (daily, monthly etc)
 """
 from datetime import timedelta
 import iris
+import numpy as np
 
 
 # slice cube over a restricted time period
@@ -46,10 +47,19 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 def time_average(mycube):
     """Get the time average over MEAN; returns a cube"""
     time = mycube.coord('time')
-    time_weights = time.bounds[:, 1] - time.bounds[:, 0]
-    var_mean = mycube.collapsed('time', iris.analysis.MEAN,
-                                weights=time_weights)
-    return var_mean
+    time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
+
+    # The weights need to match the dimensionality of the cube.
+    if time.ndim == 1:
+        slices = [None for i in mycube.shape]
+        coord_dim = mycube.coord_dims('time')[0]
+        slices[coord_dim] = slice(None)
+        time_thickness = time_thickness[tuple(slices)]
+    ones = np.ones_like(mycube.data)
+    time_weights = time_thickness * ones
+
+    return mycube.collapsed('time', iris.analysis.MEAN,
+                            weights=time_weights)
 
 
 # get the probability a value is greater than a threshold
