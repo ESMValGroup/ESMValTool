@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 """Script to convert nvl style files to python style files.
 
 Example
