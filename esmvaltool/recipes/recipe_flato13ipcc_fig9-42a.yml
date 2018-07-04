@@ -2,6 +2,7 @@
 # recipe_flato13ipcc.yml
 ---
 documentation:
+
 description: |
   Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
   9.42a
