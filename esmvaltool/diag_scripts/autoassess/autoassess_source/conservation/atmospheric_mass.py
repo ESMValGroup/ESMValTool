@@ -33,7 +33,7 @@ def global_atmos_mass_conservation(run):
 
     """
     metrics = dict()
-    g = 9.80665  # standard gravity acceleration in m s^-2
+    const_grav = 9.80665  # standard gravity acceleration in m s^-2
 
     # calculate ATMOSPHERIC MASS METRIC
     # read atmospheric dry mass and mass data
@@ -53,8 +53,8 @@ def global_atmos_mass_conservation(run):
 
     # calculating global means
     # Get time series of global means:
-    dryg = g * area_average(dry, weighted=True)
-    wetg = g * area_average(wet, weighted=True)
+    dryg = const_grav * area_average(dry, weighted=True)
+    wetg = const_grav * area_average(wet, weighted=True)
 
     # COMPUTE metrics (first subtracting mean over the data period)
     #    Best fit linear trend and inter-annual s.d. for dry and wet mass
@@ -103,8 +103,8 @@ def global_atmos_mass_conservation(run):
 
     # produce extra plots:
 
-    xtickFormatter = FormatStrFormatter('%4d')
-    ytickFormatter = FormatStrFormatter('%4.1e')
+    xtick_formatter = FormatStrFormatter('%4d')
+    ytick_formatter = FormatStrFormatter('%4.1e')
     titl1_temp = '{0}   Global {1} mass (deviation from time mean, Pa)'
     # TODO unit from cube
     titl2_temp = '$log_{{10}}$(e-fold time/year):{0:6.2f}s.d.:{1:9.2e} Pa'
@@ -113,8 +113,8 @@ def global_atmos_mass_conservation(run):
     plt.figure(figsize=(8.27, 11.69))
 
     top_ax = plt.subplot(2, 1, 1)
-    top_ax.xaxis.set_major_formatter(xtickFormatter)
-    top_ax.yaxis.set_major_formatter(ytickFormatter)
+    top_ax.xaxis.set_major_formatter(xtick_formatter)
+    top_ax.yaxis.set_major_formatter(ytick_formatter)
     titl1 = titl1_temp.format(run['runid'], 'dry')
     titl2 = titl2_temp.format(metric_dry_2, sd_dry)
     plt.plot(time_years, deldry.data, linewidth=2, color='black')
@@ -127,8 +127,8 @@ def global_atmos_mass_conservation(run):
     plt.axhline(0.0, linestyle=':', color='black')
 
     bottom_ax = plt.subplot(2, 1, 2)
-    bottom_ax.xaxis.set_major_formatter(xtickFormatter)
-    bottom_ax.yaxis.set_major_formatter(ytickFormatter)
+    bottom_ax.xaxis.set_major_formatter(xtick_formatter)
+    bottom_ax.yaxis.set_major_formatter(ytick_formatter)
     titl1 = titl1_temp.format(run['runid'], 'wet')
     titl2 = titl2_temp.format(metric_wet_2, sd_wet)
     plt.plot(time_years, delwet.data, linewidth=2, color='black')

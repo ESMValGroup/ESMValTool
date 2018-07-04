@@ -1,6 +1,4 @@
-'''
-Module to hold functions useful to area assessments
-'''
+"""Module to hold functions useful to area assessments"""
 
 import numpy as np
 import numpy.ma as ma
@@ -16,7 +14,7 @@ def area_average(cube,
                  coords=None,
                  aggregator=iris.analysis.MEAN,
                  **aggkeys):
-    '''
+    """
     Routine to calculate weighted horizontal area aggregations
 
     Routine defaults to longitude and latitude, but can be configured to
@@ -41,7 +39,7 @@ def area_average(cube,
 
     aggregated cube
 
-    '''
+    """
     if coords is None:
         coords = ['latitude', 'longitude']
 

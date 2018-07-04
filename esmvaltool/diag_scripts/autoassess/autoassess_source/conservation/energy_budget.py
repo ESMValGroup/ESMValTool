@@ -9,7 +9,7 @@ It will include other sub-models in the future.
 import matplotlib.pyplot as plt
 import numpy as np
 
-import cf_units
+# import cf_units # import when used
 import iris
 import iris.analysis.calculus as icalc
 
@@ -19,6 +19,8 @@ from .area_utils import area_average
 
 def atmos_energy_budget(run):
     """
+    Compute budget
+
     Function to check atmospheric energy budgets and conservation.
     It uses section 30 diagnostics.
     It uses Mean diagnostics (fluxes) and
@@ -32,9 +34,9 @@ def atmos_energy_budget(run):
     # constants required for calculations
     # use AuxCoords in order to maintain units
     # TODO magic numbers
-    lc = iris.coords.AuxCoord(
+    l_c = iris.coords.AuxCoord(
         2.501e6, long_name='lantent_heat_of_condensation', units='J kg-1')
-    lf = iris.coords.AuxCoord(
+    l_f = iris.coords.AuxCoord(
         0.334e6, long_name='lantent_heat_of_fusion', units='J kg-1')
     # TODO seconds per season for 360d calendar
     secs_per_season = iris.coords.AuxCoord(
@@ -74,13 +76,13 @@ def atmos_energy_budget(run):
         # m01s01i201: net down surface SW flux
         # CMOR: rsds, surface_downwelling_shortwave_flux_in_air
         # orig diag name: surface_net_downward_shortwave_flux
-        sw = load_run_ss(run, 'seasonal',
-                         'surface_downwelling_shortwave_flux_in_air')
+        sw_flux = load_run_ss(run, 'seasonal',
+                              'surface_downwelling_shortwave_flux_in_air')
         # m01s02i201: net down surface LW flux
         # CMOR: rlds, surface_downwelling_longwave_flux_in_air
         # orig diag name: surface_net_downward_longwave_flux
-        lw = load_run_ss(run, 'seasonal',
-                         'surface_downwelling_longwave_flux_in_air')
+        lw_flux = load_run_ss(run, 'seasonal',
+                              'surface_downwelling_longwave_flux_in_air')
         # m01s03i332: TOA outgoing LW rad
         # CMOR: rlut, exact name
         olr = load_run_ss(run, 'seasonal', 'toa_outgoing_longwave_flux')
@@ -134,8 +136,8 @@ def atmos_energy_budget(run):
         # Energy fluxes
         swing = area_average(swin, weighted=True)
         swoutg = area_average(swout, weighted=True)
-        swg = area_average(sw, weighted=True)
-        lwg = area_average(lw, weighted=True)
+        swg = area_average(sw_flux, weighted=True)
+        lwg = area_average(lw_flux, weighted=True)
         olrg = area_average(olr, weighted=True)
         shg = area_average(sh, weighted=True)
         snowg = area_average(snow, weighted=True)
@@ -145,7 +147,7 @@ def atmos_energy_budget(run):
         # energy flux into atmosphere = radTOA - SH +
         # Lc * precip + Lf * snowfall
         toa = swing - swoutg - olrg
-        diab_heat = toa - swg - lwg + shg + precipg * lc + snowg * lf
+        diab_heat = toa - swg - lwg + shg + precipg * l_c + snowg * l_f
 
         # Remove time bounds of cube with time
         # average data to allow arithmetics
@@ -172,7 +174,7 @@ def atmos_energy_budget(run):
         stitl2 = 'Energy correction: {0:7.4f} W/m2'.format(
             ecorrection)  # TODO unit from cube?
 
-        top_ax = plt.subplot(2, 1, 1)
+        plt.subplot(2, 1, 1)
         titl1 = 'Change in total energy over 3 months'
         plt.plot(
             x, ch_en.data, linewidth=2, color='black', label='E(end)-E(start)')
@@ -193,7 +195,7 @@ def atmos_energy_budget(run):
         plt.axhline(0.0, linestyle=':', color='black')
         plt.legend(loc='lower center', fontsize='small', frameon=0)
 
-        bottom_ax = plt.subplot(2, 1, 2)
+        plt.subplot(2, 1, 2)
         titl1 = 'Error in energy conservation over 3 month periods ' + expid
         plt.plot(x, err_en.data, linewidth=2, color='black')
         plt.xlim([0, err_en.data.size])
@@ -209,8 +211,8 @@ def atmos_energy_budget(run):
 
     except iris.exceptions.ConstraintMismatchError as msg:
         print(msg)
-        print("ERROR: Missing data!!!")
-        print("An mdi will be assigned to the energy-conservation metric.")
+        print('ERROR: Missing data!!!')
+        print('An mdi will be assigned to the energy-conservation metric.')
         metrics['atmospheric global energy error'] = mdi
 
     return metrics
@@ -225,8 +227,5 @@ def _remove_forecast_period(cube):
 
 
 def remove_forecast_period(cubes):
-    """
-
-
-    """
+    """Remove forecast period"""
     return [_remove_forecast_period(cube) for cube in cubes]
