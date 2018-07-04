@@ -43,8 +43,12 @@ __pycache__/
 .pydevproject
 .settings
 
+#Create by VSCode
+.vscode
+
 #pytest
 .cache
+.pytest_cache
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
