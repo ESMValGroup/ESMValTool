@@ -33,8 +33,8 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
         # if you want to look at a region both sides of
         # the zero longitude ie, such as the Atlantic Ocean!
         sublon = iris.Constraint(
-                longitude=lambda cell: ((start_longitude <= cell <= 360.)
-                                        + (0. <= cell <= end_longitude)))
+            longitude=lambda cell: ((start_longitude <= cell <= 360.)
+                                    + (0. <= cell <= end_longitude)))
     else:
         sublon = iris.Constraint(
             longitude=lambda cell: start_longitude <= cell <= end_longitude)

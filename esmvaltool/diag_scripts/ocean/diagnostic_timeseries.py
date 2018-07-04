@@ -42,7 +42,6 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-import sys
 
 import iris
 import iris.quickplot as qplt
