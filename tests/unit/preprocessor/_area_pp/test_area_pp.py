@@ -21,9 +21,9 @@ class Test(tests.Test):
     Unit test class for the :func:`esmvaltool.preprocessor._area_pp` module.
     """
     def setUp(self):
-        """ Prepare tests """
+        """Prepare tests."""
         self.coord_sys = iris.coord_systems.GeogCS(
-                              iris.fileformats.pp.EARTH_RADIUS)
+            iris.fileformats.pp.EARTH_RADIUS)
         data = np.ones((5, 5))
         lons = iris.coords.DimCoord(
             [i + .5 for i in range(5)],
@@ -58,26 +58,26 @@ class Test(tests.Test):
                                             dim_coords_and_dims=coords_spec)
 
     def test_area_average_2d(self):
-        """ Test for area average of a 2D field """
+        """Test for area average of a 2D field."""
         result = average_region(self.grid, 'latitude', 'longitude')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_average_negative_longitude(self):
-        """ Test for area average of a 2D field """
+        """Test for area average of a 2D field."""
         result = average_region(self.negative_grid, 'latitude', 'longitude')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_extract_region(self):
-        """ Test for extracting a region from a 2D field """
+        """Test for extracting a region from a 2D field."""
         result = extract_region(self.grid, 1.5, 2.5, 1.5, 2.5)
         # expected outcome
         expected = np.ones((2, 2))
         self.assertArrayEqual(result.data, expected)
 
     def test_extract_region_neg_longitude(self):
-        """ Test for extracting a region with a negative longitude field """
+        """Test for extracting a region with a negative longitude field."""
         result = extract_region(self.negative_grid, -0.5, 0.5, -0.5, 0.5)
         expected = np.ones((2, 2))
         self.assertArrayEqual(result.data, expected)

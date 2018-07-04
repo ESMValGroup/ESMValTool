@@ -20,8 +20,8 @@ class Test(tests.Test):
     """
     Unit test class for the :func:`esmvaltool.preprocessor._time_pp` module.
     """
-    def test_time_time_average(self):
-        """ Test for time average of a 1D field """
+    def test_time_average(self):
+        """Test for time average of a 1D field."""
         data = np.ones((3))
         cube = iris.cube.Cube(data)
 
@@ -38,8 +38,8 @@ class Test(tests.Test):
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_time_time_average_uneven(self):
-        """ Test for time average of a 1D field with uneven time boundaries """
+    def test_time_average_uneven(self):
+        """Test for time average of a 1D field with uneven time boundaries."""
         data = np.array([1., 5.])
         cube = iris.cube.Cube(data)
 
@@ -56,7 +56,7 @@ class Test(tests.Test):
         expected = np.array([4.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_time_time_average_365_day(self):
+    def test_time_average_365_day(self):
         """
         Test for time average of a realisitc time axis and 365 day calendar.
         """
