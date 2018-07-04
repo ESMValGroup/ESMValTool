@@ -107,9 +107,7 @@ def global_atmos_mass_conservation(run):
     ytickFormatter = FormatStrFormatter('%4.1e')
     titl1_temp = '{0}   Global {1} mass (deviation from time mean, Pa)'
     # TODO unit from cube
-    # VPREDOI
-    # see below at use of titl2_temp
-    # titl2_temp = '$log_{{10}}$(e-fold time/year):{0:6.2f}s.d.:{1:9.2e} Pa'
+    titl2_temp = '$log_{{10}}$(e-fold time/year):{0:6.2f}s.d.:{1:9.2e} Pa'
     # TODO unit from cube?
 
     plt.figure(figsize=(8.27, 11.69))
@@ -118,10 +116,7 @@ def global_atmos_mass_conservation(run):
     top_ax.xaxis.set_major_formatter(xtickFormatter)
     top_ax.yaxis.set_major_formatter(ytickFormatter)
     titl1 = titl1_temp.format(run['runid'], 'dry')
-    # VPREDOI
-    # Python3: not liking np array formatting
-    # titl2 = titl2_temp.format(metric_dry_2, sd_dry)
-    titl2 = 'dry titties'
+    titl2 = titl2_temp.format(metric_dry_2, sd_dry)
     plt.plot(time_years, deldry.data, linewidth=2, color='black')
     plt.xticks(time_years)
     top_ax.set_xticklabels(
@@ -135,10 +130,7 @@ def global_atmos_mass_conservation(run):
     bottom_ax.xaxis.set_major_formatter(xtickFormatter)
     bottom_ax.yaxis.set_major_formatter(ytickFormatter)
     titl1 = titl1_temp.format(run['runid'], 'wet')
-    # VPREDOI
-    # same array formatting issue for Python 3
-    # titl2 = titl2_temp.format(metric_wet_2, sd_wet)
-    titl2 = 'wet titties'
+    titl2 = titl2_temp.format(metric_wet_2, sd_wet)
     plt.plot(time_years, delwet.data, linewidth=2, color='black')
     plt.xticks(time_years)
     bottom_ax.set_xticklabels(

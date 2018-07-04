@@ -157,22 +157,9 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # flbl = ['surface runoff', 'sub-surface runoff','inland basin runoff',
     #         'river outflow']
 
-    # VPREDOI
-    # original stash list required:
-    # stash_f = ['m01s08i234', 'm01s08i235', 'm01s08i245', 'm01s26i004']
-    ###################
-    # Stashes explained
-    ###################
-    # 08i234: surface_runoff_flux; CMOR-Lmon: mrros
-    # 08i235: subsurface_runoff_flux; CMOR-Lmon: mrro ?
-    # 08i245: no std name; ~ Inland basin runoff; nope CMOR
-    # 26i004: water_flux_into_sea_water_from_rivers; nope CMOR
-    ####################
-    # I can not safely CMOR map 3 out 4 stashes so replacing with
-    # identical mrros; change to original stash_f when mapped correctly!
+    stash_f = ['m01s08i234', 'm01s08i235', 'm01s08i245', 'm01s26i004']
     # --
-    stash_f = ['m01s08i234', 'm01s08i234', 'm01s08i234', 'm01s08i234']
-    # --
+
     f_mult = [lfm, lfm, -1.0, -1.0]
     fval = gwb.fluxes_submodel(run, stash_f, f_mult)
     name = 'global net water flux TRIP'

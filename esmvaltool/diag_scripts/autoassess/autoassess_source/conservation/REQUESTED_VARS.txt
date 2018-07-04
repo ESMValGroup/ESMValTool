@@ -72,3 +72,20 @@ This is a list of requested variables for the autoassess/concentration area and 
 16. m0126i004: water_flux_into_sea_water_from_rivers
     no CMOR equivalent
     MISSING
+
+EXTRA Stashes
+=============
+
+Stash          Paul's var name          CMOR Equivalent (short/standard names)
+--------------------------------------------------------------------------------
+m01s04i204: stratiform_snowfall_flux -> prsn: snowfall_flux
+m01s05i206: convective_snowfall_flux -> prsn: snowfall_flux
+m01s03i298: water_sublimation_flux -> sbl: surface_snow_and_ice_sublimation_flux
+m01s03i353: water_sublimation_flux (?, from sea-ice over sea, masked over land) -> sbl: surface_snow_and_ice_sublimation_flux
+m01s08i231: surface_snow_melt_flux (over land, masked over sea) -> ???
+m01s04i203: stratiform_rainfall_flux -> ???
+m01s05i205: convective_rainfall_flux -> ???
+m01s03i223: surface_upward_water_flux -> evspsbl: water_evaporation_flux
+m01s03i232: surface_upward_water_flux (from sea, masked over land) -> evspsbl: water_evaporation_flux
+m01s05i216: precipitation_flux -> pr: precipitation_flux 
+

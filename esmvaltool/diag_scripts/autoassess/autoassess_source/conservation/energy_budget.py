@@ -153,6 +153,7 @@ def atmos_energy_budget(run):
         # with cube containing instantaneous time points
         diab_heat.coord('time').bounds = None
         # VPREDOI TODO use this instead when units match
+        # this is due to using pr instead of actual diag variable
         # err_en = ch_en - diab_heat
         err_en = ch_en
         ecorrection = np.mean(en_corg.data)

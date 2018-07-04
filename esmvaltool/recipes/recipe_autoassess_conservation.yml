@@ -65,6 +65,15 @@ diagnostics:
         preprocessor: pp_aa_area
         mip: Amon
         field: T3M
+      #sbl:
+      #  variable very hard to find
+      #  preprocessor: pp_aa_area
+      #  mip: Amon
+      #  field: T3M
+      evspsbl:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
       mrros:
         preprocessor: pp_aa_area
         mip: Lmon

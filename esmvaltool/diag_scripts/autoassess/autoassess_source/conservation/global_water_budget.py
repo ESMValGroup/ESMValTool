@@ -21,6 +21,45 @@ def fluxes_submodel(run, stash_f, f_mult):
     f_mult multiplicative factors to achieve that.
     Use also f_mult to multiply fields by fractional masks, etc.
     '''
+    ########################
+    # Stash codes used here:
+    ########################
+    # m01s08i234: surface_runoff_flux; CMOR-Lmon: mrros
+    # m01s08i235: subsurface_runoff_flux; CMOR-Lmon: mrro ?
+    # m01s08i245: no std name; ~ Inland basin runoff; nope CMOR
+    # m01s26i004: water_flux_into_sea_water_from_rivers; nope CMOR
+    # m01s04i204: stratiform_snowfall_flux -> prsn: snowfall_flux
+    # m01s05i206: convective_snowfall_flux -> prsn: snowfall_flux
+    # m01s03i298: water_sublimation_flux
+    # -> sbl: surface_snow_and_ice_sublimation_flux -- hard to find
+    # m01s03i353: water_sublimation_flux
+    # (?, from sea-ice over sea, masked over land)
+    # -> sbl: surface_snow_and_ice_sublimation_flux -- hard to find
+    # m01s08i231: surface_snow_melt_flux (over land, masked over sea) -> ???
+    # m01s04i203: stratiform_rainfall_flux -> ???
+    # m01s05i205: convective_rainfall_flux -> ???
+    # m01s03i223: surface_upward_water_flux-> evspsbl: water_evaporation_flux
+    # m01s03i232: surface_upward_water_flux
+    # (from sea, masked over land) -> evspsbl: water_evaporation_flux
+    # m01s05i216: precipitation_flux -> pr: precipitation_flux
+
+    # Data loading by standard_name rather than by stash
+    stash_dict = {'m01s08i234': 'surface_runoff_flux',
+                  'm01s08i235': 'surface_runoff_flux',
+                  'm01s08i245': 'surface_runoff_flux',
+                  'm01s26i004': 'surface_runoff_flux',
+                  'm01s04i204': 'snowfall_flux',
+                  'm01s05i206': 'snowfall_flux',
+                  'm01s03i298': 'water_evaporation_flux',
+                  'm01s03i353': 'water_evaporation_flux',
+                  'm01s08i231': 'water_evaporation_flux',
+                  'm01s04i203': 'surface_runoff_flux',
+                  'm01s05i205': 'surface_runoff_flux',
+                  'm01s03i223': 'water_evaporation_flux',
+                  'm01s03i232': 'water_evaporation_flux',
+                  'm01s05i216': 'precipitation_flux'
+        }
+
     # Initialize array of global budgets with zeros:
     fval = np.zeros(len(stash_f) + 1, dtype=np.float)
 
@@ -34,10 +73,7 @@ def fluxes_submodel(run, stash_f, f_mult):
     try:
         for (i, stash) in enumerate(stash_f):
 
-            # VPREDOI
-            # ppfy = load_run_ss(run, 'annual', stash)
-            # need to convert from stash to actual name !!!
-            ppfy = load_run_ss(run, 'annual', 'surface_runoff_flux')
+            ppfy = load_run_ss(run, 'annual', stash_dict[stash])
 
             # VPREDOI
             # this fails unless using the correct variables
