@@ -5,6 +5,7 @@ Allows for selecting data subsets using certain volume bounds;
 selecting depth or height regions; constructing volumetric averages;
 """
 import iris
+import numpy as np
 
 
 # slice cube over a restricted area (box)
@@ -37,7 +38,7 @@ def volume_average(mycube, coordz, coord1, coord2):
     #    mycube.coord(coord2).guess_bounds()
 
     depth = mycube.coord(coordz)
-    thickness = depth.bounds[:, 1] - depth.bounds[:, 0]  # 1D
+    thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
     area = iris.analysis.cartography.area_weights(mycube)
 
@@ -65,15 +66,20 @@ def depth_integration(mycube, coordz):
     """
     ####
     depth = mycube.coord(coordz)
-    thickness = depth.bounds[..., 1] - depth.bounds[..., 0]  # 1D
+    thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
     if depth.ndim == 1:
         slices = [None for i in mycube.shape]
         coord_dim = mycube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
         thickness = thickness[tuple(slices)]
-    result = mycube.collapsed([coordz, ], iris.analysis.SUM,
-                              weights=thickness)
+
+    ones = np.ones_like(mycube.data)
+
+    weights = thickness * ones
+
+    result = mycube.collapsed(coordz, iris.analysis.SUM,
+                              weights=weights)
 
     result.rename('Depth_integrated_' + str(mycube.name()))
     # result.units = Unit('m') * result.units # This doesn't work:
