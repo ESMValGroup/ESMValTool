@@ -19,6 +19,11 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     Returns a cube
     """
     # Converts Negative longitudes to 0 -> 360. standard
+    start_longitude = float(start_longitude)
+    end_longitude = float(end_longitude)
+    start_latitude = float(start_latitude)
+    end_latitude = float(end_latitude)
+
     if start_longitude < 0.:
         start_longitude += 360.
     if end_longitude < 0.:
@@ -28,15 +33,15 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
         # if you want to look at a region both sides of
         # the zero longitude ie, such as the Atlantic Ocean!
         sublon = iris.Constraint(
-                longitude=lambda cell: ((float(start_longitude) <= cell <= 360.)
-                                       + (0. <= cell <= float(end_longitude)))) 
+                longitude=lambda cell: ((start_longitude <= cell <= 360.)
+                                        + (0. <= cell <= end_longitude)))
     else:
         sublon = iris.Constraint(
-            longitude=lambda cell:
-                float(start_longitude) <= cell <= float(end_longitude))
+            longitude=lambda cell: start_longitude <= cell <= end_longitude)
+
     sublat = iris.Constraint(
-        latitude=lambda cell:
-            float(start_latitude) <= cell <= float(end_latitude))
+        latitude=lambda cell: start_latitude <= cell <= end_latitude)
+
     region_subset = cube.extract(sublon & sublat)
     return region_subset
 

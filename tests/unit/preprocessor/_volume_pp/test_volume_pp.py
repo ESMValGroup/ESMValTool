@@ -22,7 +22,7 @@ class Test(tests.Test):
     def test_area_volume_slice(self):
         """
         Test to extract the top two layers of a 3 layer depth column.
-        """    
+        """
         cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
         data = np.arange(3)
         grid = iris.cube.Cube(data)
@@ -79,7 +79,7 @@ class Test(tests.Test):
     def test_area_depth_integration(self):
         """
         Test to take the depth integration of a 3 layer cube.
-        """    
+        """
         cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
         data = np.ones((3, ))
         grid = iris.cube.Cube(data)
@@ -98,7 +98,7 @@ class Test(tests.Test):
 
         expected = np.array([250., ])
         self.assertArrayEqual(result.data, expected)
-        
+
     def test_area_extract_transect(self):
         """
         Test to extract a transect from a (3,2,2) cube.
@@ -128,11 +128,11 @@ class Test(tests.Test):
         coords_spec3 = [(depth, 0), (lats2, 1), (lons2, 2)]
         grid2 = iris.cube.Cube(data2, dim_coords_and_dims=coords_spec3)
 
-        result = extract_transect(grid2, latitude= 1.5)
+        result = extract_transect(grid2, latitude=1.5)
 
         expected = np.ones((3, 2))
         self.assertArrayEqual(result.data, expected)
-        
+
     def test_area_extract_trajectory(self):
         """
         Test to extract a trajectory from a (3,2,2) cube.
@@ -166,8 +166,7 @@ class Test(tests.Test):
 
         expected = np.ones((3, 2))
         self.assertArrayEqual(result.data, expected)
-        
-        
+
 
 if __name__ == '__main__':
     unittest.main()

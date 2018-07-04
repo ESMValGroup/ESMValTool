@@ -72,9 +72,9 @@ def depth_integration(mycube, coordz):
         coord_dim = mycube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
         thickness = thickness[tuple(slices)]
-    result = mycube.collapsed([coordz, ], iris.analysis.SUM, 
-                              weights = thickness)
-                              
+    result = mycube.collapsed([coordz, ], iris.analysis.SUM,
+                              weights=thickness)
+
     result.rename('Depth_integrated_' + str(mycube.name()))
     # result.units = Unit('m') * result.units # This doesn't work:
     # TODO: Change units on cube to reflect 2D concentration (not 3D)
