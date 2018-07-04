@@ -11,9 +11,9 @@ diagnostics: map(include('diagnostic'), required=False)
 # Recipe item definitions
 dataset:
   dataset: str()
-  project: str(required=False)
-  start_year: int(required=False, min=0000, max=4000)
-  end_year: int(required=False, min=0000, max=4000)
+  project: str()
+  start_year: int(min=0000, max=5000)
+  end_year: int(min=0000, max=5000)
   ensemble: str(required=False)
   exp: str(required=False)
   mip: str(required=False)
