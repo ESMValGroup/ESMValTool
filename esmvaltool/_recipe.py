@@ -77,7 +77,7 @@ def check_recipe(filename):
         raw_recipe = yaml.safe_load(file)
 
     # TODO: add more checks?
-    check_preprocessors(raw_recipe['preprocessors'])
+    check_preprocessors(raw_recipe.get('preprocessors', {}))
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -679,7 +679,7 @@ class Recipe(object):
         """Parse a recipe file into an object."""
         self._cfg = config_user
         self._recipe_file = os.path.basename(recipe_file)
-        self._preprocessors = raw_recipe['preprocessors']
+        self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
         self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
