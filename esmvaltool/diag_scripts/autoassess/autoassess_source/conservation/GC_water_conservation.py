@@ -7,12 +7,7 @@ water fluxes across various sub-models, using annual mean data. It is
 expected that in the future it will include exact calculations.
 """
 
-import subprocess
-import sys
 import matplotlib.pyplot as plt
-
-import iris
-
 from . import global_water_budget as gwb
 from .loaddata import load_run_ss
 from .matplotlib_table import render_mpl_table
@@ -101,6 +96,7 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # VPREDOI
     # land fraction file is needed
     # /home/users/valeriu/base_masks_autoassess
+    # import iris
     # lfm = iris.load_cube(lfpath)
     # ofm = -1.0 * lfm + 1.0
     lfm = pptest

@@ -4,10 +4,7 @@ import logging
 import inspect
 import sys
 import subprocess
-import numpy as np
-
 import iris
-import yaml
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 

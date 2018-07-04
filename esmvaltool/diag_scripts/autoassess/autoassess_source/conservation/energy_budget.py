@@ -86,8 +86,7 @@ def atmos_energy_budget(run):
         olr = load_run_ss(run, 'seasonal', 'toa_outgoing_longwave_flux')
         # m01s03i217: surface heat flux"
         # CMOR: hfss, exact name
-        sh = load_run_ss(run, 'seasonal',
-                         'surface_upward_sensible_heat_flux')
+        sh = load_run_ss(run, 'seasonal', 'surface_upward_sensible_heat_flux')
         # m01s05i215: total snowfall rate
         # CMOR: prsn, exact name
         snow = load_run_ss(run, 'seasonal', 'snowfall_flux')
@@ -176,31 +175,15 @@ def atmos_energy_budget(run):
         top_ax = plt.subplot(2, 1, 1)
         titl1 = 'Change in total energy over 3 months'
         plt.plot(
-            x,
-            ch_en.data,
-            linewidth=2,
-            color='black',
-            label='E(end)-E(start)')
+            x, ch_en.data, linewidth=2, color='black', label='E(end)-E(start)')
         # plt.plot(x, diab_heat.data, linewidth=2, color='red',
         #          label='E added to atmos from fluxes')
         plt.plot(
-            x,
-            ch_ke.data,
-            linewidth=2,
-            color='blue',
-            label='Change in KE')
+            x, ch_ke.data, linewidth=2, color='blue', label='Change in KE')
         plt.plot(
-            x,
-            ch_cvt.data,
-            linewidth=2,
-            color='green',
-            label='Change in cvT')
+            x, ch_cvt.data, linewidth=2, color='green', label='Change in cvT')
         plt.plot(
-            x,
-            ch_gr.data,
-            linewidth=2,
-            color='purple',
-            label='Change in gr')
+            x, ch_gr.data, linewidth=2, color='purple', label='Change in gr')
         plt.xlim([0, err_en.data.size])
         plt.ylim([np.min(ch_en.data) * 1.5, np.max(ch_en.data) * 1.5])
         plt.title(titl1)

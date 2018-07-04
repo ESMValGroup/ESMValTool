@@ -14,21 +14,21 @@ available here: https://code.metoffice.gov.uk/doc/um/vn10.5/umdp.html
 
 """
 
-import cf_units
 import os.path
 import re
 import datetime
 from datetime import timedelta as td
 from datetime import datetime as dd
 
+import cf_units
 import iris
 import iris.coord_categorisation as coord_cat
 
 
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
-
     def is_day(bound):
+        """Check if day"""
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=1) == time_span
 
@@ -37,8 +37,8 @@ def is_daily(cube):
 
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
-
     def is_month(bound):
+        """Check if month"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31) >= time_span >= td(days=28)
 
@@ -46,11 +46,9 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """
-    A season is a period of 3 months, i.e. at least 89 days, and up to 92 days.
-    """
-
+    """Season is 3 months, i.e. at least 89 days, and up to 92 days."""
     def is_season(bound):
+        """Check if season"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
@@ -59,8 +57,8 @@ def is_seasonal(cube):
 
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
-
     def is_year(bound):
+        """Check if year"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
@@ -121,13 +119,10 @@ def seasonal_mean(mycube):
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
-    import iris.coord_categorisation
     if 'clim_season' not in mycube.coords():
-        iris.coord_categorisation.add_season(mycube,
-                                             'time', name='clim_season')
+        coord_cat.add_season(mycube, 'time', name='clim_season')
     if 'season_year' not in mycube.coords():
-        iris.coord_categorisation.add_season_year(mycube,
-                                                  'time', name='season_year')
+        coord_cat.add_season_year(mycube, 'time', name='season_year')
     annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
                                                 iris.analysis.MEAN)
 
@@ -147,8 +142,7 @@ def annual_mean(mycube):
     Chunks time in 365-day periods and computes means over them;
     Returns a cube
     """
-    yr_mean = mycube.aggregated_by('year',
-                                   iris.analysis.MEAN)
+    yr_mean = mycube.aggregated_by('year', iris.analysis.MEAN)
 
     def spans_year(time):
         """Check for 12 months"""
@@ -256,6 +250,8 @@ def select_by_processing(cubes, lbproc):
 
 def select_by_initial_meaning_period(cubes, lbtim):
     """
+    Select cube
+
     Select subset from CubeList by matching the some of the information
     encoded in the 'Time indicator' `lbtim`. Namely, the initial meaning
     period and the used calendar.
@@ -330,10 +326,8 @@ def select_certain_months(cubes, lbmon):
     """
     # add 'month number' coordinate
     add_time_coord = {
-        'monthly': lambda cube:
-        coord_cat.add_month_number(cube,
-                                   'time',
-                                   name='month_number'),
+        'monthly': lambda cube: coord_cat.add_month_number(
+            cube, 'time', name='month_number'),
         'seasonal': lambda cube: coord_cat.add_season(cube,
                                                       'time',
                                                       name='clim_season'),
@@ -382,8 +376,8 @@ def extract_time_range(cubes, start, end):
     t_2 = cf_units.date2num(dd_end, time_unit, cf_units.CALENDAR_STANDARD)
     for cube in cubes:
         time_constraint = iris.Constraint(
-            time=lambda t:
-            (t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
+            time=lambda t: (t_1 <= datetime_to_int_days(t.point,
+                                                        time_unit) <= t_2))
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
     return time_ranged_cubes
@@ -399,6 +393,8 @@ def load_run_ss(run_object,
                 from_dt=None,
                 to_dt=None):
     """
+    Use - this is still used
+
     DEPRECATED: Do not use for new Assessment Areas. Instead, read the
     CubeList `cubeList.nc` in the directory with the retrieved data.
 
