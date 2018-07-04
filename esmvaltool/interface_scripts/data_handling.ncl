@@ -69,7 +69,7 @@ begin
   ; Check that variable is in the file
   if (.not. isfilevar(fin, variable)) then
     error_msg("f", scriptname, funcname, "variable " + variable + \
-              "is not in the file")
+              " not found in file " + infile)
   end if
 
   ; Read data
@@ -92,8 +92,8 @@ function read_fx_data(index[1]:integer,
 ;    variable: name of the fx variable to read
 ;
 ; Return value
-;    The actual data array with all metadata or a missing value if the fx
-;    variable is not found
+;    The a list of data array(s) with all metadata or a missing value if the
+;    fx variable is not found.
 ;
 ; Description
 ;    Retrieve the fx variable data and metadata based on the input_file_info
@@ -101,9 +101,11 @@ function read_fx_data(index[1]:integer,
 ;    by the preprocessor and stored in the preproc/<preproc_id>/ subdirectory.
 ;    Unlike read_data, this function does not exit on error if the input file
 ;    is not found. This is to provide more flexibility to the calling
-;    diagnostic
+;    diagnostic.
 ;
 ; Caveats
+;    If auxiliary coordinates are associated to the fx-variables (typically for
+;    areacello), these are also read and pushed to the return list.
 ;
 ; References
 ;
@@ -146,13 +148,33 @@ begin
   ; Check that variable is in the file
   if (.not. isfilevar(fin, variable)) then
     error_msg("f", scriptname, funcname, "variable " + variable + \
-              "is not in the file")
+              " not found in " + infile)
   end if
 
-  ; Read data
-  data = fin->$variable$
+  ; Initialize list
+  outlist = NewList("lifo")
+
+  ; Check if auxiliary coordinates are defined
+  atts = getfilevaratts(fin, variable)
+  if (any("coordinates".eq.atts)) then
+    ; Read auxiliary coordinates in reverse order (for correct order in list)
+    coords = fin->$variable$@coordinates
+    ncoords = str_fields_count(coords, " ")
+    do ii = 1, ncoords
+      curr_coord = str_squeeze(str_get_field(coords, ncoords + 1 - ii, " "))
+      if (.not. isfilevar(fin, curr_coord)) then
+        error_msg("w", scriptname, funcname, "auxiliary coordinate " + \
+                  curr_coord + " not found in " + infile + ", skipping")
+      else
+        ListPush(outlist, fin->$curr_coord$)
+      end if
+    end do
+  end if
+
+  ; Push variable to the list
+  ListPush(outlist, fin->$variable$)
 
   leave_msg(scriptname, funcname)
-  return(data)
+  return(outlist)
 
 end
