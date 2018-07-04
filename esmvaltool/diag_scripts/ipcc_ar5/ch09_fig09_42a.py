@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 """Plot figure 9.42a of IPCC AR5 chapter 9.
 
 ###############################################################################
@@ -96,7 +97,7 @@ def calculate_ecs(cfg, datasets, variables):
 def plot_data(cfg, datasets, variables):
     """Plot data."""
     if not cfg[n.WRITE_PLOTS]:
-        return None
+        return
     filepath = os.path.join(cfg[n.PLOT_DIR],
                             cfg.get('plot_name', 'ch09_fig09-42a') + '.' +
                             cfg[n.OUTPUT_FILE_TYPE])
@@ -135,7 +136,7 @@ def plot_data(cfg, datasets, variables):
         plot_kwargs=plot_kwargs,
         save_kwargs=cfg.get('save'),
         axes_functions=cfg.get('axes_functions'))
-    return None
+    return
 
 
 def write_data(cfg, datasets, variables):
