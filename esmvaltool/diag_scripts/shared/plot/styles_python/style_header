@@ -1,7 +1,7 @@
 ###############################################################################
 # PYTHON STYLE FILE
-# {0}
-# created by '{1}'.
+# {output_file}
+# created by '{script}'.
 ###############################################################################
 # This file defines plot attributes for certain datasets.
 #
