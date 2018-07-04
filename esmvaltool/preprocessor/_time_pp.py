@@ -45,7 +45,10 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 # get the time average
 def time_average(mycube):
     """Get the time average over MEAN; returns a cube"""
-    var_mean = mycube.collapsed('time', iris.analysis.MEAN)
+    time = mycube.coord('time')
+    time_weights = time.bounds[:, 1] - time.bounds[:, 0]
+    var_mean = mycube.collapsed('time', iris.analysis.MEAN,
+                                weights=time_weights)
     return var_mean
 
 
