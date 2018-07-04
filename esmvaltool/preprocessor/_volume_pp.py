@@ -40,10 +40,15 @@ def volume_average(mycube, coordz, coord1, coord2):
     thickness = depth.bounds[:, 1] - depth.bounds[:, 0]  # 1D
 
     area = iris.analysis.cartography.area_weights(mycube)
-    if area.ndim == 4 and thickness.ndim == 1:
-        grid_volume = area * thickness[None, :, None, None]
-    else:
-        grid_volume = area * thickness
+
+    if depth.ndim == 1:
+        slices = [None for i in mycube.shape]
+        coord_dim = mycube.coord_dims(coordz)[0]
+        slices[coord_dim] = slice(None)
+        thickness = thickness[tuple(slices)]
+
+    grid_volume = area * thickness
+
     result = mycube.collapsed(
         [coordz, coord1, coord2], iris.analysis.MEAN, weights=grid_volume)
 
@@ -67,16 +72,10 @@ def depth_integration(mycube, coordz):
         coord_dim = mycube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
         thickness = thickness[tuple(slices)]
-
-    result = mycube * thickness
-    result = mycube.collapsed(
-        [
-            coordz,
-        ],
-        iris.analysis.SUM,
-    )
+    result = mycube.collapsed([coordz, ], iris.analysis.SUM, 
+                              weights = thickness)
+                              
     result.rename('Depth_integrated_' + str(mycube.name()))
-
     # result.units = Unit('m') * result.units # This doesn't work:
     # TODO: Change units on cube to reflect 2D concentration (not 3D)
     # Waiting for news from iris community.
