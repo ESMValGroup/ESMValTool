@@ -50,11 +50,10 @@ def time_average(mycube):
     time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
 
     # The weights need to match the dimensionality of the cube.
-    if time.ndim == 1:
-        slices = [None for i in mycube.shape]
-        coord_dim = mycube.coord_dims('time')[0]
-        slices[coord_dim] = slice(None)
-        time_thickness = time_thickness[tuple(slices)]
+    slices = [None for i in mycube.shape]
+    coord_dim = mycube.coord_dims('time')[0]
+    slices[coord_dim] = slice(None)
+    time_thickness = np.abs(time_thickness[tuple(slices)])
     ones = np.ones_like(mycube.data)
     time_weights = time_thickness * ones
 

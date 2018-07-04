@@ -46,7 +46,7 @@ def volume_average(mycube, coordz, coord1, coord2):
         slices = [None for i in mycube.shape]
         coord_dim = mycube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
-        thickness = thickness[tuple(slices)]
+        thickness = np.abs(thickness[tuple(slices)])
 
     grid_volume = area * thickness
 
@@ -72,7 +72,7 @@ def depth_integration(mycube, coordz):
         slices = [None for i in mycube.shape]
         coord_dim = mycube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
-        thickness = thickness[tuple(slices)]
+        thickness = np.abs(thickness[tuple(slices)])
 
     ones = np.ones_like(mycube.data)
 
