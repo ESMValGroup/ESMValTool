@@ -8,8 +8,7 @@ It will include other sub-models in the future.
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-# import cf_units # import when used
+import cf_units
 import iris
 import iris.analysis.calculus as icalc
 
@@ -57,15 +56,11 @@ def atmos_energy_budget(run):
         # gr  = load_run_ss(run, 'instantaneous', 'm01s30i421', to_dt=endyear)
         # TOTAL KE PER UA WITH W  RHO GRID
         # ke  = load_run_ss(run, 'instantaneous', 'm01s30i402', to_dt=endyear)
-        # cvt, gr, ke = remove_forecast_period([cvt, gr, ke])
-
-        # Set appropriate units for fields loaded above
-        # TODO use cube.convert_units to take existing units into account
-        # cvt.units = cf_units.Unit('J m-2')
-        # gr.units  = cf_units.Unit('J m-2')
-        # ke.units  = cf_units.Unit('J m-2')
+        # energy correction
+        # en_cor = load_run_ss(run, 'seasonal', 'm01s30i419')
 
         # Seasonal means of energy fluxes:
+
         # m01s01i207: incoming SW rad flux (TOA)
         # CMOR: rsdt, exact long name
         swin = load_run_ss(run, 'seasonal', 'toa_incoming_shortwave_flux')
@@ -73,6 +68,7 @@ def atmos_energy_budget(run):
         # m01s01i208: outgoing SW rad flux (TOA)
         # CMOR: rsut, exact name
         swout = load_run_ss(run, 'seasonal', 'toa_outgoing_shortwave_flux')
+
         # m01s01i201: net down surface SW flux
         # CMOR: rsds, surface_downwelling_shortwave_flux_in_air
         # orig diag name: surface_net_downward_shortwave_flux
@@ -86,9 +82,12 @@ def atmos_energy_budget(run):
         # m01s03i332: TOA outgoing LW rad
         # CMOR: rlut, exact name
         olr = load_run_ss(run, 'seasonal', 'toa_outgoing_longwave_flux')
+
         # m01s03i217: surface heat flux"
         # CMOR: hfss, exact name
-        sh = load_run_ss(run, 'seasonal', 'surface_upward_sensible_heat_flux')
+        sh_flux = load_run_ss(run, 'seasonal',
+                              'surface_upward_sensible_heat_flux')
+
         # m01s05i215: total snowfall rate
         # CMOR: prsn, exact name
         snow = load_run_ss(run, 'seasonal', 'snowfall_flux')
@@ -97,19 +96,25 @@ def atmos_energy_budget(run):
         # CMOR: pr, exact name
         precip = load_run_ss(run, 'seasonal', 'precipitation_flux')
 
-        # energy correction
-        # en_cor = load_run_ss(run, 'seasonal', 'm01s30i419')
-        # swin, swout, sw, lw, olr, sh, snow, precip, en_cor = \
-        # remove_forecast_period([swin, swout,
-        #                         sw, lw, olr, sh, snow, precip, en_cor])
-
         # VPREDOI TODO
         # temporarily replacing missing variables with pr
-        # cvt, gr, ke, en_cor missing
+        # cvt, gr, ke, en_cor missing correct var defs
         cvt = load_run_ss(run, 'monthly', 'precipitation_flux', lbproc=192)
         gr = cvt  # missing
         ke = cvt  # missing
         en_cor = cvt  # missing
+        cvt, gr, ke = remove_forecast_period([cvt, gr, ke])
+        # Set appropriate units for fields loaded above
+        # TODO use cube.convert_units to take existing units into account
+        cvt.units = cf_units.Unit('J m-2')
+        gr.units = cf_units.Unit('J m-2')
+        ke.units = cf_units.Unit('J m-2')
+
+        # Remove forecast periods
+        swin, swout, sw_flux, lw_flux, olr, sh_flux, snow, precip, en_cor = \
+            remove_forecast_period([swin, swout,
+                                    sw_flux, lw_flux, olr, sh_flux,
+                                    snow, precip, en_cor])
 
         # calculate global budgets
 
@@ -139,7 +144,7 @@ def atmos_energy_budget(run):
         swg = area_average(sw_flux, weighted=True)
         lwg = area_average(lw_flux, weighted=True)
         olrg = area_average(olr, weighted=True)
-        shg = area_average(sh, weighted=True)
+        shg = area_average(sh_flux, weighted=True)
         snowg = area_average(snow, weighted=True)
         precipg = area_average(precip, weighted=True)
         en_corg = area_average(en_cor, weighted=True)
