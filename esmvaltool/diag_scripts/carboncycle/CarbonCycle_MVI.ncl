@@ -81,9 +81,12 @@ begin
     ;; Set region
     region = select_region(diag_script_info@region)
 
-    ;; Output plot directory
+    ;; Output plot directory, set path for saving plots
     output_dir = config_user_info@plot_dir
-    
+    if (.not.isfilepresent(config_user_info@plot_dir)) then
+      system("mkdir -p " + config_user_info@plot_dir)
+    end if
+
     ;; Set time range
     start_year = min(stringtoint(model_info@start_year))
     end_year = max(stringtoint(model_info@end_year))
@@ -298,30 +301,22 @@ begin
     ;; Optional output to NetCDF
     if (config_user_info@write_netcdf.eq."True") then
 
-    ; Set path for saving processed data
-      ;fullpath = config_user_info@work_dir + "/"
-      system("mkdir -p " + config_user_info@work_dir) ;fullpath)
-      ;fname = basename(systemfunc("basename " + model_info@filename(imod)))
-      ;fname = fname + "_" + basename(diag_script) + "_zonal"
-      ;fname = fname + "_" + diag_script_info@time_avg
-      ;procpath = fullpath + fname + "_Global.nc"
+      ;; Set path for saving processed data
+      if (.not.isfilepresent(config_user_info@work_dir)) then
+        system("mkdir -p " + config_user_info@work_dir)
+      end if
 
         ;; Mean
-        new_path = config_user_info@plot_dir + \
+        new_path = config_user_info@work_dir + \
                    basename(diag_script) + "_mean_" + var0 + ".nc"
 
-        if (.not.isfilepresent(config_user_info@work_dir)) then
-print(config_user_info@work_dir)
-        ;  systemfunc("mkdir " + config_user_info@plot_dir)
-        end if
-print(new_path)
         Mean_var@var = var0
         Mean_var@diag_script = diag_script
         Mean_var@ncdf = new_path
         ncdf_outfile = ncdf_write(Mean_var, new_path)
 
         ;; Trend
-        new_path = config_user_info@plot_dir + \
+        new_path = config_user_info@work_dir + \
                    basename(diag_script) + "_trend_" + var0 + ".nc"
         Trend_var@var = var0
         Trend_var@diag_script = diag_script
@@ -329,7 +324,7 @@ print(new_path)
         ncdf_outfile = ncdf_write(Trend_var, new_path)
 
         ;; MVI
-        new_path = config_user_info@plot_dir + \
+        new_path = config_user_info@work_dir + \
                    basename(diag_script) + "_MVI_" + var0 + ".nc"
         MVI_var@var = var0
         MVI_var@diag_script = diag_script
@@ -371,28 +366,28 @@ print(new_path)
     frame(wks)
     
     ;; Attach Metadata to plot    
-    alltags = array_append_record(tags, region@DM_tag, 0)
-    alltags := array_append_record(alltags,\
-           (/"PT_scatter", "PT_zonal", "ST_mean", "ST_trend", \
-             "ST_clim", "ST_var"/), 0)
-    caption =  "Scatterplot for multiyear average " + variables(0) + \
-               " in x axis, its linear trend in y axis, and MVI." + \
-               " Like Anav et al. Fig 1 bottom"
-    id = diag_script
-    climofiles = new(dimsizes(model_info@model) * dimsizes(variables), string)
-    do n_var = 0, dimsizes(variables) - 1
-        do imod = 0, dimsizes(model_info@model) - 1
-            climofiles(n_var * dimsizes(model_info@model) + imod) = \
-                        interface_get_inpaths(imod) + "/" + \
-                        interface_get_infile(variables(n_var), field_types(n_var), imod)
-        end do
-    end do
-    contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+    ;alltags = array_append_record(tags, region@DM_tag, 0)
+    ;alltags := array_append_record(alltags,\
+    ;       (/"PT_scatter", "PT_zonal", "ST_mean", "ST_trend", \
+    ;         "ST_clim", "ST_var"/), 0)
+    ;caption =  "Scatterplot for multiyear average " + variables(0) + \
+    ;           " in x axis, its linear trend in y axis, and MVI." + \
+   ;            " Like Anav et al. Fig 1 bottom"
+   ; id = diag_script
+   ; climofiles = new(dimsizes(model_info@model) * dimsizes(variables), string)
+    ;do n_var = 0, dimsizes(variables) - 1
+    ;    do imod = 0, dimsizes(model_info@model) - 1
+    ;        climofiles(n_var * dimsizes(model_info@model) + imod) = \
+     ;                   interface_get_inpaths(imod) + "/" + \
+     ;                   interface_get_infile(variables(n_var), field_types(n_var), imod)
+     ;   end do
+    ;end do
+    ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
     ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
 
-    delete([/alltags, caption, id, climofiles/])    
+    ;delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)
 
     leave_msg(diag_script, "")

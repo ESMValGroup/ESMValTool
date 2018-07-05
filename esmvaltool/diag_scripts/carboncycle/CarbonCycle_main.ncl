@@ -136,8 +136,11 @@ begin
         end if
     end if
 
-    ;; Output plot directory
+    ;; Output plot directory, set path for saving processed data
     output_dir = config_user_info@plot_dir
+    if (.not.isfilepresent(config_user_info@plot_dir)) then
+      system("mkdir -p " + config_user_info@plot_dir)
+    end if
 
     ;; Set time range
     start_year = min(stringtoint(model_info@start_year))
@@ -387,8 +390,13 @@ begin
     ;; Optional output to NetCDF
     if (config_user_info@write_netcdf.eq."True") then
 
+      ;; Set path for saving processed data
+      if (.not.isfilepresent(config_user_info@work_dir)) then
+        system("mkdir -p " + config_user_info@work_dir)
+      end if
+
         ;; Yearly data
-        new_path = config_user_info@plot_dir + \
+        new_path = config_user_info@work_dir + \
                    basename(diag_script) + "_yearly_" + var0 + "_" + \
             region@name + ".nc"
         all_yearly@var = var0
@@ -397,7 +405,7 @@ begin
         ncdf_outfile = ncdf_write(all_yearly, new_path)
 
         ;; Monthly data
-        new_path = config_user_info@plot_dir + \
+        new_path = config_user_info@work_dir + \
                    basename(diag_script) + "_monthly_" + var0 + "_" + \
             region@name + ".nc"
         all_monthly@var = var0
@@ -435,29 +443,29 @@ begin
 
         ;; Attach Metadata to plot
 
-        alltags = array_append_record(tags, region@DM_tag, 0)
-        alltags := array_append_record(alltags,\
-               (/"PT_seas", "ST_mean"/), 0)
-        caption = "Seasonal Cycle plot for " + variables(0) + \
-                  " over the period " + start_year + \
-                  "-" + end_year + ", similar to Anav et al., 2013, Fig. 9."
-        id = diag_script
-        isize = dim_MOD_org * dimsizes(variables)
-        if (isatt(diag_script_info, "obsfile")) then
-            isize = isize + 1
-        end if
-        climofiles = new(isize, string)
-        do n_var = 0, dimsizes(variables) - 1
-            do imod = 0, dim_MOD_org - 1
-                climofiles(n_var * dim_MOD_org + imod) = \
-                            interface_get_inpaths(imod) + "/" + \
-                            interface_get_infile(variables(n_var), field_types(n_var), imod)
-            end do
-        end do
-        if (isatt(diag_script_info, "obsfile")) then
-            climofiles(isize - 1) = diag_script_info@obsfile
-        end if
-        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+        ;alltags = array_append_record(tags, region@DM_tag, 0)
+        ;alltags := array_append_record(alltags,\
+        ;       (/"PT_seas", "ST_mean"/), 0)
+        ;caption = "Seasonal Cycle plot for " + variables(0) + \
+       ;           " over the period " + start_year + \
+       ;           "-" + end_year + ", similar to Anav et al., 2013, Fig. 9."
+      ;  id = diag_script
+     ;   isize = dim_MOD_org * dimsizes(variables)
+      ;  if (isatt(diag_script_info, "obsfile")) then
+      ;      isize = isize + 1
+      ;;  end if
+       ; climofiles = new(isize, string)
+       ; do n_var = 0, dimsizes(variables) - 1
+       ;     do imod = 0, dim_MOD_org - 1
+       ;         climofiles(n_var * dim_MOD_org + imod) = \
+       ;                     interface_get_inpaths(imod) + "/" + \
+       ;                     interface_get_infile(variables(n_var), field_types(n_var), imod)
+       ;     end do
+       ; end do
+       ; if (isatt(diag_script_info, "obsfile")) then
+       ;     climofiles(isize - 1) = diag_script_info@obsfile
+       ; end if
+      ;  contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
