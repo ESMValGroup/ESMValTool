@@ -1,4 +1,6 @@
-'''
+"""
+Execute
+
 List the functions which are to be called by auto-assess
 There are two types of functions:
  1. those which compute metrics (and optionally make plots) for a single run
@@ -28,7 +30,7 @@ Each "multi" function (type 2) has the following interface:
         doesn't return any objects - it only writes image files to the
         current working dir
 
-'''
+"""
 
 # local modules
 from . import atmospheric_mass as am

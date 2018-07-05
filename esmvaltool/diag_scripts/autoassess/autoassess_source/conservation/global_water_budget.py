@@ -1,6 +1,4 @@
-'''
-Module with routines to calculate global water budgets
-'''
+"""Module with routines to calculate global water budgets"""
 
 import os
 
@@ -12,14 +10,16 @@ from .area_utils import area_average
 
 
 def fluxes_submodel(run, stash_f, f_mult):
-    '''
+    """
+    Calculate time avg fluxes
+
     function to calculate time-average global water fluxes from a UM submodel
     (atmosphere, ocean, sea ice, soil moisture, land snow, TRIP).
 
     It assumes that units are mks:  Kg/m2s.  If this is not the case, use
     f_mult multiplicative factors to achieve that.
     Use also f_mult to multiply fields by fractional masks, etc.
-    '''
+    """
     ########################
     # Stash codes used here:
     ########################
@@ -96,20 +96,22 @@ def fluxes_submodel(run, stash_f, f_mult):
     return fval
 
 
-def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, yi, yf):
-    '''
+def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, y_i, y_f):
+    """
+    Compute ocean fluxes
+
     Function to calculate time-average global water fluxes that go into
     NEMO ocean model
-    '''
+    """
     # load land-fraction-mask an# array with global values of Rd area cubes:
     mask = iris.load_cube(mesh)  # NEMO ocean-fraction mask
     area = iris.load_cube(areas)  # what NEMO  uses for grid cell areas
 
     # Initialize array of global budgets with zeros:
-    r = np.zeros(yf - yi + 1, dtype=np.float)  # global values of R
-    net = np.zeros(
-        yf - yi + 1, dtype=np.float)  # global net flux into the ocean
-    pme = np.zeros(yf - yi + 1, dtype=np.float)  # global P-E into the ocean
+    r_arr = np.zeros(y_f - y_i + 1, dtype=np.float)  # global values of R
+    net_arr = np.zeros(
+        y_f - y_i + 1, dtype=np.float)  # global net flux into the ocean
+    pme = np.zeros(y_f - y_i + 1, dtype=np.float)  # global P-E into the ocean
 
     # initialize data missing error flag:
     errf = 1
@@ -132,7 +134,7 @@ def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, yi, yf):
     # TODO local path
     # read NEMO netcdf files:
     filetemp = opath + '/' + expid + 'o_1y_{0}1201_{1}1130_grid_T.nc'
-    nemofiles = [filetemp.format(x, x + 1) for x in range(yi, yf + 1, 1)]
+    nemofiles = [filetemp.format(x, x + 1) for x in range(y_i, y_f + 1, 1)]
     for (i, model_file) in enumerate(nemofiles):
         if os.path.exists(model_file):
             sorunoff_name = 'water_flux_into_sea_water_from_rivers'
@@ -151,16 +153,17 @@ def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, yi, yf):
 
             # TODO magic number
             # calculate global budgets:
-            r[i] = rflux.data.sum() / 1.0e9 - iceberg.data
-            net[i] = nflux.data.sum() / (-1.0e9)
+            r_arr[i] = rflux.data.sum() / 1.0e9 - iceberg.data
+            net_arr[i] = nflux.data.sum() / (-1.0e9)
             # P-E is obtained as a residual from net, R and iceberg-calving
-            pme[i] = net[i] - r[i] - iceberg.data
+            pme[i] = net_arr[i] - r_arr[i] - iceberg.data
 
         else:
             errf = 0
 
     if errf:
-        fval = np.array([np.mean(pme), np.mean(r), iceberg.data, np.mean(net)])
+        fval = np.array([np.mean(pme), np.mean(r_arr),
+                         iceberg.data, np.mean(net_arr)])
     else:
         print("ERROR:  Missing data!!!")
         print("An MDI value will be assigned to all ocean water fluxes")

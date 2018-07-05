@@ -281,12 +281,12 @@ def select_by_initial_meaning_period(cubes, lbtim):
 
     selected_cubes = iris.cube.CubeList()
     for lbtim in lbtims:
-        IA, IB, IC = str(lbtim)[:]  # pylint: disable=unused-variable
-        # IA - time interval in hours between the individual fields from which
-        #      the mean was calculated
-        # IB - = 2 if the field is a time mean between T1 and T2, or represents
-        #          a sequence of times between T1 and T2.
-        # IC - = 1 if the Proleptic Gregorian calendar is used for T1 and T2.
+        i_a, i_b, i_c = str(lbtim)[:]
+        # i_a - time interval in hours between the individual fields from
+        #      which the mean was calculated
+        # i_b - = 2 if the field is a time mean between T1 and T2, or
+        #          represents a sequence of times between T1 and T2.
+        # i_c - = 1 if the Proleptic Gregorian calendar is used for T1 and T2
         #      = 2 if the '360-day' calendar (i.e. 12 30-day months) is used
         #          for T1 and T2.
 
@@ -294,21 +294,21 @@ def select_by_initial_meaning_period(cubes, lbtim):
             # select by original meaning interval (IA)
             select_meaning_interval = {1: ('1 hour', ), 6: ('6 hour', )}
             if select_meaning_interval[int(
-                    IA)] != cube.cell_methods[0].intervals:
+                    i_a)] != cube.cell_methods[0].intervals:
                 continue
 
             # select by IB
             # Iris cubes have no T1 and T2 attributes, or equivalent
-            # Unclear how to select Iris cubes on IB
-            pass  # pylint: disable=unnecessary-pass
+            # Unclear how to select Iris cubes on I_B
+            # pass
 
-            # select calendar (IC)
+            # select calendar (I_C)
             # see cf_units.CALENDARS for possible cube calendars
             select_calendar = {
                 1: 'gregorian',  # TODO does iris distinguish between
                 2: '360_day'
             }  # proleptic_greorian and gregorian?
-            if select_calendar[int(IC)] == cube.coord('time').units.calendar:
+            if select_calendar[int(i_c)] == cube.coord('time').units.calendar:
                 selected_cubes.append(cube)
     return selected_cubes
 
