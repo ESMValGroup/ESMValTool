@@ -33,9 +33,9 @@ import datetime
 import logging
 import os
 
-from scipy import stats
 import iris
 import numpy as np
+from scipy import stats
 
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
