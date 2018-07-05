@@ -50,12 +50,16 @@ def atmos_energy_budget(run):
     endyear = endyear.replace(year=endyear.year + 1)
 
     try:
+        # Switch from stash to standard_name
         # column integral cvT per unit area
-        # cvt = load_run_ss(run, 'instantaneous', 'm01s30i420', to_dt=endyear)
+        # cvt_f = load_run_ss(run, 'instantaneous',
+        #                     'm01s30i420', to_dt=endyear)
         # column integral gr per unit area
-        # gr  = load_run_ss(run, 'instantaneous', 'm01s30i421', to_dt=endyear)
+        # gr_f  = load_run_ss(run, 'instantaneous',
+        #                     'm01s30i421', to_dt=endyear)
         # TOTAL KE PER UA WITH W  RHO GRID
-        # ke  = load_run_ss(run, 'instantaneous', 'm01s30i402', to_dt=endyear)
+        # ke_f  = load_run_ss(run, 'instantaneous',
+        #                     'm01s30i402', to_dt=endyear)
         # energy correction
         # en_cor = load_run_ss(run, 'seasonal', 'm01s30i419')
 
@@ -99,16 +103,16 @@ def atmos_energy_budget(run):
         # VPREDOI TODO
         # temporarily replacing missing variables with pr
         # cvt, gr, ke, en_cor missing correct var defs
-        cvt = load_run_ss(run, 'monthly', 'precipitation_flux', lbproc=192)
-        gr = cvt  # missing
-        ke = cvt  # missing
-        en_cor = cvt  # missing
-        cvt, gr, ke = remove_forecast_period([cvt, gr, ke])
+        cvt_f = load_run_ss(run, 'monthly', 'precipitation_flux', lbproc=192)
+        gr_f = cvt_f  # missing
+        ke_f = cvt_f  # missing
+        en_cor = cvt_f  # missing
+        cvt_f, gr_f, ke_f = remove_forecast_period([cvt_f, gr_f, ke_f])
         # Set appropriate units for fields loaded above
         # TODO use cube.convert_units to take existing units into account
-        cvt.units = cf_units.Unit('J m-2')
-        gr.units = cf_units.Unit('J m-2')
-        ke.units = cf_units.Unit('J m-2')
+        cvt_f.units = cf_units.Unit('J m-2')
+        gr_f.units = cf_units.Unit('J m-2')
+        ke_f.units = cf_units.Unit('J m-2')
 
         # Remove forecast periods
         swin, swout, sw_flux, lw_flux, olr, sh_flux, snow, precip, en_cor = \
@@ -120,9 +124,9 @@ def atmos_energy_budget(run):
 
         # calculate global averages and budgets:
         # instantaneous fields
-        cvtg = area_average(cvt, weighted=True)
-        grg = area_average(gr, weighted=True)
-        keg = area_average(ke, weighted=True)
+        cvtg = area_average(cvt_f, weighted=True)
+        grg = area_average(gr_f, weighted=True)
+        keg = area_average(ke_f, weighted=True)
         en_tot = keg + cvtg + grg
 
         # Rate of change of instantaneous fields
@@ -172,7 +176,7 @@ def atmos_energy_budget(run):
         expid = run['runid']
         fig = plt.figure(figsize=(8.27, 11.69))
 
-        x = np.arange(err_en.data.size)
+        x_err = np.arange(err_en.data.size)
         stitl1_temp = '{0} mean energy-conservation error: {1:7.4f} W/m2'
         # TODO unit from cube?
         stitl1 = stitl1_temp.format(expid, eerror)
@@ -182,15 +186,19 @@ def atmos_energy_budget(run):
         plt.subplot(2, 1, 1)
         titl1 = 'Change in total energy over 3 months'
         plt.plot(
-            x, ch_en.data, linewidth=2, color='black', label='E(end)-E(start)')
-        # plt.plot(x, diab_heat.data, linewidth=2, color='red',
+            x_err, ch_en.data, linewidth=2,
+            color='black', label='E(end)-E(start)')
+        # plt.plot(x_err, diab_heat.data, linewidth=2, color='red',
         #          label='E added to atmos from fluxes')
         plt.plot(
-            x, ch_ke.data, linewidth=2, color='blue', label='Change in KE')
+            x_err, ch_ke.data, linewidth=2,
+            color='blue', label='Change in KE')
         plt.plot(
-            x, ch_cvt.data, linewidth=2, color='green', label='Change in cvT')
+            x_err, ch_cvt.data, linewidth=2,
+            color='green', label='Change in cvT')
         plt.plot(
-            x, ch_gr.data, linewidth=2, color='purple', label='Change in gr')
+            x_err, ch_gr.data, linewidth=2,
+            color='purple', label='Change in gr')
         plt.xlim([0, err_en.data.size])
         plt.ylim([np.min(ch_en.data) * 1.5, np.max(ch_en.data) * 1.5])
         plt.title(titl1)
@@ -202,7 +210,7 @@ def atmos_energy_budget(run):
 
         plt.subplot(2, 1, 2)
         titl1 = 'Error in energy conservation over 3 month periods ' + expid
-        plt.plot(x, err_en.data, linewidth=2, color='black')
+        plt.plot(x_err, err_en.data, linewidth=2, color='black')
         plt.xlim([0, err_en.data.size])
         plt.ylim([np.min(err_en.data) * 1.5, np.max(err_en.data) * 1.5])
         plt.title(titl1)
