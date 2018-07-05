@@ -68,6 +68,10 @@ def replace_tags(path, variable, j=None, i=None):
     tlist = re.findall(r'\[([^]]*)\]', path)
 
     for tag in tlist:
+        lower = False
+        if tag.endswith('.lower'):
+            tag = tag[:-6]
+            lower = True
 
         if tag == 'var':
             replacewith = variable['short_name']
@@ -98,6 +102,10 @@ def replace_tags(path, variable, j=None, i=None):
                 raise KeyError(
                     "Dataset key {} must be specified for project {}, check "
                     "your recipe entry".format(tag, variable['project']))
+
+        if lower:
+            replacewith =  replacewith.lower()
+            tag += '.lower'
 
         if not isinstance(replacewith, list):
             path = path.replace('[' + tag + ']', replacewith)
@@ -244,12 +252,15 @@ def _get_filename(variable, drs):
     input_file = cfg['input_file']
     _drs = drs.get(project, 'default')
     if not isinstance(input_file, six.string_types):
-        if _drs in input_file:
+        try:
             input_file = input_file[_drs]
-        else:
-            raise KeyError(
-                'drs {} for {} project not specified for input_file '
-                'in config-developer file'.format(_drs, project))
+        except KeyError:
+            try:
+                input_file = input_file['default']
+            except KeyError:
+                raise KeyError(
+                    'drs {} for {} project not specified for input_file '
+                    'in config-developer file'.format(_drs, project))
     filename = replace_tags(input_file, variable)
     return filename
 
