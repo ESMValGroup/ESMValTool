@@ -191,12 +191,15 @@ def _get_value(key, datasets):
     """Get a value for key by looking at the other datasets."""
     values = {dataset[key] for dataset in datasets if key in dataset}
 
-    if len(values) == 1:
-        return values.pop()
-
     if len(values) > 1:
         raise RecipeError("Ambigous values {} for property {}".format(
             values, key))
+
+    value = None
+    if len(values) == 1:
+        value = values.pop()
+
+    return value
 
 
 def _update_from_others(variable, keys, datasets):
