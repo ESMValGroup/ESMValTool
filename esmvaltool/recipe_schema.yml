@@ -4,7 +4,7 @@
 ---
 # Recipe schema
 datasets: list(include('dataset'), required=False)
-preprocessors: map(map(), min=1)
+preprocessors: map(map(), required=False)
 diagnostics: map(include('diagnostic'), required=False)
 
 ---
@@ -12,8 +12,8 @@ diagnostics: map(include('diagnostic'), required=False)
 dataset:
   dataset: str()
   project: str()
-  start_year: int(min=1750, max=2250)
-  end_year: int(min=1750, max=2250)
+  start_year: int(min=0000, max=4000)
+  end_year: int(min=0000, max=4000)
   ensemble: str(required=False)
   exp: str(required=False)
   mip: str(required=False)
@@ -24,10 +24,11 @@ dataset:
 
 variable:
   field: str()
-  preprocessor: str()
+  preprocessor: str(required=False)
   reference_dataset: str(required=False)
   alternative_dataset: str(required=False)
   mip: str(required=False)
+  fx_files: list(required=False)
 
 # TODO: add preprocessor item
 

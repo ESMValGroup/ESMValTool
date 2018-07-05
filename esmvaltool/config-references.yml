@@ -196,6 +196,10 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
     email: romain.roehrig 'at' meteo.fr
+  schl_ma:
+    name: Schlund, Manuel
+    institute: DLR, Germany
+    email: manuel.schlund 'at' dlr.de
   senf_da:
     name: Senftleben, Daniel
     institute: DLR, Germany
