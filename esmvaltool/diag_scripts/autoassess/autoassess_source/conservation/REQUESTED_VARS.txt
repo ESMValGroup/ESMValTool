@@ -25,13 +25,13 @@ This is a list of requested variables for the autoassess/concentration area and 
 
 6. m01s01i201: net down surface SW flux
    'surface_net_downward_shortwave_flux'
-   CMOR: rsds (CIMP5 Amon: equivalent 'surface_downwelling_shortwave_flux_in_air')
-   TO CONFIRM
+   CMOR: rss (CMIP6 Emon y Eday) 
+   TO CHECK
 
 7. m01s02i201: net down surface LW flux
    'surface_net_downward_longwave_flux'
-   CMOR: rlds (CMIP5 Amon: equivalent 'surface_downwelling_longwave_flux_in_air')
-   TO CONFIRM
+   CMOR: rls (CMIP6 Emon Eday ) rlntds (CMIP6 Omon, over ocean when ice free)
+   TO CHECK
 
 8. m01s03i332: TOA outgoing LW rad
    'toa_outgoing_longwave_flux'
@@ -62,29 +62,29 @@ This is a list of requested variables for the autoassess/concentration area and 
     OK
 
 14. m0108i235: subsurface_runoff_flux
-    no CMOR equivalent
-    MISSING
+    CMOR:  mrrob (CMIP6 Eday)
+    TO CHECK
 
 15. m0108i245: no std name; approx. Inland basin runoff
     no CMOR equivalent
     MISSING
 
 16. m0126i004: water_flux_into_sea_water_from_rivers
-    no CMOR equivalent
-    MISSING
+    CMOR: friver (CMIP6 Omon)
+    TO CHECK
 
 EXTRA Stashes
 =============
 
  No. Stash          Paul's var name          CMOR Equivalent (short/standard names)
 --------------------------------------------------------------------------------
-17. m01s04i204: stratiform_snowfall_flux -> prsn: snowfall_flux TO CONFIRM
-18. m01s05i206: convective_snowfall_flux -> prsn: snowfall_flux TO CONFIRM
+17. m01s04i204: stratiform_snowfall_flux -> MISSING (Check if can be computed from prsn - prsnc or the large scale)
+18. m01s05i206: convective_snowfall_flux -> prsnc: convective_snowfall_flux (CMIP6 E3hr Eday CF3hr) TO CHECK
 19. m01s03i298: water_sublimation_flux -> sbl: surface_snow_and_ice_sublimation_flux TO CONFIRM
 20. m01s03i353: water_sublimation_flux (?, from sea-ice over sea, masked over land) -> MISSING
-21. m01s08i231: surface_snow_melt_flux (over land, masked over sea) -> MISSING
-22. m01s04i203: stratiform_rainfall_flux -> MISSING
-23. m01s05i205: convective_rainfall_flux -> MISSING
+21. m01s08i231: surface_snow_melt_flux (over land, masked over sea) -> snm (CMIP6, snm in Eday, LImon) Quite a few more tables and similar vars
+22. m01s04i203: stratiform_rainfall_flux -> total, convective and large_scale rainfall available. Is equivalent to one of those or can be computed from them?
+23. m01s05i205: convective_rainfall_flux -> prrc (CMIP6 Eday Emon) prcprof (CMIP6 CF3hr)
 24. m01s03i223: surface_upward_water_flux -> evspsbl: water_evaporation_flux TO CONFIRM
 25. m01s03i232: surface_upward_water_flux (from sea, masked over land) -> MISSING
 26. m01s30i419: no std name, but essentially a change in atmosphere_energy_content -> MISSING
