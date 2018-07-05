@@ -83,7 +83,7 @@ begin
   end if
 
   ; Read attributes and write info to log-file
-  inquire_and_save_fileinfo(infile, input_file_info@model(index), variable)
+;  inquire_and_save_fileinfo(infile, input_file_info@model(index), variable)
 
   ; Read data
   data = fin->$variable$
