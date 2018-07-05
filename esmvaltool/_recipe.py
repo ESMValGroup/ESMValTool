@@ -466,6 +466,8 @@ def _update_fx_settings(variable, settings, config_user):
         if variable.get('fx_files', {}).get(mask):
             fx_files = variable['fx_files']
         else:
+            variable = copy.deepcopy(variable)
+            variable['fx_files'] = [mask]
             fx_files = get_input_fx_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
