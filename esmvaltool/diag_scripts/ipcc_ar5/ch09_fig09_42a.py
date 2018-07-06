@@ -29,9 +29,9 @@ Configuration options
 """
 
 
-import datetime
 import logging
 import os
+from datetime import datetime
 
 import iris
 import numpy as np
@@ -62,15 +62,10 @@ def calculate_ecs(cfg, datasets, variables):
             continue
         filepath = os.path.join(cfg[n.PLOT_DIR],
                                 dataset + '.' + cfg[n.OUTPUT_FILE_TYPE])
-        plot_kwargs = {'linestyle': 'none',
-                       'markeredgecolor': 'b',
-                       'markerfacecolor': 'none',
-                       'marker': 's'}
 
         # Regression line
         x_reg = np.linspace(-1.0, 8.0, 2)
         y_reg = reg.slope * x_reg + reg.intercept
-        reg_plot_kwargs = {'color': 'k', 'linestyle': '-'}
 
         # Plot data
         text = 'r = {:.2f}, '.format(reg.rvalue) + \
@@ -81,7 +76,12 @@ def calculate_ecs(cfg, datasets, variables):
             [data_tas, x_reg],
             [data_rtmt, y_reg],
             filepath,
-            plot_kwargs=[plot_kwargs, reg_plot_kwargs],
+            plot_kwargs=[{'linestyle': 'none',
+                          'markeredgecolor': 'b',
+                          'markerfacecolor': 'none',
+                          'marker': 's'},
+                         {'color': 'k',
+                          'linestyle': '-'}],
             save_kwargs=cfg.get('save'),
             axes_functions={'set_title': dataset,
                             'set_xlabel': (variables.tas + " / " +
@@ -92,6 +92,38 @@ def calculate_ecs(cfg, datasets, variables):
                             'set_ylim': [-2.0, 10.0],
                             'text': {'args': [0.05, 0.9, text],
                                      'kwargs': {'transform': 'transAxes'}}})
+
+        # Write netcdf file for every plot
+        if not cfg[n.WRITE_NETCDF]:
+            continue
+        rtmt_coord = iris.coords.AuxCoord(
+            data_tas,
+            standard_name=variables.TAS.standard_name,
+            long_name=variables.TAS.long_name,
+            var_name=variables.TAS.short_name,
+            units=variables.TAS.units)
+        attr = {'model': dataset,
+                'regression_r_value': reg.rvalue,
+                'regression_slope': reg.slope,
+                'regression_interception': reg.intercept,
+                'climate_sensitivity': -reg.slope,
+                'ECS': -reg.intercept / (2 * reg.slope),
+                'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
+                              ', diagnostic {}'.format(cfg[n.SCRIPT]),
+                'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
+        cube = iris.cube.Cube(data_rtmt,
+                              standard_name=variables.RTMT.standard_name,
+                              long_name=variables.RTMT.long_name,
+                              var_name=variables.RTMT.short_name,
+                              units=variables.RTMT.units,
+                              attributes=attr,
+                              aux_coords_and_dims=[(rtmt_coord, 0)])
+
+        # Save file
+        filepath = os.path.join(cfg[n.WORK_DIR],
+                                'ecs_regression_' + dataset + '.nc')
+        iris.save(cube, filepath)
+        logger.info("Writing %s", filepath)
 
 
 def plot_data(cfg, datasets, variables):
@@ -143,17 +175,37 @@ def write_data(cfg, datasets, variables):
     """Write netcdf file."""
     if cfg[n.WRITE_PLOTS]:
         data_ecs = datasets.get_data_list(short_name=variables.ecs, exp=DIFF)
+        data_tas_hist = datasets.get_data_list(short_name=variables.tas,
+                                               exp=HISTORICAL)
+        data_tas_picontrol = datasets.get_data_list(short_name=variables.tas,
+                                                    exp=PICONTROL_TEMP_MEAN)
         models = datasets.get_info_list(n.DATASET, short_name=variables.ecs,
                                         exp=DIFF)
         dataset_coord = iris.coords.AuxCoord(models, long_name='models')
-        time_now = datetime.datetime.utcnow().isoformat(' ') + 'UTC'
+        tas_hist_coord = iris.coords.AuxCoord(
+            data_tas_hist,
+            standard_name=variables.TAS.standard_name,
+            long_name=variables.TAS.long_name,
+            var_name=variables.TAS.short_name + '_' + HISTORICAL,
+            units=variables.TAS.units,
+            attributes={'experiment': HISTORICAL})
+        tas_picontrol_coord = iris.coords.AuxCoord(
+            data_tas_picontrol,
+            standard_name=variables.TAS.standard_name,
+            long_name=variables.TAS.long_name,
+            var_name=variables.TAS.short_name + '_' + PICONTROL,
+            units=variables.TAS.units,
+            attributes={'experiment': PICONTROL})
         attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
                               ', diagnostic {}'.format(cfg[n.SCRIPT]),
-                'creation_date': time_now}
+                'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
         cube = iris.cube.Cube(data_ecs, long_name=variables.ECS.long_name,
                               var_name=variables.ecs,
-                              units=variables.ECS.units, attributes=attr)
-        cube.add_aux_coord(dataset_coord, 0)
+                              units=variables.ECS.units,
+                              aux_coords_and_dims=[(dataset_coord, 0),
+                                                   (tas_hist_coord, 0),
+                                                   (tas_picontrol_coord, 0)],
+                              attributes=attr)
 
         # Save file
         filepath = os.path.join(cfg[n.WORK_DIR], variables.ecs + '.nc')
