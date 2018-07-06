@@ -7,7 +7,7 @@ from iris.cube import Cube
 from .._task import AbstractTask
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, extract_metadata, load_cubes, save_cubes, concatenate
+from ._io import cleanup, extract_metadata, load_cubes, save, concatenate
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
@@ -58,7 +58,7 @@ __all__ = [
     'multi_model_statistics',
     'cmor_check_data',
     # Save to file
-    'save_cubes',
+    'save',
     'cleanup',
     'extract_metadata',
 ]
@@ -79,7 +79,7 @@ _LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'load_cubes',
     'concatenate',
     'derive',
-    'save_cubes',
+    'save',
     'cleanup',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
@@ -88,7 +88,7 @@ assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 _LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
     'load_cubes',
-    'save_cubes',
+    'save',
     'cleanup',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
@@ -225,7 +225,7 @@ def preprocess(items, settings, order, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            save_cubes(cubes, debug=debug, step=step)
+            save(cubes, debug=debug, step=step)
 
     return items
 

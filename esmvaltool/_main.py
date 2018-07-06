@@ -163,6 +163,15 @@ def process_recipe(recipe_file, config_user):
         "memory for keeping this number of tasks in memory. In that case, "
         "try reducing 'max_parallel_tasks' in your user configuration file.")
 
+    if config_user['compress_netcdf']:
+        logger.warning(
+            "You have enabled NetCDF compression. Accesing .nc files can be "
+            "much slower than expected if your access pattern does not match "
+            "their internal pattern. Make sure to specify the expected "
+            "access pattern in the recipe as a parameter to the 'save' "
+            "preprocessor function. If the problem persists, try disabling "
+            "NetCDF compression.")
+
     # copy recipe to run_dir for future reference
     shutil.copy2(recipe_file, config_user['run_dir'])
 

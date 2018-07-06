@@ -83,6 +83,7 @@ def concatenate(cubes):
 def _save_cubes(cubes, **args):
     """Save iris cube to file."""
     filename = args['target']
+    optimize_accesss = args.pop('optimize_access')
 
     dirname = os.path.dirname(filename)
     if not os.path.exists(dirname):
@@ -94,13 +95,64 @@ def _save_cubes(cubes, **args):
                      "The cube is probably unchanged.", cubes, filename)
     else:
         logger.debug("Saving cubes %s to %s", cubes, filename)
+        if optimize_accesss:
+            cube = cubes[0]
+            if optimize_accesss == 'map':
+                dims = set(cube.coord_dims('latitude') +
+                           cube.coord_dims('longitude'))
+            elif optimize_accesss == 'timeseries':
+                dims = set(cube.coord_dims('time'))
+            else:
+                dims = tuple()
+                for coord_dims in (cube.coord_dims(dimension) for dimension
+                                   in optimize_accesss.split(' ')):
+                    dims += coord_dims
+                dims = set(dims)
+
+            args['chunksizes'] = tuple(length if index in dims else 1
+                                       for index, length
+                                       in enumerate(cube.shape))
         iris.save(cubes, **args)
 
     return filename
 
 
-def save_cubes(cubes, debug=False, step=None):
-    """Save iris cubes to the file specified in the _filename attribute."""
+def save(cubes, optimize_access=None,
+         compress=False, debug=False, step=None):
+    """
+    Save iris cubes to file
+
+    Path is taken from the _filename attributte in the code.
+
+    Parameters
+    ----------
+    cubes: iterable of iris.cube.Cube
+        Data cubes to be saved
+
+    optimize_access: str
+        Set internal NetCDF chunking to favour a reading scheme
+
+        Values can be map or timeseries, which improve performance when
+        reading the file one map or time series at a time.
+        Users can also provide a coordinate or a list of coordinates. In that
+        case the better performance will be avhieved by loading all the values
+        in that coordinate at a time
+
+    compress: bool, optional
+        Use NetCDF internal compression.
+
+    debug: bool, optional
+        Inform the function if this save is an intermediate save
+
+    step: int, optional
+        Number of the preprocessor step.
+
+        Only used if debug is True
+
+    Returns
+    -------
+
+    """
     paths = {}
     for cube in cubes:
         if '_filename' not in cube.attributes:
@@ -122,7 +174,8 @@ def save_cubes(cubes, debug=False, step=None):
     for filename in paths:
         # _save_cubes(cubes=paths[filename], target=filename,
         #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename)
+        _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
+                    optimize_access=optimize_access)
 
     return list(paths)
 
@@ -170,6 +223,14 @@ def _write_ncl_metadata(output_dir, metadata):
     # dicts, so convert to dict of lists.
     keys = sorted({k for v in variables for k in v})
     input_file_info = {k: [v.get(k) for v in variables] for k in keys}
+    fx_file_list = input_file_info.pop('fx_files', None)
+    if fx_file_list:
+        for fx_files in fx_file_list:
+            for key in fx_files:
+                if key not in input_file_info:
+                    input_file_info[key] = []
+                input_file_info[key].append(fx_files[key])
+
     info = {
         'input_file_info': input_file_info,
         'dataset_info': {},
