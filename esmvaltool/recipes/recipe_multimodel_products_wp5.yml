@@ -25,9 +25,9 @@
 ---
 
 datasets:
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: GFDL-ESM2G, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
@@ -47,7 +47,7 @@ diagnostics:
   anomaly_agreement:
     description: Calculate multi-member anomalies and their spread/agreement.
     variables:
-      pr:
+      tas:
         preprocessor: preproc
         mip: Amon
         field: T2M
@@ -67,9 +67,10 @@ diagnostics:
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 8
+        monini: 1 #added by nuria cause an error in Season
         agreement_threshold: 80
         #Time series plot options
-        running_mean: 5 #Length of running mean to use for the time series plot
+        running_mean: 2 #Length of running mean to use for the time series plot
 
         # Timeseries plot
         time_series_plot: maxmin # Either mean or maxmin (plot the mean with/without shading between the max and min.
