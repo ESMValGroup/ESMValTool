@@ -96,7 +96,7 @@ def calculate_ecs(cfg, datasets, variables):
         # Write netcdf file for every plot
         if not cfg[n.WRITE_NETCDF]:
             continue
-        rtmt_coord = iris.coords.AuxCoord(
+        tas_coord = iris.coords.AuxCoord(
             data_tas,
             standard_name=variables.TAS.standard_name,
             long_name=variables.TAS.long_name,
@@ -117,7 +117,7 @@ def calculate_ecs(cfg, datasets, variables):
                               var_name=variables.RTMT.short_name,
                               units=variables.RTMT.units,
                               attributes=attr,
-                              aux_coords_and_dims=[(rtmt_coord, 0)])
+                              aux_coords_and_dims=[(tas_coord, 0)])
 
         # Save file
         filepath = os.path.join(cfg[n.WORK_DIR],
