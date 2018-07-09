@@ -11,8 +11,8 @@ import yaml
 
 from . import __version__, preprocessor
 from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_output_file, get_start_end_year,
-                           get_statistic_output_file)
+                           get_input_fx_filelist, get_output_file,
+                           get_start_end_year, get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor._derive import get_required
@@ -61,8 +61,7 @@ def check_ncl_version():
 
 def check_recipe_with_schema(filename):
     """Check if the recipe content matches schema."""
-    schema_file = os.path.join(
-        os.path.dirname(__file__), 'recipe_schema.yml')
+    schema_file = os.path.join(os.path.dirname(__file__), 'recipe_schema.yml')
     logger.debug("Checking recipe against schema %s", schema_file)
     recipe = yamale.make_data(filename)
     schema = yamale.make_schema(schema_file)
@@ -78,7 +77,7 @@ def check_recipe(filename):
         raw_recipe = yaml.safe_load(file)
 
     # TODO: add more checks?
-    check_preprocessors(raw_recipe['preprocessors'])
+    check_preprocessors(raw_recipe.get('preprocessors', {}))
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -91,8 +90,8 @@ def check_preprocessors(preprocessors):
         if invalid_functions:
             raise RecipeError(
                 "Unknown function(s) {} in preprocessor {}, choose from: {}"
-                .format(invalid_functions, name, ', '.join(
-                    preprocessor.DEFAULT_ORDER)))
+                .format(invalid_functions, name,
+                        ', '.join(preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
@@ -141,8 +140,9 @@ def check_preprocessor_settings(settings):
         try:
             inspect.getcallargs(function, None, **settings[step])
         except TypeError:
-            logger.error("Wrong preprocessor function arguments in "
-                         "function '%s'", step)
+            logger.error(
+                "Wrong preprocessor function arguments in "
+                "function '%s'", step)
             raise
 
 
@@ -245,10 +245,14 @@ def _add_cmor_info(variable, override=False):
         variable['mip'], variable['short_name'])
 
     for key in cmor_keys:
-        if key not in variable or override and hasattr(table_entry, key):
-            value = getattr(table_entry, key)
+        if key not in variable or override:
+            value = getattr(table_entry, key, None)
             if value is not None:
                 variable[key] = value
+            else:
+                logger.debug(
+                    "Failed to add key %s to variable %s from CMOR table", key,
+                    variable)
 
     # Check that keys are available
     check_variable(variable, required_keys=cmor_keys)
@@ -448,7 +452,7 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save_cubes'] = {}
+    settings['save'] = {'compress': config_user['compress_netcdf']}
 
     return settings
 
@@ -678,7 +682,9 @@ class Recipe(object):
         """Parse a recipe file into an object."""
         self._cfg = config_user
         self._recipe_file = os.path.basename(recipe_file)
-        self._preprocessors = raw_recipe['preprocessors']
+        self._preprocessors = raw_recipe.get('preprocessors', {})
+        if 'default' not in self._preprocessors:
+            self._preprocessors['default'] = {}
         self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
@@ -758,6 +764,17 @@ class Recipe(object):
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
+            if 'fx_files' in variable:
+                for fx_file in variable['fx_files']:
+                    DATASET_KEYS.add(fx_file)
+                # Get the fx files
+                variable['fx_files'] = get_input_fx_filelist(
+                    variable=variable,
+                    rootpath=self._cfg['rootpath'],
+                    drs=self._cfg['drs'])
+                logger.info("Using fx files for var %s of dataset %s:\n%s",
+                            variable['short_name'], variable['dataset'],
+                            variable['fx_files'])
 
         return variables
 
@@ -773,7 +790,8 @@ class Recipe(object):
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_name
             raw_variable['diagnostic'] = diagnostic_name
-            raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
+            raw_variable['preprocessor'] = str(
+                raw_variable.get('preprocessor', 'default'))
             preprocessor_output[variable_name] = \
                 self._initialize_variables(raw_variable, raw_datasets)
 

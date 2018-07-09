@@ -22,7 +22,7 @@
 
   <xsl:template match="MODELS">
     <xsl:if test="count(model)>0">
-      <xsl:text>models:&#xa;</xsl:text>
+      <xsl:text>datasets:&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
 
@@ -71,9 +71,9 @@
       <xsl:value-of select="normalize-space(../field_type[position()=$ind])"/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
-    <!-- Add models -->
+    <!-- Add datasets -->
     <xsl:if test="count(model)>0">
-      <xsl:text>    additional_models:&#xa;</xsl:text>
+      <xsl:text>    additional_datasets:&#xa;</xsl:text>
       <xsl:apply-templates select="model"/>
     </xsl:if>
     <!-- Add scripts -->
@@ -91,30 +91,30 @@
 
   <xsl:template match="@ref_model">
     <xsl:variable name="ref_models" select="tokenize(normalize-space(.), ',')"/>
-    <xsl:text>        reference_model: </xsl:text>
+    <xsl:text>        reference_dataset: </xsl:text>
     <xsl:value-of select="normalize-space($ref_models[1])"/>
     <xsl:text>&#xa;</xsl:text>
     <xsl:if test="count($ref_models)>1">
-      <xsl:text>        alternative_model: </xsl:text>
+      <xsl:text>        alternative_dataset: </xsl:text>
       <xsl:value-of select="normalize-space($ref_models[2])"/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
 
   <xsl:template match="@exclude">
-    <xsl:text>        exclude_model: </xsl:text>
+    <xsl:text>        exclude_dataset: </xsl:text>
     <xsl:value-of select="."/>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
   <xsl:template match="model">
     <xsl:variable name="model_line" select="tokenize(normalize-space(.))"/>
-    <xsl:variable name="model_scheme" select="$model_line[1]"/>
+    <xsl:variable name="dataset_scheme" select="$model_line[1]"/>
     <xsl:choose>
-      <!-- <xsl:when test="$model_scheme='CMIP5'"> -->
+      <!-- <xsl:when test="$dataset_scheme='CMIP5'"> -->
       <!-- </xsl:when> -->
-      <xsl:when test="$model_scheme='CMIP5_ETHZ'">
-        <xsl:text>      - {model: </xsl:text>
+      <xsl:when test="$dataset_scheme='CMIP5_ETHZ'">
+        <xsl:text>      - {dataset: </xsl:text>
         <xsl:value-of select="$model_line[2]"/>
         <xsl:text>, project: CMIP5</xsl:text>
         <xsl:text>, exp: </xsl:text>
@@ -127,8 +127,8 @@
         <xsl:value-of select="$model_line[7]"/>
         <xsl:text>}&#xa;</xsl:text>
       </xsl:when>
-      <xsl:when test="$model_scheme='OBS'">
-        <xsl:text>      - {model: </xsl:text>
+      <xsl:when test="$dataset_scheme='OBS'">
+        <xsl:text>      - {dataset: </xsl:text>
         <xsl:value-of select="$model_line[2]"/>
         <xsl:text>, project: </xsl:text>
         <xsl:value-of select="$model_line[1]"/>
@@ -144,15 +144,15 @@
         <xsl:value-of select="substring(tokenize($model_line[7], '/')[2], 5, 1)"/>
         <xsl:text>}&#xa;</xsl:text>
       </xsl:when>
-      <!-- <xsl:when test="$model_scheme='OBS_gridfile'"> -->
+      <!-- <xsl:when test="$dataset_scheme='OBS_gridfile'"> -->
       <!-- </xsl:when> -->
-      <!-- <xsl:when test="$model_scheme='obs4mips'"> -->
+      <!-- <xsl:when test="$dataset_scheme='obs4mips'"> -->
       <!-- </xsl:when> -->
-      <!-- <xsl:when test="$model_scheme='ana4mips'"> -->
+      <!-- <xsl:when test="$dataset_scheme='ana4mips'"> -->
       <!-- </xsl:when> -->
       <xsl:otherwise>
         <xsl:message terminate="yes">
-          ERROR: unknown model scheme <xsl:value-of select="$model_scheme"/>
+          ERROR: unknown dataset scheme <xsl:value-of select="$dataset_scheme"/>
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>

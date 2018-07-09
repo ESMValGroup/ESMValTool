@@ -19,6 +19,7 @@ def read_config_user_file(config_file, recipe_name):
     defaults = {
         'write_plots': True,
         'write_netcdf': True,
+        'compress_netcdf': False,
         'exit_on_warning': False,
         'max_data_filesize': 100,
         'output_file_type': 'ps',

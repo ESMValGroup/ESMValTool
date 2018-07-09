@@ -63,17 +63,13 @@ def get_args():
     parser = argparse.ArgumentParser(
         description=HEADER,
         formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('recipe', help='Path or name of the yaml recipe file')
     parser.add_argument(
         '-v',
         '--version',
         action='version',
         version=__version__,
         help="return ESMValTool's version number and exit")
-    parser.add_argument(
-        '-n',
-        '--recipe-file',
-        help='Path to the recipe file',
-        required=True)
     parser.add_argument(
         '-c',
         '--config-file',
@@ -95,8 +91,14 @@ def get_args():
 
 def main(args):
     """Define the `esmvaltool` program"""
-    recipe_file = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.recipe_file)))
+    recipe = args.recipe
+    if not os.path.exists(recipe):
+        installed_recipe = os.path.join(
+            os.path.dirname(__file__), 'recipes', recipe)
+        if os.path.exists(installed_recipe):
+            recipe = installed_recipe
+    recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
+
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
 
@@ -104,7 +106,7 @@ def main(args):
     if not os.path.exists(config_file):
         print("ERROR: config file {} does not exist".format(config_file))
 
-    recipe_name = os.path.splitext(os.path.basename(recipe_file))[0]
+    recipe_name = os.path.splitext(os.path.basename(recipe))[0]
     cfg = read_config_user_file(config_file, recipe_name)
 
     # Create run dir
@@ -128,7 +130,7 @@ def main(args):
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
-        process_recipe(recipe_file=recipe_file, config_user=cfg)
+        process_recipe(recipe_file=recipe, config_user=cfg)
     return cfg
 
 
@@ -160,6 +162,15 @@ def process_recipe(recipe_file, config_user):
         "If your system hangs during execution, it may not have enough "
         "memory for keeping this number of tasks in memory. In that case, "
         "try reducing 'max_parallel_tasks' in your user configuration file.")
+
+    if config_user['compress_netcdf']:
+        logger.warning(
+            "You have enabled NetCDF compression. Accesing .nc files can be "
+            "much slower than expected if your access pattern does not match "
+            "their internal pattern. Make sure to specify the expected "
+            "access pattern in the recipe as a parameter to the 'save' "
+            "preprocessor function. If the problem persists, try disabling "
+            "NetCDF compression.")
 
     # copy recipe to run_dir for future reference
     shutil.copy2(recipe_file, config_user['run_dir'])
