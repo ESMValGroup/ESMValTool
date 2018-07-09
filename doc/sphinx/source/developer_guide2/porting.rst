@@ -35,6 +35,8 @@ A xml2yml converter is available in ``esmvaltool/utils/xml2yml/``, please refer 
 
 Once the recipe is converted, a first attempt to run it can be done, possibly starting with a few datasets and one diagnostics and proceed gradually. The recipe file ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
 
+Do not forget to also rewrite the recipe header in a ``documentation`` section using the yaml syntax and, if possible, to add  themes and realms item to each diagnostic section. All keys and tags used for this part must be defined in ``./esmvaltool/config-references.yml``. See ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` for an example.
+
 Create a copy of the diag script in v2.0
 ========================================
 
