@@ -15,7 +15,8 @@ load "interface_scripts/auxiliary.ncl"
 
 ;;#############################################################################
 undef("ESMValMD")
-procedure ESMValMD(outfile:string,
+procedure ESMValMD(nc_file:string,
+                   outfile:string,
                    caption:string,
                    statistics[*]:string,
                    domain:string,
@@ -26,6 +27,7 @@ procedure ESMValMD(outfile:string,
                    infiles[*]:string)
 ;;
 ;; Arguments
+;;    nc_file: netcdf file with data related to the plot
 ;;    outfile: file name of the figure (including path)
 ;;    caption: figure caption
 ;;    statistics: list of metrics/statistics calculated
@@ -37,6 +39,7 @@ procedure ESMValMD(outfile:string,
 ;;
 ;; Description
 ;;    Creates a yaml file with meta data from the diagnostic
+;;    script and save it in the plot directory
 ;;
 ;; Caveats
 ;;
@@ -49,39 +52,40 @@ begin
     scriptname = "diag_scripts/shared/lib/meta_data.ncl"
     enter_msg(scriptname, funcname)
 
-    file_des = "#provenance information coming from the diagnostic"
-    str0 = systemfunc("basename " + outfile) 
-    str1 = "    caption: " + caption
+    str0 = systemfunc("basename " + nc_file) + ":"
+    str1 = "    plotfile: " + systemfunc("basename " + outfile) 
+    str2 = "    caption: '" + caption + "'"
     n = dimsizes(statistics)
-    str2 = new(n+1, string)
-    str2(0) = "    statistics: "
+    str3 = new(n+1, string)
+    str3(0) = "    statistics: "
     do i = 0, n-1
-        str2(i+1) = "      - " + statistics(i) 
+        str3(i+1) = "      - " + statistics(i) 
     end do
-    str3 = "    domain: " + domain 
-    str4 = "    plottype: " + plottype
-    str5 = "    diag_description: " + diag_des
+    str4 = "    domain: " + domain 
+    str5 = "    plottype: " + plottype
+    str6 = "    diag_description: '" + diag_des + "'"
     n = dimsizes(diag_authors)
-    str6 = new(n+1, string)
-    str6(0) = "    diag_authors: "
+    str7 = new(n+1, string)
+    str7(0) = "    diag_authors: "
     do i = 0, n-1
-        str6(i+1) = "      - " + diag_authors(i) 
+        str7(i+1) = "      - " + diag_authors(i) 
     end do
     n = dimsizes(diag_refs)
-    str7 = new(n+1, string)
-    str7(0) = "    diag_references: "
+    str8 = new(n+1, string)
+    str8(0) = "    diag_references: "
     do i = 0, n-1
-        str7(i+1) = "      - " + diag_refs(i) 
+        str8(i+1) = "      - " + diag_refs(i) 
     end do
     n = dimsizes(infiles)
-    str8 = new(n+1, string)
-    str8(0) = "    input_files: "
+    str9 = new(n+1, string)
+    str9(0) = "    input_files: "
     do i = 0, n-1
-        str8(i+1) = "      - ???" 
+        str9(i+1) = "      - ???" 
         ;str8(i+1) = "      - " + infiles(i) 
     end do
 
-    str := array_append_record(str7,str8,0) 
+    str := array_append_record(str8,str9,0) 
+    str := array_append_record(str7,str,0) 
     str := array_append_record(str6,str,0) 
     str := array_append_record(str5,str,0) 
     str := array_append_record(str4,str,0) 
@@ -89,14 +93,11 @@ begin
     str := array_append_record(str2,str,0) 
     str := array_append_record(str1,str,0) 
     str := array_append_record(str0,str,0) 
-    ;str := array_append_record(file_des,str,0) 
 
-    ;str_key = [/basenaeoutfile/]
     str_list = [/str/]
 
     yaml_file = outfile + "_diag_prov.yml"
-    ;write_table(yaml_file, "a", str_key, "%s")
-    write_table(yaml_file, "a", str_list, "%s %s %s %s %s %s %s %s")
+    write_table(yaml_file, "a", str_list, "%s %s %s %s %s %s %s %s %s")
     delete(str)
 
     log_info(" write meta data to " + yaml_file)
