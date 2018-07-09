@@ -182,9 +182,11 @@ begin
       log_info(diag_script + ": var is not on a lat-lon grid")
       ; Get area data & lat-lon from another file
       ; (dataset specific: ~/reformat_scripts folder)
-      area_lon = extract_area(imod, data, "lon", var0)
-      area_lat = extract_area(imod, data, "lat", var0)
-      area_temp = extract_area(imod, data, "areacello", var0)
+      aux_vars = read_fx_data(imod, "areacello")  ; List of auxiliary variables
+      area_temp = aux_vars[0]
+      area_lat  = aux_vars[1]
+      area_lon  = aux_vars[2]
+      delete(aux_vars)
     end if
 
     ; Determine time range (years)

@@ -23,11 +23,187 @@
 ---
 datasets:
 
+  - {dataset: ACCESS1-0,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: ACCESS1-3,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: ACCESS1-3,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: ACCESS1-3,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}  
+
+  - {dataset: bcc-csm1-1,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: bcc-csm1-1,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: bcc-csm1-1,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}  
+
+  - {dataset: bcc-csm1-1-m,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: bcc-csm1-1-m,   project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: bcc-csm1-1-m,   project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}  
+
+#  - {dataset: BNU-ESM,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
   - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: CESM1-CAM5,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CESM1-CAM5,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CESM1-CAM5,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: CMCC-CM,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: CMCC-CMS,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r7i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r9i1p1,  start_year: 1960,  end_year: 2005}
 
   - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r7i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r9i1p1,  start_year: 1960,  end_year: 2005}
+
+
+
+
+
+
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r7i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: EC-EARTH,       project: CMIP5,  exp: historical,  ensemble: r9i1p1,  start_year: 1960,  end_year: 2005}
+
+#   - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+
+
+
+
+  - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: GFDL-ESM2G,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: GFDL-ESM2M,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+  
+  - {dataset: GISS-E2-H-CC,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: GISS-E2-R-CC,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
 
   - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r7i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r9i1p1,  start_year: 1960,  end_year: 2005}
+
+
+
+
+#   - {dataset: HadGEM2-CC,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: HadGEM2-CC,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: HadGEM2-CC,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  
+#   - {dataset: HadGEM2-ES,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: HadGEM2-ES,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: HadGEM2-ES,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+#   - {dataset: HadGEM2-ES,     project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+
+
+
+
+  - {dataset: inmcm4,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r6i1p1,  start_year: 1960,  end_year: 2005}
+    
+  - {dataset: IPSL-CM5A-MR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-MR,   project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: IPSL-CM5A-MR,   project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: IPSL-CM5B-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r4i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r5i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MIROC-ESM,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC-ESM,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MIROC-ESM,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MPI-ESM-LR,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MPI-ESM-LR,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MPI-ESM-LR,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MPI-ESM-MR,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MPI-ESM-MR,     project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MPI-ESM-MR,     project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}  
+  - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r4i1p2,  start_year: 1960,  end_year: 2005}
+  - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r5i1p2,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: MRI-ESM1,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+
+  - {dataset: NorESM1-M,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: NorESM1-M,      project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1960,  end_year: 2005}
+  - {dataset: NorESM1-M,      project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1960,  end_year: 2005}
+  
+  - {dataset: NorESM1-ME,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
 
   
 preprocessors:
@@ -46,11 +222,14 @@ diagnostics:
       sic:
         preprocessor: pp_noop
         mip: OImon
-        field: T2Ms 
+        field: T2Ms
+        fx_files: [areacello]
         additional_datasets:
-          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+          - {dataset: HadISST,   project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+#          - {dataset: NSIDC-NT,  project: OBS,  type: sat,      version: NH,        start_year: 1960,  end_year: 2005,  tier: 2}
+#          - {dataset: NSIDC-BT,  project: OBS,  type: sat,      version: NH,        start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
-      tsline:
+      ancyc:
         script: seaice/SeaIce_ancyc.ncl
         region: "Arctic"      # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         month: "9"            # A = annual mean, 3 = March, 9 = September
@@ -68,8 +247,11 @@ diagnostics:
         preprocessor: pp_noop
         mip: OImon
         field: T2Ms 
+        fx_files: [areacello]
         additional_datasets:
-          - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+          - {dataset: HadISST,   project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+#          - {dataset: NSIDC-NT,  project: OBS,  type: sat,      version: NH,        start_year: 1960,  end_year: 2005,  tier: 2}
+#          - {dataset: NSIDC-BT,  project: OBS,  type: sat,      version: NH,        start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
       tsline:
         script: seaice/SeaIce_tsline.ncl
@@ -88,7 +270,8 @@ diagnostics:
       sic:
         preprocessor: pp_noop
         mip: OImon
-        field: T2Ms 
+        field: T2Ms
+        fx_files: [areacello]
         additional_datasets:
           - {dataset: HadISST,  project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
     scripts:
@@ -130,52 +313,53 @@ diagnostics:
         min_lat: 60.        # Arctic plotted from 90° up to this latitude
         multi_model_mean: False
 
-  SeaIce_polcon_NH_sit:
-    description: NH polar contour plot of Arctic sea ice thickness
-    variables: 
-      sit:
-        preprocessor: pp_noop
-        mip: OImon
-        field: T2Ms 
-#        additional datasets:
-#          - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
-    scripts:
-      polcon:
-        script: seaice/SeaIce_polcon.ncl
-        region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"          # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
-                            # 1 = use only intersection of all time ranges 
-        contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
-        max_vert: 1         # max allowed number of rows on a panel page (vertical)
-        max_hori: 1         # max allowed number of columns on a panel page (horizontal)
-        max_lat: -50.       # Antarctic plotted from -90° up to this latitude
-        min_lat: 60.        # Arctic plotted from 90° up to this latitude
+#   SeaIce_polcon_NH_sit:
+#     description: NH polar contour plot of Arctic sea ice thickness
+#     variables: 
+#       sit:
+#         preprocessor: pp_noop
+#         mip: OImon
+#         field: T2Ms 
+#         fx_files: [areacello]
+#         additional datasets:
+#           - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1978,  end_year: 2005,  tier: 2}
+#     scripts:
+#       polcon:
+#         script: seaice/SeaIce_polcon.ncl
+#         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+#         month: "9"          # A = annual mean, 3 = March, 9 = September
+#         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
+#         range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
+#                             # 1 = use only intersection of all time ranges 
+#         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
+#         max_vert: 1         # max allowed number of rows on a panel page (vertical)
+#         max_hori: 1         # max allowed number of columns on a panel page (horizontal)
+#         max_lat: -50.       # Antarctic plotted from -90° up to this latitude
+#         min_lat: 60.        # Arctic plotted from 90° up to this latitude
 
-  SeaIce_polcon_diff_NH_sit:
-    description: NH polar contour difference plot of Arctic sea ice thickness
-    variables: 
-      sic:
-        preprocessor: pp_regrid
-        mip: OImon
-        field: T2Ms 
-        reference_dataset: CanESM2
-#       additional_datasets:
-#          - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1960,  end_year: 2005,  tier: 2}
-    scripts:
-      polcon_diff:
-        script: seaice/SeaIce_polcon_diff.ncl
-        region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"          # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"   # "CMIP5", "DEFAULT"
-        range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
-                            # 1 = use only intersection of all time ranges 
-        contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
-        max_vert: 1         # max allowed number of rows on a panel page (vertical)
-        max_hori: 1         # max allowed number of columns on a panel page (horizontal)
-        max_lat: -50.       # Antarctic plotted from -90° up to this latitude
-        min_lat: 60.        # Arctic plotted from 90° up to this latitude
-        grid_min: -2.
-        grid_max: 2.
-        multi_model_mean: False
+#   SeaIce_polcon_diff_NH_sit:
+#     description: NH polar contour difference plot of Arctic sea ice thickness
+#     variables: 
+#       sit:
+#         preprocessor: pp_regrid
+#         mip: OImon
+#         field: T2Ms 
+#         reference_dataset: PIOMAS
+#         additional_datasets:
+#           - {dataset: PIOMAS,  project: OBS,  type: reanaly,  version: 2-1,  start_year: 1978,  end_year: 2005,  tier: 2}
+#     scripts:
+#       polcon_diff:
+#         script: seaice/SeaIce_polcon_diff.ncl
+#         region: "Arctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+#         month: "9"          # A = annual mean, 3 = March, 9 = September
+#         styleset: "CMIP5"   # "CMIP5", "DEFAULT"
+#         range_option: 1     # 0 = use each dataset's whole time range as specified in namelist
+#                             # 1 = use only intersection of all time ranges 
+#         contour_extent: "n" # y = draw a red contour line for sic extent in polar stereographic plots
+#         max_vert: 1         # max allowed number of rows on a panel page (vertical)
+#         max_hori: 1         # max allowed number of columns on a panel page (horizontal)
+#         max_lat: -50.       # Antarctic plotted from -90° up to this latitude
+#         min_lat: 60.        # Arctic plotted from 90° up to this latitude
+#         grid_min: -2.
+#         grid_max: 2.
+#         multi_model_mean: False

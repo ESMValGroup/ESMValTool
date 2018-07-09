@@ -193,9 +193,11 @@ begin
 
       ; Get area data & lat-lon from another file
       ; (dataset specific: ~/reformat_scripts folder)
-      area_lon = extract_area(imod, data, "lon", var0)
-      area_lat = extract_area(imod, data, "lat", var0)
-      area_temp = extract_area(imod, data, "areacello", var0)
+      aux_vars  = read_fx_data(imod, "areacello")  ; list of auxiliary variables
+      area_lon  = aux_vars[2]  ; lon
+      area_lat  = aux_vars[1]  ; lat
+      area_temp = aux_vars[0]  ; areacello
+      delete(aux_vars)
     end if
 
     ; Time axis

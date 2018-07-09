@@ -236,8 +236,10 @@ begin
       log_info("SeaIce_polcon.ncl: var is not on a lat-lon grid")
       ; Get lat - lon from another file
       ; (dataset specific: ~/reformat_scripts folder)
-      area_lon = extract_area(imod, data, "lon", var0)
-      area_lat = extract_area(imod, data, "lat", var0)
+      aux_vars = read_fx_data(imod, "areacello")
+      area_lon = aux_vars[2]
+      area_lat = aux_vars[1]
+      delete(aux_vars)
     end if
     var@lat2d = area_lat
     var@lon2d = area_lon
