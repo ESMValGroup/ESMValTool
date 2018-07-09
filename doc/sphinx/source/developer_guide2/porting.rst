@@ -35,6 +35,8 @@ A xml2yml converter is available in ``esmvaltool/utils/xml2yml/``, please refer 
 
 Once the recipe is converted, a first attempt to run it can be done, possibly starting with a few datasets and one diagnostics and proceed gradually. The recipe file ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases.
 
+Do not forget to also rewrite the recipe header in a ``documentation`` section using the yaml syntax and, if possible, to add  themes and realms item to each diagnostic section. All keys and tags used for this part must be defined in ``./esmvaltool/config-references.yml``. See ``./esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml`` for an example.
+
 Create a copy of the diag script in v2.0
 ========================================
 
@@ -151,6 +153,14 @@ Move diagnostic- and variable-specific settings to the recipe
 ===============================================================
 
 In the new version, all settings are centralized in the recipe, completely replacing the diagnostic-specific settings in ``./nml/cfg_files/`` (passed as ``diag_script_info`` to the diagnostic scripts) and the variable-specific settings in ``variable_defs/<variable>.ncl`` (passed as ``variable_info``). There is also no distinction anymore between diagnostic- and variable-specific settings: they are collectively defined in the ``scripts`` dictionary of each diagnostic in the recipe and passed as ``diag_script_info`` attributes by the new ESMValTool interface. Note that the ``variable_info`` logical still exists, but it is used to pass variable information as given in the corresponding dictionary of the recipe.
+
+Make sure the diagnostic script writes NetCDF output
+======================================================
+
+Each diagnostic script is required to write the output of the anaylsis in one or more NetCDF files. This is to give the user the possibility to further look into the results, besides the plots, but (most importantly) for tagging purposes when publishing the data in a report and/or on a website. 
+
+For each of the plot produced by the diagnostic script a single NetCDF file has to be generated. The variable saved in this file should also contain all the necessary metadata that documents the plot (dataset names, units, statistical methods, etc.).
+The files have to be saved in the work directory (defined in `cfg['work_dir']` and `config_user_info@work_dir`, for the python and NCL diagnostics, respectively).
 
 Test the recipe/diagnostic in the new version
 ===============================================
