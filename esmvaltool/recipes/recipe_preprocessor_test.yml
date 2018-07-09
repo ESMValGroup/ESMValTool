@@ -25,6 +25,7 @@ preprocessors:
       exclude: [NCEP]   
 
   preprocessor_2:
+    order: [regrid, extract_levels, mask_fillvalues, multi_model_statistics]
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev10}
       scheme: nearest

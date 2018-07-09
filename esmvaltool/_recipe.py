@@ -15,6 +15,7 @@ from ._data_finder import (get_input_filelist, get_input_filename,
                            get_start_end_year, get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
+from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -85,13 +86,33 @@ def check_recipe(filename):
 def check_preprocessors(preprocessors):
     """Check preprocessors in recipe"""
     preprocessor_functions = set(preprocessor.DEFAULT_ORDER)
-    for name, settings in preprocessors.items():
-        invalid_functions = set(settings) - preprocessor_functions
-        if invalid_functions:
+    for name, profile in preprocessors.items():
+        profile = copy.deepcopy(profile)
+        order = profile.pop('order', [])
+        for steps in profile, order:
+            invalid_functions = set(steps) - preprocessor_functions
+            if invalid_functions:
+                raise RecipeError(
+                    "Unknown function(s) {} in preprocessor {}, choose from: "
+                    "{}".format(', '.join(invalid_functions), name,
+                                ', '.join(preprocessor.DEFAULT_ORDER)))
+        if not order:
+            # Skip order checking if no custom order specified.
+            continue
+        disallowed = set(order).intersection(INITIAL_STEPS + FINAL_STEPS)
+        if disallowed:
             raise RecipeError(
-                "Unknown function(s) {} in preprocessor {}, choose from: {}"
-                .format(invalid_functions, name,
-                        ', '.join(preprocessor.DEFAULT_ORDER)))
+                "The order of step(s) {} cannot be set in the recipe, please "
+                "remove those from the order of preprocessor {}".format(
+                    ', '.join(disallowed), name))
+        order = INITIAL_STEPS + tuple(order) + FINAL_STEPS
+        unknown_order = set(step for step in profile if step not in order)
+        if unknown_order:
+            raise RecipeError(
+                "The order of all preprocessing steps used must be specified "
+                "when using a custom order. Current order: {}. Please add "
+                "step(s) {} to preprocessor '{}'.".format(
+                    order, ', '.join(unknown_order), name))
 
 
 def check_diagnostics(diagnostics):
@@ -569,12 +590,31 @@ def _check_multi_model_settings(all_settings):
                         result, settings[step], filename))
 
 
+def _extract_preprocessor_order(profile):
+    """Extract the order of the preprocessing steps from the profile."""
+    if 'order' not in profile:
+        return DEFAULT_ORDER
+    return INITIAL_STEPS + tuple(profile.pop('order')) + FINAL_STEPS
+
+
+def _split_derive_profile(profile):
+    """Split the derive preprocessor profile"""
+    order = profile.pop('order', None)
+    before, after = preprocessor.split_settings(profile, 'derive')
+    after['derive'] = {}
+    if order:
+        before['order'] = order
+        after['order'] = order
+    return before, after
+
+
 def _get_single_preprocessor_task(variables,
                                   profile,
                                   config_user,
                                   ancestors=None):
     """Create preprocessor tasks for a set of datasets."""
     # Configure preprocessor
+    order = _extract_preprocessor_order(profile)
     all_settings = _get_preprocessor_settings(
         variables=variables, profile=profile, config_user=config_user)
 
@@ -593,6 +633,7 @@ def _get_single_preprocessor_task(variables,
         output_dir=output_dir,
         ancestors=ancestors,
         input_files=input_files,
+        order=order,
         debug=config_user['save_intermediary_cubes'])
 
     return task
@@ -620,9 +661,7 @@ def _get_preprocessor_task(variables,
     derive_tasks = []
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
-        derive_profile, profile = preprocessor.split_settings(
-            profile, 'derive')
-        profile['derive'] = {}
+        derive_profile, profile = _split_derive_profile(profile)
 
         derive_input = {}
         for variable in variables:
