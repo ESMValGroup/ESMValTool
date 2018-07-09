@@ -77,7 +77,7 @@ def check_recipe(filename):
         raw_recipe = yaml.safe_load(file)
 
     # TODO: add more checks?
-    check_preprocessors(raw_recipe['preprocessors'])
+    check_preprocessors(raw_recipe.get('preprocessors', {}))
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -245,10 +245,14 @@ def _add_cmor_info(variable, override=False):
         variable['mip'], variable['short_name'])
 
     for key in cmor_keys:
-        if key not in variable or override and hasattr(table_entry, key):
-            value = getattr(table_entry, key)
+        if key not in variable or override:
+            value = getattr(table_entry, key, None)
             if value is not None:
                 variable[key] = value
+            else:
+                logger.debug(
+                    "Failed to add key %s to variable %s from CMOR table", key,
+                    variable)
 
     # Check that keys are available
     check_variable(variable, required_keys=cmor_keys)
@@ -448,8 +452,7 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save'] = {
-        'compress': config_user['compress_netcdf']}
+    settings['save'] = {'compress': config_user['compress_netcdf']}
 
     return settings
 
@@ -679,7 +682,7 @@ class Recipe(object):
         """Parse a recipe file into an object."""
         self._cfg = config_user
         self._recipe_file = os.path.basename(recipe_file)
-        self._preprocessors = raw_recipe['preprocessors']
+        self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
         self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
@@ -787,8 +790,8 @@ class Recipe(object):
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_name
             raw_variable['diagnostic'] = diagnostic_name
-            raw_variable['preprocessor'] = str(raw_variable.get('preprocessor',
-                                                                'default'))
+            raw_variable['preprocessor'] = str(
+                raw_variable.get('preprocessor', 'default'))
             preprocessor_output[variable_name] = \
                 self._initialize_variables(raw_variable, raw_datasets)
 
