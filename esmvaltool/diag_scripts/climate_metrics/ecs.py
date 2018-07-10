@@ -149,13 +149,10 @@ def main(cfg):
     # Read data
     ###########################################################################
 
-    # Create iris cube for each dataset
+    # Create iris cube for each dataset and save annual means
     for dataset_path in data:
         cube = iris.load(dataset_path, var.standard_names())[0]
-
-        # Annual means
         cube = cube.aggregated_by(n.YEAR, iris.analysis.MEAN)
-
         data.set_data(cube.data, dataset_path)
 
     ###########################################################################
