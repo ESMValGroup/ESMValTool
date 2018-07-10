@@ -17,10 +17,9 @@ Description
     ch. 9, fig. 9.42a).
 
 Configuration options
----------------------
-    plot_ecs_regression : Switch to plot the linear regressions needed for the
-                          ECS calculations.
-    plot_name           : Name of plot file.
+--------------------, {}-
+    ecs_filename        : Name of the netcdf in which the ECS data is saved.
+    output_name         : Name of the output files.
     save                : Keyword arguments for the fig.saveplot() function.
     axes_functions      : Plot appearance functions.
 
@@ -32,6 +31,7 @@ Configuration options
 import logging
 import os
 from datetime import datetime
+from pprint import pprint
 
 import iris
 
@@ -46,14 +46,14 @@ def plot_data(cfg, datasets):
     if not cfg[n.WRITE_PLOTS]:
         return
     filepath = os.path.join(cfg[n.PLOT_DIR],
-                            cfg.get('plot_name', 'ch09_fig09-42a') + '.' +
+                            cfg.get('output_name', 'fig09-42a') + '.' +
                             cfg[n.OUTPUT_FILE_TYPE])
     x_data = []
     y_data = []
     dataset_names = []
     plot_kwargs = []
-    names = datasets.get_info_list(n.DATASET, short_name='ecs', exp=DIFF)
-    ecs_data = datasets.get_data_list(short_name='ecs', exp=DIFF)
+    names = datasets.get_info_list(n.DATASET, short_name='ecs')
+    ecs_data = datasets.get_data_list(short_name='ecs')
 
     # Historical
     x_data.extend(ecs_data)
@@ -79,20 +79,20 @@ def plot_data(cfg, datasets):
         dataset_names,
         filepath,
         plot_kwargs=plot_kwargs,
-        save_kwargs=cfg.get('save'),
-        axes_functions=cfg.get('axes_functions'))
+        save_kwargs=cfg.get('save', {}),
+        axes_functions=cfg.get('axes_functions', {}))
     return
 
 
 def write_data(cfg, datasets, variables):
     """Write netcdf file."""
     if cfg[n.WRITE_PLOTS]:
-        data_ecs = datasets.get_data_list(short_name='ecs', exp=DIFF)
+        data_ecs = datasets.get_data_list(short_name='ecs')
         data_tas_hist = datasets.get_data_list(short_name='tas',
                                                exp=HISTORICAL)
         data_tas_picontrol = datasets.get_data_list(short_name='tas',
                                                     exp=PICONTROL_TEMP_MEAN)
-        models = datasets.get_info_list(n.DATASET, short_name='ecs', exp=DIFF)
+        models = datasets.get_info_list(n.DATASET, short_name='ecs')
         dataset_coord = iris.coords.AuxCoord(models, long_name='models')
         tas_hist_coord = iris.coords.AuxCoord(
             data_tas_hist,
@@ -150,6 +150,7 @@ def main(cfg):
     ###########################################################################
     # Read recipe data
     ###########################################################################
+    pprint(cfg)
 
     # Dataset data containers
     data = e.Datasets(cfg)
@@ -160,6 +161,12 @@ def main(cfg):
     logging.debug("Found variables in recipe:\n%s", var)
     var.add_var(ecs=ECS)
 
+    # Get ECS data
+    if len(cfg[n.INPUT_FILES]) != 1:
+        logging.warning("No/more than one ecs input files are given")
+    ecs_filepath = os.path.join(cfg[n.INPUT_FILES][0],
+                                cfg.get('ecs_filename', 'ecs') + '.nc')
+
     ###########################################################################
     # Read data
     ###########################################################################
@@ -168,12 +175,17 @@ def main(cfg):
     for dataset_path in data:
         cube = iris.load(dataset_path, var.standard_names())[0]
 
-        # Temporal means
+        # Total temporal means
         cube = cube.collapsed([n.TIME], iris.analysis.MEAN)
-
         data.set_data(cube.data, dataset_path)
 
-    # TODO: Read ECS data
+    # Create iris cube for ECS data
+    cube = iris.load_cube(ecs_filepath)
+    for (idx, model) in enumerate(cube.coord('datasets').points):
+        data.add_dataset('ecs_' + model,
+                         data=cube.data[idx],
+                         short_name='ecs')
+        print("{}: {}".format(model, cube.data[idx]))
 
     ###########################################################################
     # Plot data
