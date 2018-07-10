@@ -154,8 +154,8 @@ class Variables(object):
         Returns
         -------
         dict
-            Dictinoary contating all attributes of the variable which can be
-            used in iris (`short_name` replaced by `var_name`).
+            Dictionary containing all attributes of the variable which can be
+            used directly in iris (`short_name` replaced by `var_name`).
 
         """
         iris_dict = self._dict[var]._asdict()

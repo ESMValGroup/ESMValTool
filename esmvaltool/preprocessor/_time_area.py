@@ -113,7 +113,7 @@ def area_average(mycube, coord1, coord2):
     Returns a cube
     """
     import iris.analysis.cartography
-    for coord in [coord1, coord2]:
+    for coord in (coord1, coord2):
         if not mycube.coord(coord).has_bounds():
             mycube.coord(coord).guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(mycube)
