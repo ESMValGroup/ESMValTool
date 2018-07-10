@@ -96,12 +96,12 @@ def write_data(cfg, datasets, variables):
         dataset_coord = iris.coords.AuxCoord(models, long_name='models')
         tas_hist_coord = iris.coords.AuxCoord(
             data_tas_hist,
-            **variables.iris_dict('tas'),
-            attributes={'experiment': HISTORICAL})
+            attributes={'experiment': HISTORICAL},
+            **variables.iris_dict('tas'))
         tas_picontrol_coord = iris.coords.AuxCoord(
             data_tas_picontrol,
-            **variables.iris_dict('tas'),
-            attributes={'experiment': PICONTROL})
+            attributes={'experiment': PICONTROL},
+            **variables.iris_dict('tas'))
         attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
                               ', diagnostic {}'.format(cfg[n.SCRIPT]),
                 'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
