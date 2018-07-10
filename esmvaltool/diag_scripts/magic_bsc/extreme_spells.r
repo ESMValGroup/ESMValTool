@@ -28,13 +28,15 @@ model_names <- unname(model_names)
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
+
 experiment <- lapply(input_files_per_var, function(x) x$exp)
 experiment <- unlist(unname(experiment))
 
 
-
-reference_files <- which(unname(experiment) == "historical")
+reference_files <- which(unname(experiment) == "historical")[1]
 projection_files <- which(unname(experiment) != "historical")
+projection_files <- which(unname(experiment) == "historical")[c(2,3)] # Remove after check it works
+
 rcp_scenario <- unique(experiment[projection_files])
 model_names <-  lapply(input_files_per_var, function(x) x$model)
 model_names <- unlist(unname(model_names))[projection_files]
@@ -49,8 +51,7 @@ start_projection <- c(unlist(unname(start_projection))[projection_files])[1]
 end_projection <- lapply(input_files_per_var, function(x) x$end_year)
 end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
-print(start_climatology)
-print(end_projection)
+
 
 ## Do not print warnings
 #options(warn=-1)
@@ -63,7 +64,7 @@ spell_length <- params$min_duration
 
 reference_filenames <-  fullpath_filenames[reference_files]
 
-historical_data <-  <- Start(model = reference_filenames,
+historical_data  <- Start(model = reference_filenames,
                          var = var0,
                          var_var = 'var_names',
                          time = 'all',
@@ -77,7 +78,7 @@ historical_data <-  <- Start(model = reference_filenames,
 base_range <- c(as.numeric(substr(start_reference, 1, 4)), as.numeric(substr(end_reference, 1, 4)))
 threshold <- Threshold(historical_data, base_range = base_range, qtiles = qtile, ncores = NULL)
 
-projection_filenames <-  projection_filenames[projection_files]
+projection_filenames <-  fullpath_filenames[projection_files]
 
 for (i in 1 : length(projection_filenames)) {
     projection_data <- Start(model = projection_filenames[i],
@@ -90,7 +91,8 @@ for (i in 1 : length(projection_filenames)) {
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
 
- heatwave <- Heatwave(rcp_data, threshold, op = op, spell_length = spell_length, by.seasons = TRUE, ncores = NULL)
+ heatwave <- Heatwave(projection_data, threshold, op = op, spell_length = spell_length, by.seasons = TRUE, ncores = NULL)
+
   if (var0 == "tasmax") {
     ## Select summer season
     heatwave_season <- heatwave$result[seq(2, dim(heatwave$result)[1] - 2, by = 4), 1, 1, , ]
@@ -101,8 +103,8 @@ for (i in 1 : length(projection_filenames)) {
     years <-  as.numeric(substr(start_projection, 1, 4)) : as.numeric(substr(end_projection, 1, 4))
   }
 
-  lat <- attr(rcp_data, "Variables")$dat1$lat
-  lon <- attr(rcp_data, "Variables")$dat1$lon
+  lat <- attr(projection_data, "Variables")$dat1$lat
+  lon <- attr(projection_data, "Variables")$dat1$lon
   lon[lon > 180] <- lon[lon > 180] - 360
   lon_order <- sort(lon, index.return = TRUE)
   data <- heatwave_season
