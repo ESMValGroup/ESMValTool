@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 # Global variables
 DEFAULT_INFO = 'not_specified'
-INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
@@ -82,7 +81,7 @@ class Variables(object):
         if cfg is not None:
             success = True
             if isinstance(cfg, dict):
-                data = cfg.get(INPUT_DATA)
+                data = cfg.get(n.INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
                         name = info.get(n.SHORT_NAME, DEFAULT_INFO)
@@ -331,7 +330,7 @@ class Datasets(object):
         self._data = {}
         success = True
         if isinstance(cfg, dict):
-            input_data = cfg.get(INPUT_DATA)
+            input_data = cfg.get(n.INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
                     dataset_info = input_data[path]

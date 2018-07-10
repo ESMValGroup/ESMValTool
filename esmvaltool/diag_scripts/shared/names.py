@@ -24,6 +24,8 @@ STANDARD_NAME = 'standard_name'
 UNITS = 'units'
 VAR_NAME = 'var_name'
 
+INPUT_DATA = 'input_data'
+INPUT_FILES = 'input_files'
 OUTPUT_FILE_TYPE = 'output_file_type'
 PLOT_DIR = 'plot_dir'
 SCRIPT = 'script'
