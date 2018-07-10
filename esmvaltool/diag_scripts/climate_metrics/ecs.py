@@ -18,7 +18,7 @@ Description
 Configuration options
 ---------------------
     plot_regression : Switch to plot the linear regression.
-    output_name     : Name of the output file.
+    output_name     : Name of the output files.
 
 ###############################################################################
 
@@ -187,10 +187,9 @@ def main(cfg):
     ###########################################################################
     # Write data
     ###########################################################################
-    print(data_ecs)
-    if cfg[n.WRITE_PLOTS]:
+    if cfg[n.WRITE_NETCDF]:
         dataset_coord = iris.coords.AuxCoord(list(data_ecs),
-                                             long_name='models')
+                                             long_name='datasets')
         attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
                               ', diagnostic {}'.format(cfg[n.SCRIPT]),
                 'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
