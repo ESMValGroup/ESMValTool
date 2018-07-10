@@ -93,9 +93,9 @@ def plot_ecs_regression(cfg, dataset_name, data, variables, regression_stats):
                           ', diagnostic {}'.format(cfg[n.SCRIPT]),
             'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
     cube = iris.cube.Cube(data[1],
-                          **variables.iris_dict('rtmt'),
                           attributes=attr,
-                          aux_coords_and_dims=[(tas_coord, 0)])
+                          aux_coords_and_dims=[(tas_coord, 0)],
+                          **variables.iris_dict('rtmt'))
     filepath = os.path.join(cfg[n.WORK_DIR],
                             'ecs_regression_' + dataset_name + '.nc')
     iris.save(cube, filepath)
