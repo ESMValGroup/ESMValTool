@@ -33,9 +33,8 @@ experiment <- lapply(input_files_per_var, function(x) x$exp)
 experiment <- unlist(unname(experiment))
 
 
-reference_files <- which(unname(experiment) == "historical")[1]
+reference_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
-projection_files <- which(unname(experiment) == "historical")[c(2,3)] # Remove after check it works
 
 rcp_scenario <- unique(experiment[projection_files])
 model_names <-  lapply(input_files_per_var, function(x) x$model)
