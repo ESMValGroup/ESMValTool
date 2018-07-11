@@ -12,16 +12,20 @@ dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
+
 input_files <- lapply(var_names, function(x) names(input_files_per_var[[x]]))
 names(input_files) <- var_names
-model_names <- lapply(input_files_per_var, function(x) unname(sapply(x, '[[', 'model')))
+model_names <- lapply(input_files_per_var, function(x) x$dataset)
+model_names <- unlist(unname(model_names))
+
 
 ## Do not print warnings
 #options(warn=-1)
 
 
 #Var considered
-var0 <- var_names[1]
+var0 <- lapply(input_files_per_var, function(x) x$short_name)
+
 
 #Region considered
 lat.max <- params$lat_max
@@ -43,22 +47,24 @@ EOFS <- params$EOFS
 
 
 library(s2dverification)
-library(startR)
 library(ggplot2)
 library(multiApply)
 library(devtools)
+library(startR)
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/WeatherRegime.R')
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-debug-plot-ts/R/PlotTimeSeries.R')
 
-fullpath_filenames <- input_files[[var0]]
+
+fullpath_filenames <- names(var0)
+var0 <- unname(var0)[1]
 data <- Start(model = fullpath_filenames,
               var = var0,
               var_var = 'var_names',
               #  sdate = paste0(seq(1970, 2000, by = 1), "0101"),
-              time = values(list(as.POSIXct(start_historical), 
+              time = values(list(as.POSIXct(start_historical),
                                  as.POSIXct(end_historical))),
-              time_tolerance = as.difftime(15, units = 'days'), 
+              time_tolerance = as.difftime(15, units = 'days'),
               lat = values(list(lat.min, lat.max)),
               lon = values(list(lon.min, lon.max)),
               lon_var = 'lon',
@@ -89,9 +95,10 @@ clim <- Clim(var_exp = data,var_obs = data,memb=T)
 anom_obs <- Ano(data, clim$clim_obs)
 #anom_exp<-Ano(data$mod,clim_smoothed_exp)
 
-WR_obs <- WeatherRegime(data = anom_obs, EOFS = FALSE, lat_weights = TRUE, lat = lat, lon = lon, 
+#WR_obs <- WeatherRegime(data = anom_obs, EOFS = FALSE, lat_weights = TRUE, lat = lat, lon = lon,
+#                        ncenters = ncenters, method = cluster_method)
+WR_obs <- WeatherRegime(data = anom_obs, EOFS = FALSE, lat = lat, lon = lon,# lat_weights = FALSE,
                         ncenters = ncenters, method = cluster_method)
-
 titles<-paste0('freq = ', round(WR_obs$frequency, 1), '%')
 PlotLayout(PlotEquiMap,c(1,2),lon=lon,lat=lat,var=WR_obs$composite/100,
            titles=paste0(paste0('Cluster ',1:4),' (',paste0('freq = ',round(WR_obs$frequency,1),'%'),' )'),filled.continents=F,
