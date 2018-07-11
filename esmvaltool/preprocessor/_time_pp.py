@@ -11,7 +11,7 @@ import numpy as np
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
+def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
     """
     Slice cube on time
 
@@ -24,7 +24,7 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     Returns a cube
     """
     import datetime
-    time_units = mycube.coord('time').units
+    time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
         if d1 > 30:
             d1 = 30
@@ -39,56 +39,68 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     # my_constraint = iris.Constraint(time=lambda t: (
     #     time1 < time_units.date2num(t.point) < time2))
     my_constraint = iris.Constraint(time=lambda t: (time1 < t.point < time2))
-    cube_slice = mycube.extract(my_constraint)
+    cube_slice = cube.extract(my_constraint)
     return cube_slice
 
 
 # get the time average
-def time_average(mycube):
-    """Get the time average over MEAN; returns a cube"""
-    time = mycube.coord('time')
+def time_average(cube):
+    """
+    Get the time average over the entire cube. The average is weighted by the
+    bounds of the time coordinate.
+
+    Arguments
+    ---------
+        cube: input cube.
+
+    Returns
+    -------
+        time averaged cube.
+    """
+
+    time = cube.coord('time')
     time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
 
     # The weights need to match the dimensionality of the cube.
-    slices = [None for i in mycube.shape]
-    coord_dim = mycube.coord_dims('time')[0]
+    slices = [None for i in cube.shape]
+    coord_dim = cube.coord_dims('time')[0]
     slices[coord_dim] = slice(None)
     time_thickness = np.abs(time_thickness[tuple(slices)])
-    ones = np.ones_like(mycube.data)
+    ones = np.ones_like(cube.data)
     time_weights = time_thickness * ones
 
-    return mycube.collapsed('time', iris.analysis.MEAN,
-                            weights=time_weights)
+    return cube.collapsed('time', iris.analysis.MEAN,
+                          weights=time_weights)
 
 
 # get the probability a value is greater than a threshold
-def proportion_greater(mycube, coord1, threshold):
+def proportion_greater(cube, coord1, threshold):
     """
     Proportion greater
 
     Return the probability that a cetain variable coord1 (string)
     is greater than a threshold threshold (float or string),
-    across a cube mycube; returns a cube
+    across a cube cube; returns a cube
     """
     thr = float(threshold)
-    result = mycube.collapsed(
+    result = cube.collapsed(
         coord1, iris.analysis.PROPORTION, function=lambda values: values > thr)
     return result
 
 
 # get the seasonal mean
-def seasonal_mean(mycube):
+def seasonal_mean(cube):
     """
     Function to compute seasonal means with MEAN
 
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
-    iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
+    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     iris.coord_categorisation.add_season_year(
-        mycube, 'time', name='season_year')
-    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
-                                                iris.analysis.MEAN)
+        cube, 'time', name='season_year')
+    annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
+                                              iris.analysis.MEAN)
 
     def spans_three_months(time):
         """Check for three months"""

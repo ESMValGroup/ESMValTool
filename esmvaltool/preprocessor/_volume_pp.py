@@ -9,101 +9,164 @@ import numpy as np
 
 
 # slice cube over a restricted area (box)
-def volume_slice(mycube, z_min, z_max):
+def volume_slice(cube, z_min, z_max):
     """
     Subset a cube on volume
 
     Function that subsets a cube on a box (z_min,z_max)
     This function is a restriction of masked_cube_lonlat();
-    Returns a cube
-    """
-    subz = iris.Constraint(
-        depth=lambda cell: float(z_min) <= cell <= float(z_max))
+    Note that this requires the requested depth range to be the same sign
+    as the iris cube. ie, if the cube has depth as negative, then z_min
+    and z_max need to be negative numbers.
 
-    region_subset = mycube.extract(subz)
+    Arguments
+    ---------
+        cube: input cube.
+        z_min: minimum depth to extract.
+        z_max: maximum depth to extract.
+
+    Returns
+    -------
+        extracted cube.
+    """
+    if z_min > z_max:
+        # minimum is below maximum, so switch them around
+        zmax = z_min
+        zmin = z_max
+    else:
+        zmax = z_max
+        zmin = z_min
+
+    subz = iris.Constraint(
+        depth=lambda cell: float(zmin) <= cell <= float(zmax))
+
+    region_subset = cube.extract(subz)
     return region_subset
 
 
-def volume_average(mycube, coordz, coord1, coord2):
+def volume_average(cube, coordz, coord1, coord2):
     """
-    Determine the area average.
+    Determine the volume average.
 
-    Can be used with coord1 and coord2 (strings,
-    usually 'longitude' and 'latitude' but depends on the cube);
+    The volume average is weighted acoording to the cell volume. Cell volume
+    is calculated from iris's cartography tool multiplied by the cell
+    thickness.
 
-    Returns a cube
+    Arguments
+    ---------
+        cube: input cube.
+        coordz: name of depth coordinate
+        coord1: name of first coordinate
+        coord2: name of second coordinate
+
+    Returns
+    -------
+        collapsed cube.
     """
     # CMOR ised data should already have bounds?
-    #    mycube.coord(coord1).guess_bounds()
-    #    mycube.coord(coord2).guess_bounds()
+    #    cube.coord(coord1).guess_bounds()
+    #    cube.coord(coord2).guess_bounds()
 
-    depth = mycube.coord(coordz)
+    depth = cube.coord(coordz)
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
-    area = iris.analysis.cartography.area_weights(mycube)
+    area = iris.analysis.cartography.area_weights(cube)
 
     if depth.ndim == 1:
-        slices = [None for i in mycube.shape]
-        coord_dim = mycube.coord_dims(coordz)[0]
+        slices = [None for i in cube.shape]
+        coord_dim = cube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
         thickness = np.abs(thickness[tuple(slices)])
 
     grid_volume = area * thickness
 
-    result = mycube.collapsed(
+    result = cube.collapsed(
         [coordz, coord1, coord2], iris.analysis.MEAN, weights=grid_volume)
 
     return result
 
 
 # get the depth integration
-def depth_integration(mycube, coordz):
+def depth_integration(cube, coordz):
     """
     Determine the total sum over the vertical component.
 
-    Requires a 3D cube, and the name of the z coordinate.
-    Returns a cube 2D.
+    Requires a 3D cube, and the name of the z coordinate. The depth
+    integration is calculated by taking the sum in the z direction
+    of the cell contents multiplied by the cell thickness.
+
+    Arguments
+    ---------
+        cube: input cube.
+        coordz: name of depth coordinate
+
+    Returns
+    -------
+        collapsed cube.
     """
     ####
-    depth = mycube.coord(coordz)
+    depth = cube.coord(coordz)
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
     if depth.ndim == 1:
-        slices = [None for i in mycube.shape]
-        coord_dim = mycube.coord_dims(coordz)[0]
+        slices = [None for i in cube.shape]
+        coord_dim = cube.coord_dims(coordz)[0]
         slices[coord_dim] = slice(None)
         thickness = np.abs(thickness[tuple(slices)])
 
-    ones = np.ones_like(mycube.data)
+    ones = np.ones_like(cube.data)
 
     weights = thickness * ones
 
-    result = mycube.collapsed(coordz, iris.analysis.SUM,
-                              weights=weights)
+    result = cube.collapsed(coordz, iris.analysis.SUM,
+                            weights=weights)
 
-    result.rename('Depth_integrated_' + str(mycube.name()))
+    result.rename('Depth_integrated_' + str(cube.name()))
     # result.units = Unit('m') * result.units # This doesn't work:
     # TODO: Change units on cube to reflect 2D concentration (not 3D)
     # Waiting for news from iris community.
     return result
 
 
-def extract_transect(mycube, latitude=None, longitude=None):
+def extract_transect(cube, latitude=None, longitude=None):
     """
     Extract data along a line of constant latitude or longitude.
 
-    A range may also be extracted using a minimum and maximum
-    value for latitude or longitude.
+    Both arguments, latitude and longitude, are treated identically.
+    Either argument can be a single float, or a pair of floats, or can be
+    left empty.
+    The single float indicates the latitude or longitude along which the
+    transect should be extracted.
+    A pair of floats indicate the range that the transect should be
+    extracted along the secondairy axis.
+
+    ie:
+      extract_transect(cube, longitude=-28)
+        will produce a transect along 28 West.
+
+      extract_transect(cube, longitude=-28, latitude=[-50,50])
+        will produce a transect along 28 West  between 50 south and 50 North.
 
     This function is not yet implemented for irregular arrays - instead
     try the extract_trajectory function, but note that it is currently
-    very slow.
+    very slow. Alternatively, use the regrid preprocessor to regrid along
+    a regular grid and then extract the transect.
+
+    Arguments
+    ---------
+        cube: input cube.
+        latitude: transect latiude or range.
+        longitude: transect longitude or range.
+
+    Returns
+    -------
+        collapsed cube.
     """
     ####
     coord_dim2 = False
     second_coord_range = False
-    lats = mycube.coord('latitude')
-    lons = mycube.coord('longitude')
+    lats = cube.coord('latitude')
+    lons = cube.coord('longitude')
 
     if lats.ndim == 2:
         raise ValueError(
@@ -125,27 +188,27 @@ def extract_transect(mycube, latitude=None, longitude=None):
         # Look for the first coordinate.
         if isinstance(dim_cut, float):
             coord_index = lats.nearest_neighbour_index(dim_cut)
-            coord_dim = mycube.coord_dims(dim_name)[0]
+            coord_dim = cube.coord_dims(dim_name)[0]
 
         #####
         # Look for the second coordinate.
         if isinstance(dim_cut, list):
-            coord_dim2 = mycube.coord_dims(dim_name)[0]
+            coord_dim2 = cube.coord_dims(dim_name)[0]
             second_coord_range = [coord.nearest_neighbour_index(dim_cut[0]),
                                   coord.nearest_neighbour_index(dim_cut[1])]
     #####
     # Extracting the line of constant longitude/latitude
-    slices = [slice(None) for i in mycube.shape]
+    slices = [slice(None) for i in cube.shape]
     slices[coord_dim] = coord_index
 
     if second_coord_range:
         slices[coord_dim2] = slice(second_coord_range[0],
                                    second_coord_range[1])
-    return mycube[tuple(slices)]
+    return cube[tuple(slices)]
 
 
 # extract along a trajectory
-def extract_trajectory(mycube, latitudes, longitudes, number_points):
+def extract_trajectory(cube, latitudes, longitudes, number_points=2):
     """
     Extract data along a trajectory.
 
@@ -154,6 +217,26 @@ def extract_trajectory(mycube, latitudes, longitudes, number_points):
 
     This version uses the expensive interpolate method, but it may be
     necceasiry for irregular grids.
+
+    If only two latitude and longitude coordinates are given,
+    extract_trajectory will produce a cube will extrapolate along a line
+    bewteen those two points, and will add `number_points` points between
+    the two corners.
+
+    If more than two points are provided, then
+    extract_trajectory will produce a cube which has extrapolated the data
+    of the cube to those points, and `number_points` is not needed.
+
+    Arguments
+    ---------
+        cube: input cube.
+        latitudes: list of latitude coordinates.
+        longitudes: list of longitude coordinates.
+        number_points: number of points to extrapolate (optional).
+
+    Returns
+    -------
+        collapsed cube.
     """
     from iris.analysis.trajectory import interpolate
     import numpy as np
@@ -171,5 +254,5 @@ def extract_trajectory(mycube, latitudes, longitudes, number_points):
         latitudes = np.linspace(minlon, maxlon, num=number_points)
 
     points = [('latitude', latitudes), ('longitude', longitudes)]
-    interpolated_cube = interpolate(mycube, points)  # Very slow!
+    interpolated_cube = interpolate(cube, points)  # Very slow!
     return interpolated_cube

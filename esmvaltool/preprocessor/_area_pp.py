@@ -16,7 +16,18 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
     This function is a restriction of masked_cube_lonlat();
-    Returns a cube
+
+    Arguments
+    ---------
+        cube: input cube.
+        start_longitude: Western boundary longitude.
+        end_longitude:  Eastern boundary longitude.
+        start_latitude: Southern Boundary latitude.
+        end_latitude: Northern Boundary Latitude.
+
+    Returns
+    -------
+        smaller cube.
     """
     # Converts Negative longitudes to 0 -> 360. standard
     start_longitude = float(start_longitude)
@@ -68,25 +79,34 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(mycube, coord1, coord2):
+def area_average(cube, coord1, coord2):
     """
     Determine the area average.
 
     Can be used with coord1 and coord2 (strings,
     usually 'longitude' and 'latitude' but depends on the cube);
-    Returns a cube
+
+    Arguments
+    ---------
+        cube: input cube.
+        coord1: name of first coordinate
+        coord2: name of second coordinate
+
+    Returns
+    -------
+        collapsed cube.
     """
     # CMOR ised data should already have bounds?
-    #    mycube.coord(coord1).guess_bounds()
-    #    mycube.coord(coord2).guess_bounds()
-    grid_areas = iris.analysis.cartography.area_weights(mycube)
-    result = mycube.collapsed(
+    #    cube.coord(coord1).guess_bounds()
+    #    cube.coord(coord2).guess_bounds()
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    result = cube.collapsed(
         [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
     return result
 
 
 # operate along a trajectory line
-def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
+def trajectory_cube(cube, long1, long2, lat1, lat2, plong1, plong2, plat1,
                     plat2, samplecounts):
     """
     Build a trajectory
@@ -101,7 +121,7 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
         longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
         latitude=lambda cell: float(lat1) <= cell <= float(lat2))
-    wspd_subset = mycube.extract(sublon & sublat)
+    wspd_subset = cube.extract(sublon & sublat)
     pnts = [{
         'longitude': float(plong1),
         'latitude': float(plat1)
