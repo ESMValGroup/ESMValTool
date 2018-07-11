@@ -66,7 +66,6 @@ def volume_average(cube, coordz, coord1, coord2):
     # CMOR ised data should already have bounds?
     #    cube.coord(coord1).guess_bounds()
     #    cube.coord(coord2).guess_bounds()
-
     depth = cube.coord(coordz)
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 

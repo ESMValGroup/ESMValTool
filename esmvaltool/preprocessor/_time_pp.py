@@ -57,7 +57,6 @@ def time_average(cube):
     -------
         time averaged cube.
     """
-
     time = cube.coord('time')
     time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
 
