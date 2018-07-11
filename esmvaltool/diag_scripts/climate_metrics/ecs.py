@@ -29,7 +29,6 @@ import logging
 import os
 from collections import OrderedDict
 from datetime import datetime
-from pprint import pprint
 
 import iris
 import numpy as np
@@ -132,7 +131,6 @@ def main(cfg):
     ###########################################################################
     # Read recipe data
     ###########################################################################
-    pprint(cfg)
 
     # Dataset data containers
     data = e.Datasets(cfg)

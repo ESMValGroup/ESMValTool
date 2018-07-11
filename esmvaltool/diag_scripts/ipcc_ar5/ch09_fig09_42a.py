@@ -65,8 +65,7 @@ def plot_data(cfg, datasets):
 
     # piControl
     x_data.extend(ecs_data)
-    y_data.extend(datasets.get_data_list(short_name='tas',
-                                         exp=PICONTROL_TEMP_MEAN))
+    y_data.extend(datasets.get_data_list(short_name='tas', exp=PICONTROL))
     dataset_names.extend(names)
     for name in names:
         plot_kwargs.append({'label': '_' + name, 'linestyle': 'none',
@@ -91,7 +90,7 @@ def write_data(cfg, datasets, variables):
         data_tas_hist = datasets.get_data_list(short_name='tas',
                                                exp=HISTORICAL)
         data_tas_picontrol = datasets.get_data_list(short_name='tas',
-                                                    exp=PICONTROL_TEMP_MEAN)
+                                                    exp=PICONTROL)
         models = datasets.get_info_list(n.DATASET, short_name='ecs')
         dataset_coord = iris.coords.AuxCoord(models, long_name='models')
         tas_hist_coord = iris.coords.AuxCoord(
@@ -135,7 +134,6 @@ PICONTROL = 'piControl'
 HISTORICAL = 'historical'
 ABRUPT4XCO2 = 'abrupt4xCO2'
 DIFF = 'difference of abrupt4xCO2 and piControl'
-PICONTROL_TEMP_MEAN = 'total temporal mean of piControl'
 
 
 def main(cfg):
@@ -161,10 +159,13 @@ def main(cfg):
     logging.debug("Found variables in recipe:\n%s", var)
     var.add_var(ecs=ECS)
 
-    # Get ECS data
-    if len(cfg[n.INPUT_FILES]) != 1:
-        logging.warning("No/more than one ecs input files are given")
-    ecs_filepath = os.path.join(cfg[n.INPUT_FILES][0],
+    # Get ECS data (ignore metadata.yml files)
+    input_dirs = [d for d in cfg[n.INPUT_FILES]
+                  if not d.endswith(n.METADATA_YAML_FILE)]
+    if len(input_dirs) != 1:
+        logging.error("Input files directory from ancestors should contain "
+                      "exactly one directory (ECS directory)")
+    ecs_filepath = os.path.join(input_dirs[0],
                                 cfg.get('ecs_filename', 'ecs') + '.nc')
 
     ###########################################################################
