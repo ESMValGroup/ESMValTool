@@ -17,7 +17,7 @@ Description
     ch. 9, fig. 9.42a).
 
 Configuration options
---------------------, {}-
+---------------------
     ecs_filename        : Name of the netcdf in which the ECS data is saved.
     output_name         : Name of the output files.
     save                : Keyword arguments for the fig.saveplot() function.
