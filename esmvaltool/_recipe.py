@@ -457,22 +457,36 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
-def _update_fx_settings(settings, variable):
+def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX mask settings"""
     if 'mask_landocean' in settings.keys():
         # Configure ingestion of landocean masks
         logger.debug('Getting FX mask settings now...')
+
+        # fx_files already in variable
         if variable.get('fx_files'):
-            if 'sftlf' in variable['fx_files'].keys():
-                settings['mask_landocean']['fx_file'] = \
-                    variable['fx_files']['sftlf']
-            elif 'sftof' in variable['fx_files'].keys():
-                settings['mask_landocean']['fx_file'] = \
-                    variable['fx_files']['sftof']
-            # add more file options here with elif
-            # else: return an empty value
-            else:
-                settings['mask_landocean']['fx_file'] = None
+            fx_files_dict = variable['fx_files']
+
+        # fx_files are not specified in variable
+        else:
+            variable['fx_files'] = ['sftlf', 'sftof']
+            fx_files_dict = get_input_fx_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+
+        # parse fx_files_dict for needed masking variable
+        if 'sftlf' in fx_files_dict.keys():
+            settings['mask_landocean']['fx_file'] = \
+                fx_files_dict['sftlf']
+        elif 'sftof' in fx_files_dict.keys():
+            settings['mask_landocean']['fx_file'] = \
+                fx_files_dict['sftof']
+        # add more file options here with elif
+        # else: return an empty value for Natural Earth mask use
+        else:
+            logger.debug('No sft-like FX file found...')
+            settings['mask_landocean']['fx_file'] = None
 
 
 def _get_input_files(variable, config_user):
@@ -559,7 +573,8 @@ def _get_preprocessor_settings(variables, profile, config_user):
             settings=settings,
             config_user=config_user)
         _update_fx_settings(settings=settings,
-                            variable=variable)
+                            variable=variable,
+                            config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
