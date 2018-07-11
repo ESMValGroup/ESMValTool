@@ -23,15 +23,15 @@
 ---
 
 datasets:
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2030}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2005}
  # - {model: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: bcc-csm1-1
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -46,15 +46,15 @@ diagnostics:
   risk_index:
     description: Calculate insurance risk indices.
     variables:
-      tasmax:
+      tas:
         preprocessor: preproc
-        mip: day
+        mip: Amon
         field: T2M
 
     scripts:
       main:
-        script: magic_bsc/insurance_index.r #(in diag_scripts)
+        script: magic_bsc/risk_index.r #(in diag_scripts)
 
         metric: tx90p
-
+        detrend: FALSE
 
