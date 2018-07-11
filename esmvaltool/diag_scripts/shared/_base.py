@@ -1,6 +1,7 @@
 """Convenience functions for running a diagnostic script."""
 import argparse
 import contextlib
+import glob
 import logging
 import os
 import shutil
@@ -145,12 +146,19 @@ def get_cfg(filename=None):
 
 def _get_input_data_files(cfg):
     """Get a dictionary containing all data input files."""
-    input_files = {}
+    metadata_files = []
     for filename in cfg['input_files']:
-        if os.path.basename(filename) == 'metadata.yml':
-            with open(filename) as file:
-                metadata = yaml.safe_load(file)
-                input_files.update(metadata)
+        if os.path.isdir(filename):
+            metadata_files.extend(
+                glob.glob(os.path.join(filename, '*metadata.yml')))
+        elif os.path.basename(filename) == 'metadata.yml':
+            metadata_files.append(filename)
+
+    input_files = {}
+    for filename in metadata_files:
+        with open(filename) as file:
+            metadata = yaml.safe_load(file)
+            input_files.update(metadata)
 
     return input_files
 
