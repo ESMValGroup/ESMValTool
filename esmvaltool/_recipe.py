@@ -100,9 +100,13 @@ def check_diagnostics(diagnostics):
         if 'scripts' not in diagnostic:
             raise RecipeError("Missing scripts section in diagnostic {}"
                               .format(name))
-        if diagnostic['scripts'] is None:
-            continue
-        for script_name, script in diagnostic['scripts'].items():
+        variable_names = tuple(diagnostic.get('variables', {}))
+        for script_name, script in diagnostic.get('scripts', {}).items():
+            if script_name in variable_names:
+                raise RecipeError(
+                    "Invalid script name {} encountered in diagnostic {}: "
+                    "scripts cannot have the same name as variables.".format(
+                        script_name, name))
             if not script.get('script'):
                 raise RecipeError(
                     "No script defined for script {} in diagnostic {}".format(
@@ -719,8 +723,9 @@ class Recipe(object):
                     raw_diagnostic.get('variables', {}),
                     raw_datasets +
                     raw_diagnostic.get('additional_datasets', []))
+            variable_names = tuple(raw_diagnostic.get('variables', {}))
             diagnostic['scripts'] = self._initialize_scripts(
-                name, raw_diagnostic.get('scripts'))
+                name, raw_diagnostic.get('scripts'), variable_names)
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -797,7 +802,8 @@ class Recipe(object):
 
         return preprocessor_output
 
-    def _initialize_scripts(self, diagnostic_name, raw_scripts):
+    def _initialize_scripts(self, diagnostic_name, raw_scripts,
+                            variable_names):
         """Define script in diagnostic"""
         if not raw_scripts:
             return {}
@@ -809,7 +815,7 @@ class Recipe(object):
         for script_name, raw_settings in raw_scripts.items():
             raw_script = raw_settings.pop('script')
             ancestors = []
-            for id_glob in raw_settings.pop('ancestors', []):
+            for id_glob in raw_settings.pop('ancestors', variable_names):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
@@ -837,80 +843,65 @@ class Recipe(object):
 
         return scripts
 
-    def _resolve_diagnostic_ancestors(self, diagnostic_tasks, later):
+    def _resolve_diagnostic_ancestors(self, tasks):
         """Resolve diagnostic ancestors"""
         for diagnostic_name, diagnostic in self.diagnostics.items():
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
-                if diagnostic_tasks[task_id].ancestors is later:
+                if isinstance(tasks[task_id], DiagnosticTask):
                     logger.debug("Linking tasks for diagnostic %s script %s",
                                  diagnostic_name, script_name)
                     ancestors = []
                     for id_glob in script_cfg['ancestors']:
-                        ancestor_ids = fnmatch.filter(diagnostic_tasks,
-                                                      id_glob)
+                        ancestor_ids = fnmatch.filter(tasks, id_glob)
                         if not ancestor_ids:
                             raise RecipeError(
                                 "Could not find any ancestors matching {}"
                                 .format(id_glob))
                         logger.debug("Pattern %s matches %s", id_glob,
                                      ancestor_ids)
-                        ancestors.extend(diagnostic_tasks[ancestor_id]
-                                         for ancestor_id in ancestor_ids)
-                    diagnostic_tasks[task_id].ancestors = ancestors
+                        ancestors.extend(tasks[a] for a in ancestor_ids)
+                    tasks[task_id].ancestors = ancestors
 
     def initialize_tasks(self):
         """Define tasks in recipe"""
         logger.info("Creating tasks from recipe")
-        tasks = []
+        tasks = {}
 
-        diagnostic_tasks = {}
-        later = object()
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            preproc_tasks = []
             for variable_name in diagnostic['preprocessor_output']:
-                logger.info("Creating preprocessor tasks for variable %s",
-                            variable_name)
+                task_id = diagnostic_name + TASKSEP + variable_name
+                logger.info("Creating preprocessor task %s", task_id)
                 task = _get_preprocessor_task(
                     variables=diagnostic['preprocessor_output'][variable_name],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     write_ncl_interface=self._support_ncl)
-                preproc_tasks.append(task)
-            tasks.extend(preproc_tasks)
+                tasks[task_id] = task
+
+            if not self._cfg['run_diagnostic']:
+                continue
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
                 logger.info("Creating diagnostic task %s", task_id)
-                # Ancestors will be resolved after creating all tasks,
-                # unless there aren't any, in which case we set them to the
-                # preprocessor tasks.
-                ancestors = later if script_cfg['ancestors'] else preproc_tasks
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],
-                    settings=script_cfg['settings'],
-                    ancestors=ancestors,
-                )
-                diagnostic_tasks[task_id] = task
+                    settings=script_cfg['settings'])
+                tasks[task_id] = task
 
-        # Resolve diagnostic ancestors marked as 'later'
-        self._resolve_diagnostic_ancestors(diagnostic_tasks, later)
+        # Resolve diagnostic ancestors
+        self._resolve_diagnostic_ancestors(tasks)
 
         # TODO: check that no loops are created (will throw RecursionError)
 
-        # Only add diagnostic tasks if enabled
-        if self._cfg['run_diagnostic']:
-            tasks.extend(diagnostic_tasks.values())
-
         # Return smallest possible set of tasks
-        tasks = get_independent_tasks(tasks)
-
-        return tasks
+        return get_independent_tasks(tasks.values())
 
     def __str__(self):
         """Get human readable summary."""
