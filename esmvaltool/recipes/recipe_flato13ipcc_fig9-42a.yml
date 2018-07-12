@@ -132,6 +132,7 @@ diagnostics:
         ancestors: ['tas', 'ecs/ecs']
         ecs_filename: 'ecs'
         output_name: 'ch09_fig09-42a'
+        tas_units: celsius
         save:
           bbox_inches: tight
           orientation: landscape

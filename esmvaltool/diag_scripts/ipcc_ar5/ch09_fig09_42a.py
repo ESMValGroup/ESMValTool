@@ -32,6 +32,7 @@ import logging
 import os
 from datetime import datetime
 
+import cf_units
 import iris
 
 import esmvaltool.diag_scripts.shared as e
@@ -127,6 +128,9 @@ HISTORICAL = 'historical'
 ABRUPT4XCO2 = 'abrupt4xCO2'
 DIFF = 'difference of abrupt4xCO2 and piControl'
 
+# Default settings
+DEFAULT_TAS_UNITS = 'celsius'
+
 
 def main(cfg):
     """Run the diagnostic.
@@ -147,6 +151,7 @@ def main(cfg):
 
     # Variables
     var = e.Variables(cfg)
+    var.modify_var('tas', units=cfg.get('tas_units', DEFAULT_TAS_UNITS))
     logging.debug("Found variables in recipe:\n%s", var)
 
     # Get ECS data (ignore metadata.yml files)
@@ -166,6 +171,9 @@ def main(cfg):
     for dataset_path in data:
         cube = iris.load(dataset_path, var.standard_names())[0]
 
+        # Convert units if desired
+        cube.convert_units(cfg.get('tas_units', DEFAULT_TAS_UNITS))
+
         # Total temporal means
         cube = cube.collapsed([n.TIME], iris.analysis.MEAN)
         data.set_data(cube.data, dataset_path)
@@ -174,7 +182,7 @@ def main(cfg):
     cube = iris.load_cube(ecs_filepath)
     var.add_var(ecs={n.SHORT_NAME: cube.var_name,
                      n.LONG_NAME: cube.long_name,
-                     n.UNITS: cube.units})
+                     n.UNITS: cube.units.format(cf_units.UT_DEFINITION)})
     for (idx, model) in enumerate(cube.coord('datasets').points):
         data.add_dataset('ecs_' + model,
                          data=cube.data[idx],
