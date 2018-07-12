@@ -62,8 +62,8 @@ def get_path_to_mpl_style(style_file=None):
     if style_file is None:
         style_file = 'default.mplstyle'
     if not isinstance(style_file, str):
-        raise TypeError("Invalid input: {} is not ".format(style_file) +
-                        "a string")
+        raise TypeError("Invalid input: {} is not a "
+                        "string".format(style_file))
     base_dir = os.path.dirname(__file__)
     filepath = os.path.join(base_dir, 'styles_python', 'matplotlib',
                             style_file)
@@ -85,7 +85,7 @@ def get_dataset_style(dataset, style_file=None):
         with open(filepath, 'r') as infile:
             style = yaml.safe_load(infile)
     else:
-        raise IOError("Invalid input: could not open style file " +
+        raise IOError("Invalid input: could not open style file "
                       "'{}'".format(filepath))
     logger.debug("Using style file %s for dataset %s", filepath, dataset)
 
@@ -93,13 +93,13 @@ def get_dataset_style(dataset, style_file=None):
     default_dataset = 'default'
     options = ['color', 'dash', 'thick', 'mark', 'avgstd', 'facecolor']
     if default_dataset not in style:
-        raise IOError("Style file '{}' does not ".format(filepath) +
-                      "contain default information for unknown datasets")
+        raise IOError("Style file '{}' does not contain default information "
+                      "for unknown datasets".format(filepath))
     for option in options:
         if option not in style[default_dataset]:
-            raise IOError("Style file '{}' ".format(filepath) +
-                          "does not contain '{}' ".format(option) +
-                          "default information for unknown datasets")
+            raise IOError("Style file '{}' does not contain '{}' default "
+                          "information for unknown "
+                          "datasets".format(filepath, option))
 
     # Check if dataset is available
     if not style.get(dataset):
