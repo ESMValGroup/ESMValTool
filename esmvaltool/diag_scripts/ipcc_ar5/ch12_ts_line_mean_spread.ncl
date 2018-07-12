@@ -150,8 +150,9 @@ begin
   eyears = diag_script_info@eyears
   nperiods = dimsizes(syears)
   nyears = toint(eyears(nperiods - 1)) - toint(syears(0)) + 1
-  nyearsp1 =  toint(eyears(nperiods - 1)) - toint(eyears(0))
-
+  nyearsp1 = toint(eyears(nperiods - 1)) - toint(eyears(0))
+  print(nyears)
+  print(nyearsp1)
   ; How many rcp2.6 model runs?
   ind_26 = ind(dataset_info@exp .eq. diag_script_info@scenarios(0))
   dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
@@ -214,15 +215,10 @@ begin
 
     ; find all other runs from this model and calculate relative ts
     imod26 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                 dataset_info@exp .eq. diag_script_info@scenarios(0))
+                 dataset_info@exp .eq. diag_script_info@scenarios(0) .and. \
+                 dataset_info@ensemble .eq. dataset_info@ensemble(imod))
     if (.not.all(ismissing(imod26))) then
-      if (dimsizes(imod26) .gt. 1) then
-        do ens = 0, dimsizes(imod26) - 1
-          A1 = read_data(imod26(ens), var0, field_type0)
-        end do
-      else
-        A1 = read_data(imod26, var0, field_type0)
-      end if
+      A1 = read_data(imod26, var0, field_type0)
       data3 = time_operations(A1, -1, -1, "average", "yearly", True)
       data3_glob = coswgt_areaave(data3)
       dim_data3g = dimsizes(data3_glob)
@@ -247,15 +243,10 @@ begin
 
     if (dim_scen .gt. 1) then
       imod45 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(1))
+                   dataset_info@exp .eq. diag_script_info@scenarios(1) .and. \
+                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
       if (.not.all(ismissing(imod45))) then
-        if (dimsizes(imod45) .gt. 1) then
-          do ens = 0, dimsizes(imod45) - 1
-            A1 = read_data(imod45(ens), var0, field_type0)
-          end do
-        else
-          A1 = read_data(imod45, var0, field_type0)
-        end if
+        A1 = read_data(imod45, var0, field_type0)
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
@@ -281,15 +272,10 @@ begin
 
     if (dim_scen .gt. 2) then
       imod60 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(2))
+                   dataset_info@exp .eq. diag_script_info@scenarios(2) .and. \
+                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
       if (.not.all(ismissing(imod60))) then
-        if (dimsizes(imod60) .gt. 1) then
-          do ens = 0, dimsizes(imod60) - 1
-            A1 = read_data(imod60(ens), var0, field_type0)
-          end do
-        else
-          A1 = read_data(imod60, var0, field_type0)
-        end if
+        A1 = read_data(imod60, var0, field_type0)
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
@@ -315,15 +301,10 @@ begin
 
     if (dim_scen .gt. 3) then
       imod85 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(3))
+                   dataset_info@exp .eq. diag_script_info@scenarios(3) .and. \
+                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
       if (.not.all(ismissing(imod85))) then
-        if (dimsizes(imod85) .gt. 1) then
-          do ens = 0, dimsizes(imod85) - 1
-            A1 = read_data(imod85(ens), var0, field_type0)
-          end do
-        else
-          A1 = read_data(imod85, var0, field_type0)
-        end if
+        A1 = read_data(imod85, var0, field_type0)
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
