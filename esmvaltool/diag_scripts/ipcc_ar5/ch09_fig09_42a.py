@@ -31,7 +31,6 @@ Configuration options
 import logging
 import os
 from datetime import datetime
-from pprint import pprint
 
 import iris
 
@@ -122,13 +121,6 @@ def write_data(cfg, datasets, variables):
 # Setup diagnostic
 ###############################################################################
 
-# Variables
-ECS = e.Variable('ecs',
-                 'equilibrium_climate_sensitivity',
-                 'Change in global mean surface temperature at equilibrium '
-                 'caused by a doubling of the atmospheric CO2 concentration',
-                 'K')
-
 # Experiments
 PICONTROL = 'piControl'
 HISTORICAL = 'historical'
@@ -148,7 +140,6 @@ def main(cfg):
     ###########################################################################
     # Read recipe data
     ###########################################################################
-    pprint(cfg)
 
     # Dataset data containers
     data = e.Datasets(cfg)
@@ -157,7 +148,6 @@ def main(cfg):
     # Variables
     var = e.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", var)
-    var.add_var(ecs=ECS)
 
     # Get ECS data (ignore metadata.yml files)
     input_dirs = [d for d in cfg[n.INPUT_FILES]
@@ -182,11 +172,14 @@ def main(cfg):
 
     # Create iris cube for ECS data
     cube = iris.load_cube(ecs_filepath)
+    var.add_var(ecs={n.SHORT_NAME: cube.var_name,
+                     n.LONG_NAME: cube.long_name,
+                     n.UNITS: cube.units})
     for (idx, model) in enumerate(cube.coord('datasets').points):
         data.add_dataset('ecs_' + model,
                          data=cube.data[idx],
+                         dataset=model,
                          short_name='ecs')
-        print("{}: {}".format(model, cube.data[idx]))
 
     ###########################################################################
     # Plot data
