@@ -74,11 +74,11 @@ load "./diag_scripts/shared/scaling.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/regridding.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
-load "./diag_scripts/shared/watermark.ncl"
+;load "./diag_scripts/shared/watermark.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 load "./diag_scripts/shared/plot/xy_line.ncl"
-load "./diag_scripts/shared/plot/style."
+load "./diag_scripts/shared/plot/style.ncl"
 
 begin
 
@@ -169,31 +169,32 @@ begin
     all_monthly&month     = ispan(1, 12, 1)
     all_monthly&statistic = (/"mean", "stddev"/)
 
+;;DELETE if skript works in v2 since regridding is done in the preprocessor!!!
     ;; Check for irregular grid
-    l_irreg = new(dim_MOD, logical)
-    l_irreg = False
-    do imod = 0, dim_MOD - 1
-        cnt = interface_get_dictkeys(var0, imod) + "_dimNames"
-        dims = data@$cnt$
-        ndims = dimsizes(dims)
-        if (ndims.lt.2) then
-            continue
-        end if
-        if (ndims.eq.2 .and. dims(0).eq."time") then
-            continue
-        end if
-        if (dims(ndims - 1).ne."lon" .and. dims(ndims - 2).ne."lat") then
-            l_irreg(imod) = True
-            continue
-        end if
-    end do
-    delete([/cnt, dims, ndims/])
+    ;l_irreg = new(dim_MOD, logical)
+    ;l_irreg = False
+    ;do imod = 0, dim_MOD - 1
+        ;cnt = interface_get_dictkeys(var0, imod) + "_dimNames"
+        ;dims = data@$cnt$
+        ;ndims = dimsizes(dims)
+        ;if (ndims.lt.2) then
+        ;    continue
+        ;end if
+        ;if (ndims.eq.2 .and. dims(0).eq."time") then
+        ;    continue
+        ;end if
+        ;if (dims(ndims - 1).ne."lon" .and. dims(ndims - 2).ne."lat") then
+        ;    l_irreg(imod) = True
+        ;    continue
+        ;end if
+    ;end do
+    ;delete([/cnt, dims, ndims/])
 
     ;; Set destination grid
-    grid_resolution = diag_script_info@grid
-    if (grid_resolution.eq."2deg") then
-        dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g020"
-    end if
+    ;grid_resolution = diag_script_info@grid
+    ;if (grid_resolution.eq."2deg") then
+    ;    dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g020"
+    ;end if
 
     ;; Loop over datasets
     do imod = 0, dim_MOD - 1
@@ -203,23 +204,24 @@ begin
         ;; Extract dataset corresponding data
         var  = read_data(imod, var0, field_type0)
 
+;;DELETE if skript works in v2 since regridding is done in the preprocessor!!!
              ;; Regridding
-            if (l_irreg(imod)) then
-                regr_file = basename(diag_script) + "_" + dataset_info@dataset(imod)+ "_" + \
-                              var0 + "_" + start_year + "-" + end_year+ "_grid_" + \
-                              grid_resolution
-                              regr_path = wrk_dir + "/CDO/" + regr_file + ".nc"            
-                if (isfilepresent(regr_path)) then
-                    var_regrid = ncdf_read(regr_path, var0)
-                else
-                    var_regrid = cdo_remapdis(var0, var, imod, data, \
-                             dst_grid, regr_file)                
-                end if
-                var_regrid := var_regrid(time|:, lat|:, lon|:)
-                delete(var)
-                var = var_regrid
-                delete(var_regrid)
-            end if
+            ;if (l_irreg(imod)) then
+            ;    regr_file = basename(diag_script) + "_" + dataset_info@dataset(imod)+ "_" + \
+            ;                  var0 + "_" + start_year + "-" + end_year+ "_grid_" + \
+            ;                  grid_resolution
+            ;                  regr_path = wrk_dir + "/CDO/" + regr_file + ".nc"            
+            ;    if (isfilepresent(regr_path)) then
+            ;        var_regrid = ncdf_read(regr_path, var0)
+            ;    else
+            ;        var_regrid = cdo_remapdis(var0, var, imod, data, \
+            ;                 dst_grid, regr_file)                
+            ;    end if
+            ;    var_regrid := var_regrid(time|:, lat|:, lon|:)
+            ;    delete(var)
+            ;    var = var_regrid
+            ;    delete(var_regrid)
+           ; end if
 
             ;; CRU is only land based - Need landmask and also cut off Antarctica
             if (isatt(diag_script_info, "ref_dataset")).and. \
@@ -253,7 +255,7 @@ begin
                     time_operations(var, max((/mean_minyear, \
                                     toint(dataset_info@start_year(imod))/)), \
                                     min((/mean_maxyear, \
-                                    toint(datasets@end_year(imod))/)), "average", \
+                                    toint(dataset_info@end_year(imod))/)), "average", \
                                      "monthlyclim", True)
 
             ;; Special case for LAI.
@@ -470,7 +472,7 @@ begin
         ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
-        delete([/alltags, caption, id, climofiles/])
+        ;delete([/alltags, caption, id, climofiles/])
 
         delete(plot)
         delete(wks)
@@ -522,36 +524,36 @@ begin
 
         ;; Attach Metadata to plot
 
-        alltags = array_append_record(tags, region@DM_tag, 0)
-        alltags := array_append_record(alltags,\
-               (/"PT_errorbar", "ST_stddev", "ST_mean"/), 0)
-        caption = "Errorbar plot for " + variables(0) + \
-                  " over the period " + start_year + \
-                  "-" + end_year + ", similar to Anav et al., 2013, Fig. 6."
-        id = diag_script
+        ;alltags = array_append_record(tags, region@DM_tag, 0)
+        ;alltags := array_append_record(alltags,\
+        ;       (/"PT_errorbar", "ST_stddev", "ST_mean"/), 0)
+        ;caption = "Errorbar plot for " + variables(0) + \
+        ;          " over the period " + start_year + \
+        ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 6."
+        ;id = diag_script
 
-        isize = dim_MOD_org * dimsizes(variables)
-        if (isatt(diag_script_info, "obsfile")) then
-            isize = isize + 1
-        end if
-        climofiles = new(isize, string)
-        do n_var = 0, dimsizes(variables) - 1
-            do imod = 0, dim_MOD_org - 1
-                climofiles(n_var * dim_MOD_org + imod) = \
-                            interface_get_inpaths(imod) + "/" + \
-                            interface_get_infile(variables(n_var), field_types(n_var), imod)
-            end do
-        end do
-        if (isatt(diag_script_info, "obsfile")) then
-            climofiles(isize - 1) = diag_script_info@obsfile
-        end if
+        ;isize = dim_MOD_org * dimsizes(variables)
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;    isize = isize + 1
+        ;end if
+        ;climofiles = new(isize, string)
+        ;do n_var = 0, dimsizes(variables) - 1
+       ;     do imod = 0, dim_MOD_org - 1
+        ;        climofiles(n_var * dim_MOD_org + imod) = \
+        ;                    interface_get_inpaths(imod) + "/" + \
+        ;                    interface_get_infile(variables(n_var), field_types(n_var), imod)
+        ;    end do
+        ;end do
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;;    climofiles(isize - 1) = diag_script_info@obsfile
+        ;end if
 
-        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+        ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
-        delete([/alltags, caption, id, climofiles/])
+        ;delete([/alltags, caption, id, climofiles/])
 
         delete(plot)
         delete(wks)
@@ -606,36 +608,36 @@ begin
 
         ;; Attach Metadata to plot
 
-        alltags = array_append_record(tags, region@DM_tag, 0)
-        alltags := array_append_record(alltags,\
-               (/"PT_scatter", "ST_mean"/), 0)
-        caption = "Scatterplot for " + variables(0) + \
-                  " over the period " + start_year + \
-                  "-" + end_year + ", similar to Anav et al., 2013, Fig. 17."
-        id = diag_script
+        ;alltags = array_append_record(tags, region@DM_tag, 0)
+        ;alltags := array_append_record(alltags,\
+        ;       (/"PT_scatter", "ST_mean"/), 0)
+        ;caption = "Scatterplot for " + variables(0) + \
+        ;          " over the period " + start_year + \
+        ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 17."
+        ;id = diag_script
 
-        isize = dim_MOD_org * dimsizes(variables)
-        if (isatt(diag_script_info, "obsfile")) then
-            isize = isize + 1
-        end if
-        climofiles = new(isize, string)
-        do n_var = 0, dimsizes(variables) - 1
-            do imod = 0, dim_MOD_org - 1
-                climofiles(n_var * dim_MOD_org + imod) = \
-                            interface_get_inpaths(imod) + "/" + \
-                            interface_get_infile(variables(n_var), field_types(n_var), imod)
-            end do
-        end do
-        if (isatt(diag_script_info, "obsfile")) then
-            climofiles(isize - 1) = diag_script_info@obsfile
-        end if
+        ;isize = dim_MOD_org * dimsizes(variables)
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;    isize = isize + 1
+        ;end if
+        ;climofiles = new(isize, string)
+        ;do n_var = 0, dimsizes(variables) - 1
+        ;    do imod = 0, dim_MOD_org - 1
+        ;        climofiles(n_var * dim_MOD_org + imod) = \
+        ;                    interface_get_inpaths(imod) + "/" + \
+        ;                    interface_get_infile(variables(n_var), field_types(n_var), imod)
+        ;    end do
+        ;end do
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;    climofiles(isize - 1) = diag_script_info@obsfile
+        ;;end if
 
-        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+        ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
-        delete([/alltags, caption, id, climofiles/])
+        ;delete([/alltags, caption, id, climofiles/])
 
     end if
     
