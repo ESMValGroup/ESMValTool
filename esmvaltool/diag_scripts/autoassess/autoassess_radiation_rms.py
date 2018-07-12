@@ -1,9 +1,12 @@
 """
-;;#############################################################################
+;; Original Description from Version 1 Diagnostic
+;; Ported to Version 2 with implementation of v2-specific changes
+;; Valeriu Predoi, UREAD, July 2018
+;;###########################################################################
 ;; AutoAssess_radiation_rms.py
 ;; Author: Yoko Tsushima (Met Office, UK)
 ;; CMUG project
-;;#############################################################################
+;;###########################################################################
 ;; Description
 ;;    This script is the RMS error metric script of 
 ;;    AutoAssess radiation
@@ -40,7 +43,8 @@
 ;; seasons:         Control what plots (regions/seasons) are generated
 ;;
 ;; [SouthernHemisphere_default]
-;; # Latitudes [-90, 90 degrees]: 10S = -10, 10N = 10; longtitudes [0, 360 degrees]
+;; # Latitudes [-90, 90 degrees]: 10S = -10, 10N = 10;
+;; longtitudes [0, 360 degrees]
 ;; lat_min: Default area
 ;; lat_max: Default area
 ;; lon_min: Default area
@@ -59,10 +63,10 @@
 ;; contour_limits_rlds:  (min, max, diff, [dev_min, dev_max]
 ;; contour_limits_rsds:  (min, max, diff, [dev_min, dev_max]
 ;;
-;; colourmap_clouds: Python matplotlib colormaps, '_r' indicates a reversed colormap
-;; colourmap_model:  Python matplotlib colormaps, '_r' indicates a reversed colormap
-;; colourmap_diff:   Python matplotlib colormaps, '_r' indicates a reversed colormap
-;; colourmap_dev:    Python matplotlib colormaps, '_r' indicates a reversed colormap
+;; colourmap_clouds: Python matplotlib colormaps, '_r' reversed colormap
+;; colourmap_model:  Python matplotlib colormaps, '_r' reversed colormap
+;; colourmap_diff:   Python matplotlib colormaps, '_r' reversed colormap
+;; colourmap_dev:    Python matplotlib colormaps, '_r' reversed colormap
 ;;
 ;;
 ;; # Define area specifications for sub_areas
@@ -108,158 +112,94 @@
 ;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
-;;   landsea.nc from NCLA for land/sea mask and resolution. This does not have coord system info.
+;;   landsea.nc from NCLA for land/sea mask and resolution.
+;;   This does not have coord system info.
 ;;
 ;; Modification history
+;;    20180712- autoassess_radiation_rms: porting to v2
 ;;    20170323-_AutoAssess_radiation_rms: Test finished.
 ;;    20160819-_test_AutoAssess_radiation_rms: written based on calc_rms code.
 ;;
-;; #############################################################################
+;; ###########################################################################
 """
 
-# Basic Python packages
-import ConfigParser
 import os
-import pdb
+import logging
 import sys
 import numpy as np
 import iris
-##import iris.quickplot as qplt
-##import matplotlib.pyplot as plt
-from netCDF4 import Dataset
+from esmvaltool.diag_scripts.autoassess.autoassess_source import rms
+from esmvaltool.diag_scripts.autoassess.autoassess_source import valmod_radiation as vm
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+                                            select_metadata, sorted_metadata)
 
-# ESMValTool defined Python packages
-sys.path.append("./interface_scripts")
-from esmval_lib import ESMValProject
-from auxiliary import info
+logger = logging.getLogger(os.path.basename(__file__))
 
-# Force matplotlib to not use any Xwindows backend.
-import matplotlib
-matplotlib.use('Agg')
+# dict of model var-to-obs name
+VAR_DICT = {'pr': 'MPI-ESM-MR'}
 
-# Common Python packages
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
 
-# Python netcdf handler
-import netCDF4 as nc
+def main(cfg):
+    """Execute the radiation rms diag"""
+    logger.setLevel(cfg['log_level'].upper())
+    if not os.path.exists(cfg['plot_dir']):
+        os.makedirs(cfg['plot_dir'])
+    if not os.path.exists(cfg['work_dir']):
+        os.makedirs(cfg['work_dir'])
 
-# Deduce code directory (where is this file)
-code_dir=os.path.dirname(os.path.realpath(__file__))
-#print 'code_dir', code_dir
-# Before continuing we need to be able to import python code in the general/cma_python directory.
-# To do this we need to add the full path to your system path (removing any other instances of cma_python in the process).
-lib_dir = os.path.join(code_dir, 'aux/AutoAssess')
-print 'lib_dir', lib_dir
-sys.path.append(lib_dir)
-
-# Import extra routines that we couldn't import at the start
-import utility.valmod_radiation as vm
-import utility.globalvar as globalvar
-import utility.rms as rms
-globalvar.debug=True
-
-def main(project_info):
-    #print '>>>entering radiation_rms.py <<<<<<<<<<<<'
-    # create instance of a wrapper that allows easy access to data
-    E = ESMValProject(project_info)
-    config_file = E.get_configfile()
-    datakeys = E.get_currVars()
-    plot_dir = E.get_plot_dir()
-    verbosity = E.get_verbosity()
-
-    diag_script = E.get_diag_script_name()
-    print 'diag_script', diag_script
-
-# A_laue_ax+
-    res = E.write_references(diag_script,              # diag script name
-                             ["A_tsus_yo"],            # authors
-                             ["A_read_si"],            # contributors
-                             [""],                     # diag_references
-                             [""],                     # obs_references
-                             ["P_cmug"],               # proj_references
-                             project_info,
-                             verbosity,
-                             False)
-# A_laue_ax-
 
     # Load some extra data needed for the grids and land fractions used in the RMS calculations
-    print 'Loading supplementary data'
-    extras_dict=vm.read_info_file(
-        os.path.join(
-            lib_dir,
-            'extras_file.dat'
-        )
-    )
-    vm.load_extra_data(extras_dict)
+    #print 'Loading supplementary data'
+    #extras_dict=vm.read_info_file(
+    #    os.path.join(
+    #        lib_dir,
+    #        'extras_file.dat'
+    #    )
+    #)
+    #vm.load_extra_data(extras_dict)
 
-    # Initialise data_dict
-    data_dict={}
+    input_data = cfg['input_data'].values()
+    grouped_input_data = group_metadata(
+        input_data, 'short_name', sort='dataset')
 
-    for datakey in datakeys:
-        print 'datakey', datakey
-        # Decide on an output directory for your CSV files
-        #work_dir = os.path.join(code_dir,'../work/')
-        work_dir = E.get_work_dir()
-        if not os.path.exists(work_dir): os.mkdir(work_dir)
-        print 'work_dir', work_dir
-        summary_dir = os.path.join(work_dir,'AutoAssess_radiation_rms_summary')
-        if not os.path.exists(summary_dir): os.mkdir(summary_dir)
-        print 'summary_dir', summary_dir
-        csv_dir = os.path.join(summary_dir,datakey)
-        if not os.path.exists(csv_dir): os.mkdir(csv_dir)
-        print 'csv_dir', csv_dir
+    # select variables and their corresponding
+    # obs files
+    for short_name in grouped_input_data:
+        dataset_selection = select_metadata(input_data,
+                                            short_name=short_name,
+                                            project='CMIP5')
+        obs_selection = select_metadata(input_data,
+                                        short_name=short_name,
+                                        dataset=VAR_DICT[short_name])
+        logger.info("Processing variable %s", short_name)
+        # this is a length=1 list
+        obs = obs_selection[0]
+        for model in dataset_selection:
+            logger.info("Processing dataset %s", model['dataset'])
+            logger.info("Processing obs data %s", obs['dataset'])
 
-        # Observations location
-        obsmodel, obs_loc, models = E.get_clim_model_and_obs_filenames(datakey)
-        print 'obsmodel, obs_loc, models', obsmodel, obs_loc, models
-        #Output dirs based on reference data
-        #csv_dir = os.path.join(code_dir,'../work/'+datakey+'/'+obsmodel)
-        #if not os.path.exists(csv_dir): os.mkdir(csv_dir)
+            # load files
+            model_file = model['filename']
+            obs_file = obs['filename']
+            logger.info("Loading %s", model_file)
+            logger.info("Loading %s", obs_file)
 
-        cube_mon_obs=iris.load_cube(obs_loc)
-        # A-laue_ax+
-        E.add_to_filelist(obs_loc)
-        # A-laue_ax-
+            # load cubes
+            model_cube = iris.load_cube(model_file)
+            obs_cube = iris.load_cube(obs_file)
+            model_cube = model_cube.collapsed('time', iris.analysis.MEAN)
+            logger.debug("Time-averaged %s", model_cube)
+            obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+            logger.debug("Time-averaged %s", obs_cube)
 
-        # supermean
-        obs_variable = cube_mon_obs.collapsed(['time'], iris.analysis.MEAN)
-        # We want to put this into a dictionary for passing to perform_equation
-        data_dict['obs_variable']=obs_variable
-
-        for model in models:
-            # Start an rms list to hold the rms data
-            print 'model', model
-
-            model_id = model
-            rms_list = rms.start(model_id,model_id)
-
-            cube_mon_model=iris.load_cube(models[model])
-            # A-laue_ax+
-            E.add_to_filelist(models[model])
-            # A-laue_ax-
-
-            # supermean
-            exper_variable = cube_mon_model.collapsed(['time'], iris.analysis.MEAN)
-
-            # We want to put this into a dictionary for passing to perform_equation
-            data_dict['exper_variable']=exper_variable
-
-            # Run perform equation
-            print 'Performing calculations'
+            # apply rms
+            rms_list = rms.start(model['dataset'], obs['dataset'])
+            data_dict['exper_variable'] = model_cube
+            data_dict['obs_variable'] = obs_cube
             model_vs_obs_variable, rms_exper_variable = vm.perform_equation('exper_variable - obs_variable',data_dict,datakey,'a',rms_list=rms_list,calc_rms=True)
+            rms.end(rms_list, cfg['work_dir'])
 
+if __name__ == '__main__':
 
-            # ************** End calculations and print out final RMS values ******************
-            # Display one of the plots to show that we have reasonable figures
-            # Close the RMS list and output to CSV files
-            #qplt.contourf(model_vs_obs_variable, extend='both')
-            #plt.gca().coastlines()
-            #plt.title(datakey+'  '+obsmodel+'  '+model)
-            #plt.savefig('/home/users/ytsushima/plot/'+datakey+'_'+obsmodel+'_'+model+'.png')                                               
-            #plt.show()
-            #plt.close()
-            rms.end(rms_list,csv_dir)
-            print 'Finished outputting csv files into {0}.'.format(csv_dir)
-
-# End of main
+    with run_diagnostic() as config:
+        main(config)

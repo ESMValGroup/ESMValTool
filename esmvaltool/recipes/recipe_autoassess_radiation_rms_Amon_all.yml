@@ -101,5 +101,5 @@ diagnostics:
       # - {dataset: GPCP-SG,  project: obs4mips,  type: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: Tier1}
     scripts:
       autoassess_Radiation_rms_Amon_all:
-        script: AutoAssess_radiation_rms.py
+        script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All"
