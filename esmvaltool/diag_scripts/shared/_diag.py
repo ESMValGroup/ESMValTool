@@ -128,7 +128,7 @@ class Variables(object):
         self._dict[name] = attr
 
     def add_vars(self, **names):
-        """Add a costum variables to the class.
+        """Add costum variables to the class.
 
         Parameters
         ----------
