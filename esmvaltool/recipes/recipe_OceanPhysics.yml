@@ -58,8 +58,6 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_2: # For specific levels of 3D fields
-    fix_data:
-    fix_metadata:
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
@@ -123,8 +121,6 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_7: # For regional volume averaged (at the surface)
-    fix_data:
-    fix_metadata:  
     extract_region:
       start_longitude: -80.
       end_longitude: 30.

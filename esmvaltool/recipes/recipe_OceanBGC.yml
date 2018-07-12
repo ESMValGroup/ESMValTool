@@ -53,8 +53,6 @@ preprocessors:
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_depth_integration_1: # For a 2D map global profile
-    fix_data:     
-    fix_metadata: 
     depth_integration:
       coordz: depth
 #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
@@ -66,8 +64,6 @@ preprocessors:
   # map preprocessors
   # --------------------------------------------------
   prep_surface_map_1: # For a 2D global surface map
-    fix_data:     
-    fix_metadata: 
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical  
