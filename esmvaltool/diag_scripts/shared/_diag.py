@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 # Global variables
 DEFAULT_INFO = 'not_specified'
-INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
@@ -47,16 +46,20 @@ class Variables(object):
 
         vars = Variables(cfg)
 
-    Access `short_name` (as str) of a variable `tas`::
+    Access information of a variable `tas`::
 
-        vars.tas
+        vars.short_name('tas')
+        vars.standard_name('tas')
+        vars.long_name('tas')
+        vars.units('tas')
 
-    Access all other information of a variable `tas`::
+    Access `iris`-suitable dictionary of a variable `tas`::
 
-        vars.TAS.short_name
-        vars.TAS.standard_name
-        vars.TAS.long_name
-        vars.TAS.units
+        vars.iris_dict('tas')
+
+    Check if several variables are available::
+
+        vars.vars_available('tas', 'pr')
 
     """
 
@@ -78,7 +81,7 @@ class Variables(object):
         if cfg is not None:
             success = True
             if isinstance(cfg, dict):
-                data = cfg.get(INPUT_DATA)
+                data = cfg.get(n.INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
                         name = info.get(n.SHORT_NAME, DEFAULT_INFO)
@@ -123,8 +126,6 @@ class Variables(object):
         """
         if name not in self._dict:
             logger.debug("Added variable '%s' to collection", name)
-        setattr(self, name, name)
-        setattr(self, name.upper(), attr)
         self._dict[name] = attr
 
     def add_var(self, **names):
@@ -141,6 +142,57 @@ class Variables(object):
             attr = Variable(*names[name])
             self._add_to_dict(name, attr)
 
+    def iris_dict(self, var):
+        """Access iris dictionary of the variable.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all attributes of the variable which can be
+            used directly in iris (`short_name` replaced by `var_name`).
+
+        """
+        iris_dict = self._dict[var]._asdict()
+        iris_dict[n.VAR_NAME] = iris_dict.pop(n.SHORT_NAME)
+        return iris_dict
+
+    def long_name(self, var):
+        """Access long name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Long name of the variable.
+
+        """
+        return getattr(self._dict[var], n.LONG_NAME)
+
+    def short_name(self, var):
+        """Access short name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Short name of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
+
     def short_names(self):
         """Get list of all `short_names`.
 
@@ -152,6 +204,22 @@ class Variables(object):
         """
         return list(self._dict)
 
+    def standard_name(self, var):
+        """Access standard name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Standard name of the variable.
+
+        """
+        return getattr(self._dict[var], n.STANDARD_NAME)
+
     def standard_names(self):
         """Get list of all `standard_names`.
 
@@ -161,8 +229,58 @@ class Variables(object):
             List of all `standard_names`.
 
         """
-        return [getattr(self._dict[name], n.STANDARD_NAME) for
-                name in self._dict]
+        return [self.standard_name(name) for name in self._dict]
+
+    def units(self, var):
+        """Access units.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Units of the variable.
+
+        """
+        return getattr(self._dict[var], n.UNITS)
+
+    def var_name(self, var):
+        """Access var name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Var name (=short name) of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
+
+    def vars_available(self, *args):
+        """Check if given variables are available.
+
+        Parameters
+        ----------
+        *args
+            Variables to be tested.
+
+        Returns
+        -------
+        bool
+            `True` if variables are available, `False` if not.
+
+        """
+        for var in args:
+            if var not in self._dict:
+                return False
+        return True
 
 
 class Datasets(object):
@@ -212,7 +330,7 @@ class Datasets(object):
         self._data = {}
         success = True
         if isinstance(cfg, dict):
-            input_data = cfg.get(INPUT_DATA)
+            input_data = cfg.get(n.INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
                     dataset_info = input_data[path]

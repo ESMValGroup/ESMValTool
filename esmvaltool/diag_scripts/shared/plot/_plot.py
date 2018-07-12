@@ -163,9 +163,8 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     Raises
     ------
     TypeError
-        - A non-valid keyword argument is given.
-        - `x_data`, `y_data`, `datasets` or (if given) `plot_kwargs` are not
-           array-like.
+        A non-valid keyword argument is given or `x_data`, `y_data`, `datasets`
+        or (if given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data`, `datasets` or `plot_kwargs` do not have the same
          size.
@@ -244,8 +243,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     Raises
     ------
     TypeError
-        - A non-valid keyword argument is given.
-        - `x_data`, `y_data` or (if given) `plot_kwargs` are not array-like.
+        A non-valid keyword argument is given or `x_data`, `y_data` or (if
+        given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data` or `plot_kwargs` do not have the same size.
 
