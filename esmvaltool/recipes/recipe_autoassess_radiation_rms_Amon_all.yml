@@ -1,0 +1,105 @@
+#### summary
+#namelist_AutoAssess_radiation_rms_Amon_all.xml
+#
+#Description
+#Diagnostics of spatial RMS errors of radiation and clouds
+#
+#Author
+#Yoko Tsushima (Met Office, United Kingdom - yoko.tsushima@metoffice.gov.uk)
+#
+#Contributor
+#Simon Read (University of Reading,  United Kingdom)
+#
+#Project
+#CMUG
+#
+#Port to ESMValTool v2: July 2018
+#References
+#Technical report or a paper will be written in the future.
+#
+#This namelist is part of the ESMValTool
+###########################################################################################################
+---
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
+  - {dataset: NorESM1-M,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
+
+preprocessors:
+  pp_rad:
+    #extract_levels:
+    #  levels: [100000., 50000., 10000., 7000., 5000., 3000., 1000.]
+    #  scheme: nearest
+    regrid:
+      target_grid: MPI-ESM-LR
+      scheme: linear
+
+diagnostics:
+  radiation_Amon_all:
+    description: 
+    variables: # 13 variables total
+      rtnt: # ceres TOA TOT net
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsnt: # ceres TOA SW net
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsut: # ceres TOA SW up all sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rlut: # ceres TOA LW up all sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsutcs: # ceres TOA SW up clear sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rlutcs: # jra TOA LW up clear sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      SW_CRE: # ceres TOA SW Cloud Radiative Effect
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      LW_CRE: # ceres TOA LW Cloud Radiative Effect
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsns: # ceres Surf SW net all sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rlns: # ceres Surf LW net all sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rldscs: # jra Surf LW down clear sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      prw: # ssmi Column Water vapour
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      pr: # gpcp Precipitation
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      # xml entry: obs4mips CERES-EBAF L3B Ed2-7 2001 2012
+      # - {dataset: CERES-EBAF,  project: obs4mips,  type: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: Tier1}
+      # xml entry: ana4mips   JRA-55 Amon reanalysis   2001  2005 @{OBSPATH}/Tier1/
+      # - {dataset: JRA-55,  project: ana4mips,  type: reanaly,  start_year: 2001,  end_year: 2005, tier: Tier1}
+      # xml entry: obs4mips SSMI-MERIS L3 v1-00 2003 2008
+      # - {dataset: SSMI-MERIS,  project: obs4mips,  type: L3,  version: v1-00,  start_year: 2003,  end_year: 2008, tier: Tier1}
+      # xml entry: obs4mips GPCP-SG L3 v2.2 2001 2009
+      # - {dataset: GPCP-SG,  project: obs4mips,  type: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: Tier1}
+    scripts:
+      autoassess_Radiation_rms_Amon_all:
+        script: AutoAssess_radiation_rms.py
+        title: "Autoassess Radiation RMS Amon All"
