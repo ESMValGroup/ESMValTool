@@ -192,6 +192,40 @@ class Variables(object):
         """
         return getattr(self._dict[var], n.LONG_NAME)
 
+    def modify_var(self, var, **names):
+        """Modify an already existing  variable of the class.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the existing variable.
+        **names : dict or Variable, optional
+            Keyword arguments of the form `short_name=Variable_object` where
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
+
+        Raises
+        ------
+        ValueError
+            If `var` is not an existing variable.
+        TypeError
+            If a non-valid keyword argument is given.
+
+        """
+        if var not in self._dict:
+            raise ValueError("Variable '{}' does not exist yet and cannot be "
+                             "modified".format(var))
+        old_var = self._dict.pop(var)
+        new_var = {}
+        for name in Variable._fields:
+            new_var[name] = names.pop(name, getattr(old_var, name))
+
+        # Check if names is not empty (=non-valid keyword argument given)
+        if names:
+            raise TypeError("Non-valid keyword arguments "
+                            "given: {}".format(names))
+        new_var = Variable(**new_var)
+        self._add_to_dict(var, new_var)
+
     def short_name(self, var):
         """Access short name.
 
@@ -359,8 +393,8 @@ class Datasets(object):
         else:
             success = False
         if not success:
-            raise TypeError("{} is not a valid ".format(repr(cfg)) +
-                            "configuration file")
+            raise TypeError("{} is not a valid configuration "
+                            "file".format(repr(cfg)))
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
