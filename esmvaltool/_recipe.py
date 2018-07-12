@@ -5,6 +5,7 @@ import inspect
 import logging
 import os
 import subprocess
+from collections import OrderedDict
 
 import yamale
 import yaml
@@ -28,6 +29,23 @@ TASKSEP = os.sep
 
 class RecipeError(Exception):
     """Recipe contains an error."""
+
+
+def ordered_safe_load(stream):
+    """Load a YAML file using OrderedDict instead of dict"""
+
+    class OrderedSafeLoader(yaml.SafeLoader):
+        """Loader class that uses OrderedDict to load a map"""
+
+    def construct_mapping(loader, node):
+        """Load a map as an OrderedDict"""
+        loader.flatten_mapping(node)
+        return OrderedDict(loader.construct_pairs(node))
+
+    OrderedSafeLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping)
+
+    return yaml.load(stream, OrderedSafeLoader)
 
 
 def read_recipe_file(filename, config_user, initialize_tasks=True):
@@ -75,7 +93,7 @@ def check_recipe(filename):
     # computed entries have been filled in by creating a Recipe object.
     check_recipe_with_schema(filename)
     with open(filename, 'r') as file:
-        raw_recipe = yaml.safe_load(file)
+        raw_recipe = ordered_safe_load(file)
 
     # TODO: add more checks?
     check_preprocessors(raw_recipe.get('preprocessors', {}))
@@ -85,34 +103,14 @@ def check_recipe(filename):
 
 def check_preprocessors(preprocessors):
     """Check preprocessors in recipe"""
-    preprocessor_functions = set(preprocessor.DEFAULT_ORDER)
+    valid_functions = set(preprocessor.DEFAULT_ORDER)
     for name, profile in preprocessors.items():
-        profile = copy.deepcopy(profile)
-        order = profile.pop('order', [])
-        for steps in profile, order:
-            invalid_functions = set(steps) - preprocessor_functions
-            if invalid_functions:
-                raise RecipeError(
-                    "Unknown function(s) {} in preprocessor {}, choose from: "
-                    "{}".format(', '.join(invalid_functions), name,
-                                ', '.join(preprocessor.DEFAULT_ORDER)))
-        if not order:
-            # Skip order checking if no custom order specified.
-            continue
-        disallowed = set(order).intersection(INITIAL_STEPS + FINAL_STEPS)
-        if disallowed:
+        invalid_functions = set(profile) - {'custom_order'} - valid_functions
+        if invalid_functions:
             raise RecipeError(
-                "The order of step(s) {} cannot be set in the recipe, please "
-                "remove those from the order of preprocessor {}".format(
-                    ', '.join(disallowed), name))
-        order = INITIAL_STEPS + tuple(order) + FINAL_STEPS
-        unknown_order = set(step for step in profile if step not in order)
-        if unknown_order:
-            raise RecipeError(
-                "The order of all preprocessing steps used must be specified "
-                "when using a custom order. Current order: {}. Please add "
-                "step(s) {} to preprocessor '{}'.".format(
-                    order, ', '.join(unknown_order), name))
+                "Unknown function(s) {} in preprocessor {}, choose from: "
+                "{}".format(', '.join(invalid_functions), name,
+                            ', '.join(preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
@@ -592,19 +590,21 @@ def _check_multi_model_settings(all_settings):
 
 def _extract_preprocessor_order(profile):
     """Extract the order of the preprocessing steps from the profile."""
-    if 'order' not in profile:
+    custom_order = profile.pop('custom_order', False)
+    if not custom_order:
         return DEFAULT_ORDER
-    return INITIAL_STEPS + tuple(profile.pop('order')) + FINAL_STEPS
+    order = tuple(p for p in profile if p not in INITIAL_STEPS + FINAL_STEPS)
+    return INITIAL_STEPS + order + FINAL_STEPS
 
 
 def _split_derive_profile(profile):
     """Split the derive preprocessor profile"""
-    order = profile.pop('order', None)
+    custom_order = profile.pop('custom_order', False)
     before, after = preprocessor.split_settings(profile, 'derive')
     after['derive'] = {}
-    if order:
-        before['order'] = order
-        after['order'] = order
+    if custom_order:
+        before['custom_order'] = custom_order
+        after['custom_order'] = custom_order
     return before, after
 
 
@@ -786,7 +786,7 @@ class Recipe(object):
             raw_datasets + raw_variable.pop('additional_datasets', []))
 
         for dataset in datasets:
-            variable = copy.deepcopy(raw_variable)
+            variable = dict(raw_variable)
             variable.update(dataset)
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
