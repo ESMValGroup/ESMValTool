@@ -11,7 +11,7 @@
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    grid: target grid for the regridding
 ;;    region: region to be averaged
-;;    ref_model: reference for the MVI calculation
+;;    ref_dataset: reference for the MVI calculation
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;
@@ -23,7 +23,7 @@
 ;;    The derived variables pr-mmday and tas-degC needs to be used in order
 ;;    to get the correct linear trend. For land variables nbp, gpp and lai, it
 ;;    is recommended to use the masked version (NBP, GPP and LAI, respectively)
-;;    in order to have a consistent land mask for all models.
+;;    in order to have a consistent land mask for all datasets.
 ;;
 ;; Modification history
 ;;    20180619-A_wenz_sa: adopted script to v2
@@ -51,7 +51,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -88,8 +88,8 @@ begin
     end if
 
     ;; Set time range
-    start_year = min(stringtoint(model_info@start_year))
-    end_year = max(stringtoint(model_info@end_year))
+    start_year = min(stringtoint(dataset_info@start_year))
+    end_year = max(stringtoint(dataset_info@end_year))
     all_years = ispan(start_year, end_year, 1)
 
     ;; Regrid to destination grid
@@ -114,40 +114,40 @@ begin
     ;; Gridded matrix for a given resolution where all yearly data are stored
     all_data_yearly = \
         new((/dim_MOD, end_year - start_year + 1, dNLAT, dNLON/), float)
-    all_data_yearly!0 = "model"
+    all_data_yearly!0 = "dataset"
     all_data_yearly!1 = "year"
     all_data_yearly!2 = "lat"
     all_data_yearly!3 = "lon"
 
     ;; Gridded matrix for a given resolution where all MVI data are stored
     MVI_all_data = new((/dim_MOD, dNLAT, dNLON/), float)
-    MVI_all_data!0 = "model"
+    MVI_all_data!0 = "dataset"
     MVI_all_data!1 = "lat"
     MVI_all_data!2 = "lon"
 
     ;; Gridded matrix for a given resolution where all trend data are stored
     Trend_all_data = new((/dim_MOD, dNLAT, dNLON/), float)
-    Trend_all_data!0 = "model"
+    Trend_all_data!0 = "dataset"
     Trend_all_data!1 = "lat"
     Trend_all_data!2 = "lon"
 
-    ;; Loop over models and regrid
+    ;; Loop over datasets and regrid
     do imod = 0, dim_MOD - 1
 
-        log_info("Processing " + model_info@model(imod))
+        log_info("Processing " + dataset_info@dataset(imod))
 
-        ;; Extract model corresponding data
+        ;; Extract dataset corresponding data
         var  = read_data(imod, var0, field_type0)
 
         ;; Computing annual mean
-        data_annual = time_operations(var, toint(model_info@start_year(imod)), \
-                                      toint(model_info@end_year(imod)), "average",\
+        data_annual = time_operations(var, toint(dataset_info@start_year(imod)), \
+                                      toint(dataset_info@end_year(imod)), "average",\
                                       "yearly", True)
 
-        ;; Place array in model specific time range
-        idx1 = start_year - toint(model_info@start_year(imod))
+        ;; Place array in dataset specific time range
+        idx1 = start_year - toint(dataset_info@start_year(imod))
         idx2 = dimsizes(all_years) - \
-            (end_year - toint(model_info@end_year(imod))) - 1
+            (end_year - toint(dataset_info@end_year(imod))) - 1
 
 ;;DELETE part if script works in v2!!!
         ;; If lat and lon are 2D arrays, assume irregular grid
@@ -164,61 +164,61 @@ begin
         ;end if
 
             all_data_yearly(imod, idx1:idx2, :, :) = data_annual
-            all_data_yearly&model = model_info@model
+            all_data_yearly&dataset = dataset_info@dataset
             copy_VarAtts(data_annual,all_data_yearly)
 
         ;; Cleaning up
         delete(var)
         delete(data_annual)
 
-    end do  ; end loop over models
+    end do  ; end loop over datasets
 
     ;; Compute annual mean, MVI, trend
-    MVI_all_data&model = model_info@model
+    MVI_all_data&dataset = dataset_info@dataset
     MVI_all_data&lat = all_data_yearly&lat
     MVI_all_data&lon = all_data_yearly&lon
     MVI_all_data@_FillValue = 1.e20
 
-    Trend_all_data&model = model_info@model
+    Trend_all_data&dataset = dataset_info@dataset
     Trend_all_data&lat = all_data_yearly&lat
     Trend_all_data&lon = all_data_yearly&lon
     Trend_all_data@_FillValue = 1.e20
 
-    ;; Determine reference model and compute MVI
-    ref_ind = get_ref_model_idx(model_info, variable_info@reference_model);ind(model_info@model.eq.variable_info@reference_model)
+    ;; Determine reference dataset and compute MVI
+    ref_ind = get_ref_dataset_idx(dataset_info, variable_info@reference_dataset);ind(dataset_info@dataset.eq.variable_info@reference_dataset)
     if (ismissing(ref_ind)) then
-        error_msg("f", diag_script, "", "no adequate reference model provided")
+        error_msg("f", diag_script, "", "no adequate reference dataset provided")
     end if
 
-    log_info("Reference model: " + model_info@model(ref_ind))
+    log_info("Reference dataset: " + dataset_info@dataset(ref_ind))
     reference = all_data_yearly(ref_ind, :, :, :)
     ref = dim_stddev_n(reference, 0)
     ref = where(ref.ne.0, ref, all_data_yearly@_FillValue)
 
-    ;; Loop over models
+    ;; Loop over datasets
     do imod = 0, dim_MOD - 1
 
         temp  = all_data_yearly(imod, :, :, :)
-        model = dim_stddev_n(temp, 0)
+        dataset = dim_stddev_n(temp, 0)
 
         ;; Prevents a division by 0
-        model = where(model.ne.0, model, all_data_yearly@_FillValue)
+        dataset = where(dataset.ne.0, dataset, all_data_yearly@_FillValue)
 
         ;; Commpute MVI
-        MVI_all_data(imod, :, :) = (model/ref - ref/model) ^ 2
-        delete(model)
+        MVI_all_data(imod, :, :) = (dataset/ref - ref/dataset) ^ 2
+        delete(dataset)
         delete(temp)
 
-        model = all_data_yearly(imod, :, :, :)
+        dataset = all_data_yearly(imod, :, :, :)
 
          ;; Commpute Trend
-        rc = regCoef_n(1.0 * all_years, model, 0, 0)
+        rc = regCoef_n(1.0 * all_years, dataset, 0, 0)
         rc!0 = "lat"
         rc!1 = "lon"
-        rc&lat = model&lat
-        rc&lon = model&lon
+        rc&lat = dataset&lat
+        rc&lon = dataset&lon
         Trend_all_data(imod, :, :) = rc
-        delete(model)
+        delete(dataset)
         delete(rc)
 
     end do
@@ -228,7 +228,7 @@ begin
     MVI_all_data = where(MVI_all_data.lt.10, MVI_all_data, 50)
 
     ;; Special case for LAI
-    ;; Since models have different land covers, all sparse vegetated points
+    ;; Since datasets have different land covers, all sparse vegetated points
     ;; must be masked out
     if (var0.eq."LAI") then
         all_data_yearly = where(all_data_yearly.ge.0.025, \
@@ -236,27 +236,27 @@ begin
     end if
 
     all_annual_mean = dim_avg_n_Wrap(all_data_yearly, 1)
-;    all_annual_mean!0 = "model"               ;;DELETE part if script works in v2!!!
+;    all_annual_mean!0 = "dataset"               ;;DELETE part if script works in v2!!!
 ;    all_annual_mean!1 = "lat"
 ;    all_annual_mean!2 = "lon"
 
-;    all_annual_mean&model = model_info@model
+;    all_annual_mean&dataset = dataset_info@dataset
 ;    all_annual_mean&lat = all_data_yearly&lat
 ;    all_annual_mean&lon = all_data_yearly&lon
 ;    all_annual_mean@units = all_data_yearly@units
     delete(all_data_yearly)
 
     Mean_var = new((/dim_MOD/), typeof(all_annual_mean))
-    Mean_var!0 = "model"
-    Mean_var&model = model_info@model
+    Mean_var!0 = "dataset"
+    Mean_var&dataset = dataset_info@dataset
 
     Trend_var = new((/dim_MOD/), typeof(all_annual_mean))
-    Trend_var!0 = "model"
-    Trend_var&model = model_info@model
+    Trend_var!0 = "dataset"
+    Trend_var&dataset = dataset_info@dataset
 
     MVI_var = new((/dim_MOD/), typeof(all_annual_mean))
-    MVI_var!0 = "model"
-    MVI_var&model = model_info@model
+    MVI_var!0 = "dataset"
+    MVI_var&dataset = dataset_info@dataset
 
     ;; Compute global area
     area = map_area(all_annual_mean&lat, all_annual_mean&lon)
@@ -268,7 +268,7 @@ begin
         sp_opt = "average"  ; for non-flux variable
     end if
 
-    ;; Loop over models
+    ;; Loop over datasets
     do imod = 0, dim_MOD - 1
         Mean_var(imod) = area_operations(all_annual_mean(imod, :, :), \
                                          region(0), region(1), region(2), \
@@ -288,7 +288,7 @@ begin
         Mean_var  = convert_units(Mean_var, variable_info@plot_units)
         Trend_tmp = convert_units(Trend_var, variable_info@plot_units)
 
-        if (model_info@mip(0).eq."Lmon") then
+        if (dataset_info@mip(0).eq."Lmon") then
           Trend_var = Trend_tmp
           Trend_var@units = Trend_tmp@units + " y-1"
         else
@@ -346,9 +346,9 @@ begin
     data_arr(1, :) = (/Trend_var/)
     data_arr(2, :) = (/MVI_var/)
     data_arr!0 = "statistic"
-    data_arr!1 = "models"
+    data_arr!1 = "datasets"
     data_arr&statistic = (/"mean", "linear trend", "MVI"/)
-    data_arr&models = model_info@model
+    data_arr&datasets = dataset_info@dataset
     data_arr@units = (/Mean_var@units, Trend_var@units, "1"/)
 
     ;; Set levels for the color coding
@@ -374,10 +374,10 @@ begin
     ;           " in x axis, its linear trend in y axis, and MVI." + \
    ;            " Like Anav et al. Fig 1 bottom"
    ; id = diag_script
-   ; climofiles = new(dimsizes(model_info@model) * dimsizes(variables), string)
+   ; climofiles = new(dimsizes(dataset_info@dataset) * dimsizes(variables), string)
     ;do n_var = 0, dimsizes(variables) - 1
-    ;    do imod = 0, dimsizes(model_info@model) - 1
-    ;        climofiles(n_var * dimsizes(model_info@model) + imod) = \
+    ;    do imod = 0, dimsizes(dataset_info@dataset) - 1
+    ;        climofiles(n_var * dimsizes(dataset_info@dataset) + imod) = \
      ;                   interface_get_inpaths(imod) + "/" + \
      ;                   interface_get_infile(variables(n_var), field_types(n_var), imod)
      ;   end do
@@ -385,7 +385,7 @@ begin
     ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
     ;;NOTE: not implemented in v2 yet
-    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
     ;delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)

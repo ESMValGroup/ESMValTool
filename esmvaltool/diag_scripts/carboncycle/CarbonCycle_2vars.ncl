@@ -49,7 +49,7 @@ begin
                 variables(1) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     var1 = variables(1)
@@ -99,33 +99,33 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     ;; Determine time range
-    start_year = min(stringtoint(model_info@start_year))
-    end_year = max(stringtoint(model_info@end_year))
+    start_year = min(stringtoint(dataset_info@start_year))
+    end_year = max(stringtoint(dataset_info@end_year))
     all_years = ispan(start_year, end_year, 1)
 
     ;; GLobal array for collecting all data
     all_data_A = new((/dim_MOD/), float)
-    all_data_A!0 = "model"
-    all_data_A&model = model_info@model
+    all_data_A!0 = "dataset"
+    all_data_A&dataset = dataset_info@dataset
 
     all_data_B = new((/dim_MOD/), float)
-    all_data_B!0 = "model"
-    all_data_B&model = model_info@model
+    all_data_B!0 = "dataset"
+    all_data_B&dataset = dataset_info@dataset
 
-    ;; Loop over models
+    ;; Loop over datasets
     do imod = 0, dim_MOD - 1
 
-        log_info("Processing " + all_data_A&model(imod))
+        log_info("Processing " + all_data_A&dataset(imod))
 
         ;; First variable
-        if (var_attr_exclude(0).ne.model_attr_id(imod)) then
+        if (var_attr_exclude(0).ne.dataset_attr_id(imod)) then
 
             ;; Read data
             varA = read_data(imod, var0, field_type0)
 
             ;; Computing annual mean
-            tmpA = time_operations(varA, toint(model_info@start_year(imod)), \
-                                   toint(model_info@end_year(imod)), "average", \
+            tmpA = time_operations(varA, toint(dataset_info@start_year(imod)), \
+                                   toint(dataset_info@end_year(imod)), "average", \
                                    "annualclim", True)
             delete(varA)
 
@@ -141,14 +141,14 @@ begin
         end if
 
         ;; Second variable
-        if (var_attr_exclude(1).ne.model_attr_id(imod)) then
+        if (var_attr_exclude(1).ne.dataset_attr_id(imod)) then
 
             ;; Read data
             varB = read_data(imod, var1, field_type1)
 
             ;; Computing annual mean
-            tmpB = time_operations(varB, toint(model_info@start_year(imod)), \
-                                   toint(model_info@end_year(imod)), "average", \
+            tmpB = time_operations(varB, toint(dataset_info@start_year(imod)), \
+                                   toint(dataset_info@end_year(imod)), "average", \
                                    "annualclim", True)
             delete(varB)
 
@@ -163,7 +163,7 @@ begin
 
         end if
 
-    end do  ; end loop over models
+    end do  ; end loop over datasets
 
     ;; Convert units if appropriate
     if (isatt(variable_info, "plot_units")) then
@@ -191,13 +191,13 @@ begin
 
     end if
 
-    ;; Get reference model index
-    idx_ref_A = get_ref_model_idx(model_info, variable_info@reference_model)
-    idx_ref_B = get_ref_model_idx(model_info, variable_info@altreference_model)
+    ;; Get reference dataset index
+    idx_ref_A = get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
+    idx_ref_B = get_ref_dataset_idx(dataset_info, variable_info@altreference_dataset)
 
-    ;; Replace FillValue in the model array with the value of the reference
-    ;; model. Since it is not possible to reduce the size of model_info@model, the
-    ;; reference model is simply duplicated.
+    ;; Replace FillValue in the dataset array with the value of the reference
+    ;; dataset. Since it is not possible to reduce the size of dataset_info@dataset, the
+    ;; reference dataset is simply duplicated.
     all_data_A = \
         where(ismissing(all_data_A), all_data_A(idx_ref_A), all_data_A)
     all_data_B = \
@@ -206,9 +206,9 @@ begin
     ;; Collect data
     data_arr = new((/2, dim_MOD/), float)
     data_arr!0 = "statistic"
-    data_arr!1 = "model"
+    data_arr!1 = "dataset"
     data_arr&statistic = (/var0, var1/)
-    data_arr&model = model_info@model
+    data_arr&dataset = dataset_info@dataset
     data_arr(0, :) = (/all_data_A/)
     data_arr(1, :) = (/all_data_B/)
     data_arr@units = (/all_data_A@units, all_data_B@units/)
@@ -227,25 +227,25 @@ begin
     frame(wks)
     
     ;; Attach Metadata to plot    
-    alltags = array_append_record(tags, region@DM_tag, 0)
-    alltags := array_append_record(alltags,\
-           (/"PT_scatter", "ST_mean"/), 0)
-    caption = "Scatterplot for " + variables(0) + " and " + \
-              variables(1) + " over the period " + start_year + \
-              "-" + end_year + ", similar to Anav et al., 2013, Fig. 12."
-    id = diag_script
-    climofiles = new(dimsizes(model_info@model) * dimsizes(variables), string)
-    do n_var = 0, dimsizes(variables) - 1
-        do imod = 0, dimsizes(model_info@model) - 1
-            climofiles(n_var * dimsizes(model_info@model) + imod) = \
-                        interface_get_inpaths(imod) + "/" + \
-                        interface_get_infile(variables(n_var), field_types(n_var), imod)
-        end do
-    end do
-    contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+    ;alltags = array_append_record(tags, region@DM_tag, 0)
+    ;alltags := array_append_record(alltags,\
+    ;       (/"PT_scatter", "ST_mean"/), 0)
+    ;caption = "Scatterplot for " + variables(0) + " and " + \
+    ;          variables(1) + " over the period " + start_year + \
+    ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 12."
+    ;id = diag_script
+    ;climofiles = new(dimsizes(dataset_info@dataset) * dimsizes(variables), string)
+    ;do n_var = 0, dimsizes(variables) - 1
+    ;    do imod = 0, dimsizes(dataset_info@dataset) - 1
+    ;        climofiles(n_var * dimsizes(dataset_info@dataset) + imod) = \
+    ;                    interface_get_inpaths(imod) + "/" + \
+    ;                    interface_get_infile(variables(n_var), field_types(n_var), imod)
+    ;    end do
+    ;end do
+    ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
     ;;NOTE: not implemented in v2 yet
-    ;ESMValMD(plot@outfile, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+    ;ESMValMD(plot@outfile, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
     
     delete([/alltags, caption, id, climofiles/])
 

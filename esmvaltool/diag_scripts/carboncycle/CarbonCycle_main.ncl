@@ -16,17 +16,17 @@
 ;;    mean_IAV_plot: draw Mean (x-axis), IAV (y-axis) plot [False/True]
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
-;;    sort: sort model in alphabetical order.
+;;    sort: sort dataset in alphabetical order.
 ;;    anav_month : Conversion of y-axis to PgC/month instead of /year,
 ;;                 following Anav2013 fig 7, 9 (cycle plot)
 ;;    evolution_plot: time evolution of a variable comparing obs to
-;;                    multi-model mean; requires ref_model in nml,
-;;                    and at least one model, one obs
+;;                    multi-dataset mean; requires ref_dataset in nml,
+;;                    and at least one dataset, one obs
 ;;    fignum: Reference to figure in Anav paper for evolution plot. "1 top"
 ;;            as default 
-;;    evolution_plot_ref_model: reference model for evolution_plot
+;;    evolution_plot_ref_dataset: reference dataset for evolution_plot
 ;;    evolution_plot_anomaly: makes evolution_plot an anomaly plot
-;;    evolution_plot_ignore: Models to ignore, obs are excluded automatically
+;;    evolution_plot_ignore: Datasets to ignore, obs are excluded automatically
 ;;    evolution_plot_volcanoes: Turns on/off lines of volcano eruptions
 ;;    evolution_plot_color: Hue of the contours; default: red = 0
 ;;
@@ -48,7 +48,7 @@
 ;;    consistent missing value mask is not applied here. However, for variable
 ;;    such NBP, GPP, LAI, FGCO2 for which this script is designed, there
 ;;    should be no inconsistencies, as the missing value mask is similar for
-;;    all models and observations and coincides with the land-sea mask.
+;;    all datasets and observations and coincides with the land-sea mask.
 ;;
 ;; Modification history
 ;;    20180619-A_wenz_sa: adopted script to v2
@@ -87,7 +87,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
+    dim_MOD = dimsizes(dataset_info@dataset)
     dim_MOD_org = dim_MOD
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -143,8 +143,8 @@ begin
     end if
 
     ;; Set time range
-    start_year = min(stringtoint(model_info@start_year))
-    end_year = max(stringtoint(model_info@end_year))
+    start_year = min(stringtoint(dataset_info@start_year))
+    end_year = max(stringtoint(dataset_info@end_year))
 
     ;; Only evolution plot utilizes timeranges greater then 1986-2005
     mean_minyear = 1986
@@ -154,18 +154,18 @@ begin
 
     ;; Global array for collecting all data
     all_yearly = new((/dim_MOD, end_year - start_year + 1, 2/), float)
-    all_yearly!0          = "model"
+    all_yearly!0          = "dataset"
     all_yearly!1          = "year"
     all_yearly!2          = "statistic"
-    all_yearly&model      = model_info@model
+    all_yearly&dataset      = dataset_info@dataset
     all_yearly&year       = ispan(start_year, end_year, 1)
     all_yearly&statistic  = (/"mean", "stddev"/)
 
     all_monthly = new((/dim_MOD, 12, 2/), float)
-    all_monthly!0         = "model"
+    all_monthly!0         = "dataset"
     all_monthly!1         = "month"
     all_monthly!2         = "statistic"
-    all_monthly&model     = model_info@model
+    all_monthly&dataset     = dataset_info@dataset
     all_monthly&month     = ispan(1, 12, 1)
     all_monthly&statistic = (/"mean", "stddev"/)
 
@@ -195,17 +195,17 @@ begin
         dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g020"
     end if
 
-    ;; Loop over models
+    ;; Loop over datasets
     do imod = 0, dim_MOD - 1
 
-        log_info("Processing " + model_info@model(imod))
+        log_info("Processing " + dataset_info@dataset(imod))
 
-        ;; Extract model corresponding data
+        ;; Extract dataset corresponding data
         var  = read_data(imod, var0, field_type0)
 
              ;; Regridding
             if (l_irreg(imod)) then
-                regr_file = basename(diag_script) + "_" + model_info@model(imod)+ "_" + \
+                regr_file = basename(diag_script) + "_" + dataset_info@dataset(imod)+ "_" + \
                               var0 + "_" + start_year + "-" + end_year+ "_grid_" + \
                               grid_resolution
                               regr_path = wrk_dir + "/CDO/" + regr_file + ".nc"            
@@ -222,8 +222,8 @@ begin
             end if
 
             ;; CRU is only land based - Need landmask and also cut off Antarctica
-            if (isatt(diag_script_info, "ref_model")).and. \
-                                variable_info@reference_model.eq."CRU" then
+            if (isatt(diag_script_info, "ref_dataset")).and. \
+                                variable_info@reference_dataset.eq."CRU" then
                 f = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
                 a = f->LSMASK
                 sftlf = byte2flt(landsea_mask(a, var&lat, var&lon))
@@ -244,20 +244,20 @@ begin
 
             ;; Calculate annual mean
             data_yearly = \
-                   time_operations(var, toint(model_info@start_year(imod)), \
-                                   toint(model_info@end_year(imod)), \
+                   time_operations(var, toint(dataset_info@start_year(imod)), \
+                                   toint(dataset_info@end_year(imod)), \
                                     "average", "yearly", True)
 
             ;; Calculate mean annual cycle
             data_monthly = \
                     time_operations(var, max((/mean_minyear, \
-                                    toint(model_info@start_year(imod))/)), \
+                                    toint(dataset_info@start_year(imod))/)), \
                                     min((/mean_maxyear, \
-                                    toint(models@end_year(imod))/)), "average", \
+                                    toint(datasets@end_year(imod))/)), "average", \
                                      "monthlyclim", True)
 
             ;; Special case for LAI.
-            ;; Since model_info have different land covers, all sparse vegetated points
+            ;; Since dataset_info have different land covers, all sparse vegetated points
             ;; must be masked out
             if (var0.eq."LAI" .or. var0.eq."lai") then
                 data_yearly = where(data_yearly.ge.0.025, data_yearly, \
@@ -348,10 +348,10 @@ begin
 
         ;; Make an array like all_yearly to easily append data
         all_yearly_add = new((/1, end_year - start_year + 1, 2/), float)
-        all_yearly_add!0          = "model"
+        all_yearly_add!0          = "dataset"
         all_yearly_add!1          = "year"
         all_yearly_add!2          = "statistic"
-        all_yearly_add&model      = diag_script_info@obsname
+        all_yearly_add&dataset      = diag_script_info@obsname
         all_yearly_add&year       = ispan(start_year, end_year, 1)
         all_yearly_add&statistic  = (/"mean", "stddev"/)
 
@@ -360,18 +360,18 @@ begin
         all_yearly_add(0, l_idx1:u_idx1, 0) = (/data_dum2(obs_ind(l_idx2:u_idx2))/)
         all_yearly_add(0, l_idx1:u_idx1, 1) = 0.  ; (/ystd/)
 
-        ;; Add data to existing arrays, add project, name to models attributes
+        ;; Add data to existing arrays, add project, name to datasets attributes
         all_yearly_new = array_append_record(all_yearly, all_yearly_add, 0)
         delete([/data_dum, data_dum2, min_obs_year, max_obs_year, obs_time, \
                 all_yearly_add, obs_years, obs_ind/])
-        model_info@model_new = array_append_record(model_info@model, diag_script_info@obsname, 0)
-        model_info@project_new = array_append_record(model_info@project, "OBS", 0)
-        delete([/model_info@model, model_info@project, all_yearly/])
-        model_info@project = model_info@project_new
-        model_info@model = model_info@model_new
+        dataset_info@dataset_new = array_append_record(dataset_info@dataset, diag_script_info@obsname, 0)
+        dataset_info@project_new = array_append_record(dataset_info@project, "OBS", 0)
+        delete([/dataset_info@dataset, dataset_info@project, all_yearly/])
+        dataset_info@project = dataset_info@project_new
+        dataset_info@dataset = dataset_info@dataset_new
         all_yearly = all_yearly_new
-        delete([/model_info@project_new, model_info@model_new, all_yearly_new/])
-        dim_MOD = dimsizes(model_info@model)  ; update number of models
+        delete([/dataset_info@project_new, dataset_info@dataset_new, all_yearly_new/])
+        dim_MOD = dimsizes(dataset_info@dataset)  ; update number of datasets
     end if
 
     ;; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
@@ -468,7 +468,7 @@ begin
       ;  contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
-    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 
@@ -483,17 +483,17 @@ begin
         annual_mean = dim_avg_Wrap(all_yearly(:, minyear_ind:maxyear_ind, 0))
         annual_std = dim_stddev_Wrap(all_yearly(:, minyear_ind:maxyear_ind, 0))
 
-        ;; Sort model in alphabetical order (observations at the beginning)
+        ;; Sort dataset in alphabetical order (observations at the beginning)
         if (isatt(diag_script_info, "sort")) then
             if (diag_script_info@sort) then
-                pid = sort_alphabetically(annual_mean&model, \
-                                          ind(model_info@project.eq."OBS"), \
+                pid = sort_alphabetically(annual_mean&dataset, \
+                                          ind(dataset_info@project.eq."OBS"), \
                                           "begin")
                 annual_mean_s = annual_mean(pid)
-                annual_mean_s&model = annual_mean&model(pid)
+                annual_mean_s&dataset = annual_mean&dataset(pid)
                 annual_mean = annual_mean_s
                 annual_std_s = annual_std(pid)
-                annual_std_s&model = annual_std&model(pid)
+                annual_std_s&dataset = annual_std&dataset(pid)
                 annual_std = annual_std_s
                 delete([/annual_mean_s, annual_std_s, pid/])
             end if
@@ -502,9 +502,9 @@ begin
         ;; Collect data
         data_arr = new((/2, dimsizes(annual_mean)/), float)
         data_arr!0 = "statistic"
-        data_arr!1 = "model"
+        data_arr!1 = "dataset"
         data_arr&statistic = (/"mean", "standard deviation"/)
-        data_arr&model = annual_mean&model
+        data_arr&dataset = annual_mean&dataset
         data_arr(0, :) = (/annual_mean/)
         data_arr(1, :) = (/annual_std/)
         data_arr@units = annual_mean@units
@@ -549,7 +549,7 @@ begin
         contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
-    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 
@@ -570,7 +570,7 @@ begin
         annual_mean@units      = all_yearly@units
         annual_std@units       = all_yearly@units
 
-        ;; Loop over models
+        ;; Loop over datasets
         do imod = 0, dim_MOD - 1
             ;; Compute the spatial mean over time
             annual_mean(imod) = dim_avg(all_yearly(imod, minyear_ind:maxyear_ind, 0))
@@ -581,9 +581,9 @@ begin
         ;; Collect data
         data_arr = new((/2, dim_MOD/), float)
         data_arr!0 = "statistic"
-        data_arr!1 = "model"
+        data_arr!1 = "dataset"
         data_arr&statistic = (/"mean", "interannual variability"/)
-        data_arr&model = model_info@model
+        data_arr&dataset = dataset_info@dataset
         data_arr(0, :) = (/annual_mean/)
         data_arr(1, :) = (/annual_std/)
         data_arr@units = (/annual_mean@units, annual_std@units/)
@@ -633,7 +633,7 @@ begin
         contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
-    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+    ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 
@@ -654,30 +654,30 @@ begin
         outfile = output_dir + diag_script + "_" + var0 + "_evolution_" + \
            region@name
 
-        ;; Find out ref model index
-        obs_ind = ind(model_info@model.eq.diag_script_info@evolution_plot_ref_model)
+        ;; Find out ref dataset index
+        obs_ind = ind(dataset_info@dataset.eq.diag_script_info@evolution_plot_ref_dataset)
 
-        ;; Set list of observations/model_info to exclude in the statistics
-        ex_mod = ind(model_info@project.eq."OBS")
+        ;; Set list of observations/dataset_info to exclude in the statistics
+        ex_mod = ind(dataset_info@project.eq."OBS")
         if (isatt(diag_script_info, "evolution_plot_ignore")) then
-            ex_mod1 = array_append_record(ex_mod, ind(model_info@model.eq. \
+            ex_mod1 = array_append_record(ex_mod, ind(dataset_info@dataset.eq. \
                                  diag_script_info@evolution_plot_ignore), 0)
             delete(ex_mod)
             ex_mod = ex_mod1
             delete(ex_mod1)
         end if
         ;; To not get a warning about fillvalues from get1Dindex_Exclude
-        ind_mods = ispan(0, dimsizes(model_info@model) -1, 1)
+        ind_mods = ispan(0, dimsizes(dataset_info@dataset) -1, 1)
         ind_mods@_FillValue = default_fillvalue("integer")
         mod_ind = get1Dindex_Exclude(ind_mods, ex_mod)
         delete([/ex_mod, ind_mods/])
           
-        ;;data_arr = all_yearly                   ;; all_yearly:  model, year, std = 0
+        ;;data_arr = all_yearly                   ;; all_yearly:  dataset, year, std = 0
         data_arr = new((/6, dimsizes(all_yearly&year)/), float)
-        model_mean = dim_avg_n(all_yearly(mod_ind,:,0), 0)
-        model_std = new((/dimsizes(model_mean)/), float)
+        dataset_mean = dim_avg_n(all_yearly(mod_ind,:,0), 0)
+        dataset_std = new((/dimsizes(dataset_mean)/), float)
         
-        data_arr@ref_name = diag_script_info@evolution_plot_ref_model
+        data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
         data_arr@units = all_yearly@units
         data_arr@dim_Mod = dimsizes(mod_ind)
 
@@ -688,23 +688,23 @@ begin
             data_arr(0, :) = (/all_yearly(obs_ind, :, 0)/) - \
                               avg(all_yearly(obs_ind, :ind_1930, 0))
             mod_means = dim_avg_n(all_yearly(mod_ind, :ind_1930, 0), 1)
-            data_arr(1, :) =(/model_mean/) - avg(mod_means)
+            data_arr(1, :) =(/dataset_mean/) - avg(mod_means)
             do time_i = 0, dimsizes(all_yearly&year)-1
                 data_arr(2, time_i) = dim_min_n(all_yearly(mod_ind,time_i,0) - mod_means, 0)
                 data_arr(3, time_i) = dim_max_n(all_yearly(mod_ind,time_i,0) - mod_means, 0)
-                model_std(time_i)  = dim_stddev_n(all_yearly(mod_ind,time_i,0) - mod_means, 0)
+                dataset_std(time_i)  = dim_stddev_n(all_yearly(mod_ind,time_i,0) - mod_means, 0)
             end do
         else
-            data_arr(1, :) = (/model_mean/)
+            data_arr(1, :) = (/dataset_mean/)
             data_arr(2, :) = dim_min_n(all_yearly(mod_ind,:,0), 0)
             data_arr(3, :) = dim_max_n(all_yearly(mod_ind,:,0), 0)
             data_arr(0, :) = (/all_yearly(obs_ind, :, 0)/)
-            model_std  = dim_stddev_n(all_yearly(mod_ind,:,0), 0)
+            dataset_std  = dim_stddev_n(all_yearly(mod_ind,:,0), 0)
 
         end if
 
         data_arr(4, :) = (/all_yearly&year/)
-        data_arr(5, :) = (/model_std/)
+        data_arr(5, :) = (/dataset_std/)
         
         ;; Pass on contour color
         if (isatt(diag_script_info, "evolution_plot_color")) then
@@ -784,49 +784,49 @@ begin
 
         ;; Attach Metadata to plot
 
-        alltags = array_append_record(tags, region@DM_tag, 0)
-        alltags := array_append_record(alltags,\
-               (/"PT_times"/), 0)
-        if (anomaly) then
-            alltags := array_append_record(alltags,\
-                   (/"ST_anomaly"/), 0)
-            tagstr = " (anomalies) "
-        else
-            alltags := array_append_record(alltags,\
-                   (/"ST_mean"/), 0)
-            tagstr = " "
-        end if
-        if isatt(diag_script_info, "fignum") then
-            fignum = diag_script_info@fignum
-        else
-            fignum = "1 top"
-        end if
-        caption = "Time series of " + variables(0) + tagstr + \
-                  ", similar to Anav et al., 2013, Fig." + fignum
-        id = diag_script
+        ;alltags = array_append_record(tags, region@DM_tag, 0)
+        ;alltags := array_append_record(alltags,\
+        ;       (/"PT_times"/), 0)
+        ;if (anomaly) then
+        ;    alltags := array_append_record(alltags,\
+        ;           (/"ST_anomaly"/), 0)
+        ;    tagstr = " (anomalies) "
+        ;else
+        ;    alltags := array_append_record(alltags,\
+        ;           (/"ST_mean"/), 0)
+        ;    tagstr = " "
+        ;end if
+        ;if isatt(diag_script_info, "fignum") then
+        ;    fignum = diag_script_info@fignum
+        ;else
+        ;    fignum = "1 top"
+        ;end if
+        ;caption = "Time series of " + variables(0) + tagstr + \
+        ;          ", similar to Anav et al., 2013, Fig." + fignum
+        ;id = diag_script
 
-        isize = dim_MOD_org * dimsizes(variables)
-        if (isatt(diag_script_info, "obsfile")) then
-            isize = isize + 1
-        end if
-        climofiles = new(isize, string)
-        do n_var = 0, dimsizes(variables) - 1
-            do imod = 0, dim_MOD_org - 1
-                climofiles(n_var * dim_MOD_org + imod) = \
-                            interface_get_inpaths(imod) + "/" + \
-                            interface_get_infile(variables(n_var), field_types(n_var), imod)
-            end do
-        end do
-        if (isatt(diag_script_info, "obsfile")) then
-            climofiles(isize - 1) = diag_script_info@obsfile
-        end if
+        ;isize = dim_MOD_org * dimsizes(variables)
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;    isize = isize + 1
+        ;end if
+        ;climofiles = new(isize, string)
+        ;do n_var = 0, dimsizes(variables) - 1
+        ;    do imod = 0, dim_MOD_org - 1
+        ;        climofiles(n_var * dim_MOD_org + imod) = \
+        ;                    interface_get_inpaths(imod) + "/" + \
+        ;                    interface_get_infile(variables(n_var), field_types(n_var), imod)
+        ;    end do
+        ;end do
+        ;if (isatt(diag_script_info, "obsfile")) then
+        ;    climofiles(isize - 1) = diag_script_info@obsfile
+        ;end if
 
-        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+        ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
         ;;NOTE: not implemented in v2 yet
-        ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, model_info@model, climofiles, diag_script, contrib_authors)
+        ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
-        delete([/alltags, caption, id, climofiles/])
+        ;delete([/alltags, caption, id, climofiles/])
 
         delete([/data_arr, anomaly/])
 
