@@ -37,7 +37,7 @@ function scatterplot(wks_in[1],
 ;    source = (2, npoints)
 ;    source(0, :) = x-axis values
 ;    source(1, :) = y-axis values
-;    source!0 = models
+;    source!0 = datasets
 ;
 ; Return value
 ;    A graphic object.
@@ -105,8 +105,8 @@ begin
     res@gsnCenterString  = res@gsnCenterString + " [" + \
       format_units(data@units) + "]"
   end if
-  res@tiXAxisString = data&models(0)
-  res@tiYAxisString = data&models(1)
+  res@tiXAxisString = data&datasets(0)
+  res@tiYAxisString = data&datasets(1)
   if (diag_script_info@scatter_log) then
     res@trXAxisType = "LogAxis"
     res@trYAxisType = "LogAxis"
@@ -220,7 +220,7 @@ begin
     st(3) = res@tiYAxisString + " / " + res@tiXAxisString + " = " + \
       sprintf("%4.2f", avg(ypts) / avg(xpts))
 
-    ; Fraction of model points within factor 2 of the observations
+    ; Fraction of dataset points within factor 2 of the observations
     ratio = xpts / ypts
     fac2p = tofloat(num(ratio .ge. 0.5 .and. ratio .le. 2.0)) \
       / tofloat(num(.not. ismissing(ratio))) * 100
@@ -267,7 +267,7 @@ function scatterplot3D(wks_in[1],
 ;    source(1, :) = y-axis values
 ;    source(2, :) = z-axis values
 ;    source!0 = statistic
-;    source!1 = models
+;    source!1 = datasets
 ;
 ; Return value
 ;    A graphic object.
@@ -392,7 +392,7 @@ begin
       xb = xb - 0.01
     end if
     ndctodata(plot, xb, yb, xp, yp)
-    labels(imod) = gsn_add_text(wks, plot, data&models(imod), xp, yp, resT)
+    labels(imod) = gsn_add_text(wks, plot, data&datasets(imod), xp, yp, resT)
     str = "text" + imod
     plot@$str$ = labels(imod)
 
@@ -443,7 +443,7 @@ function scatterplot_markers(wks_in[1],
 ;    source(0, :) = x-axis values
 ;    source(1, :) = y-axis values
 ;    source!0 = statistic
-;    source!1 = model
+;    source!1 = dataset
 ;
 ; Return value
 ;    A graphic object.

@@ -149,20 +149,6 @@ begin
         idx2 = dimsizes(all_years) - \
             (end_year - toint(dataset_info@end_year(imod))) - 1
 
-;;DELETE part if script works in v2!!!
-        ;; If lat and lon are 2D arrays, assume irregular grid
-        ;if (dimsizes(dimsizes(var&lat)).ge.2 .and. \
-        ;    dimsizes(dimsizes(var&lon)).ge.2) then
-        ;    filename = interface_get_fullpath(var0, field_type0, imod)
-        ;    all_data_yearly(imod, idx1:idx2, :, :) = \
-        ;        regrid_3D_to_rectilinear_grid(data_annual, var&lon, var&lat, \
-        ;                                      grid_resolution, filename, False)
-        ;else  ; Regular grid
-        ;    all_data_yearly(imod, idx1:idx2, :, :) = \
-        ;        regrid_3D_to_rectilinear_grid(data_annual, var&lon, var&lat, \
-        ;                                      grid_resolution, "", True)
-        ;end if
-
             all_data_yearly(imod, idx1:idx2, :, :) = data_annual
             all_data_yearly&dataset = dataset_info@dataset
             copy_VarAtts(data_annual,all_data_yearly)

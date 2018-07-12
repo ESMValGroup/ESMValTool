@@ -59,45 +59,45 @@ preprocessors:
 
 diagnostics:
 
-  DIAG_tasMVI: &diagMVI
-    description: MVI scatter plot surface temperature (Figure 1)
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      tas:
-        preprocessor: ppAtmos
-        reference_dataset: CRU
-        mip: Amon
-        field: T2Ms
-        plot_units: degC
-    additional_datasets:
-      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-    scripts:
-      mvi_global: &mvi_glob
-        script: carboncycle/CarbonCycle_MVI.ncl
-        legend_year_outside: true
-        sort: true
-        styleset: CMIP5
-        region: Global
-        grid: 2deg
-      mvi_nh: &mvi_nh
-        <<: *mvi_glob
-        region: Northern Hemisphere
-      mvi_sh: &mvi_sh
-        <<: *mvi_glob
-        region: Southern Hemisphere                
-      mvi_trop: &mvi_trop
-        <<: *mvi_glob
-        region: Tropics
+#  DIAG_tasMVI: &diagMVI
+#    description: MVI scatter plot surface temperature (Figure 1)
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      tas:
+#        preprocessor: ppAtmos
+#        reference_dataset: CRU
+#        mip: Amon
+#        field: T2Ms
+#        plot_units: degC
+#    additional_datasets:
+#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
+#    scripts:
+#      mvi_global: &mvi_glob
+#        script: carboncycle/CarbonCycle_MVI.ncl
+#        legend_year_outside: true
+#        sort: true
+#        styleset: CMIP5
+#        region: Global
+#        grid: 2deg
+#      mvi_nh: &mvi_nh
+#        <<: *mvi_glob
+#        region: Northern Hemisphere
+#      mvi_sh: &mvi_sh
+#        <<: *mvi_glob
+#        region: Southern Hemisphere                
+#      mvi_trop: &mvi_trop
+#        <<: *mvi_glob
+#        region: Tropics
 
       
 #  DIAG_prMVI:
@@ -130,45 +130,43 @@ diagnostics:
 #        <<: *mvi_trop
               
       
-#  DIAG_nbpMAIN: &diagMAIN
-#    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      nbp:
-#        preprocessor: ppLand
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: JMA-TRANSCOM
-#        plot_units: PgC y-1
-#    additional_datasets:
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  DIAG_nbpMAIN: &diagMAIN
+    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
+    realms:
+      - land
+    variables:
+      nbp:
+        preprocessor: ppLand
+        field: T2Ms
+        mip: Lmon
+        reference_dataset: JMA-TRANSCOM
+        plot_units: PgC y-1
+    additional_datasets:
+      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-#    scripts:
-#      main_global: &main_glob
-#        script: carboncycle/CarbonCycle_main.ncl
-#        legend_year_outside: false
-#        sort: true
-#        seasonal_cycle_plot: true
-#        errorbar_plot: true
-#        mean_IAV_plot: true
-#        styleset: CMIP5
-#        region: Global
-#      main_nh: &main_nh
-#        <<: *main_glob
-#        region: Northern Hemisphere
-#      main_sh: &main_sh
-#        <<: *main_glob
-#        region: Southern Hemisphere
-#      main_trop: &main_trop
-#        <<: *main_glob
-#        region: Tropics
+      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
+    scripts:
+      main_global: &main_glob
+        script: carboncycle/CarbonCycle_main.ncl
+        legend_year_outside: false
+        sort: true
+        seasonal_cycle_plot: true
+        errorbar_plot: true
+        mean_IAV_plot: true
+        styleset: CMIP5
+        region: Global
+      main_nh: &main_nh
+        <<: *main_glob
+        region: Northern Hemisphere
+      main_sh: &main_sh
+        <<: *main_glob
+        region: Southern Hemisphere
+      main_trop: &main_trop
+        <<: *main_glob
+        region: Tropics
               
      
 #  DIAG_gppMVI:
