@@ -36,30 +36,28 @@ Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
 
 
 class Variables(object):
-    """Class to easily access a recipe's variables.
-
-    This class is designed to easily access variables in the diagnostic script.
+    """Class to easily access a recipe's variables in a diagnostic.
 
     Examples
     --------
     Get all variables of a recipe configuration `cfg`::
 
-        vars = Variables(cfg)
+        variables = Variables(cfg)
 
     Access information of a variable `tas`::
 
-        vars.short_name('tas')
-        vars.standard_name('tas')
-        vars.long_name('tas')
-        vars.units('tas')
+        variables.short_name('tas')
+        variables.standard_name('tas')
+        variables.long_name('tas')
+        variables.units('tas')
 
-    Access `iris`-suitable dictionary of a variable `tas`::
+    Access :mod:`iris`-suitable dictionary of a variable `tas`::
 
-        vars.iris_dict('tas')
+        variables.iris_dict('tas')
 
-    Check if several variables are available::
+    Check if variables `tas` and `pr` are available::
 
-        vars.vars_available('tas', 'pr')
+        variables.vars_available('tas', 'pr')
 
     """
 
@@ -70,9 +68,9 @@ class Variables(object):
         ----------
         cfg : dict, optional
             Configuation dictionary of the recipe.
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
         self._dict = {}
@@ -103,18 +101,28 @@ class Variables(object):
                            "scripts (using 'ancestors' key)")
 
         # Add costum variables
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        for (name, attr) in names.items():
+            if isinstance(attr, Variable):
+                attr_var = attr
+            else:
+                attr_var = Variable(
+                    name,
+                    attr.get(n.STANDARD_NAME, DEFAULT_INFO),
+                    attr.get(n.LONG_NAME, DEFAULT_INFO),
+                    attr.get(n.UNITS, DEFAULT_INFO))
+            self._add_to_dict(name, attr_var)
         if not self._dict:
             logger.warning("No variables found!")
 
     def __repr__(self):
         """Representation of the class."""
-        return repr(self.short_names())
+        output = ''
+        for (name, attr) in self._dict.items():
+            output += '{}: {}\n'.format(name, attr)
+        return output
 
     def _add_to_dict(self, name, attr):
-        """Add variable to class (internal method).
+        """Add variable to class dictionary.
 
         Parameters
         ----------
@@ -129,21 +137,28 @@ class Variables(object):
         self._dict[name] = attr
 
     def add_var(self, **names):
-        """Add a costum variable to the class member.
+        """Add a costum variable to the class.
 
         Parameters
         ----------
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        for (name, attr) in names.items():
+            if isinstance(attr, Variable):
+                attr_var = attr
+            else:
+                attr_var = Variable(
+                    name,
+                    attr.get(n.STANDARD_NAME, DEFAULT_INFO),
+                    attr.get(n.LONG_NAME, DEFAULT_INFO),
+                    attr.get(n.UNITS, DEFAULT_INFO))
+            self._add_to_dict(name, attr_var)
 
     def iris_dict(self, var):
-        """Access iris dictionary of the variable.
+        """Access :mod:`iris` dictionary of the variable.
 
         Parameters
         ----------
@@ -154,7 +169,7 @@ class Variables(object):
         -------
         dict
             Dictionary containing all attributes of the variable which can be
-            used directly in iris (`short_name` replaced by `var_name`).
+            used directly in :mod:`iris` (`short_name` replaced by `var_name`).
 
         """
         iris_dict = self._dict[var]._asdict()
@@ -269,7 +284,7 @@ class Variables(object):
         Parameters
         ----------
         *args
-            Variables to be tested.
+            Short names of the variables to be tested.
 
         Returns
         -------
@@ -284,9 +299,7 @@ class Variables(object):
 
 
 class Datasets(object):
-    """Class to easily access a recipe's datasets.
-
-    This class is designed to easily access datasets in the diagnostic script.
+    """Class to easily access a recipe's datasets in a diagnostic script.
 
     Examples
     --------
@@ -302,7 +315,7 @@ class Datasets(object):
 
         datasets.get_dataset_info(path=dataset_path)
 
-    Access the data of all datasets with `exp=piControl'::
+    Access the data of all datasets with `exp=piControl`::
 
         datasets.get_data_list(exp=piControl)
 
@@ -312,7 +325,8 @@ class Datasets(object):
         """Load datasets.
 
         Load all datasets of the recipe and store them in three internal
-        dictionaries/lists (`self._paths`, `self._data` and `self._datasets`).
+        :obj:`dict`/:obj:`list` containers: `self._paths`, `self._data` and
+        `self._datasets`.
 
         Parameters
         ----------
@@ -384,7 +398,7 @@ class Datasets(object):
         Returns
         -------
         bool
-            True if valid path, False if not.
+            `True` if valid path, `False` if not.
 
         """
         if path in self._paths:
@@ -436,9 +450,9 @@ class Datasets(object):
         ----------
         path : str
             (Unique) path to the dataset.
-        data, optional
+        data: optional
             Arbitrary object to be saved as data for the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -464,7 +478,7 @@ class Datasets(object):
             Element to be added to the dataset's data.
         path : str, optional
             Path to the dataset
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -496,13 +510,13 @@ class Datasets(object):
         ----------
         path : str, optional
             Path to the dataset
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
-        data_object
+        `data_object`
             Data of the selected dataset.
 
         Raises
@@ -529,7 +543,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -554,7 +568,7 @@ class Datasets(object):
         ----------
         path : str, optional
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -587,7 +601,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -615,7 +629,7 @@ class Datasets(object):
             Desired dictionary key.
         path : str
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -656,7 +670,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -683,7 +697,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -712,7 +726,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -738,7 +752,7 @@ class Datasets(object):
             Element to be set as the dataset's data.
         path : str, optional
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 

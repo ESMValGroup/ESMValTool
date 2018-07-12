@@ -133,19 +133,19 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     Notes
     -----
-    Allowed keyword arguments::
+    Allowed keyword arguments:
 
-        mpl_style_file : str, optional
-            Path to the matplotlib style file.
-        dataset_style_file : str, optional
-            Path to the dataset styles file.
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
-        save_kwargs : dict, optional
-            Keyword arguments for saving the plot.
-        axes_functions : dict, optional
-            Arbitrary functions for axes, i.e.
-            `axes.function(*args, **kwargs)`.
+    * `mpl_style_file` (:obj:`str`):  Path to the matplotlib style file.
+
+    * `dataset_style_file` (:obj:`str`): Path to the dataset style file.
+
+    * `plot_kwargs` (`array-like`): Keyword arguments for the plot (e.g.
+      `label`, `makersize`, etc.).
+
+    * `save_kwargs` (:obj:`dict`): Keyword arguments for saving the plot.
+
+    * `axes_functions` (:obj:`dict`): Arbitrary functions for axes, i.e.
+      `axes.set_title('title')`.
 
     Parameters
     ----------
@@ -217,17 +217,17 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     Notes
     -----
-    Allowed keyword arguments::
+    Allowed keyword arguments:
 
-        mpl_style_file : str, optional
-            Path to the matplotlib style file.
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
-        save_kwargs : dict, optional
-            Keyword arguments for saving the plot.
-        axes_functions : dict, optional
-            Arbitrary functions for axes, i.e.
-            `axes.function(*args, **kwargs)`.
+    * `mpl_style_file` (:obj:`str`):  Path to the matplotlib style file.
+
+    * `plot_kwargs` (`array-like`): Keyword arguments for the plot (e.g.
+      `label`, `makersize`, etc.).
+
+    * `save_kwargs` (:obj:`dict`): Keyword arguments for saving the plot.
+
+    * `axes_functions` (:obj:`dict`): Arbitrary functions for axes, i.e.
+      `axes.set_title('title')`.
 
     Parameters
     ----------
