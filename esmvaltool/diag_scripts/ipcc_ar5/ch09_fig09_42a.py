@@ -180,9 +180,9 @@ def main(cfg):
 
     # Create iris cube for ECS data
     cube = iris.load_cube(ecs_filepath)
-    var.add_var(ecs={n.SHORT_NAME: cube.var_name,
-                     n.LONG_NAME: cube.long_name,
-                     n.UNITS: cube.units.format(cf_units.UT_DEFINITION)})
+    var.add_vars(ecs={n.SHORT_NAME: cube.var_name,
+                      n.LONG_NAME: cube.long_name,
+                      n.UNITS: cube.units.format(cf_units.UT_DEFINITION)})
     for (idx, model) in enumerate(cube.coord('datasets').points):
         data.add_dataset('ecs_' + model,
                          data=cube.data[idx],

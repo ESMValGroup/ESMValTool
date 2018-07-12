@@ -101,16 +101,7 @@ class Variables(object):
                            "scripts (using 'ancestors' key)")
 
         # Add costum variables
-        for (name, attr) in names.items():
-            if isinstance(attr, Variable):
-                attr_var = attr
-            else:
-                attr_var = Variable(
-                    name,
-                    attr.get(n.STANDARD_NAME, DEFAULT_INFO),
-                    attr.get(n.LONG_NAME, DEFAULT_INFO),
-                    attr.get(n.UNITS, DEFAULT_INFO))
-            self._add_to_dict(name, attr_var)
+        self.add_vars(**names)
         if not self._dict:
             logger.warning("No variables found!")
 
@@ -136,8 +127,8 @@ class Variables(object):
             logger.debug("Added variable '%s' to collection", name)
         self._dict[name] = attr
 
-    def add_var(self, **names):
-        """Add a costum variable to the class.
+    def add_vars(self, **names):
+        """Add a costum variables to the class.
 
         Parameters
         ----------
@@ -199,9 +190,8 @@ class Variables(object):
         ----------
         var : str
             (Short) name of the existing variable.
-        **names : dict or Variable, optional
-            Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
+        **names
+            Keyword arguments of the form `short_name=tas`.
 
         Raises
         ------
