@@ -3,19 +3,19 @@
 ---
 documentation:
 
-description: |
-  Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-  9.42a
+  description: |
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.42a
 
-authors:
-  - schl_ma
+  authors:
+    - schl_ma
 
-references:
-  - flato13ipcc
+  references:
+    - flato13ipcc
 
-projects:
-  - esmval
-  - crescendo
+  projects:
+    - esmval
+    - crescendo
 
 
 preprocessors:
