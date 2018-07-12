@@ -64,9 +64,6 @@ load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 
-;begin
-  loadscript("/net/tropo/climphys/rlorenz/ESMVal/work/recipe_test_collins_short_20180702_070635//ta_info.ncl")
-;end
 begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
