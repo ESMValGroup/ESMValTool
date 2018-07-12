@@ -92,7 +92,7 @@ def zonal_means(cube, coordinate, mean_type):
     Returns
     -------
     iris.cube.Cube
-	    Returns a cube
+        Returns a cube
     """
     if mean_type == 'mean':
         result = cube.collapsed(coordinate, iris.analysis.MEAN)

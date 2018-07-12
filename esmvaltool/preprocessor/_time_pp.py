@@ -42,7 +42,7 @@ def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
             Month of at the end of the slice
 
         d2: int
-            Day of at the end of the slice                                                        
+            Day of at the end of the slice
 
     Returns
     -------
@@ -118,7 +118,7 @@ def proportion_greater(cube, coord1, threshold):
             name of coordinate to collapse along
 
         threshold: float
-            value of threshold    
+            value of threshold
 
     Returns
     -------
