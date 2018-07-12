@@ -42,19 +42,19 @@ preprocessors:
 
   ppAtmos:
     extract_levels: false
-    #regrid: false
     regrid:
       target_grid: 2x2
       scheme: linear
     mask_fillvalues: false
     multi_model_statistics: false
     
-#  ppLand:
-#    extract_levels: false
-#    regrid: false
-#    mask_fillvalues: false
-#    multi_model_statistics: false
-#    #mask_landocean: land
+  ppLand:
+    extract_levels: false
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues: false
+    multi_model_statistics: false
 
 #  ppGrading:
 #    extract_levels: false
@@ -65,41 +65,41 @@ preprocessors:
 
 diagnostics:
 
-  DIAG_tasMVI: &diagMVI
-    description: MVI scatter plot surface temperature (Figure 1)
-    variables:
-      tas:
-        preprocessor: ppAtmos
-        field: T2Ms
-        mip: Amon
-        reference_model: CRU
-        plot_units: degC
-    additional_models:
-      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {model: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-    scripts:
-      mvi_global: &mvi_glob
-        script: carboncycle/CarbonCycle_MVI.ncl
-        legend_year_outside: true
-        sort: true
-        styleset: CMIP5
-        region: Global
-        grid: 2deg
-      mvi_nh: &mvi_nh
-        <<: *mvi_glob
-        region: Northern Hemisphere
-      mvi_sh: &mvi_sh
-        <<: *mvi_glob
-        region: Southern Hemisphere                
-      mvi_trop: &mvi_trop
-        <<: *mvi_glob
-        region: Tropics
+#  DIAG_tasMVI: &diagMVI
+#   description: MVI scatter plot surface temperature (Figure 1)
+#    variables:
+#      tas:
+#        preprocessor: ppAtmos
+#        field: T2Ms
+#        mip: Amon
+#        reference_model: CRU
+#        plot_units: degC
+#    additional_models:
+#      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {model: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
+#    scripts:
+#      mvi_global: &mvi_glob
+#        script: carboncycle/CarbonCycle_MVI.ncl
+#        legend_year_outside: true
+#        sort: true
+#        styleset: CMIP5
+#        region: Global
+#        grid: 2deg
+#      mvi_nh: &mvi_nh
+#        <<: *mvi_glob
+#        region: Northern Hemisphere
+#      mvi_sh: &mvi_sh
+#        <<: *mvi_glob
+#        region: Southern Hemisphere                
+#      mvi_trop: &mvi_trop
+#        <<: *mvi_glob
+#        region: Tropics
 
       
 #  DIAG_prMVI:
@@ -111,7 +111,7 @@ diagnostics:
 #        field: T2Ms
 #        mip: Amon
 #        reference_model: CRU
-#        plot_units: mm
+#        plot_units: mm day-1
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -140,7 +140,7 @@ diagnostics:
 #        field: T2Ms
 #        mip: Lmon
 #        reference_model: JMA-TRANSCOM
-#        plot_units: 
+#        plot_units: PgC y-1
 #    additional_models:
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -171,14 +171,14 @@ diagnostics:
      
 #  DIAG_gppMVI:
 #    description: MVI scatter plot gpp (Figure 8)
-#    <<: *diagMVI
+##    <<: *diagMVI
 #    variables:
 #      gpp:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
 #        reference_model: MTE
-#        plot_units: 
+#        plot_units: PgC y-1
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -186,7 +186,24 @@ diagnostics:
 #      - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,   tier: 2}
-#    scripts:
+#    scripts: 
+#      mvi_global: &mvi_glob
+#        script: carboncycle/CarbonCycle_MVI.ncl
+#        legend_year_outside: true
+#        sort: true
+#        styleset: CMIP5
+#        region: Global
+#        grid: 2deg
+#      mvi_nh: &mvi_nh
+#        <<: *mvi_glob
+#        region: Northern Hemisphere
+#      mvi_sh: &mvi_sh
+#        <<: *mvi_glob
+#        region: Southern Hemisphere                
+#      mvi_trop: &mvi_trop
+#        <<: *mvi_glob
+#        region: Tropics
+
 #      mvi_global:
 #        <<: *mvi_glob              
 #      mvi_nh:
@@ -206,7 +223,7 @@ diagnostics:
 #        field: T2Ms
 #        mip: Lmon
 #        reference_model: MTE
-#        plot_units: 
+#        plot_units: PgC y-1
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -227,22 +244,21 @@ diagnostics:
               
 #  DIAG_laiMVI:
 #    description: MVI scatter plot LAI (Figure 10)
-#    <<: *diagMVI
+##    <<: *diagMVI
 #    variables:
-#      gpp:
+#      lai:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
-#        reference_model: LAI3gk
-#        plot_units: 
+#        reference_model: LAI3g
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+##      - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {model: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 2}
+#      - {model: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
 #    scripts:
 #      mvi_global:
 #        <<: *mvi_glob
@@ -263,7 +279,7 @@ diagnostics:
 #        field: T2Ms
 #        mip: Lmon
 #        reference_model: LAI3g
-#        plot_units: 
+#        plot_units: -1
 #    additional_models:
 #      - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {model: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -291,7 +307,7 @@ diagnostics:
 #        field: T2Ms
 #        mip: Lmon
 #        reference_model: HWSD
-#        plot_units: 
+#        plot_units: PgC
 #        additional_models:
 #          - {model: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #          - {model: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}

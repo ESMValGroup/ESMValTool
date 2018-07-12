@@ -155,7 +155,7 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
-    if (any(units_to.eq.(/"mm d-1", "mm/day"/))) then
+    if (any(units_to.eq.(/"mm d-1", "mm day-1", "mm/day"/))) then
       out = out * 24 * 3600
       out@units = units_to
       leave_msg(scriptname, funcname)
