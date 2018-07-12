@@ -130,53 +130,53 @@ diagnostics:
 #        <<: *mvi_trop
               
       
-  DIAG_nbpMAIN: &diagMAIN
-    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      nbp:
-        preprocessor: ppLand
-        field: T2Ms
-        mip: Lmon
-        reference_dataset: JMA-TRANSCOM
-        #alternative_dataset: GCP
-        plot_units: PgC y-1
-    additional_datasets:
-      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      #- {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-      #- {dataset: GCP,  project: OBS,  type: reanaly,  version: 1,  start_year: 1959,  end_year: 2015,  tier: 2}
-    scripts:
-      main_global: &main_glob
-        script: carboncycle/CarbonCycle_main.ncl
-        legend_year_outside: false
-        legend_outside: false
-        sort: true
-        seasonal_cycle_plot: true
-        anav_month: true
-        errorbar_plot: true
-        mean_IAV_plot: false
-        styleset: CMIP5
-        region: Global
-        evolution_plot: false
-        #evolution_plot_volcanoes: True
-        #evolution_plot_ref_model: GCP
-        #obsname: GCP
-      main_nh: &main_nh
-        <<: *main_glob
-        region: Northern Hemisphere
-      main_sh: &main_sh
-        <<: *main_glob
-        region: Southern Hemisphere
-      main_trop: &main_trop
-        <<: *main_glob
-        region: Tropics
+#  DIAG_nbpMAIN: &diagMAIN
+#    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      nbp:
+#        preprocessor: ppLand
+#        field: T2Ms
+#        mip: Lmon
+#        reference_dataset: JMA-TRANSCOM
+#        #alternative_dataset: GCP ###(only available in T0M, how to read this in v2.0a0 ???)
+#        plot_units: PgC y-1
+#    additional_datasets:
+#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      #- {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
+#      #- {dataset: GCP,  project: OBS,  type: reanaly,  version: 1,  start_year: 1959,  end_year: 2015,  tier: 2}
+#    scripts:
+#      main_global: &main_glob
+#        script: carboncycle/CarbonCycle_main.ncl
+#        legend_year_outside: false
+#        legend_outside: false
+#        sort: true
+#        seasonal_cycle_plot: true
+#        anav_month: true
+#        errorbar_plot: true
+#        mean_IAV_plot: false
+#        styleset: CMIP5
+#        region: Global
+#        evolution_plot: false
+#        #evolution_plot_volcanoes: True
+#        #evolution_plot_ref_model: GCP
+#        #obsname: GCP
+#      main_nh: &main_nh
+#        <<: *main_glob
+#        region: Northern Hemisphere
+#      main_sh: &main_sh
+#        <<: *main_glob
+#        region: Southern Hemisphere
+#      main_trop: &main_trop
+#        <<: *main_glob
+#        region: Tropics
               
      
 #  DIAG_gppMVI:
@@ -271,12 +271,11 @@ diagnostics:
 #    description: Seasonal cycle plot LAI (Figure 11)
 #    <<: *diagMAIN
 #    variables:
-#      gpp:
+#      lai:
 #        preprocessor: ppLand
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: LAI3g
-#        plot_units: -1
 #    additional_datasets:
 #      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
@@ -284,7 +283,7 @@ diagnostics:
 #      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year:    1986,  end_year: 2005,  tier: 2}
+#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
 #    scripts:
 #      main_global:
 #        <<: *main_glob
@@ -296,53 +295,53 @@ diagnostics:
 #        <<: *main_trop
 
               
-#  DIAG_scatter2:
-#    description: Two-variable scatter plot cSoil-cVeg (Figure 12)
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      cSoil:
-#        preprocessor: ppLand
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: HWSD
-#        plot_units: PgC
-#        additional_datasets:
-#          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
-#      cVeg:
-#        preprocessor: ppAll
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: NDP
-#        plot_units: 
-#        additional_datasets:
-#          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#          - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
-#    scripts:
-#      scat_global:
-#        script: carboncycle/CarbonCycle_2vars.ncl
-#        legend_year_outside: false
-#        styleset: CMIP5
-#        region: Global
-#      scat_nh:
-#        <<: *scat_glob
-#        region: Northern Hemisphere
-#      scat_nh:
-#        <<: *scat_glob
-#        region: Southern Hemisphere
-#      scat_nh:
-#        <<: *scat_glob
-#        region: Tropics
-                  
+  DIAG_scatter2:
+    description: Two-variable scatter plot cSoil-cVeg (Figure 12)
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      cSoil:
+        preprocessor: ppLand
+        field: T2Ms
+        mip: Lmon
+        reference_dataset: HWSD
+        plot_units: PgC
+        additional_datasets:
+          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
+      cVeg:
+        preprocessor: ppLand
+        field: T2Ms
+        mip: Lmon
+        alternative_dataset: NDP
+        plot_units: PgC
+        additional_datasets:
+          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+          - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      scat_global: &scat_glob
+        script: carboncycle/CarbonCycle_2vars.ncl
+        legend_year_outside: false
+        styleset: CMIP5
+        region: Global
+      scat_nh:
+        <<: *scat_glob
+        region: Northern Hemisphere
+      scat_nh:
+        <<: *scat_glob
+        region: Southern Hemisphere
+      scat_nh:
+        <<: *scat_glob
+        region: Tropics
+                 
 
 # THIS DIAGNOSTIC DOES NOT SUPPORT IRREGULAR GRIDS YET
   # DIAG_mainFGCO2:
