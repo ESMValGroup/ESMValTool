@@ -137,8 +137,8 @@ diagnostics:
           orientation: landscape
         axes_functions:
           set_title: GMSAT vs. ECS for CMIP5 models
-          set_xlabel: ECS / K
-          set_ylabel: GMSAT / K
+          set_xlabel: ECS / °C
+          set_ylabel: GMSAT / °C
           set_xlim: [1.5, 5.0]
           legend:
             kwargs:
