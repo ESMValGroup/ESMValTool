@@ -21,7 +21,33 @@ def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
     time_slice(cube,2006,2,2,2010,1,1) or
     time_slice(cube,'2006','2','2','2010','1','1');
 
-    Returns a cube
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+        yr1: int
+            Year of at the start of the slice
+
+        mo1: int
+            Month of at the start of the slice
+
+        d1: int
+            Day of at the start of the slice
+
+        yr2: int
+            Year of at the end of the slice
+
+        mo2: int
+            Month of at the end of the slice
+
+        d2: int
+            Day of at the end of the slice                                                        
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns a cube
     """
     import datetime
     time_units = cube.coord('time').units
@@ -51,10 +77,12 @@ def time_average(cube):
 
     Arguments
     ---------
-        cube: input cube.
+        cube: iris.cube.Cube
+            input cube.
 
     Returns
     -------
+    iris.cube.Cube
         time averaged cube.
     """
     time = cube.coord('time')
@@ -80,6 +108,22 @@ def proportion_greater(cube, coord1, threshold):
     Return the probability that a cetain variable coord1 (string)
     is greater than a threshold threshold (float or string),
     across a cube cube; returns a cube
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+        coord1: str
+            name of coordinate to collapse along
+
+        threshold: float
+            value of threshold    
+
+    Returns
+    -------
+    iris.cube.Cube
+        Seasonal mean cube
     """
     thr = float(threshold)
     result = cube.collapsed(
@@ -93,7 +137,16 @@ def seasonal_mean(cube):
     Function to compute seasonal means with MEAN
 
     Chunks time in 3-month periods and computes means over them;
-    Returns a cube
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Seasonal mean cube
     """
     iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     iris.coord_categorisation.add_season_year(

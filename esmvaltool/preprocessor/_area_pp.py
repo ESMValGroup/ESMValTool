@@ -19,14 +19,24 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
 
     Arguments
     ---------
-        cube: input cube.
-        start_longitude: Western boundary longitude.
-        end_longitude:  Eastern boundary longitude.
-        start_latitude: Southern Boundary latitude.
-        end_latitude: Northern Boundary Latitude.
+        cube: iris.cube.Cube
+            input cube.
+
+        start_longitude: float
+            Western boundary longitude.
+
+        end_longitude: float
+              Eastern boundary longitude.
+
+        start_latitude: float
+             Southern Boundary latitude.
+
+        end_latitude: float
+             Northern Boundary Latitude.
 
     Returns
     -------
+    iris.cube.Cube
         smaller cube.
     """
     # Converts Negative longitudes to 0 -> 360. standard
@@ -67,7 +77,22 @@ def zonal_means(cube, coordinate, mean_type):
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
-    Returns a cube
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+         coordinate: str
+             name of coordinate to make mean
+
+         mean_type: str
+             Type of analysis to use, from iris.analysis.
+
+    Returns
+    -------
+    iris.cube.Cube
+	    Returns a cube
     """
     if mean_type == 'mean':
         result = cube.collapsed(coordinate, iris.analysis.MEAN)
@@ -88,12 +113,18 @@ def area_average(cube, coord1, coord2):
 
     Arguments
     ---------
-        cube: input cube.
-        coord1: name of first coordinate
-        coord2: name of second coordinate
+        cube: iris.cube.Cube
+            input cube.
+
+        coord1: str
+            name of first coordinate
+
+        coord2: str
+            name of second coordinate
 
     Returns
     -------
+    iris.cube.Cube
         collapsed cube.
     """
     # CMOR ised data should already have bounds?

@@ -21,12 +21,18 @@ def volume_slice(cube, z_min, z_max):
 
     Arguments
     ---------
-        cube: input cube.
-        z_min: minimum depth to extract.
-        z_max: maximum depth to extract.
+        cube: iris.cube.Cube
+            input cube.
+
+        z_min: float
+            minimum depth to extract.
+
+        z_max: float
+            maximum depth to extract.
 
     Returns
     -------
+    iris.cube.Cube
         extracted cube.
     """
     if z_min > z_max:
@@ -54,13 +60,21 @@ def volume_average(cube, coordz, coord1, coord2):
 
     Arguments
     ---------
-        cube: input cube.
-        coordz: name of depth coordinate
-        coord1: name of first coordinate
-        coord2: name of second coordinate
+        cube: iris.cube.Cube
+            input cube.
+
+        coordz: str
+            name of depth coordinate
+
+        coord1: str
+            name of first coordinate
+
+        coord2: str
+            name of second coordinate
 
     Returns
     -------
+    iris.cube.Cube
         collapsed cube.
     """
     # CMOR ised data should already have bounds?
@@ -96,11 +110,15 @@ def depth_integration(cube, coordz):
 
     Arguments
     ---------
-        cube: input cube.
-        coordz: name of depth coordinate
+        cube: iris.cube.Cube
+            input cube.
+
+        coordz: str
+            name of depth coordinate
 
     Returns
     -------
+    iris.cube.Cube
         collapsed cube.
     """
     ####
@@ -153,12 +171,18 @@ def extract_transect(cube, latitude=None, longitude=None):
 
     Arguments
     ---------
-        cube: input cube.
-        latitude: transect latiude or range.
-        longitude: transect longitude or range.
+        cube: iris.cube.Cube
+            input cube.
+
+        latitude: None, float or [float, float], optional
+            transect latiude or range.
+
+        longitude:  None, float or [float, float], optional
+            transect longitude or range.
 
     Returns
     -------
+    iris.cube.Cube
         collapsed cube.
     """
     ####
@@ -228,13 +252,21 @@ def extract_trajectory(cube, latitudes, longitudes, number_points=2):
 
     Arguments
     ---------
-        cube: input cube.
-        latitudes: list of latitude coordinates.
-        longitudes: list of longitude coordinates.
-        number_points: number of points to extrapolate (optional).
+        cube: iris.cube.Cube
+            input cube.
+
+        latitudes: list of floats
+            list of latitude coordinates.
+
+        longitudes: list of floats
+            list of longitude coordinates.
+
+        number_points: int
+            number of points to extrapolate (optional).
 
     Returns
     -------
+    iris.cube.Cube
         collapsed cube.
     """
     from iris.analysis.trajectory import interpolate
