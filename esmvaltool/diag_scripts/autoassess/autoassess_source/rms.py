@@ -11,6 +11,7 @@ import numpy
 import numpy.ma as ma
 import iris
 
+from esmvaltool.diag_scripts.autoassess.autoassess_source import valmod_radiation as vm
 
 class rms_list_class(list):
     '''

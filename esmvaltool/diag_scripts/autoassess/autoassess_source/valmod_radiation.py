@@ -187,28 +187,6 @@ def apply_heavyside(cube, heavyside_cube):
     cube.data /= heavyside_cube.data
     return cube
     
-# **************** EXPAND_EQUATION **********************
-
-def expand_equation(equation, component_list,dict_name='data_regrid_dict'):
-    """So far we have an equation but in order to execute it we need
-    data_regrid_dict in front of each component in the equation. This routine
-    adds those data_dict bits.
-    
-    equation = (string) the equation from the plots_file
-    components = a list of components where each item is a string of the
-                 form source_season_field
-    dict_name = (string) the name of the dictionary that contains the
-                 variables that you want in the equation. The default (as used
-                 by the validation notes) is data_regrid_dict             
-    """
-    
-    long_equation=equation
-    
-    # Loop over components
-    for comp in component_list:
-        long_equation=long_equation.replace(comp,dict_name+"['"+comp+"']",1)
-        
-    return long_equation
 
 # **************** GET_CUBE_READY **********************
 
@@ -229,12 +207,10 @@ def get_cube_ready(cube):
     # Test to see if the grid does not have a coordinate system (CERES-EBAF). If so fix it.
     if cube.coord_system() == None:
         cube = fix_cube(cube)
-        if globalvar.error: return 1
     
     # Test to see if the grid is a rotated coordinate system (HadSLP2). If so fix it.
     if cube.coord_system() == iris.coord_systems.RotatedGeogCS(0.0, 0.0, ellipsoid=iris.coord_systems.GeogCS(6371229.0)):
         cube = fix_cube(cube)
-        if globalvar.error: return 1
 
     # Roll the cube
     coords_list = [this_coord.name() for this_coord in cube.coords()]
@@ -242,8 +218,10 @@ def get_cube_ready(cube):
         cube = roll_cube(cube)
         
     # Guess the bounds
-    if not cube.coord(axis='x').has_bounds(): cube.coord(axis='x').guess_bounds()
-    if not cube.coord(axis='y').has_bounds(): cube.coord(axis='y').guess_bounds() 
+    if not cube.coord(axis='x').has_bounds():
+        cube.coord(axis='x').guess_bounds()
+    if not cube.coord(axis='y').has_bounds():
+        cube.coord(axis='y').guess_bounds() 
     
     return cube
 
@@ -681,141 +659,33 @@ def load_extra_data(extras_dict):
 
         globalvar.extra_data_dict[key] = iris.load_cube(extras_dict[key])
         globalvar.extra_data_dict[key] = get_cube_ready(globalvar.extra_data_dict[key])
-# **************** PERFORM_EQUATION **********************
 
-def perform_equation(equation,data_dict,page_title,key,rms_list=None,filename=None,calc_rms=False,n_underscores=0):
-    """Perform the equations provided in plots_file.dat
-    
-    equation = the equation to perform
-    data_dict = a dictionary containing the data needed for those equations
-    page_title = the title of the page from valorder.dat
-    key = the key (a, b, c or d) for the plot
-    rms_list = an rms object for storing root mean square values of the final field (see rms.py for object structure)
-    calc_rms = switch to turn on calculation of rms values
-    filename = (string) the filename of the png plot
-    n_underscores = (int) number of underscores that the component needs to have in
-                    order for it to be a component.
-                    default = 0 (ignore this)
+
+def perform_equation(data_dict, analysis_type):
     """
-    
-    print('Performing equation '+equation)
-           
-    # Generate a list of components used in the equation
-    component_set=get_component_set(equation, n_underscores=n_underscores)
-    
-    # Are any of these components observations.
-    using_obs=0
-    for comp in component_set:
-        input_info = string.split(comp,'_')
-        if input_info[0] != 'exper' and input_info[0] != 'control':
-            using_obs=1
-            
-        # Check that the component exists in data_dict
-        if comp not in data_dict.keys():
-            print('ERROR: Not all variables in equation '+equation+' have entries in data_dict. data_dict.keys()=')
-            print(data_dict.keys())
-            if globalvar.debug:
-                pdb.set_trace()
-            else:
-                globalvar.error=True
-                return 1, -999
+    Do equation
 
+    Perform the equations provided in plots_file.dat
+    data_dict = a dictionary containing the data needed for those equations
+    analysis_type = type of analysis (zonal_mean, vertical_mean,...)
+    """
     # Make sure all the fields have correct units and axes
-    for comp in component_set:
+    for comp in data_dict.keys():
         data_dict[comp] = get_cube_ready(data_dict[comp])
-        if globalvar.error: return 1, -999
-    same_units(data_dict)    
 
-    # Get a list of longitude sizes
-    n_lons_list=[]
-    for comp in component_set:
-        n_lons_list.append(data_dict[comp].coords(axis='x')[0].shape[0])
-        #print 'comp', comp, n_lons_list, data_dict[comp].coords(axis='x')[0].shape
-    # Find the minimum resolution
-    min_resn = min(n_lons_list)                                             # The lowest resolution
-    min_comp = list(component_set)[n_lons_list.index(min_resn)]             # Find out the component that corresponds to that lowest resolution    
+        # Data needs to be regridded on a 1x1 degrees grid
+        # This is done in preprocessor (previously shitload of code
+        # here to do just that)
     
-    # If using observations in the equation then regrid to a coarse grid (either N96 or the obs grid if less than N96) 
-    #if using_obs:    
-    #    if min_resn < 192:
-    #        regrid_grid = data_dict[min_comp]
-    #    else:
-    #        regrid_grid = globalvar.extra_data_dict['n96_land_frac']
-    #        regrid_grid = get_cube_ready(regrid_grid) 
-    #        if globalvar.error: return 1, -999   
-    #else:
-        
-        # If no obs are present then use the coarsest resolution for the regrid
-    #    regrid_grid = data_dict[min_comp]
-    
-    regrid_grid = globalvar.extra_data_dict['1deg_1deg_landsea_frac']
-    
-    # Make an array of regridded data
-    data_regrid_dict={}
-    for comp in component_set:
-        if data_dict[comp] != regrid_grid:
-            data_regrid_dict[comp] = regrid_cube(data_dict[comp],regrid_grid)
-        else:
-            data_regrid_dict[comp] = data_dict[comp]
-    if globalvar.error: return 1, -999  
-        
-    # Get a list of components
-    component_list = list(component_set)
-    n_components = len(component_list)
-    
-    # If this is a zonal mean then make sure all your fields have the same levels
-    if globalvar.plot_type ==  'zonal_mean':
-        
-        # Count up, comparing vertical grids and removing levels not the same
-        if n_components > 1:
-            for c in range(n_components-1):
-                data_regrid_dict[component_list[c]], data_regrid_dict[component_list[c+1]]=iris.analysis.maths.intersection_of_cubes(data_regrid_dict[component_list[c]], data_regrid_dict[component_list[c+1]])
-            
-        # Count down, comparing vertical grids and removing levels not the same
-        if n_components > 2:
-            for c in range(n_components-2,0,-1):
-                data_regrid_dict[component_list[c]], data_regrid_dict[component_list[c+1]]=iris.analysis.maths.intersection_of_cubes(data_regrid_dict[component_list[c]], data_regrid_dict[component_list[c+1]])         
-    
-    # Include data_regrid_dict in the equation
-    long_equation = expand_equation(equation, component_list) 
-    
-    # Perform pre equation processing. e.g. zonal meaning or vertical meaning. This is specified by
-    # the proc input in item_file.dat  
-    if globalvar.valnote:
-        for comp in component_set:
-            input_info = string.split(comp,'_')
-            if globalvar.item_dict[input_info[2]].has_key('proc'):            
-                if globalvar.item_dict[input_info[2]]['proc'][0] == 'zonal_mean':
-                    data_regrid_dict[comp] = data_regrid_dict[comp].collapsed('longitude', iris.analysis.MEAN)
-                if globalvar.item_dict[input_info[2]]['proc'][0] == 'vertical_mean': 
-                    data_regrid_dict[comp] = data_regrid_dict[comp].collapsed('pressure', iris.analysis.MEAN)   
+        # Perform pre equation processing
+        if  analysis_type == 'zonal_mean':
+            data_dict[comp] = data_dict[comp].collapsed('longitude',
+                                                        iris.analysis.MEAN)
+        elif analysis_type == 'vertical_mean': 
+            data_dict[comp] = data_dict[comp].collapsed('pressure',
+                                                        iris.analysis.MEAN)
 
-    # Perform the equation
-    try:
-        toplot_cube=eval(long_equation)
-    except:
-        print('ERROR: failed to execute equation '+long_equation+' in perform_equation')
-        print("ERROR: ", sys.exc_info())
-        if globalvar.debug:
-            pdb.set_trace()      
-        else:
-            globalvar.error=True
-            return 1, -999   
+    # Perform difference
+    toplot_cube = data_dict['exper_variable'] - data_dict['obs_variable']
     
-    # Perform post equation processing. e.g. zonal meaning or vertical meaning. This is specified by
-    # the proc input in levels_file.dat
-    if globalvar.valnote:
-        level_type = globalvar.plots_dict[page_title][key][1]
-        coords_list = [this_coord.name() for this_coord in toplot_cube.coords()]
-        if globalvar.levels_dict[level_type].has_key('proc'):
-            if globalvar.levels_dict[level_type]['proc'][0] == 'zonal_mean' and 'longitude' in coords_list:
-                toplot_cube = toplot_cube.collapsed('longitude', iris.analysis.MEAN)
-            if globalvar.levels_dict[level_type]['proc'][0] == 'vertical_mean':
-                toplot_cube = toplot_cube.collapsed('pressure', iris.analysis.MEAN)
-                
-    if calc_rms:
-        rms_float = rms.calc_all(rms_list, toplot_cube, key, page_title, filename=filename)  
-    else:
-        rms_float = -999                            
-    
-    return toplot_cube, rms_float
+    return toplot_cube

@@ -193,10 +193,18 @@ def main(cfg):
             logger.debug("Time-averaged %s", obs_cube)
 
             # apply rms
+            data_dict = {}
             rms_list = rms.start(model['dataset'], obs['dataset'])
             data_dict['exper_variable'] = model_cube
             data_dict['obs_variable'] = obs_cube
-            model_vs_obs_variable, rms_exper_variable = vm.perform_equation('exper_variable - obs_variable',data_dict,datakey,'a',rms_list=rms_list,calc_rms=True)
+            p_title = 'Wet Titties'
+            key = 'a'
+            filename = 'crapOn.png'
+            model_vs_obs = vm.perform_equation(data_dict, 'zonal_mean')
+
+            # apply rms
+            rms_float = rms.calc_all(rms_list, model_vs_obs,
+                                     key, p_title, filename)
             rms.end(rms_list, cfg['work_dir'])
 
 if __name__ == '__main__':
