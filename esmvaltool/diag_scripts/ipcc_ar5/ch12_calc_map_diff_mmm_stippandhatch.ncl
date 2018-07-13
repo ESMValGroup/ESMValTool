@@ -59,6 +59,7 @@
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 
@@ -85,16 +86,15 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
-
 end
 
 begin
@@ -105,7 +105,7 @@ begin
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)  ; Needed?
 
-  input_dir = diag_script_info@input_files
+  input_dir = diag_script_info@input_files(1)
 end
 
 begin
@@ -153,247 +153,69 @@ begin
   end if
   lon_name = dims(idx)
 
-  ; determine destination grid (regridding.ncl)
-  index = ispan(0, dim_MOD - 1, 1)
   if (isatt(diag_script_info, "seasons")) then
     dim_seas = dimsizes(diag_script_info@seasons)
   else
     dim_seas = 1
   end if
-  if (.not.(isatt(diag_script_info, "grid"))) then
-    error_msg("w", diag_script, "", \
-	      "Regridding method not defined. " + "Using 2.5x2.5")
-    selected_grid = "2.5x2.5"
-  else
-    selected_grid = diag_script_info@grid
-  end if
-  log_info("Setting target grid:")
-    if (selected_grid.eq."ref") then
-        ; set reference model
-        ref_ind = ind(datasets@name.eq.diag_script_info@ref_dataset(0))
-        ref_dataset = diag_script_info@ref_dataset
-        if (ismissing(ref_ind)) then
-            if (diag_script_info@ref_dataset(0).eq."n.a.") then
-                ref_ind = 0
-            else
-                error_msg("f", diag_script, "", \
-                          "no adequate reference dataset provided")
-            end if
-        end if
-        dest_grd = find_destination_grid(ref_ind, var0, field_type0, \
-                                         "coarsest")
-    else if (selected_grid.eq."1x1") then
-        dest_grd     = new((/180, 360/), float)
-        dest_grd!0   = "lat"
-        dest_grd!1   = "lon"
-        dest_grd&lat = flt2dble(fspan(-89.5,  89.5, 180))  ; CMOR standard
-        dest_grd&lon = flt2dble(fspan(0.5, 359.5, 360))    ; CMOR standard
-        dest_grd&lat@standard_name = "latitude"
-        dest_grd&lon@standard_name = "longitude"
-        dest_grd&lat@long_name     = "latitude"
-        dest_grd&lon@long_name     = "longitude"
-        dest_grd&lat@units         = "degrees_north"
-        dest_grd&lon@units         = "degrees_east"
-        dest_grd&lat@axis          = "Y"
-        dest_grd&lon@axis          = "X"
-    else if (selected_grid.eq."2.5x2.5") then
-        dest_grd     = new((/72, 144/), float)
-        dest_grd!0   = "lat"
-        dest_grd!1   = "lon"
-        dest_grd&lat = flt2dble(fspan(-88.75, 88.75, 72))  ; CMOR standard
-        dest_grd&lon = flt2dble(fspan(1.25, 358.75, 144))    ; CMOR standard
-        dest_grd&lat@standard_name = "latitude"
-        dest_grd&lon@standard_name = "longitude"
-        dest_grd&lat@long_name     = "latitude"
-        dest_grd&lon@long_name     = "longitude"
-        dest_grd&lat@units         = "degrees_north"
-        dest_grd&lon@units         = "degrees_east"
-        dest_grd&lat@axis          = "Y"
-        dest_grd&lon@axis          = "X"
-    else
-        dest_grd = find_destination_grid(index, var0, field_type0, \
-                                         selected_grid)
-    end if
-    end if
-    end if
-    ;annots = project_style(diag_script_info, "annots")
-    Fill = default_fillvalue(typeof(A0))
-    var_grd = new((/dim_MOD, dim_seas, dimsizes(dest_grd&lat), \
-                   dimsizes(dest_grd&lon)/), typeof(A0), Fill)
-    var_grd!0 = "models"
-    var_grd!1 = "season"
-    var_grd!2 = "lat"
-    var_grd!3 = "lon"
-    var_grd&models = annots
-    if (isatt(diag_script_info, "seasons")) then
-        var_grd&season = (/ispan(0, dim_seas - 1, 1)/)
-    else
-        var_grd&season = (/0/)
-    end if
-    var_grd&lat = dest_grd&lat
-    var_grd&lon = dest_grd&lon
-    if (isatt(diag_script_info, "iavmode")) then
-        if (diag_script_info@iavmode .eq. "each") then
-            iav = new((/dim_MOD, dim_seas, dimsizes(dest_grd&lat), \
-                       dimsizes(dest_grd&lon)/), typeof(A0), Fill)
-            copy_VarMeta(var_grd, iav)
-        end if
-    end if
 
-    ; determine if rectilinear or curvilinear original grid
-    if (lat_name .ne. "lat") .or. (lon_name .ne. "lon") then
-        regular_grid = False
-        filename = interface_get_fullpath(var0, field_type0, imod)
-        infile = addfile(filename, "r")
-        lat2D = infile->lat
-        lon2D = infile->lon
-        if (selected_grid .eq. "1x1") then
-            grid_res = "1degCMOR"
-        else if (selected_grid .eq. "2.5x2.5") then
-            grid_res = "2.5degCMOR"
-        else
-            error_msg("f", diag_script, "", "selected grid not possible if"\
-                      + " original grid is irregular, select either 1x1 "\
-                      + "or 2.5x2.5 as target grid")
-        end if
-        end if
-    else
-        regular_grid = True
+  annots = project_style(diag_script_info, "annots")
+  Fill = default_fillvalue(typeof(A0))
+  if (isatt(diag_script_info, "iavmode")) then
+    if (diag_script_info@iavmode .eq. "each") then
+      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
+		 dimsizes(A0&lon)/), typeof(A0), Fill)
+      copy_VarMeta(A0, iav)
     end if
-      
-  ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
-  if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-    (dim_seas .ne. 4)) then
-    tmp_seas = time_operations(A0, -1, -1, "average", \
-			       diag_script_info@time_avg, True)
-    data1 = tmp_seas(diag_script_info@seasons, :, :)
-    delete(tmp_seas)
-  else
-    data1 = time_operations(A0, -1, -1, "average", \
-			    diag_script_info@time_avg, True)
   end if
+  data2 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
+		 dimsizes(A0&lon)/), typeof(A0), Fill)   
 
   do imod = 0, dim_MOD - 1
     log_info(dataset_info@dataset(imod))
-        if (imod .eq. 0) then
-            if (dim_seas .eq. 1) then
-                if (regular_grid .eq. True) then
-                    var_grd(imod, 0, :, :) = linint2(data1&lon, data1&lat,\
-                                                     data1, True, \
-                                                     dest_grd&lon, \
-                                                     dest_grd&lat, 0)
-                else
-                    tmp = new((/1, dimsizes(data1&$lat_name$), \
-                               dimsizes(data1&$lon_name$)/), float)
-                    tmp(0, :, :) = data1
-                    tmp!0 = "season"
-                    var_grd(imod, :, :, :) = \
-                        regrid_3D_to_rectilinear_grid(tmp, lon2D, lat2D, \
-                                                      grid_res, filename, \
-                                                      False)
-                    delete(tmp)
-                end if
-            else
-                if (regular_grid .eq. True) then
-                    var_grd(imod, :, :, :) = linint2(data1&lon, data1&lat, \
-                                                     data1, True, \
-                                                     dest_grd&lon,\
-                                                     dest_grd&lat, 0)
-                else
-                    var_grd(imod, :, :, :) = \
-                        regrid_3D_to_rectilinear_grid(data1, lon2D, lat2D, \
-                                                      grid_res, filename, \
-                                                      False)
-                end if
-            end if
-            delete([/A0, data1/])
-            if (regular_grid .eq. False) then
-                delete([/lat2D, lon2D/])
-            end if
-        else
-            A1 = extract_data(imod, data, -1, 0, 0)
-            dims = getvardims(A1)
-            idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
-            if (ismissing(idx)) then
-                error_msg("f", diag_script, "", "no lat dimension")
-            end if
-            lat_name = dims(idx)
-            idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
-            if (ismissing(idx)) then
-                error_msg("f", diag_script, "", "no lon dimension")
-            end if
-            lon_name = dims(idx)
-            ; Average over time,
-            ; function in ./diag_scripts/lib/ncl/statistics.ncl)
-            if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-                (dim_seas .ne. 4)) then
-                tmp_seas = time_operations(A1, -1, -1, "average", \
-                                           diag_script_info@time_avg, True)
-                data2 = tmp_seas(diag_script_info@seasons, :, :)
-                delete(tmp_seas)
-            else
-                data2 = time_operations(A1, -1, -1, "average", \
-                                        diag_script_info@time_avg, True)
-            end if
-            ; determine if rectilinear or curvilinear original grid
-            if (lat_name .ne. "lat") .or. (lon_name .ne. "lon") then
-                regular_grid = False
-                filename = interface_get_fullpath(var0, field_type0, imod)
-                infile = addfile(filename, "r")
-                lat2D = infile->lat
-                lon2D = infile->lon
-                if (selected_grid .eq. "1x1") then
-                    grid_res = "1degCMOR"
-                else if (selected_grid .eq. "2.5x2.5") then
-                    grid_res = "2.5degCMOR"
-                else
-                    error_msg("f", diag_script, "", "selected grid not "\
-                              + "possible if original grid is irregular, "\
-                              + "select either 1x1 or 2.5x2.5 as target grid")
-                end if
-                end if
-            else
-                regular_grid = True
-            end if
-            ; Regrid to common grid
-            if (dim_seas .eq. 1) then
-                if (regular_grid .eq. True) then
-                    var_grd(imod, 0, :, :) = linint2(data2&$lon_name$, \
-                                                     data2&$lat_name$, \
-                                                     data2, True, \
-                                                     dest_grd&lon, \
-                                                     dest_grd&lat, 0)
-                else
-                    tmp = new((/1, dimsizes(data2&$lat_name$), \
-                               dimsizes(data2&$lon_name$)/), float)
-                    tmp(0, :, :) = data2
-                    var_grd(imod, :, :, :) = \
-                        regrid_3D_to_rectilinear_grid(tmp, lon2D, lat2D, \
-                                                      grid_res, filename, \
-                                                      False)
-                    delete(tmp)
-                end if
-            else
-                if (regular_grid .eq. True) then
-                    var_grd(imod, :, :, :) = linint2(data2&$lon_name$, \
-                                                     data2&$lat_name$, \
-                                                     data2, True, \
-                                                     dest_grd&lon, \
-                                                     dest_grd&lat, 0)
-                else
-                    var_grd(imod, :, :, :) = \
-                        regrid_3D_to_rectilinear_grid(data2, lon2D, lat2D, \
-                                                      grid_res, filename, \
-                                                      False)
-                end if
-            end if
-            delete(A1)
-            delete(data2)
-            if (regular_grid .eq. False) then
-                delete(lat2D)
-                delete(lon2D)
-            end if
-        end if
+    ; Average over time
+    if (imod .eq. 0) then
+      if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+	(dim_seas .ne. 4)) then
+	tmp_seas = time_operations(A0, -1, -1, "average", \
+				   diag_script_info@time_avg, True)
+	data1 = tmp_seas(diag_script_info@seasons, :, :)
+	delete(tmp_seas)
+      else
+	data1 = time_operations(A0, -1, -1, "average", \
+				diag_script_info@time_avg, True)
+      end if
+    else
+      A1 = read_data(imod, var0, field_type0)
+      dims = getvardims(A1)
+      idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
+      if (ismissing(idx)) then
+        error_msg("f", diag_script, "", "no lat dimension")
+      end if
+      lat_name = dims(idx)
+      idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
+      if (ismissing(idx)) then
+        error_msg("f", diag_script, "", "no lon dimension")
+      end if
+      lon_name = dims(idx)
+      ; Average over time,
+      if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+	  (dim_seas .ne. 4)) then
+        tmp_seas = time_operations(A1, -1, -1, "average", \
+                                   diag_script_info@time_avg, True)
+        data1 = tmp_seas(diag_script_info@seasons, :, :)
+        delete(tmp_seas)
+      else
+        data1 = time_operations(A1, -1, -1, "average", \
+                                diag_script_info@time_avg, True)
+      end if
+    end if
+    if (dim_seas .eq. 1) then
+      data2(imod, 0, :, :) = data1
+    else
+      data2(imod, :, :, :) = data1
+    end if
+
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
 	; #########################################################
@@ -405,19 +227,11 @@ begin
                            + "_" + dataset_info@ensemble(imod) + "_" + \
                            field_type0 + "_" + var0 + "_" + \
                            diag_script_info@time_avg + ".nc", "r")
-        iav_native = iav_file->iav
-        tmp_regrd = linint2_Wrap(iav_native&$lon_name$, \
-                                 iav_native&$lat_name$, iav_native, \
-                                 True, dest_grd&lon, dest_grd&lat, 0)
 	if (dim_seas .eq. 1) then
-          iav(imod, 0, :, :) = rm_single_dims(tmp_regrd)
-	else if (dim_seas .ne. 4) then
-          iav(imod, :, :, :) = tmp_regrd(diag_script_info@seasons, :, :)
+          iav(imod, 0, :, :) = iav_file->iav
 	else
-          iav(imod, :, :, :) = tmp_regrd
+          iav(imod, :, :, :) = iav_file->iav
         end if
-        end if
-        delete(iav_native)
       end if
     end if
   end do
@@ -434,21 +248,29 @@ begin
     ; read already calculated mmm iav
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                          field_type0 + \
-			  "_" + var0 + "_" + diag_script_info@time_avg + \
-			  ".nc", "r")
+                          field_type0 + "_" + var0 + "_" + \
+                          diag_script_info@time_avg + ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
       (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-			dimsizes(dest_grd&lat), \
-			dimsizes(dest_grd&lon)/), float)
-      natvar_mmm(:, :, :) = tmp(diag_script_info@seasons, :, :)
+			dimsizes(A0&lat), \
+			dimsizes(A0&lon)/), float)
+      natvar_mmm = tmp(diag_script_info@seasons, :, :)
     end if
   end if
-
+  data2!0 = "models"
+  data2!1 = "season"
+  data2!2 = "lat"
+  data2!3 = "lon"
+  data2&models = annots
+  if (isatt(diag_script_info, "seasons")) then
+    data2&season = (/ispan(0, dim_seas - 1, 1)/)
+  else
+    data2&season = (/0/)
+  end if
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
@@ -456,111 +278,113 @@ begin
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
 
-  to_plot = new((/dim_scen * dim_per * dim_seas, dimsizes(dest_grd&lat), \
-	         dimsizes(dest_grd&lon)/), typeof(var_grd), Fill)
+  to_plot = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
+	         dimsizes(A0&lon)/), typeof(data1), Fill)
   if (isatt(diag_script_info, "percent")) then
     percent = diag_script_info@percent
-    ref = new((/dim_scen * dim_per * dim_seas, dimsizes(dest_grd&lat), \
-	       dimsizes(dest_grd&lon)/), typeof(var_grd), Fill)
+    ref = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
+	       dimsizes(A0&lon)/), typeof(data1), Fill)
   else
     percent = 0
   end if
   to_plot_signif = new((/dim_scen * dim_per * dim_seas,  \
-		        dimsizes(dest_grd&lat), dimsizes(dest_grd&lon)/), \
-		       typeof(var_grd), Fill)
+		        dimsizes(A0&lat), dimsizes(A0&lon)/), \
+		       typeof(data1), Fill)
   to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, \
-			    dimsizes(dest_grd&lat), \
-			    dimsizes(dest_grd&lon)/), typeof(var_grd), Fill)
+			    dimsizes(A0&lat), \
+			    dimsizes(A0&lon)/), typeof(data1), Fill)
   model_number = new((/dim_scen * dim_per * dim_seas/), integer)
-  if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-    ; read mask to mask data where not defined (ocean and ice)
-    in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-    msk_data = in->LSMASK
-    msk = landsea_mask(msk_data, dest_grd&lat, dest_grd&lon)
-  end if
+  ; move to preprocessor
+  ; if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
+  ;   ; read mask to mask data where not defined (ocean and ice)
+  ;   in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
+  ;   msk_data = in->LSMASK
+  ;   msk = landsea_mask(msk_data, A0&lat, A0&lon)
+  ; end if
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do rcp = 0, dim_scen - 1  ; loop over rcps
       do per = 0, dim_per - 1  ; loop over periods
-	idx_rcp = ind((dataset_info@exp .eq. \
-		       diag_script_info@scenarios(rcp)) .and. \
-		      (dataset_info@start_year .eq. \
-		       diag_script_info@periods(per)))
-	proj = var_grd(idx_rcp, seas, :, :)
-	; **cut low values ***
-	proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
-	proj_avg = dim_avg_n_Wrap(proj, 0)
-	; find historical runs from same datasets as in rcp
-	idx_hist = find_model_index(dataset_info@dataset(idx_rcp), \
-				    dataset_info@dataset, "historical",\
-				    dataset_info@exp, \
-				    dataset_info@ensemble(idx_rcp), \
-				    dataset_info@ensemble, 0)
-	base = var_grd(idx_hist, seas, :, :)
-	; **cut low values ***
-	base = where(abs(base) .gt. 1.e-14, base, base@_FillValue)
-	base_avg = dim_avg_n_Wrap(base, 0)
-	var_diff = proj - base
-	delete([/base, proj/])
-	to_plot(i, :, :) = proj_avg - base_avg
-	if (isatt(diag_script_info, "percent")) then
-	  ref(i, :, :) = base_avg
-	end if
-	; determine sigma and sign for significance
-	var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
-					 to_plot@_FillValue) .eq. 1., 0)
-	var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
-					 to_plot@_FillValue) .eq. 1., 0)
-	var_pos_signif_tmp = \
-	    var_pos_signif / where((var_pos_signif + var_neg_signif) \
-				   .ne. 0., var_pos_signif + \
-				   var_neg_signif, to_plot@_FillValue)
-	var_neg_signif_tmp = \
-	    var_neg_signif / where((var_pos_signif + var_neg_signif) \
-				   .ne. 0., var_pos_signif + \
-				   var_neg_signif, to_plot@_FillValue)
-	signif_and_sign = where(var_pos_signif_tmp .ge. 0.9 .or. \
-				var_neg_signif_tmp .ge. 0.9, 1., 0.)
-	signif_and_sign = where(ismissing(signif_and_sign), 0.,\
-				signif_and_sign)
-	if (dim_seas .ne. 1) then
-	  sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
-				 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
-	  to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
+        idx_rcp = ind((dataset_info@exp .eq. \
+                       diag_script_info@scenarios(rcp)) .and. \
+                       (dataset_info@start_year .eq. \
+                       diag_script_info@periods(per)))
+        proj = data2(idx_rcp, seas, :, :)
+        ; **cut low values ***
+        proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
+        proj_avg = dim_avg_n_Wrap(proj, 0)
+        ; find historical runs from same datasets as in rcp
+        idx_hist = find_model_index(dataset_info@dataset(idx_rcp), \
+                                    dataset_info@dataset, "historical",\
+                                    dataset_info@exp, \
+                                    dataset_info@ensemble(idx_rcp), \
+                                    dataset_info@ensemble, 0)
+        base = data2(idx_hist, seas, :, :)
+        ; **cut low values ***
+        base = where(abs(base) .gt. 1.e-14, base, base@_FillValue)
+        base_avg = dim_avg_n_Wrap(base, 0)
+        var_diff = proj - base
+        delete([/base, proj/])
+        to_plot(i, :, :) = proj_avg - base_avg
+        if (isatt(diag_script_info, "percent")) then
+          ref(i, :, :) = base_avg
+        end if
+        ; determine sigma and sign for significance
+        var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
+                                         to_plot@_FillValue) .eq. 1., 0)
+        var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
+                                         to_plot@_FillValue) .eq. 1., 0)
+        var_pos_signif_tmp = \
+          var_pos_signif / where((var_pos_signif + var_neg_signif) \
+                                 .ne. 0., var_pos_signif + \
+                                  var_neg_signif, to_plot@_FillValue)
+        var_neg_signif_tmp = \
+          var_neg_signif / where((var_pos_signif + var_neg_signif) \
+                                 .ne. 0., var_pos_signif + \
+                                  var_neg_signif, to_plot@_FillValue)
+        signif_and_sign = where(var_pos_signif_tmp .ge. 0.9 .or. \
+                                var_neg_signif_tmp .ge. 0.9, 1., 0.)
+        signif_and_sign = where(ismissing(signif_and_sign), 0.,\
+                                signif_and_sign)
+        if (dim_seas .ne. 1) then
+          sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
+                                 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
+          to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
                                               abs(natvar_mmm(seas, :, :)),\
                                               1., 0.)
-	else
-	  sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
-				 abs(2. * natvar_mmm(0, :, :)), 1., 0.)
-	  to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm(0, :, :)),	1., 0.)
-	end if
-	to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
-					sigma_and_sign, 0.)
-	if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-	  to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 0, False)
-	  to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
-	  to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
-					 msk .eq. 0, False)
-	  to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
-					 msk .eq. 4, False)
+        else
+          sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
+                                 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
+          to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
+                                              abs(natvar_mmm(seas, :, :)),\
+                                              1., 0.)
+        end if
+        to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
+                                        sigma_and_sign, 0.)
+        if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
+          to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 0, False)
+          to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
+          to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
+                                         msk .eq. 0, False)
+          to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
+                                         msk .eq. 4, False)
           to_plot_not_signif(i, :, :) = mask(to_plot_not_signif(i, :, :), \
                                              msk .eq. 0, False)
           to_plot_not_signif(i, :, :) = mask(to_plot_not_signif(i, :, :), \
                                              msk .eq. 4, False)
-	end if
-	model_number(i) = dimsizes(idx_rcp)
-	i = i + 1
-	delete([/idx_hist, idx_rcp, var_diff/])
+        end if
+        model_number(i) = dimsizes(idx_rcp)
+        i = i + 1
+        delete([/idx_hist, idx_rcp, var_diff/])
       end do  ; per
     end do  ; rcp
   end do  ; seas
   to_plot!0 = "panel"
   to_plot&panel = diag_script_info@label
   to_plot!1 = "lat"
-  to_plot&lat = dest_grd&lat
+  to_plot&lat = A0&lat
   to_plot!2 = "lon"
-  to_plot&lon = dest_grd&lon
+  to_plot&lon = A0&lon
   copy_VarMeta(to_plot, to_plot_signif)
   copy_VarMeta(to_plot, to_plot_not_signif)
   if (isatt(diag_script_info, "percent")) then
@@ -668,15 +492,13 @@ begin
   ; # Optional output to netCDF               #
   ; ###########################################
   ; Optional output (controlled by diag_script_info)
-  if (isatt(diag_script_info, "ncdf")) then
-    to_plot@ncdf = diag_script_info@ncdf
-    ncdf_file = netcdf_dir + "/" + diag_script_info@ncdf
-    ncdf_file@existing = "overwrite"
-    ; Function in ~/interface_scripts/auxiliary.ncl
-    ncdf_outfile = ncdf_write(to_plot, ncdf_file)
-    ncdf_file@existing = "append"
-    ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)
-    ncdf_outfile = ncdf_write(to_plot_not_signif, ncdf_file)
-    ncdf_outfile = ncdf_write(model_number, ncdf_file)
-  end if
+  to_plot@ncdf = variable_info@diagnostic + ".nc"
+  ncdf_file = work_dir + "/" + to_plot@ncdf
+  ncdf_file@existing = "overwrite"
+  ; Function in ~/interface_scripts/auxiliary.ncl
+  ncdf_outfile = ncdf_write(to_plot, ncdf_file)
+  ncdf_file@existing = "append"
+  ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)
+  ncdf_outfile = ncdf_write(to_plot_not_signif, ncdf_file)
+  ncdf_outfile = ncdf_write(model_number, ncdf_file)
 end
