@@ -44,6 +44,7 @@ datasets:
 #  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 #  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
 
 preprocessors:
   # --------------------------------------------------
@@ -53,9 +54,9 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_2: # For specific levels of 3D fields
     extract_levels:
@@ -64,9 +65,9 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_3: # For regional fields
     extract_region:
@@ -77,11 +78,13 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_4: # For regional fields at depth
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.  
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
@@ -93,20 +96,24 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_5: # For Global Volume Averaged
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.
     average_volume:
       coord1: longitude
       coord2: latitude
       coordz: depth
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_6: # For regional volume averaged
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.  
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -116,11 +123,13 @@ preprocessors:
       coord1: longitude
       coord2: latitude
       coordz: depth
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_timeseries_7: # For regional volume averaged (at the surface)
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.  
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -133,9 +142,9 @@ preprocessors:
       coord1: longitude
       coord2: latitude
       coordz: depth
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
 
   # --------------------------------------------------
@@ -145,15 +154,19 @@ preprocessors:
     time_average:
 
   prep_map_2: # For Global 2D fields with regridding
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.    
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
     time_average:
 
   prep_map_3: # For specific levels of 3D fields with regrid
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.    
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
@@ -161,11 +174,13 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_map_4: # For a specific region with regrid
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.    
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -175,11 +190,13 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   prep_map_5: # For a specific region at depth levels,
+#    custom_order: true # Not yet implemented
+#    Default order will try to run multi model mean before average volume.  
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
@@ -192,9 +209,9 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
 
   # --------------------------------------------------
   # Transects preprocessors
@@ -295,45 +312,45 @@ diagnostics:
       Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_4:
-    description: Regional scale diagnostics
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_timeseries_4
-        field: TO3M
-    scripts:
-      Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
-        script: ocean/diagnostic_timeseries.py
+#  diag_timeseries_4:
+#    description: Regional scale diagnostics
+#    variables:
+#      thetao: # Temperature ocean 3D
+#        preprocessor: prep_timeseries_4
+#        field: TO3M
+#    scripts:
+#      Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
+#        script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_5:
-    description: Global Volume average diagnostics
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_timeseries_5
-        field: TO3M
-    scripts:
-      Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
-        script: ocean/diagnostic_timeseries.py
+#  diag_timeseries_5:
+#    description: Global Volume average diagnostics
+#    variables:
+#      thetao: # Temperature ocean 3D
+#        preprocessor: prep_timeseries_5
+#        field: TO3M
+#    scripts:
+#      Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
+#        script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_6:
-    description: Regional Volume average diagnostics
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_timeseries_6
-        field: TO3M
-    scripts:
-      Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
-        script: ocean/diagnostic_timeseries.py
+#  diag_timeseries_6:
+#    description: Regional Volume average diagnostics
+#    variables:
+#      thetao: # Temperature ocean 3D
+#        preprocessor: prep_timeseries_6
+#        field: TO3M
+#    scripts:
+#      Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
+#        script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_7:
-    description: Regional Volume to 100m depth average diagnostics
-    variables:
-      thetao: # Temperature ocean 3D averaged over top 100m
-        preprocessor: prep_timeseries_7
-        field: TO3M
-    scripts:
-      Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
-        script: ocean/diagnostic_timeseries.py
+#  diag_timeseries_7:
+#    description: Regional Volume to 100m depth average diagnostics
+#    variables:
+#      thetao: # Temperature ocean 3D averaged over top 100m
+#        preprocessor: prep_timeseries_7
+#        field: TO3M
+#    scripts:
+#      Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
+#        script: ocean/diagnostic_timeseries.py
 
   # --------------------------------------------------
   # Map diagnostics
@@ -378,15 +395,15 @@ diagnostics:
       Regional_Ocean_Surface_regrid_map: &Regional_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
 
-  diag_map_5:
-    description: Regional scale depth layers regridded map
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_map_5
-        field: TO3M
-    scripts:
-      Regional_Ocean_DepthLayers_mean_map: &Regional_Ocean_DepthLayers_mean_map
-        script: ocean/diagnostic_maps.py
+#  diag_map_5:
+#    description: Regional scale depth layers regridded map
+#    variables:
+#      thetao: # Temperature ocean 3D
+#        preprocessor: prep_map_5
+#        field: TO3M
+#    scripts:
+#      Regional_Ocean_DepthLayers_mean_map: &Regional_Ocean_DepthLayers_mean_map
+#        script: ocean/diagnostic_maps.py
 
   # --------------------------------------------------
   # Transects diagnostics
