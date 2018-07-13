@@ -165,12 +165,16 @@ def _mask_with_shp(cube, shapefilename):
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
+    # the NE mask has no points at x = -180 and y = -90
+    # so we will fool it and apply the mask at (-179, -89) instead
+    x_p_180 = np.where(x_p_180 == -180., x_p_180 + 1., x_p_180)
+    y_p_0 = np.where(y_p == -90., y_p + 1., y_p)
 
     # Build mask with vectorization
     if len(cube.data.shape) == 3:
-        mask[:] = shp_vect.contains(region, x_p_180, y_p)
+        mask[:] = shp_vect.contains(region, x_p_180, y_p_0)
     elif len(cube.data.shape) == 4:
-        mask[:, :] = shp_vect.contains(region, x_p_180, y_p)
+        mask[:, :] = shp_vect.contains(region, x_p_180, y_p_0)
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
