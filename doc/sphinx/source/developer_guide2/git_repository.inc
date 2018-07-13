@@ -163,7 +163,7 @@ Do-s
 * Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables immediately. If possible, separate diagnostic calculations from plotting routines.
 * Consider reusing or extending existing code. General-purpose code can be found in diag_scripts/lib/ and in plot_scripts/.
 * Comment all switches and parameters including a list of all possible settings/options in the header section of your code (see also Section :ref:`std_diag`).
-* Use templates for namelists (Section :ref:`std_namelist`) and diagnostics (Section :ref:`std_diag`) to help with proper documentation.
+* Use templates for recipes (Section :ref:`std_recipe`) and diagnostics (Section :ref:`std_diag`) to help with proper documentation.
 * Keep your *FEATURE BRANCH* regularly synchronized with the *DEVELOPMENT BRANCH* (git merge).
 * Keep developments / modifications of the ESMValTool framework / backend / basic structure separate from developments of diagnostics by creating different *FEATURE BRANCHES* for these two kinds of developments. Create *FEATURE BRANCHES* for changes / modifications of the ESMValTool framework only in the *PUBLIC* repository.
 
