@@ -270,7 +270,6 @@ def extract_trajectory(cube, latitudes, longitudes, number_points=2):
         collapsed cube.
     """
     from iris.analysis.trajectory import interpolate
-    import numpy as np
 
     if len(latitudes) != len(longitudes):
         raise ValueError(
