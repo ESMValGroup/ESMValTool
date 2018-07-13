@@ -139,7 +139,7 @@ def main(cfg):
     # Variables
     var = e.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", var)
-    var.add_var(ecs=ECS)
+    var.add_vars(ecs=ECS)
 
     # Check for tas and rtmt
     if not var.vars_available('tas', 'rtmt'):
