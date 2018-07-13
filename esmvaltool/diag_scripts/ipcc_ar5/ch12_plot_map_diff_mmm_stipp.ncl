@@ -78,21 +78,6 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
-  vardeffile = systemfunc("ls " + diag_script_info@input_files + "/*_info.ncl")
-  print(vardeffile)
-  if(isfilepresent(vardeffile))
-    loadscript(vardeffile)
-    print("INFO    Loading input data description from " + vardeffile)
-  else
-    print("Error: file does not exist. Can't continue.")
-  end if
-  loadscript("/net/tropo/climphys/rlorenz/ESMVal/work/recipe_test_collins_short_20180627_091825/work/tas_change_scaleT/ch12_calc_map_diff_scaleT_tas/tas_info.ncl")
-end
-begin
-  variables = "tas"  ; (/variable_info@short_name/)
-  field_types = "T2M"  ; (/variable_info@field/)
-end
-begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
@@ -122,16 +107,15 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
   exit_if_missing_atts(diag_script_info, req_atts)
-
 end
 
 begin
@@ -149,7 +133,7 @@ begin
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
 
-  netcdf_dir = diag_script_info@input_files
+  netcdf_dir = diag_script_info@input_files(1)
 
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
