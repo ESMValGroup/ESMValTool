@@ -13,7 +13,7 @@ This user's and developer's guide consists of parts targeting two overlapping ca
 
 For the developer's guide (Part II), it is assumed that the user/developer is already familiar with the ESMValTool framework introduced in part I.
 
-**Please report problems and bugs to the ESMValTool Core Development Team (**:numref:`core_dev_team` **and http://www.esmvaltool.org/). Thank you!**
+**Please report problems and bugs to the ESMValTool Core Development Team (**:ref:`core_dev_team` **and http://www.esmvaltool.org/). Thank you!**
 
 .. raw:: latex
 

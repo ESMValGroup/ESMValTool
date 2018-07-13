@@ -36,7 +36,7 @@ effort by the development team.
 Architecture
 ============
 
-:numref:`fig_schematic` shows a schematic of the ESMValTool architecture: to be written.
+:ref:`fig_schematic` shows a schematic of the ESMValTool architecture: to be written.
 
 .. _fig_schematic:
 .. figure::  ../figures/schematic.png
