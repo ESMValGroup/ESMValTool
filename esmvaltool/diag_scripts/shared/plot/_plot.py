@@ -278,9 +278,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         plot_kwargs = kwargs.get('plot_kwargs', empty_dict)[idx]
 
         # Fix problem when plotting ps file
-        if 'markerfacecolor' in plot_kwargs:
-            if filepath.endswith('ps'):
-                plot_kwargs.pop('markerfacecolor')
+        if 'markerfacecolor' in plot_kwargs and filepath.endswith('ps'):
+            plot_kwargs.pop('markerfacecolor')
 
         # Plot
         axes.plot(x_vals, y_data[idx],
