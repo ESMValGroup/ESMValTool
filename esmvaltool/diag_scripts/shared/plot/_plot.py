@@ -189,16 +189,20 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
-    fig, axes = plt.subplots()
+    (fig, axes) = plt.subplots()
 
     # Plot data
     for (idx, dataset) in enumerate(datasets):
         style = get_dataset_style(dataset, kwargs.get('dataset_styles_file'))
 
+        # Fix problem when plotting ps file
+        facecolor = style['color'] if filepath.endswith('ps') else \
+            style['facecolor']
+
         # Plot
         axes.plot(x_data[idx], y_data[idx],
                   markeredgecolor=style['color'],
-                  markerfacecolor=style['facecolor'],
+                  markerfacecolor=facecolor,
                   marker=style['mark'],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
@@ -267,10 +271,18 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
-    fig, axes = plt.subplots()
+    (fig, axes) = plt.subplots()
 
     # Plot data
     for (idx, x_vals) in enumerate(x_data):
+        plot_kwargs = kwargs.get('plot_kwargs', empty_dict)[idx]
+
+        # Fix problem when plotting ps file
+        if 'markerfacecolor' in plot_kwargs:
+            if filepath.endswith('ps'):
+                plot_kwargs.pop('markerfacecolor')
+
+        # Plot
         axes.plot(x_vals, y_data[idx],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
