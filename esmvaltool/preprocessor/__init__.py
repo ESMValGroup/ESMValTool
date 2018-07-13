@@ -20,9 +20,9 @@ from ._time_pp import time_slice as extract_time
 from ._area_pp import area_slice as extract_region
 from ._area_pp import area_average as average_region
 from ._volume_pp import volume_slice as extract_volume
-from ._volume_pp import extract_trajectory as extract_trajectory
-from ._volume_pp import extract_transect as extract_transect
-from ._volume_pp import depth_integration as depth_integration
+from ._volume_pp import extract_trajectory
+from ._volume_pp import extract_transect
+from ._volume_pp import depth_integration
 from ._volume_pp import volume_average as average_volume
 
 logger = logging.getLogger(__name__)
