@@ -1,11 +1,5 @@
-.. raw:: latex
-
-   \section*{Known issues}
-
-.. raw:: html
-
-   <h1> Known issues </h1>
-
-**To be added for v2**
+Known issues
+------------
 
 
+Please see our bug and feature request tracker on `github <https://github.com/ESMValGroup/ESMValTool/issues>`_.
