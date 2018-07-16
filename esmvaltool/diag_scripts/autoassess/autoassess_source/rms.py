@@ -3,15 +3,19 @@ This file contains an rms class which contains all the information needed
 to make a rms table of a particular region.
 '''
 
+import os
 import csv
 import math
-import pdb
-
 import numpy
 import numpy.ma as ma
 import iris
+import logging
 
 from esmvaltool.diag_scripts.autoassess.autoassess_source import valmod_radiation as vm
+
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 class rms_list_class(list):
     '''
@@ -48,11 +52,15 @@ class rms_list_class(list):
                     rms_returned = rms_item
                     rms_found = True
         if not region:
-            print("Please supply a region using the region='xxxx' input. " + \
-                "Available regions are:")
+            logger.warning(
+                "Please supply a region using the region='xxxx' input. " + \
+                "Available regions are:"
+            )
         elif not rms_found:
-            print("ERROR: Requested region {0} not found. Available " + \
-                "regions are:".format(region))
+            logger.warning(
+                "ERROR: Requested region {0} not found. Available " + \
+                "regions are:".format(region)
+            )
         if not rms_found:
             print(region_list)
             raise Exception
@@ -237,7 +245,7 @@ class rms_class:
             else:
                 # If there is a mask but we are using zonal mean or meridional
                 # mean data then just return missing data
-                return globalvar.missing_data
+                return working_cube
 
         # Extract a region
         if hasattr(self, 'region_bounds'):
@@ -263,59 +271,35 @@ class rms_class:
         if amount_of_data == 0:
             rms_float = globalvar.missing_data
         else:
-            print('Calculating RMS for '+self.region)
+            logger.info('Calculating RMS for %s', self.region)
 
             # Square the values
             squared_cube = working_cube ** 2
 
             # Mean the values
-            area_average = vm.area_avg(squared_cube)
+            area_average = vm.area_avg(squared_cube,
+                                       coord1='latitude',
+                                       coord2='longitude')
 
             # Square root the answer
-            rms_float = math.sqrt(area_average)
+            rms_float = math.sqrt(area_average.data)
 
         return rms_float
 
-    def calc_wrapper(self, toplot_cube, letter, page_title,
+    def calc_wrapper(self, toplot_cube, page_title,
                      filename='no plot available'):
         """
         Gets the RMS value and adds it to its own data array.
 
         toplot_cube = (cube) cube that is to be plotted
-        letter = (str) letter number of this calculation. For validation
-                       notes this is normally the plot letter. i.e.
-             a = experiment
-             b = experiment minus control
-             c = control minus obs
-             d = experiment minus obs
         page_title = (str) the page title for this plot
         filename = (str) the filename of the corresponding png plot.
         """
 
         rms_float = self.calc(toplot_cube)
-
-        # If this is the first time you have calculated rms values then add
-        #  a key to the dictionary. The first entry should be the filename.
-        if letter == globalvar.rms_first_letter:
-            self.data_dict[page_title] = []
-
-        # Test to make sure that an rms entry exists for your page title.
-        # This will fail if you have started making an RMS entry but not
-        # using the first letter first.
-        # remaining_letters='abcdefghijklmnop'.replace(globalvar.rms_first_letter, '')
-        # if letter in remaining_letters:
-        try:
-            rms_len = len(self.data_dict[page_title])
-        except:
-            print('ERROR: Could not assign RMS value as incorrect first ' + \
-                'letter used (in rms.py) in '+page_title)
-            if globalvar.debug:
-                pdb.set_trace()
-            else:
-                return globalvar.missing_data
-
-        # Subsequent entries are the rms values
-        self.data_dict[page_title].append(rms_float)
+        self.data_dict[page_title] = []
+        if rms_float:
+            self.data_dict[page_title].append(rms_float)
         return rms_float
 
     def add(self, letter, page_title, rms_float):
@@ -325,33 +309,16 @@ class rms_class:
         self.data_dict[page_title].append(rms_float)
 
     def tofile(self, csv_dir):
-        """
-        Output all the RMS statistics to csv files
-
-        csv_dir = (str) the directory that contains the csv files of rms errors
-        """
-
-        # Create a new file
-        #with open(csv_dir+'/summary_'+self.region+'.csv', 'w') as f:
-        with open(csv_dir+'/summary_'+self.region+'_'+self.exper+'.csv', 'w') as f:
-
-            '''
-            # Add the heading row
-            if globalvar.valnote:
-                f.write('Description, Filename, RMS1 (expt:{1} vs control:{0}), RMS2 (control:{0} vs obs), RMS3 (expt:{1} vs obs)\n'.format(self.control, self.exper))
-            else:
-                f.write('Description, Filename, control:{0} vs obs, expt:{1} vs obs\n'.format(self.control, self.exper))
-            '''
-
-            # Loop over all the fields, outputting their values to the csv file
-            for page_title, rms_list in self.data_dict.iteritems():
-                f.write('{0},'.format(page_title))
-                for index in range(len(rms_list)):
-                    f.write('{0}'.format(rms_list[index]))
-                    if index < len(rms_list)-1:
-                        f.write(',')     # Next comma
-                    else:
-                        f.write('\n')    # Next line
+        """Output all the RMS statistics to csv files"""
+        csv_file = 'summary_' + self.region + '_RMS_' + self.exper + '.csv'
+        csv_path = os.path.join(csv_dir, csv_file)
+        with open(csv_path, 'w') as f:
+            for page_title, rms_list in self.data_dict.items():
+                print(page_title, rms_list)
+                f.write('{0}, '.format(page_title))
+                for rms_val in rms_list:
+                    f.write('{0}'.format(str(rms_val)))
+                    f.write('\n')
 
 
 def start(exper='experiment', control='control'):
@@ -416,7 +383,7 @@ def calc_all(rms_list, toplot_cube, letter, page_title,
     rms_float_list = []
     n_rms = len(rms_list)
     for i in range(n_rms):
-        rms_float = rms_list[i].calc_wrapper(toplot_cube, letter, page_title,
+        rms_float = rms_list[i].calc_wrapper(toplot_cube, page_title,
                                              filename=filename)
         rms_float_list.append(rms_float)
 

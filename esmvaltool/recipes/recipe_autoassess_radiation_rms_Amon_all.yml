@@ -103,3 +103,6 @@ diagnostics:
       autoassess_Radiation_rms_Amon_all:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All"
+        control_model: MPI-ESM-LR
+        exper_model: NorESM1-M
+        analysis_type: zonal_mean

@@ -135,8 +135,61 @@ from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 # dict of model var-to-obs name
 VAR_DICT = {'pr': 'MPI-ESM-MR'}
+
+
+def apply_supermeans(cfg, ctrl, exper, obs):
+    """Grab data and apply supermeans"""
+    ctrl_file = ctrl['filename']
+    exper_file = exper['filename']
+    logger.info("Loading %s", ctrl_file)
+    logger.info("Loading %s", exper_file)
+    ctrl_cube = iris.load_cube(ctrl_file)
+    exper_cube = iris.load_cube(exper_file)
+    ctrl_cube = ctrl_cube.collapsed('time', iris.analysis.MEAN)
+    logger.debug("Time-averaged control %s", ctrl_cube)
+    exper_cube = exper_cube.collapsed('time', iris.analysis.MEAN)
+    logger.debug("Time-averaged experiment %s", exper_cube)
+    if obs:
+        obs_file = obs['filename']
+        logger.info("Loading %s", obs_file)
+        obs_cube = iris.load_cube(obs_file)
+        obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+        logger.debug("Time-averaged obs %s", obs_cube)
+    else:
+        obs_cube = None
+
+    return ctrl_cube, exper_cube, obs_cube
+
+
+def apply_rms(data_1, data_2, cfg, component_dict):
+    """Compute RMS for any data1-2 combination"""
+    data_names = [model['dataset'] for model in component_dict.values()]
+    plot_title = data_names[0] + ' vs ' + data_names[1]
+    rms_list = rms.start(data_names[0], data_names[1])
+    # key is a very weird pointer to the type of data operations
+    # that are done by rms.py (really badly coded this! -- by whoever
+    # wrote rms.py). Anyways, here is the explanation:
+    #         b = experiment minus control
+    #         c = control minus obs
+    #         d = experiment minus obs
+    # So, for now, we'll go with this 'lovely' operational identification:
+    if 'ctrl' and 'exper' in component_dict.keys():
+        key = 'b'
+    elif 'ctrl' and 'obs' in component_dict.keys():
+        key = 'c'
+    elif 'exper' and 'obs' in component_dict.keys():
+        key = 'd'
+    filename = data_names[0] + '_vs_' + data_names[1]
+    analysis_type = cfg['analysis_type']
+    data1_vs_data2 = vm.perform_equation(data_1, data_2, analysis_type)
+
+    # apply rms
+    rms_float = rms.calc_all(rms_list, data1_vs_data2,
+                             key, plot_title, filename)
+    rms.end(rms_list, cfg['work_dir'])
 
 
 def main(cfg):
@@ -172,40 +225,56 @@ def main(cfg):
                                         short_name=short_name,
                                         dataset=VAR_DICT[short_name])
         logger.info("Processing variable %s", short_name)
-        # this is a length=1 list
-        obs = obs_selection[0]
+
+        # determine CONTROL and EXPERIMENT datasets
         for model in dataset_selection:
-            logger.info("Processing dataset %s", model['dataset'])
-            logger.info("Processing obs data %s", obs['dataset'])
+            if model['dataset'] == cfg['control_model']:
+                logger.info("Control dataset %s", model['dataset'])
+                ctrl = model
+            elif model['dataset'] == cfg['exper_model']:
+                logger.info("Experiment dataset %s", model['dataset'])
+                exper = model
 
-            # load files
-            model_file = model['filename']
-            obs_file = obs['filename']
-            logger.info("Loading %s", model_file)
-            logger.info("Loading %s", obs_file)
+        # determine OBS dataset
+        if obs_selection:
+            if len(obs_selection) > 1:
+                logger.error("This diag works with a single OBS dataset!")
+            obs = obs_selection[0]
+            logger.info("Observations dataset %s", obs['dataset'])
+        else:
+            obs = None
 
-            # load cubes
-            model_cube = iris.load_cube(model_file)
-            obs_cube = iris.load_cube(obs_file)
-            model_cube = model_cube.collapsed('time', iris.analysis.MEAN)
-            logger.debug("Time-averaged %s", model_cube)
-            obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
-            logger.debug("Time-averaged %s", obs_cube)
+        # apply the supermeans
+        ctrl_sm, exper_sm, obs_sm = apply_supermeans(cfg, ctrl, exper, obs)
 
-            # apply rms
-            data_dict = {}
-            rms_list = rms.start(model['dataset'], obs['dataset'])
-            data_dict['exper_variable'] = model_cube
-            data_dict['obs_variable'] = obs_cube
-            p_title = 'Wet Titties'
-            key = 'a'
-            filename = 'crapOn.png'
-            model_vs_obs = vm.perform_equation(data_dict, 'zonal_mean')
+        # assemble a dict that contains various params depending
+        # on the data combinations for RMS computations
+        if obs_sm:
+            data_component_dict = {'ct-ex': {'ctrl': ctrl, 'exper': exper},
+                                   'ct-obs': {'ctrl': ctrl, 'obs': obs},
+                                   'ex-obs': {'exper': exper, 'obs': obs}}
+        else:
+            data_component_dict = {'ct-ex': {'ctrl': ctrl, 'exper': exper}}
 
-            # apply rms
-            rms_float = rms.calc_all(rms_list, model_vs_obs,
-                                     key, p_title, filename)
-            rms.end(rms_list, cfg['work_dir'])
+        if obs_sm:
+            # ctrl-exper
+            logger.info("Computing CONTROL-EXPERIMENT RMS...")
+            apply_rms(ctrl_sm, exper_sm, cfg,
+                      data_component_dict['ct-ex'])
+            # ctrl-obs
+            logger.info("Computing CONTROL-OBS RMS...")
+            apply_rms(ctrl_sm, obs_sm, cfg,
+                      data_component_dict['ct-obs'])
+            # exper-obs
+            logger.info("Computing EXPERIMENT-OBS RMS...")
+            apply_rms(exper_sm, obs_sm, cfg,
+                      data_component_dict['ex-obs'])
+        else:
+            # only ctrl-exper
+            logger.info("Computing CONTROL-EXPERIMENT RMS...")
+            apply_rms(ctrl_sm, exper_sm, cfg,
+                      data_component_dict['ct-ex'])
+
 
 if __name__ == '__main__':
 

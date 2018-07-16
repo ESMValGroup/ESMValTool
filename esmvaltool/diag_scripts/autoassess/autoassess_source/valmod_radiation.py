@@ -364,43 +364,19 @@ def roll_cube(cube, start_longitude=-180.0):
 
 # **************** AREA_AVG **************************
 
-def area_avg(cube):
+def area_avg(cube, coord1=None, coord2=None):
     """Perform an area average of a cube using weights to account for
     changes in latitude."""
-    
-    # What dimension is latitude
-    thiscoords = cube.coords()
-    lat_dim=-99
-    for i in range(len(thiscoords)):
-        if thiscoords[i].standard_name == 'latitude': lat_dim=i
-    if lat_dim == -99: raise ValError('Could not find latitude coordinate in cube')
-    
-    # Convert latitudes to radians
-    lats_radians_array = cube.coord(standard_name='latitude').points/360.0 * 2.0 * numpy.pi
+    import iris.analysis.cartography
+    for coord in (coord1, coord2):
+        if not cube.coord(coord).has_bounds():
+            cube.coord(coord).guess_bounds()
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    result = cube.collapsed(
+        [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
+    return result
 
-    # Generate the cos of these latitudes
-    cos_lats_array = numpy.cos(lats_radians_array)
 
-    # Make a 2d array of these cos values
-    cos_2d_array = numpy.zeros(cube.data.shape)
-    #cos_2d_array = numpy.empty_like(cube.data)
-    for i in range(cos_2d_array.shape[0]):
-        for j in range(cos_2d_array.shape[1]):
-            got_data=True
-            location=[i,j]
-            lat_index=location[lat_dim]
-            if hasattr(cube.data, 'mask'):
-                if cube.data.mask.size == cube.data.size:
-                    got_data = not cube.data.mask[i,j]
-            if got_data: cos_2d_array[i,j] = cos_lats_array[lat_index]
-
-    # Do some area averaging
-    area_average = numpy.average(cube.data, weights=cos_2d_array)
-    
-    return area_average
-   
-# **************** ADD_COLORBAR **********************
-    
 def add_colorbar(mappable,units=None):
     # adds a colorbar to a plot with some standard keywords set
     cbar_kwargs = {'pad': 0.1, 'orientation': 'horizontal', 'extend': 'both'}
@@ -661,31 +637,29 @@ def load_extra_data(extras_dict):
         globalvar.extra_data_dict[key] = get_cube_ready(globalvar.extra_data_dict[key])
 
 
-def perform_equation(data_dict, analysis_type):
+def perform_equation(dataset_1, dataset_2, analysis_type):
     """
-    Do equation
-
-    Perform the equations provided in plots_file.dat
-    data_dict = a dictionary containing the data needed for those equations
+    Perform simple cube subtraction
+    
     analysis_type = type of analysis (zonal_mean, vertical_mean,...)
     """
-    # Make sure all the fields have correct units and axes
-    for comp in data_dict.keys():
-        data_dict[comp] = get_cube_ready(data_dict[comp])
+    # Make sure all the fields have correct units
+    dataset_1_ready = get_cube_ready(dataset_1)
+    dataset_2_ready = get_cube_ready(dataset_2)
 
-        # Data needs to be regridded on a 1x1 degrees grid
-        # This is done in preprocessor (previously shitload of code
-        # here to do just that)
-    
-        # Perform pre equation processing
-        if  analysis_type == 'zonal_mean':
-            data_dict[comp] = data_dict[comp].collapsed('longitude',
-                                                        iris.analysis.MEAN)
-        elif analysis_type == 'vertical_mean': 
-            data_dict[comp] = data_dict[comp].collapsed('pressure',
-                                                        iris.analysis.MEAN)
+    if  analysis_type == 'zonal_mean':
+        dataset_1_mean = dataset_1_ready.collapsed('longitude',
+                                                   iris.analysis.MEAN)
+        dataset_2_mean = dataset_2_ready.collapsed('longitude',
+                                                   iris.analysis.MEAN)
+
+    elif analysis_type == 'vertical_mean':
+        dataset_1_mean = dataset_1_ready.collapsed('pressure',
+                                                   iris.analysis.MEAN)
+        dataset_2_mean = dataset_2_ready.collapsed('pressure',
+                                                   iris.analysis.MEAN)
 
     # Perform difference
-    toplot_cube = data_dict['exper_variable'] - data_dict['obs_variable']
+    toplot_cube = dataset_1_mean - dataset_2_mean
     
     return toplot_cube
