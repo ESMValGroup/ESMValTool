@@ -243,6 +243,10 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     email: keith.williams 'at' metoffice.gov.uk
+  zech_sa:
+    name: Zechlau, Sabrina
+    institute: DLR, Germany
+    email: sabrina.zechlau 'at' dlr.de
 ### Viewers (not active developers)
   bala_ve:
     name: Balaji, Venkatramani
@@ -443,6 +447,7 @@ references:
   webster92qjrms: "Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877-926. doi:10.1002/qj.49711850705, 1992."
   weedon14wrr: "Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638, 2014."
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
+  wenzel16jclim: "Wenzel et al., J. Climate, 29, 673-687, doi:10.1175/JCLI-D-15-0412.1, 2016"
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
 
 observation references:
