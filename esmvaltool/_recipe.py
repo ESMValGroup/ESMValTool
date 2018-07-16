@@ -599,12 +599,12 @@ def _extract_preprocessor_order(profile):
 
 def _split_derive_profile(profile):
     """Split the derive preprocessor profile"""
-    custom_order = profile.pop('custom_order', False)
-    before, after = preprocessor.split_settings(profile, 'derive')
+    order = _extract_preprocessor_order(profile)
+    before, after = preprocessor.split_settings(profile, 'derive', order)
     after['derive'] = {}
-    if custom_order:
-        before['custom_order'] = custom_order
-        after['custom_order'] = custom_order
+    if order != DEFAULT_ORDER:
+        before['custom_order'] = True
+        after['custom_order'] = True
     return before, after
 
 
@@ -852,7 +852,7 @@ class Recipe(object):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
-            settings = copy.deepcopy(raw_settings)
+            settings = dict(copy.deepcopy(raw_settings))
             settings['recipe'] = self._recipe_file
             settings['version'] = __version__
             settings['script'] = script_name

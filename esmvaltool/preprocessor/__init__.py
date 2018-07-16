@@ -97,10 +97,10 @@ _LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
 
-def split_settings(settings, step):
+def split_settings(settings, step, order=DEFAULT_ORDER):
     """Split settings, using step as a separator."""
     before = {}
-    for _step in DEFAULT_ORDER:
+    for _step in order:
         if _step == step:
             break
         if _step in settings:
@@ -180,7 +180,7 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
         # Run single model steps
         for name in all_settings:
             settings, all_settings[name] = split_settings(
-                all_settings[name], step)
+                all_settings[name], step, order)
             all_items[name] = preprocess(all_items[name], settings, order,
                                          debug)
         if step is not dummy_step:
