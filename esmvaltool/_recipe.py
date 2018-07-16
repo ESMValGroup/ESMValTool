@@ -459,8 +459,8 @@ def _get_default_settings(variable, config_user, derive=False):
 
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX mask settings"""
-    if 'mask_landocean' in settings.keys():
-        # Configure ingestion of landocean masks
+    if 'mask_landsea' in settings.keys():
+        # Configure ingestion of land/sea masks
         logger.debug('Getting FX mask settings now...')
 
         # fx_files already in variable
@@ -477,16 +477,16 @@ def _update_fx_settings(settings, variable, config_user):
 
         # parse fx_files_dict for needed masking variable
         if 'sftlf' in fx_files_dict.keys():
-            settings['mask_landocean']['fx_file'] = \
+            settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftlf']
         elif 'sftof' in fx_files_dict.keys():
-            settings['mask_landocean']['fx_file'] = \
+            settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftof']
         # add more file options here with elif
         # else: return an empty value for Natural Earth mask use
         else:
             logger.debug('No sft-like FX file found...')
-            settings['mask_landocean']['fx_file'] = None
+            settings['mask_landsea']['fx_file'] = None
 
 
 def _get_input_files(variable, config_user):

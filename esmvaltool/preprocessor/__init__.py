@@ -8,7 +8,7 @@ from .._task import AbstractTask
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, extract_metadata, load_cubes, save, concatenate
-from ._mask import mask_fillvalues, mask_landocean
+from ._mask import mask_fillvalues, mask_landsea
 from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
     cmor_check_metadata
@@ -40,8 +40,8 @@ __all__ = [
     'fix_data',
     # Level extraction
     'extract_levels',
-    # Mask landocean (fx)
-    'mask_landocean',
+    # Mask landsea (fx or Natural Earth)
+    'mask_landsea',
     # Regridding
     'regrid',
     # Masking missing values

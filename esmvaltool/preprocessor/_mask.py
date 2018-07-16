@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 
 def _get_fx_mask(fx_data, fx_option):
-    """Build a 50 percent land or ocean mask"""
+    """Build a 50 percent land or sea mask"""
     inmask = np.zeros_like(fx_data, bool)
     if fx_option == 'land':
         # Mask land out
         inmask[fx_data > 50.] = True
-    elif fx_option == 'ocean':
-        # Mask ocean out
+    elif fx_option == 'sea':
+        # Mask sea out
         inmask[fx_data <= 50.] = True
     return inmask
 
@@ -48,24 +48,23 @@ def _apply_fx_mask(fx_mask, var_data):
     return var_data
 
 
-def mask_landocean(cube, fx_file, mask_out):
-    """Apply a land/ocean mask"""
-    # mask_out: is either 'land' or 'ocean'
+def mask_landsea(cube, fx_file, mask_out):
+    """Apply a land/sea mask"""
+    # mask_out: is either 'land' or 'sea'
     # Dict to store the Natural Earth masks
     cwd = os.path.dirname(__file__)
     # ne_10m_land is fast; ne_10m_ocean is very slow
     shapefiles = {
         'land': os.path.join(cwd, 'ne_masks/ne_10m_land.shp'),
-        'ocean': os.path.join(cwd, 'ne_masks/ne_50m_ocean.shp')
+        'sea': os.path.join(cwd, 'ne_masks/ne_50m_ocean.shp')
     }
 
     if fx_file:
         # Try loading; some files may be broken
         try:
             fx_cube = iris.load_cube(fx_file)
-            landocean_mask = _get_fx_mask(fx_cube.data,
-                                          mask_out)
-            cube.data = _apply_fx_mask(landocean_mask,
+            landsea_mask = _get_fx_mask(fx_cube.data, mask_out)
+            cube.data = _apply_fx_mask(landsea_mask,
                                        cube.data)
         except iris.exceptions.TranslationError as msg:
             logger.warning('Could not load fx file !')
@@ -145,7 +144,7 @@ def _get_geometry_from_shp(shapefilename):
 
 
 def _mask_with_shp(cube, shapefilename):
-    """Apply a Natural Earth land/ocean mask"""
+    """Apply a Natural Earth land/sea mask"""
     import shapely.vectorized as shp_vect
 
     # Create the region
@@ -165,16 +164,17 @@ def _mask_with_shp(cube, shapefilename):
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
-    # the NE mask has no points at x = -180 and y = -90
-    # so we will fool it and apply the mask at (-179, -89) instead
+    # the NE mask has no points at x = -180 and y = +/-90
+    # so we will fool it and apply the mask at (-179, -89, 89) instead
     x_p_180 = np.where(x_p_180 == -180., x_p_180 + 1., x_p_180)
     y_p_0 = np.where(y_p == -90., y_p + 1., y_p)
+    y_p_90 = np.where(y_p_0 == 90., y_p_0 - 1., y_p_0)
 
     # Build mask with vectorization
     if len(cube.data.shape) == 3:
-        mask[:] = shp_vect.contains(region, x_p_180, y_p_0)
+        mask[:] = shp_vect.contains(region, x_p_180, y_p_90)
     elif len(cube.data.shape) == 4:
-        mask[:, :] = shp_vect.contains(region, x_p_180, y_p_0)
+        mask[:, :] = shp_vect.contains(region, x_p_180, y_p_90)
 
     # Then apply the mask
     if isinstance(cube.data, np.ma.MaskedArray):
