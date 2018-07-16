@@ -19,6 +19,7 @@ from ._time_pp import seasonal_mean
 from ._time_pp import time_slice as extract_time
 from ._area_pp import area_slice as extract_region
 from ._area_pp import area_average as average_region
+from ._area_pp import zonal_means as zonal_means
 from ._volume_pp import volume_slice as extract_volume
 from ._volume_pp import extract_trajectory
 from ._volume_pp import extract_transect
@@ -66,6 +67,7 @@ __all__ = [
     'depth_integration',
     'average_region',
     'average_volume',
+    'zonal_means',
     'seasonal_mean',
     'time_average',
     'cmor_check_data',

@@ -77,6 +77,8 @@ def zonal_means(cube, coordinate, mean_type):
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
+        'min' -> MIN
+        'max' -> MAX
 
     Arguments
     ---------
@@ -100,6 +102,10 @@ def zonal_means(cube, coordinate, mean_type):
         result = cube.collapsed(coordinate, iris.analysis.STD_DEV)
     elif mean_type == 'variance':
         result = cube.collapsed(coordinate, iris.analysis.VARIANCE)
+    elif mean_type.lower() in ['minimum', 'min']:
+        result = cube.collapsed(coordinate, iris.analysis.MIN)
+    elif mean_type.lower() in ['maximum',]:
+        result = cube.collapsed(coordinate, iris.analysis.MAX)
     return result
 
 
