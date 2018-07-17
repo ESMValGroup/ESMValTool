@@ -378,7 +378,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("find_model_index")
 function find_model_index(model_name :string,
                           models_tot :string,
@@ -387,38 +387,38 @@ function find_model_index(model_name :string,
                           ens_name : string,
                           ensemble :string,
                           opt[1])
-;;
-;; Arguments
-;;    model_name: model names to match up.
-;;    models_tot: all model names to look in, models@name.
-;;    exp_name : experiment to match up
-;;    experiment: experiments to look for matching models in,
-;;                dataset_info@exp.
-;;    ens_name : ensemble to match up,
-;;    ensemble : ensembles to look for match in, models@ensemble
-;;    opt: not used yet, set to 0
-;;
-;; Return value
-;;    A list of indices which match the experiment an model name
-;;
-;; Description
-;;    Finds all all indices which match a particular experiment name, model
-;;    name and ensemble. For instance to calculate changes in different RCPs
-;;    we only consider historical runs which are also available in the
-;;    particular RCP, so we need to find all historical runs for the models
-;;    in the RCP in the namelist.
-;;
-;; Caveats
-;;    Fails if we look for a model name that does not exist in the namelist.
-;;    Is there a more elegant and simpler way of doing this???
-;;    e.g. without loop?
-;;
-;; References
-;;
-;; Modification history:
-;;    20161031-A_lore_ru: added ensemble as matching criteria
-;;    20160908-A_lore_ru: written.
-;;
+;
+; Arguments
+;    model_name: model names to match up.
+;    models_tot: all model names to look in, dataset_info@dataset.
+;    exp_name : experiment to match up
+;    experiment: experiments to look for matching models in,
+;                dataset_info@exp.
+;    ens_name : ensemble to match up,
+;    ensemble : ensembles to look for match in, dataset_info@ensemble
+;    opt: not used yet, set to 0
+;
+; Return value
+;    A list of indices which match the experiment, ensemble and model name
+;
+; Description
+;    Finds all indices which match a particular experiment name, model
+;    name and ensemble. For instance to calculate changes in different RCPs
+;    we only consider historical runs which are also available in the
+;    particular RCP, so we need to find all historical runs for the models
+;    in the RCP in the namelist.
+;
+; Caveats
+;    Fails if we look for a model name that does not exist in the namelist.
+;    Is there a more elegant and simpler way of doing this???
+;    e.g. without loop?
+;
+; References
+;
+; Modification history:
+;    20161031-A_lore_ru: added ensemble as matching criteria
+;    20160908-A_lore_ru: written.
+;
 local funcname, scriptname, dim_rcp, hist, tmp_hist0, tmp_ind, \
     idx_hist
 begin
@@ -427,9 +427,10 @@ begin
     scriptname = "diag_scripts/shared/ensemble.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; how many model names do we need to match up?
+    ; how many model names do we need to match up?
     dim_rcp = dimsizes(model_name)
-    ;; loop over all model names in RCP and find corresponding historical run
+
+    ; loop over all model names in RCP and find corresponding historical run
     do hist = 0, dim_rcp - 1
         if (hist .eq. 0) then
             tmp_hist0 = 0
