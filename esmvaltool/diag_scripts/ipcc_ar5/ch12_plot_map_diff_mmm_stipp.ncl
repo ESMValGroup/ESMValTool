@@ -4,69 +4,17 @@
 ; CRESCENDO project
 ; #############################################################################
 ;
-; Description
-;    Annual mean or seasonal change in multi-model mean with signficance
-;    lat-lon field precalculated, plotting only
-;
-; Required diag_script_info attributes (diagnostics specific)
-;    ncdf: filename for netcdf to read, include variable name at beginning if
-;          only one variable to be plotted, if multiple variables variable
-;          name will be automatically added to string when looping over
-;          variables
-;    diagscript: script name which produced netcdf to read
-;    scenarios: list with scenarios to be included in the
-;               figure, e.g (/"rcp26","rcp45","rcp60","rcp85"/),
-;               warning: for map_diff_scaleT_mmm_stipp_ipcc12.ncl all
-;               scenarios are scaled by the degree of warming and aggregated,
-;               @scenarios corresponds to scenarios included in calculation
-;               but not individually plotted!!! In this case dimsizes @label
-;               and dimsizes @scenarios are not equal -> use label size
-;    periods: list with start years of periods to be included
-;    	       e.g. (/"2046", "2081", "2180"/)
-;    time_avg: seasonal means or annual means, (/"annualclim"/) or
-;             (/"seasonalclim"/)
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    explicit_cn_levels: explicit levels for all contour plots
-;    max_vert: maximum number of plots in vertical
-;              default determined by number of scenarios
-;    max_hori: maximum number of plots in horizontal
-;              default determined by number of periods
-;    pltname: alternative string for plotname instead of variable name
-;             (e.g. if multiple variables in same panel)
-;    title: Figure title
-;    label: labels on top of each panel, e.g. scenario + rcp,
-;           loop to plot is seasons, scenarios, periods
-;    colormap: specify colormap for contour plots
-;    units: unit string in ncl formatting for legend title
-;    plotmask: apply a mask when plotting? either
-;              "None" (default), "ocean", "land"
-;    span: boolean to decide if span whole colormap (default = True)
-;    sig: boolean, true if stippling for significance
-;         to be applied, default no stippling
-;    not_sig: boolean, true if hatching for not significance
-;             to be applied, default no hatching
-;    model_nr: boolean, true if want number of models included to be printet
-;              in top right and precalculated and saved this number in
-;              netcdf to be read, default no
-; Required variable_info attributes (variable specific)
-;    long_name: long name of variable
-;    units: variable units
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
 ; Caveats
 ;    Loop to plot is variables, seasons, scenarios, periods
 ;    Can either plot seasonal means or annual means in one panel, but not both
 ;
 ; Modification history
+;    20181307-A_lore_ru: Ported to version 2
 ;    20171002-A_lore_ru: Added tags for searching
 ;    20170530-A_lore_ru: multiple variables possible
 ;    20170120-A_lore_ru: adapted towritten for ESMValTool
 ;                        based on IPCC AR5 scripts.
-;;
+;
 ; #############################################################################
 
 ; A temporary file written by the invoking Python script
@@ -107,12 +55,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
+  ; write_references(diag_script, \  ; script name
+  ;                  "A_lore_ru", \  ; authors
+  ;                  "", \  ; contributors
+  ;                  "D_collins13ipcc",    \  ; diag_references
+  ;                  "",          \  ; obs_references
+  ;                  "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
   exit_if_missing_atts(diag_script_info, req_atts)
@@ -256,7 +204,8 @@ begin
   to_plot@res_cnLineLabelsOn    = False           ; Contour lines
   to_plot@res_cnLinesOn         = False
   if (isatt(diag_script_info, "colormap")) then
-    col = read_colormap_file(diag_script_info@colormap)
+    col = read_colormap_file("./diag_scripts/shared/plot/rgb/" + \
+                             diag_script_info@colormap)
   else
     col = "BlueYellowRed"
   end if
@@ -382,7 +331,7 @@ begin
         to_plot@res_mpInlandWaterFillColor = 0
         to_plot@res_mpLandFillColor = -1
         to_plot@res_mpCenterLonF = 10.
-        ; change latitude  line spacing
+        ; change latitude line spacing
         to_plot@res_mpGridLatSpacingF = 90.
         ; change longitude line spacing
         to_plot@res_mpGridLonSpacingF = 180.
