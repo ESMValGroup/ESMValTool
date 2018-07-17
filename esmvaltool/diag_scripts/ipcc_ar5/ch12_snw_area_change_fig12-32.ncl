@@ -157,72 +157,59 @@ begin
   months = diag_script_info@months
   dim_SEAS = dimsizes(months)
 
-  ; Extract data for time
-  ; (function in ./diag_scripts/lib/ncl/statistics.ncl)
-  data3 = time_operations(A0, -1, -1, "extract", [months(0)], False)
-  dsize = dimsizes(data3)
-  data0 = new((/dim_SEAS, dsize(0), dsize(1), dsize(2)/), float)
-  data0(0, :, :, :) = data3
-  do m = 1, dim_SEAS - 1
-    data0(m, :, :, :) = time_operations(A0, -1, -1, "extract", \
-					[months(m)], False)
-  end do
-  data0!0 = "seas"
-  data0&seas = months
-  date    = cd_calendar(data3&time, 0)
-  years = date(:, 0)
-  nyears = dimsizes(years)
-  nlat = dimsizes(A0&lat)
-  nlon = dimsizes(A0&lon)
-  data1 = dim_avg_n_Wrap(data0, 0)
-
-  ; if variable is "snw" we need to calculate the snow area using sftgif
-  ; and sftlf    sftgif_0 = sftgif * (- 0.01)
-  land_ice_sftgif= read_fx_data(imod, "sftgif")
+  ; we need to calculate the snow area using sftgif
+  ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+  list_sftgif = read_fx_data(imod, "sftgif")
+  var_idx = ListIndexFromName(list_sftgif, "sftgif")
+  land_ice_sftgif = list_sftgif[var_idx] 
   sftgif_0 = land_ice_sftgif * (- 0.01)
   sftgif_1 = sftgif_0 + 1
 
   ; read sftlf (land sea mask)
-  land_sea_sftlf = read_fx_data(imod, "sftlf")
-
+  list_sftlf = read_fx_data(imod, "sftlf")
+  var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
+  land_sea_sftlf = list_sftlf[var_idx2]
   sftifl = sftgif_1 * land_sea_sftlf
+  delete([/var_idx, var_idx2/])
 
-  tmp2 = data1 / 2.
-  tmp3 = tmp2 * 5.10067e14
+  ; date    = cd_calendar(A0&time, 0)
+  ; years = date(:, 0)
+  ; nyears = dimsizes(years)
+  ; nlat = dimsizes(A0&lat)
+  ; nlon = dimsizes(A0&lon)
+  sftifl_conf = conform(A0, sftifl, (/1, 2/))
+  tmp2 = (A0 * sftifl_conf) / 100
   ; where > 5
-  tmp4 = where(tmp3 .gt. 5., tmp3, sftgif@_FillValue) / 100.
-  data2 = new((/nyears, nlat, nlon/), typeof(A0), A0@_FillValue)
-  do yr = 0, nyears - 1
-    data2(yr, :, :) = tmp4(yr, :, :) * sftifl
-  end do
-  delete([/tmp2, tmp3, tmp4/])
+  tmp3 = where(tmp2 .gt. 5., tmp2, land_ice_sftgif@_FillValue)
   ; Add coordinates
-  data2!0 = "year"
-  data2&year = date(:, 0)
-  data2!1 = "lat"
-  data2&lat = A0&lat
-  data2!2 = "lon"
-  data2&lon = A0&lon
-  delete(data3)
-  dim_file = dimsizes(data2)  ; file size of historical file
+  copy_VarCoords(A0, tmp3)
   ; Average over globe/region
   ; (function in ./diag_scripts/lib/ncl/latlon.ncl)
   if (isatt(diag_script_info, "ts_minlat")) then
-    data1_glob = area_operations(data2, diag_script_info@ts_minlat, \
+    tmp4 = area_operations(tmp3, diag_script_info@ts_minlat, \
 				 diag_script_info@ts_maxlat, \
 				 diag_script_info@ts_minlon, \
 				 diag_script_info@ts_maxlon, "average", \
 				 True)
   else
-    data1_glob = coswgt_areaave(data2)
+    tmp4 = coswgt_areaave(tmp3)
   end if
+  tmp5 = (tmp4 * 5.10067e14) / 2.0
+  ; Add coordinates
+  tmp5!0 = "time"
+  tmp5&time = A0&time
+  tmp6 = extract_season(tmp5, months)
+  data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
+  delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf/])
+
+  dim_file = dimsizes(data2_glob)  ; file size of historical file
 
   ; How many historical model runs?
   ind_hist = ind(dataset_info@exp .eq. "historical")
   dim_MOD_hist = dimsizes(dataset_info@dataset(ind_hist))
-  ref_data2 = new((/dim_MOD_hist/), float, data1_glob@_FillValue)
+  ref_data2 = new((/dim_MOD_hist/), float, A0@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
-                  data1_glob@_FillValue)
+                  A0@_FillValue)
 
   ; How many scenarios?
   dim_scen = dimsizes(diag_script_info@scenarios)
@@ -238,28 +225,28 @@ begin
   dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
   ; indicate array for scenarios
   data26_rel = new((/dim_MOD_26, nyearsp1/), float, \
-                   data1_glob@_FillValue)
+                   data2_glob@_FillValue)
 
   if (dim_scen .gt. 1) then
     ; How many model runs in 2nd sceanrio?
     ind_45 = ind(dataset_info@exp .eq. diag_script_info@scenarios(1))
     dim_MOD_45 = dimsizes(dataset_info@dataset(ind_45))
     data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
-                     data1_glob@_FillValue)
+                     data2_glob@_FillValue)
   end if
   if (dim_scen .gt. 2) then                   
     ; How many model runs in 3rd scenario?
     ind_60 = ind(dataset_info@exp .eq. diag_script_info@scenarios(2))
     dim_MOD_60 = dimsizes(dataset_info@dataset(ind_60))
     data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
-                     data1_glob@_FillValue)
+                     data2_glob@_FillValue)
   end if
   if (dim_scen .gt. 3) then                   
     ; How many model runs in 4th scenario?
     ind_85 = ind(dataset_info@exp .eq. diag_script_info@scenarios(3))
     dim_MOD_85 = dimsizes(dataset_info@dataset(ind_85))
     data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
-                     data1_glob@_FillValue)
+                     data2_glob@_FillValue)
   end if
   i = 0
   i26 = 0
@@ -268,77 +255,52 @@ begin
   i85 = 0
   do imod = 0, dim_MOD_hist - 1
     if (imod .eq. 0) then
-      ; Add coordinates
-      data2!0 = "year"
-      data2&year = date(:, 0)
-      data2!1 = "lat"
-      data2&lat = A0&lat
-      data2!2 = "lon"
-      data2&lon = A0&lon
       delete(A0)
-      delete(data0)
     else
       A0 = read_data(imod, var0, field_type0)
-      ; Extact over time
-      ; (function in ./diag_scripts/lib/ncl/statistics.ncl)
-      data3 = time_operations(A0, -1, -1, "extract", [months(0)], False)
-      dsize = dimsizes(data3)
-      data0 = new((/dim_SEAS, dsize(0), dsize(1), dsize(2)/), float)
-      data0(0, :, :, :) = data3
-      do m = 1, dim_SEAS - 1
-        data0(m, :, :, :) = time_operations(A0, -1, -1, "extract", \
-                                            [months(m)], False)
-      end do
-      data0!0 = "seas"
-      data0&seas = months
-      date    = cd_calendar(data3&time, 0)
-      years = date(:, 0)
-      nyears = dimsizes(years)
-      nlat = dimsizes(A0&lat)
-      nlon = dimsizes(A0&lon)
-      data1 = dim_avg_n_Wrap(data0, 0)
-
-      ; read sftlf
-      land_ice_sftgif= read_fx_data(imod, "sftgif")
+      ; we need to calculate the snow area using sftgif
+      ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+      list_sftgif = read_fx_data(imod, "sftgif")
+      var_idx = ListIndexFromName(list_sftgif, "sftgif")
+      land_ice_sftgif = list_sftgif[var_idx] 
       sftgif_0 = land_ice_sftgif * (- 0.01)
       sftgif_1 = sftgif_0 + 1
 
       ; read sftlf (land sea mask)
-      land_sea_sftlf = read_fx_data(imod, "sftlf")
-
+      list_sftlf = read_fx_data(imod, "sftlf")
+      var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
+      land_sea_sftlf = list_sftlf[var_idx2]
       sftifl = sftgif_1 * land_sea_sftlf
+      delete([/var_idx, var_idx2/])
 
-      tmp2 = data1 / 2.
-      tmp3 = tmp2 * 5.10067e14
-      ;; where > 5
-      tmp4 = where(tmp3 .gt. 5., tmp3, sftgif@_FillValue) / 100.
-      data2 = new((/nyears, nlat, nlon/), typeof(A0), A0@_FillValue)
-      do yr = 0, nyears - 1
-        data2(yr, :, :) = tmp4(yr, :, :) * sftifl
-      end do
-      ;; Add coordinates
-      data2!0 = "year"
-      data2&year = date(:, 0)
-      data2!1 = "lat"
-      data2&lat = A0&lat
-      data2!2 = "lon"
-      data2&lon = A0&lon
-      delete([/tmp2, tmp3, tmp4/])
-      delete([/A0, data0, data3/])
+      sftifl_conf = conform(A0, sftifl, (/1, 2/))
+      tmp2 = (A0 * sftifl_conf) / 100
+      ; where > 5
+      tmp3 = where(tmp2 .gt. 5., tmp2, land_ice_sftgif@_FillValue)
+      ; Add coordinates
+      copy_VarCoords(A0, tmp3)
+      ; Average over globe/region
+      ; (function in ./diag_scripts/lib/ncl/latlon.ncl)
+      if (isatt(diag_script_info, "ts_minlat")) then
+        tmp4 = area_operations(tmp3, diag_script_info@ts_minlat, \
+                               diag_script_info@ts_maxlat, \
+                               diag_script_info@ts_minlon, \
+                               diag_script_info@ts_maxlon, "average", \
+                               True)
+      else
+        tmp4 = coswgt_areaave(tmp3)
+      end if
+      tmp5 = (tmp4 * 5.10067e14) / 2.0
+      ; Add coordinates
+      tmp5!0 = "time"
+      tmp5&time = A0&time
+      tmp6 = extract_season(tmp5, months)
+      data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
+      delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf, A0/])
     end if
-    ; Average over globe (function in
-    ; ./diag_scripts/lib/ncl/statistics.ncl)
-    if (isatt(diag_script_info, "ts_minlat")) then
-      data2_glob = area_operations(data2, diag_script_info@ts_minlat, \
-                                   diag_script_info@ts_maxlat, \
-                                   diag_script_info@ts_minlon, \
-                                   diag_script_info@ts_maxlon, \
-                                   "average", True)
-    else
-      data2_glob = coswgt_areaave(data2)
-    end if
-    ind_start = ind(data2&year .eq. diag_script_info@begin_ref_year)
-    ind_end = ind(data2&year .eq. diag_script_info@end_ref_year)
+
+    ind_start = ind(data2_glob&year .eq. diag_script_info@begin_ref_year)
+    ind_end = ind(data2_glob&year .eq. diag_script_info@end_ref_year)
     ref_data2(imod) = dim_avg(data2_glob(ind_start : ind_end))
     dim_data2g = dimsizes(data2_glob)
     if (dim_data2g .ne. dim_file(0)) then
@@ -349,74 +311,66 @@ begin
       data2_rel(imod, :) = (data2_glob / ref_data2(imod)) - 1
     end if
     ;; clean up
-    delete([/data1, data2, data2_glob/])
-    delete([/date, years, nyears/])
+    delete([/data2_glob/])
 
     do s = 0, dim_scen - 1
       ; find all other runs from this model and calculate relative ts
       imodrcp = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                    dataset_info@exp .eq. diag_script_info@scenarios(s))
+                    dataset_info@exp .eq. diag_script_info@scenarios(s) .and. \
+                    dataset_info@ensemble .eq. dataset_info@ensemble(imod))
       if (.not.all(ismissing(imodrcp))) then
-	if (dimsizes(imodrcp) .gt. 1) then
-          do ens = 0, dimsizes(imodrcp) - 1
-            A1 = extract_data(imodrcp(ens), data, -1, 0, 0)
-          end do
-	else
-          A1 = extract_data(imodrcp, data, -1, 0, 0)
-	end if
-	;; Extract over time
-	;; (function in ./diag_scripts/lib/ncl/statistics.ncl)
-	data3 = time_operations(A1, -1, -1, "extract", [months(0)], \
-				False)
-	dsize = dimsizes(data3)
-	data0 = new((/dim_SEAS, dsize(0), dsize(1), dsize(2)/), float)
-	data0(0, :, :, :) = data3
-	do m = 1, dim_SEAS - 1
-          data0(m, :, :, :) = time_operations(A1, -1, -1, "extract",\
-                                              [months(m)], False)
-	end do
-	data0!0 = "seas"
-	data0&seas = months
-	date    = cd_calendar(data3&time, 0)
-	years = date(:, 0)
-	nyears = dimsizes(years)
-	nlat = dimsizes(A1&lat)
-	nlon = dimsizes(A1&lon)
-	data1 = dim_avg_n_Wrap(data0, 0)
+        A1 = read_data(imodrcp, var0, field_type0)
+        ; we need to calculate the snow area using sftgif
+        ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+        list_sftgif = read_fx_data(imodrcp, "sftgif")
+        var_idx = ListIndexFromName(list_sftgif, "sftgif")
+        land_ice_sftgif = list_sftgif[var_idx] 
+        sftgif_0 = land_ice_sftgif * (- 0.01)
+        sftgif_1 = sftgif_0 + 1
 
-	tmp2 = data1 / 2.
-	tmp3 = tmp2 * 5.10067e14
-	;; where > 5
-	tmp4 = where(tmp3 .gt. 5., tmp3, sftgif@_FillValue) / 100.
-	data2 = new((/nyears, nlat, nlon/), typeof(A1), \
-                    A1@_FillValue)
-        do yr = 0, nyears - 1
-          data2(yr, :, :) = tmp4(yr, :, :) * sftifl
-        end do
-        ;; Add coordinates
-        data2!0 = "year"
-        data2&year = years
-        data2!1 = "lat"
-        data2&lat = A1&lat
-        data2!2 = "lon"
-        data2&lon = A1&lon
-	delete(A1)
-	if (isatt(diag_script_info, "ts_minlat")) then
-          data2_glob = area_operations(data2, \
-                                       diag_script_info@ts_minlat, \
-                                       diag_script_info@ts_maxlat, \
-                                       diag_script_info@ts_minlon, \
-                                       diag_script_info@ts_maxlon, \
-                                       "average", True)
-	else
-	  data2_glob = coswgt_areaave(data2)
-	end if
+        ; read sftlf (land sea mask)
+        list_sftlf = read_fx_data(imodrcp, "sftlf")
+        var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
+        land_sea_sftlf = list_sftlf[var_idx2]
+        sftifl = sftgif_1 * land_sea_sftlf
+        delete([/var_idx, var_idx2/])
+        sftifl_conf = conform(A1, sftifl, (/1, 2/))
+        tmp2 = (A1 * sftifl_conf) / 100
+        ; where > 5
+        tmp3 = where(tmp2 .gt. 5., tmp2, A1@_FillValue)
+        ; Add coordinates
+        copy_VarCoords(A1, tmp3)
+        ; Average over globe/region
+        ; (function in ./diag_scripts/lib/ncl/latlon.ncl)
+        if (isatt(diag_script_info, "ts_minlat")) then
+          tmp4 = area_operations(tmp3, diag_script_info@ts_minlat, \
+                                 diag_script_info@ts_maxlat, \
+                                 diag_script_info@ts_minlon, \
+                                 diag_script_info@ts_maxlon, "average", \
+                                 True)
+        else
+          tmp4 = coswgt_areaave(tmp3)
+        end if
+        tmp5 = (tmp4 * 5.10067e14) / 2.0
+        ; Add coordinates
+        tmp5!0 = "time"
+        tmp5&time = A1&time
+        tmp6 = extract_season(tmp5, months)
+        data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
+        delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf/])
 	dim_data2g = dimsizes(data2_glob)
 	if (s .eq. 0) then
           if (dim_data2g .ne. nyearsp1) then
-            data26_rel(i26, 0 : dim_data2g - 1) = \
-              (data2_glob / ref_data2(imod)) - 1
-              data26_rel(i26, dim_data2g :) =  data2_glob@_FillValue
+            if (dim_data2g .gt. nyearsp1) then
+              error_msg("w", diag_script, "", "Length of dataset " + \
+                        dataset_info@dataset(imod) + " in recipe is " + \
+                        "longer than period given in recipe (" + nyearsp1 + \
+                        " years)")
+            else
+              data26_rel(i26, 0 : dim_data2g - 1) = \
+                (data2_glob / ref_data2(imod)) - 1
+                data26_rel(i26, dim_data2g :) =  data2_glob@_FillValue
+            end if
           else
             data26_rel(i26, :) = (data2_glob / ref_data2(imod)) - 1
           end if
@@ -424,9 +378,16 @@ begin
 	end if
 	if (s .eq. 1) then
           if (dim_data2g .ne. nyearsp1) then
-            data45_rel(i45, 0 : dim_data2g - 1) = \
-              (data2_glob / ref_data2(imod)) - 1
-            data45_rel(i45, dim_data2g:) =  data2_glob@_FillValue
+            if (dim_data2g .gt. nyearsp1) then
+              error_msg("w", diag_script, "", "Length of dataset " + \
+                        dataset_info@dataset(imod) + " in recipe is " + \
+                        "longer than period given in recipe (" + nyearsp1 + \
+                        " years)")
+            else
+              data45_rel(i45, 0 : dim_data2g - 1) = \
+                (data2_glob / ref_data2(imod)) - 1
+              data45_rel(i45, dim_data2g:) =  data2_glob@_FillValue
+            end if
           else
             data45_rel(i45, :) = (data2_glob / ref_data2(imod)) - 1
 	  end if
@@ -434,9 +395,16 @@ begin
 	end if
 	if (s .eq. 2) then
           if (dim_data2g.ne.nyearsp1) then
-            data60_rel(i60, 0 : dim_data2g - 1) = \
-              (data2_glob / ref_data2(imod)) - 1
-            data60_rel(i60, dim_data2g:) =  data2_glob@_FillValue
+            if (dim_data2g .gt. nyearsp1) then
+              error_msg("w", diag_script, "", "Length of dataset " + \
+                        dataset_info@dataset(imod) + " in recipe is " + \
+                        "longer than period given in recipe (" + nyearsp1 + \
+                        " years)")
+            else
+              data60_rel(i60, 0 : dim_data2g - 1) = \
+                (data2_glob / ref_data2(imod)) - 1
+              data60_rel(i60, dim_data2g:) =  data2_glob@_FillValue
+            end if
           else
             data60_rel(i60, :) = (data2_glob / ref_data2(imod)) - 1
           end if
@@ -444,34 +412,34 @@ begin
 	end if
 	if (s .eq. 3) then
           if (dim_data2g.ne.nyearsp1) then
-            data85_rel(i85, 0 : dim_data2g - 1) = \
-              (data2_glob / ref_data2(imod)) - 1
-            data85_rel(i85, dim_data2g :) = data2_glob@_FillValue
+            if (dim_data2g .gt. nyearsp1) then
+              error_msg("w", diag_script, "", "Length of dataset " + \
+                        dataset_info@dataset(imod) + " in recipe is " + \
+                        "longer than period given in recipe (" + nyearsp1 + \
+                        " years)")
+            else
+              data85_rel(i85, 0 : dim_data2g - 1) = \
+                (data2_glob / ref_data2(imod)) - 1
+              data85_rel(i85, dim_data2g :) = data2_glob@_FillValue
+            end if
           else
             data85_rel(i85, :) = (data2_glob / ref_data2(imod)) - 1
           end if
           i85 = i85 + 1
 	end if
 	;; clean up
-	delete([/data1, data2, data3, data0, data2_glob/])
-	delete([/date, years, nyears/])
-	if (var0 .eq. "snw") then
-          delete([/tmp2, tmp3, tmp4/])
-	end if
+	delete([/A1, data2_glob/])
       end if
       delete(imodrcp)
     end do  ; scenario
-    if (var0 .eq. "snw") then
-      delete([/sftgif, sftgif_0, sftgif_1, sftlf, sftifl/])
-    end if
-    delete([/nlat, nlon/])
+    delete([/land_ice_sftgif, sftgif_0, sftgif_1, land_sea_sftlf, sftifl/])
   end do  ; imod
 
   ; average and standard deviation over all datasets
   datahist_avg = dim_avg_n_Wrap(data2_rel, 0)
   datahist_std = dim_stddev_n_Wrap(data2_rel, 0)
 
-    ; put all data from 1850-2100 into mean_val and std_val
+  ; put all data from 1850-2100 into mean_val and std_val
   mean_val = new((/dim_scen + 1, nyears_full/), typeof(data2_rel),\
                  data2_rel@_FillValue)
   std_val = new((/dim_scen + 1, nyears_full/), typeof(data2_rel),\
@@ -484,7 +452,7 @@ begin
   data26_avg = dim_avg_n_Wrap(data26_rel, 0)
   data26_std = dim_stddev_n_Wrap(data26_rel, 0)
 
-  mean_val(1, p1 :) = data26_avg
+  mean_val(1, p1 :) = data26_avg 
   std_val(1, p1 :) = data26_std
 
   if (dim_scen .gt. 1) then
@@ -542,17 +510,17 @@ begin
   copy_VarMeta(mean_val, to_plot)
   to_plot!0 = "metric"
   if (dim_scen .eq. 1) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/) 
+    to_plot&metric = (/"mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std"/) 
   else if (dim_scen .eq. 2) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/) 
+    to_plot&metric = (/"mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std"/) 
   else if (dim_scen .eq. 3) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/)    
+    to_plot&metric = (/"mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std", \
+                       "mean", "+1.std", "-1.std"/)    
   else if (dim_scen .eq. 4) then  
     to_plot&metric = (/"mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
