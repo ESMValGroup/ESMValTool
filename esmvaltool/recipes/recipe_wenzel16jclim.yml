@@ -18,7 +18,7 @@ documentation:
 
 preprocessors:
 
-  sp100:
+  mean_sp100:
     extract_levels:
       levels: 10000
       scheme: linear
@@ -27,15 +27,44 @@ preprocessors:
       lat2: -60
       long1: 0
       long2: 360
+    average_region:
+      coord1: latitude
+      coord2: longitude
+
+  mean_ng100:
+    extract_levels:
+      levels: 10000
+      scheme: linear
+    extract_region:
+      lat1: -90
+      lat2: 90
+      long1: 0
+      long2: 360
+    average_region:
+      coord1: latitude
+      coord2: longitude
+
+  mean_trop250:
+    extract_levels:
+      levels: 25000
+      scheme: linear
+    extract_region:
+      lat1: -30
+      lat2: 30
+      long1: 0
+      long2: 360
+    average_region:
+      coord1: latitude
+      coord2: longitude
 
 
 diagnostics:
 
-  ta_trends_sp:
-    description: Calculate temperature trends.
+  ta_sp100:
+    description: Calculate temperature trends and climatological means.
     variables:
-      ta: &sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: sp100
+      ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_sp100
         project: CMIP5
         mip: Amon
         field: T3M
@@ -100,7 +129,7 @@ diagnostics:
       - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
       - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
-      ta_trends_sp: &ta_mder
+      ta_sp100: &ta_mder
         script: mder/austral_jet_diags.ncl
         styleset: CMIP5
         e13fig10_yr_min: 1979
@@ -111,6 +140,35 @@ diagnostics:
         ref_model: ['ERA-Interim']
         diagscript: austral_jet_diags
         average_ens: True
+
+  ta_ng100:
+    description: Calculate temperature trends and climatological means.
+    variables:
+      ta:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_ng100
+    additional_datasets: *ta_datasets
+    scripts:
+      ta_ng100:
+        <<: *ta_mder
+        e13fig10_season: ['yearly']
+        wdiag: ['T-NGlob_t', 'T-NGlob_c']
+        wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
+
+  ta_trop250:
+    description: Calculate temperature trends and climatological means.
+    variables:
+      ta:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_trop250
+    additional_datasets: *ta_datasets
+    scripts:
+      ta_trop250:
+        <<: *ta_mder
+        e13fig10_season: ['DJF']
+        wdiag: ['T-Trop_t', 'T-Trop_c']
+        wdiag_title: ['T-Trop_t', 'T-Trop_c']
+
 
 
 # <!-- Make diagnostic plot and output -->
