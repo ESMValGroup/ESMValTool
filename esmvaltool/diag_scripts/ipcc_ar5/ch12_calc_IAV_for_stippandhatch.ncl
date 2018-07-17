@@ -315,20 +315,50 @@ begin
       if (file_exist .and. diag_script_info@overwrite .eq. False) then
         continue
       end if
+      if (imod .eq.0) then
+        if (rank .eq. 3) then
+          data1!0 = "models"
+          data1!1 = "season"
+          data1!2 = "lat"
+          data1!3 = "lon"
+        else if (rank .eq. 4) then
+          data1!0 = "models"
+          data1!1 = "season"
+          data1!2 = lev_name
+          data1&$lev_name$ = A0&$lev_name$
+          data1!3 = "lat"
+          data1!4 = "lon"
+        end if
+        end if
+        if (isatt(diag_script_info, "seasons")) then
+          data1&season = (/ispan(0, dim_seas - 1, 1)/)
+        else
+          data1&season = (/0/)
+        end if
+        data1&lat = A0&lat
+        data1&lon = A0&lon
+
+        data1@diag_script = (/diag_script/)
+        data1@var = "iav"
+        if (isatt(variable_info, "long_name")) then
+          data1@var_long_name = "iav of " + variable_info@long_name
+        end if
+        if (isatt(variable_info, "units")) then
+          data1@var_units     = variable_info@units
+        end if
+      end if
       ; ###########################################
       ; # Output to netCDF                        #
       ; ###########################################
-      data1@diag_script = (/diag_script/)
-      data1@var = "iav"
-      if (isatt(variable_info, "long_name")) then
-        data1@var_long_name = "iav of " + variable_info@long_name
+      if (rank .eq. 3) then
+        write_data = data1(imod, :, :, :)
+      else if (rank .eq. 4) then
+        write_data = data1(imod, :, :, :, :)
       end if
-      if (isatt(variable_info, "units")) then
-        data1@var_units     = variable_info@units
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
-      ncdf_outfile = ncdf_write(data1, work_dir + outfile)
-      delete(data1)
+      ncdf_outfile = ncdf_write(write_data, work_dir + outfile)
+      ;delete(data1)
     end if
   end do  ; imod
 
@@ -382,8 +412,7 @@ begin
     if (isatt(variable_info, "units")) then
       IAV_mmm@var_units     = variable_info@units
     end if
-    IAV_mmm@comment = "models included in mmm are " + dataset_info@dataset
-    printVarSummary(IAV_mmm)
+    IAV_mmm@comment = dataset_info@dataset
     ; Function in ~/interface_scripts/auxiliary.ncl
     ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
   end if
