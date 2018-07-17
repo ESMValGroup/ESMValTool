@@ -10,6 +10,9 @@
 #Contributor
 #Simon Read (University of Reading,  United Kingdom)
 #
+#Author version2
+#Valeriu Predoi (University of Reading, UK)
+#
 #Project
 #CMUG
 #
@@ -27,30 +30,45 @@ datasets:
 
 preprocessors:
   pp_rad:
-    #extract_levels:
-    #  levels: [100000., 50000., 10000., 7000., 5000., 3000., 1000.]
-    #  scheme: nearest
     regrid:
-      target_grid: MPI-ESM-LR
+      target_grid: 1x1
       scheme: linear
 
 diagnostics:
   radiation_Amon_all:
     description: 
-    variables: # 13 variables total
-      rtnt: # ceres TOA TOT net
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rsnt: # ceres TOA SW net
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
+    variables: # 13 required variables total
+      #rtnt: # ceres TOA TOT net
+      ## derived: rsdt:T2*s,rsut:T2*s,rlut:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
+      #rsnt: # ceres TOA SW net
+      ## derived: rsdt:T2*s,rsut:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
       rsut: # ceres TOA SW up all sky
         preprocessor: pp_rad
         mip: Amon
         field: T2Ms
       rlut: # ceres TOA LW up all sky
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rlus: # used in derivation only
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsdt: # used in derivation only
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsds: # used in derivation only
+        preprocessor: pp_rad
+        mip: Amon
+        field: T2Ms
+      rsus: # used in derivation only
         preprocessor: pp_rad
         mip: Amon
         field: T2Ms
@@ -62,22 +80,26 @@ diagnostics:
         preprocessor: pp_rad
         mip: Amon
         field: T2Ms
-      SW_CRE: # ceres TOA SW Cloud Radiative Effect
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      LW_CRE: # ceres TOA LW Cloud Radiative Effect
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rsns: # ceres Surf SW net all sky
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rlns: # ceres Surf LW net all sky
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
+      #SW_CRE: # ceres TOA SW Cloud Radiative Effect
+      ## derived: rsut:T2*s,rsutcs:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
+      #LW_CRE: # ceres TOA LW Cloud Radiative Effect
+      ## derived: rlut:T2*s,rlutcs:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
+      #rsns: # ceres Surf SW net all sky
+      ## derived: rsds:T2*s,rsus:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
+      #rlns: # ceres Surf LW net all sky
+      ## derived: rlds:T2*s,rlus:T2*s
+      #  preprocessor: pp_rad
+      #  mip: Amon
+      #  field: T2Ms
       rldscs: # jra Surf LW down clear sky
         preprocessor: pp_rad
         mip: Amon
@@ -107,5 +129,5 @@ diagnostics:
         title: "Autoassess Radiation RMS Amon All"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
-        analysis_type: zonal_mean  # one of: lat_lon, zonal_mean, vertical_mean
+        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
