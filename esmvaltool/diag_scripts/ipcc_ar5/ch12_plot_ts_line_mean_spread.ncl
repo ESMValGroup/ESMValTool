@@ -48,7 +48,7 @@
 load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
-
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
@@ -94,13 +94,13 @@ begin
   end if
 
   ; Basename of diag_script
-  diag_script_base = basename(diag_script)
+;  diag_script_base = basename(diag_script)
 
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
 
-  netcdf_dir = diag_script_info@input_files
+  netcdf_dir = diag_script_info@input_files(1)
 
   ; Output netcdf directory
   plot_dir = config_user_info@plot_dir
@@ -117,18 +117,18 @@ begin
   end if
   if(isatt(variable_info, "long_name")) then
     MyParam = variable_info@long_name
-    info_output(" MyParam = " + MyParam)
+    log_debug("MyParam = " + MyParam)
   else
     error_msg("f", diag_script, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
-  climofiles = new(dim_MOD, string)
-  do ii = 0, dim_MOD - 1
-    climofiles(ii) = \
-      interface_get_inpaths(ii) + "/" \
-      + interface_get_infile(variables(0), field_types(0), ii)
-  end do
+  ; climofiles = new(dim_MOD, string)
+  ; do ii = 0, dim_MOD - 1
+  ;   climofiles(ii) = \
+  ;     interface_get_inpaths(ii) + "/" \
+  ;     + interface_get_infile(variables(0), field_types(0), ii)
+  ; end do
 
   ; ###########################################
   ; # Get data                                #
@@ -153,7 +153,8 @@ begin
   outfile = var0 + "_" + syears(0) + "_" + eyears(nperiods - 1)
   wks = get_wks(0, diag_script, outfile)
   if(isatt(diag_script_info, "colormap")) then
-    colormap = RGBtoCmap(diag_script_info@colormap)
+    colormap = RGBtoCmap("./diag_scripts/shared/plot/rgb/" + \
+                         diag_script_info@colormap)
   else
     colormap = "StepSeq25"
   end if
@@ -265,8 +266,8 @@ begin
   draw(wks)
   frame(wks)
 
-  alltags = array_append_record(tags,\
-    (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
+;  alltags = array_append_record(tags,\
+;    (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
   string1 = "Time series of global annual mean  " + variable_info@long_name +\
             " anomalies (relative to " + dataset_info@start_year(0)+ "-" + \
             dataset_info@end_year(0) + ") from CMIP5 concentration drive " + \
@@ -290,12 +291,11 @@ begin
   id = diag_script + "_" + variables(0)
 
   contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-  ESMValMD(wks@fullname, alltags, \
-           caption, id, variables(0), dataset_info@dataset, \
-           climofiles, diag_script, contrib_authors)
+  ; ESMValMD(wks@fullname, alltags, \
+  ;          caption, id, variables(0), dataset_info@dataset, \
+  ;          climofiles, diag_script, contrib_authors)
 
-  delete([/alltags, caption, id, climofiles/])
+;  delete([/alltags, caption, id, climofiles/])
 
-  log_info(" Wrote " + plot_dir + "/" + diag_script + "/" + \
-                diag_script + "_" + outfile + "." + file_type)
+  log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
 end
