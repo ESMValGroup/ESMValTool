@@ -151,8 +151,6 @@ begin
   nperiods = dimsizes(syears)
   nyears = toint(eyears(nperiods - 1)) - toint(syears(0)) + 1
   nyearsp1 = toint(eyears(nperiods - 1)) - toint(eyears(0))
-  print(nyears)
-  print(nyearsp1)
   ; How many rcp2.6 model runs?
   ind_26 = ind(dataset_info@exp .eq. diag_script_info@scenarios(0))
   dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
@@ -223,8 +221,15 @@ begin
       data3_glob = coswgt_areaave(data3)
       dim_data3g = dimsizes(data3_glob)
       if (dim_data3g .ne. nyearsp1) then
-        data26_rel(i26, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
-        data26_rel(i26, dim_data3g :) =  data3_glob@_FillValue
+        if (dim_data3g .gt. nyearsp1) then
+          error_msg("w", diag_script, "", "Length of dataset " + \
+                    dataset_info@dataset(imod) + " in recipe is " + \
+                    "longer than period given in recipe (" + nyearsp1 + \
+                    " years)")
+        else
+          data26_rel(i26, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
+          data26_rel(i26, dim_data3g :) =  data3_glob@_FillValue
+        end if
       else
         data26_rel(i26, :) = data3_glob - ref_data2(imod)
       end if
@@ -251,8 +256,15 @@ begin
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
-          data45_rel(i45, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
-          data45_rel(i45, dim_data3g:) =  data3_glob@_FillValue
+          if (dim_data3g .gt. nyearsp1) then
+            error_msg("w", diag_script, "", "Length of dataset " + \
+                      dataset_info@dataset(imod) + " in recipe is " + \
+                      "longer than period given in recipe (" + nyearsp1 + \
+                      " years)")
+          else
+            data45_rel(i45, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
+            data45_rel(i45, dim_data3g:) =  data3_glob@_FillValue
+          end if
         else
           data45_rel(i45, :) = data3_glob - ref_data2(imod)
         end if
@@ -280,8 +292,15 @@ begin
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
-          data60_rel(i60, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
-          data60_rel(i60, dim_data3g :) =  data3_glob@_FillValue
+          if (dim_data3g .gt. nyearsp1) then
+            error_msg("w", diag_script, "", "Length of dataset " + \
+                      dataset_info@dataset(imod) + " in recipe is " + \
+                      "longer than period given in recipe (" + nyearsp1 + \
+                      " years)")
+          else
+            data60_rel(i60, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
+            data60_rel(i60, dim_data3g :) =  data3_glob@_FillValue
+          end if
         else
           data60_rel(i60, :) = data3_glob - ref_data2(imod)
         end if
@@ -309,8 +328,15 @@ begin
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
-          data85_rel(i85, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
-          data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
+          if (dim_data3g .gt. nyearsp1) then
+            error_msg("w", diag_script, "", "Length of dataset " + \
+                      dataset_info@dataset(imod) + " in recipe is " + \
+                      "longer than period given in recipe (" + nyearsp1 + \
+                      " years)")
+          else
+            data85_rel(i85, 0:dim_data3g - 1) = data3_glob - ref_data2(imod)
+            data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
+          end if
         else
           data85_rel(i85, :) = data3_glob - ref_data2(imod)
         end if
