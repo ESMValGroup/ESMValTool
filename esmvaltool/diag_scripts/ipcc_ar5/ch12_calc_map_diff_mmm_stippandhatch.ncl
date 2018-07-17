@@ -4,55 +4,20 @@
 ; CRESCENDO project
 ; #############################################################################
 ;
-; Description
-;    Annual mean or seasonal change in multi-model mean with signficance
-;    in different RCPs in different periods (e.g. 2046-65, 2081-2100 and
-;    2181-2200 with respect to 1986-2005)
-;
-; Required diag_script_info attributes (diagnostics specific)
-;    scenarios: list with scenarios to be included in the
-;               figure, e.g (/"rcp26","rcp45","rcp60","rcp85"/)
-;    periods: list with start years of periods to be included
-;    	       e.g. (/"2046","2081","2180"/)
-;    time_avg: seasonal or annual means, either (/"annualclim"/) or
-;              (/"seasonalclim"/)
-;    label: labels on top of each panel, e.g. scenario + rcp,
-;           loop to plot is seasons, scenarios, periods, needed to write
-;           metadata into netcdf
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    seasons: list with seasons index to be included if averagetime is
-;             "seasonalclim" (required for seasonalclim),
-;             DJF:0, MAM:1, JJA:2, SON:3
-;    iavmode: use IAV data from multi-model mean calculated by
-;             IAV_mmm_for_stippandhatch_ipcc12.ncl or include identical models
-;             to the ones plotted calculated for each model on native grid
-;             with IAV_for_stippandhatch_ipcc12.ncl default if not given is
-;             mmm, otherwise set iavmode = "each"
-;    grid:    grid for regridding (coarsest, finest, ref, 1x1, 2.5x2.5)
-;    percent: 0 or 1, difference in percent = 1, default = 0
-;;
-; Required variable_info attributes (variable specific)
-;    long_name: long name of variable
-;    units: variable units
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
 ; Caveats
 ;    Only handles one variable at a time. Appends multiple output variables
 ;    (variable to_plot, signficance to_plot_signif and not significant
 ;    to_plot_not_signif and number of model in mmm to model_nr)
 ;    to the same file, if the file already exists overwrites
-;;
+;
 ; Modification history
+;    20181307-A_lore_ru: Ported to version 2
 ;    20170120-A_lore_ru: separated plotting from calculations
 ;    20161027-A_lore_ru: added stippling and hatching for significance
 ;    20161024-A_lore_ru: adjusted to plot multiple figs with one diag script
 ;    20160621-A_lore_ru: adapted to ESMValTool
 ;    20130501-A_sedl_ja: written for IPCC AR5.
-;;
+;
 ; #############################################################################
 
 ; A temporary file written by the invoking Python script
@@ -86,12 +51,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
+  ; write_references(diag_script, \  ; script name
+  ;                  "A_lore_ru", \  ; authors
+  ;                  "", \  ; contributors
+  ;                  "D_collins13ipcc",    \  ; diag_references
+  ;                  "",          \  ; obs_references
+  ;                  "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
@@ -391,10 +356,11 @@ begin
     percent = diag_script_info@percent
     if (percent .eq. 1) then
       to_plot = 100 * to_plot / where(ref .ne. 0., ref, ref@_FillValue)
-      to_plot@units     = "%"
+      to_plot@var_units     = "%"
       delete(ref)
     end if
   end if
+
   ; ###########################################
   ; # Other Metadata: diag_script, var        #
   ; ###########################################
@@ -433,7 +399,9 @@ begin
       to_plot = to_plot / 100
       to_plot@var_units     = "hPa"
     else
-      to_plot@var_units     = variable_info@units
+      if (percent .ne. 1) then
+        to_plot@var_units     = variable_info@units
+      end if
     end if
     end if
     end if
