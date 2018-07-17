@@ -137,7 +137,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 # dict of model var-to-obs name
-VAR_DICT = {'pr': 'MPI-ESM-MR'}
+VAR_DICT = {'pr': 'MPI-ESM-MR',
+            'rlut': 'MPI-ESM-MR'}
 
 
 def apply_supermeans(cfg, ctrl, exper, obs):
@@ -164,31 +165,22 @@ def apply_supermeans(cfg, ctrl, exper, obs):
     return ctrl_cube, exper_cube, obs_cube
 
 
-def apply_rms(data_1, data_2, cfg, component_dict):
+def apply_rms(data_1, data_2, cfg, component_dict, var_name):
     """Compute RMS for any data1-2 combination"""
     data_names = [model['dataset'] for model in component_dict.values()]
-    plot_title = data_names[0] + ' vs ' + data_names[1]
+    plot_title = var_name + ': ' + data_names[0] + ' vs ' + data_names[1]
     rms_list = rms.start(data_names[0], data_names[1])
-    # key is a very weird pointer to the type of data operations
-    # that are done by rms.py (really badly coded this! -- by whoever
-    # wrote rms.py). Anyways, here is the explanation:
-    #         b = experiment minus control
-    #         c = control minus obs
-    #         d = experiment minus obs
-    # So, for now, we'll go with this 'lovely' operational identification:
-    if 'ctrl' and 'exper' in component_dict.keys():
-        key = 'b'
-    elif 'ctrl' and 'obs' in component_dict.keys():
-        key = 'c'
-    elif 'exper' and 'obs' in component_dict.keys():
-        key = 'd'
-    filename = data_names[0] + '_vs_' + data_names[1]
+    filename = var_name + '_' + data_names[0] + '_vs_' + data_names[1]
     analysis_type = cfg['analysis_type']
+    landsea_mask_file = os.path.join(os.path.dirname(__file__),
+                                     'autoassess_source',
+                                     cfg['landsea_mask'])
+    landsea_mask_cube = iris.load_cube(landsea_mask_file)
     data1_vs_data2 = vm.perform_equation(data_1, data_2, analysis_type)
 
     # apply rms
-    rms_float = rms.calc_all(rms_list, data1_vs_data2,
-                             key, plot_title, filename)
+    rms_float = rms.calc_all(rms_list, data1_vs_data2, landsea_mask_cube,
+                             plot_title, filename)
     rms.end(rms_list, cfg['work_dir'])
 
 
@@ -199,17 +191,6 @@ def main(cfg):
         os.makedirs(cfg['plot_dir'])
     if not os.path.exists(cfg['work_dir']):
         os.makedirs(cfg['work_dir'])
-
-
-    # Load some extra data needed for the grids and land fractions used in the RMS calculations
-    #print 'Loading supplementary data'
-    #extras_dict=vm.read_info_file(
-    #    os.path.join(
-    #        lib_dir,
-    #        'extras_file.dat'
-    #    )
-    #)
-    #vm.load_extra_data(extras_dict)
 
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(
@@ -260,20 +241,20 @@ def main(cfg):
             # ctrl-exper
             logger.info("Computing CONTROL-EXPERIMENT RMS...")
             apply_rms(ctrl_sm, exper_sm, cfg,
-                      data_component_dict['ct-ex'])
+                      data_component_dict['ct-ex'], short_name)
             # ctrl-obs
             logger.info("Computing CONTROL-OBS RMS...")
             apply_rms(ctrl_sm, obs_sm, cfg,
-                      data_component_dict['ct-obs'])
+                      data_component_dict['ct-obs'], short_name)
             # exper-obs
             logger.info("Computing EXPERIMENT-OBS RMS...")
             apply_rms(exper_sm, obs_sm, cfg,
-                      data_component_dict['ex-obs'])
+                      data_component_dict['ex-obs'], short_name)
         else:
             # only ctrl-exper
             logger.info("Computing CONTROL-EXPERIMENT RMS...")
             apply_rms(ctrl_sm, exper_sm, cfg,
-                      data_component_dict['ct-ex'])
+                      data_component_dict['ct-ex'], short_name)
 
 
 if __name__ == '__main__':

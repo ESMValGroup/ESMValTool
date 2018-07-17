@@ -15,207 +15,17 @@ import pickle
 import numpy as np
 import cf_units
 
-# **************** READ_CONTROL_FILE **********************
 
-def read_control_file(controlfile):
-    """Reads the control files and returns the data held in them in two nested dictionaries
-    """
-
-    # Initialise variables
-    in_sec=0
-    large_dict={}
-
-    # Open the file
-    f = open(controlfile, 'r')
-
-    # Read each line in turn
-    for line in f:
-
-        # Split it up into substrings and remove whitespace
-        line_split = string.split(line,':')
-        line_split = [s.replace('\n','') for s in line_split]
-        line_split_nw = [s.replace(' ','') for s in line_split]
-   
-        if len(line_split) > 1:
-        
-            # Ignore any lines beginning with hash
-            if line_split_nw[0][0] != '#':
-    
-                # Work out if we are at the start or end of a section
-                if line_split_nw[0] == 'start':
-                    in_sec=1
-                    section=line_split[1]
-                    setting_dict={}
-       
-                elif line_split_nw[0] == 'end':
-                    in_sec=0
-                    # Add to the large dictionary
-                    large_dict[section]=setting_dict
-       
-                else:
-                    if in_sec:
-      
-                        # Add to the small dictionary
-                        setting_dict[line_split_nw[0]]=line_split[1:]
-       
-    f.close()
-    return large_dict
-
-# **************** READ_INFO_FILE **********************
-   
-def read_info_file(infofile):
-    """Reads the info file and returns the data held in it as a single dictionary
-    """
-
-    # Initialise variables
-    info_dict={}
-   
-    # Read the valorder file as a csv file
-    f = csv.reader(open(infofile,'r'), delimiter=':')
-    for line in f:
-        
-        # Ignore any blank lines or those beginning with a hash
-        if len(line) > 0:
-            if line[0][0] != '#':
-                info_dict[line[0]]=line[1]
-      
-    return info_dict
-
-# **************** WRITE_INFO_FILE *****************
-
-def write_info_file(infofile, info_dict):
-    """Writes information to an info file.
-    
-    infofile=(string) a filename to hold this information. The final file will have
-             two columns of data: keys on the left and items on the right, separated
-             by a colon.
-    info_dict=(dictionary) the information to store in the file
-    """
-    
-    # Open a file ready for reading
-    f = open(infofile, 'w')
-    
-    # Loop over the info_dict
-    for info_key, info_item in info_dict.iteritems():
-        f.write(info_key+':'+info_item+'\n')
-        
-    f.close()
-    
-
-# **************** KEY_VALID **********************
-    
-def key_valid(info_key):
-    """Checks that info_key is a key that points to a file name"""
-    
-    acceptable_key_list=['djfm','mamm','jjam','sonm','annm','djfs','mams','jjas','sons','anns']
-    return info_key in acceptable_key_list
-
-# **************** LOAD_PICKLE **********************
-    
-def load_pickle(pickle_file):
-    """Loads from a pickle file"""
-    f=open(pickle_file)
-    cube_list=pickle.load(f)
-    f.close()
-    
-    return cube_list
-
-# **************** SAVE_PICKLE **********************
-    
-def save_pickle(cube_list, pickle_file):
-    """Saves to a pickle file"""
-    f=open(pickle_file, 'wb')
-    pickle.dump(cube_list, f)
-    f.close()
-   
-    
-# **************** SPLIT_EQUATION **********************
-   
-def split_equation(equation, n_underscores=0):
-    """Reads in an equation and returns the component parts
-    n_underscores = (int) number of underscores that the component needs to have in
-                    order for it to be a component.
-                    default = 0 (ignore this)
-    """
-      
-    # Initialise arrays
-    components=[]   
-    this_comp=''
-   
-    # Loop over each charactor and check for maths symbols. Append the strings to the components array.
-    for char in equation:
-        if char == '+' or char == '-' or char == '*' or char == '/' or char == '^' or char == '(' or char == ')':
-        
-            # If you have a decent length component append it to a list of components
-            if this_comp.replace(' ','') != '':
-        
-                # Components can't be purely numerical
-                try:
-                    this_comp_float=float(this_comp)
-                except ValueError:
-                    if n_underscores > 0:
-                        if this_comp.count('_') == n_underscores:
-                            components.append(this_comp.replace(' ',''))
-                    else:
-                        components.append(this_comp.replace(' ',''))
-            this_comp=''
-        else:
-            this_comp=this_comp+char
-            
-    if this_comp.replace(' ','') != '':
-
-        # Components can't be purely numerical
-        try:
-            this_comp_float=float(this_comp)
-        except ValueError:    
-            components.append(this_comp.replace(' ',''))   
-   
-    return components
-
-# **************** APPLY_HEAVYSIDE **********************
-
-def apply_heavyside(cube, heavyside_cube):
-    """Uses the heavyside to mask out points where the field is below ground level
-    
-    cube = the input field
-    heavyside_cube = the heavyside cube that contains 0 for data below ground, 1
-                     for data above ground and fractions for partial situations.
-    """
-    
-    mask = heavyside_cube.data <= 0.1
-    cube.data = numpy.ma.array(cube.data, mask=mask)
-    cube.data /= heavyside_cube.data
-    return cube
-    
-
-# **************** GET_CUBE_READY **********************
 
 def get_cube_ready(cube):
     """Sets up cubes ready for regridding, in the equation and for generating means"""
     
     # Remove unnecessary coordinates in cube
-    coords_list=['forecast_reference_time','forecast_period','source','season','time']     
-    for coord in coords_list:
-        try:
+    to_remove_list=['forecast_reference_time',
+                    'forecast_period','source','season','time']     
+    for coord in cube.coords():
+        if coord.name() in to_remove_list:
             cube.remove_coord(coord)
-        except iris.exceptions.CoordinateNotFoundError:
-            pass
-            
-    # Also make sure we are not using grid_longitude and grid_latitude
-    fix_coords(cube)
-    
-    # Test to see if the grid does not have a coordinate system (CERES-EBAF). If so fix it.
-    if cube.coord_system() == None:
-        cube = fix_cube(cube)
-    
-    # Test to see if the grid is a rotated coordinate system (HadSLP2). If so fix it.
-    if cube.coord_system() == iris.coord_systems.RotatedGeogCS(0.0, 0.0, ellipsoid=iris.coord_systems.GeogCS(6371229.0)):
-        cube = fix_cube(cube)
-
-    # Roll the cube
-    coords_list = [this_coord.name() for this_coord in cube.coords()]
-    if 'longitude' in coords_list or 'grid_longitude' in coords_list:
-        cube = roll_cube(cube)
         
     # Guess the bounds
     if not cube.coord(axis='x').has_bounds():
@@ -224,145 +34,7 @@ def get_cube_ready(cube):
         cube.coord(axis='y').guess_bounds() 
     
     return cube
-
-# **************** SAME_UNITS **************************
-
-def same_units(cube_dict):
-    """Make sure all the cubes in this dectionary have the same coordinates"""
-    
-    component_set=cube_dict.keys()
-    
-    first_unit=cube_dict[component_set[0]].units
-    
-    for comp in component_set: cube_dict[comp].units = first_unit
-        
-
-# **************** GET_COMPONENT_SET **********************
-
-def get_component_set(equation, n_underscores=0):
-    """Get a set of components used in this equation"""
-    
-    component_list=[]
-    for comp in split_equation(equation, n_underscores=n_underscores):
-        if comp != '': component_list.append(comp)
-    component_set = set(component_list)
-    
-    return component_set
-
-# ************* FIX_COORDS ************
-
-def fix_coords(incube):
-    """Makes so that all grid_longitude axes are renamed longitude
-    and all grid_latitude axes are renamed latitude.
-    
-    incube = input cube to fix
-    returned value = fixed cube
-    """
-    
-    dims=[cor.standard_name for cor in incube.coords()]
-    if 'grid_longitude' in dims: incube.coord('grid_longitude').standard_name = 'longitude'
-    if 'grid_latitude' in dims: incube.coord('grid_latitude').standard_name = 'latitude'
-    if u'longitude' in dims: incube.coord(u'longitude').standard_name = 'longitude'
-    if u'latitude' in dims: incube.coord(u'latitude').standard_name = 'latitude'    
-    
-    
-# **************** FIX_CUBE **********************
-
-def fix_cube(incube):
-    """Fixes this cube by putting it on a GeogCS coordinate system
-    with standard latitudes and longitudes.
-    
-    incube = input cube to fix
-    returned value = fixed cube
-    """
-
-    print('Incompatible coordinate system detected. Fixing cube.')
-    
-    # Generate new latitudes and longitudes on a GeogCS coordinate system
-    old_lats_dim = incube.coord(axis='y')
-    new_lats_dim = iris.coords.DimCoord(old_lats_dim.points, standard_name='latitude', units=cf_units.Unit('degrees'), coord_system=iris.coord_systems.GeogCS(6371229.0))
-    old_lons_dim = incube.coord(axis='x')
-    new_lons_dim = iris.coords.DimCoord(old_lons_dim.points, standard_name='longitude', units=cf_units.Unit('degrees'), coord_system=iris.coord_systems.GeogCS(6371229.0))
-
-    # Reshape the data to remove any extra, single length, dimensions.
-    reshaped_data = np.reshape(incube.data, (new_lats_dim.shape[0], new_lons_dim.shape[0]))
-
-    # Generate a new cube from the raw data and the new latitudes and longitudes
-    outcube = iris.cube.Cube(reshaped_data, dim_coords_and_dims=[(new_lats_dim, 0), (new_lons_dim, 1)])
-    
-    # Make sure we have the correct coordinate system
-    # outcube.coord(axis='x').coord_system = iris.coord_systems.GeogCS(6371229.0)
-    # outcube.coord(axis='y').coord_system = iris.coord_systems.GeogCS(6371229.0)
-    
-    return outcube
-
-    
-# **************** REGRID_CUBE **********************
-
-def regrid_cube(incube, newgrid, scheme_str='AreaWeighted'):
-    """Regrids a cube to a new grid, retaining missing data:
-    
-    incube = input cube to regrid
-    rewgrid = new grid cube
-    scheme_str = (string) The scheme by which to do the regridding. One of:
-       'AreaWeighted' = Use the area weighted scheme (default)
-       'Linear' = Use a linear interpolation scheme
-    """    
-                
-    # Assign the area weighted scheme for regridding
-    if scheme_str == 'AreaWeighted': scheme = iris.analysis.AreaWeighted(mdtol=0.5)
-    elif scheme_str == 'Linear': scheme = iris.analysis.Linear()
-    else: print('ERROR in valmod.regrid_cube: scheme_str value of ',scheme_str,' not supported')
-    
-    # Regrid the cube
-
-    try:
-        regrided_cube = incube.regrid(newgrid, scheme)
-    except:
-        print("ERROR: Cubes are not compatible for regridding.")
-        print("ERROR: ", sys.exc_info())
-        if globalvar.debug:
-            pdb.set_trace()     
-        else:
-            globalvar.error=True
-            return 1
-
-    return regrided_cube
-    
-# **************** ROLL_CUBE *************************
-
-def roll_cube(cube, start_longitude=-180.0):
-    """Rolls the cube so that it starts from 180W and goes to 180E (instead of from 0E to 360E).
-    
-    cube = input cube that you wish to alter.
-    start_longitude = destination starting longitude. Default is -180 (180W).
-    """
-    
-    # Work out how much to shift the longitude axis by
-    start_longitude_old = cube.coord(axis='x').points[0]
-    degrees_to_shift = start_longitude - start_longitude_old
-    fraction_to_shift = degrees_to_shift/360.0
-    
-    # However in reality we can only shift by a whole number of grid boxes.
-    # Work out how many grid boxes to shift by
-    long_axis = cube.coord_dims(cube.coord(axis='x'))[0]
-    number_boxes_to_shift = int(cube.shape[long_axis]*fraction_to_shift)
-    
-    # Correct the degrees_to_shift to match number_boxes_to_shift
-    degrees_to_shift = 360.0 * number_boxes_to_shift/float(cube.shape[long_axis])
-    
-    # Roll the data
-    cube.data = numpy.roll(cube.data, number_boxes_to_shift, axis=long_axis)
-    
-    # Roll the coordinates
-    cube.coord(axis='x').points = cube.coord(axis='x').points+degrees_to_shift
-    
-    # Roll the bounds
-    if cube.coord(axis='x').has_bounds(): cube.coord(axis='x').bounds = cube.coord(axis='x').bounds+degrees_to_shift
-    
-    return cube
-
-# **************** AREA_AVG **************************
+ 
 
 def area_avg(cube, coord1=None, coord2=None):
     """Perform an area average of a cube using weights to account for
@@ -389,8 +61,7 @@ def add_colorbar(mappable,units=None):
     if not globalvar.pub and 'units' in locals(): cb.set_label(units)
 
     return cb
-    
-# **************** LatsFormatter **********************
+
 
 class LatsFormatter(matplotlib.ticker.Formatter):
     """
@@ -399,8 +70,7 @@ class LatsFormatter(matplotlib.ticker.Formatter):
     def __call__(self, x, pos=None):
         letter = 'S' if x < 0 else 'N' 
         return u"%d%s" % (abs(x), letter)
-        
-# **************** LonsFormatter **********************
+
 
 class LonsFormatter(matplotlib.ticker.Formatter):
     """
@@ -409,8 +79,7 @@ class LonsFormatter(matplotlib.ticker.Formatter):
     def __call__(self, x, pos=None):
         letter = 'W' if x < 0 else 'E' 
         return u"%d%s" % (abs(x), letter)
-        
-# **************** ValError ************************
+
                     
 class ValError(Exception):
     """
@@ -421,8 +90,7 @@ class ValError(Exception):
         print(value)
     def __str__(self):
         return repr(self.value)
-        
-# **************** MAKE_CMAP ***************************
+
 
 def make_cmap(red_list, green_list, blue_list):
     """
@@ -464,7 +132,6 @@ def make_cmap(red_list, green_list, blue_list):
     
     return cmap
 
-# ************** FILE_NAME ************************
 
 def file_name(page_num,page_title):
     """ Make a file name derived from the page number and page title.
@@ -485,21 +152,6 @@ def file_name(page_num,page_title):
         filename=page_num+'_'+page_title+'.png'
     return filename
 
-# ************* MK_TEMP ******************
-
-def mk_temp():
-    """ Make a temporary directory on your local disk to store pkl files and
-    page titles. 
-    
-    returned_value = full path to temporary directory.
-    """
-
-    localdata=os.getenv('LOCALDATA')
-    temp_dir=os.path.join(localdata,'valnote_temp')
-    if not os.path.exists(temp_dir): os.mkdir(temp_dir)
-    return(temp_dir)
-
-# ************* EXTRACT_NO_DIURNAL ******************
 
 def extract_no_diurnal(all_data_cube, all_constraints=None):
     """ Extracts one cube from all_data_cube based on the constraints provided.
@@ -623,19 +275,6 @@ def extract_no_diurnal(all_data_cube, all_constraints=None):
     
     return output_cube
 
-# **************** LOAD_EXTRA_DATA **********************
-    
-def load_extra_data(extras_dict):
-    """Loads in extra data, such as land-sea masks, into a dictionary"""
-    
-    # Initialise variable
-    globalvar.extra_data_dict={}
-    print('The line of globalvar.extra_data_dict={}', globalvar.extra_data_dict)
-    for key in extras_dict.iterkeys():
-
-        globalvar.extra_data_dict[key] = iris.load_cube(extras_dict[key])
-        globalvar.extra_data_dict[key] = get_cube_ready(globalvar.extra_data_dict[key])
-
 
 def perform_equation(dataset_1, dataset_2, analysis_type):
     """
@@ -658,8 +297,11 @@ def perform_equation(dataset_1, dataset_2, analysis_type):
                                                    iris.analysis.MEAN)
         dataset_2_mean = dataset_2_ready.collapsed('pressure',
                                                    iris.analysis.MEAN)
+    elif analysis_type == 'lat_lon':
+        dataset_1_mean = dataset_1_ready
+        dataset_2_mean = dataset_2_ready
 
-    # Perform difference
+    # Perform simple difference
     toplot_cube = dataset_1_mean - dataset_2_mean
     
     return toplot_cube

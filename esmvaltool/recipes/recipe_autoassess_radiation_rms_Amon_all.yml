@@ -99,10 +99,13 @@ diagnostics:
       # - {dataset: SSMI-MERIS,  project: obs4mips,  type: L3,  version: v1-00,  start_year: 2003,  end_year: 2008, tier: Tier1}
       # xml entry: obs4mips GPCP-SG L3 v2.2 2001 2009
       # - {dataset: GPCP-SG,  project: obs4mips,  type: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: Tier1}
+      # for testing only
+      - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
     scripts:
       autoassess_Radiation_rms_Amon_all:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
-        analysis_type: zonal_mean
+        analysis_type: zonal_mean  # one of: lat_lon, zonal_mean, vertical_mean
+        landsea_mask: landsea.nc

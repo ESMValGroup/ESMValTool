@@ -29,8 +29,6 @@ class rms_list_class(list):
             super(rms_list_class, self).__init__(args[0])
 
     def __repr__(self):
-        # This defines how this class is shown on the screen if you print it
-        # See http://stackoverflow.com/questions/1535327/python-how-to-print-a-class-or-objects-of-class-using-print
         rms_out = "["
         for rms_item in self:
             rms_out += "rms.rms_class for "+rms_item.region+", \n"
@@ -40,9 +38,6 @@ class rms_list_class(list):
         return rms_out
 
     def __call__(self, region=False):
-        # This is what happens when this is called.
-        # Return an rms item that matches the region requested.
-        # http://www.rafekettler.com/magicmethods.html
         rms_found = False
         region_list = []
         for rms_item in self:
@@ -53,7 +48,7 @@ class rms_list_class(list):
                     rms_found = True
         if not region:
             logger.warning(
-                "Please supply a region using the region='xxxx' input. " + \
+                "Please supply a region using the region='xxx' input. " + \
                 "Available regions are:"
             )
         elif not rms_found:
@@ -62,7 +57,7 @@ class rms_list_class(list):
                 "regions are:".format(region)
             )
         if not rms_found:
-            print(region_list)
+            logger.error(region_list)
             raise Exception
         return rms_returned
 
@@ -126,22 +121,6 @@ class rms_class:
         # Make a blank dictionary to store the values
         self.data_dict = {}
 
-        # What is the filename
-        # filename = 'summary_'+region+'.csv'
-
-        # Open a file
-        # self.file_unit = open('/data/local2/hadco/temp/'+filename, 'w')
-        # self.csv_writer = csv.writer(self.file_unit, delimiter=',')
-
-        # Write out the header to the csv file
-        # header=['Description',
-        #         'RMS1 (expt:'+exper+' vs control:'+control+')',
-        #         'RMS2 (control:'+control+' vs obs)',
-        #         'RMS3 (expt:'+exper+' vs obs)']
-        # self.csv_writer.writerow(header)
-
-    # **************** Other class defined functions ****************
-
     # Allow iterations over this
     def __iter__(self):
         return(self)
@@ -151,36 +130,11 @@ class rms_class:
         rms_out = "rms.rms_class for {0}".format(self.region)
         return rms_out
 
-    # This defines what it returns if you call this class
-    def __call__(self, description=None, letter=None):
-        if letter:
-            index_value = ord(letter)-ord(globalvar.rms_first_letter)+1
-        if description and letter:
-            return self.data_dict[description][index_value]
-        elif description:
-            rms_dict = {}
-            for index in range(len(self.data_dict[description])-1):
-                indexp1 = index+1
-                this_letter = chr(index+ord(globalvar.rms_first_letter))
-                rms_dict[this_letter] = self.data_dict[description][indexp1]
-            return rms_dict
-        elif letter:
-            rms_dict = {}
-            for description, rms_values in self.data_dict.iteritems():
-                rms_dict[description] = rms_values[index_value]
-            return rms_dict
-        else:
-            print("Please call rms.rms_class with either description or " + \
-                  "letter inputs. e.g. my_rms_class(description='TOA " + \
-                  "longwave vs EBAF', letter='a') or my_rms_class" + \
-                  "(description='TOA longwave vs EBAF') or " + \
-                  "my_rms_class(letter='a')")
-            raise Exception
-
-    def calc(self, toplot_cube):
+    def calc(self, toplot_cube, mask_cube):
         """Calculate the rms value of a cube for this region.
 
         toplot_cube = (cube) cube that is to be plotted
+        mask_cube = (cube) the mask to be applied (land/sea)
         """
 
         # Make a copy of the input cube
@@ -201,51 +155,16 @@ class rms_class:
 
         # Apply the mask but only for lat_lon plots
         if hasattr(self, 'mask_end'):
-
             if plot_type == 'lat_lon':
-
-                # What resultion mask should we be using
-                #if working_cube.shape[1]/2 > 364:
-                #    mask_key = 'n512_'+self.mask_end
-                #elif working_cube.shape[1]/2 > 156:
-                #    mask_key = 'n216_'+self.mask_end
-                #elif working_cube.shape[1]/2 > 72:
-                #    mask_key = 'n96_'+self.mask_end
-                #else:
-                #    mask_key = 'n48_'+self.mask_end
-
-                # Extract the mask from the extra data dictionary
-                #mask_cube = globalvar.extra_data_dict[mask_key]
-                mask_cube = globalvar.extra_data_dict['1deg_1deg_landsea_frac']
-
-                # Roll the mask
-                mask_cube = vm.roll_cube(mask_cube)
-
-                # Is the mask in need of regridding. If so regrid the mask.
-                if mask_cube.shape != toplot_cube.shape:
-                    if not mask_cube.coord(axis='x').has_bounds():
-                        mask_cube.coord(axis='x').guess_bounds()
-                    if not mask_cube.coord(axis='y').has_bounds():
-                        mask_cube.coord(axis='y').guess_bounds()
-                    mask_cube = vm.regrid_cube(mask_cube, working_cube,
-                                               scheme_str='Linear')
-
                 # Apply the mask
-                try:
-                    working_cube.data = \
-                        ma.masked_array(working_cube.data,
-                                        mask=(mask_cube.data > 0.5))
-                except:
-                    print('ERROR: Failed to assign mask')
-                    if globalvar.debug:
-                        pdb.set_trace()
-                    else:
-                        return globalvar.missing_data
+                working_cube.data = \
+                    ma.masked_array(working_cube.data,
+                                    mask=(mask_cube.data > 0.5))
 
             else:
-                # If there is a mask but we are using zonal mean or meridional
-                # mean data then just return missing data
-                return working_cube
+                # If there is a mask but we are using zonal
+                # mean or meridional mean, return missing
+                return 1e+20
 
         # Extract a region
         if hasattr(self, 'region_bounds'):
@@ -269,7 +188,7 @@ class rms_class:
         if hasattr(working_cube.data, 'compressed'):
             amount_of_data = len(working_cube.data.compressed())
         if amount_of_data == 0:
-            rms_float = globalvar.missing_data
+            rms_float = 1e+20
         else:
             logger.info('Calculating RMS for %s', self.region)
 
@@ -286,36 +205,31 @@ class rms_class:
 
         return rms_float
 
-    def calc_wrapper(self, toplot_cube, page_title,
+    def calc_wrapper(self, toplot_cube, mask_cube, page_title,
                      filename='no plot available'):
         """
-        Gets the RMS value and adds it to its own data array.
+        Get the RMS value and adds it to its own data array.
 
         toplot_cube = (cube) cube that is to be plotted
+        mask_cube = (cube) mask land/sea
         page_title = (str) the page title for this plot
         filename = (str) the filename of the corresponding png plot.
         """
 
-        rms_float = self.calc(toplot_cube)
+        rms_float = self.calc(toplot_cube, mask_cube)
         self.data_dict[page_title] = []
         if rms_float:
             self.data_dict[page_title].append(rms_float)
         return rms_float
 
-    def add(self, letter, page_title, rms_float):
-        filename = 'blank'
-        if letter == globalvar.rms_first_letter:
-            self.data_dict[page_title] = [filename]
-        self.data_dict[page_title].append(rms_float)
 
     def tofile(self, csv_dir):
         """Output all the RMS statistics to csv files"""
         csv_file = 'summary_' + self.region + '_RMS_' + self.exper + '.csv'
         csv_path = os.path.join(csv_dir, csv_file)
-        with open(csv_path, 'w') as f:
+        with open(csv_path, 'a') as f:
             for page_title, rms_list in self.data_dict.items():
-                print(page_title, rms_list)
-                f.write('{0}, '.format(page_title))
+                f.write('{0}: '.format(page_title))
                 for rms_val in rms_list:
                     f.write('{0}'.format(str(rms_val)))
                     f.write('\n')
@@ -362,7 +276,7 @@ def start(exper='experiment', control='control'):
     return rms_list
 
 
-def calc_all(rms_list, toplot_cube, letter, page_title,
+def calc_all(rms_list, toplot_cube, mask_cube, page_title,
              filename='no plot available'):
     """
     Loop through all the regions, calculating rms values and storing
@@ -371,10 +285,6 @@ def calc_all(rms_list, toplot_cube, letter, page_title,
     rms_list = list of rms classes that stores all the information to do
                with the rms regions and the resulting answers.
     toplot_cube = (cube) cube that is to be plotted
-    letter = (str) letter number of this plot on the page.
-             b = experiment minus control
-             c = control minus obs
-             d = experiment minus obs
     page_title = (str) the page title for this plot
     filename = (str) the filename of the png plot
     """
@@ -383,21 +293,12 @@ def calc_all(rms_list, toplot_cube, letter, page_title,
     rms_float_list = []
     n_rms = len(rms_list)
     for i in range(n_rms):
-        rms_float = rms_list[i].calc_wrapper(toplot_cube, page_title,
-                                             filename=filename)
+        rms_float = rms_list[i].calc_wrapper(toplot_cube, mask_cube,
+                                             page_title, filename=filename)
         rms_float_list.append(rms_float)
 
     # Return the global rms value
     return rms_float_list[0]
-
-
-def add_example(rms_list, letter, page_title):
-    """Example code to add numbers to your rms_list"""
-    n_rms = len(rms_list)
-    rms_float = 1.2
-    for i in range(n_rms):
-        rms_list[i].add(letter, page_title, rms_float)
-        rms_float = rms_float+1.0
 
 
 def end(rms_list, csv_dir):
