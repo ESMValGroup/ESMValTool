@@ -157,30 +157,22 @@ begin
   months = diag_script_info@months
   dim_SEAS = dimsizes(months)
 
-  ; we need to calculate the snow area using sftgif
-  ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+  ; we need to calculate the snow area using sftgif and sftlf
   list_sftgif = read_fx_data(imod, "sftgif")
   var_idx = ListIndexFromName(list_sftgif, "sftgif")
   land_ice_sftgif = list_sftgif[var_idx] 
-  sftgif_0 = land_ice_sftgif * (- 0.01)
-  sftgif_1 = sftgif_0 + 1
 
   ; read sftlf (land sea mask)
   list_sftlf = read_fx_data(imod, "sftlf")
   var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
   land_sea_sftlf = list_sftlf[var_idx2]
-  sftifl = sftgif_1 * land_sea_sftlf
+  sftifl = land_sea_sftlf - land_ice_sftgif
   delete([/var_idx, var_idx2/])
 
-  ; date    = cd_calendar(A0&time, 0)
-  ; years = date(:, 0)
-  ; nyears = dimsizes(years)
-  ; nlat = dimsizes(A0&lat)
-  ; nlon = dimsizes(A0&lon)
   sftifl_conf = conform(A0, sftifl, (/1, 2/))
-  tmp2 = (A0 * sftifl_conf) / 100
+  tmp2 = (A0 * sftifl_conf) / 100  ; sftifl in percent -> / 100
   ; where > 5
-  tmp3 = where(tmp2 .gt. 5., tmp2, land_ice_sftgif@_FillValue)
+  tmp3 = where(tmp2 .gt. 5., 1.0, 0)
   ; Add coordinates
   copy_VarCoords(A0, tmp3)
   ; Average over globe/region
@@ -225,28 +217,28 @@ begin
   dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
   ; indicate array for scenarios
   data26_rel = new((/dim_MOD_26, nyearsp1/), float, \
-                   data2_glob@_FillValue)
+                   A0@_FillValue)
 
   if (dim_scen .gt. 1) then
     ; How many model runs in 2nd sceanrio?
     ind_45 = ind(dataset_info@exp .eq. diag_script_info@scenarios(1))
     dim_MOD_45 = dimsizes(dataset_info@dataset(ind_45))
     data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
-                     data2_glob@_FillValue)
+                     A0@_FillValue)
   end if
   if (dim_scen .gt. 2) then                   
     ; How many model runs in 3rd scenario?
     ind_60 = ind(dataset_info@exp .eq. diag_script_info@scenarios(2))
     dim_MOD_60 = dimsizes(dataset_info@dataset(ind_60))
     data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
-                     data2_glob@_FillValue)
+                     A0@_FillValue)
   end if
   if (dim_scen .gt. 3) then                   
     ; How many model runs in 4th scenario?
     ind_85 = ind(dataset_info@exp .eq. diag_script_info@scenarios(3))
     dim_MOD_85 = dimsizes(dataset_info@dataset(ind_85))
     data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
-                     data2_glob@_FillValue)
+                     A0@_FillValue)
   end if
   i = 0
   i26 = 0
@@ -258,25 +250,22 @@ begin
       delete(A0)
     else
       A0 = read_data(imod, var0, field_type0)
-      ; we need to calculate the snow area using sftgif
-      ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+      ; we need to calculate the snow area using sftgif (glacier) and sftlf
       list_sftgif = read_fx_data(imod, "sftgif")
       var_idx = ListIndexFromName(list_sftgif, "sftgif")
       land_ice_sftgif = list_sftgif[var_idx] 
-      sftgif_0 = land_ice_sftgif * (- 0.01)
-      sftgif_1 = sftgif_0 + 1
 
       ; read sftlf (land sea mask)
       list_sftlf = read_fx_data(imod, "sftlf")
       var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
       land_sea_sftlf = list_sftlf[var_idx2]
-      sftifl = sftgif_1 * land_sea_sftlf
+      sftifl = land_sea_sftlf - land_ice_sftgif
       delete([/var_idx, var_idx2/])
 
       sftifl_conf = conform(A0, sftifl, (/1, 2/))
       tmp2 = (A0 * sftifl_conf) / 100
-      ; where > 5
-      tmp3 = where(tmp2 .gt. 5., tmp2, land_ice_sftgif@_FillValue)
+      ; where > 5 kg m**-2 considered snow covered
+      tmp3 = where(tmp2 .gt. 5., 1., 0)
       ; Add coordinates
       copy_VarCoords(A0, tmp3)
       ; Average over globe/region
@@ -302,10 +291,11 @@ begin
     ind_start = ind(data2_glob&year .eq. diag_script_info@begin_ref_year)
     ind_end = ind(data2_glob&year .eq. diag_script_info@end_ref_year)
     ref_data2(imod) = dim_avg(data2_glob(ind_start : ind_end))
+    print(ref_data2(imod))
     dim_data2g = dimsizes(data2_glob)
     if (dim_data2g .ne. dim_file(0)) then
       tdiff = dim_file(0) - dim_data2g
-      data2_rel(imod, 0 : tdiff - 1) = data2_glob@_FillValue
+      data2_rel(imod, 0 : tdiff - 1) = data2_rel@_FillValue
       data2_rel(imod, tdiff :) =  (data2_glob / ref_data2(imod)) - 1
     else
       data2_rel(imod, :) = (data2_glob / ref_data2(imod)) - 1
@@ -320,24 +310,21 @@ begin
                     dataset_info@ensemble .eq. dataset_info@ensemble(imod))
       if (.not.all(ismissing(imodrcp))) then
         A1 = read_data(imodrcp, var0, field_type0)
-        ; we need to calculate the snow area using sftgif
-        ; and sftlf, sftgif_0 = sftgif * (- 0.01)
+        ; we need to calculate the snow area using sftgif (glacier) and sftlf
         list_sftgif = read_fx_data(imodrcp, "sftgif")
         var_idx = ListIndexFromName(list_sftgif, "sftgif")
         land_ice_sftgif = list_sftgif[var_idx] 
-        sftgif_0 = land_ice_sftgif * (- 0.01)
-        sftgif_1 = sftgif_0 + 1
 
         ; read sftlf (land sea mask)
         list_sftlf = read_fx_data(imodrcp, "sftlf")
         var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
         land_sea_sftlf = list_sftlf[var_idx2]
-        sftifl = sftgif_1 * land_sea_sftlf
+        sftifl = land_sea_sftlf - land_ice_sftgif ; land areas without glaciers
         delete([/var_idx, var_idx2/])
         sftifl_conf = conform(A1, sftifl, (/1, 2/))
-        tmp2 = (A1 * sftifl_conf) / 100
-        ; where > 5
-        tmp3 = where(tmp2 .gt. 5., tmp2, A1@_FillValue)
+        tmp2 = (A1 * sftifl_conf) / 100  ; sftifl in percent -> / 100
+        ; where > 5 kg m**-2 considered snow covered
+        tmp3 = where(tmp2 .gt. 5., 1., 0)
         ; Add coordinates
         copy_VarCoords(A1, tmp3)
         ; Average over globe/region
@@ -357,6 +344,7 @@ begin
         tmp5&time = A1&time
         tmp6 = extract_season(tmp5, months)
         data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
+        printMinMax(data2_glob, True)
         delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf/])
 	dim_data2g = dimsizes(data2_glob)
 	if (s .eq. 0) then
@@ -369,7 +357,7 @@ begin
             else
               data26_rel(i26, 0 : dim_data2g - 1) = \
                 (data2_glob / ref_data2(imod)) - 1
-                data26_rel(i26, dim_data2g :) =  data2_glob@_FillValue
+                data26_rel(i26, dim_data2g :) = data26_rel@_FillValue
             end if
           else
             data26_rel(i26, :) = (data2_glob / ref_data2(imod)) - 1
@@ -386,7 +374,7 @@ begin
             else
               data45_rel(i45, 0 : dim_data2g - 1) = \
                 (data2_glob / ref_data2(imod)) - 1
-              data45_rel(i45, dim_data2g:) =  data2_glob@_FillValue
+              data45_rel(i45, dim_data2g:) =  data45_rel@_FillValue
             end if
           else
             data45_rel(i45, :) = (data2_glob / ref_data2(imod)) - 1
@@ -403,7 +391,7 @@ begin
             else
               data60_rel(i60, 0 : dim_data2g - 1) = \
                 (data2_glob / ref_data2(imod)) - 1
-              data60_rel(i60, dim_data2g:) =  data2_glob@_FillValue
+              data60_rel(i60, dim_data2g:) =  data60_rel@_FillValue
             end if
           else
             data60_rel(i60, :) = (data2_glob / ref_data2(imod)) - 1
@@ -420,7 +408,7 @@ begin
             else
               data85_rel(i85, 0 : dim_data2g - 1) = \
                 (data2_glob / ref_data2(imod)) - 1
-              data85_rel(i85, dim_data2g :) = data2_glob@_FillValue
+              data85_rel(i85, dim_data2g :) = data85_rel@_FillValue
             end if
           else
             data85_rel(i85, :) = (data2_glob / ref_data2(imod)) - 1
@@ -432,7 +420,7 @@ begin
       end if
       delete(imodrcp)
     end do  ; scenario
-    delete([/land_ice_sftgif, sftgif_0, sftgif_1, land_sea_sftlf, sftifl/])
+    delete([/land_ice_sftgif, land_sea_sftlf, sftifl/]) 
   end do  ; imod
 
   ; average and standard deviation over all datasets
@@ -566,7 +554,6 @@ begin
   ; ###########################################
   ; Output (controlled by diag_script_info)
   to_plot@ncdf = variable_info@diagnostic + ".nc"
-
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ;; Function in ~/interface_scripts/auxiliary.ncl
