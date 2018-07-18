@@ -149,17 +149,28 @@ def get_representant(cube, ref_to_slice):
 
 def build_regridder(src_rep, dst_rep, method):
     regrid_method = ESMF_REGRID_METHODS[method]
-    dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
     if src_rep.ndim == 2:
-        src_fields = [cube_to_empty_field(src_rep)]
-        esmf_regridders = [
-            ESMF.Regrid(src_fields[0], dst_field,
-                        regrid_method=regrid_method,
-                        src_mask_values=np.array([1]),
-                        unmapped_action=ESMF.UnmappedAction.IGNORE,
-                        ignore_degenerate=True)
-        ]
+        dst_field = cube_to_empty_field(dst_rep, remove_mask=True)
+        src_field = cube_to_empty_field(src_rep)
+        esmf_regridder = ESMF.Regrid(
+            src_field, dst_field,
+            regrid_method=regrid_method,
+            src_mask_values=np.array([1]),
+            unmapped_action=ESMF.UnmappedAction.IGNORE,
+            ignore_degenerate=True
+        )
+
+        def regridder(src):
+            res_data = np.empty(dst_rep.shape)
+            res_mask = np.empty(dst_rep.shape, dtype=bool)
+            res = np.ma.masked_array(res_data, res_mask)
+            src_field.data[...] = src.data.data.T
+            regr_field = esmf_regridder(src_field, dst_field)
+            res.data[...] = regr_field.data[...].T
+            res.mask[...] = res.data[...] == 0.
+            return res
     elif src_rep.ndim == 3:
+        dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
         src_fields = []
         esmf_regridders = []
         no_levels = src_rep.shape[0]
@@ -173,18 +184,18 @@ def build_regridder(src_rep, dst_rep, method):
                             unmapped_action=ESMF.UnmappedAction.IGNORE,
                             ignore_degenerate=True)
             )
-    dst_shape = dst_rep.shape
 
-    def regridder(src):
-        res_data = np.empty(dst_shape)
-        res_mask = np.empty(dst_shape, dtype=bool)
-        res = np.ma.masked_array(res_data, res_mask)
-        for i, (src_field, esmf_regridder) in enumerate(zip(src_fields, esmf_regridders)):
-            src_field.data[...] = src[i].data.data.T
-            regr_field = esmf_regridder(src_field, dst_field)
-            res.data[i, ...] = regr_field.data[...].T
-            res.mask[i, ...] = res.data[i, ...] == 0.
-        return res
+        def regridder(src):
+            res_data = np.empty(dst_rep.shape)
+            res_mask = np.empty(dst_rep.shape, dtype=bool)
+            res = np.ma.masked_array(res_data, res_mask)
+            for i, (src_field, esmf_regridder) \
+                    in enumerate(zip(src_fields, esmf_regridders)):
+                src_field.data[...] = src[i].data.data.T
+                regr_field = esmf_regridder(src_field, dst_field)
+                res.data[i, ...] = regr_field.data[...].T
+                res.mask[i, ...] = res.data[i, ...] == 0.
+            return res
     return regridder
 
 
@@ -208,8 +219,13 @@ def get_grid_representant(cube, horizontal_only=False):
 def get_grid_representants(src, dst):
     src_rep = get_grid_representant(src)
     dst_horiz_rep = get_grid_representant(dst, horizontal_only=True)
-    dst_shape = (src_rep.shape[0],) + dst_horiz_rep.shape
-    dim_coords = [src_rep.coord(dimensions=[0], dim_coords=True)]
+    if src_rep.ndim == 3:
+        dst_shape = (src_rep.shape[0],)
+        dim_coords = [src_rep.coord(dimensions=[0], dim_coords=True)]
+    else:
+        dst_shape = tuple()
+        dim_coords = []
+    dst_shape += dst_horiz_rep.shape
     dim_coords += dst_horiz_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst_rep = iris.cube.Cube(
