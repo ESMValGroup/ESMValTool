@@ -12,6 +12,11 @@ from scipy import constants
 
 logger = logging.getLogger(__name__)
 
+# TODO: @valeriupredoi implemented variables --
+# TODO: remove this comment block after variable derivation check
+# TODO: to be checked by @mattiarighi, ti prego :)
+# TODO: autoassess rms Amon vars implemented: [rtnt, rsnt, rsns, rlns]
+
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
@@ -43,6 +48,30 @@ def get_required(short_name, field=None):
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
         ],
+        # TODO: @mattiarighi - check here
+        # info taken from v1 variable_defs/
+        # [rtnt, rsnt, rsns, rlns]
+        # rtnt: rsdt:T2*s,rsut:T2*s,rlut:T2*s
+        # rsnt: rsdt:T2*s,rsut:T2*s
+        # rsns: rsds:T2*s,rsus:T2*s
+        # rlns: rlds:T2*s,rlus:T2*s
+        'rtnt': [
+            ('rsdt', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+            ('rlut', 'T2' + frequency + 's')
+        ],
+        'rsnt': [
+            ('rsdt', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+        ],
+        'rsns': [
+            ('rsds', 'T2' + frequency + 's'),
+            ('rsus', 'T2' + frequency + 's'),
+        ],
+        'rlns': [
+            ('rlds', 'T2' + frequency + 's'),
+            ('rlus', 'T2' + frequency + 's'),
+        ]
     }
 
     if short_name in required:
@@ -64,6 +93,10 @@ def derive(cubes, variable):
         'lwp': calc_lwp,
         'swcre': calc_swcre,
         'toz': calc_toz,
+        'rtnt': calc_rtnt,
+        'rsnt': calc_rsnt,
+        'rsns': calc_rsns,
+        'rlns': calc_rlns
     }
 
     if short_name not in functions:
@@ -214,6 +247,119 @@ def calc_toz(cubes):
     toz.convert_units(Dobson_unit)
 
     return toz
+
+
+# TODO @mattiarighi -- check rtnt
+def calc_rtnt(cubes):
+    """Compute rtnt: TOA Net downward Total Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing rsut (toa_outgoing_shortwave_flux) and
+               rsdt (toa_incoming_shortwave_flux) and
+               rlut (toa_outgoing_longwave_flux).
+
+    Returns
+    -------
+        Cube containing TOA Net downward Total Radiation.
+        Units: W m-2
+
+    """
+    rsdt_cube = cubes.extract_strict(
+        Constraint(name='toa_incoming_shortwave_flux'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+    rlut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux'))
+
+    # rtnt = (rsdt - rsut) - rlut
+    rtnt = rsdt_cube - rsut_cube - rlut_cube
+    rtnt.units = rlut_cube.units
+
+    return rtnt
+
+
+# TODO @mattiarighi -- check rsnt
+def calc_rsnt(cubes):
+    """Compute rsnt: TOA Net downward Shortwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing rsut (toa_outgoing_shortwave_flux) and
+               rsdt (toa_incoming_shortwave_flux).
+
+    Returns
+    -------
+        Cube containing TOA Net downward Shortwave Radiation.
+        Units: W m-2
+
+    """
+    rsdt_cube = cubes.extract_strict(
+        Constraint(name='toa_incoming_shortwave_flux'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+
+    # rsnt = rsdt - rsut
+    rsnt = rsdt_cube - rsut_cube
+    rsnt.units = rsut_cube.units
+
+    return rsnt
+
+
+# TODO @mattiarighi -- check rsns
+def calc_rsns(cubes):
+    """Compute rsns: Surface Net downward Shortwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               rsus (surface_upwelling_shortwave_flux_in_air) and
+               rsds (surface_downwelling_shortwave_flux_in_air).
+
+    Returns
+    -------
+        Cube containing Surface Net downward Shortwave Radiation.
+        Units: W m-2
+
+    """
+    rsds_cube = cubes.extract_strict(
+        Constraint(name='surface_downwelling_shortwave_flux_in_air'))
+    rsus_cube = cubes.extract_strict(
+        Constraint(name='surface_upwelling_shortwave_flux_in_air'))
+
+    # rsns = rsds - rsus
+    rsns = rsds_cube - rsus_cube
+    rsns.units = rsus_cube.units
+
+    return rsns
+
+
+# TODO @mattiarighi -- check rlns
+def calc_rlns(cubes):
+    """Compute rlns: Surface Net downward Longwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               rlds (surface_downwelling_longwave_flux_in_air) and
+               rlus ().
+
+    Returns
+    -------
+        Cube containing Surface Net downward Longwave Radiation.
+        Units: W m-2
+
+    """
+    rlds_cube = cubes.extract_strict(
+        Constraint(name='surface_downwelling_longwave_flux_in_air'))
+    rlus_cube = cubes.extract_strict(
+        Constraint(name='surface_upwelling_longwave_flux_in_air'))
+
+    # rlns = rlds - rlus
+    rlns = rlds_cube - rlus_cube
+    rlns.units = rlus_cube.units
+
+    return rlns
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):

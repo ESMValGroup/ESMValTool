@@ -141,18 +141,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 # dict of model var-to-obs name
 # replace test MPI-ESM-MR with actual OBS datasets
 VAR_DICT = {
-    'pr': 'MPI-ESM-MR',
-    'rlut': 'MPI-ESM-MR',
-    'rsut': 'MPI-ESM-MR',
-    'rsdt': 'MPI-ESM-MR',  # used for derivation only
-    'rsutcs': 'MPI-ESM-MR',
-    'rlutcs': 'MPI-ESM-MR',
-    'rsds': 'MPI-ESM-MR',  # used for derivation only
-    'rsus': 'MPI-ESM-MR',  # used for derivation only
-    'prw': 'MPI-ESM-MR',
-    'rldscs': 'MPI-ESM-MR',
-    'rlus': 'MPI-ESM-MR'
-}  # used for derivation only
+    'pr': 'MPI-ESM-MR',       # underived
+    'rlut': 'MPI-ESM-MR',     # underived
+    'rsut': 'MPI-ESM-MR',     # underived
+    'rsutcs': 'MPI-ESM-MR',   # underived
+    'rlutcs': 'MPI-ESM-MR',   # underived
+    'prw': 'MPI-ESM-MR',      # underived
+    'rldscs': 'MPI-ESM-MR',   # underived
+    'rtnt': 'MPI-ESM-MR',     # derived
+    'rsnt': 'MPI-ESM-MR',     # derived
+    'rsns': 'MPI-ESM-MR',     # derived
+    'rlns': 'MPI-ESM-MR',     # derived
+    'lwcre': 'MPI-ESM-MR',    # derived
+    'swcre': 'MPI-ESM-MR'     # derived
+}
 
 
 def apply_supermeans(ctrl, exper, obs):
