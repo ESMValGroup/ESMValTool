@@ -135,17 +135,17 @@ begin
   field_type0 = field_types(0)
 
   ; Array sizes
-  dim_DAT = dimsizes(idx_datasets)
+  DIM_DAT = dimsizes(idx_datasets)
 
   ; Trend array
-  val_trend = new((/2, dim_DAT/), "float")
+  val_trend = new((/2, DIM_DAT/), "float")
   val_trend!0 = "case"
   val_trend&case = (/"val", "stddev"/)
   val_trend!1 = "dataset"
   val_trend&dataset = dataset_info@dataset(idx_datasets)
 
   ; Mean array
-  val_mean = new((/2, dim_DAT/), "float")
+  val_mean = new((/2, DIM_DAT/), "float")
   val_mean!0 = "case"
   val_mean&case = (/"val", "stddev"/)
   val_mean!1 = "dataset"
@@ -171,7 +171,7 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Iterate over datasets
-  do i = 0, dim_DAT - 1
+  do i = 0, DIM_DAT - 1
     idat = idx_datasets(i)
     log_info(dataset_info@dataset(idat))
 
@@ -355,13 +355,13 @@ begin
     tmp_vtrend = val_trend
     tmp_vt = val_mean
     delete([/val_trend, val_mean/])
-    dim_DAT = dim_DAT + dim_rsondes
-    dataset_names = new(dim_DAT, string)
+    DIM_DAT = DIM_DAT + dim_rsondes
+    dataset_names = new(DIM_DAT, string)
     dataset_names(:dim_rsondes-1) = rsondes
     dataset_names(dim_rsondes:) = dataset_info@dataset(idx_dataset)
 
     ; Trend
-    val_trend   = new((/2, dim_DAT/), "float")
+    val_trend   = new((/2, DIM_DAT/), "float")
     val_trend(:, dim_rsondes:) = (/tmp_vtrend/)
     val_trend!0 = "case"
     val_trend&case = (/"val", "stddev"/)
@@ -369,7 +369,7 @@ begin
     val_trend&dataset = dataset_names
 
     ; Mean
-    val_mean = new((/2, dim_DAT/), "float")
+    val_mean = new((/2, DIM_DAT/), "float")
     val_mean(:, dim_rsondes:) = (/tmp_vt/)
     val_mean!0 = "case"
     val_mean&case = (/"val", "stddev"/)
@@ -454,15 +454,14 @@ begin
     ; Plotting instances
     wks1 = gsn_open_wks(file_type, plot_file1)
     wks2 = gsn_open_wks(file_type, plot_file2)
-    dum0 = new(dim_DAT, graphic)
-    dum1 = new(dim_DAT, graphic)
-    error_bar0 = new(dim_DAT, graphic)
-    error_bar1 = new(dim_DAT, graphic)
+    dum0 = new(DIM_DAT, graphic)
+    dum1 = new(DIM_DAT, graphic)
+    error_bar0 = new(DIM_DAT, graphic)
+    error_bar1 = new(DIM_DAT, graphic)
     ti = ispan(1, dimsizes(val_trend(0, :)), 1)
 
     ; Get plot descriptions
-    if (lat_range(0).eq.90.0 .and. lat_range(1).eq.-90.0 .or. \
-        lat_range(0).eq.82.5 .and. lat_range(1).eq.-82.5) then
+    if (lat_range(0).le.-82.5 .and. lat_range(1).ge.82.5) then
       lat_string = "NG"
     else
       if (lat_range(0) .ge. 0.0) then
@@ -471,10 +470,11 @@ begin
         lat_string = "(" + -1 * round(lat_range(0), 3) + "S"
       end if
       end if
+      lat_string = lat_string + "-"
       if (lat_range(1) .ge. 0.0) then
         lat_string = lat_string + round(lat_range(1), 3) + "N)"
       else if (lat_range(1) .lt. 0.0) then
-        lat_string = lat_string + round(lat_range(1), 3) + "S)"
+        lat_string = lat_string + -1 * round(lat_range(1), 3) + "S)"
       end if
       end if
     end if
@@ -505,7 +505,7 @@ begin
     res@trYMinF = min(val_trend(0, :)) - 0.5 * abs(min(val_trend(0, :)))
     res@trYMaxF = max(val_trend(0, :)) + 0.5 * abs(max(val_trend(0, :)))
     res@trXMinF = 0
-    res@trXMaxF = dim_DAT + 1
+    res@trXMaxF = DIM_DAT + 1
     res@vpWidthF = 0.9                      ; Change the aspect ratio, but
     res@vpHeightF = 0.4                     ; make plot as large as possible.
     res@gsnYRefLine = 0.0
@@ -524,7 +524,7 @@ begin
     mkres = True
     mkres@gsMarkerSizeF = 0.01
     mkres@gsMarkerThicknessF = 1.0
-    do t = 0, dim_DAT - 1
+    do t = 0, DIM_DAT - 1
       mkres@gsMarkerColor = colors(t)
       mkres@gsMarkerIndex = 16
       dum0(t) = gsn_add_polymarker(wks1, plot1, ti(t), val_trend(0, t), mkres)
@@ -532,7 +532,7 @@ begin
 
     ; Plot error bars
     polyres = True
-    do t = 0, dim_DAT - 1
+    do t = 0, DIM_DAT - 1
       polyres@gsLineColor = colors(t)
       error_bar0(t) = gsn_add_polyline(wks1, plot1, (/ti(t), ti(t)/), \
                                        (/val_trend(0, t) - val_trend(1, t), \
@@ -543,8 +543,8 @@ begin
     frame(wks1)
 
     ; ; Add meta data (TODO)
-    ; climofiles = new(dim_DAT, string)
-    ; do ii = 0, dim_DAT - 1
+    ; climofiles = new(DIM_DAT, string)
+    ; do ii = 0, DIM_DAT - 1
     ;     climofiles(ii) = interface_get_inpaths(ii) + "/" + \
     ;                      interface_get_infile(var0, field_type0, ii)
     ; end do
@@ -582,7 +582,7 @@ begin
     mkres = True
     mkres@gsMarkerSizeF = 0.01
     mkres@gsMarkerThicknessF = 1.0
-    do t = 0, dim_DAT - 1
+    do t = 0, DIM_DAT - 1
       mkres@gsMarkerColor = colors(t)
       mkres@gsMarkerIndex = 16    ; thicks(t)
       dum1(t) = gsn_add_polymarker(wks2, plot2, ti(t), val_mean(0, t), mkres)
@@ -590,7 +590,7 @@ begin
 
     ; Plot error bars
     polyres = True
-    do t = 0, dim_DAT - 1
+    do t = 0, DIM_DAT - 1
       polyres@gsLineColor = colors(t)
       error_bar1(t) = gsn_add_polyline(wks2, plot2, (/ti(t), ti(t)/), \
                                        (/val_mean(0, t) - val_mean(1, t), \
@@ -618,19 +618,22 @@ begin
   ; ---------------------------------------------------------------------------
 
   if (config_user_info@write_netcdf) then
-    tmp_d = diag_script_info@wdiag
-    do dd = 0, dimsizes(tmp_d) - 1
-      delete(diag_script_info@wdiag)
-      diag_script_info@wdiag = tmp_d(dd)
+    work_dir = config_user_info@work_dir
+    system("mkdir -p " + work_dir)
+    opt = True
+
+    ; Iterate over all desired diagnostics
+    do dd = 0, dimsizes(diag_script_info@wdiag) - 1
+      opt@wdiag = diag_script_info@wdiag(dd)
 
       ; Iterate over all datasets
-      do i = 0, dim_DAT - 1
+      do i = 0, DIM_DAT - 1
         idat = idx_datasets(i)
         log_debug("Processing " + dataset_info@dataset(i))
-        new_path = diag_file_path(idat, diag_script, diag_script_info)
+        new_path = work_dir + diag_file_name(idat, opt)
 
         ; Write files
-        if (isStrSubset(diag_script_info@wdiag, "_t")) then
+        if (isStrSubset(opt@wdiag, "_t")) then
           val = val_trend(case|:, dataset|i)
           val@var = var0
           val@units = "(" + variable_info@units + "/dec)"
@@ -642,7 +645,7 @@ begin
           val@ncdf = new_path
           ncdf_outfile = ncdf_write(val, new_path)
           delete(val)
-        else if(isStrSubset(diag_script_info@wdiag, "_c")) then
+        else if(isStrSubset(opt@wdiag, "_c")) then
           val = val_mean(case|:, dataset|i)
           val@var = var0
           val@units = "(" + variable_info@units + "/dec)"

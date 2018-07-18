@@ -129,7 +129,7 @@ diagnostics:
       - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
       - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
-      ta_sp100: &ta_mder
+      ta_sp100: &ta_sp100
         script: mder/austral_jet_diags.ncl
         styleset: CMIP5
         e13fig10_yr_min: 1979
@@ -137,9 +137,13 @@ diagnostics:
         e13fig10_season: ['ONDJ']
         wdiag: ['T-SP_t', 'T-SP_c']
         wdiag_title: ['T-SP_t', 'T-SP_c']
-        ref_model: ['ERA-Interim']
-        diagscript: austral_jet_diags
+        ref_dataset: ['ERA-Interim']
         average_ens: True
+      select_for_mder:
+        <<: *ta_sp100
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_sp100']
+
 
   ta_ng100:
     description: Calculate temperature trends and climatological means.
@@ -149,11 +153,15 @@ diagnostics:
         preprocessor: mean_ng100
     additional_datasets: *ta_datasets
     scripts:
-      ta_ng100:
-        <<: *ta_mder
+      ta_ng100: &ta_ng100
+        <<: *ta_sp100
         e13fig10_season: ['yearly']
         wdiag: ['T-NGlob_t', 'T-NGlob_c']
         wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
+      select_for_mder:
+        <<: *ta_ng100
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_ng100']
 
   ta_trop250:
     description: Calculate temperature trends and climatological means.
@@ -163,11 +171,15 @@ diagnostics:
         preprocessor: mean_trop250
     additional_datasets: *ta_datasets
     scripts:
-      ta_trop250:
-        <<: *ta_mder
+      ta_trop250: &ta_trop250
+        <<: *ta_sp100
         e13fig10_season: ['DJF']
         wdiag: ['T-Trop_t', 'T-Trop_c']
         wdiag_title: ['T-Trop_t', 'T-Trop_c']
+      select_for_mder:
+        <<: *ta_trop250
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_trop250']
 
 
 

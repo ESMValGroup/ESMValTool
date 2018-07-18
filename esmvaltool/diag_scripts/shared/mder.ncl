@@ -8,16 +8,15 @@
 ;
 ; Contents:
 ;
-;    * function diag_file_path
+;   * function diag_file_name
 ;
 ; #############################################################################
 
 load "interface_scripts/interface.ncl"
 
 
-undef("diag_file_path")
-function diag_file_path(dataset_idx[1]: integer, \
-                        diag_name[1]: string, \
+undef("diag_file_name")
+function diag_file_name(dataset_idx[1]: integer, \
                         opt[1]: logical)
 ;
 ; Arguments:
@@ -37,25 +36,18 @@ function diag_file_path(dataset_idx[1]: integer, \
 ;
 ; Modification history:
 ;   * 20180717-A_schl_ma: ported to v2.0
-;   * 20140723 A_wenz_sa: written
+;   * 20140723-A_wenz_sa: written
 ;
 
-local fullpath, outname
+local outname
 
 begin
 
   enter_msg("mder.ncl", "")
 
-  ; Path
-  fullpath = config_user_info@work_dir
-  if (.not. fileexists(fullpath)) then
-    system("mkdir -p " + fullpath)
-  end if
-
   ; File name
   outname = basename(systemfunc("basename " + \
                                 input_file_info@filename(dataset_idx)))
-  outname = outname + "_" + basename(diag_name)
 
   ; Add extra info to the file
   if (isatt(opt, "wdiag")) then
@@ -94,7 +86,6 @@ begin
 
   ; Return file name
   leave_msg("mder.ncl", "")
-  out = fullpath + outname
-  return(out)
+  return(outname)
 
 end
