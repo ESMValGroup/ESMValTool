@@ -3,7 +3,8 @@
 
 import ESMF
 import iris
-from ._mapping import ref_to_dims_index, get_slice_spec, map_slices
+from iris.exceptions import CoordinateNotFoundError
+from ._mapping import ref_to_dims_index, get_empty_data, map_slices
 import numpy as np
 
 ESMF_MANAGER = ESMF.Manager(debug=False)
@@ -148,25 +149,80 @@ def get_representant(cube, ref_to_slice):
 
 def build_regridder(src_rep, dst_rep, method):
     regrid_method = ESMF_REGRID_METHODS[method]
-    src_field = cube_to_empty_field(src_rep)
-    dst_field = cube_to_empty_field(dst_rep, remove_mask=True)
-    esmf_regridder = ESMF.Regrid(src_field, dst_field,
-                                 regrid_method=regrid_method,
-                                 src_mask_values=np.array([1]),
-                                 unmapped_action=ESMF.UnmappedAction.IGNORE,
-                                 ignore_degenerate=True)
+    dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
+    if src_rep.ndim == 2:
+        src_fields = [cube_to_empty_field(src_rep)]
+        esmf_regridders = [
+            ESMF.Regrid(src_fields[0], dst_field,
+                        regrid_method=regrid_method,
+                        src_mask_values=np.array([1]),
+                        unmapped_action=ESMF.UnmappedAction.IGNORE,
+                        ignore_degenerate=True)
+        ]
+    elif src_rep.ndim == 3:
+        src_fields = []
+        esmf_regridders = []
+        no_levels = src_rep.shape[0]
+        for level in range(no_levels):
+            field = cube_to_empty_field(src_rep[level])
+            src_fields.append(field)
+            esmf_regridders.append(
+                ESMF.Regrid(field, dst_field,
+                            regrid_method=regrid_method,
+                            src_mask_values=np.array([1]),
+                            unmapped_action=ESMF.UnmappedAction.IGNORE,
+                            ignore_degenerate=True)
+            )
+    dst_shape = dst_rep.shape
 
     def regridder(src):
-        src_field.data[...] = src.data.data.T
-        regr_field = esmf_regridder(src_field, dst_field)
-        data = regr_field.data[...].T
-        res = np.ma.masked_array(data, data == 0.)
+        res_data = np.empty(dst_shape)
+        res_mask = np.empty(dst_shape, dtype=bool)
+        res = np.ma.masked_array(res_data, res_mask)
+        for i, (src_field, esmf_regridder) in enumerate(zip(src_fields, esmf_regridders)):
+            src_field.data[...] = src[i].data.data.T
+            regr_field = esmf_regridder(src_field, dst_field)
+            res.data[i, ...] = regr_field.data[...].T
+            res.mask[i, ...] = res.data[i, ...] == 0.
         return res
     return regridder
 
 
 def correct_metadata(cube):
     pass
+
+
+def get_grid_representant(cube, horizontal_only=False):
+    horizontal_slice = ['latitude', 'longitude']
+    if horizontal_only:
+        ref_to_slice = horizontal_slice
+    else:
+        try:
+            cube_z_coord = cube.coord(axis='Z')
+            ref_to_slice = [cube_z_coord] + horizontal_slice
+        except CoordinateNotFoundError:
+            ref_to_slice = horizontal_slice
+    return get_representant(cube, ref_to_slice)
+
+
+def get_grid_representants(src, dst):
+    src_rep = get_grid_representant(src)
+    dst_horiz_rep = get_grid_representant(dst, horizontal_only=True)
+    dst_shape = (src_rep.shape[0],) + dst_horiz_rep.shape
+    dim_coords = [src_rep.coord(dimensions=[0], dim_coords=True)]
+    dim_coords += dst_horiz_rep.coords(dim_coords=True)
+    dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
+    dst_rep = iris.cube.Cube(
+        data=get_empty_data(dst_shape),
+        standard_name=src.standard_name,
+        long_name=src.long_name,
+        var_name=src.var_name,
+        units=src.units,
+        attributes=src.attributes,
+        cell_methods=src.cell_methods,
+        dim_coords_and_dims=dim_coords_and_dims,
+    )
+    return src_rep, dst_rep
 
 
 def regrid(src, dst, method='linear'):
@@ -194,11 +250,8 @@ def regrid(src, dst, method='linear'):
     esmpy_doc/html/RegridMethod.html#ESMF.api.constants.RegridMethod
 
     """
-    ref_to_slice = ['latitude', 'longitude']
-    src_rep = get_representant(src, ref_to_slice)
-    dst_rep = get_representant(dst, ref_to_slice)
+    src_rep, dst_rep = get_grid_representants(src, dst)
     regridder = build_regridder(src_rep, dst_rep, method)
-    dst_slice_spec = get_slice_spec(dst, ref_to_slice)
-    res = map_slices(src, regridder, ref_to_slice, *dst_slice_spec)
+    res = map_slices(src, regridder, src_rep, dst_rep)
     correct_metadata(res)
     return res

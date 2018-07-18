@@ -126,14 +126,13 @@ def index_iterator(dims_to_slice, shape):
         yield src_ind, dst_ind
 
 
-def map_slices(src, func, ref_to_slice,
-               sub_shape=None, sub_dim_coords=None, sub_aux_coords=None):
+def map_slices(src, func, src_rep, dst_rep):
+    ref_to_slice = src_rep.coords(dim_coords=True)
     src_slice_dims = ref_to_dims_index(src, ref_to_slice)
     src_keep_dims = list(set(range(src.ndim))-set(src_slice_dims))
     src_keep_spec = get_slice_spec(src, src_keep_dims)
-    sub_shape = check_slice_spec(sub_shape, sub_dim_coords)
-    res_shape = src_keep_spec[0]+sub_shape
-    dim_coords = src_keep_spec[1]+sub_dim_coords
+    res_shape = src_keep_spec[0] + dst_rep.shape
+    dim_coords = src_keep_spec[1] + dst_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst = iris.cube.Cube(
         data=get_empty_data(res_shape),
