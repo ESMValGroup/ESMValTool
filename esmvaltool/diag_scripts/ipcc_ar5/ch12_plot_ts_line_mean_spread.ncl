@@ -150,7 +150,7 @@ begin
   ; ###########################################
   ; *********** PLOTTING ************
   ; Create plot variables
-  outfile = var0 + "_" + syears(0) + "_" + eyears(nperiods - 1)
+  outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
   wks = get_wks(0, diag_script, outfile)
   if(isatt(diag_script_info, "colormap")) then
     colormap = RGBtoCmap("./diag_scripts/shared/plot/rgb/" + \
@@ -224,7 +224,7 @@ begin
     res@gsnXYFillOpacities = (/0.2, 0.2, 0.2/)
     res@xyLineColor     = -1
     spread_plot = gsn_csm_xy(wks, to_plot&year,\
-                                 to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
+                             to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)
     delete(res@gsnXYFillOpacities)
@@ -258,9 +258,14 @@ begin
     amres                  = True
     amres@amJust           = "TopLeft"    ; Use bottom right corner of box
                                               ; for determining its location.
-    amres@amParallelPosF   = -0.45              ; Move legend to right
-    amres@amOrthogonalPosF = -0.45              ; Move legend down.
-
+    amres@amParallelPosF   = -0.46              ; Move legend to right
+    if (var0 .ne. "snw") then
+      amres@amParallelPosF   = -0.45              ; Move legend to right
+      amres@amOrthogonalPosF = -0.45              ; Move legend up.
+    else
+      amres@amParallelPosF   = -0.47              ; Move legend to right
+      amres@amOrthogonalPosF = 0.12              ; Move legend down. 
+    end if
     annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   end if
   draw(wks)
