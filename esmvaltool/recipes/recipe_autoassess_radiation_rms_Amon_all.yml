@@ -1,5 +1,5 @@
 #### summary
-#namelist_AutoAssess_radiation_rms_Amon_all.xml
+#namelist_autoassess_radiation_rms_Amon_all.yml
 #
 #Description
 #Diagnostics of spatial RMS errors of radiation and clouds
@@ -11,16 +11,23 @@
 #Simon Read (University of Reading,  United Kingdom)
 #
 #Author version2
-#Valeriu Predoi (University of Reading, UK)
+#Valeriu Predoi: VP (University of Reading, UK)
 #
 #Project
 #CMUG
 #
 #Port to ESMValTool v2: July 2018
+# Final version of recipe: 18 July 2018
+#
 #References
 #Technical report or a paper will be written in the future.
 #
-#This namelist is part of the ESMValTool
+#This recipe is part of the ESMValTool
+#
+#Caveats:
+# - uncomment out OBS files; VP has no access to such files so testing was done with
+#   MPI-ESM-MR as 'OBS' dataset; various fixes will have to be implemented for these
+#   files; fully working in this version though.
 ###########################################################################################################
 ---
 
@@ -38,81 +45,59 @@ diagnostics:
   radiation_Amon_all:
     description: 
     variables: # 13 required variables total
-      #rtnt: # ceres TOA TOT net
-      ## derived: rsdt:T2*s,rsut:T2*s,rlut:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
-      #rsnt: # ceres TOA SW net
-      ## derived: rsdt:T2*s,rsut:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
+      rtnt: # ceres TOA TOT net
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rsnt: # ceres TOA SW net
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      swcre: # ceres TOA SW Cloud Radiative Effect
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      lwcre: # ceres TOA LW Cloud Radiative Effect
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rsns: # ceres Surf SW net all sky
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rlns: # ceres Surf LW net all sky
+        preprocessor: pp_rad
+        field: T2Ms
+        derive: true
+        force_derivation: false
       rsut: # ceres TOA SW up all sky
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
       rlut: # ceres TOA LW up all sky
         preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rlus: # used in derivation only
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rsdt: # used in derivation only
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rsds: # used in derivation only
-        preprocessor: pp_rad
-        mip: Amon
-        field: T2Ms
-      rsus: # used in derivation only
-        preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
       rsutcs: # ceres TOA SW up clear sky
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
       rlutcs: # jra TOA LW up clear sky
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
-      #SW_CRE: # ceres TOA SW Cloud Radiative Effect
-      ## derived: rsut:T2*s,rsutcs:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
-      #LW_CRE: # ceres TOA LW Cloud Radiative Effect
-      ## derived: rlut:T2*s,rlutcs:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
-      #rsns: # ceres Surf SW net all sky
-      ## derived: rsds:T2*s,rsus:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
-      #rlns: # ceres Surf LW net all sky
-      ## derived: rlds:T2*s,rlus:T2*s
-      #  preprocessor: pp_rad
-      #  mip: Amon
-      #  field: T2Ms
       rldscs: # jra Surf LW down clear sky
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
       prw: # ssmi Column Water vapour
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
       pr: # gpcp Precipitation
         preprocessor: pp_rad
-        mip: Amon
         field: T2Ms
     additional_datasets:
+      # all OBS; don't have any so using MPI-ESM-MR for testing instead !!!
       # xml entry: obs4mips CERES-EBAF L3B Ed2-7 2001 2012
       # - {dataset: CERES-EBAF,  project: obs4mips,  type: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: Tier1}
       # xml entry: ana4mips   JRA-55 Amon reanalysis   2001  2005 @{OBSPATH}/Tier1/
