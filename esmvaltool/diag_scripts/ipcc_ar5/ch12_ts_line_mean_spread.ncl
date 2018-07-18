@@ -12,7 +12,7 @@
 ;    reference, if no corresponding model found in scenario log_info
 ;
 ; Modification history
-;    20182006-A_lore_ru: ported to version2, put plotting back into here
+;    20182006-A_lore_ru: ported to version2
 ;    20170523-A_lore_ru: separated plotting from calcuation
 ;    20160625-A_lore_ru: adapted to ESMValTool
 ;    20130506-A_sedl_ja: written for IPCC AR5.
@@ -501,8 +501,7 @@ begin
   ; ###########################################
   ; # Output to netCDF                        #
   ; ###########################################
-  to_plot@ncdf = var0 + "_ts_line_" + syears(0) + "-" + eyears(nperiods - 1) + \
-                 ".nc"
+  to_plot@ncdf = variable_info@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
@@ -512,160 +511,5 @@ begin
     ncdf_file@existing = "append"
     ncdf_outfile = ncdf_write(runs, ncdf_file)
   end if
-
-  ; ###########################################
-  ; *********** PLOTTING ************
-  dims_data_plot = (dimsizes(to_plot&metric) - 1) / 3
-
-  ; Create plot variables
-  outfile = var0 + "_ts_line_" + syears(0) + "-" + eyears(nperiods - 1)
-  wks = get_wks(0, plot_dir, outfile)
-  if(isatt(diag_script_info, "colormap")) then
-    colormap_file = "./diag_scripts/shared/plot/rgb/" + \
-                    diag_script_info@colormap
-    colormap = RGBtoCmap(colormap_file)
-  else
-    colormap = "StepSeq25"
-  end if
-  gsn_define_colormap(wks, colormap)
-
-  colors_main = (/1, 3, 4, 5, 6/)
-  colors_spread = (/2, 3, 4, 5, 6/)
-
-  res                   = True
-
-  res@gsnDraw = False
-  res@gsnFrame = False
-  res@txFont   = 25
-  res@vpHeightF = 0.5                    ; change aspect ratio of plot
-  res@vpWidthF = 0.8
-  res@vpXF     = 0.15                   ; start plot at x ndc coord
-
-  if (isatt(diag_script_info, "title")) then
-    res@tiMainString = diag_script_info@title
-  end if
-  if(isatt(diag_script_info, "yaxis")) then
-    res@tiYAxisString = diag_script_info@yaxis
-  end if
-  res@tiXAxisString = "Year"
-
-  res@xyDashPatterns     = 0
-  res@trXMinF = toint(syears(0))
-  res@trXMaxF = toint(eyears(nperiods - 1))
-  if(isatt(diag_script_info, "ymin")) then
-    res@trYMinF = diag_script_info@ymin
-  end if
-  if(isatt(diag_script_info, "ymax")) then
-    res@trYMaxF = diag_script_info@ymax
-  end if
-
-  res@tmXBMode = "Explicit"
-  res@tmXBValues = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 50)
-  res@tmXBLabels = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 50)
-  res@tmXBMinorValues  = ispan(toint(syears(0)), \
-                               toint(eyears(nperiods - 1)), 10)
-
-  res@xyLineThicknesses = 3.5
-  res@xyLineColor      = colors_main(0)
-
-  ; create plot
-  plot  = gsn_csm_xy(wks, to_plot&year, to_plot(0, :), res)
-
-  res@gsnXYFillColors = colors_spread(0)
-  res@xyLineColor     = -1
-  spread_plot  = gsn_csm_xy(wks, to_plot&year, to_plot(1 : 2, :), res)
-  overlay(plot, spread_plot)
-
-  delete(res@gsnXYFillColors)
-
-  do j = 1, dims_data_plot
-    if (all(ismissing(to_plot(j * 3, :)))) then
-      error_msg("w", diag_script, "", "all missing values for " + \
-                "dimension " + j * 3 + " in to_plot, need at least 5" + \
-                " models, go to next")
-      continue
-    end if
-    res@xyLineColor      = colors_main(j)
-    plot1  = gsn_csm_xy(wks, to_plot&year, to_plot(j * 3, :), res)
-    overlay(plot, plot1)
-
-    res@gsnXYFillColors = colors_spread(j)
-    res@gsnXYFillOpacities = (/0.2, 0.2, 0.2/)
-    res@xyLineColor     = -1
-    spread_plot = gsn_csm_xy(wks, to_plot&year,\
-                             to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
-    overlay(plot, spread_plot)
-    delete(res@gsnXYFillColors)
-    delete(res@gsnXYFillOpacities)
-  end do
-
-  polyres                  = True
-  polyres@gsLineThicknessF = 1.5
-  ; add polylines
-  dum = new(nperiods, graphic)
-  do n = 0, nperiods - 1
-    dum(n) = gsn_add_polyline(wks, plot, (/toint(eyears(n)), \
-                              toint(eyears(n))/), (/-20, 20/), polyres)
-  end do
-  delete(res@xyLineColor)
-
-  ; Attach a legend
-  lgres                    = True
-  lgres@lgLineColors       = colors_main    ; (/1, 3, 4, 5, 6/)
-  lgres@lgItemType         = "Lines"        ; show lines only (default)
-  lgres@lgLabelFontHeightF = .08            ; legend label font thickness
-  lgres@vpWidthF           = 0.13           ; width of legend (NDC)
-  lgres@vpHeightF          = 0.15           ; height of legend (NDC)
-  lgres@lgMonoDashIndex    = True
-  lgres@lgDashIndex        = 0
-  lgres@lgLineThicknessF   = 4
-  lgres@lgPerimOn = False
-  lgres@lgItemOrder = (/4, 3, 2, 1, 0/)
-  if (isatt(diag_script_info, "label")) then
-    labels = "  " + diag_script_info@label
-    legend = gsn_create_legend(wks, 5, labels, lgres)
-    amres                  = True
-    amres@amJust           = "TopLeft"    ; Use bottom right corner of box
-                                          ; for determining its location.
-    amres@amParallelPosF   = -0.45              ; Move legend to right
-    amres@amOrthogonalPosF = -0.45              ; Move legend down.
-
-    annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
-  end if
-  draw(wks)
-  frame(wks)
-
-  ;alltags = array_append_record(tags,\
-  ;          (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
-  ;string1 = "Time series of global annual mean " + variable_info@long_name \
-  ;+ " anomalies (relative to " + datasets@start_year(0)+ "-" + \
-  ;datasets@end_year(0) + ") from CMIP5 concentration drive " + \
-  ;"experiments. Projections are shown for each RCP for the " + \
-  ;"multi-dataset mean (solid lines) and the 5 to 95% range " + \
-  ;"(+-1.64 standar deviation) across the distribution of " + \
-  ;"individual models (shading). "
-  ;if (nperiods .gt. 1) then
-  ;  string2 = "Discontinuities at 2100 are due to different numbers of" + \
-  ;  "models performing the extension runs beyond the 21st " + \
-  ;  "century and have no physical meaning. Only one ensemble " + \
-  ;  "member is used from each model and numbers in the " + \
-  ;  "figure indicate the number of different models " + \
-  ;  "contributing to the different time periods. No ranges " + \
-  ;  "are given for the RCP6.0 projections beyond 2100 as only" + \
-  ;  " 2 models are available."
-  ;else
-  ;  string2 = ""
-  ;end if
-  ;caption = string1 + string2
-  id = diag_script + "_" + variables(0)
-
-  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-  ;ESMValMD(wks@fullname, alltags, \
-  ;         caption, id, variables(0), datasets@datasets, \
-  ;         climofiles, diag_script, contrib_authors)
-
-  ;delete([/alltags, caption, id, climofiles/])
-
-  log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
   
 end
