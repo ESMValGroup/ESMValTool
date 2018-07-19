@@ -2,6 +2,6 @@
 Developer's Guide
 #################
 
-.. include:: porting.rst
-.. include:: core_team.rst
-.. include:: git_repository.rst
+.. include:: porting.inc
+.. include:: core_team.inc
+.. include:: git_repository.inc

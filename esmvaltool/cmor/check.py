@@ -557,7 +557,7 @@ def cmor_check_metadata(cube, cmor_table, mip, short_name):
 
     None of the checks at this step will force the cube to load the data
 
-    Parameters:
+    Parameters
     ----------
     cube: iris.cube.Cube
         Data cube to check
@@ -603,7 +603,7 @@ def cmor_check(cube, cmor_table, mip, short_name):
 
     Equivalent to calling cmor_check_metadata and cmor_check_data consecutively
 
-    Parameters:
+    Parameters
     ----------
     cube: iris.cube.Cube
         Data cube to check
