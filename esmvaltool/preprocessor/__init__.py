@@ -14,10 +14,17 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import regrid
 from ._regrid import vinterp as extract_levels
-from ._time_area import area_average as average_region
-from ._time_area import area_slice as extract_region
-from ._time_area import seasonal_mean
-from ._time_area import time_slice as extract_time
+from ._time_pp import time_average
+from ._time_pp import seasonal_mean
+from ._time_pp import time_slice as extract_time
+from ._area_pp import area_slice as extract_region
+from ._area_pp import area_average as average_region
+from ._area_pp import zonal_means
+from ._volume_pp import volume_slice as extract_volume
+from ._volume_pp import extract_trajectory
+from ._volume_pp import extract_transect
+from ._volume_pp import depth_integration
+from ._volume_pp import volume_average as average_volume
 
 logger = logging.getLogger(__name__)
 
@@ -47,15 +54,22 @@ __all__ = [
     'mask_fillvalues',
     # Region selection
     'extract_region',
-    # Grid-point operations
-    'average_region',
+    'extract_volume',
+    'extract_trajectory',
+    'extract_transect',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
-    'seasonal_mean',
     'multi_model_statistics',
+    # Grid-point operations
+    'depth_integration',
+    'average_region',
+    'average_volume',
+    'zonal_means',
+    'seasonal_mean',
+    'time_average',
     'cmor_check_data',
     # Save to file
     'save',
