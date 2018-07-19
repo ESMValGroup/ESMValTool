@@ -147,54 +147,70 @@ def get_representant(cube, ref_to_slice):
     return cube[rep_ind]
 
 
-def build_regridder(src_rep, dst_rep, method):
+def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
     regrid_method = ESMF_REGRID_METHODS[method]
     if src_rep.ndim == 2:
-        dst_field = cube_to_empty_field(dst_rep, remove_mask=True)
+        dst_field = cube_to_empty_field(dst_rep)
         src_field = cube_to_empty_field(src_rep)
-        esmf_regridder = ESMF.Regrid(
-            src_field, dst_field,
-            regrid_method=regrid_method,
-            src_mask_values=np.array([1]),
-            unmapped_action=ESMF.UnmappedAction.IGNORE,
-            ignore_degenerate=True
-        )
+        regridding_arguments = {
+            'srcfield': src_field,
+            'dstfield': dst_field,
+            'regrid_method': regrid_method,
+            'unmapped_action': ESMF.UnmappedAction.IGNORE,
+            'ignore_degenerate': True,
+        }
+        mask_regridder = ESMF.Regrid(**regridding_arguments,
+                                     src_mask_values=np.array([]))
+        src_field.data[...] = src_rep.data.mask.T
+        regr_field = mask_regridder(src_field, dst_field)
+        dst_mask = (regr_field.data[...].T > mask_threshold).astype(bool)
+        field_regridder = ESMF.Regrid(**regridding_arguments,
+                                      src_mask_values=np.array([1]))
 
         def regridder(src):
-            res_data = np.empty(dst_rep.shape)
-            res_mask = np.empty(dst_rep.shape, dtype=bool)
-            res = np.ma.masked_array(res_data, res_mask)
+            res = get_empty_data(dst_rep.shape)
             src_field.data[...] = src.data.data.T
-            regr_field = esmf_regridder(src_field, dst_field)
+            regr_field = field_regridder(src_field, dst_field)
             res.data[...] = regr_field.data[...].T
-            res.mask[...] = res.data[...] == 0.
+            res.mask[...] = dst_mask
             return res
     elif src_rep.ndim == 3:
         dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
         src_fields = []
         esmf_regridders = []
+        dst_masks = []
         no_levels = src_rep.shape[0]
+        regridding_arguments = {
+            'dstfield': dst_field,
+            'regrid_method': regrid_method,
+            'unmapped_action': ESMF.UnmappedAction.IGNORE,
+            'ignore_degenerate': True,
+        }
         for level in range(no_levels):
-            field = cube_to_empty_field(src_rep[level])
-            src_fields.append(field)
+            src_field = cube_to_empty_field(src_rep[level])
+            src_fields.append(src_field)
+            mask_regridder = ESMF.Regrid(**regridding_arguments,
+                                         srcfield=src_field,
+                                         src_mask_values=np.array([]))
+            src_field.data[...] = src_rep[level].data.mask.T
+            regr_field = mask_regridder(src_field, dst_field)
+            dst_masks.append(
+                (regr_field.data[...].T > mask_threshold).astype(bool)
+            )
             esmf_regridders.append(
-                ESMF.Regrid(field, dst_field,
-                            regrid_method=regrid_method,
-                            src_mask_values=np.array([1]),
-                            unmapped_action=ESMF.UnmappedAction.IGNORE,
-                            ignore_degenerate=True)
+                ESMF.Regrid(**regridding_arguments,
+                            srcfield=src_field,
+                            src_mask_values=np.array([1]))
             )
 
         def regridder(src):
-            res_data = np.empty(dst_rep.shape)
-            res_mask = np.empty(dst_rep.shape, dtype=bool)
-            res = np.ma.masked_array(res_data, res_mask)
-            for i, (src_field, esmf_regridder) \
-                    in enumerate(zip(src_fields, esmf_regridders)):
+            res = get_empty_data(dst_rep.shape)
+            for i, (src_field, esmf_regridder, dst_mask) \
+                    in enumerate(zip(src_fields, esmf_regridders, dst_masks)):
                 src_field.data[...] = src[i].data.data.T
                 regr_field = esmf_regridder(src_field, dst_field)
                 res.data[i, ...] = regr_field.data[...].T
-                res.mask[i, ...] = res.data[i, ...] == 0.
+                res.mask[i, ...] = dst_mask
             return res
     return regridder
 
