@@ -1,9 +1,9 @@
 """Fixes for CESM1-BGC model"""
 import shutil
+
 import six
 from cf_units import Unit
 from netCDF4 import Dataset
-
 
 from ..fix import Fix
 
@@ -46,10 +46,12 @@ class nbp(Fix):
             fill_value = variable._FillValue
             if var_name == 'nbp':
                 fill_value = 1e+33
-            new_var = new_dataset.createVariable(var_name, variable.datatype,
-                                                 variable.dimensions,
-                                                 zlib=True,
-                                                 fill_value=fill_value)
+            new_var = new_dataset.createVariable(
+                var_name,
+                variable.datatype,
+                variable.dimensions,
+                zlib=True,
+                fill_value=fill_value)
             attr = {k: variable.getncattr(k) for k in variable.ncattrs()}
             del attr['_FillValue']
             attr['missing_value'] = 1e+33
@@ -78,7 +80,10 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 28.966 / 44.0
+        metadata = cube.metadata
+        cube *= 28.966 / 44.0
+        cube.metadata = metadata
+        return cube
 
 
 class allvars(Fix):
