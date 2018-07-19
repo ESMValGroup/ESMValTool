@@ -127,6 +127,20 @@ OBS:
   output_file: '[project]_[dataset]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
+OBS2:
+  input_dir:
+    default: '[tier]/[dataset]'
+    BSC: '[type]/[institute]/[dataset]/[freq_folder]/[var][freq_base]'
+  input_file:
+    default: '[project]_[dataset]_[type]_[version]_[field]_[var]_*'
+    BSC: '[var]_*.nc'
+  fx_dir:
+    default: '[tier]/[dataset]'
+  fx_file:
+    default: '[project]_[dataset]_[type]_fx_[fx_var].nc'
+  output_file: '[project]_[dataset]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
+
 obs4mips:
   input_dir:
     default: '[tier]/[dataset]'
@@ -160,4 +174,11 @@ EMAC:
     default: '[dataset]'
   input_file: ''
   output_file: '[dataset]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
+
+O3Cionni:
+  input_dir:
+    default: ''
+  input_file: 'Ozone_CMIP5_ACC_SPARC_[exp]_[field]_[var]_*'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
