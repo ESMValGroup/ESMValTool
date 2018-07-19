@@ -10,16 +10,22 @@ import json
 import logging
 import os
 
-from .._config import CFG
-
 logger = logging.getLogger(__name__)
 
 
-def _read_cmor_tables():
-    tables = {}
+def read_cmor_tables(cfg_developer):
+    """Read cmor tables required in the configuration
 
-    for table in CFG.keys():
-        project = CFG[table]
+    Parameters
+    ----------
+    cfg_developer : dict of str
+        Parsed config-developer file
+    """
+
+    global CMOR_TABLES
+
+    for table in cfg_developer.keys():
+        project = cfg_developer[table]
 
         table_path = project.get('cmor_tables', '')
         table_path = os.path.expandvars(os.path.expanduser(table_path))
@@ -27,10 +33,9 @@ def _read_cmor_tables():
         cmor_type = project.get('cmor_type', 'CMIP5')
 
         if cmor_type == 'CMIP5':
-            tables[table] = CMIP5Info(table_path)
+            CMOR_TABLES[table] = CMIP5Info(table_path)
         elif cmor_type == 'CMIP6':
-            tables[table] = CMIP6Info(table_path)
-    return tables
+            CMOR_TABLES[table] = CMIP6Info(table_path)
 
 
 class CMIP6Info(object):
@@ -487,5 +492,5 @@ class CMIP5Info(object):
             return None
 
 
-CMOR_TABLES = _read_cmor_tables()
+CMOR_TABLES = {}
 """dict of str, obj: CMOR info objects"""
