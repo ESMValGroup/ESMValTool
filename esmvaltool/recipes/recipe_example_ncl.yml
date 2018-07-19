@@ -15,14 +15,6 @@ preprocessors:
     mask_landocean: false
     multi_model_statistics: false
 
-  preprocessor_2:
-    extract_levels: false
-    regrid:
-      target_grid: ERA-Interim
-      scheme: linear
-    mask_landocean: false
-    multi_model_statistics: false
-
 diagnostics:
   ta_diagnostics:
     description: Air temperature tutorial diagnostics.
@@ -30,6 +22,7 @@ diagnostics:
       ta:
         preprocessor: preprocessor_1
         field: T3M
+        fx_files: [sftlf]
     additional_datasets:
       - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     scripts:
@@ -47,7 +40,6 @@ diagnostics:
     description: Precipitation tutorial diagnostic.
     variables:
       pr:
-        preprocessor: preprocessor_2
         field: T2Ms
     additional_datasets: []
     scripts:

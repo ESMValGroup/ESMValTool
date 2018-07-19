@@ -20,7 +20,10 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 29. / 44. * 1.e6
+        metadata = cube.metadata
+        cube *= 29. / 44. * 1.e6
+        cube.metadata = metadata
+        return cube
 
 
 class ch4(Fix):
@@ -41,4 +44,7 @@ class ch4(Fix):
         iris.cube.Cube
 
         """
-        return cube * 29. / 16. * 1.e9
+        metadata = cube.metadata
+        cube *= 29. / 16. * 1.e9
+        cube.metadata = metadata
+        return cube
