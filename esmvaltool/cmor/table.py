@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 CMOR_TABLES = {}
 """dict of str, obj: CMOR info objects"""
 
+
 def read_cmor_tables(cfg_developer):
     """Read cmor tables required in the configuration
 
@@ -23,8 +24,6 @@ def read_cmor_tables(cfg_developer):
     cfg_developer : dict of str
         Parsed config-developer file
     """
-    global CMOR_TABLES
-
     for table in cfg_developer.keys():
         project = cfg_developer[table]
 
