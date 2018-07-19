@@ -74,8 +74,8 @@ def _normalize_path(path):
 
     Expand ~ character and environment variables and convert path to absolute
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     path: str
         Original path
 
