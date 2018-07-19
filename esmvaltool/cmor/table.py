@@ -12,6 +12,8 @@ import os
 
 logger = logging.getLogger(__name__)
 
+CMOR_TABLES = {}
+"""dict of str, obj: CMOR info objects"""
 
 def read_cmor_tables(cfg_developer):
     """Read cmor tables required in the configuration
@@ -489,7 +491,3 @@ class CMIP5Info(object):
             return self.tables[table][short_name]
         except KeyError:
             return None
-
-
-CMOR_TABLES = {}
-"""dict of str, obj: CMOR info objects"""
