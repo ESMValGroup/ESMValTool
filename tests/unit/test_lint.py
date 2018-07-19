@@ -80,4 +80,5 @@ def test_nclcodestyle():
 
 def test_r_lint():
     """Test R lint"""
-    subprocess.check_call(('Rscript', 'check_lint_r.R'))
+    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    subprocess.check_call(('Rscript', 'check_lint_r.R', package_root))
