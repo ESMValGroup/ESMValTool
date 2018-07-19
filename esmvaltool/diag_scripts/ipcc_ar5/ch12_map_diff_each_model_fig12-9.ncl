@@ -134,7 +134,8 @@ begin
     end if
     climofiles = input_file_info@filename(imod)
 
-    idx_rcp = find_model_index(dataset_info@dataset(imod), dataset_info@dataset, \
+    idx_rcp = find_model_index(dataset_info@dataset(imod), \
+                               dataset_info@dataset, \
                                diag_script_info@experiment, \
                                dataset_info@exp, dataset_info@ensemble(imod), \
                                dataset_info@ensemble, 0)
@@ -173,14 +174,12 @@ begin
     ; ###########################################
     ; # Optional output to netCDF               #
     ; ###########################################
-    ; Optional output (controlled by diag_script_info)
-    if (isatt(diag_script_info, "ncdf")) then
-      to_plot@ncdf = work_dir + "/" + dataset_info@dataset(imod) + \
-                     dataset_info@ensemble(imod) + diag_script_info@ncdf
-      to_plot@ncdf_existing = "overwrite"
-      ; Function in ~/interface_scripts/auxiliary.ncl
-      ncdf_outfile = ncdf_write(to_plot, to_plot@ncdf)
-    end if
+    to_plot@ncdf = work_dir + "/" + dataset_info@dataset(imod) + "_" + \
+                   dataset_info@ensemble(imod) + "_" +\
+                   variable_info@diagnostic + ".nc"
+    to_plot@ncdf_existing = "overwrite"
+    ; Function in ~/interface_scripts/auxiliary.ncl
+    ncdf_outfile = ncdf_write(to_plot, to_plot@ncdf)
 
     ; ######################################################
     ; # Separate output to a graphics file, Panelling      #
@@ -191,12 +190,12 @@ begin
     to_plot@res_cnLineLabelsOn    = False           ; Contour lines
     to_plot@res_cnLinesOn         = False
     if (isatt(diag_script_info, "colormap")) then   ; Set colormap
-      to_plot@res_cnFillColors = diag_script_info@colormap
+      col = read_colormap_file(diag_script_info@colormap)
     else
-      col = read_colormap_file("diag_scripts/shared/plot/rgb/" +  \
+      col = read_colormap_file("./diag_scripts/shared/plot/rgb/" +  \
                                "ipcc_temperature_with_grey.rgb")
-      to_plot@res_cnFillColors     = col
     end if
+    to_plot@res_cnFillColors     = col
     if (isatt(diag_script_info, "span")) then
       to_plot@res_cnSpanFillPalette     = diag_script_info@span
     else
@@ -205,7 +204,7 @@ begin
     to_plot@res_lbLabelBarOn = False
     ; function in aux_plotting.ncl
     if (imod.eq.0) then
-      wks = get_wks("dummy_for_wks", diag_script, var0)
+      wks = get_wks("dummy_for_wks", diag_script, variable_info@diagnostic)
       nmap = dim_MOD / 2
 
       if (isatt(diag_script_info, "max_vert")) then
