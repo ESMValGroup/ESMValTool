@@ -137,7 +137,8 @@ begin
         else if (rank .eq. 5) then
           data(i, :, :, :, :) = data_temp
         else
-          error_msg("f", diag_script, "", "rank " + rank + " not supported")
+          error_msg("f", diag_script, "", "rank " + rank + \
+                    " data not supported")
         end if
         end if
         end if
@@ -175,20 +176,20 @@ begin
     do idat = 0, DIM_DAT - 1
 
       ; Extract data of given dataset
-      if (rank.eq.2) then
+      if (rank .eq. 2) then
         var = data(idat, 0)
         var_std = data(idat, 1)
-      else if (rank.eq.3) then
+      else if (rank .eq. 3) then
         var = data(idat, :, 0)
         var_std = data(idat, :, 1)
-      else if (rank.eq.4) then
+      else if (rank .eq. 4) then
         var = data(idat, :, :, 0)
         var_std = data(idat, :, :, 1)
-      else if (rank.eq.5) then
+      else if (rank .eq. 5) then
         var = data(idat, :, :, :, 0)
         var_std = data(idat, :, :, :, 1)
       else
-        error_msg("f", diag_script, "", "rank " + rank + " not supported")
+        error_msg("f", diag_script, "", "rank " + rank + " data not supported")
       end if
       end if
       end if
