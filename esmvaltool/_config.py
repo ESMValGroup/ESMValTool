@@ -84,6 +84,8 @@ def _normalize_path(path):
     str:
         Normalized path
     """
+    if path is None:
+        return None
     return os.path.abspath(os.path.expanduser(os.path.expandvars(path)))
 
 
