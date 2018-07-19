@@ -18,6 +18,19 @@ documentation:
 
 preprocessors:
 
+  mean_sp50:
+    extract_levels:
+      levels: 5000
+      scheme: linear
+    extract_region:
+      lat1: -90
+      lat2: -60
+      long1: 0
+      long2: 360
+    average_region:
+      coord1: latitude
+      coord2: longitude
+
   mean_sp100:
     extract_levels:
       levels: 10000
@@ -25,6 +38,19 @@ preprocessors:
     extract_region:
       lat1: -90
       lat2: -60
+      long1: 0
+      long2: 360
+    average_region:
+      coord1: latitude
+      coord2: longitude
+
+  mean_ng50:
+    extract_levels:
+      levels: 5000
+      scheme: linear
+    extract_region:
+      lat1: -82.5
+      lat2: 82.5
       long1: 0
       long2: 360
     average_region:
@@ -61,7 +87,7 @@ preprocessors:
 diagnostics:
 
   ta_sp100:
-    description: Calculate temperature trends and climatological means.
+    description: Calculate temperature trends and climatological means of ta.
     variables:
       ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_sp100
@@ -131,6 +157,7 @@ diagnostics:
     scripts:
       ta_sp100: &ta_sp100
         script: mder/austral_jet_diags.ncl
+        average_ens: True
         styleset: CMIP5
         e13fig10_yr_min: 1979
         e13fig10_yr_max: 2005
@@ -138,15 +165,13 @@ diagnostics:
         wdiag: ['T-SP_t', 'T-SP_c']
         wdiag_title: ['T-SP_t', 'T-SP_c']
         ref_dataset: ['ERA-Interim']
-        average_ens: True
       select_for_mder:
         <<: *ta_sp100
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'ta_sp100']
 
-
   ta_ng100:
-    description: Calculate temperature trends and climatological means.
+    description: Calculate temperature trends and climatological means of ta.
     variables:
       ta:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
@@ -164,7 +189,7 @@ diagnostics:
         ancestors: ['ta', 'ta_ng100']
 
   ta_trop250:
-    description: Calculate temperature trends and climatological means.
+    description: Calculate temperature trends and climatological means of ta.
     variables:
       ta:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
@@ -181,28 +206,80 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'ta_trop250']
 
+  tro3_sp50:
+    description: Calculate temperature trends and climatological means of tro3.
+    variables:
+      tro3:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_sp50
+    additional_datasets: &tro3_datasets
+      - {dataset: BDBP,    project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+      - {dataset: BNU-ESM,        ensemble: r1i1p1}
+      - {dataset: CanESM2,        ensemble: r1i1p1}
+      - {dataset: CanESM2,        ensemble: r2i1p1}
+      - {dataset: CanESM2,        ensemble: r3i1p1}
+      - {dataset: CanESM2,        ensemble: r4i1p1}
+      - {dataset: CanESM2,        ensemble: r5i1p1}
+      - {dataset: CCSM4,          ensemble: r1i1p1}
+      - {dataset: CCSM4,          ensemble: r2i1p1}
+      - {dataset: CCSM4,          ensemble: r3i1p1}
+      - {dataset: CCSM4,          ensemble: r4i1p1}
+      - {dataset: CCSM4,          ensemble: r5i1p1}
+      - {dataset: CCSM4,          ensemble: r6i1p1}
+      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r2i1p1}
+      # In save() in file preprocessor/_io.py: ValueError: No filename in cube
+      # - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+      # - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+    scripts:
+      tro3_sp50: &tro3_sp50
+        <<: *ta_sp100
+        e13fig10_season: ['SOND']
+        wdiag: ['O3-SP_t', 'O3-SP_c']
+        wdiag_title: ['O3-SP_t', 'O3-SP_c']
+        ref_dataset: ['BDBP']
+      select_for_mder:
+        <<: *tro3_sp50
+        script: mder/select_for_mder.ncl
+        ancestors: ['tro3', 'tro3_sp50']
 
+  tro3_ng50:
+    description: Calculate temperature trends and climatological means of tro3.
+    variables:
+      tro3:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_ng50
+    additional_datasets: *tro3_datasets
+    scripts:
+      tro3_ng50: &tro3_ng50
+        <<: *tro3_sp50
+        e13fig10_season: ['yearly']
+        wdiag: ['O3-NGlob_t', 'O3-NGlob_c']
+        wdiag_title: ['O3-NGlob_t', 'O3-NGlob_c']
+      select_for_mder:
+        <<: *tro3_ng50
+        script: mder/select_for_mder.ncl
+        ancestors: ['tro3', 'tro3_ng50']
 
-# <!-- Make diagnostic plot and output -->
-#   <diag_script cfg="cfg_austral-jet_diags_T-SP.ncl">    austral-jet_diags.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_T-NGlob.ncl"> austral-jet_diags.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_T-Trop.ncl">  austral-jet_diags.ncl </diag_script>
-# <!-- Select diagnostigaverage (diagnostic plot and output!) -->
-#   <diag_script cfg="cfg_austral-jet_diags_T-SP.ncl">    select_diag.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_T-NGlob.ncl"> select_diag.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_T-Trop.ncl">  select_diag.ncl </diag_script>
-# </diag>
-#
-# <diag>
-#     <description>           Ozone trends (tro3) </description>
-#     <variable_def_dir>         ./variable_defs/ </variable_def_dir>
-#     <variable>                             tro3 </variable>
-#     <field_type>                            T3M </field_type>
-#     <diag_script_cfg_dir> ./nml/cfg_austral-jet </diag_script_cfg_dir>
-#     <tags> E_erainterim, DM_sh, DM_global, PT_errorbar, ST_corr, ST_trend </tags>
-#
 # <!-- Variable specific observations -->
-#   <model> OBS BDBP reanaly 1 1979 2007  @{OBSPATH}/Tier3/BDBP/ </model>
 #
 # <!-- Variable specific models -->
 #
