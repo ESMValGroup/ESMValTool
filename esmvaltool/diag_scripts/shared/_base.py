@@ -1,15 +1,138 @@
 """Convenience functions for running a diagnostic script."""
 import argparse
 import contextlib
+import glob
 import logging
 import os
 import shutil
 import sys
 import time
+from collections import OrderedDict
 
 import yaml
 
 logger = logging.getLogger(__name__)
+
+
+def select_metadata(metadata, **attributes):
+    """Select specific metadata describing preprocessed data.
+
+    Parameters
+    ----------
+    metadata : :obj:`list` of :obj:`dict`
+        A list of metadata describing preprocessed data.
+    **attributes :
+        Keyword arguments specifying the required variable attributes and
+        their values.
+        Use the value '*' to select any variable that has the attribute.
+
+    Returns
+    -------
+    :obj:`list` of :obj:`dict`
+        A list of matching metadata.
+
+    """
+    selection = []
+    for attribs in metadata:
+        if all(
+                a in attribs and (
+                    attribs[a] == attributes[a] or attributes[a] == '*')
+                for a in attributes):
+            selection.append(attribs)
+    return selection
+
+
+def group_metadata(metadata, attribute, sort=None):
+    """Group metadata describing preprocessed data by attribute.
+
+    Parameters
+    ----------
+    metadata : :obj:`list` of :obj:`dict`
+        A list of metadata describing preprocessed data.
+    attribute : str
+        The attribute name that the metadata should be grouped by.
+    sort :
+        See `sorted_group_metadata`.
+
+    Returns
+    -------
+    :obj:`dict` of :obj:`list` of :obj:`dict`
+        A dictionary containing the requested groups. If sorting is requested,
+        an `OrderedDict` will be returned.
+
+    """
+    groups = {}
+    for attributes in metadata:
+        key = attributes.get(attribute)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(attributes)
+
+    if sort:
+        groups = sorted_group_metadata(groups, sort)
+
+    return groups
+
+
+def sorted_metadata(metadata, sort):
+    """Sort a list of metadata describing preprocessed data.
+
+    Sorting is done on strings and is not case sensitive.
+
+    Parameters
+    ----------
+    metadata : :obj:`list` of :obj:`dict`
+        A list of metadata describing preprocessed data.
+    sort : :obj:`str` or :obj:`list` of :obj:`str`
+        One or more attributes to sort by.
+
+    Returns
+    -------
+    :obj:`list` of :obj:`dict`
+        The sorted list of variable metadata.
+
+    """
+    if isinstance(sort, str):
+        sort = [sort]
+
+    def normalized_variable_key(attributes):
+        """Define a key to sort the list of attributes by."""
+        return tuple(str(attributes.get(k, '')).lower() for k in sort)
+
+    return sorted(metadata, key=normalized_variable_key)
+
+
+def sorted_group_metadata(metadata_groups, sort):
+    """Sort grouped metadata.
+
+    Sorting is done on strings and is not case sensitive.
+
+    Parameters
+    ----------
+    metadata_groups : :obj:`dict` of :obj:`list` of :obj:`dict`
+        Dictionary containing the groups of metadata.
+    sort : :obj:`bool` or :obj:`str` or :obj:`list` of :obj:`str`
+        One or more attributes to sort by or True to just sort the groups but
+        not the lists.
+
+    Returns
+    -------
+    :obj:`OrderedDict` of :obj:`list` of :obj:`dict`
+        A dictionary containing the requested groups.
+
+    """
+    if sort is True:
+        sort = []
+
+    def normalized_group_key(key):
+        """Define a key to sort the OrderedDict by."""
+        return '' if key is None else str(key).lower()
+
+    groups = OrderedDict()
+    for key in sorted(metadata_groups, key=normalized_group_key):
+        groups[key] = sorted_metadata(metadata_groups[key], sort)
+
+    return groups
 
 
 def get_cfg(filename=None):
@@ -23,19 +146,33 @@ def get_cfg(filename=None):
 
 def _get_input_data_files(cfg):
     """Get a dictionary containing all data input files."""
-    input_files = {}
+    metadata_files = []
     for filename in cfg['input_files']:
-        if os.path.basename(filename) == 'metadata.yml':
-            with open(filename) as file:
-                metadata = yaml.safe_load(file)
-                input_files.update(metadata)
+        if os.path.isdir(filename):
+            metadata_files.extend(
+                glob.glob(os.path.join(filename, '*metadata.yml')))
+        elif os.path.basename(filename) == 'metadata.yml':
+            metadata_files.append(filename)
+
+    input_files = {}
+    for filename in metadata_files:
+        with open(filename) as file:
+            metadata = yaml.safe_load(file)
+            input_files.update(metadata)
 
     return input_files
 
 
 @contextlib.contextmanager
 def run_diagnostic():
-    """Run a diagnostic."""
+    """Run a diagnostic.
+
+    Example
+    -------
+    See esmvaltool/diag_scripts/examples/diagnostic.py for an example of how to
+    start your diagnostic.
+
+    """
     # Implemented as context manager so we can support clean up actions later
     parser = argparse.ArgumentParser(description="Diagnostic script")
     parser.add_argument('filename', help="Path to settings.yml")
