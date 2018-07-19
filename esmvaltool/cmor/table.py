@@ -21,7 +21,6 @@ def read_cmor_tables(cfg_developer):
     cfg_developer : dict of str
         Parsed config-developer file
     """
-
     global CMOR_TABLES
 
     for table in cfg_developer.keys():
