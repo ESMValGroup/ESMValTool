@@ -213,7 +213,18 @@ diagnostics:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_sp50
     additional_datasets: &tro3_datasets
-      - {dataset: BDBP,    project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: BDBP,           project: OBS2, type: reanaly, version: 1, tier: 3}
+      - {dataset: ACCESS1-0,      project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: ACCESS1-3,      project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: CanCM4,         project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC,      project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,     project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: CMCC-CMS,       project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: HadGEM2-A0,     project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: inmcm4,         project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3,      project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: NorESM1-M,      project: O3Cionni, ensemble: r1i1p1}
       - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
       - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
       - {dataset: BNU-ESM,        ensemble: r1i1p1}
@@ -240,9 +251,8 @@ diagnostics:
       - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
       - {dataset: MIROC5,         ensemble: r1i1p1}
       - {dataset: MIROC5,         ensemble: r2i1p1}
-      # In save() in file preprocessor/_io.py: ValueError: No filename in cube
-      # - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      # - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
       - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
       - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
       - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
@@ -278,63 +288,6 @@ diagnostics:
         <<: *tro3_ng50
         script: mder/select_for_mder.ncl
         ancestors: ['tro3', 'tro3_ng50']
-
-# <!-- Variable specific observations -->
-#
-# <!-- Variable specific models -->
-#
-#   <model> O3_Cionni ACCESS1-0        1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> O3_Cionni ACCESS1-3        1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> O3_Cionni CanCM4           1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r6i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> O3_Cionni CESM1-BGC        1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> O3_Cionni CESM1-CAM5       1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> O3_Cionni CMCC-CMS         1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> O3_Cionni CSIRO-Mk3-6-0    1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> O3_Cionni HadGEM2-AO       1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> O3_Cionni inmcm4           1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> O3_Cionni MRI-CGCM3        1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#   <model> O3_Cionni NorESM1-M        1   historical 1979 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
-#
-# <!-- Make diagnostic plot and output -->
-#   <diag_script cfg="cfg_austral-jet_diags_O3-NGlob.ncl"> austral-jet_diags.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_O3-SP.ncl">    austral-jet_diags.ncl </diag_script>
-# <!-- Select diagnostigaverage (diagnostic plot and output!) -->
-#   <diag_script cfg="cfg_austral-jet_diags_O3-NGlob.ncl"> select_diag.ncl </diag_script>
-#   <diag_script cfg="cfg_austral-jet_diags_O3-SP.ncl">    select_diag.ncl </diag_script>
-# </diag>
 #
 # <diag>
 #     <description>          Wind/Jet trends (ua) </description>
