@@ -4,13 +4,14 @@ import logging
 import logging.config
 import os
 import time
+import six
 
 import yaml
 from .cmor.table import read_cmor_tables
 
 logger = logging.getLogger(__name__)
 
-CFG = None
+CFG = {}
 
 
 def read_config_user_file(config_file, recipe_name):
@@ -59,8 +60,9 @@ def read_config_user_file(config_file, recipe_name):
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
-    global CFG
-    CFG = read_config_developer_file(cfg['config_developer_file'])
+    cfg_developer = read_config_developer_file(cfg['config_developer_file'])
+    for key, value in six.iteritems(cfg_developer):
+        CFG[key] = value
     read_cmor_tables(CFG)
 
     return cfg
