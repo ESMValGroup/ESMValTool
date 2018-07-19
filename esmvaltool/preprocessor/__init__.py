@@ -16,6 +16,8 @@ from ._regrid import regrid
 from ._regrid import vinterp as extract_levels
 from ._time_area import area_average as average_region
 from ._time_area import area_slice as extract_region
+from ._time_area import extract_season
+from ._time_area import extract_month
 from ._time_area import seasonal_mean
 from ._time_area import time_slice as extract_time
 
@@ -36,6 +38,8 @@ __all__ = [
     'cmor_check_metadata',
     # Time extraction
     'extract_time',
+    'extract_season',
+    'extract_month',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction
