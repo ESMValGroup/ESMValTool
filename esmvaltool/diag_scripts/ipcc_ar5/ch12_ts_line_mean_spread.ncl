@@ -208,8 +208,7 @@ begin
       data2_rel(imod, :) = data2_glob - ref_data2(imod)
     end if
     ; clean up
-    delete(data2)
-    delete(data2_glob)
+    delete([/data2, data2_glob/])
 
     ; find all other runs from this model and calculate relative ts
     imod26 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
@@ -235,9 +234,7 @@ begin
       end if
       i26 = i26 + 1
       ; clean up
-      delete(A1)
-      delete(data3)
-      delete(data3_glob)
+      delete([/A1, data3, data3_glob/])
     else
       log_info("No corresponding model for historial run " + \
                dataset_info@dataset(imod) + " found in scenario " + \
@@ -270,9 +267,7 @@ begin
         end if
         i45 = i45 + 1
         ; clean up
-        delete(A1)
-        delete(data3)
-        delete(data3_glob)
+        delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
                  dataset_info@dataset(imod) + " found in scenario " + \
@@ -306,9 +301,7 @@ begin
         end if
         i60 = i60 + 1
         ; clean up
-        delete(A1)
-        delete(data3)
-        delete(data3_glob)
+        delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
                  dataset_info@dataset(imod) + " found in scenario " + \
@@ -496,7 +489,6 @@ begin
   if(isatt(variable_info, "units")) then
     to_plot@var_units     = variable_info@units
   end if
-
   runs!0 = "scenario"
   runs&scenario = diag_script_info@label
   runs!1 = "period"
@@ -512,7 +504,6 @@ begin
   runs@var = "nr"
   runs@var_long_name = "number of model runs per scenario and period"
   runs@var_units     = 1
-
   ; ###########################################
   ; # Output to netCDF                        #
   ; ###########################################

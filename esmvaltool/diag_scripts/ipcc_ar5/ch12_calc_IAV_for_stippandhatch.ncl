@@ -358,7 +358,6 @@ begin
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
       ncdf_outfile = ncdf_write(write_data, work_dir + outfile)
-      ;delete(data1)
     end if
   end do  ; imod
 

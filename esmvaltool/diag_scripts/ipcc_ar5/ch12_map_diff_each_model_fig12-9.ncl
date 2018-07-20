@@ -175,8 +175,7 @@ begin
     ; # Optional output to netCDF               #
     ; ###########################################
     to_plot@ncdf = work_dir + "/" + dataset_info@dataset(imod) + "_" + \
-                   dataset_info@ensemble(imod) + "_" +\
-                   variable_info@diagnostic + ".nc"
+      dataset_info@ensemble(imod) + "_" + variable_info@diagnostic + ".nc"
     to_plot@ncdf_existing = "overwrite"
     ; Function in ~/interface_scripts/auxiliary.ncl
     ncdf_outfile = ncdf_write(to_plot, to_plot@ncdf)
@@ -296,21 +295,21 @@ begin
 
   outfile = panelling(wks, maps, nvert, nhori, pres)
 
-;# add tags
-  ;alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
-  ;caption = "Surface change in " + variable_info@long_name + " in " + \
-  ;          dataset_info@start_year(idx_rcp) + "-" + \
-;	    dataset_info@end_year(idx_rcp) + " displayed as anomalies with " + \
-;	    "respect to " + dataset_info@start_year(0) + "-" + \
-;	    dataset_info@end_year(0) + " for " + dataset_info@exp(idx_rcp) + \
-;	    " from one ensemble member of each of the concentration" + \
-;           " driven models available in the CMIP5 archive. " + \
-;           "Similar to Figure 12.9 of Collins et al. (2013)."
+; add tags
+;  alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
+;  caption = "Surface change in " + variable_info@long_name + " in " + \
+;    dataset_info@start_year(idx_rcp) + "-" + \
+;    dataset_info@end_year(idx_rcp) + " displayed as anomalies with " + \
+;    "respect to " + dataset_info@start_year(0) + "-" + \
+;    dataset_info@end_year(0) + " for " + dataset_info@exp(idx_rcp) + \
+;    " from one ensemble member of each of the " + \
+;    "concentration driven models available in the CMIP5 archive. " + \
+;    "Similar to Figure 12.9 of Collins et al. (2013)."
 ;  id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
 ;  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
 
-  ;ESMValMD(outfile, alltags, caption, id, variables(0), dataset_info@dataset, \
-  ;         climofiles, diag_script, contrib_authors)
+;  ESMValMD(outfile, alltags, caption, id, variables(0), \
+;           dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
 ;  delete([/alltags, caption, id, climofiles/])
 
