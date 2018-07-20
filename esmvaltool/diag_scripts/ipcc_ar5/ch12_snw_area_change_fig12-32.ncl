@@ -9,43 +9,8 @@
 ;    and season (e.g. NH spring March & April)
 ;    relative to reference period (e.g 1986-2005) as in Fig. 12.32 of IPCC AR5
 ;
-; Required diag_script_info attributes (diagnostics specific)
-;    scenarios: which scenarios included in figure
-;    syears : start years in time periods
-;             (e.g. start of historical period and rcps)
-;    eyears : end years in time periods
-;             (end year of historical runs and rcps)
-;    begin_ref_year: start year of reference period (e.g. 1986)
-;    end_ref_year: end year of reference period (e.g 2005)
-;    months: months in year to calculate snow area from
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    ncdf : enable to output to netCDF; either use "default"
-;           or give a full file name
-;    ts_minlat: minimum latitude in case not global e.g(/0/)
-;    ts_maxlat: maximum latitude in case not global e.g.(/90/)
-;    ts_minlon: minimum longitude in case not global e.g.(/0/)
-;    ts_maxlon: maximum longitude in case not global e.g.(/360/)
-;    colormap: choose file to create colormap from
-;    yaxis: y-axis title
-;    ymin: minimim value on y-axis
-;    ymax: maximum value on y-axis
-;    title: title in plot
-;    label: labels to use in legend depending on scenarios
-;
-; Required variable_info attributes (variable specific)
-;    long_name: longer variable name
-;    units: variable units
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
-; Caveats
-;    List possible caveats or limitations of this diagnostic
-;    Features to-be-implemented shall also be mentioned here
-;
 ; Modification history
+;    20180718-A_lore_ru: ported to v2 and bugs in area calculation fixed
 ;    20170120-A_lore_ru: written.
 ;
 ; #############################################################################
@@ -96,7 +61,7 @@ begin
   ; Get environment variables
   if (isatt(diag_script_info, "plot_type")) then
     file_type = diag_script_info@plot_type
-  else    
+  else
     file_type = "pdf"
   end if
 
@@ -132,17 +97,17 @@ begin
   ; get data from first model for historical period
   imod = 0  ; NCL array indices start from zero
   log_info("processing " + dataset_info@dataset(imod) + "_" \
-              + dataset_info@exp(imod) + "_" \
-              + dataset_info@ensemble(imod))
+           + dataset_info@exp(imod) + "_" \
+           + dataset_info@ensemble(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
 
-  ;; Check dimensions
+  ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
     error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
-	      "need 2 or 3")
+              "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
@@ -160,7 +125,7 @@ begin
   ; we need to calculate the snow area using sftgif and sftlf
   list_sftgif = read_fx_data(imod, "sftgif")
   var_idx = ListIndexFromName(list_sftgif, "sftgif")
-  land_ice_sftgif = list_sftgif[var_idx] 
+  land_ice_sftgif = list_sftgif[var_idx]
 
   ; read sftlf (land sea mask)
   list_sftlf = read_fx_data(imod, "sftlf")
@@ -179,10 +144,9 @@ begin
   ; (function in ./diag_scripts/lib/ncl/latlon.ncl)
   if (isatt(diag_script_info, "ts_minlat")) then
     tmp4 = area_operations(tmp3, diag_script_info@ts_minlat, \
-				 diag_script_info@ts_maxlat, \
-				 diag_script_info@ts_minlon, \
-				 diag_script_info@ts_maxlon, "average", \
-				 True)
+                           diag_script_info@ts_maxlat, \
+                           diag_script_info@ts_minlon, \
+                           diag_script_info@ts_maxlon, "average", True)
   else
     tmp4 = coswgt_areaave(tmp3)
   end if
@@ -226,14 +190,14 @@ begin
     data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
                      A0@_FillValue)
   end if
-  if (dim_scen .gt. 2) then                   
+  if (dim_scen .gt. 2) then
     ; How many model runs in 3rd scenario?
     ind_60 = ind(dataset_info@exp .eq. diag_script_info@scenarios(2))
     dim_MOD_60 = dimsizes(dataset_info@dataset(ind_60))
     data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
                      A0@_FillValue)
   end if
-  if (dim_scen .gt. 3) then                   
+  if (dim_scen .gt. 3) then
     ; How many model runs in 4th scenario?
     ind_85 = ind(dataset_info@exp .eq. diag_script_info@scenarios(3))
     dim_MOD_85 = dimsizes(dataset_info@dataset(ind_85))
@@ -253,7 +217,7 @@ begin
       ; we need to calculate the snow area using sftgif (glacier) and sftlf
       list_sftgif = read_fx_data(imod, "sftgif")
       var_idx = ListIndexFromName(list_sftgif, "sftgif")
-      land_ice_sftgif = list_sftgif[var_idx] 
+      land_ice_sftgif = list_sftgif[var_idx]
 
       ; read sftlf (land sea mask)
       list_sftlf = read_fx_data(imod, "sftlf")
@@ -300,26 +264,27 @@ begin
     else
       data2_rel(imod, :) = (data2_glob / ref_data2(imod)) - 1
     end if
-    ;; clean up
+    ; clean up
     delete([/data2_glob/])
 
     do s = 0, dim_scen - 1
       ; find all other runs from this model and calculate relative ts
-      imodrcp = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                    dataset_info@exp .eq. diag_script_info@scenarios(s) .and. \
-                    dataset_info@ensemble .eq. dataset_info@ensemble(imod))
+      imodrcp = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) \
+                    .and. dataset_info@exp .eq. diag_script_info@scenarios(s) \
+                    .and. dataset_info@ensemble .eq. \
+                    dataset_info@ensemble(imod))
       if (.not.all(ismissing(imodrcp))) then
         A1 = read_data(imodrcp, var0, field_type0)
         ; we need to calculate the snow area using sftgif (glacier) and sftlf
         list_sftgif = read_fx_data(imodrcp, "sftgif")
         var_idx = ListIndexFromName(list_sftgif, "sftgif")
-        land_ice_sftgif = list_sftgif[var_idx] 
+        land_ice_sftgif = list_sftgif[var_idx]
 
         ; read sftlf (land sea mask)
         list_sftlf = read_fx_data(imodrcp, "sftlf")
         var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
         land_sea_sftlf = list_sftlf[var_idx2]
-        sftifl = land_sea_sftlf - land_ice_sftgif ; land areas without glaciers
+        sftifl = land_sea_sftlf - land_ice_sftgif  ; land areas sans glaciers
         delete([/var_idx, var_idx2/])
         sftifl_conf = conform(A1, sftifl, (/1, 2/))
         tmp2 = (A1 * sftifl_conf) / 100  ; sftifl in percent -> / 100
@@ -346,8 +311,8 @@ begin
         data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
         printMinMax(data2_glob, True)
         delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf/])
-	dim_data2g = dimsizes(data2_glob)
-	if (s .eq. 0) then
+        dim_data2g = dimsizes(data2_glob)
+        if (s .eq. 0) then
           if (dim_data2g .ne. nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
               error_msg("w", diag_script, "", "Length of dataset " + \
@@ -363,8 +328,8 @@ begin
             data26_rel(i26, :) = (data2_glob / ref_data2(imod)) - 1
           end if
           i26 = i26 + 1
-	end if
-	if (s .eq. 1) then
+        end if
+        if (s .eq. 1) then
           if (dim_data2g .ne. nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
               error_msg("w", diag_script, "", "Length of dataset " + \
@@ -378,10 +343,10 @@ begin
             end if
           else
             data45_rel(i45, :) = (data2_glob / ref_data2(imod)) - 1
-	  end if
-	  i45 = i45 + 1
-	end if
-	if (s .eq. 2) then
+          end if
+          i45 = i45 + 1
+        end if
+        if (s .eq. 2) then
           if (dim_data2g.ne.nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
               error_msg("w", diag_script, "", "Length of dataset " + \
@@ -397,8 +362,8 @@ begin
             data60_rel(i60, :) = (data2_glob / ref_data2(imod)) - 1
           end if
           i60 = i60 + 1
-	end if
-	if (s .eq. 3) then
+        end if
+        if (s .eq. 3) then
           if (dim_data2g.ne.nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
               error_msg("w", diag_script, "", "Length of dataset " + \
@@ -414,13 +379,13 @@ begin
             data85_rel(i85, :) = (data2_glob / ref_data2(imod)) - 1
           end if
           i85 = i85 + 1
-	end if
-	;; clean up
-	delete([/A1, data2_glob/])
+        end if
+        ; clean up
+        delete([/A1, data2_glob/])
       end if
       delete(imodrcp)
     end do  ; scenario
-    delete([/land_ice_sftgif, land_sea_sftlf, sftifl/]) 
+    delete([/land_ice_sftgif, land_sea_sftlf, sftifl/])
   end do  ; imod
 
   ; average and standard deviation over all datasets
@@ -440,7 +405,7 @@ begin
   data26_avg = dim_avg_n_Wrap(data26_rel, 0)
   data26_std = dim_stddev_n_Wrap(data26_rel, 0)
 
-  mean_val(1, p1 :) = data26_avg 
+  mean_val(1, p1 :) = data26_avg
   std_val(1, p1 :) = data26_std
 
   if (dim_scen .gt. 1) then
@@ -486,7 +451,7 @@ begin
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)
 
   do j = 0, dims_data(0) - 1
-    ;;  if variable sw or lw TOA flux: change direction
+    ; if variable sw or lw TOA flux: change direction
     if (var0 .eq. "rlut" .or. var0 .eq. "rsut") then
       to_plot(j * 3, :) = - mean_val(j, :)
     else
@@ -499,17 +464,17 @@ begin
   to_plot!0 = "metric"
   if (dim_scen .eq. 1) then
     to_plot&metric = (/"mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/) 
+                       "mean", "+1.std", "-1.std"/)
   else if (dim_scen .eq. 2) then
     to_plot&metric = (/"mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/) 
+                       "mean", "+1.std", "-1.std"/)
   else if (dim_scen .eq. 3) then
     to_plot&metric = (/"mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/)    
-  else if (dim_scen .eq. 4) then  
+                       "mean", "+1.std", "-1.std"/)
+  else if (dim_scen .eq. 4) then
     to_plot&metric = (/"mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
                        "mean", "+1.std", "-1.std", \
@@ -556,10 +521,10 @@ begin
   to_plot@ncdf = variable_info@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
-  ;; Function in ~/interface_scripts/auxiliary.ncl
+  ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
-    diag_script_info@model_nr .eq. True) then
+     diag_script_info@model_nr .eq. True) then
     ncdf_file@existing = "append"
     ncdf_outfile = ncdf_write(runs, ncdf_file)
   end if
