@@ -20,7 +20,10 @@ class sic(Fix):
         iris.cube.Cube
 
         """
-        return cube * 100
+        metadata = cube.metadata
+        cube *= 100
+        cube.metadata = metadata
+        return cube
 
 
 class sftlf(Fix):
@@ -41,4 +44,7 @@ class sftlf(Fix):
         iris.cube.Cube
 
         """
-        return cube * 100
+        metadata = cube.metadata
+        cube *= 100
+        cube.metadata = metadata
+        return cube

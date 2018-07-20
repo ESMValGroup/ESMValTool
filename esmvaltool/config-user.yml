@@ -27,6 +27,9 @@ remove_preproc_dir: true
 # Set to null to use the number of available CPUs.
 # Make sure your system has enough memory for the specified number of tasks.
 max_parallel_tasks: 1
+# Path to custom config-developer file, to customise project configurations.
+# See config-developer.yml for an example. Set to None to use the default
+config_developer_file: None
 
 rootpath:
   # Rootpath to CMIP5 data
