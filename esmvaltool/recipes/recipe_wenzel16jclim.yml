@@ -18,6 +18,16 @@ documentation:
 
 preprocessors:
 
+  ua850:
+    extract_levels:
+      levels: 85000
+      scheme: linear
+    extract_region:
+      lat1: -80
+      lat2: -30
+      long1: 0
+      long2: 360
+
   mean_sp50:
     extract_levels:
       levels: 5000
@@ -213,18 +223,19 @@ diagnostics:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_sp50
     additional_datasets: &tro3_datasets
-      - {dataset: BDBP,           project: OBS2, type: reanaly, version: 1, tier: 3}
-      - {dataset: ACCESS1-0,      project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: CanCM4,         project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: CESM1-BGC,      project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: CMCC-CMS,       project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: HadGEM2-A0,     project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: inmcm4,         project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: MRI-CGCM3,      project: O3Cionni, ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      project: O3Cionni, ensemble: r1i1p1}
+      - {dataset: BDBP,           project: OBS, type: reanaly, version: 1, tier: 3}
+      # Does not work yet (wrong time format for cf_units 'months since ...')
+      # - {dataset: ACCESS1-0,      project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: ACCESS1-3,      project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: CanCM4,         project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: CESM1-BGC,      project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: CESM1-CAM5,     project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: CMCC-CMS,       project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: CSIRO-Mk3-6-0,  project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: HadGEM2-A0,     project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: inmcm4,         project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: MRI-CGCM3,      project: Ozone_CMIP5_ACC_SPARC}
+      # - {dataset: NorESM1-M,      project: Ozone_CMIP5_ACC_SPARC}
       - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
       - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
       - {dataset: BNU-ESM,        ensemble: r1i1p1}
@@ -288,81 +299,25 @@ diagnostics:
         <<: *tro3_ng50
         script: mder/select_for_mder.ncl
         ancestors: ['tro3', 'tro3_ng50']
-#
-# <diag>
-#     <description>          Wind/Jet trends (ua) </description>
-#     <variable_def_dir>         ./variable_defs/ </variable_def_dir>
-#     <variable>                               ua </variable>
-#     <field_type>                            T3M </field_type>
-#     <diag_script_cfg_dir> ./nml/cfg_austral-jet </diag_script_cfg_dir>
-#     <tags> E_erainterim, DM_sh, DM_sh, PT_errorbar, ST_corr, ST_trend </tags>
-#
-# <!-- Variable specific observations -->
-#   <model>  OBS ERA-Interim reanaly 1 1979 2005 @{OBSPATH}/Tier3/ERA-Interim/  </model>
-#
-# <!-- Variable specific models -->
-#   <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r6i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-BGC      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CMCC-CMS       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r6i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r7i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r8i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r9i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0 Amon historical r10i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ HadGEM2-AO     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ inmcm4         Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MRI-CGCM3      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#
-# <!-- Make diagnostic plot and output -->
-#   <diag_script cfg="cfg_austral-jet_diags_U-Jet.ncl"> austral-jet_diags.ncl </diag_script>
-# <!-- Select diagnostigaverage (diagnostic plot and output!) -->
-#   <diag_script cfg="cfg_austral-jet_diags_U-Jet.ncl"> select_diag.ncl </diag_script>
-# </diag>
-#
+
+  ua_850:
+    description: Calculate temperature trends and climatological means of ua.
+    variables:
+      ua:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: ua850
+    additional_datasets: *ta_datasets
+    scripts:
+      ua_850: &ua_850
+        <<: *ta_sp100
+        e13fig10_season: ['DJF']
+        wdiag: ['U-Jet_t', 'U-Jet_c']
+        wdiag_title: ['U-Jet_t', 'U-Jet_c']
+      select_for_mder:
+        <<: *ua_850
+        script: mder/select_for_mder.ncl
+        ancestors: ['ua', 'ua_850']
+
 # <diag>
 #     <description>   tropopause pressure (ta => tpp)    </description>
 #     <variable_def_dir>         ./variable_defs/ </variable_def_dir>

@@ -154,6 +154,30 @@ class spco2(Fix):
         return cube
 
 
+class tro3(Fix):
+    """Fixes for tro3"""
+
+    def fix_data(self, cube):
+        """
+        Fix data
+
+        Fixes cube units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        metadata = cube.metadata
+        cube *= 1.e9
+        cube.metadata = metadata
+        return cube
+
+
 # No clear way to apply this fix now that we are working with cubes, not files
 
 # class sftlf(Fix):
