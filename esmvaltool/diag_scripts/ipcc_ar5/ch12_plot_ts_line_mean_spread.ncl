@@ -9,28 +9,6 @@
 ;    1850-2?00 for all available models precalculated by
 ;    ts_line_collins_ipcc_ch12.ncl
 ;
-; Required diag_script_info attributes (diagnostics specific)
-;    ncdf : filename for netcdf to read
-;    diagscript: diagnostics script where data was calculated
-;    syears : start years in time periods
-;                              (e.g. start of historical period and rcps)
-;    eyears : end years in time periods
-;                              (end year of historical runs and rcps)
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    colormap: choose file to create colormap from
-;    yaxis: y-axis title
-;    ymin: minimim value on y-axis
-;    ymax: maximum value on y-axis
-;    title: title in plot
-;    label: labels to use in legend depending on scenarios
-;    model_nr: boolean, print number of model runs per period and scenario
-;              in plot? only possible if variable "nr" in netcdf to read
-;
-; Optional variable_info attributes (variable specific)
-;    long_name: long name of variable
-;    units: variable unit
-;
 ; Caveats
 ;    Variable number of scenarios? So far hardcoded 4 scenarios (rcp2.6,
 ;    rcp4.5, rcp6.0, rcp8.5)
@@ -153,8 +131,7 @@ begin
   outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
   wks = get_wks(0, diag_script, outfile)
   if(isatt(diag_script_info, "colormap")) then
-    colormap = RGBtoCmap("./diag_scripts/shared/plot/rgb/" + \
-                         diag_script_info@colormap)
+    colormap = RGBtoCmap(diag_script_info@colormap)
   else
     colormap = "StepSeq25"
   end if
