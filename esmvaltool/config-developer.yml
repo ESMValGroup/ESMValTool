@@ -29,7 +29,7 @@ CMIP5:
     DKRZ: '[institute]/[dataset]/[exp]/[freq]/[realm]/[mip]/[ensemble]/[latestversion]/[var]'
     ETHZ: '[exp]/[mip]/[var]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[freq]'
-    BSC: '[project]/[exp]/[dataset]'
+    BSC: '[project]/[exp]/[dataset.lower]'
   input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
   fx_dir:
     default: '/'
@@ -116,7 +116,7 @@ CMIP5:
 OBS:
   input_dir:
     default: '[tier]/[dataset]'
-    BSC: '[type]/[institute]/[dataset]/[freq_folder]/[var][freq_base]'
+    BSC: '[type]/[institute.lower]/[dataset.upperlower]/[freq_folder]/[var][freq_base]'
   input_file:
     default: '[project]_[dataset]_[type]_[version]_[field]_[var]_*'
     BSC: '[var]_*.nc'

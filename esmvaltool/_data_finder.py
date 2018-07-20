@@ -68,6 +68,15 @@ def replace_tags(path, variable, j=None, i=None):
     tlist = re.findall(r'\[([^]]*)\]', path)
 
     for tag in tlist:
+        original_tag = tag
+        lower = False
+        upper = False
+        if tag.endswith('.lower'):
+            lower = True
+            tag = tag[0:-6]
+        elif tag.endswith('.upper'):
+            upper = True
+            tag = tag[0:-6]
 
         if tag == 'var':
             replacewith = variable['short_name']
@@ -100,13 +109,23 @@ def replace_tags(path, variable, j=None, i=None):
                     "your recipe entry".format(tag, variable['project']))
 
         if not isinstance(replacewith, list):
-            path = path.replace('[' + tag + ']', replacewith)
+            path = path.replace('[' + original_tag + ']',
+                                _apply_lower(replacewith, lower, upper))
         else:
             path = [
-                path.replace('[' + tag + ']', dkrz_place)
+                path.replace('[' + original_tag + ']',
+                             _apply_lower(dkrz_place, lower, upper))
                 for dkrz_place in replacewith
             ][j]
     return path
+
+
+def _apply_lower(original, lower, upper):
+    if lower:
+        return original.lower()
+    elif upper:
+        return original.upper()
+    return original
 
 
 def get_input_dirname_template(variable, rootpath, drs):
