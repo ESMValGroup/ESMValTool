@@ -2,7 +2,7 @@
 ;  Global timeseries for historical and RCPs 1850-2?00
 ;  Author: Ruth Lorenz (ETH, Switzerland)
 ;  PROJECT-NAME CRESCENDO
-; #############################################################################;
+; #############################################################################
 ; Caveats
 ;    Needs lots of memory, in particular if lots of models and scenarios
 ;    are included
@@ -424,6 +424,11 @@ begin
   dims_data = dimsizes(mean_val)
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)
 
+  if (isatt(diag_script_info, "spread")) then
+    spread = diag_script_info@spread
+  else
+    spread = 1.0
+  end if
   do j = 0, dims_data(0) - 1
     ;  if variable sw or lw TOA flux: change direction
     if (var0 .eq. "rlut" .or. var0 .eq. "rsut") then
@@ -431,34 +436,44 @@ begin
     else
       to_plot(j * 3, :) = mean_val(j, :)
     end if
-    to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + 1.64 * std_val(j, :)
-    to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - 1.64 * std_val(j, :)
+    to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + spread * std_val(j, :)
+    to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - spread * std_val(j, :)
   end do
   copy_VarMeta(mean_val, to_plot)
   to_plot!0 = "metric"
   if (dim_scen .eq. 1) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/) 
+    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" + \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std"/)
   else if (dim_scen .eq. 2) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/) 
+    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" + \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std", "mean", "+" + tostring(spread) + "std", "-" \
+                       + tostring(spread) + "std"/)
   else if (dim_scen .eq. 3) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/)    
+    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" +  \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" + \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std"/)
   else if (dim_scen .eq. 4) then
-    to_plot&metric = (/"mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std", \
-                       "mean", "+1.64std", "-1.64std"/)
+    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" + \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std", "mean", "+" + \
+                       tostring(spread) + "std", "-" + tostring(spread) + \
+                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
+                       tostring(spread) + "std"/)
   end if
   end if
   end if
   end if
-             
+
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 1)
 
@@ -511,5 +526,5 @@ begin
     ncdf_file@existing = "append"
     ncdf_outfile = ncdf_write(runs, ncdf_file)
   end if
-  
+
 end
