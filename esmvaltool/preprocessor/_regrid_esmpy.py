@@ -159,17 +159,27 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             'unmapped_action': ESMF.UnmappedAction.IGNORE,
             'ignore_degenerate': True,
         }
-        mask_regridder = ESMF.Regrid(**regridding_arguments,
-                                     src_mask_values=np.array([]))
-        src_field.data[...] = src_rep.data.mask.T
-        regr_field = mask_regridder(src_field, dst_field)
-        dst_mask = (regr_field.data[...].T > mask_threshold).astype(bool)
+        if np.ma.is_masked(src_rep.data):
+            mask_regridder = ESMF.Regrid(**regridding_arguments,
+                                         src_mask_values=np.array([]))
+            src_field.data[...] = src_rep.data.mask.T
+            regr_field = mask_regridder(src_field, dst_field)
+            dst_mask = regr_field.data[...].T > mask_threshold
+            center_mask = dst_field.grid.get_item(ESMF.GridItem.MASK,
+                                                  ESMF.StaggerLoc.CENTER)
+            center_mask[...] = dst_mask.T
+        else:
+            dst_mask = False
         field_regridder = ESMF.Regrid(**regridding_arguments,
-                                      src_mask_values=np.array([1]))
+                                      src_mask_values=np.array([1]),
+                                      dst_mask_values=np.array([1]))
 
         def regridder(src):
             res = get_empty_data(dst_rep.shape)
-            src_field.data[...] = src.data.data.T
+            d = src.data
+            if np.ma.is_masked(d):
+                d = d.data
+            src_field.data[...] = d.T
             regr_field = field_regridder(src_field, dst_field)
             res.data[...] = regr_field.data[...].T
             res.mask[...] = dst_mask
@@ -189,25 +199,35 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
         for level in range(no_levels):
             src_field = cube_to_empty_field(src_rep[level])
             src_fields.append(src_field)
-            mask_regridder = ESMF.Regrid(**regridding_arguments,
-                                         srcfield=src_field,
-                                         src_mask_values=np.array([]))
-            src_field.data[...] = src_rep[level].data.mask.T
-            regr_field = mask_regridder(src_field, dst_field)
-            dst_masks.append(
-                (regr_field.data[...].T > mask_threshold).astype(bool)
-            )
+            center_mask = dst_field.grid.get_item(ESMF.GridItem.MASK,
+                                                  ESMF.StaggerLoc.CENTER)
+            if np.ma.is_masked(src_rep.data):
+                mask_regridder = ESMF.Regrid(**regridding_arguments,
+                                             srcfield=src_field,
+                                             src_mask_values=np.array([]))
+                src_field.data[...] = src_rep[level].data.mask.T
+                regr_field = mask_regridder(src_field, dst_field)
+                dst_mask = regr_field.data[...].T > mask_threshold
+                dst_masks.append(dst_mask)
+                center_mask[...] = dst_mask.T
+            else:
+                dst_masks.append(False)
+                center_mask[...] = 0
             esmf_regridders.append(
                 ESMF.Regrid(**regridding_arguments,
                             srcfield=src_field,
-                            src_mask_values=np.array([1]))
+                            src_mask_values=np.array([1]),
+                            dst_mask_values=np.array([1]))
             )
 
         def regridder(src):
             res = get_empty_data(dst_rep.shape)
             for i, (src_field, esmf_regridder, dst_mask) \
                     in enumerate(zip(src_fields, esmf_regridders, dst_masks)):
-                src_field.data[...] = src[i].data.data.T
+                d = src[i].data
+                if np.ma.is_masked(d):
+                    d = d.data
+                src_field.data[...] = d.T
                 regr_field = esmf_regridder(src_field, dst_field)
                 res.data[i, ...] = regr_field.data[...].T
                 res.mask[i, ...] = dst_mask
