@@ -176,9 +176,9 @@ EMAC:
   output_file: '[dataset]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
-O3Cionni:
+Ozone_CMIP5_ACC_SPARC:
   input_dir:
     default: ''
-  input_file: 'Ozone_CMIP5_ACC_SPARC_[exp]_[field]_[var]_*'
-  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  input_file: '[project]_[exp]_[field]_[var]_*'
+  output_file: '[project]_[dataset]_[exp]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
