@@ -114,7 +114,6 @@ def replace_tags(path, variable, j=None, i=None):
 
 
 def _get_caps_options(tag):
-    original_tag = tag
     lower = False
     upper = False
     if tag.endswith('.lower'):
