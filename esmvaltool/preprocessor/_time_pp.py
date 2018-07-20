@@ -69,6 +69,39 @@ def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
     return cube_slice
 
 
+def extract_season(cube, season):
+    """
+    Slice cube to get only the data belonging to a specific season
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Original data
+    season: str
+        Season to extract. Available: DJF, MAM, JJA, SON
+    """
+    import iris.coord_categorisation
+    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
+    return season_cube
+
+
+def extract_month(mycube, month):
+    """
+    Slice cube to get only the data belonging to a specific month
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Original data
+    month: int
+        Month to extract as a number from 1 to 12
+    """
+    import iris.coord_categorisation
+    season_cube = mycube.extract(iris.Constraint(month_number=month))
+    return season_cube
+
+
 # get the time average
 def time_average(cube):
     """

@@ -5,6 +5,9 @@ import os
 from iris.cube import Cube
 
 from .._task import AbstractTask
+from ._area_pp import area_average as average_region
+from ._area_pp import area_slice as extract_region
+from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
@@ -14,17 +17,12 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import regrid
 from ._regrid import vinterp as extract_levels
-from ._time_pp import time_average
-from ._time_pp import seasonal_mean
+from ._time_pp import (extract_month, extract_season, seasonal_mean,
+                       time_average)
 from ._time_pp import time_slice as extract_time
-from ._area_pp import area_slice as extract_region
-from ._area_pp import area_average as average_region
-from ._area_pp import zonal_means
-from ._volume_pp import volume_slice as extract_volume
-from ._volume_pp import extract_trajectory
-from ._volume_pp import extract_transect
-from ._volume_pp import depth_integration
+from ._volume_pp import depth_integration, extract_trajectory, extract_transect
 from ._volume_pp import volume_average as average_volume
+from ._volume_pp import volume_slice as extract_volume
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +41,8 @@ __all__ = [
     'cmor_check_metadata',
     # Time extraction
     'extract_time',
+    'extract_season',
+    'extract_month',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction

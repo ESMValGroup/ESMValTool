@@ -10,9 +10,16 @@ from __future__ import absolute_import, division, print_function
 import unittest
 
 from esmvaltool.preprocessor import _regrid
+from esmvaltool.cmor.table import read_cmor_tables
+from esmvaltool._config import read_config_developer_file
 
 
 class TestGetCmorLevels(unittest.TestCase):
+
+    @staticmethod
+    def setUpClass():
+        """Read cmor tables before testing"""
+        read_cmor_tables(read_config_developer_file())
 
     def test_cmip6_alt40(self):
         self.assertListEqual(_regrid.get_cmor_levels('CMIP6', 'alt40'),
