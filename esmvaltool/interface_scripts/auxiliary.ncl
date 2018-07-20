@@ -528,8 +528,16 @@ begin
     else if (existing .eq. "append") then
       ncdf = addfile(outfile, "w")
       dimNames = getvardims(data)
-      filevardef(ncdf, varname, typeof(data), dimNames)
       dim_dim = dimsizes(dimNames)
+      ; define dimensions in case not defined yet
+      dimSzs = new(dimsizes(dimNames), long)
+      dimUnlim = new(dimsizes(dimNames), logical)
+      dimUnlim(:) = False
+      do i = 0, dim_dim - 1
+        dimSzs(i) = dimsizes(data&$dimNames(i)$)
+      end do
+      filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+      filevardef(ncdf, varname, typeof(data), dimNames)
       ; Copy attributes associated with each variable to the file
       do i = 0, dim_dim - 1
         ; No attribute assignment to variable if no attributes are available
