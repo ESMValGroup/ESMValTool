@@ -113,6 +113,12 @@ CMIP5:
     'day': ['atmos', 'day']
     'fx': ['*', 'fx']
 
+CMIP52:
+  input_dir:
+    default: '/'
+  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+
 OBS:
   input_dir:
     default: '[tier]/[dataset]'
