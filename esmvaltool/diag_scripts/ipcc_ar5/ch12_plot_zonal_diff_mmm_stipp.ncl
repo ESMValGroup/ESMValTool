@@ -127,17 +127,17 @@ begin
   lev_name = dims(idx)
 
   if (isatt(diag_script_info, "sig") .and. \
-    diag_script_info@sig .eq. True) then
+      diag_script_info@sig .eq. True) then
     ; read already calculated significance
     to_plot_signif = ncdf_read(datapath, "signif")
   end if
   if (isatt(diag_script_info, "not_sig") .and. \
-    diag_script_info@not_sig .eq. True) then
+      diag_script_info@not_sig .eq. True) then
     ; read already calculated significance
     to_plot_not_signif = ncdf_read(datapath, "not_signif")
   end if
   if (isatt(diag_script_info, "model_nr") .and. \
-    diag_script_info@model_nr .eq. True) then
+      diag_script_info@model_nr .eq. True) then
     ; read already calculated number of models included in plot
     model_number = ncdf_read(datapath, "model_nr")
   end if
@@ -184,8 +184,8 @@ begin
     to_plot@res_cnSpanFillPalette     = True   ; use full colormap
   end if
   to_plot@res_lbLabelBarOn = False
-  ;to_plot@res_trYReverse               = True
-  ;to_plot@res_gsnYAxisIrregular2Log = True
+;  to_plot@res_trYReverse               = True
+;  to_plot@res_gsnYAxisIrregular2Log = True
   if (lev_name .eq. "lev") then
     to_plot@res_trYReverse            = True
     to_plot@res_gsnYAxisIrregular2Linear = True
@@ -229,7 +229,7 @@ begin
     end if
   end if
   if (isatt(diag_script_info, "sig") .and. \
-    diag_script_info@sig .eq. True) then
+      diag_script_info@sig .eq. True) then
     ; resources dots
     to_plot_signif@res_gsnDraw = False
     to_plot_signif@res_gsnFrame = False
@@ -252,7 +252,7 @@ begin
     to_plot_signif@res_cnFillScaleF        = .6
   end if
   if (isatt(diag_script_info, "not_sig") .and. \
-    diag_script_info@not_sig .eq. True) then
+      diag_script_info@not_sig .eq. True) then
     ; resources hatch
     to_plot_not_signif@res_gsnDraw = False
     to_plot_not_signif@res_gsnFrame = False
@@ -295,13 +295,13 @@ begin
       maps(i) = contourplot(wks, to_plot(i, :, :), var0)
     end if
     if (isatt(diag_script_info, "sig") .and. \
-      diag_script_info@sig .eq. True) then
+        diag_script_info@sig .eq. True) then
       ; plot dots
       if all(to_plot_signif(i, :, :) .eq. 1) then
         to_plot_signif(i, 0, 0) = 0
       end if
       if (max(to_plot_signif(i, :, :)) .gt. \
-        min(to_plot_signif(i, :, :))) then
+          min(to_plot_signif(i, :, :))) then
         to_plot_signif@res_gsnAddCyclic = False
         if (lev_name .eq. "plev") then
           plot1 = zonalmean_profile(wks, to_plot_signif(i, :, :), var0)
@@ -312,7 +312,7 @@ begin
       end if
     end if
     if (isatt(diag_script_info, "not_sig") .and. \
-      diag_script_info@not_sig .eq. True) then
+        diag_script_info@not_sig .eq. True) then
       ; plot hatch
       if all(to_plot_not_signif(i, :, :) .eq. 1) then
         to_plot_not_signif(i, 0, 0) = 0
@@ -347,7 +347,7 @@ begin
   amres@amOrthogonalPosF = -0.48    ; This is the bottom edge of the plot.
   amres@amJust           = "TopRight"
   if ((isatt(diag_script_info, "model_nr")) .and. \
-    (diag_script_info@model_nr .eq. True)) then
+      (diag_script_info@model_nr .eq. True)) then
     do i = 0, dimsizes(maps) - 1
       txid1 = gsn_create_text(wks, "" + model_number(i), txres)
       annoid1 = gsn_add_annotation(maps(i), txid1, amres)
@@ -388,19 +388,20 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, psles)
 
 ; # add tags
-  ; alltags = array_append_record(tags, (/"DM_glob", "PT_zonal", "ST_clim"/), 0)
+  ; alltags = array_append_record(tags, (/"DM_glob", "PT_zonal", \
+  ;                                       "ST_clim"/), 0)
   ; caption = "CMIP5 multi-model changes in annual mean zonal mean " + \
-  ;            variable_info@long_name + \
-  ;            " relative to " + dataset_info@start_year(0) + "-" +  \
-  ;            dataset_info@end_year(0) + " for 20 year periods starting in " + \
-  ;            str_join(diag_script_info@periods, ", ") + " under the " + \
+  ;            variable_info@long_name + " relative to " + \
+  ;            dataset_info@start_year(0) + "-" + dataset_info@end_year(0) \
+  ;            + " for 20 year periods starting in " \
+  ;            + str_join(diag_script_info@periods, ", ") + " under the " + \
   ;            str_join(diag_script_info@scenarios, ", ") + \
   ;            " forcing scenarios. Hatching indicates regions where the " + \
-  ;            "multi-model mean change is less than one standard deviation "+\
-  ;            "of internal variability. Stippling indicates regions where " + \
-  ;            "the multi-model chnage mean is greater than two standard " + \
-  ;            "deviations of internal variability and where at least 90% " + \
-  ;            "of the models agree on the sign of change. " + \
+  ;            "multi-model mean change is less than one standard " + \
+  ;            "deviation of internal variability. Stippling indicates " + \
+  ;            "regions where the multi-model chnage mean is greater than " + \
+  ;            "two standard deviations of internal variability and where " + \
+  ;            "at least 90% of the models agree on the sign of change. " + \
   ;            "Similar to Figure 12.12 of Collins et al. (2013)."
   ; id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
   ; contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)

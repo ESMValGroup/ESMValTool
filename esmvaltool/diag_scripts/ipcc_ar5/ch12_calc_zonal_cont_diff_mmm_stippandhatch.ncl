@@ -324,7 +324,7 @@ begin
           to_plot_base(i, :, :) = base_avg
         end if
         ; determine sigma and sign for significance
-        print ("determine sigma and sign for significance")
+        print("determine sigma and sign for significance")
         var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
                                          to_plot@_FillValue) .eq. 1., 0)
         var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
@@ -461,7 +461,7 @@ begin
   ; # Output to netCDF                        #
   ; ###########################################
   ; Optional output (controlled by diag_script_info)
-  print ("Write to netcdf")
+  print("Write to netcdf")
   to_plot@ncdf = variable_info@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"

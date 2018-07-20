@@ -105,7 +105,7 @@ begin
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
     error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
-	      "need 2 or 3")
+              "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
   if (ismissing(idx)) then
@@ -129,26 +129,26 @@ begin
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
       iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
-		 dimsizes(A0&lon)/), typeof(A0), Fill)
+                 dimsizes(A0&lon)/), typeof(A0), Fill)
       copy_VarMeta(A0, iav)
     end if
   end if
   data2 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
-		 dimsizes(A0&lon)/), typeof(A0), Fill)   
+               dimsizes(A0&lon)/), typeof(A0), Fill)
 
   do imod = 0, dim_MOD - 1
     log_info(dataset_info@dataset(imod))
     ; Average over time
     if (imod .eq. 0) then
       if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-	(dim_seas .ne. 4)) then
-	tmp_seas = time_operations(A0, -1, -1, "average", \
-				   diag_script_info@time_avg, True)
-	data1 = tmp_seas(diag_script_info@seasons, :, :)
-	delete(tmp_seas)
+          (dim_seas .ne. 4)) then
+        tmp_seas = time_operations(A0, -1, -1, "average", \
+                                   diag_script_info@time_avg, True)
+        data1 = tmp_seas(diag_script_info@seasons, :, :)
+        delete(tmp_seas)
       else
-	data1 = time_operations(A0, -1, -1, "average", \
-				diag_script_info@time_avg, True)
+        data1 = time_operations(A0, -1, -1, "average", \
+                                diag_script_info@time_avg, True)
       end if
     else
       A1 = read_data(imod, var0, field_type0)
@@ -165,7 +165,7 @@ begin
       lon_name = dims(idx)
       ; Average over time,
       if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-	  (dim_seas .ne. 4)) then
+          (dim_seas .ne. 4)) then
         tmp_seas = time_operations(A1, -1, -1, "average", \
                                    diag_script_info@time_avg, True)
         data1 = tmp_seas(diag_script_info@seasons, :, :)
@@ -183,18 +183,19 @@ begin
 
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
-	; #########################################################
-	; # Read natural variability for stippling for each model #
-	; #########################################################
+        ; #########################################################
+        ; # Read natural variability for stippling for each model #
+        ; #########################################################
         log_info("Read natural variability for stippling for each model")
         iav_file = addfile(input_dir + "/" + "IAV_for_stippandhatch_" +\
-                           "ipcc12/IAV_piControl_" + dataset_info@dataset(imod)\
-                           + "_" + dataset_info@ensemble(imod) + "_" + \
-                           field_type0 + "_" + var0 + "_" + \
-                           diag_script_info@time_avg + ".nc", "r")
-	if (dim_seas .eq. 1) then
+                           "ipcc12/IAV_piControl_" + \
+                           dataset_info@dataset(imod) + "_" +  \
+                           dataset_info@ensemble(imod) + "_" + field_type0 + \
+                           "_" + var0 + "_" + diag_script_info@time_avg + \
+                           ".nc", "r")
+        if (dim_seas .eq. 1) then
           iav(imod, 0, :, :) = iav_file->iav
-	else
+        else
           iav(imod, :, :, :) = iav_file->iav
         end if
       end if
@@ -217,12 +218,11 @@ begin
                           diag_script_info@time_avg + ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
-      (diag_script_info@time_avg .ne. "annualclim")) then
+        (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-			dimsizes(A0&lat), \
-			dimsizes(A0&lon)/), float)
+                        dimsizes(A0&lat), dimsizes(A0&lon)/), float)
       natvar_mmm = tmp(diag_script_info@seasons, :, :)
     end if
   end if
@@ -244,20 +244,18 @@ begin
   dim_per = dimsizes(diag_script_info@periods)
 
   to_plot = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
-	         dimsizes(A0&lon)/), typeof(data1), Fill)
+                 dimsizes(A0&lon)/), typeof(data1), Fill)
   if (isatt(diag_script_info, "percent")) then
     percent = diag_script_info@percent
     ref = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
-	       dimsizes(A0&lon)/), typeof(data1), Fill)
+               dimsizes(A0&lon)/), typeof(data1), Fill)
   else
     percent = 0
   end if
-  to_plot_signif = new((/dim_scen * dim_per * dim_seas,  \
-		        dimsizes(A0&lat), dimsizes(A0&lon)/), \
-		       typeof(data1), Fill)
-  to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, \
-			    dimsizes(A0&lat), \
-			    dimsizes(A0&lon)/), typeof(data1), Fill)
+  to_plot_signif = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
+                        dimsizes(A0&lon)/), typeof(data1), Fill)
+  to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
+                            dimsizes(A0&lon)/), typeof(data1), Fill)
   model_number = new((/dim_scen * dim_per * dim_seas/), integer)
   ; move to preprocessor
   ; if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
@@ -272,7 +270,7 @@ begin
       do per = 0, dim_per - 1  ; loop over periods
         idx_rcp = ind((dataset_info@exp .eq. \
                        diag_script_info@scenarios(rcp)) .and. \
-                       (dataset_info@start_year .eq. \
+                      (dataset_info@start_year .eq. \
                        diag_script_info@periods(per)))
         proj = data2(idx_rcp, seas, :, :)
         ; **cut low values ***
@@ -302,11 +300,11 @@ begin
         var_pos_signif_tmp = \
           var_pos_signif / where((var_pos_signif + var_neg_signif) \
                                  .ne. 0., var_pos_signif + \
-                                  var_neg_signif, to_plot@_FillValue)
+                                 var_neg_signif, to_plot@_FillValue)
         var_neg_signif_tmp = \
           var_neg_signif / where((var_pos_signif + var_neg_signif) \
                                  .ne. 0., var_pos_signif + \
-                                  var_neg_signif, to_plot@_FillValue)
+                                 var_neg_signif, to_plot@_FillValue)
         signif_and_sign = where(var_pos_signif_tmp .ge. 0.9 .or. \
                                 var_neg_signif_tmp .ge. 0.9, 1., 0.)
         signif_and_sign = where(ismissing(signif_and_sign), 0.,\
@@ -380,13 +378,13 @@ begin
   ; check unit and adjust for plotting if necessary
   if (isatt(variable_info, "units")) then
     if ((var0 .eq. "mrro" .or. var0 .eq. "evspsbl") \
-	.and. variable_info@units .eq. "kg m-2 s-1") then
+        .and. variable_info@units .eq. "kg m-2 s-1") then
       ; convert [kg m-2 s-1] to [mm day-1]
       to_plot = to_plot * 60 * 60 * 24
       variable_info@units = "mm day-1"
       to_plot@var_units   = variable_info@units
     else if (var0 .eq. "mrsos" .and. \
-	     variable_info@units .eq. "kg m-2") then
+             variable_info@units .eq. "kg m-2") then
       ; convert [kg m-2] to [mm]
       variable_info@units = "mm"
       to_plot@var_units   = variable_info@units
@@ -415,31 +413,30 @@ begin
   if(isatt(to_plot_signif, "diag_script")) then  ; Add to existing entries
     temp = to_plot_signif@diag_script
     delete(to_plot_signif@diag_script)
-    to_plot_signif@diag_script = array_append_record(temp, \
-						     (/diag_script/), 0)
+    to_plot_signif@diag_script = array_append_record(temp, (/diag_script/), 0)
     delete(temp)
   else  ; Add as new attribute
     to_plot_signif@diag_script = (/diag_script/)
   end if
 
   to_plot_signif@var = "signif"
-  to_plot_signif@var_long_name = "significance: mean change larger than "\
-			         + "2*natvar and 90% of models have the " \
-			         + "same sign"
+  to_plot_signif@var_long_name = "significance: mean change larger than " \
+                                 + "2*natvar and 90% of models have the " \
+                                 + "same sign"
   to_plot_signif@var_units     = 1
 
   if(isatt(to_plot_not_signif, "diag_script")) then
     temp = to_plot_not_signif@diag_script
     delete(to_plot_not_signif@diag_script)
     to_plot_not_signif@diag_script = array_append_record(temp, \
-							 (/diag_script/), 0)
+                                                         (/diag_script/), 0)
     delete(temp)
   else  ; Add as new attribute
     to_plot_not_signif@diag_script = (/diag_script/)
   end if
   to_plot_not_signif@var = "not_signif"
   to_plot_not_signif@var_long_name = "not significant: mean change " \
-    				     + "smaller than 1*natvar"
+                                     + "smaller than 1*natvar"
   to_plot_not_signif@var_units     = 1
 
   model_number!0 = "panel"
