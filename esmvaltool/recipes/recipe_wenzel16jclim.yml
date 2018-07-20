@@ -96,227 +96,261 @@ preprocessors:
 
 diagnostics:
 
-  ta_sp100:
-    description: Calculate temperature trends and climatological means of ta.
+  # ta_sp100:
+  #   description: Calculate temperature trends and climatological means of ta.
+  #   variables:
+  #     ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: mean_sp100
+  #       project: CMIP5
+  #       mip: Amon
+  #       field: T3M
+  #       exp: historical
+  #       start_year: 1979
+  #       end_year: 2005
+  #   additional_datasets: &ta_datasets
+  #     - {dataset: ERA-Interim,    project: OBS, type: reanaly, version: 1, tier: 3}
+  #     - {dataset: ACCESS1-0,      ensemble: r1i1p1}
+  #     - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+  #     - {dataset: BNU-ESM,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r2i1p1}
+  #     - {dataset: CanESM2,        ensemble: r3i1p1}
+  #     - {dataset: CanESM2,        ensemble: r4i1p1}
+  #     - {dataset: CanESM2,        ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r1i1p1}
+  #     - {dataset: CCSM4,          ensemble: r2i1p1}
+  #     - {dataset: CCSM4,          ensemble: r3i1p1}
+  #     - {dataset: CCSM4,          ensemble: r4i1p1}
+  #     - {dataset: CCSM4,          ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r6i1p1}
+  #     - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+  #     - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+  #     - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+  #     - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+  #     - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+  #     - {dataset: inmcm4,         ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+  #     - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r2i1p1}
+  #     - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+  #     - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+  #     - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+  #     - {dataset: NorESM1-M,      ensemble: r1i1p1}
+  #   scripts:
+  #     ta_sp100: &ta_sp100
+  #       script: mder/austral_jet_diags.ncl
+  #       average_ens: True
+  #       styleset: CMIP5
+  #       e13fig10_yr_min: 1979
+  #       e13fig10_yr_max: 2005
+  #       e13fig10_season: ['ONDJ']
+  #       wdiag: ['T-SP_t', 'T-SP_c']
+  #       wdiag_title: ['T-SP_t', 'T-SP_c']
+  #       ref_dataset: ['ERA-Interim']
+  #     select_for_mder:
+  #       <<: *ta_sp100
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['ta', 'ta_sp100']
+  #
+  # ta_ng100:
+  #   description: Calculate temperature trends and climatological means of ta.
+  #   variables:
+  #     ta:
+  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: mean_ng100
+  #   additional_datasets: *ta_datasets
+  #   scripts:
+  #     ta_ng100: &ta_ng100
+  #       <<: *ta_sp100
+  #       e13fig10_season: ['yearly']
+  #       wdiag: ['T-NGlob_t', 'T-NGlob_c']
+  #       wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
+  #     select_for_mder:
+  #       <<: *ta_ng100
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['ta', 'ta_ng100']
+  #
+  # ta_trop250:
+  #   description: Calculate temperature trends and climatological means of ta.
+  #   variables:
+  #     ta:
+  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: mean_trop250
+  #   additional_datasets: *ta_datasets
+  #   scripts:
+  #     ta_trop250: &ta_trop250
+  #       <<: *ta_sp100
+  #       e13fig10_season: ['DJF']
+  #       wdiag: ['T-Trop_t', 'T-Trop_c']
+  #       wdiag_title: ['T-Trop_t', 'T-Trop_c']
+  #     select_for_mder:
+  #       <<: *ta_trop250
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['ta', 'ta_trop250']
+  #
+  # tro3_sp50:
+  #   description: Calculate temperature trends and climatological means of tro3.
+  #   variables:
+  #     tro3:
+  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: mean_sp50
+  #   additional_datasets: &tro3_datasets
+  #     - {dataset: BDBP,           project: OBS, type: reanaly, version: 1, tier: 3}
+  #     # Does not work yet (wrong time format for cf_units 'months since ...')
+  #     # - {dataset: ACCESS1-0,      project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: ACCESS1-3,      project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: CanCM4,         project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: CESM1-BGC,      project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: CESM1-CAM5,     project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: CMCC-CMS,       project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: CSIRO-Mk3-6-0,  project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: HadGEM2-A0,     project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: inmcm4,         project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: MRI-CGCM3,      project: Ozone_CMIP5_ACC_SPARC}
+  #     # - {dataset: NorESM1-M,      project: Ozone_CMIP5_ACC_SPARC}
+  #     - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+  #     - {dataset: BNU-ESM,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r2i1p1}
+  #     - {dataset: CanESM2,        ensemble: r3i1p1}
+  #     - {dataset: CanESM2,        ensemble: r4i1p1}
+  #     - {dataset: CanESM2,        ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r1i1p1}
+  #     - {dataset: CCSM4,          ensemble: r2i1p1}
+  #     - {dataset: CCSM4,          ensemble: r3i1p1}
+  #     - {dataset: CCSM4,          ensemble: r4i1p1}
+  #     - {dataset: CCSM4,          ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r6i1p1}
+  #     - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+  #     - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+  #     - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r2i1p1}
+  #     - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+  #     - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+  #   scripts:
+  #     tro3_sp50: &tro3_sp50
+  #       <<: *ta_sp100
+  #       e13fig10_season: ['SOND']
+  #       wdiag: ['O3-SP_t', 'O3-SP_c']
+  #       wdiag_title: ['O3-SP_t', 'O3-SP_c']
+  #       ref_dataset: ['BDBP']
+  #     select_for_mder:
+  #       <<: *tro3_sp50
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['tro3', 'tro3_sp50']
+  #
+  # tro3_ng50:
+  #   description: Calculate temperature trends and climatological means of tro3.
+  #   variables:
+  #     tro3:
+  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: mean_ng50
+  #   additional_datasets: *tro3_datasets
+  #   scripts:
+  #     tro3_ng50: &tro3_ng50
+  #       <<: *tro3_sp50
+  #       e13fig10_season: ['yearly']
+  #       wdiag: ['O3-NGlob_t', 'O3-NGlob_c']
+  #       wdiag_title: ['O3-NGlob_t', 'O3-NGlob_c']
+  #     select_for_mder:
+  #       <<: *tro3_ng50
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['tro3', 'tro3_ng50']
+  #
+  # ua_850:
+  #   description: Calculate temperature trends and climatological means of ua.
+  #   variables:
+  #     ua:
+  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+  #       preprocessor: ua850
+  #   additional_datasets: *ta_datasets
+  #   scripts:
+  #     ua_850: &ua_850
+  #       <<: *ta_sp100
+  #       e13fig10_season: ['DJF']
+  #       wdiag: ['U-Jet_t', 'U-Jet_c']
+  #       wdiag_title: ['U-Jet_t', 'U-Jet_c']
+  #     select_for_mder:
+  #       <<: *ua_850
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['ua', 'ua_850']
+
+  tpp_sh50:
+    description: Calculate temperature trends and climatological means of tpp.
     variables:
-      ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: mean_sp100
+      ta: &cmip5_amon_t3m_historical_1979_2005
         project: CMIP5
         mip: Amon
         field: T3M
         exp: historical
         start_year: 1979
         end_year: 2005
-    additional_datasets: &ta_datasets
+    additional_datasets:
+      # *ta_datasets
       - {dataset: ERA-Interim,    project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r1i1p1}
-      - {dataset: CCSM4,          ensemble: r2i1p1}
-      - {dataset: CCSM4,          ensemble: r3i1p1}
-      - {dataset: CCSM4,          ensemble: r4i1p1}
-      - {dataset: CCSM4,          ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r6i1p1}
-      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
-      ta_sp100: &ta_sp100
+      tpp_sh50: &tpp_sh50
+        # <<: *ta_sp100
+        e13fig10_season: ['DJF']
+        wdiag: ['P-SH_t', 'P_SH_c']
+        wdiag_title: ['P_SH_t', 'P_SH_c']
+        derive_var: tpp
+        derive_lev: 5000
+        derive_latrange: [-90, -50]
+
         script: mder/austral_jet_diags.ncl
         average_ens: True
         styleset: CMIP5
         e13fig10_yr_min: 1979
         e13fig10_yr_max: 2005
-        e13fig10_season: ['ONDJ']
-        wdiag: ['T-SP_t', 'T-SP_c']
-        wdiag_title: ['T-SP_t', 'T-SP_c']
         ref_dataset: ['ERA-Interim']
       select_for_mder:
-        <<: *ta_sp100
+        <<: *tpp_sh50
         script: mder/select_for_mder.ncl
-        ancestors: ['ta', 'ta_sp100']
-
-  ta_ng100:
-    description: Calculate temperature trends and climatological means of ta.
-    variables:
-      ta:
-        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: mean_ng100
-    additional_datasets: *ta_datasets
-    scripts:
-      ta_ng100: &ta_ng100
-        <<: *ta_sp100
-        e13fig10_season: ['yearly']
-        wdiag: ['T-NGlob_t', 'T-NGlob_c']
-        wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
-      select_for_mder:
-        <<: *ta_ng100
-        script: mder/select_for_mder.ncl
-        ancestors: ['ta', 'ta_ng100']
-
-  ta_trop250:
-    description: Calculate temperature trends and climatological means of ta.
-    variables:
-      ta:
-        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: mean_trop250
-    additional_datasets: *ta_datasets
-    scripts:
-      ta_trop250: &ta_trop250
-        <<: *ta_sp100
-        e13fig10_season: ['DJF']
-        wdiag: ['T-Trop_t', 'T-Trop_c']
-        wdiag_title: ['T-Trop_t', 'T-Trop_c']
-      select_for_mder:
-        <<: *ta_trop250
-        script: mder/select_for_mder.ncl
-        ancestors: ['ta', 'ta_trop250']
-
-  tro3_sp50:
-    description: Calculate temperature trends and climatological means of tro3.
-    variables:
-      tro3:
-        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: mean_sp50
-    additional_datasets: &tro3_datasets
-      - {dataset: BDBP,           project: OBS, type: reanaly, version: 1, tier: 3}
-      # Does not work yet (wrong time format for cf_units 'months since ...')
-      # - {dataset: ACCESS1-0,      project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: ACCESS1-3,      project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: CanCM4,         project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: CESM1-BGC,      project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: CESM1-CAM5,     project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: CMCC-CMS,       project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: CSIRO-Mk3-6-0,  project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: HadGEM2-A0,     project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: inmcm4,         project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: MRI-CGCM3,      project: Ozone_CMIP5_ACC_SPARC}
-      # - {dataset: NorESM1-M,      project: Ozone_CMIP5_ACC_SPARC}
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r1i1p1}
-      - {dataset: CCSM4,          ensemble: r2i1p1}
-      - {dataset: CCSM4,          ensemble: r3i1p1}
-      - {dataset: CCSM4,          ensemble: r4i1p1}
-      - {dataset: CCSM4,          ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r6i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-    scripts:
-      tro3_sp50: &tro3_sp50
-        <<: *ta_sp100
-        e13fig10_season: ['SOND']
-        wdiag: ['O3-SP_t', 'O3-SP_c']
-        wdiag_title: ['O3-SP_t', 'O3-SP_c']
-        ref_dataset: ['BDBP']
-      select_for_mder:
-        <<: *tro3_sp50
-        script: mder/select_for_mder.ncl
-        ancestors: ['tro3', 'tro3_sp50']
-
-  tro3_ng50:
-    description: Calculate temperature trends and climatological means of tro3.
-    variables:
-      tro3:
-        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: mean_ng50
-    additional_datasets: *tro3_datasets
-    scripts:
-      tro3_ng50: &tro3_ng50
-        <<: *tro3_sp50
-        e13fig10_season: ['yearly']
-        wdiag: ['O3-NGlob_t', 'O3-NGlob_c']
-        wdiag_title: ['O3-NGlob_t', 'O3-NGlob_c']
-      select_for_mder:
-        <<: *tro3_ng50
-        script: mder/select_for_mder.ncl
-        ancestors: ['tro3', 'tro3_ng50']
-
-  ua_850:
-    description: Calculate temperature trends and climatological means of ua.
-    variables:
-      ua:
-        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-        preprocessor: ua850
-    additional_datasets: *ta_datasets
-    scripts:
-      ua_850: &ua_850
-        <<: *ta_sp100
-        e13fig10_season: ['DJF']
-        wdiag: ['U-Jet_t', 'U-Jet_c']
-        wdiag_title: ['U-Jet_t', 'U-Jet_c']
-      select_for_mder:
-        <<: *ua_850
-        script: mder/select_for_mder.ncl
-        ancestors: ['ua', 'ua_850']
+        ancestors: ['ta', 'tpp_sh50']
 
 # <diag>
 #     <description>   tropopause pressure (ta => tpp)    </description>

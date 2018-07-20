@@ -151,23 +151,95 @@ begin
   val_mean!1 = "dataset"
   val_mean&dataset = dataset_info@dataset(idx_datasets)
 
-  ; Get plev and lat range from preprocessed data
-  plev = read_data(0, "plev", field_type0)
-  lat = read_data(0, "lat", field_type0)
-  if (dimsizes(plev) .eq. 1) then
-    lev = plev(0)
+  ; ---------------------------------------------------------------------------
+  ; Derive variables
+  ; ---------------------------------------------------------------------------
+
+  if (isatt(diag_script_info, "derive_var")) then
+    var1 = diag_script_info@derive_var
+    log_info("Deriving variable " + var1)
+
+    ; Check attributes
+    if (isatt(diag_script_info, "derive_latrange")) then
+      lat_range = diag_script_info@derive_latrange
+    else
+      error_msg("f", diag_script, "", "when deriving a variable the " + \
+                "attribute derive_latrange is required")
+    end if
+    if (isatt(diag_script_info, "derive_lev")) then
+      lev = diag_script_info@derive_lev
+    else
+      error_msg("f", diag_script, "", "when deriving a variable the " + \
+                "attribute derive_lev is required")
+    end if
+    log_info("Retrieved pressure level " + lev + " and latitude range " + \
+             lat_range(0) + " to " + lat_range(1) + " from recipe")
+
+    ; Iterate over all datasets
+    do i = 0, dimsizes(dataset_info@dataset) - 1
+      if (var1 .eq. var0) then
+        log_info("Derived variable equals input variable, skipping deriving")
+        break
+      end if
+      A0 = read_data(i, var0, field_type0)
+
+      ; Tropopause pressure tpp
+      if (var1 .eq. "tpp") then
+
+        ; Order plev: lowest pressure first
+        pr = A0&plev
+        if (pr(0) .eq. max(pr)) then
+          pin = pr(::-1)
+          tin = A0({time|:}, {lat|:}, {lon|:}, {plev|::-1})
+        else
+          pin = pr
+          tin = A0({time|:}, {lat|:}, {lon|:}, {plev|:})
+        end if
+
+        ; Calculate tropopause pressure and copy metedata
+        ptp = trop_wmo(pin, tin, 0, False)
+        ptp!0 = A0!0
+        ptp!1 = A0!2
+        ptp!2 = A0!3
+        ptp&time = A0&time
+        ptp&lat = A0&lat
+        ptp&lon = A0&lon
+        ptp@standard_name = "tropopause_air_pressure"
+        ptp@long_name = "Tropopause Air Pressure"
+        ptp@units = "Pa"
+
+        printVarSummary(A0)
+        printVarSummary(ptp)
+
+        ; Set variables
+        var0 := var1
+        field_type0 := "T2Ms"
+
+        delete([/A0, ptp, pr, pin, tin/])
+      end if
+    end do
+
+  ; Get plev and lat range from preprocessed data if variable is not derived
   else
-    error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
-              "only one supported")
-  end if
-  if (dimsizes(lat) .gt. 1) then
-    lat_range = (/min(lat), max(lat)/)
-  else
-    lat_range = read_data(0, "lat_bnds", field_type0)
+    plev = read_data(0, "plev", field_type0)
+    lat = read_data(0, "lat", field_type0)
+    if (dimsizes(plev) .eq. 1) then
+      lev = plev(0)
+    else
+      error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
+                "only one supported")
+    end if
+    if (dimsizes(lat) .gt. 1) then
+      lat_range = (/min(lat), max(lat)/)
+    else
+      lat_range = read_data(0, "lat_bnds", field_type0)
+    end if
+    log_info("Retrieved pressure level " + lev + " and latitude range " + \
+             lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
   end if
 
   ; ---------------------------------------------------------------------------
-  ; Read and precprocess data
+  ; Read and preprocess data
   ; ---------------------------------------------------------------------------
 
   ; Iterate over datasets
