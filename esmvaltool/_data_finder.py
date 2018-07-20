@@ -69,14 +69,7 @@ def replace_tags(path, variable, j=None, i=None):
 
     for tag in tlist:
         original_tag = tag
-        lower = False
-        upper = False
-        if tag.endswith('.lower'):
-            lower = True
-            tag = tag[0:-6]
-        elif tag.endswith('.upper'):
-            upper = True
-            tag = tag[0:-6]
+        tag, lower, upper = _get_caps_options(tag)
 
         if tag == 'var':
             replacewith = variable['short_name']
@@ -110,17 +103,30 @@ def replace_tags(path, variable, j=None, i=None):
 
         if not isinstance(replacewith, list):
             path = path.replace('[' + original_tag + ']',
-                                _apply_lower(replacewith, lower, upper))
+                                _apply_caps(replacewith, lower, upper))
         else:
             path = [
                 path.replace('[' + original_tag + ']',
-                             _apply_lower(dkrz_place, lower, upper))
+                             _apply_caps(dkrz_place, lower, upper))
                 for dkrz_place in replacewith
             ][j]
     return path
 
 
-def _apply_lower(original, lower, upper):
+def _get_caps_options(tag):
+    original_tag = tag
+    lower = False
+    upper = False
+    if tag.endswith('.lower'):
+        lower = True
+        tag = tag[0:-6]
+    elif tag.endswith('.upper'):
+        upper = True
+        tag = tag[0:-6]
+    return tag, lower, upper
+
+
+def _apply_caps(original, lower, upper):
     if lower:
         return original.lower()
     elif upper:
