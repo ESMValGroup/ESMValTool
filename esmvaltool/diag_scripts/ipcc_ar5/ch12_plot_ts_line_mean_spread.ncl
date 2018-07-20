@@ -114,11 +114,11 @@ begin
   datapath = netcdf_dir + "/" + variable_info@diagnostic + ".nc"
   to_plot = ncdf_read(datapath, var0)
   if(isatt(diag_script_info, "model_nr") .and. \
-    diag_script_info@model_nr .eq. True) then
+     diag_script_info@model_nr .eq. True) then
     runs = ncdf_read(datapath, "nr")
   end if
 
-  ;start and end years of timeperiods
+  ; start and end years of timeperiods
   syears = diag_script_info@syears
   eyears = diag_script_info@eyears
   nperiods = dimsizes(syears)
@@ -189,7 +189,7 @@ begin
   do j = 1, dims_data
     if(all(ismissing(to_plot(j * 3, :)))) then
       error_msg("w", diag_script, "", "all missing values for " + \
-                "dimension " + j * 3  + " in to_plot, need at least 5" + \
+                "dimension " + j * 3 + " in to_plot, need at least 5" + \
                 " models, go to next")
       continue
     end if
@@ -241,7 +241,7 @@ begin
       amres@amOrthogonalPosF = -0.45              ; Move legend up.
     else
       amres@amParallelPosF   = -0.47              ; Move legend to right
-      amres@amOrthogonalPosF = 0.12              ; Move legend down. 
+      amres@amOrthogonalPosF = 0.12               ; Move legend down.
     end if
     annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   end if
@@ -251,7 +251,7 @@ begin
 ;  alltags = array_append_record(tags,\
 ;    (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
   string1 = "Time series of global annual mean  " + variable_info@long_name +\
-            " anomalies (relative to " + dataset_info@start_year(0)+ "-" + \
+            " anomalies (relative to " + dataset_info@start_year(0) + "-" + \
             dataset_info@end_year(0) + ") from CMIP5 concentration drive " + \
             "experiments. Projections are shown for each RCP for the " + \
             "multi-model mean (solid lines) and the 5 to 95% range " + \
