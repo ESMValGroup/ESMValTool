@@ -36,4 +36,4 @@ ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
 export PATH=$PATH:$CONDAPATH/bin/
 conda info --envs
 module load ncl
-$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/recipes/$RECIPE
+$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG
