@@ -138,22 +138,21 @@ from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-# dict of model var-to-obs name
-# replace test MPI-ESM-MR with actual OBS datasets
+# dict of model var-to-obs
 VAR_DICT = {
-    'pr': 'MPI-ESM-MR',       # underived
-    'rlut': 'MPI-ESM-MR',     # underived
-    'rsut': 'MPI-ESM-MR',     # underived
-    'rsutcs': 'MPI-ESM-MR',   # underived
-    'rlutcs': 'MPI-ESM-MR',   # underived
-    'prw': 'MPI-ESM-MR',      # underived
-    'rldscs': 'MPI-ESM-MR',   # underived
-    'rtnt': 'MPI-ESM-MR',     # derived
-    'rsnt': 'MPI-ESM-MR',     # derived
-    'rsns': 'MPI-ESM-MR',     # derived
-    'rlns': 'MPI-ESM-MR',     # derived
-    'lwcre': 'MPI-ESM-MR',    # derived
-    'swcre': 'MPI-ESM-MR'     # derived
+    'pr': 'GPCP-SG',          # underived
+    'rlut': 'CERES-EBAF',     # underived
+    'rsut': 'CERES-EBAF',     # underived
+    'rsutcs': 'CERES-EBAF',   # underived
+    'rlutcs': 'JRA-55',       # underived
+    'prw': 'SSMI-MERIS',      # underived
+    'rldscs': 'JRA-55',       # underived
+    'rtnt': 'CERES-EBAF',     # derived
+    'rsnt': 'CERES-EBAF',     # derived
+    'rsns': 'CERES-EBAF',     # derived
+    'rlns': 'CERES-EBAF',     # derived
+    'lwcre': 'CERES-EBAF',    # derived
+    'swcre': 'CERES-EBAF'     # derived
 }
 
 

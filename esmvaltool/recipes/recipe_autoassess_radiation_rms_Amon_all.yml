@@ -40,78 +40,116 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
+  pp_rad_derive_var:
+    # use this not to overwrite variables that are used both
+    # for derivation and as standalone diag vars
+    regrid:
+      target_grid: 1x1
+      scheme: linear
 
 diagnostics:
-  radiation_Amon_all:
-    description: 
-    variables: # 13 required variables total
-      rtnt: # ceres TOA TOT net
+  radiation_Amon_all_CERES-EBAF:
+    description: "CMIP5 vs CERES-EBAF" 
+    variables:
+      rtnt: # TOA TOT net
+        preprocessor: pp_rad_derive_var
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rsnt: # TOA SW net
+        preprocessor: pp_rad_derive_var
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      swcre: # TOA SW Cloud Radiative Effect
+        preprocessor: pp_rad_derive_var
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      lwcre: # TOA LW Cloud Radiative Effect
+        preprocessor: pp_rad_derive_var
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rsns: # obs: ceres; name: Surf SW net all sky
         preprocessor: pp_rad
         field: T2Ms
         derive: true
         force_derivation: false
-      rsnt: # ceres TOA SW net
-        preprocessor: pp_rad
+      rlns: # Surf LW net all sky
+        preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-      swcre: # ceres TOA SW Cloud Radiative Effect
+      rsut: # TOA SW up all sky
         preprocessor: pp_rad
         field: T2Ms
-        derive: true
-        force_derivation: false
-      lwcre: # ceres TOA LW Cloud Radiative Effect
+      rlut: # TOA LW up all sky
         preprocessor: pp_rad
         field: T2Ms
-        derive: true
-        force_derivation: false
-      rsns: # ceres Surf SW net all sky
-        preprocessor: pp_rad
-        field: T2Ms
-        derive: true
-        force_derivation: false
-      rlns: # ceres Surf LW net all sky
-        preprocessor: pp_rad
-        field: T2Ms
-        derive: true
-        force_derivation: false
-      rsut: # ceres TOA SW up all sky
-        preprocessor: pp_rad
-        field: T2Ms
-      rlut: # ceres TOA LW up all sky
-        preprocessor: pp_rad
-        field: T2Ms
-      rsutcs: # ceres TOA SW up clear sky
-        preprocessor: pp_rad
-        field: T2Ms
-      rlutcs: # jra TOA LW up clear sky
-        preprocessor: pp_rad
-        field: T2Ms
-      rldscs: # jra Surf LW down clear sky
-        preprocessor: pp_rad
-        field: T2Ms
-      prw: # ssmi Column Water vapour
-        preprocessor: pp_rad
-        field: T2Ms
-      pr: # gpcp Precipitation
+      rsutcs: # TOA SW up clear sky
         preprocessor: pp_rad
         field: T2Ms
     additional_datasets:
-      # all OBS; don't have any so using MPI-ESM-MR for testing instead !!!
-      # xml entry: obs4mips CERES-EBAF L3B Ed2-7 2001 2012
-      # - {dataset: CERES-EBAF,  project: obs4mips,  type: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: Tier1}
-      # xml entry: ana4mips   JRA-55 Amon reanalysis   2001  2005 @{OBSPATH}/Tier1/
-      # - {dataset: JRA-55,  project: ana4mips,  type: reanaly,  start_year: 2001,  end_year: 2005, tier: Tier1}
-      # xml entry: obs4mips SSMI-MERIS L3 v1-00 2003 2008
-      # - {dataset: SSMI-MERIS,  project: obs4mips,  type: L3,  version: v1-00,  start_year: 2003,  end_year: 2008, tier: Tier1}
-      # xml entry: obs4mips GPCP-SG L3 v2.2 2001 2009
-      # - {dataset: GPCP-SG,  project: obs4mips,  type: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: Tier1}
-      # for testing only
-      - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
+      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:
       autoassess_Radiation_rms_Amon_all:
         script: autoassess/autoassess_radiation_rms.py
-        title: "Autoassess Radiation RMS Amon All"
+        title: "Autoassess Radiation RMS Amon All (vs. CERES-EBAF)"
+        control_model: MPI-ESM-LR
+        exper_model: NorESM1-M
+        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
+        landsea_mask: landsea.nc
+
+  radiation_Amon_all_JRA-55:
+    description: "CMIP5 vs JRA-55"
+    variables:
+      rlutcs: # TOA LW up clear sky
+        preprocessor: pp_rad
+        field: T2Ms
+      rldscs: # Surf LW down clear sky
+        preprocessor: pp_rad
+        field: T2Ms
+    additional_datasets:
+      - {dataset: JRA-55,  project: ana4mips,  type: reanalysis,  start_year: 2001,  end_year: 2005, tier: 1}
+    scripts:
+      autoassess_Radiation_rms_Amon_all:
+        script: autoassess/autoassess_radiation_rms.py
+        title: "Autoassess Radiation RMS Amon All (vs. JRA-55)"
+        control_model: MPI-ESM-LR
+        exper_model: NorESM1-M
+        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
+        landsea_mask: landsea.nc
+
+  radiation_Amon_all_SSMI-MERIS:
+    description: "CMIP5 vs SSMI-MERIS"
+    variables:
+      prw: # Column Water vapour
+        preprocessor: pp_rad
+        field: T2Ms
+    additional_datasets:
+      - {dataset: SSMI-MERIS,  project: obs4mips,  level: L3,  version: v1-00,  start_year: 2003,  end_year: 2008, tier: 1}
+    scripts:
+      autoassess_Radiation_rms_Amon_all:
+        script: autoassess/autoassess_radiation_rms.py
+        title: "Autoassess Radiation RMS Amon All (vs. SSMI-MERIS)"
+        control_model: MPI-ESM-LR
+        exper_model: NorESM1-M
+        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
+        landsea_mask: landsea.nc
+
+  radiation_Amon_all_GPCP-SG:
+    description: "CMIP5 vs GPCP-SG"
+    variables:
+      pr: # Precipitation
+        preprocessor: pp_rad
+        field: T2Ms
+    additional_datasets:
+      - {dataset: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: 1}
+    scripts:
+      autoassess_Radiation_rms_Amon_all:
+        script: autoassess/autoassess_radiation_rms.py
+        title: "Autoassess Radiation RMS Amon All (vs. GPCP-SG)"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
