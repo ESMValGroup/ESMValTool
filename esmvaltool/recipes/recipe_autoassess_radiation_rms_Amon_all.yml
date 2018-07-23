@@ -98,6 +98,7 @@ diagnostics:
         title: "Autoassess Radiation RMS Amon All (vs. CERES-EBAF)"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
+        diagnostic_class: Amon_all # use any of : Amon_all, Amon_obs, cfMon_all
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
@@ -118,6 +119,7 @@ diagnostics:
         title: "Autoassess Radiation RMS Amon All (vs. JRA-55)"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
+        diagnostic_class: Amon_all # use any of : Amon_all, Amon_obs, cfMon_all
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
@@ -135,6 +137,7 @@ diagnostics:
         title: "Autoassess Radiation RMS Amon All (vs. SSMI-MERIS)"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
+        diagnostic_class: Amon_all # use any of : Amon_all, Amon_obs, cfMon_all
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
@@ -152,5 +155,6 @@ diagnostics:
         title: "Autoassess Radiation RMS Amon All (vs. GPCP-SG)"
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
+        diagnostic_class: Amon_all # use any of : Amon_all, Amon_obs, cfMon_all
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
