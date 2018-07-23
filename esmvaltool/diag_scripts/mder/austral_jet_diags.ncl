@@ -177,17 +177,25 @@ begin
 
     ; Iterate over all datasets
     do i = 0, dimsizes(dataset_info@dataset) - 1
-      if (var1 .eq. var0) then
-        log_info("Derived variable equals input variable, skipping deriving")
+
+      ; Read file and skip if already derived
+      filename = input_file_info@filename(i)
+      f = addfile(filename, "r")
+      if (isfilevar(f, var1)) then
+        log_info("Variable was already derived, skipping")
+        delete(f)
         break
       end if
-      A0 = read_data(i, var0, field_type0)
 
       ; Tropopause pressure tpp
       if (var1 .eq. "tpp") then
 
-        ; Order plev: lowest pressure first
+        ; Read ta
+        A0 = read_data(i, "ta", "T3M")
+
+        ; Order plev: lowest pressure first (in hPa)
         pr = A0&plev
+        pr = pr / 100.0
         if (pr(0) .eq. max(pr)) then
           pin = pr(::-1)
           tin = A0({time|:}, {lat|:}, {lon|:}, {plev|::-1})
@@ -197,27 +205,67 @@ begin
         end if
 
         ; Calculate tropopause pressure and copy metedata
-        ptp = trop_wmo(pin, tin, 0, False)
-        ptp!0 = A0!0
-        ptp!1 = A0!2
-        ptp!2 = A0!3
-        ptp&time = A0&time
-        ptp&lat = A0&lat
-        ptp&lon = A0&lon
-        ptp@standard_name = "tropopause_air_pressure"
-        ptp@long_name = "Tropopause Air Pressure"
-        ptp@units = "Pa"
-
-        printVarSummary(A0)
-        printVarSummary(ptp)
-
-        ; Set variables
-        var0 := var1
-        field_type0 := "T2Ms"
-
-        delete([/A0, ptp, pr, pin, tin/])
+        outvar = trop_wmo(pin, tin, 0, False)
+        outvar!0 = A0!0
+        outvar!1 = A0!2
+        outvar!2 = A0!3
+        outvar&time = A0&time
+        outvar&lat = A0&lat
+        outvar&lon = A0&lon
+        outvar@var = var1
+        outvar@standard_name = "tropopause_air_pressure"
+        outvar@long_name = "Tropopause Air Pressure"
+        outvar@units = "hPa"
+        delete([/A0, pr, pin, tin/])
       end if
+
+      ; Zonal meridional stream function mmstf
+      if (var1 .eq. "mmstf") then
+
+        ; Read va and ps
+        va = read_data(i, "va", "T3M")
+        ps = read_data(i, "ps", "T2Ms")
+        if (dimsizes(va&lat) .ne. dimsizes(ps&lat)) then
+          ps := ps({time|:}, {lat|va&lat}, {lon|:})
+        end if
+
+        ; Preprocess plev (see docu of zonal_mpsi_Wrap)
+        pidx = ind(pr.gt.500.0 .and. pr.lt.100500.0)
+        pr = va&plev
+        pr := pr(pidx)
+        vt2b = va(:, pidx, :, :)
+        if (pr(0) .eq. max(pr)) then
+          pr := pr(::-1)
+          vt2b := vt2b({time|:}, {lat|:}, {lon|:}, {plev|::-1})
+        end if
+
+        ; Calculate zonal meridional stream function
+        outvar = zonal_mpsi_Wrap(vt2b, va&lat, pr, ps)
+        outvar!0 = va!0
+        outvar!1 = va!1
+        outvar!2 = va!2
+        outvar&time = va&time
+        outvar&plev = va&plev
+        outvar&lat = va&lat
+        outvar@var = var1
+        outvar@standard_name = "zonal_meridional_stream_function"
+        outvar@long_name = "Zonal Meridional Stream Function"
+        outvar@units = "kg s-1"
+        delete([/va, ps, pr, pidx, vt2b/])
+      end if
+
+      ; Write variable info
+      variable_info@short_name = var1
+      variable_info@standard_name = outvar@standard_name
+      variable_info@long_name = outvar@long_name
+      variable_info@units = outvar@units
+
+      ; Write file
+      outvar@diag_script = diag_script
+      ncdf_outfile = ncdf_write(outvar, filename)
+      delete([/f, outvar/])
     end do
+    var0 := var1
 
   ; Get plev and lat range from preprocessed data if variable is not derived
   else
@@ -335,6 +383,11 @@ begin
       variable_info@units = "deg"
       delete(tmpx)
 
+    ; Process ua (jet position)
+    else if (var0 .eq. "tpp") then
+      dummy1 = area_operations(A0, lat_range(0), lat_range(1), 0.0, 360.0, \
+                               "average", True)
+
     ; Process mmstf (SH Hadley cell boundary)
     else if (var0 .eq. "mmstf") then
       tmp = A0
@@ -365,6 +418,7 @@ begin
     ; Other variables (no operations needed, done in preprocessing)
     else
         dummy1 = A0
+    end if
     end if
     end if
     delete(A0)
@@ -686,7 +740,7 @@ begin
   end if
 
   ; ---------------------------------------------------------------------------
-  ; Write NETCDF file
+  ; Write NETCDF file for MDER
   ; ---------------------------------------------------------------------------
 
   if (config_user_info@write_netcdf) then

@@ -41,9 +41,17 @@ begin
               "variable has to be selected as ancestor in the recipe")
   end if
 
+  ; Get correct variable and field type
+  if (isatt(diag_script_info, "derive_var")) then
+    var0 = diag_script_info@derive_var
+  else
+    var0 = variables(0)
+  end if
+  field_type0 = field_types(0)
+
   enter_msg(diag_script, "")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(diag_script + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Get datasets (consider ensemble averaging if desired)
@@ -59,10 +67,6 @@ begin
     dataset_names = unique_labels_min((/"dataset", "ensemble"/))
   end if
 
-  ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
-
   ; Array sizes
   DIM_DAT = dimsizes(idx_datasets)
   DIM_VAR = dimsizes(variables)
@@ -73,7 +77,7 @@ end
 begin
 
   ; Check field type
-  if (.not.any(field_type0 .eq. (/"T3M", "T2Ms", "T2Mz", "T0D"/))) then
+  if (.not. any(field_type0 .eq. (/"T3M", "T2Ms", "T2Mz", "T0D"/))) then
     error_msg("f", diag_script, "", "cannot use field " + field_type0)
   end if
 
