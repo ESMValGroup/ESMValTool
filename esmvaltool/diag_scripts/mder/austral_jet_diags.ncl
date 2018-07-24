@@ -216,11 +216,12 @@ begin
         outvar@standard_name = "tropopause_air_pressure"
         outvar@long_name = "Tropopause Air Pressure"
         outvar@units = "hPa"
+        outvar := area_operations(outvar, lat_range(0), lat_range(1), 0.0, \
+                                  360.0, "average", True)
         delete([/A0, pr, pin, tin/])
-      end if
 
       ; Zonal meridional stream function mmstf
-      if (var1 .eq. "mmstf") then
+      else if (var1 .eq. "mmstf") then
 
         ; Read va and ps
         va = read_data(i, "va", "T3M")
@@ -252,6 +253,7 @@ begin
         outvar@long_name = "Zonal Meridional Stream Function"
         outvar@units = "kg s-1"
         delete([/va, ps, pr, pidx, vt2b/])
+      end if
       end if
 
       ; Write variable info
@@ -383,11 +385,6 @@ begin
       variable_info@units = "deg"
       delete(tmpx)
 
-    ; Process ua (jet position)
-    else if (var0 .eq. "tpp") then
-      dummy1 = area_operations(A0, lat_range(0), lat_range(1), 0.0, 360.0, \
-                               "average", True)
-
     ; Process mmstf (SH Hadley cell boundary)
     else if (var0 .eq. "mmstf") then
       tmp = A0
@@ -418,7 +415,6 @@ begin
     ; Other variables (no operations needed, done in preprocessing)
     else
         dummy1 = A0
-    end if
     end if
     end if
     delete(A0)
