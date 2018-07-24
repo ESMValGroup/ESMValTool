@@ -17,7 +17,7 @@
 #CMUG
 #
 #Port to ESMValTool v2: July 2018
-# Final version of recipe: 18 July 2018
+# Final version of recipe: July 2018
 #
 #References
 #Technical report or a paper will be written in the future.
@@ -44,7 +44,7 @@ preprocessors:
       scheme: linear
 
 diagnostics:
-  radiation_Amon_all_CERES-EBAF:
+  radiation_Amon_obs_CERES-EBAF:
     description: "CMIP5 vs CERES-EBAF" 
     variables:
       rtnt: # TOA TOT net
@@ -67,8 +67,8 @@ diagnostics:
         field: T2Ms
         derive: true
         force_derivation: false
-      rsns: # obs: ceres; name: Surf SW net all sky
-        preprocessor: pp_rad
+      rsns: # Surf SW net all sky
+        preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
@@ -87,10 +87,10 @@ diagnostics:
         preprocessor: pp_rad
         field: T2Ms
     additional_datasets:
-      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS, type: comp, version: Ed3A, start_year: 2001, end_year: 2015, tier: 2}
+      - {dataset: CERES-EBAF,    project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: comp,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 2}
     scripts:
-      autoassess_Radiation_rms_Amon_all:
+      autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All (vs. CERES-EBAF)"
         control_model: MPI-ESM-LR
@@ -99,7 +99,7 @@ diagnostics:
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
-  radiation_Amon_all_JRA-55:
+  radiation_Amon_obs_JRA-55:
     description: "CMIP5 vs JRA-55"
     variables:
       rlutcs: # TOA LW up clear sky
@@ -109,10 +109,10 @@ diagnostics:
         preprocessor: pp_rad
         field: T2Ms
     additional_datasets:
-      - {dataset: JRA-55,  project: ana4mips,  type: reanalysis,  start_year: 2001,  end_year: 2005, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS, type: comp, version: Ed3A, start_year: 2001, end_year: 2015, tier: 2}
+      - {dataset: JRA-55,        project: ana4mips,  type: reanalysis,          start_year: 2001,  end_year: 2005, tier: 1}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: comp, version: Ed3A, start_year: 2001,  end_year: 2015, tier: 2}
     scripts:
-      autoassess_Radiation_rms_Amon_all:
+      autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All (vs. JRA-55)"
         control_model: MPI-ESM-LR
@@ -121,7 +121,7 @@ diagnostics:
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
-  radiation_Amon_all_SSMI-MERIS:
+  radiation_Amon_obs_SSMI-MERIS:
     description: "CMIP5 vs SSMI-MERIS"
     variables:
       prw: # Column Water vapour
@@ -131,7 +131,7 @@ diagnostics:
       - {dataset: SSMI-MERIS,  project: obs4mips,  level: L3,  version: v1-00,      start_year: 2003,  end_year: 2008, tier: 1}
       - {dataset: SSMI,        project: obs4mips,  level: L3,  version: RSSv07r00,  start_year: 1988,  end_year: 2006, tier: 1}
     scripts:
-      autoassess_Radiation_rms_Amon_all:
+      autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All (vs. SSMI-MERIS)"
         control_model: MPI-ESM-LR
@@ -140,7 +140,7 @@ diagnostics:
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
         landsea_mask: landsea.nc
 
-  radiation_Amon_all_GPCP-SG:
+  radiation_Amon_obs_GPCP-SG:
     description: "CMIP5 vs GPCP-SG"
     variables:
       pr: # Precipitation
@@ -150,7 +150,7 @@ diagnostics:
       - {dataset: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: 1}
       - {dataset: TRMM-L3,  project: obs4mips,  level: v7,  version: 7A,    start_year: 1998,  end_year: 2013, tier: 1}
     scripts:
-      autoassess_Radiation_rms_Amon_all:
+      autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
         title: "Autoassess Radiation RMS Amon All (vs. GPCP-SG)"
         control_model: MPI-ESM-LR

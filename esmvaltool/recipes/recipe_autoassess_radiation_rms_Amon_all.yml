@@ -17,7 +17,7 @@
 #CMUG
 #
 #Port to ESMValTool v2: July 2018
-# Final version of recipe: 18 July 2018
+# Final version of recipe: July 2018
 #
 #References
 #Technical report or a paper will be written in the future.
@@ -67,7 +67,7 @@ diagnostics:
         derive: true
         force_derivation: false
       rsns: # obs: ceres; name: Surf SW net all sky
-        preprocessor: pp_rad
+        preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
