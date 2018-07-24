@@ -40,32 +40,32 @@ diagnostics:
   radiation_cfMon_all_ISCCP:
     description: "CMIP5 vs ISCCP Clouds" 
     variables:
-      cllmtisccp: # Low-intermediate Cloud ; needs clisccp
+      cllmtisccp: # Low-intermediate Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-      clltkisccp: # Low-thick Cloud ; needs clisccp
+      clltkisccp: # Low-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-      clmmtisccp: # Middle-intermediate Cloud ; needs clisccp
+      clmmtisccp: # Middle-intermediate Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-      clmtkisccp: # Middle-thick Cloud ; needs clisccp
+      clmtkisccp: # Middle-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-      clhmtisccp: # High-intermediate Cloud ; needs clisccp
+      clhmtisccp: # High-intermediate Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-      clhtkisccp: # High-thick Cloud ; needs clisccp
+      clhtkisccp: # High-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true

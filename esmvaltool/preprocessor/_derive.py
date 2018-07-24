@@ -371,14 +371,8 @@ def calc_rlns(cubes):
     return rlns
 
 
-# TODO
-# clouds variables:
-# 'cllmtisccp': calc_cllmtisccp (needs clisccp)
-# 'clltkisccp': calc_clltkisccp (needs clisccp)
-# 'clmmtisccp': calc_clmmtisccp (needs clisccp)
-# 'clmtkisccp': calc_clmtkisccp (needs clisccp)
-# 'clhmtisccp': calc_clhmtisccp (needs clisccp)
-# 'clhtkisccp': calc_clhtkisccp (needs clisccp)
+# TODO - write the actual derivation of the 6 cl* vars below
+# from the ncl files; all else is already here
 def calc_cllmtisccp(cubes):
     """Compute cllmtisccp:
 
@@ -404,6 +398,141 @@ def calc_cllmtisccp(cubes):
     cllmtisccp.units = clisccp_cube.units
 
     return cllmtisccp
+
+
+def calc_clltkisccp(cubes):
+    """Compute clltkisccp:
+
+    long name: ISCCP low level thick cloud area fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP low level thick cloud area fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # clltkisccp=
+    clltkisccp = 'Mattia_please_help'
+    clltkisccp.units = clisccp_cube.units
+
+    return clltkisccp
+
+
+def calc_clmmtisccp(cubes):
+    """Compute clmmtisccp:
+
+    long name: ISCCP Middle Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Middle Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # clmmtisccp=
+    clmmtisccp = 'Mattia_please_help'
+    clmmtisccp.units = clisccp_cube.units
+
+    return clmmtisccp
+
+
+def calc_clmtkisccp(cubes):
+    """Compute clmtkisccp:
+
+    long name: ISCCP Middle Level Thick Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Middle Level Thick Cloud Area Fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # clmtkisccp=
+    clmtkisccp = 'Mattia_please_help'
+    clmtkisccp.units = clisccp_cube.units
+
+    return clmtkisccp
+
+
+def calc_clhmtisccp(cubes):
+    """Compute clhmtisccp:
+
+    long name: ISCCP High Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP High Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # clhmtisccp=
+    clhmtisccp = 'Mattia_please_help'
+    clhmtisccp.units = clisccp_cube.units
+
+    return clhmtisccp
+
+
+def calc_clhtkisccp(cubes):
+    """Compute clhtkisccp:
+
+    long name: ISCCP high level thick cloud area fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP high level thick cloud area fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # clhtkisccp=
+    clhtkisccp = 'Mattia_please_help'
+    clhtkisccp.units = clisccp_cube.units
+
+    return clhtkisccp
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
