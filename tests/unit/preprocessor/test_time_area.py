@@ -10,17 +10,29 @@ from cf_units import Unit
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor._time_area import extract_month, extract_season
+from esmvaltool.preprocessor._time_area import extract_month, extract_season, \
+    area_slice
 
 
 def _create_sample_cube():
-    cube = Cube(np.arange(1, 25), var_name='co2', units='J')
+    data = np.ones((24, 9, 18))
+    cube = Cube(data, var_name='co2', units='J')
     cube.add_dim_coord(
         iris.coords.DimCoord(np.arange(15., 720., 30.),
                              standard_name='time',
                              units=Unit('days since 1950-01-01',
                                         calendar='gregorian')),
         0)
+    cube.add_dim_coord(
+        iris.coords.DimCoord(np.arange(-90., 90., 20.),
+                             standard_name='latitude',
+                             units='degrees_north'),
+        1)
+    cube.add_dim_coord(
+        iris.coords.DimCoord(np.arange(0., 360., 20.),
+                             standard_name='longitude',
+                             units="degrees_east"),
+        2)
     iris.coord_categorisation.add_month_number(cube, 'time')
     return cube
 
@@ -81,3 +93,34 @@ class TestExtractSeason(tests.Test):
         print(sliced)
         self.assertTrue((np.array([9, 10, 11, 9, 10, 11]) ==
                          sliced.coord('month_number').points).all())
+
+
+class TestAreaSlice(tests.Test):
+    """Tests for extract_month`."""
+
+    def setUp(self):
+        """Prepare tests"""
+        self.cube = _create_sample_cube()
+
+    def test_slice_box(self):
+        """Test area slicing"""
+        sliced = area_slice(self.cube, 0, 180, 0, 90)
+        print(sliced.coord('latitude').points)
+        print(sliced.coord('longitude').points)
+        self.assertTrue((np.array([10., 30., 50., 70.]) ==
+                         sliced.coord('latitude').points).all())
+        lon_points = np.array(
+            [0., 20., 40., 60., 80., 100., 120., 140., 160., 180.])
+        self.assertTrue((lon_points ==
+                         sliced.coord('longitude').points).all())
+
+    def test_slice_negative_lon(self):
+        """Test area slice with negative lons"""
+        sliced = area_slice(self.cube, -90, 90, 0, 90)
+        print(sliced.coord('latitude').points)
+        print(sliced.coord('longitude').points)
+        self.assertTrue((np.array([10., 30., 50., 70.]) ==
+                         sliced.coord('latitude').points).all())
+        self.assertTrue((
+            np.array([0., 20., 40., 60., 80., 280., 300., 320., 340.]) ==
+            sliced.coord('longitude').points).all())

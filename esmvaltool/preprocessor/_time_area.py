@@ -6,6 +6,7 @@ selecting geographical regions; constructing seasonal and area
 averages; checks on data time frequencies (daily, monthly etc)
 """
 from datetime import timedelta
+import numpy as np
 import iris
 
 
@@ -85,11 +86,10 @@ def area_slice(mycube, long1, long2, lat1, lat2):
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
-    sublon = iris.Constraint(
-        longitude=lambda cell: float(long1) <= cell <= float(long2))
-    sublat = iris.Constraint(
-        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
-    region_subset = mycube.extract(sublon & sublat)
+    region_subset = mycube.intersection(
+        longitude=(long1, long2),
+        latitude=(lat1, lat2))
+    region_subset = region_subset.intersection(longitude=(0., 360.))
     return region_subset
 
 
