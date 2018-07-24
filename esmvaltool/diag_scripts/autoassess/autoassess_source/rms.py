@@ -31,7 +31,7 @@ class RMSLISTCLASS(list):
 
     def __init__(self, *args):
         """Init"""
-        if len(args) == 0:
+        if not args:
             super(RMSLISTCLASS, self).__init__()
         else:
             super(RMSLISTCLASS, self).__init__(args[0])
@@ -150,12 +150,12 @@ class RMSCLASS:
 
         # What type of plot is this
         plot_type = 'lat_lon'
-        if len(toplot_cube.coords(axis='x')) == 0:
+        if not toplot_cube.coords(axis='x'):
             plot_type = 'zonal_mean'
         else:
             if len(toplot_cube.coords(axis='x')[0].points) == 1:
                 plot_type = 'zonal_mean'
-        if len(toplot_cube.coords(axis='y')) == 0:
+        if not toplot_cube.coords(axis='y'):
             plot_type = 'meridional_mean'
         else:
             if len(toplot_cube.coords(axis='y')[0].points) == 1:
