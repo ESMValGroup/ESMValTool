@@ -27,6 +27,10 @@ def get_required(short_name, field=None):
     """Get variable short_name and field pairs required to derive variable"""
     frequency = field[2] if field else 'M'
     required = {
+        'asr': [
+            ('rsdt', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+        ],
         'lwcre': [
             ('rlut', 'T2' + frequency + 's'),
             ('rlutcs', 'T2' + frequency + 's'),
@@ -60,6 +64,7 @@ def derive(cubes, variable):
 
     # Available derivation functions
     functions = {
+        'asr': calc_asr,
         'lwcre': calc_lwcre,
         'lwp': calc_lwp,
         'swcre': calc_swcre,
@@ -88,6 +93,30 @@ def derive(cubes, variable):
     cube.attributes['metadata'] = yaml.safe_dump(variable)
 
     return cube
+
+
+def calc_asr(cubes):
+    """Compute gradient of absorbed shortwave radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing rsdt (toa_incoming_shortwave_flux) and rsut
+               (toa_outgoing_shortwave_flux).
+
+    Returns
+    -------
+        Cube containing gradient of absorbed shortwave radiation.
+
+    """
+    rsdt_cube = cubes.extract_strict(
+        Constraint(name='toa_incoming_shortwave_flux'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+
+    asr = rsdt_cube - rsut_cube
+    asr.units = rsdt_cube.units
+
+    return asr
 
 
 def calc_lwcre(cubes):
