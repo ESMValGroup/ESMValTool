@@ -21,15 +21,15 @@
 ---
 
 datasets:
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 1990}
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: daily_mean,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 1990}
+  - {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 1995}
+  - {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
 
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: bcc-csm1-1
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -43,9 +43,9 @@ diagnostics:
   heatwaves_coldwaves:
     description: Calculate heatwaves and coldwaves.
     variables:
-      tasmax:
+      tas:
         preprocessor: preproc
-        mip: day
+        mip: Amon
         field: T2M
     scripts:
       main:
@@ -53,5 +53,5 @@ diagnostics:
 
         quantile: 0.9    # quantile defining the exceedance/non-exceedance threshold
         min_duration: 5  # Min duration of a heatwave/coldwave event
-        operator: greaterthan #or lessthan
+        operator: '>' #or lessthan
 

@@ -43,8 +43,10 @@ dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
-model_names <- lapply(input_files_per_var, function(x) x$model)
-model_names <- unname(model_names)
+model_names <- lapply(input_files_per_var, function(x) x$dataset)
+
+model_names <- unlist(unname(model_names))
+
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
@@ -56,8 +58,8 @@ anomaly_class <- params$anomaly_class
 climatology_files <- which(unname(experiment) == as.character(climatology_class))
 anomaly_files <- which(unname(experiment) == as.character(anomaly_class))
 
-model_names <-  lapply(input_files_per_var, function(x) x$model)
-model_names <- unlist(unname(model_names))[anomaly_files]
+#model_names <-  lapply(input_files_per_var, function(x) x$model)
+#model_names <- unlist(unname(model_names))[anomaly_files]
 
 start_climatology <- lapply(input_files_per_var, function(x) x$start_year)
 start_climatology <- c(unlist(unname(start_climatology))[climatology_files])[1]
@@ -194,14 +196,16 @@ dim(time) <- c(time = length(time))
 metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
 attr(time, "variables") <- metadata
 #Save the single model anomalies
+print(paste("model names", model_names))
 for (mod in 1 : length(model_names)) {
   if (!is.null(moninf)) {
      data <- anomaly[mod,1,1, , ,]
   } else {
-    data <- anomaly[mod,1,,1 , ,]
+     data <- anomaly[mod,1,,1 , ,]
   }
   data <- anomaly[mod,1,1, , ,]
-  data <- aperm(data, c(2,3,1))
+  data <- aperm(data, c(2, 3, 1))
+
   names(dim(data)) <- c("lat", "lon", "time")
   metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE)), units = units ))
   names(metadata)[1] <- var0
@@ -236,8 +240,9 @@ data_frame <- as.data.frame.table(t(model_anomalies[,1,1,]))
 years <- rep(start_anomaly : end_anomaly, dim(model_anomalies)[1])
 data_frame$Year <- c(years)
 names(data_frame)[2] <- "Model"
+
 for (i in 1 : length(levels(data_frame$Model))) {
-levels(data_frame$Model)[i] <- model_names[i]
+    levels(data_frame$Model)[i] <- model_names[i]
 }
 
 
@@ -267,7 +272,7 @@ if (!is.null(time_series_plot)) {
 if (!is.null(agreement_threshold)) {
 
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
-  agreement <- AnoAgree(multi_year_anomaly + rnorm(3*17*19), members_dim = model_dim)
+  agreement <- AnoAgree(multi_year_anomaly + rnorm(length(model_names)*length(lat)*length(lon)), members_dim = model_dim)
 } else {
   agreement_threshold <- 1000
   agreement <- NULL

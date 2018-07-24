@@ -29,7 +29,7 @@
 ---
 
 datasets:
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
 
 preprocessors:
   preproc:

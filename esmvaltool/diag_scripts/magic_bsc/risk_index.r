@@ -8,11 +8,12 @@
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
 library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
-library(multiApply, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(multiApply)
 library(ggplot2)
 library(yaml)
 library(climdex.pcic)
 library(devtools)
+library(parallel)
 
 ##Until integrated into current version of s2dverification
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
@@ -42,11 +43,11 @@ experiment <- lapply(input_files_per_var, function(x) x$exp)
 experiment <- unlist(unname(experiment))
 
 
-
 reference_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
+
 rcp_scenario <- unique(experiment[projection_files])
-model_names <-  lapply(input_files_per_var, function(x) x$model)
+model_names <-  lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unlist(unname(model_names))[projection_files]
 
 start_reference <- lapply(input_files_per_var, function(x) x$start_year)
@@ -59,8 +60,8 @@ start_projection <- c(unlist(unname(start_projection))[projection_files])[1]
 end_projection <- lapply(input_files_per_var, function(x) x$end_year)
 end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
-print(start_climatology)
-print(end_projection)
+print(start_reference)
+print(end_reference)
 
 ## Do not print warnings
 #options(warn=-1)
@@ -68,6 +69,7 @@ print(end_projection)
 
 # Which metric to be computed
 metric <- params$metric
+detrend <- params$detrend
 
 reference_filenames <-  fullpath_filenames[reference_files]
 

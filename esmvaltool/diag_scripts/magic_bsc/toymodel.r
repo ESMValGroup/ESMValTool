@@ -49,7 +49,7 @@ data <- Start(model = fullpath_filenames,
                         time = 'all',
                         lat = 'all',
                         lon = 'all',
-                        plev = "all",
+#                        plev = "all",
                         lon_var = 'lon',
                         return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                         retrieve = TRUE)
