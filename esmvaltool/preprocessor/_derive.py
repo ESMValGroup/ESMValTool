@@ -12,11 +12,6 @@ from scipy import constants
 
 logger = logging.getLogger(__name__)
 
-# TODO: @valeriupredoi implemented variables --
-# TODO: remove this comment block after variable derivation check
-# TODO: to be checked by @mattiarighi, ti prego :)
-# TODO: autoassess rms Amon vars implemented: [rtnt, rsnt, rsns, rlns]
-
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
@@ -48,13 +43,6 @@ def get_required(short_name, field=None):
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
         ],
-        # TODO: @mattiarighi - check here
-        # info taken from v1 variable_defs/
-        # [rtnt, rsnt, rsns, rlns]
-        # rtnt: rsdt:T2*s,rsut:T2*s,rlut:T2*s
-        # rsnt: rsdt:T2*s,rsut:T2*s
-        # rsns: rsds:T2*s,rsus:T2*s
-        # rlns: rlds:T2*s,rlus:T2*s
         'rtnt': [
             ('rsdt', 'T2' + frequency + 's'),
             ('rsut', 'T2' + frequency + 's'),
@@ -71,6 +59,24 @@ def get_required(short_name, field=None):
         'rlns': [
             ('rlds', 'T2' + frequency + 's'),
             ('rlus', 'T2' + frequency + 's'),
+        ],
+        'cllmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clltkisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clmmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clmtkisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clhmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clhtkisccp': [
+            ('clisccp', 'T4' + frequency)
         ]
     }
 
@@ -96,7 +102,13 @@ def derive(cubes, variable):
         'rtnt': calc_rtnt,
         'rsnt': calc_rsnt,
         'rsns': calc_rsns,
-        'rlns': calc_rlns
+        'rlns': calc_rlns,
+        'cllmtisccp': calc_cllmtisccp,
+        'clltkisccp': calc_clltkisccp,
+        'clmmtisccp': calc_clmmtisccp,
+        'clmtkisccp': calc_clmtkisccp,
+        'clhmtisccp': calc_clhmtisccp,
+        'clhtkisccp': calc_clhtkisccp
     }
 
     if short_name not in functions:
@@ -192,6 +204,7 @@ def calc_lwp(cubes):
 
 def calc_swcre(cubes):
     """Compute shortwave cloud radiative effect from all-sky and clear-sky
+
        flux.
 
     Arguments
@@ -249,7 +262,6 @@ def calc_toz(cubes):
     return toz
 
 
-# TODO @mattiarighi -- check rtnt
 def calc_rtnt(cubes):
     """Compute rtnt: TOA Net downward Total Radiation.
 
@@ -279,7 +291,6 @@ def calc_rtnt(cubes):
     return rtnt
 
 
-# TODO @mattiarighi -- check rsnt
 def calc_rsnt(cubes):
     """Compute rsnt: TOA Net downward Shortwave Radiation.
 
@@ -306,7 +317,6 @@ def calc_rsnt(cubes):
     return rsnt
 
 
-# TODO @mattiarighi -- check rsns
 def calc_rsns(cubes):
     """Compute rsns: Surface Net downward Shortwave Radiation.
 
@@ -334,7 +344,6 @@ def calc_rsns(cubes):
     return rsns
 
 
-# TODO @mattiarighi -- check rlns
 def calc_rlns(cubes):
     """Compute rlns: Surface Net downward Longwave Radiation.
 
@@ -342,7 +351,7 @@ def calc_rlns(cubes):
     ----
         cubes: cubelist containing
                rlds (surface_downwelling_longwave_flux_in_air) and
-               rlus ().
+               rlus (surface_upwelling_longwave_flux_in_air).
 
     Returns
     -------
@@ -360,6 +369,41 @@ def calc_rlns(cubes):
     rlns.units = rlus_cube.units
 
     return rlns
+
+
+# TODO
+# clouds variables:
+# 'cllmtisccp': calc_cllmtisccp (needs clisccp)
+# 'clltkisccp': calc_clltkisccp (needs clisccp)
+# 'clmmtisccp': calc_clmmtisccp (needs clisccp)
+# 'clmtkisccp': calc_clmtkisccp (needs clisccp)
+# 'clhmtisccp': calc_clhmtisccp (needs clisccp)
+# 'clhtkisccp': calc_clhtkisccp (needs clisccp)
+def calc_cllmtisccp(cubes):
+    """Compute cllmtisccp:
+
+    long name: ISCCP Low Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Low Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
+
+    # cllmtisccp=
+    cllmtisccp = 'Mattia_please_help'
+    cllmtisccp.units = clisccp_cube.units
+
+    return cllmtisccp
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
