@@ -205,8 +205,7 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_unestructured_grid(self):
         """Check succeeds even if two required coordinates share a dimension"""
         self.cube = self.cube.extract(
-            iris.Constraint(latitude=self.cube.coord('latitude').points[0])
-            )
+            iris.Constraint(latitude=self.cube.coord('latitude').points[0]))
         self.cube.remove_coord('latitude')
         iris.util.demote_dim_coord_to_aux_coord(self.cube, 'longitude')
         new_lat = self.cube.coord('longitude').copy()
