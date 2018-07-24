@@ -1,43 +1,55 @@
-'''
+"""
+Port for ESMValTool v2 from v1
+
+Uses: ESMValTool v2, Python 3.x
+Valeriu Predoi, UREAD, July 2018
+
+Functionality: computes root mean squares for a bunch of geographical
+regions;
+
+Original docstring:
 This file contains an rms class which contains all the information needed
 to make a rms table of a particular region.
-'''
+"""
 
 import os
-import csv
 import math
-import numpy
+import logging
 import numpy.ma as ma
 import iris
-import logging
 
-from esmvaltool.diag_scripts.autoassess.autoassess_source import valmod_radiation as vm
-
+from esmvaltool.diag_scripts.autoassess.autoassess_source \
+    import valmod_radiation as vm
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class rms_list_class(list):
-    '''
-    This is the class for a list of rms_class (i.e. for lots of regions)
-    '''
+class RMSLISTCLASS(list):
+    """
+    Construct the regions class
 
-    def __init__(self, *args, **kwargs):
+    This is the class for a list of RMSCLASS (i.e. for lots of regions)
+    """
+
+    def __init__(self, *args):
+        """Init"""
         if len(args) == 0:
-            super(rms_list_class, self).__init__()
+            super(RMSLISTCLASS, self).__init__()
         else:
-            super(rms_list_class, self).__init__(args[0])
+            super(RMSLISTCLASS, self).__init__(args[0])
 
     def __repr__(self):
+        """Repr"""
         rms_out = "["
         for rms_item in self:
-            rms_out += "rms.rms_class for "+rms_item.region+", \n"
+            rms_out += "rms.RMSCLASS for " + rms_item.region + ", \n"
         rms_out = rms_out[0:-3]
         rms_out += "]"
 
         return rms_out
 
     def __call__(self, region=False):
+        """Call"""
         rms_found = False
         region_list = []
         for rms_item in self:
@@ -48,14 +60,11 @@ class rms_list_class(list):
                     rms_found = True
         if not region:
             logger.warning(
-                "Please supply a region using the region='xxx' input. " + \
+                "Please supply a region using the region='xxx' input. " +
                 "Available regions are:"
             )
         elif not rms_found:
-            logger.warning(
-                "ERROR: Requested region {0} not found. Available " + \
-                "regions are:".format(region)
-            )
+            logger.warning("ERROR: Requested region not found.")
         if not rms_found:
             logger.error(region_list)
             raise Exception
@@ -63,18 +72,19 @@ class rms_list_class(list):
 
 
 # This is the class for one set of rms values (i.e. for one region)
-class rms_class:
+class RMSCLASS:
+    """Class per region"""
 
     def __init__(self, region, exper='experiment', control='control'):
         """
-        This not only creates instances of this class but also starts making
-        html files that will contain all the rms data.
+        Create instances of this class but also start making
+
+        html files that will contain all the rms data. (old)
 
         region = the region name
         exper = experiment jobid
         control = control jobid
         """
-
         # Store the region name, experiment and control
         self.region = region
         self.exper = exper
@@ -123,11 +133,13 @@ class rms_class:
 
     # Allow iterations over this
     def __iter__(self):
-        return(self)
+        """Iter"""
+        return self
 
     # This defines how this class is shown on the screen if you print it
     def __repr__(self):
-        rms_out = "rms.rms_class for {0}".format(self.region)
+        """Repr"""
+        rms_out = "rms.RMSCLASS for {0}".format(self.region)
         return rms_out
 
     def calc(self, toplot_cube, mask_cube):
@@ -136,7 +148,6 @@ class rms_class:
         toplot_cube = (cube) cube that is to be plotted
         mask_cube = (cube) the mask to be applied (land/sea)
         """
-
         # Make a copy of the input cube
         working_cube = toplot_cube.copy()
 
@@ -193,46 +204,44 @@ class rms_class:
             logger.info('Calculating RMS for %s', self.region)
 
             # Square the values
-            squared_cube = working_cube ** 2
+            squared_cube = working_cube**2
 
             # Mean the values
-            area_average = vm.area_avg(squared_cube,
-                                       coord1='latitude',
-                                       coord2='longitude')
+            area_average = vm.area_avg(
+                squared_cube, coord1='latitude', coord2='longitude')
 
             # Square root the answer
             rms_float = math.sqrt(area_average.data)
 
         return rms_float
 
-    def calc_wrapper(self, toplot_cube, mask_cube, page_title,
-                     filename='no plot available'):
+    def calc_wrapper(self,
+                     toplot_cube,
+                     mask_cube,
+                     page_title):
         """
         Get the RMS value and adds it to its own data array.
 
         toplot_cube = (cube) cube that is to be plotted
         mask_cube = (cube) mask land/sea
         page_title = (str) the page title for this plot
-        filename = (str) the filename of the corresponding png plot.
         """
-
         rms_float = self.calc(toplot_cube, mask_cube)
         self.data_dict[page_title] = []
         if rms_float:
             self.data_dict[page_title].append(rms_float)
         return rms_float
 
-
     def tofile(self, csv_dir):
         """Output all the RMS statistics to csv files"""
         csv_file = 'summary_' + self.region + '_RMS_' + self.exper + '.csv'
         csv_path = os.path.join(csv_dir, csv_file)
-        with open(csv_path, 'a') as f:
+        with open(csv_path, 'a') as out_file:
             for page_title, rms_list in self.data_dict.items():
-                f.write('{0}: '.format(page_title))
+                out_file.write('{0}: '.format(page_title))
                 for rms_val in rms_list:
-                    f.write('{0}'.format(str(rms_val)))
-                    f.write('\n')
+                    out_file.write('{0}'.format(str(rms_val)))
+                    out_file.write('\n')
 
 
 def start(exper='experiment', control='control'):
@@ -242,7 +251,6 @@ def start(exper='experiment', control='control'):
     exper = experiment jobid (optional)
     control = control jobid (optional)
     """
-
     # Loop over all regions. Regions are:
     # 0 = globe
     # 1 = north of 30N
@@ -260,41 +268,42 @@ def start(exper='experiment', control='control'):
     # 13 = african land
 
     # Make a list of the regions
-    region_list = ['global', 'north', 'south', 'tropical_land',
-                   'tropical_ocean', 'east_asia', 'natl_europe',
-                   'australia_land', 'sahara_n_africa', 'tropical_n_africa',
-                   'east_africa', 'central_africa', 'southern_africa',
-                   'africa_land']
+    region_list = [
+        'global', 'north', 'south', 'tropical_land', 'tropical_ocean',
+        'east_asia', 'natl_europe', 'australia_land', 'sahara_n_africa',
+        'tropical_n_africa', 'east_africa', 'central_africa',
+        'southern_africa', 'africa_land'
+    ]
 
     # Make a blank list that will hold the rms classes
-    rms_list = rms_list_class()
+    rms_list = RMSLISTCLASS()
 
     # Make the rms classes. This will also start making the summary web pages.
     for region in region_list:
-        rms_list.append(rms_class(region, exper=exper, control=control))
+        rms_list.append(RMSCLASS(region, exper=exper, control=control))
 
     return rms_list
 
 
-def calc_all(rms_list, toplot_cube, mask_cube, page_title,
-             filename='no plot available'):
+def calc_all(rms_list,
+             toplot_cube,
+             mask_cube,
+             page_title):
     """
-    Loop through all the regions, calculating rms values and storing
-    them in the class.
+    Loop through all the regions
 
+    Calculate rms values and store them in the class.
     rms_list = list of rms classes that stores all the information to do
                with the rms regions and the resulting answers.
     toplot_cube = (cube) cube that is to be plotted
     page_title = (str) the page title for this plot
-    filename = (str) the filename of the png plot
     """
-
     # Run through the loop, calculating rms values for each region
     rms_float_list = []
     n_rms = len(rms_list)
     for i in range(n_rms):
-        rms_float = rms_list[i].calc_wrapper(toplot_cube, mask_cube,
-                                             page_title, filename=filename)
+        rms_float = rms_list[i].calc_wrapper(
+            toplot_cube, mask_cube, page_title)
         rms_float_list.append(rms_float)
 
     # Return the global rms value
