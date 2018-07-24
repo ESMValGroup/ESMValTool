@@ -23,11 +23,6 @@
 #Technical report or a paper will be written in the future.
 #
 #This recipe is part of the ESMValTool
-#
-#Caveats:
-# - uncomment out OBS files; VP has no access to such files so testing was done with
-#   MPI-ESM-MR as 'OBS' dataset; various fixes will have to be implemented for these
-#   files; fully working in this version though.
 ###########################################################################################################
 ---
 
