@@ -76,29 +76,6 @@ def extract_month(mycube, month):
     return season_cube
 
 
-# get the seasonal mean
-def seasonal_mean(mycube):
-    """
-    Function to compute seasonal means with MEAN
-
-    Chunks time in 3-month periods and computes means over them;
-    Returns a cube
-    """
-    import iris.coord_categorisation
-    iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
-    iris.coord_categorisation.add_season_year(
-        mycube, 'time', name='season_year')
-    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
-                                                iris.analysis.MEAN)
-
-    def spans_three_months(time):
-        """Check for three months"""
-        return (time.bound[1] - time.bound[0]) == 2160
-
-    three_months_bound = iris.Constraint(time=spans_three_months)
-    return annual_seasonal_mean.extract(three_months_bound)
-
-
 # slice cube over a restricted area (box)
 def area_slice(mycube, long1, long2, lat1, lat2):
     """
@@ -169,8 +146,9 @@ def area_average(mycube, coord1, coord2):
     Returns a cube
     """
     import iris.analysis.cartography
-    mycube.coord(coord1).guess_bounds()
-    mycube.coord(coord2).guess_bounds()
+    for coord in (coord1, coord2):
+        if not mycube.coord(coord).has_bounds():
+            mycube.coord(coord).guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(mycube)
     result = mycube.collapsed(
         [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)

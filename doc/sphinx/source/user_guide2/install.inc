@@ -72,6 +72,11 @@ For a minimal conda installation go to https://conda.io/miniconda.html. To
 simplify the process, an environment definition file is provided within the
 repository (``environment.yml`` in the root folder).
 
+.. attention::
+    Some systems provides a preinstalled version of conda (e.g., via the module environment).
+    Several users however reported problems when installing NCL with such versions. It is
+    therefore preferable to use a local, fully user-controlled conda installation.
+
 Note that the standard conda installation has some issues with the ``csh``/``tcsh``
 login shell. If you are using such shell, do not prepend the install
 location (``<prefix>``) to PATH in your ``.tcshrc`` file (as suggested by

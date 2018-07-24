@@ -28,12 +28,12 @@ RECIPE=recipe_perfmetrics_CMIP5.yml
 CONFIG=config-user.yml
 
 # Set environment
-CONDAPATH =  # e.g. /home/soft/miniconda3/
-CONDAENV =   # e.g. $CONDAPATH/envs/esmvaltool/bin
-ESMVALPATH = # e.g. /home/ESMValTool/esmvaltool
+CONDAPATH=  # e.g. /home/soft/miniconda3/
+CONDAENV=   # e.g. $CONDAPATH/envs/esmvaltool/bin
+ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
 
 # Changes below this line should not be required
 export PATH=$PATH:$CONDAPATH/bin/
 conda info --envs
 module load ncl
-$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/recipes/$RECIPE
+$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG
