@@ -17,9 +17,7 @@ import math
 import logging
 import numpy.ma as ma
 import iris
-
-from esmvaltool.diag_scripts.autoassess.autoassess_source \
-    import valmod_radiation as vm
+from .valmod_radiation import area_avg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -208,7 +206,7 @@ class RMSCLASS:
             squared_cube = working_cube**2
 
             # Mean the values
-            area_average = vm.area_avg(
+            area_average = area_avg(
                 squared_cube, coord1='latitude', coord2='longitude')
 
             # Square root the answer

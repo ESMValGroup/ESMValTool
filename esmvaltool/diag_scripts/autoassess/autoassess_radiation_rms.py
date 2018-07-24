@@ -28,9 +28,8 @@ Original Description from Version 1 Diagnostic:
 import os
 import logging
 import iris
-from esmvaltool.diag_scripts.autoassess.autoassess_source import rms
-from esmvaltool.diag_scripts.autoassess.autoassess_source \
-    import valmod_radiation as vm
+import autoassess_source.rms as rms
+import autoassess_source.valmod_radiation as vm
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
 
