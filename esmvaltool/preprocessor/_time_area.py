@@ -6,7 +6,6 @@ selecting geographical regions; constructing seasonal and area
 averages; checks on data time frequencies (daily, monthly etc)
 """
 from datetime import timedelta
-import numpy as np
 import iris
 
 
