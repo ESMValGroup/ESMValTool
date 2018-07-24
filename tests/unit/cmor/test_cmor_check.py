@@ -199,11 +199,10 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_with_scalar_coords(self):
         """Check succeeds even if a required coordinate is an scalar coord"""
         self.cube = self.cube.extract(
-            iris.Constraint(time=self.cube.coord('time').points[0])
-            )
+            iris.Constraint(time=self.cube.coord('time').points[0]))
         self._check_cube()
 
-    def test_rank_with_unestructured_grid(self):
+    def test_rank_unestructured_grid(self):
         """Check succeeds even if two required coordinates share a dimension"""
         self.cube = self.cube.extract(
             iris.Constraint(latitude=self.cube.coord('latitude').points[0])
