@@ -96,12 +96,12 @@ class CMORCheck(object):
         if logger is None:
             logger = logging.getLogger(__name__)
 
-        self._check_rank()
         self._check_var_metadata()
         self._check_fill_value()
         self._check_dim_names()
         self._check_coords()
         self._check_time_coord()
+        self._check_rank()
 
         self.report_warnings(logger)
         self.report_errors()
@@ -245,16 +245,26 @@ class CMORCheck(object):
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
         rank = 0
+        dimensions = []
         for coordinate in self._cmor_var.coordinates.values():
-            if coordinate.generic_level or not coordinate.value:
+            if coordinate.generic_level:
                 rank += 1
+            elif not coordinate.value:
+                try:
+                    for dim in self._cube.coord_dims(coordinate.standard_name):
+                        dimensions.append(dim)
+                except iris.exceptions.CoordinateNotFoundError:
+                    # Error reported at other stages
+                    pass
+        rank += len(set(dimensions))
+
         # Check number of dimension coords matches rank
         if self._cube.ndim != rank:
             self.report_error(self._does_msg, self._cube.var_name,
                               'match coordinate rank')
 
     def _check_dim_names(self):
-        for (axis, coordinate) in self._cmor_var.coordinates.items():
+        for (_, coordinate) in self._cmor_var.coordinates.items():
             if coordinate.generic_level:
                 continue
             else:
