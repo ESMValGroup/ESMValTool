@@ -61,8 +61,7 @@ class RMSLISTCLASS(list):
         if not region:
             logger.warning(
                 "Please supply a region using the region='xxx' input. " +
-                "Available regions are:"
-            )
+                "Available regions are:")
         elif not rms_found:
             logger.warning("ERROR: Requested region not found.")
         if not rms_found:
@@ -184,13 +183,15 @@ class RMSCLASS:
             lonc = iris.Constraint()
             latc = iris.Constraint()
             if plot_type == 'lat_lon' or plot_type == 'meridional_mean':
-                lamfn = lambda lon: self.region_bounds[0] <= lon \
-                    <= self.region_bounds[2]
-                lonc = iris.Constraint(longitude=lamfn)
+                lonc = iris.Constraint(
+                    longitude=lambda lon:
+                    self.region_bounds[0] <= lon <= self.region_bounds[2]
+                )
             if plot_type == 'lat_lon' or plot_type == 'zonal_mean':
-                lamfn = lambda lat: self.region_bounds[1] <= lat \
-                    <= self.region_bounds[3]
-                latc = iris.Constraint(latitude=lamfn)
+                latc = iris.Constraint(
+                    latitude=lambda lat:
+                    self.region_bounds[1] <= lat <= self.region_bounds[3]
+                )
             working_cube = working_cube.extract(lonc & latc)
 
         # Check to see if we have any data left.
@@ -215,10 +216,7 @@ class RMSCLASS:
 
         return rms_float
 
-    def calc_wrapper(self,
-                     toplot_cube,
-                     mask_cube,
-                     page_title):
+    def calc_wrapper(self, toplot_cube, mask_cube, page_title):
         """
         Get the RMS value and adds it to its own data array.
 
@@ -285,10 +283,7 @@ def start(exper='experiment', control='control'):
     return rms_list
 
 
-def calc_all(rms_list,
-             toplot_cube,
-             mask_cube,
-             page_title):
+def calc_all(rms_list, toplot_cube, mask_cube, page_title):
     """
     Loop through all the regions
 
@@ -302,8 +297,8 @@ def calc_all(rms_list,
     rms_float_list = []
     n_rms = len(rms_list)
     for i in range(n_rms):
-        rms_float = rms_list[i].calc_wrapper(
-            toplot_cube, mask_cube, page_title)
+        rms_float = rms_list[i].calc_wrapper(toplot_cube, mask_cube,
+                                             page_title)
         rms_float_list.append(rms_float)
 
     # Return the global rms value
