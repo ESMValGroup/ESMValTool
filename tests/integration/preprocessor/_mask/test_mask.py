@@ -1,5 +1,7 @@
 """
-Integration tests for the :func:`esmvaltool.preprocessor.regrid.regrid`
+Test mask
+
+Integration tests for the :func:`esmvaltool.preprocessor.mask`
 function.
 
 """
@@ -11,7 +13,6 @@ import unittest
 import subprocess
 import iris
 import numpy as np
-from numpy import ma
 
 import tests
 from esmvaltool.preprocessor import _mask as mask
@@ -23,19 +24,19 @@ class Test(tests.Test):
         fx_data[:] = 60.
         new_cube_data = np.empty((3, 3))
         new_cube_data[:] = 200.
-        cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+        crd_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
         lons = iris.coords.DimCoord(
             [0, 1.5, 3],
             standard_name='longitude',
             bounds=[[0, 1], [1, 2], [2, 3]],
             units='degrees_east',
-            coord_system=cs)
+            coord_system=crd_sys)
         lats = iris.coords.DimCoord(
             [0, 1.5, 3],
             standard_name='latitude',
             bounds=[[0, 1], [1, 2], [2, 3]],
             units='degrees_north',
-            coord_system=cs)
+            coord_system=crd_sys)
         coords_spec = [(lats, 0), (lons, 1)]
         fx_mask = iris.cube.Cube(fx_data, dim_coords_and_dims=coords_spec)
         iris.save(fx_mask, 'fx.nc')
