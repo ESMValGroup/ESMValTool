@@ -13,6 +13,10 @@ dependencies:
   # Multi language support:
   - ncl
   # TODO: add R, julia
+  - r
+  - r-rcpp
+  - r-ncdf4
+  - r-dotcall64
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py

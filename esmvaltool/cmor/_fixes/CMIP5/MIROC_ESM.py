@@ -24,7 +24,10 @@ class tro3(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1000
+        metadata = cube.metadata
+        cube *= 1000
+        cube.metadata = metadata
+        return cube
 
 
 class co2(Fix):

@@ -20,7 +20,10 @@ class gpp(Fix):
         iris.cube.Cube
 
         """
-        return cube * -1
+        metadata = cube.metadata
+        cube *= -1
+        cube.metadata = metadata
+        return cube
 
 
 class lai(Fix):
@@ -41,4 +44,7 @@ class lai(Fix):
         iris.cube.Cube
 
         """
-        return cube / 100.0
+        metadata = cube.metadata
+        cube *= 0.01
+        cube.metadata = metadata
+        return cube

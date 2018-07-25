@@ -11,7 +11,7 @@ diagnostics: map(include('diagnostic'), required=False)
 # Recipe item definitions
 dataset:
   dataset: str()
-  project: str()
+  project: str(required=False)
   start_year: int(min=0000, max=4000)
   end_year: int(min=0000, max=4000)
   ensemble: str(required=False)
@@ -29,6 +29,7 @@ variable:
   alternative_dataset: str(required=False)
   mip: str(required=False)
   fx_files: list(required=False)
+  additional_datasets: list(include('dataset'), required=False)
 
 # TODO: add preprocessor item
 

@@ -21,7 +21,6 @@
 # This namelist is part of the ESMValTool
 ###############################################################################
 ---
-
 datasets:
   #- {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
   #- {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2005}
@@ -58,4 +57,3 @@ diagnostics:
 
         metric: tx90p
         detrend: FALSE
-
