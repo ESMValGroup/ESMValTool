@@ -96,7 +96,7 @@ def derive(cubes, variable):
 
 
 def calc_asr(cubes):
-    """Compute gradient of absorbed shortwave radiation.
+    """Compute absorbed shortwave radiation.
 
     Arguments
     ----
@@ -105,7 +105,7 @@ def calc_asr(cubes):
 
     Returns
     -------
-        Cube containing gradient of absorbed shortwave radiation.
+        Cube containing absorbed shortwave radiation.
 
     """
     rsdt_cube = cubes.extract_strict(

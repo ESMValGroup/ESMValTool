@@ -6,15 +6,16 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     gradient_absorbed_shortwave_radiation
+standard_name:     absorbed_shortwave_radiation
 units:             W m-2
+cell_methods:      time: mean
 cell_measures:     area: areacella
-long_name:         Gradient of absorbed shortwave radiation
+long_name:         Absorbed shortwave radiation
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
 dimensions:        longitude latitude time
 type:              real
-positive:          up
+positive:          down
 !----------------------------------
 !
