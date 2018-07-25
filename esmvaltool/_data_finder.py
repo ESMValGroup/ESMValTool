@@ -35,12 +35,12 @@ def get_start_end_year(filename):
 
     This works for filenames matching 
     
-    *[-,_]YYYY*[-,_]YYYY*.* 
-      or 
-    *[-,_]YYYY*.* 
-      or 
+    *[-,_]YYYY*[-,_]YYYY*.*
+      or
+    *[-,_]YYYY*.*
+      or
     YYYY*[-,_]*.*
-      or 
+      or
     YYYY*[-,_]YYYY*[-,_]*.*
       or
     YYYY*[-,_]*[-,_]YYYY*.* (Does this make sense? Is this worth catching?)
@@ -51,20 +51,21 @@ def get_start_end_year(filename):
     filename_list = [elem.split('-') for elem in filename.split('_')]
     filename_list = [elem for sublist in filename_list for elem in sublist]
     
-    pos_ydates = [elem.isdigit() and len(elem)>=4 for elem in filename_list]
-    pos_ydates_l = pos_ydates.copy(); pos_ydates_r = pos_ydates.copy() 
+    pos_ydates = [elem.isdigit() and len(elem) >= 4 for elem in filename_list]
+    pos_ydates_l = pos_ydates.copy()
+    pos_ydates_r = pos_ydates.copy()
     
-    for ind,_ in enumerate(pos_ydates_l):
+    for ind, _ in enumerate(pos_ydates_l):
         if ind != 0:
             pos_ydates_l[ind] = (pos_ydates_l[ind-1] and pos_ydates_l[ind])
     
     
-    for ind,_ in enumerate(pos_ydates_r):
+    for ind, _ in enumerate(pos_ydates_r):
         if ind != 0:
-            pos_ydates_r[-ind-1] = (pos_ydates_r[-ind] and 
+            pos_ydates_r[-ind-1] = (pos_ydates_r[-ind] and
                                     pos_ydates_r[-ind-1])
     
-    dates = [filename_list[ind] for ind,_ in enumerate(pos_ydates) 
+    dates = [filename_list[ind] for ind, _ in enumerate(pos_ydates)
              if pos_ydates_r[ind] or pos_ydates_l[ind]]
 
     if len(dates) == 1:
