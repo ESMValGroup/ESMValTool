@@ -7,7 +7,8 @@
 
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
-library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(startR)#, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+#library(startR, lib.loc = '/home/Earth/nmanuben/tmp/startR_mod/startR.Rcheck')
 library(multiApply)
 library(ggplot2)
 library(yaml)
@@ -80,18 +81,38 @@ historical_data <- Start(model = reference_filenames,
                          lat = 'all',
                          lon = 'all',
                          lon_var = 'lon',
+    lon_reorder = CircularSort(0, 360),
                          return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                          retrieve = TRUE)
+# ------------------------------
+# Provisional solution to error in dimension order:
+ lon <- attr(historical_data, "Variables")$dat1$lon
+ lat <- attr(historical_data, "Variables")$dat1$lat
+ time <- attr(historical_data, "Variables")$dat1$time
+    historical_data <- as.vector(historical_data)
+    dim(historical_data) <- c(model = 1, var = 1, lat = length(lat), lon = length(lon), time = length(time))
+historical_data <- aperm(historical_data, c(1,2,5,3,4))
+    attr(historical_data, "Variables")$dat1$time <- time
+# ------------------------------
 
+#print("real")
+#print(historical_data[1,1,1:13,1:2,1:2])
+#x <- as.vector(historical_data[1,1,,,])
+#print("vec")
+#print(x[1:9])
+#dim(x) <- c(lat = 12, lon = 12, time = 7300)
+#print("tras")
+#print(x[1:4, 1:5 ,1])
+#PlotEquiMap(x[,,2], lon=lon, lat=lat, filled =FALSE, fileout = paste0(plot_dir, "/Plots.png"))
 
-lat <- attr(historical_data, "Variables")$dat1$lat
-lon <- attr(historical_data, "Variables")$dat1$lon
 time_dimension <- which(names(dim(historical_data)) == "time")
+
 #lon[lon > 180] <- lon[lon > 180] - 360
 #lon_order <- sort(lon, index.return = TRUE)
 #historical_data <- Subset(historical_data, "lon", lon_order$ix)
 #lon <- lon_order$x
 
+PlotEquiMap(historical_data[1,1,1,,], lon=lon, lat=lat, filled = FALSE, fileout = paste0(plot_dir, "/Plots1.png"))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
 # attributes(years) <- NULL
@@ -118,6 +139,7 @@ if (var0 == "tasmin") {
   historical_data <- historical_data * 60 * 60 * 24
 
 }
+
 base_sd <- base_sd_historical <- base_mean <- list()
 for (m in 1 : length(metric)) {
   base_range <- as.numeric(c(substr(start_reference, 1, 4), substr(end_reference, 1, 4)))
@@ -143,6 +165,9 @@ for (m in 1 : length(metric)) {
     base_mean_historical <- InsertDim(base_mean[[m]], 1, dim(base_index$result)[1])
   }
   historical_index_standardized <- (base_index$result - base_mean_historical) / base_sd_historical[[m]]
+ #   print(str(historical_index_standardized))
+ #   print(dim(historical_index_standardized))
+ #   print(attributes(historical_index_standardized))
   for (mod in 1 : dim(historical_data)[model_dim]) {
     historical_index_standardized <- aperm(historical_index_standardized[,mod,1, ,], c(3,2,1))
     names(dim(historical_index_standardized)) <- c("lon", "lat", "time")
@@ -159,16 +184,22 @@ for (m in 1 : length(metric)) {
     dim(time) <- c(time = length(time))
     metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
     attr(time, "variables") <- metadata
+         print(str(historical_index_standardized))
+    print(dim(historical_index_standardized))
+    print(attributes(historical_index_standardized))
     variable_list <- list(index = historical_index_standardized, lat = lat, lon = lon, time = time)
     names(variable_list)[1] <- var0
+
+print("AS")
+
     ArrayToNetCDF(variable_list,
-                  paste0(metric[m], "_",model_names[mod],"_", "historical", "_", start_reference, "_", end_reference, ".nc"))
+                  paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", "historical", "_", start_reference, "_", end_reference, ".nc"))
   }
 }
 
 
 #Compute the time series of the relevant index, using the quantiles and standard deviation from the index
-projection_filenames <-  projection_filenames[projection_files]
+projection_filenames <-  fullpath_filenames[projection_files]
 
 for (i in 1 : length(projection_filenames)) {
     projection_data <- Start(model = projection_filenames[i],
@@ -178,10 +209,24 @@ for (i in 1 : length(projection_filenames)) {
                              lat = 'all',
                              lon = 'all',
                              lon_var = 'lon',
+                        lon_reorder = CircularSort(0, 360),
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
-    projection_data <- Subset(projection_data, "lon", lon_order$ix)
-    lon <- lon_order$x
+    # ------------------------------
+# Provisional solution to error in dimension order:
+ lon <- attr(projection_data, "Variables")$dat1$lon
+ lat <- attr(projection_data, "Variables")$dat1$lat
+ time <- attr(projection_data, "Variables")$dat1$time
+    projection_data <- as.vector(projection_data)
+    dim(projection_data) <- c(model = 1, var = 1, lat = length(lat), lon = length(lon), time = length(time))
+    projection_data <- aperm(projection_data, c(1,2,5,3,4))
+     attr(projection_data, "Variables")$dat1$time <- time
+    print(dim(projection_data))
+# ------------------------------
+
+
+    #projection_data <- Subset(projection_data, "lon", lon_order$ix)
+    #lon <- lon_order$x
     if (var0 == "pr") {
       projection_data <- projection_data * 60 * 60 * 24
     } else if (var0 == "sfcWind") {
@@ -203,26 +248,40 @@ for (i in 1 : length(projection_filenames)) {
 
     base_sd_proj <- InsertDim(base_sd[[m]], 1, dim(projection_index$result)[1])
     projection_index_standardized <- (projection_index$result - projection_mean) / base_sd_proj
+#print("PROJ")
+#print(str(projection_index_standardized))
+ #   print(dim(projection_index_standardized))#
+      # print(attributes(projection_index_standardized))
     for (mod in 1 : dim(projection_data)[model_dim]) {
-      projection_index_standardized <- aperm(projection_index_standardized[,mod,1, ,], c(3,2,1))
+        projection_index_standardized <- aperm(projection_index_standardized[,mod,1, ,], c(3,2,1))
       names(dim(projection_index_standardized)) <- c("lon", "lat", "time")
-      metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE))))
-      attr(projection_index_standardized, 'variables') <- metadata
-      time <- as.numeric(projection_index$years)
+
+      metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE, prec = 'double'))))
+      names(metadata)[1] <- var0
+        attr(projection_index_standardized, 'variables') <- metadata
+
       day <- "01"
       month <- "-01-"
+        time <- as.numeric(projection_index$years)
       time <- as.POSIXct(paste0(time, month, day), tz = "CET")
-      time <- julian(time, origin = as.POSIXct("1970-01-01"))
+      time <- as.numeric(julian(time, origin = as.POSIXct("1970-01-01")))
 
       attributes(time) <- NULL
+        #attributes(lat) <- NULL
+        #attributes(lon) <- NULL
+
       dim(time) <- c(time = length(time))
       metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
       attr(time, "variables") <- metadata
-      names(metadata)[1] <- "var0"
-      variable_list <- list(index = historical_index_standardized, lat = lat, lon = lon, time = time)
-      names(variable_list)[1] <- var0
-      ArrayToNetCDF(variable_list,
-                    paste0(metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"))
+        names(variable_list)[1] <- var0
+
+
+      variable_list <- list(index = projection_index_standardized, lat = lat, lon = lon, time = time)
+
+print("dr")
+
+   #   ArrayToNetCDF(variable_list,
+    #                paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"))
 
       title <- paste0("Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
                       substr(end_projection, 1, 4), " ",
@@ -230,13 +289,11 @@ for (i in 1 : length(projection_filenames)) {
       breaks <- -8 : 8
       PlotEquiMap(Mean1Dim(projection_index_standardized, 3), lon = lon, lat = lat, filled.continents = FALSE,
                   toptitle = title, brks = breaks,
-                  fileout = paste0(metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".pdf"))
+                  fileout = paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".pdf"))
       }
   }
 
 }
-
-
 
 
 
