@@ -22,7 +22,6 @@ function diag_file_name(dataset_idx[1]: integer, \
 ; Arguments:
 ;   dataset_idx : index of the current model
 ;   opt : options, needs the attributes
-;                            @diagscript   (diagscript name)
 ;                            @wdiag        (diagnostic name)
 ;                            @period_avg   (year-, month- or season name)
 ;                            @level        (specify plev range)

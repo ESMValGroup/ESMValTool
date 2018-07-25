@@ -23,14 +23,15 @@
 ;     e13fig10_season: seasons (n-element array of strings, "ANN", "JAN",
 ;         "FEB", "MAR", "DJF", "SON", etc.).
 ;
-;  Optional recipe attributes:
-;      rsondes: a set of additional observations can be added to the plot
-;          but will not be saved for the MDER diagnostics.
-;      wdiag: if the diagnostics will be used for the MDER a diagnostic name
-;          name is needed.
-;      wdiag_title: this name will apper in the figure title.
+; Optional recipe attributes:
+;     rsondes: a set of additional observations can be added to the plot
+;         but will not be saved for the MDER diagnostics.
+;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
+;         name is needed.
+;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
+;     Modifies dataset_info@dataset.
 ;
 ; Modification history:
 ;   * 20180716-A_schl_ma: ported to v2.0
@@ -62,6 +63,10 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
+
+  ; Variable
+  var0 = variables(0)
+  field_type0 = field_types(0)
 
   ; Write references (TODO)
   ; write_references(diag_script,       \
@@ -130,21 +135,15 @@ begin
     idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
   end if
 
-  ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
-
   ; Array sizes
   DIM_DAT = dimsizes(idx_datasets)
 
-  ; Trend array
+  ; Output arrays
   val_trend = new((/2, DIM_DAT/), "float")
   val_trend!0 = "case"
   val_trend&case = (/"val", "stddev"/)
   val_trend!1 = "dataset"
   val_trend&dataset = dataset_info@dataset(idx_datasets)
-
-  ; Mean array
   val_mean = new((/2, DIM_DAT/), "float")
   val_mean!0 = "case"
   val_mean&case = (/"val", "stddev"/)
@@ -560,8 +559,7 @@ begin
 
   ; Basic plotting settings
   if (config_user_info@write_plots) then
-    delete(dataset_info@dataset)
-    dataset_info@dataset = dataset_names
+    dataset_info@dataset := dataset_names   ; Used by unique_labels_min
     colors = project_style(diag_script_info, "colors")
     thicks = project_style(diag_script_info, "thicks")
     lg_labels = unique_labels_min((/"dataset", "ensemble"/))
@@ -672,7 +670,7 @@ begin
     ; end do
     ; id = diag_script + "_" + var0
     ; contrib_authors = (/"A_zech_sa", "A_schl_ma"/)
-    ; alldatasetnames = dataset_info@dataset
+    ; alldatasetnames = dataset_names
     ; alltags = array_append_record(tags, \
     ;                               (/"DM_sh", "ST_mean", "ST_clim", \
     ;                               "ST_range", "PT_errorbar", \
@@ -747,11 +745,12 @@ begin
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1
       opt@wdiag = diag_script_info@wdiag(dd)
+      log_info(opt@wdiag)
 
       ; Iterate over all datasets
       do i = 0, DIM_DAT - 1
         idat = idx_datasets(i)
-        log_debug("Processing " + dataset_info@dataset(i))
+        log_debug("Processing " + dataset_names(i))
         new_path = work_dir + diag_file_name(idat, opt)
 
         ; Write files
@@ -761,27 +760,25 @@ begin
           val@units = "(" + variable_info@units + "/dec)"
           val@diag_script = (/diag_script/)
           copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_info@dataset(i)
+          val@dataset = dataset_names(i)
           val@start_year = input_file_info@start_year(idat)
           val@end_year = input_file_info@end_year(idat)
           val@ncdf = new_path
           ncdf_outfile = ncdf_write(val, new_path)
-          delete(val)
         else if(isStrSubset(opt@wdiag, "_c")) then
           val = val_mean(case|:, dataset|i)
           val@var = var0
           val@units = "(" + variable_info@units + "/dec)"
           val@diag_script = (/diag_script/)
           copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_info@dataset(i)
+          val@dataset = dataset_names(i)
           val@start_year = input_file_info@start_year(idat)
           val@end_year = input_file_info@end_year(idat)
           val@ncdf = new_path
           ncdf_outfile = ncdf_write(val, new_path)
-          delete(val)
         end if
         end if
-        delete(new_path)
+        delete([/val, new_path/])
       end do
     end do
   end if
