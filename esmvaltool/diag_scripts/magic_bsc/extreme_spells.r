@@ -109,7 +109,7 @@ for (i in 1 : length(projection_filenames)) {
                              lat = 'all',
                              lon = 'all',
                              lon_var = 'lon',
-        lon_reorder = CircularSort(0, 360),
+   #     lon_reorder = CircularSort(0, 360),
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
 
