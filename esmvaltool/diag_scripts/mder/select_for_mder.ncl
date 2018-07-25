@@ -1,5 +1,5 @@
 ; #############################################################################
-; select_for_mder.ncl
+; mder/select_for_mder.ncl
 ; #############################################################################
 ; DIAGNOSTIC SCRIPT SELECTING MDER DIAGNOSTICS
 ; Author: Sabrina Wenzel (DLR, Germany)

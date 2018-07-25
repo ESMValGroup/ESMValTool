@@ -1,5 +1,5 @@
 ; #############################################################################
-; asr.ncl
+; mder/asr.ncl
 ; #############################################################################
 ; Author: Sabrina Zechlau (DLR, Germany)
 ; ESMVal project PI: Veronika Eyring (DLR, Germany)
@@ -36,8 +36,6 @@ load "./diag_scripts/shared/plot/style.ncl"
 ; load "./diag_scripts/shared/meta_data.ncl"
 
 load "./diag_scripts/shared/mder.ncl"
-
-; load "./diag_scripts/calc_seasonal.ncl"
 
 
 begin

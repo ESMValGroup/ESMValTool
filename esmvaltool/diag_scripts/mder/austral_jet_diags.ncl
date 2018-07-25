@@ -1,5 +1,5 @@
 ; #############################################################################
-; austral_jet_diags.ncl
+; mder/austral_jet_diags.ncl
 ; #############################################################################
 ; Author: Sabrina Zechlau (DLR, Germany)
 ; ESMVal project PI: Veronika Eyring (DLR, Germany)
@@ -69,11 +69,11 @@ begin
   field_type0 = field_types(0)
 
   ; Write references (TODO)
-  ; write_references(diag_script,       \
-  ;                  "A_zech_sa",       \
-  ;                  "A_schl_ma",       \
+  ; write_references(diag_script, \
+  ;                  "A_zech_sa", \
+  ;                  "A_schl_ma", \
   ;                  "D_wenzel16jclim", \
-  ;                  "",                \
+  ;                  "", \
   ;                  "P_embrace")
 
 end
