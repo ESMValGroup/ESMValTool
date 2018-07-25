@@ -33,7 +33,7 @@ def find_files(dirname, filename):
 def get_start_end_year(filename):
     """Get the start and end year from a file name.
 
-    This works for filenames matching 
+    This works for filenames matching
     
     *[-,_]YYYY*[-,_]YYYY*.*
       or
@@ -57,13 +57,13 @@ def get_start_end_year(filename):
     
     for ind, _ in enumerate(pos_ydates_l):
         if ind != 0:
-            pos_ydates_l[ind] = (pos_ydates_l[ind-1] and pos_ydates_l[ind])
+            pos_ydates_l[ind] = (pos_ydates_l[ind - 1] and pos_ydates_l[ind])
     
     
     for ind, _ in enumerate(pos_ydates_r):
         if ind != 0:
-            pos_ydates_r[-ind-1] = (pos_ydates_r[-ind] and
-                                    pos_ydates_r[-ind-1])
+            pos_ydates_r[- ind - 1] = (pos_ydates_r[- ind] and
+                                    pos_ydates_r[- ind - 1])
     
     dates = [filename_list[ind] for ind, _ in enumerate(pos_ydates)
              if pos_ydates_r[ind] or pos_ydates_l[ind]]
