@@ -15,7 +15,6 @@ from numpy import ma
 
 import tests
 from esmvaltool.preprocessor import _mask as mask
-from tests.unit.preprocessor._regrid import _make_cube
 
 
 class Test(tests.Test):
