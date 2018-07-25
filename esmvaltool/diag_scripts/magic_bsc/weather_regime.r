@@ -62,20 +62,30 @@ data <- Start(model = fullpath_filenames,
               var = var0,
               var_var = 'var_names',
               #  sdate = paste0(seq(1970, 2000, by = 1), "0101"),
-              time = values(list(as.POSIXct(start_historical),
-                                 as.POSIXct(end_historical))),
+             # time = values(list(as.POSIXct(start_historical),
+              #                   as.POSIXct(end_historical))),
+    time ='all',
               time_tolerance = as.difftime(15, units = 'days'),
               lat = values(list(lat.min, lat.max)),
               lon = values(list(lon.min, lon.max)),
+    #lat = 'all', lon = 'all',
               lon_var = 'lon',
               lon_reorder = CircularSort(0, 360),
               return_vars = list(time = 'model', lon = 'model', lat = 'model'),
               retrieve = TRUE)
+      # ------------------------------
+# Provisional solution to error in dimension order:
+ lon <- attr(data, "Variables")$dat1$lon
+ lat <- attr(data, "Variables")$dat1$lat
+ time <- attr(data, "Variables")$dat1$time
+    data <- as.vector(data)
+    dim(data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
+    data <- aperm(data, c(1,2,5,4,3))
+     attr(data, "Variables")$dat1$time <- time
+    print(dim(data))
+# ------------------------------
 
-print(dim(data))
 
-lat <- attr(data, "Variables")$dat1$lat
-lon <- attr(data, "Variables")$dat1$lon
 
 time_dim <- which(names(dim(data)) == "time")
 dims <- dim(data)
@@ -93,17 +103,36 @@ Loess<-function(clim,loess_span){
 clim <- Clim(var_exp = data,var_obs = data,memb=T)
 
 anom_obs <- Ano(data, clim$clim_obs)
+
 #anom_exp<-Ano(data$mod,clim_smoothed_exp)
 
 #WR_obs <- WeatherRegime(data = anom_obs, EOFS = FALSE, lat_weights = TRUE, lat = lat, lon = lon,
 #                        ncenters = ncenters, method = cluster_method)
+
+
 WR_obs <- WeatherRegime(data = anom_obs, EOFS = FALSE, lat = lat, lon = lon,# lat_weights = FALSE,
                         ncenters = ncenters, method = cluster_method)
+
+#
 titles<-paste0('freq = ', round(WR_obs$frequency, 1), '%')
-PlotLayout(PlotEquiMap,c(1,2),lon=lon,lat=lat,var=WR_obs$composite/100,
-           titles=paste0(paste0('Cluster ',1:4),' (',paste0('freq = ',round(WR_obs$frequency,1),'%'),' )'),filled.continents=F,
-           axelab=F,draw_separators = T,subsampleg = 1,brks=seq(-16,16,by=2),
-           bar_extra_labels = c(2,0,0,0),fileout= paste0(plot_dir, '/observed_regimes.png'))
+
+# -----------------------------
+# WeatherRegime.R returns an altered order of dimensions:
+names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
+# -----------------------------
+
+
+
+clim_frequencies<-paste0('freq = ',round(Mean1Dim(WR_obs$frequency,1),1),'%')
+
+
+cosa <- aperm(drop(WR_obs$composite), c(3,1,2))
+
+PlotLayout(PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
+           titles = paste0(paste0('Cluster ', 1:4),' (',clim_frequencies,' )'), filled.continents = FALSE,
+           axelab = FALSE, draw_separators = TRUE, subsampleg = 1, brks = seq(-16, 16, by = 2),
+           bar_extra_labels = c(2, 0, 0, 0), fileout = paste0(plot_dir, '/observed_regimes.png'))
+
 
 
 #reference<-drop(WR_obs$composite)

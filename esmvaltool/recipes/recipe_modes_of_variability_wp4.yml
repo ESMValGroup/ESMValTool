@@ -29,7 +29,9 @@
 ---
 
 datasets:
-  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+    #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i0p1,  start_year: 1961,  end_year: 1990}
 
 preprocessors:
   preproc:
@@ -43,7 +45,7 @@ diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      pr:
+      psl:
         preprocessor: preproc
         mip: Amon
         field: T2M
@@ -52,10 +54,11 @@ diagnostics:
         script: magic_bsc/weather_regime.r #(in diag_scripts)
 
         #Region considered
-        lat_max: 81
-        lat_min: 27
-        lon_max: 45
-        lon_min: 274.5
+        lat_max: 80
+        lat_min: 30
+        lon_max: 40
+        #lon_min: 274.5
+        lon_min: -60
 
         #Start and end periods for the historical and projection periods
         start_historical: "1960-01-01"
