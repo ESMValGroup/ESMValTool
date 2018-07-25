@@ -10,15 +10,12 @@
 ;     Creates line plot for sea ice area and extent versus time.
 ;
 ; Required recipe attributes:
-;     multi_model_m: additionally plot MMM and standard deviation.
 ;     month: selected month or annual mean.
-;     region: region to be plotted ( "Arctic" or "Antarctic").
+;     region: region to be plotted ("Arctic" or "Antarctic").
 ;
 ; Optional recipe attributes:
 ;     fill_pole_hole: fill observational hole at North pole, Default: False
 ;     styleset: specify line and color style
-;     EMs_in_lg: create legend label for each individual ensemble member
-;                (Default: "True")
 ;     xy_line_legend: False: do not draw a legend inside the plot
 ;     legend_outside: True: draw legend in an extra plot
 ;
@@ -26,17 +23,17 @@
 ;     CMOR units expected: areacello in m2, sic in %
 ;
 ; Modification history
-;     20180723-A_schl_ma: Extended diagnostic to use it in MDER
-;     20180620-A_senf_da: Ported to ESMValTool v2
-;     20160906-A_senf_da: Added option to fill polar observation hole
-;     20151027-A_laue_ax: Moved call to 'write_references' to the beginning
-;                         of the code
-;     20150325-A_laue_ax: Modified reference tags used for acknowledgements
-;                         (projects, observations, etc)
-;     20140312-A_righ_ma: Adapted to new time_operations structure.
-;     20140129-A_senf_da: Modularized to fit to new structure.
-;     20130419-A_gott_kl: Implemented into ./diag_scripts.
-;     20130405-A_gott_kl: Implemented.
+;   * 20180723-A_schl_ma: Extended diagnostic to use it in MDER.
+;   * 20180620-A_senf_da: Ported to ESMValTool v2.
+;   * 20160906-A_senf_da: Added option to fill polar observation hole.
+;   * 20151027-A_laue_ax: Moved call to 'write_references' to the beginning
+;                         of the code.
+;   * 20150325-A_laue_ax: Modified reference tags used for acknowledgements
+;                         (projects, observations, etc).
+;   * 20140312-A_righ_ma: Adapted to new time_operations structure.
+;   * 20140129-A_senf_da: Modularized to fit to new structure.
+;   * 20130419-A_gott_kl: Implemented into ./diag_scripts.
+;   * 20130405-A_gott_kl: Implemented.
 ;
 ; #############################################################################
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
@@ -89,8 +86,7 @@ begin
   if (all(ismissing(ind_f))) then
     error_msg("f", diag_script, "", "can't use field " + field_type0)
   end if
-  delete(plot_fields)
-  delete(ind_f)
+  delete([/plot_fields, ind_f/])
 
   ; Check region selection
   if (diag_script_info@region.ne."Arctic" .and. \
@@ -166,12 +162,12 @@ begin
   end if
 
   ; Loop over datasets
-  do imod = 0, dimsizes(annots) - 1
+  do idat = 0, dimsizes(annots) - 1
 
-    log_info("processing " + annots(imod) + \
+    log_info("processing " + annots(idat) + \
              "  ############################################")
     ; See ./interface_scripts/data_handling.ncl
-    sic = read_data(imod, var0, field_type0)
+    sic = read_data(idat, var0, field_type0)
     if (sic@units.eq."%") then
       sic = sic / 100.0  ; Subsequent code expects %/100
       sic@units = "%/100"
@@ -199,7 +195,7 @@ begin
 
       ; Get area data & lat-lon from another file
       ; (dataset specific: ~/reformat_scripts folder)
-      aux_vars  = read_fx_data(imod, "areacello")
+      aux_vars  = read_fx_data(idat, "areacello")
       area_lon  = aux_vars[2]  ; lon
       area_lat  = aux_vars[1]  ; lat
       area_temp = aux_vars[0]  ; areacello
@@ -207,8 +203,8 @@ begin
     end if
 
     ; Time axis
-    sic_temp = time_operations(sic, toint(dataset_info@start_year(imod)),\
-                               toint(dataset_info@end_year(imod)), \
+    sic_temp = time_operations(sic, toint(dataset_info@start_year(idat)),\
+                               toint(dataset_info@end_year(idat)), \
                                "extract", "", 0)
     sic_temp!0 = "time"
     delete(sic)
@@ -282,12 +278,12 @@ begin
     ; Calculate weighted annual mean or select month
     if (diag_script_info@month .eq. "A") then    ; weighted annual mean
       sic_ann_ext  = time_operations(sic_ext, \
-                                     toint(dataset_info@start_year(imod)), \
-                                     toint(dataset_info@end_year(imod)), \
+                                     toint(dataset_info@start_year(idat)), \
+                                     toint(dataset_info@end_year(idat)), \
                                      "average", "yearly", True)
       sic_ann_area = time_operations(sic_area, \
-                                     toint(dataset_info@start_year(imod)),\
-                                     toint(dataset_info@end_year(imod)), \
+                                     toint(dataset_info@start_year(idat)),\
+                                     toint(dataset_info@end_year(idat)), \
                                      "average", "yearly", True)
     else  ; Select month
       month = toint(diag_script_info@month)
@@ -310,16 +306,16 @@ begin
     delete(temp)
 
     ; Put into global array
-    ia = toint(dataset_info@start_year(imod)) - start_year
-    ie = toint(dataset_info@end_year(imod)) - start_year
-    val_ext(imod, ia:ie) = tofloat(sic_sum_ext)
-    val_area(imod, ia:ie) = tofloat(sic_sum_area)
+    ia = toint(dataset_info@start_year(idat)) - start_year
+    ie = toint(dataset_info@end_year(idat)) - start_year
+    val_ext(idat, ia:ie) = tofloat(sic_sum_ext)
+    val_area(idat, ia:ie) = tofloat(sic_sum_area)
 
     ; Clean up
     delete([/area_lon, area_lat, area_temp, sic_sum_ext, sic_sum_area, \
            ia, ie/])
 
-  end do  ; imod
+  end do  ; idat
 
   ; Calculate standard deviation of datasets
   if (diag_script_info@multi_model_mean .eq. "y") then
@@ -447,11 +443,12 @@ begin
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1
       opt@wdiag = diag_script_info@wdiag(dd)
+      log_info(opt@wdiag)
 
       ; Iterate over all datasets
       do i = 0, DIM_DAT - 1
         idat = idx_datasets(i)
-        log_debug("Processing " + dataset_info@dataset(i))
+        log_debug("Processing " + dataset_info@dataset(idat))
         new_path = work_dir + diag_file_name(idat, opt)
 
         ; Write files
@@ -461,11 +458,10 @@ begin
           val@units = "(" + variable_info@units + "/dec)"
           val@diag_script = (/diag_script/)
           copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_info@dataset(i)
+          val@dataset = dataset_info@dataset(idat)
           val@start_year = input_file_info@start_year(idat)
           val@end_year = input_file_info@end_year(idat)
           val@ncdf = new_path
-          ncdf_outfile = ncdf_write(val, new_path)
           delete(val)
         else if(isStrSubset(opt@wdiag, "_c")) then
           val = val_mean(case|:, dataset|i)
@@ -473,15 +469,14 @@ begin
           val@units = "(" + variable_info@units + "/dec)"
           val@diag_script = (/diag_script/)
           copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_info@dataset(i)
+          val@dataset = dataset_info@dataset(idat)
           val@start_year = input_file_info@start_year(idat)
           val@end_year = input_file_info@end_year(idat)
           val@ncdf = new_path
           ncdf_outfile = ncdf_write(val, new_path)
-          delete(val)
         end if
         end if
-        delete(new_path)
+        delete([/val, new_path/])
       end do
     end do
   end if
