@@ -59,7 +59,6 @@ def get_start_end_year(filename):
         if ind != 0:
             pos_ydates_l[ind] = (pos_ydates_l[ind - 1] and pos_ydates_l[ind])
     
-    
     for ind, _ in enumerate(pos_ydates_r):
         if ind != 0:
             pos_ydates_r[- ind - 1] = (pos_ydates_r[- ind] and
@@ -67,7 +66,7 @@ def get_start_end_year(filename):
     
     dates = [filename_list[ind] for ind, _ in enumerate(pos_ydates)
              if pos_ydates_r[ind] or pos_ydates_l[ind]]
-
+    
     if len(dates) == 1:
         start_year = int(dates[0][:4])
         end_year = start_year
