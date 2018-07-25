@@ -61,19 +61,31 @@ anomaly_files <- which(unname(experiment) == as.character(anomaly_class))
 #model_names <-  lapply(input_files_per_var, function(x) x$model)
 #model_names <- unlist(unname(model_names))[anomaly_files]
 
-start_climatology <- lapply(input_files_per_var, function(x) x$start_year)
-start_climatology <- c(unlist(unname(start_climatology))[climatology_files])[1]
-end_climatology <- lapply(input_files_per_var, function(x) x$end_year)
-end_climatology <- c(unlist(unname(end_climatology))[climatology_files])[1]
+#start_climatology <- lapply(input_files_per_var, function(x) x$start_year)
+#start_climatology <- c(unlist(unname(start_climatology))[climatology_files])[1]
+#end_climatology <- lapply(input_files_per_var, function(x) x$end_year)
+#end_climatology <- c(unlist(unname(end_climatology))[climatology_files])[1]
 
-start_anomaly <- lapply(input_files_per_var, function(x) x$start_year)
-start_anomaly <- c(unlist(unname(start_anomaly))[anomaly_files])[1]
-end_anomaly <- lapply(input_files_per_var, function(x) x$end_year)
-end_anomaly <- c(unlist(unname(end_anomaly))[anomaly_files])[1]
+#start_anomaly <- lapply(input_files_per_var, function(x) x$start_year)
+#start_anomaly <- c(unlist(unname(start_anomaly))[anomaly_files])[1]
+#end_anomaly <- lapply(input_files_per_var, function(x) x$end_year)
+#end_anomaly <- c(unlist(unname(end_anomaly))[anomaly_files])[1]
 
 agreement_threshold <- params$agreement_threshold
+
+
+
+start_climatology <- params$climatology_start_year
+end_climatology <- params$climatology_end_year
+start_anomaly <- params$anomaly_start_year
+end_anomaly <- params$anomaly_end_year
+
 print(start_climatology)
+print(end_climatology)
+print(start_anomaly)
 print(end_anomaly)
+
+
 
 font_size <- 12
 
@@ -101,6 +113,25 @@ reference_data <- Start(model = climatology_filenames,
 
 lat <- attr(reference_data, "Variables")$dat1$lat
 lon <- attr(reference_data, "Variables")$dat1$lon
+jpeg(paste0(plot_dir, "/plot.jpg"))
+PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
+# ------------------------------
+# Provisional solution to error in dimension order:
+ lon <- attr(reference_data, "Variables")$dat1$lon
+ lat <- attr(reference_data, "Variables")$dat1$lat
+ time <- attr(reference_data, "Variables")$dat1$time
+num_models <- dim(reference_data)[which(names(dim(reference_data))=='model')]
+    reference_data <- as.vector(reference_data)
+
+    dim(reference_data) <- c( num_models, var = 1, lon = length(lon), lat = length(lat), time = length(time))
+    reference_data <- aperm(reference_data, c(1,2,5,4,3))
+     attr(reference_data, "Variables")$dat1$time <- time
+    print(dim(reference_data))
+# ------------------------------
+jpeg(paste0(plot_dir, "/plot1.jpg"))
+PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
 
 if (!is.null(moninf)) {
   months <- paste0(month.abb[moninf],"-", month.abb[monsup])
@@ -142,10 +173,29 @@ rcp_data <- Start(model = anomaly_filenames,
                   lat = 'all',
                   lon = 'all',
                   lon_var = 'lon',
-                  lon_reorder = CircularSort(0, 360),
+                  #lon_reorder = CircularSort(0, 360),
                   return_vars = list(time = 'model', lon = 'model',
                                      lat = 'model'),
                   retrieve = TRUE)
+jpeg(paste0(plot_dir, "/plot2.jpg"))
+PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
+# ------------------------------
+# Provisional solution to error in dimension order:
+ lon <- attr(rcp_data, "Variables")$dat1$lon
+ lat <- attr(rcp_data, "Variables")$dat1$lat
+ time <- attr(rcp_data, "Variables")$dat1$time
+ num_models <- dim(rcp_data)[which(names(dim(rcp_data))=='model')]
+ units <- (attr(rcp_data,"Variables")$common)[[2]]$units
+    rcp_data <- as.vector(rcp_data)
+    dim(rcp_data) <- c(num_models, var = 1, lon = length(lon), lat = length(lat), time = length(time))
+    rcp_data <- aperm(rcp_data, c(1,2,5,4,3))
+     attr(rcp_data, "Variables")$dat1$time <- time
+    print(dim(rcp_data))
+# ------------------------------
+jpeg(paste0(plot_dir, "/plot3.jpg"))
+PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
 
 
 
@@ -156,13 +206,13 @@ dims <- dims[-time_dim]
 dim(rcp_data) <- dims
 names(dim(rcp_data))[c(time_dim, time_dim + 1)] <- c("month", "year")
 #
-attr <- ((attr(rcp_data,"Variables")$common))[2]
-units <- attr[[1]]$units
+
 
 if (!is.null(moninf)) {
   proj_seasonal_mean <- Season(rcp_data, posdim = time_dim, monini = monini, moninf = moninf,
                              monsup = monsup)
    years_dim <- which(names(dim(proj_seasonal_mean)) == "year")
+    print(dim(proj_seasonal_mean))
   multi_year_anomaly <- Mean1Dim(proj_seasonal_mean, years_dim) - climatology
   climatology <- InsertDim(climatology, years_dim, lendim = dim(proj_seasonal_mean)[years_dim])
 } else {
@@ -212,8 +262,9 @@ for (mod in 1 : length(model_names)) {
   attr(data, 'variables') <- metadata
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
-  ArrayToNetCDF(variable_list,
-                paste0(plot_dir,  "/", var0, "_", months, "_anomaly_",model_names[mod],"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
+
+ # ArrayToNetCDF(variable_list,
+ #               paste0(plot_dir,  "/", var0, "_", months, "_anomaly_",model_names[mod],"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
 }
 
 
@@ -270,7 +321,7 @@ if (!is.null(time_series_plot)) {
 ##Plot maps
 
 if (!is.null(agreement_threshold)) {
-
+print(dim(multi_year_anomaly))
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
   agreement <- AnoAgree(multi_year_anomaly + rnorm(length(model_names)*length(lat)*length(lon)), members_dim = model_dim)
 } else {
@@ -305,7 +356,7 @@ attr(time, "variables") <- metadata
 variable_list <- list(variable = data, agreement = agreement, lat = lat, lon = lon, time = time)
 names(variable_list)[1] <- var0
 
-ArrayToNetCDF(variable_list,  paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
-              model_names_filename,"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
+#ArrayToNetCDF(variable_list,  paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
+            #  model_names_filename,"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
 
 
