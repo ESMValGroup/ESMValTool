@@ -90,6 +90,9 @@ begin
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
 
+  ; Get fx variable (land/sea mask, not used, just an example)
+  AM = read_fx_data(imod, "sftlf")
+
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then

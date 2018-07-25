@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 """Script to convert nvl style files to python style files.
 
 Example
@@ -13,17 +15,19 @@ Global attributes
 INPUT_FILE : str
     Path to the ncl style file.
 OUTPUT_FILE : str
-    Path to the new python style file (yaml format)
+    Path to the new python style file (yml format).
 
 """
 
 
+import os
 import yaml
 
 
 # Global variables
 INPUT_FILE = '../styles/cmip5.style'
 OUTPUT_FILE = 'cmip5.yml'
+
 HEADER_FILE = 'style_header'
 DATASET = 'dataset'
 COLOR = 'color'
@@ -32,7 +36,81 @@ THICKNESS = 'thick'
 MARK = 'mark'
 AVG_STD = 'avgstd'
 FILLING = 'facecolor'
+
 INFORMATION = [DATASET, COLOR, DASH, THICKNESS, MARK, AVG_STD]
+
+
+def read_line(line):
+    """Read line of the ncl style file."""
+    # Read information
+    info_dict = {}
+    for (idx, line_elem) in enumerate(line):
+        info = line_elem.strip()
+        option = INFORMATION[idx]
+
+        # Convert color to hex string
+        if option == COLOR:
+            color = info.split(',')
+            info = '#'
+            for col in color:
+                col = "{:02x}".format(int(col))
+                info += col
+
+        # Convert mark index to matplotlib marker
+        elif option == MARK:
+            # Filling
+            info_dict[FILLING] = info_dict[COLOR] if info == '16' else 'none'
+
+            # Shape
+            shape = {
+                '0': 'x',
+                '1': '.',
+                '2': '+',
+                '3': 'x',
+                '4': 'o',
+                '5': 'x',
+                '6': 's',
+                '7': '^',
+                '8': 'v',
+                '9': 'D',
+                '10': '<',
+                '11': '>',
+                '12': '*',
+                '13': 'h',
+                '14': '.',
+                '15': 'x',
+                '16': 'o'}
+            info = shape.get(info, 'o')
+
+        # Convert dash index to matplotlib dash marker
+        elif option == DASH:
+            dash = {
+                '0': '-',
+                '1': '--',
+                '2': ':',
+                '3': '-.',
+                '4': '-.',
+                '5': '--',
+                '6': '--',
+                '7': '-.',
+                '8': '-.',
+                '9': '-.',
+                '10': '-.',
+                '11': '--',
+                '12': '--',
+                '13': '--',
+                '14': '--',
+                '15': '--',
+                '16': '--'}
+            info = dash.get(info, '-')
+
+        # Convert str to int
+        elif option in (AVG_STD, THICKNESS):
+            info = int(info)
+
+        # Add information
+        info_dict[option] = info
+    return info_dict
 
 
 def read_ncl_style(file_name):
@@ -51,52 +129,8 @@ def read_ncl_style(file_name):
             if len(line) != len(INFORMATION):
                 continue
 
-            # Read information
-            infos = {}
-            for (idx, line_elem) in enumerate(line):
-                info = line_elem.strip()
-                option = INFORMATION[idx]
-
-                # Convert color to hex string
-                if option == COLOR:
-                    color = info.split(',')
-                    info = '#'
-                    for col in color:
-                        col = hex(int(col.strip()))
-                        info += col[2:]
-
-                # Convert mark index to matplotlib marker
-                if option == MARK:
-                    # Filling
-                    if info == '16':
-                        infos.update({FILLING: infos[COLOR]})
-                    else:
-                        infos.update({FILLING: 'none'})
-
-                    # Shape
-                    shape = {
-                        '0': 'x',
-                        '1': '.',
-                        '2': '+',
-                        '3': 'x',
-                        '4': 'o',
-                        '5': 'x',
-                        '6': 's',
-                        '7': '^',
-                        '8': 'v',
-                        '9': 'D',
-                        '10': '<',
-                        '11': '>',
-                        '12': '*',
-                        '13': 'h',
-                        '14': '.',
-                        '15': 'x',
-                        '16': 'o'}
-                    info = shape.get(info, 'o')
-
-                # Add information
-                infos.update({INFORMATION[idx]: info})
-            output.append(infos)
+            # Read line
+            output.append(read_line(line))
 
     # Convert list to dictionary
     output_dict = {}
@@ -108,13 +142,14 @@ def read_ncl_style(file_name):
     return output_dict
 
 
-def write_yml_file(dataset_infos, file_name):
+def write_yml_file(dataset_info, file_name):
     """Write configuration file."""
     with open(file_name, 'w') as outfile:
         with open(HEADER_FILE, 'r') as header_file:
             header = header_file.read()
-        outfile.write(header)
-        yaml.dump(dataset_infos, outfile, default_flow_style=False)
+        outfile.write(header.format(output_file=OUTPUT_FILE,
+                                    script=os.path.basename(__file__)))
+        yaml.dump(dataset_info, outfile, default_flow_style=False)
 
 
 # Execute script if called directly

@@ -42,7 +42,10 @@ class xco2Stderr(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1.0e6
+        metadata = cube.metadata
+        cube *= 1.0e6
+        cube.metadata = metadata
+        return cube
 
 
 class xco2Stddev(xco2Stderr):
@@ -89,7 +92,10 @@ class xch4Stderr(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1.0e9
+        metadata = cube.metadata
+        cube *= 1.0e9
+        cube.metadata = metadata
+        return cube
 
 
 class xch4Stddev(xch4Stderr):

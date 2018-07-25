@@ -19,10 +19,10 @@ License
 
 The ESMValTool is released under the Apache License, version 2.0 and citation
 of the ESMValTool paper ("Software Documentation Paper") is kindly requested
-upon use alongside with the software doi (doi:10.17874/ac8548f0315)
+upon use alongside with the software doi (to be added for v2)
 and version number:
 
-* Eyring et al., ESMValTool (v1.0) - a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, 2016.*
+* Righi et al. to be added
 
 Besides the above citation, users are kindly asked to register any journal
 articles (or other scientific documents) that use the software at the
@@ -36,10 +36,10 @@ effort by the development team.
 Architecture
 ============
 
-:numref:`fig_schematic` shows a schematic of the ESMValTool architecture: the workflow manager (controlled by the Python script "main.py") runs a set of diagnostics on data provided by, for instance, a data archive. The configuration and the settings of each diagnostic are specified in recipes read and passed to the diagnostics by the workflow manager. The results which typically comprise of netCDF files and/or plots are stored in output folders along with log-files summarizing the data used, references, and technical details to ensure traceability and reproducibility of the results.
+:ref:`fig_schematic` shows a schematic of the ESMValTool architecture: to be written.
 
 .. _fig_schematic:
 .. figure::  ../figures/schematic.png
    :align:   center
 
-   Schematic of the system architecture. The workflow manager (main.py) passes information to the diagnostics; results and log-files are written to dedicated folders.
+   Schematic of the system architecture.

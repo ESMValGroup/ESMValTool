@@ -1,8 +1,8 @@
 """Code that is shared between multiple diagnostic scripts."""
-from . import names
-from . import plot
-from ._base import get_cfg, run_diagnostic
-from ._diag import Variable, Variables, Datasets
+from . import names, plot
+from ._base import (get_cfg, group_metadata, run_diagnostic, select_metadata,
+                    sorted_group_metadata, sorted_metadata)
+from ._diag import Datasets, Variable, Variables
 
 __all__ = [
     'names',
@@ -12,4 +12,8 @@ __all__ = [
     'Variable',
     'Variables',
     'Datasets',
+    'select_metadata',
+    'sorted_metadata',
+    'group_metadata',
+    'sorted_group_metadata',
 ]
