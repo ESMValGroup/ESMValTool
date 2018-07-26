@@ -277,8 +277,7 @@ class CMORCheck(object):
 
             # Get coordinate var_name as it exists!
             try:
-                coord = self._cube.coord(
-                    var_name=var_name, dim_coords=True)
+                coord = self._cube.coord(var_name=var_name, dim_coords=True)
             except iris.exceptions.CoordinateNotFoundError:
                 continue
 
@@ -293,13 +292,12 @@ class CMORCheck(object):
 
             # Get coordinate var_name as it exists!
             try:
-                coord = self._cube.coord(
-                    var_name=var_name, dim_coords=True)
+                coord = self._cube.coord(var_name=var_name, dim_coords=True)
             except iris.exceptions.CoordinateNotFoundError:
                 continue
 
-            self._check_coord_monotonicity_and_direction(coordinate, coord,
-                                                         var_name)
+            self._check_coord_monotonicity_and_direction(
+                coordinate, coord, var_name)
 
     def _check_coord(self, cmor, coord, var_name):
         if coord.var_name == 'time':
@@ -536,8 +534,9 @@ def _get_cmor_checker(table,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
     if table not in CMOR_TABLES:
-        raise NotImplementedError("No CMOR checker implemented for table {}"
-                                  .format(table))
+        raise NotImplementedError("No CMOR checker implemented for table {}."
+                                  "\nThe following options are available: {}"
+                                  .format(table, ', '.join(CMOR_TABLES)))
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)

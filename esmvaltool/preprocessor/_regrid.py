@@ -12,8 +12,6 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
-import six
-from ..cmor.table import CMOR_TABLES
 
 import iris
 import iris.exceptions
@@ -22,6 +20,8 @@ import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
+
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -53,7 +53,9 @@ horizontal_schemes = dict(
     unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest']
+vertical_schemes = ['linear', 'nearest',
+                    'linear_horizontal_extrapolate_vertical',
+                    'nearest_horizontal_extrapolate_vertical']
 
 
 def _stock_cube(spec):
@@ -102,15 +104,13 @@ def _stock_cube(spec):
     # Construct the latitude coordinate, with bounds.
     ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
     lats = iris.coords.DimCoord(
-        ydata, standard_name='latitude', units='degrees_north',
-        var_name='lat')
+        ydata, standard_name='latitude', units='degrees_north', var_name='lat')
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
     xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
     lons = iris.coords.DimCoord(
-        xdata, standard_name='longitude', units='degrees_east',
-        var_name='lon')
+        xdata, standard_name='longitude', units='degrees_east', var_name='lon')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.
@@ -322,8 +322,19 @@ def vinterp(src_cube, levels, scheme):
         raise ValueError(emsg)
 
     if scheme not in vertical_schemes:
-        emsg = 'Unknown vertical interpolation scheme, got {!r}.'
-        raise ValueError(emsg.format(scheme))
+        emsg = 'Unknown vertical interpolation scheme, got {!r}. '
+        emsg += 'Possible schemes: {!r}'
+        raise ValueError(emsg.format(scheme, list(vertical_schemes)))
+
+    # This allows us to put level 0. to load the ocean surface.
+    extrap_scheme = 'nan'
+    if scheme == 'nearest_horizontal_extrapolate_vertical':
+        scheme = 'nearest'
+        extrap_scheme = 'nearest'
+
+    if scheme == 'linear_horizontal_extrapolate_vertical':
+        scheme = 'linear'
+        extrap_scheme = 'nearest'
 
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
@@ -373,7 +384,7 @@ def vinterp(src_cube, levels, scheme):
                 src_cube.data,
                 axis=z_axis,
                 interpolation=scheme,
-                extrapolation='nan')
+                extrapolation=extrap_scheme)
 
             # Calculate the mask based on the any
             # NaN values in the interpolated data.

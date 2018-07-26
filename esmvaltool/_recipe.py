@@ -145,6 +145,7 @@ def check_preprocessor_settings(settings):
             raise RecipeError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
                     step, ', '.join(preprocessor.DEFAULT_ORDER)))
+
         function = getattr(preprocessor, step)
         argspec = inspect.getargspec(function)
         args = argspec.args[1:]
@@ -153,7 +154,9 @@ def check_preprocessor_settings(settings):
         if invalid_args:
             raise RecipeError(
                 "Invalid argument(s): {} encountered for preprocessor "
-                "function {}".format(', '.join(invalid_args), step))
+                "function {}. \nValid arguments are: [{}]".format(
+                    ', '.join(invalid_args), step, ', '.join(args)))
+
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
