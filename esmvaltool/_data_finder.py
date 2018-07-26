@@ -52,8 +52,8 @@ def get_start_end_year(filename):
     filename_list = [elem for sublist in filename_list for elem in sublist]
 
     pos_ydates = [elem.isdigit() and len(elem) >= 4 for elem in filename_list]
-    pos_ydates_l = pos_ydates.copy()
-    pos_ydates_r = pos_ydates.copy()
+    pos_ydates_l = list(pos_ydates)
+    pos_ydates_r = list(pos_ydates)
 
     for ind, _ in enumerate(pos_ydates_l):
         if ind != 0:
