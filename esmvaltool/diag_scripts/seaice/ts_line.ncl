@@ -135,7 +135,10 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens .eq. "True") then
+    avgens = True
+    idx_datasets = UNIQ(dataset_info@dataset)
   else
+    avgens = False
     idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
   end if
   dataset_names = dataset_info@dataset(idx_datasets)
@@ -233,9 +236,14 @@ begin
 
       ; Get area data & lat-lon from another file
       aux_vars = read_fx_data(idat, "areacello")
-      area_tmp = aux_vars[0]
-      area_lat = aux_vars[1]
-      area_lon = aux_vars[2]
+      area_temp = aux_vars[0]
+      if (ListCount(aux_vars) .gt. 1) then
+        area_lat = aux_vars[1]
+        area_lon = aux_vars[2]
+      else
+        area_lat = conform_dims(dimsizes(area_temp), area_temp&lat, 0)
+        area_lon = conform_dims(dimsizes(area_temp), area_temp&lon, 1)
+      end if
       delete(aux_vars)
     end if
 
@@ -309,7 +317,6 @@ begin
     ; Calculate sea ice extent
     extent_temp = where(sic .ge. 0.15, 1.0, 0.0)
     sic_ext = conform(sic, area_temp, (/1, 2/)) * extent_temp
-    delete(extent_temp)
     copy_VarMeta(sic, sic_ext)
     delete([/extent_temp, sic/])
 
@@ -395,7 +402,7 @@ begin
     val_area&time = int2dble(all_years)
     delete([/sic_ext, sic_area, dims_ext, dims_area/])
   else
-    if (dimsizes(UNIQ(dataset_info@dataset) .eq. 1)) then
+    if (dimsizes(UNIQ(dataset_info@dataset)) .eq. 1) then
       dataset_names := unique_labels_min((/"dataset", "ensemble"/))
     end if
   end if
@@ -432,7 +439,7 @@ begin
   ; Some attributes for extent plot
   val_ext!1 = "time"
   val_ext&time = int2dble(all_years)
-  if diag_script_info@month .eq. "A" then   ; weighted annual mean
+  if (diag_script_info@month .eq. "A") then   ; weighted annual mean
     val_ext&time@units = "Annual"
   else                                      ; select a month
     val_ext&time@units = smonths(stringtoint(diag_script_info@month) - 1)

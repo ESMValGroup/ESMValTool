@@ -126,51 +126,51 @@ diagnostics:
       - {dataset: CanESM2,        ensemble: r3i1p1}
       - {dataset: CanESM2,        ensemble: r4i1p1}
       - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r1i1p1}
-      - {dataset: CCSM4,          ensemble: r2i1p1}
-      - {dataset: CCSM4,          ensemble: r3i1p1}
-      - {dataset: CCSM4,          ensemble: r4i1p1}
-      - {dataset: CCSM4,          ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r6i1p1}
-      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
+      # - {dataset: CCSM4,          ensemble: r1i1p1}
+      # - {dataset: CCSM4,          ensemble: r2i1p1}
+      # - {dataset: CCSM4,          ensemble: r3i1p1}
+      # - {dataset: CCSM4,          ensemble: r4i1p1}
+      # - {dataset: CCSM4,          ensemble: r5i1p1}
+      # - {dataset: CCSM4,          ensemble: r6i1p1}
+      # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+      # - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+      # - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+      # - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+      # - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+      # - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+      # - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+      # - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+      # - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+      # - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+      # - {dataset: inmcm4,         ensemble: r1i1p1}
+      # - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+      # - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+      # - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+      # - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+      # - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+      # - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+      # - {dataset: MIROC5,         ensemble: r1i1p1}
+      # - {dataset: MIROC5,         ensemble: r2i1p1}
+      # - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+      # - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      # - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+      # - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+      # - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+      # - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+      # - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+      # - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+      # - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+      # - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
       ta_sp100: &ta_sp100
         script: mder/austral_jet_diags.ncl
@@ -469,91 +469,93 @@ diagnostics:
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['asr', 'asr_sh']
 
-  # sic_sp:
-  #   description: Calculate temperature trends and climatological means of sic.
-  #   variables:
-  #     sic:
-  #       project: CMIP5
-  #       mip: OImon
-  #       field: T2Ms
-  #       exp: historical
-  #       start_year: 1979
-  #       end_year: 2005
-  #       fx_files: [areacello]
-  #   additional_datasets:
-  #     # <model>  OBS_gridfile  NSIDC-BT  sat  SH  2000 2004 @{OBSPATH}/Tier2/NSIDC/
-  #     #      @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
-  #     # - {dataset: NSIDC-BT,    project: OBS, type: sat, tier: 2, start_year: 2000, end_year: 2004}
-  #     - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-  #     - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-  #     - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-  #     - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-  #     - {dataset: BNU-ESM,        ensemble: r1i1p1}
-  #     - {dataset: CanESM2,        ensemble: r1i1p1}
-  #     - {dataset: CanESM2,        ensemble: r2i1p1}
-  #     - {dataset: CanESM2,        ensemble: r3i1p1}
-  #     - {dataset: CanESM2,        ensemble: r4i1p1}
-  #     - {dataset: CanESM2,        ensemble: r5i1p1}
-  #     - {dataset: CCSM4,          ensemble: r1i1p1}
-  #     - {dataset: CCSM4,          ensemble: r2i1p1}
-  #     - {dataset: CCSM4,          ensemble: r3i1p1}
-  #     - {dataset: CCSM4,          ensemble: r4i1p1}
-  #     - {dataset: CCSM4,          ensemble: r5i1p1}
-  #     - {dataset: CCSM4,          ensemble: r6i1p1}
-  #     # AttributeError: 'NoneType' object has no attribute 'units'
-  #     # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-  #     - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-  #     - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-  #     - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-  #     - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-  #     - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-  #     - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-  #     - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-  #     - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-  #     - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-  #     - {dataset: inmcm4,         ensemble: r1i1p1}
-  #     - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-  #     - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-  #     - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-  #     - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-  #     - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-  #     - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-  #     - {dataset: MIROC5,         ensemble: r1i1p1}
-  #     - {dataset: MIROC5,         ensemble: r2i1p1}
-  #     - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-  #     - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-  #     - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-  #     - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-  #     - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-  #     - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-  #     - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-  #     - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-  #     - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-  #     - {dataset: NorESM1-M,      ensemble: r1i1p1}
-  #   scripts:
-  #     sic_sp: &sic_sp
-  #       script: seaice/ts_line.ncl
-  #       styleset: CMIP5
-  #       region: Antarctic
-  #       month: A
-  #       multi_model_mean: y
-  #       wdiag: ['SIE-SP_t', 'SIE-SP_c']
-  #       wdiag_title: ['SIE-SP_t', 'SIE-SP_c']
-  #       ref_dataset: ['NSDIC-BT']
-  #     select_for_mder:
-  #       <<: *sic_sp
-  #       script: mder/select_for_mder.ncl
-  #       ancestors: ['sic', 'sic_sp']
+  sic_sp:
+    description: Calculate temperature trends and climatological means of sic.
+    variables:
+      sic:
+        project: CMIP5
+        mip: OImon
+        field: T2Ms
+        exp: historical
+        start_year: 1979
+        end_year: 2005
+        fx_files: [areacello]
+    additional_datasets:
+      # <model>  OBS_gridfile  NSIDC-BT  sat  SH  2000 2004 @{OBSPATH}/Tier2/NSIDC/
+      #      @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+      # - {dataset: NSIDC-BT,    project: OBS, type: sat, tier: 2, start_year: 2000, end_year: 2004}
+      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
+      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+      # No areacello file
+      # - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+      - {dataset: BNU-ESM,        ensemble: r1i1p1}
+      - {dataset: CanESM2,        ensemble: r1i1p1}
+      - {dataset: CanESM2,        ensemble: r2i1p1}
+      - {dataset: CanESM2,        ensemble: r3i1p1}
+      - {dataset: CanESM2,        ensemble: r4i1p1}
+      - {dataset: CanESM2,        ensemble: r5i1p1}
+      - {dataset: CCSM4,          ensemble: r1i1p1}
+      - {dataset: CCSM4,          ensemble: r2i1p1}
+      - {dataset: CCSM4,          ensemble: r3i1p1}
+      - {dataset: CCSM4,          ensemble: r4i1p1}
+      - {dataset: CCSM4,          ensemble: r5i1p1}
+      - {dataset: CCSM4,          ensemble: r6i1p1}
+      # AttributeError: 'NoneType' object has no attribute 'units'
+      # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+      # No areacello file
+      # - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+      # - {dataset: inmcm4,         ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r2i1p1}
+      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+      - {dataset: NorESM1-M,      ensemble: r1i1p1}
+    scripts:
+      sic_sp: &sic_sp
+        <<: *ta_sp100
+        script: seaice/ts_line.ncl
+        region: Antarctic
+        month: A
+        multi_model_mean: y
+        wdiag: ['SIE-SP_t', 'SIE-SP_c']
+        wdiag_title: ['SIE-SP_t', 'SIE-SP_c']
+        ref_dataset: ['NSDIC-BT']
+      select_for_mder:
+        <<: *sic_sp
+        script: mder/select_for_mder.ncl
+        ancestors: ['sic', 'sic_sp']
 
 # <diag>
 #     <description> e-folding time of SAM (sam)   </description>
