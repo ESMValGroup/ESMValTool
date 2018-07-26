@@ -253,6 +253,7 @@ begin
         delete(iav_native)
       end if
     end if
+    delete(A0)
   end do
   printVarSummary(var_reg)
   if (isatt(diag_script_info, "iavmode")) then
@@ -282,21 +283,21 @@ begin
   dim_per = dimsizes(diag_script_info@periods)
 
   to_plot = new((/dim_scen * dim_per * dim_seas, \
-                 dimsizes(A0&$lev_name$), dimsizes(A0&lat)/), \
-                typeof(A0), Fill)
+                 dimsizes(var_reg&$lev_name$), dimsizes(var_reg&lat)/), \
+                typeof(var_reg), Fill)
   if (isatt(diag_script_info, "base_cn")) then
     to_plot_base = new((/dim_scen * dim_per * dim_seas, \
-                       dimsizes(A0&$lev_name$), \
-                       dimsizes(A0&lat)/), typeof(A0), Fill)
+                       dimsizes(var_reg&$lev_name$), \
+                       dimsizes(var_reg&lat)/), typeof(var_reg), Fill)
   end if
   to_plot_signif = new((/dim_scen * dim_per * dim_seas, \
-                        dimsizes(A0&$lev_name$),  \
-                        dimsizes(A0&lat)/), \
-                       typeof(A0), Fill)
+                        dimsizes(var_reg&$lev_name$),  \
+                        dimsizes(var_reg&lat)/), \
+                       typeof(var_reg), Fill)
   to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, \
-                            dimsizes(A0&$lev_name$),  \
-                            dimsizes(A0&lat)/), \
-                           typeof(A0), Fill)
+                            dimsizes(var_reg&$lev_name$),  \
+                            dimsizes(var_reg&lat)/), \
+                           typeof(var_reg), Fill)
   model_number = new((/dim_scen * dim_per * dim_seas/), integer)
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
@@ -314,7 +315,6 @@ begin
                                     dataset_info@exp, \
                                     dataset_info@ensemble(idx_rcp), \
                                     dataset_info@ensemble, 0)
-        print(idx_hist)
         base = var_reg(idx_hist, seas, :, :)
         base_avg = dim_avg_n_Wrap(base, 0)
         var_diff = proj - base
@@ -366,14 +366,14 @@ begin
   to_plot&panel = diag_script_info@label
 
   to_plot!1 = lev_name
-  to_plot&$lev_name$ = A0&$lev_name$
+  to_plot&$lev_name$ = var_reg&$lev_name$
   if (isatt(diag_script_info, "base_cn")) then
     to_plot_base!1 = lev_name
-    to_plot_base&$lev_name$ = A0&$lev_name$
+    to_plot_base&$lev_name$ = var_reg&$lev_name$
   end if
 
   to_plot!2 = "lat"
-  to_plot&lat = A0&lat
+  to_plot&lat = var_reg&lat
   if (isatt(diag_script_info, "base_cn")) then
     copy_VarMeta(to_plot, to_plot_base)
   end if

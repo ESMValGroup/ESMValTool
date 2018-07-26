@@ -175,9 +175,10 @@ begin
     colormap = read_colormap_file(diag_script_info@colormap)
   else
     colormap = read_colormap_file("./diag_scripts/shared/plot/rgb/" + \
-                                  "ipcc_colors_blu2red_centered.rgb")
+                                  "ipcc_temperature_with_grey.rgb")
   end if
-  to_plot@res_cnFillPalette = colormap
+;  to_plot@res_cnFillPalette = colormap
+  to_plot@res_cnFillColors = colormap
   if (isatt(diag_script_info, "span")) then
     to_plot@res_cnSpanFillPalette     = diag_script_info@span
   else
