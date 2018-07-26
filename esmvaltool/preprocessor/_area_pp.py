@@ -45,11 +45,6 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     start_latitude = float(start_latitude)
     end_latitude = float(end_latitude)
 
-    if start_longitude < 0.:
-        start_longitude += 360.
-    if end_longitude < 0.:
-        end_longitude += 360.
-
     region_subset = cube.intersection(
         longitude=(start_longitude, end_longitude),
         latitude=(start_latitude, end_latitude))
