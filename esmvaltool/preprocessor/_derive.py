@@ -47,6 +47,9 @@ def get_required(short_name, field=None):
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
         ],
+        'uajet': [
+            ('ua', 'T3' + frequency),
+        ],
     }
 
     if short_name in required:
@@ -69,6 +72,7 @@ def derive(cubes, variable):
         'lwp': calc_lwp,
         'swcre': calc_swcre,
         'toz': calc_toz,
+        'uajet': calc_uajet,
     }
 
     if short_name not in functions:
@@ -243,6 +247,55 @@ def calc_toz(cubes):
     toz.convert_units(Dobson_unit)
 
     return toz
+
+
+def calc_uajet(cubes):
+    """Compute latitude of maximum meridional wind speed.
+
+    Arguments
+    ----
+        cubes: cubelist containing ua (eastward_wind).
+
+    Returns
+    -------
+        Cube containing latitude of maximum meridional wind speed.
+
+    """
+    # Paramters: Southern hemisphere at 850 hPa
+    lat = (-80.0, -30.0)
+    plev = 85000
+
+    # Load cube and extract correct region and perform zonal mean
+    ua_cube = cubes.extract_strict(Constraint(name='eastward_wind'))
+    ua_cube = ua_cube.interpolate([('air_pressure', plev)],
+                                  scheme=iris.analysis.Linear())
+    ua_cube = ua_cube.extract(iris.Constraint(
+        latitude=lambda cell: lat[0] <= cell <= lat[1]))
+    ua_cube = ua_cube.collapsed('longitude', iris.analysis.MEAN)
+
+    # Calculate maximum jet position
+    uajet_vals = []
+    for time_slice in ua_cube.slices(['latitude']):
+        ua_data = time_slice.data
+
+        # Get maximum ua and corresponding index
+        max_ua = np.max(ua_data)
+        idx_max_ua = np.argmax(ua_data)
+        slc = slice(idx_max_ua - 1, idx_max_ua + 2)
+
+        # Perform 2nd degree polynomial fit to get maximum jet position
+        x_vals = ua_data[slc]
+        y_vals = time_slice.coord('latitude').points[slc]
+        polyfit = np.polyfit(x_vals, y_vals, 2)
+        polynom = np.poly1d(polyfit)
+        uajet_vals.append(polynom(max_ua))
+
+    # Build new cube
+    uajet_cube = iris.cube.Cube(
+        uajet_vals,
+        dim_coords_and_dims=[(ua_cube.coord('time'), 0)])
+
+    return uajet_cube
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
