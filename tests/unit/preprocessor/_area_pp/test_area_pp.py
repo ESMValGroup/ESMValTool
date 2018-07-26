@@ -1,7 +1,4 @@
-"""
-Unit tests for the :func:`esmvaltool.preprocessor._area_pp` module.
-
-"""
+"""Unit tests for the :func:`esmvaltool.preprocessor._area_pp` module."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -17,9 +14,8 @@ from esmvaltool.preprocessor._area_pp import area_average as average_region
 
 
 class Test(tests.Test):
-    """
-    Unit test class for the :func:`esmvaltool.preprocessor._area_pp` module.
-    """
+    """Test class for the :func:`esmvaltool.preprocessor._area_pp` module"""
+
     def setUp(self):
         """Prepare tests."""
         self.coord_sys = iris.coord_systems.GeogCS(

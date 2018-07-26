@@ -1,7 +1,4 @@
-"""
-Unit tests for the :func:`esmvaltool.preprocessor._time_pp` module.
-
-"""
+"""Unit tests for the :func:`esmvaltool.preprocessor._time_pp` module"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -92,9 +89,7 @@ class TestExtractSeason(tests.Test):
 
 
 class TestTimeAverage(tests.Test):
-    """
-    Unit test class for the :func:`esmvaltool.preprocessor._time_pp` module.
-    """
+    """Test class for the :func:`esmvaltool.preprocessor._time_pp` module"""
 
     def test_time_average(self):
         """Test for time average of a 1D field."""
@@ -133,9 +128,7 @@ class TestTimeAverage(tests.Test):
         self.assertArrayEqual(result.data, expected)
 
     def test_time_average_365_day(self):
-        """
-        Test for time average of a realisitc time axis and 365 day calendar.
-        """
+        """Test for time avg of a realisitc time axis and 365 day calendar"""
         data = np.ones((6, ))
         cube = iris.cube.Cube(data)
 

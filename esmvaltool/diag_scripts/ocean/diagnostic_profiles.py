@@ -1,5 +1,5 @@
 """
-Diagnostic profile:
+Diagnostic:
 
 Diagnostic to produce png images of the profile over time from a cube.
 These plost show cube value (ie temperature) on the x-axis, and depth/height

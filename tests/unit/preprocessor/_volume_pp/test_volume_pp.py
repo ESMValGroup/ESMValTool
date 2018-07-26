@@ -1,7 +1,4 @@
-"""
-Unit tests for the :func:`esmvaltool.preprocessor.regrid.regrid` function.
-
-"""
+"""Unit test for the :func:`esmvaltool.preprocessor._volume_pp` function"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -19,6 +16,8 @@ from esmvaltool.preprocessor._volume_pp import extract_trajectory
 
 
 class Test(tests.Test):
+    """Test class for _volume_pp"""
+
     def setUp(self):
         """Prepare tests"""
         coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
