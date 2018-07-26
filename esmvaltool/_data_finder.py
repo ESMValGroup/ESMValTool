@@ -68,6 +68,8 @@ def replace_tags(path, variable, j=None, i=None):
     tlist = re.findall(r'\[([^]]*)\]', path)
 
     for tag in tlist:
+        original_tag = tag
+        tag, lower, upper = _get_caps_options(tag)
 
         if tag == 'var':
             replacewith = variable['short_name']
@@ -100,13 +102,35 @@ def replace_tags(path, variable, j=None, i=None):
                     "your recipe entry".format(tag, variable['project']))
 
         if not isinstance(replacewith, list):
-            path = path.replace('[' + tag + ']', replacewith)
+            path = path.replace('[' + original_tag + ']',
+                                _apply_caps(replacewith, lower, upper))
         else:
             path = [
-                path.replace('[' + tag + ']', dkrz_place)
+                path.replace('[' + original_tag + ']',
+                             _apply_caps(dkrz_place, lower, upper))
                 for dkrz_place in replacewith
             ][j]
     return path
+
+
+def _get_caps_options(tag):
+    lower = False
+    upper = False
+    if tag.endswith('.lower'):
+        lower = True
+        tag = tag[0:-6]
+    elif tag.endswith('.upper'):
+        upper = True
+        tag = tag[0:-6]
+    return tag, lower, upper
+
+
+def _apply_caps(original, lower, upper):
+    if lower:
+        return original.lower()
+    elif upper:
+        return original.upper()
+    return original
 
 
 def get_input_dirname_template(variable, rootpath, drs):

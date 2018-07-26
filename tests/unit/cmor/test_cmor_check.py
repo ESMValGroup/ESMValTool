@@ -166,16 +166,19 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def test_check_with_positive(self):
+        """Check variable with positive attribute"""
         self.var_info.positive = 'up'
         self.cube = self.get_cube(self.var_info)
         self._check_cube()
 
     def test_check_with_no_positive_CMIP5(self):
+        """Check CMIP5 variable with no positive attribute report warning"""
         self.cube = self.get_cube(self.var_info)
         self.var_info.positive = 'up'
         self._check_warnings_on_metadata()
 
     def test_check_with_no_positive_CMIP6(self):
+        """Check CMIP6 variable with no positive attribute report error"""
         self.cube = self.get_cube(self.var_info)
         self.var_info.positive = 'up'
         self.var_info.table_type = 'CMIP6'
@@ -183,12 +186,33 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_invalid_rank(self):
         """Test check fails in metadata step when rank is not correct"""
+        lat = iris.coords.AuxCoord.from_coord(self.cube.coord('latitude'))
         self.cube.remove_coord('latitude')
+        self.cube.add_aux_coord(lat, self.cube.coord_dims('longitude'))
         self._check_fails_in_metadata()
 
     def test_rank_with_aux_coords(self):
         """Check succeeds even if a required coordinate is an aux coord"""
         iris.util.demote_dim_coord_to_aux_coord(self.cube, 'latitude')
+        self._check_cube()
+
+    def test_rank_with_scalar_coords(self):
+        """Check succeeds even if a required coordinate is a scalar coord"""
+        self.cube = self.cube.extract(
+            iris.Constraint(time=self.cube.coord('time').points[0]))
+        self._check_cube()
+
+    def test_rank_unestructured_grid(self):
+        """Check succeeds even if two required coordinates share a dimension"""
+        self.cube = self.cube.extract(
+            iris.Constraint(latitude=self.cube.coord('latitude').points[0]))
+        self.cube.remove_coord('latitude')
+        iris.util.demote_dim_coord_to_aux_coord(self.cube, 'longitude')
+        new_lat = self.cube.coord('longitude').copy()
+        new_lat.var_name = 'lat'
+        new_lat.standard_name = 'latitude'
+        new_lat.long_name = 'Latitude'
+        self.cube.add_aux_coord(new_lat, 1)
         self._check_cube()
 
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
