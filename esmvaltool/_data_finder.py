@@ -182,6 +182,11 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                 'drs {} for {} project not specified in config-developer file'
                 .format(_drs, project))
 
+        # Replace seaIce realm by ocean realm
+        path_elements = dir2.split(os.path.sep)
+        if "seaIce" in path_elements:
+            dir2 = dir2.replace("seaIce", "ocean")
+
         dirname_template = os.path.join(dir1, dir2)
         dirs.append(dirname_template)
 
