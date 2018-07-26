@@ -1,8 +1,8 @@
 """
 Test mask
 
-Integration tests for the :func:`esmvaltool.preprocessor.mask`
-function.
+Integration tests for the :func:`esmvaltool.preprocessor._mask`
+module.
 
 """
 
@@ -19,7 +19,10 @@ from esmvaltool.preprocessor import _mask as mask
 
 
 class Test(tests.Test):
+    """Test class"""
+
     def test_mask_landsea(self):
+        """Test mask_landocean func"""
         fx_data = np.empty((3, 3))
         fx_data[:] = 60.
         new_cube_data = np.empty((3, 3))
