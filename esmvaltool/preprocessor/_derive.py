@@ -262,7 +262,7 @@ def calc_uajet(cubes):
 
     """
     # Paramters: Southern hemisphere at 850 hPa
-    lat = (-80.0, -30.0)
+    lat = [-80.0, -30.0]
     plev = 85000
 
     # Load cube and extract correct region and perform zonal mean
@@ -279,7 +279,6 @@ def calc_uajet(cubes):
         ua_data = time_slice.data
 
         # Get maximum ua and corresponding index
-        max_ua = np.max(ua_data)
         idx_max_ua = np.argmax(ua_data)
         slc = slice(idx_max_ua - 1, idx_max_ua + 2)
 
@@ -288,12 +287,14 @@ def calc_uajet(cubes):
         y_vals = time_slice.coord('latitude').points[slc]
         polyfit = np.polyfit(x_vals, y_vals, 2)
         polynom = np.poly1d(polyfit)
-        uajet_vals.append(polynom(max_ua))
+        uajet_vals.append(polynom(np.max(ua_data)))
 
-    # Build new cube
     uajet_cube = iris.cube.Cube(
         uajet_vals,
-        dim_coords_and_dims=[(ua_cube.coord('time'), 0)])
+        dim_coords_and_dims=[(ua_cube.coord('time'), 0)],
+        attributes={'plev': plev,
+                    'lat_range_0': lat[0],
+                    'lat_range_1': lat[1]})
 
     return uajet_cube
 

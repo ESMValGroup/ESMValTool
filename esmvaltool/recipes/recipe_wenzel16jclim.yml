@@ -20,30 +20,20 @@ preprocessors:
 
   sh:
     extract_region:
-      lat1: -90
-      lat2: -20
-      long1: 0
-      long2: 360
-
-  ua850:
-    extract_levels:
-      levels: 85000
-      scheme: linear
-    extract_region:
-      lat1: -80
-      lat2: -30
-      long1: 0
-      long2: 360
+      start_latitude: -90
+      end_latitude: -20
+      start_longitude: 0
+      end_longitude: 360
 
   mean_sp50:
     extract_levels:
       levels: 5000
       scheme: linear
     extract_region:
-      lat1: -90
-      lat2: -60
-      long1: 0
-      long2: 360
+      start_latitude: -90
+      end_latitude: -60
+      start_longitude: 0
+      end_longitude: 360
     average_region:
       coord1: latitude
       coord2: longitude
@@ -53,10 +43,10 @@ preprocessors:
       levels: 10000
       scheme: linear
     extract_region:
-      lat1: -90
-      lat2: -60
-      long1: 0
-      long2: 360
+      start_latitude: -90
+      end_latitude: -60
+      start_longitude: 0
+      end_longitude: 360
     average_region:
       coord1: latitude
       coord2: longitude
@@ -66,10 +56,10 @@ preprocessors:
       levels: 5000
       scheme: linear
     extract_region:
-      lat1: -82.5
-      lat2: 82.5
-      long1: 0
-      long2: 360
+      start_latitude: -82.5
+      end_latitude: 82.5
+      start_longitude: 0
+      end_longitude: 360
     average_region:
       coord1: latitude
       coord2: longitude
@@ -79,10 +69,10 @@ preprocessors:
       levels: 10000
       scheme: linear
     extract_region:
-      lat1: -90
-      lat2: 90
-      long1: 0
-      long2: 360
+      start_latitude: -90
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
     average_region:
       coord1: latitude
       coord2: longitude
@@ -92,10 +82,10 @@ preprocessors:
       levels: 25000
       scheme: linear
     extract_region:
-      lat1: -30
-      lat2: 30
-      long1: 0
-      long2: 360
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
     average_region:
       coord1: latitude
       coord2: longitude
@@ -126,51 +116,51 @@ diagnostics:
       - {dataset: CanESM2,        ensemble: r3i1p1}
       - {dataset: CanESM2,        ensemble: r4i1p1}
       - {dataset: CanESM2,        ensemble: r5i1p1}
-      # - {dataset: CCSM4,          ensemble: r1i1p1}
-      # - {dataset: CCSM4,          ensemble: r2i1p1}
-      # - {dataset: CCSM4,          ensemble: r3i1p1}
-      # - {dataset: CCSM4,          ensemble: r4i1p1}
-      # - {dataset: CCSM4,          ensemble: r5i1p1}
-      # - {dataset: CCSM4,          ensemble: r6i1p1}
-      # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      # - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      # - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      # - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      # - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      # - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      # - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      # - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      # - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      # - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      # - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      # - {dataset: inmcm4,         ensemble: r1i1p1}
-      # - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      # - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      # - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      # - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      # - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      # - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      # - {dataset: MIROC5,         ensemble: r1i1p1}
-      # - {dataset: MIROC5,         ensemble: r2i1p1}
-      # - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      # - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      # - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      # - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      # - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      # - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      # - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      # - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      # - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      # - {dataset: NorESM1-M,      ensemble: r1i1p1}
+      - {dataset: CCSM4,          ensemble: r1i1p1}
+      - {dataset: CCSM4,          ensemble: r2i1p1}
+      - {dataset: CCSM4,          ensemble: r3i1p1}
+      - {dataset: CCSM4,          ensemble: r4i1p1}
+      - {dataset: CCSM4,          ensemble: r5i1p1}
+      - {dataset: CCSM4,          ensemble: r6i1p1}
+      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+      - {dataset: inmcm4,         ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r1i1p1}
+      - {dataset: MIROC5,         ensemble: r2i1p1}
+      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+      - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
       ta_sp100: &ta_sp100
         script: mder/austral_jet_diags.ncl
@@ -288,7 +278,7 @@ diagnostics:
   #       <<: *tro3_sp50
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['tro3', 'tro3_sp50']
-  #
+
   # tro3_ng50:
   #   description: Calculate temperature trends and climatological means of tro3.
   #   variables:
@@ -306,24 +296,29 @@ diagnostics:
   #       <<: *tro3_ng50
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['tro3', 'tro3_ng50']
-  #
-  # ua_850:
-  #   description: Calculate temperature trends and climatological means of ua.
-  #   variables:
-  #     ua:
-  #       <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
-  #       preprocessor: ua850
-  #   additional_datasets: *ta_datasets
-  #   scripts:
-  #     ua_850: &ua_850
-  #       <<: *ta_sp100
-  #       e13fig10_season: ['DJF']
-  #       wdiag: ['U-Jet_t', 'U-Jet_c']
-  #       wdiag_title: ['U-Jet_t', 'U-Jet_c']
-  #     select_for_mder:
-  #       <<: *ua_850
-  #       script: mder/select_for_mder.ncl
-  #       ancestors: ['ua', 'ua_850']
+
+  uajet_sh850:
+    description: Calculate temperature trends and climatological means of uajet.
+    variables:
+      uajet: &cmip5_amon_t0m_historical_1979_2005
+        project: CMIP5
+        mip: Amon
+        field: T0M
+        exp: historical
+        start_year: 1979
+        end_year: 2005
+        derive: True
+    additional_datasets: *ta_datasets
+    scripts:
+      uajet_sh850: &uajet_sh850
+        <<: *ta_sp100
+        e13fig10_season: ['DJF']
+        wdiag: ['U-Jet_t', 'U-Jet_c']
+        wdiag_title: ['U-Jet_t', 'U-Jet_c']
+      select_for_mder:
+        <<: *uajet_sh850
+        script: mder/select_for_mder.ncl
+        ancestors: ['uajet', 'uajet_sh850']
 
   # tpp_sh50:
   #   description: Calculate temperature trends and climatological means of tpp.
@@ -469,93 +464,161 @@ diagnostics:
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['asr', 'asr_sh']
 
-  sic_sp:
-    description: Calculate temperature trends and climatological means of sic.
-    variables:
-      sic:
-        project: CMIP5
-        mip: OImon
-        field: T2Ms
-        exp: historical
-        start_year: 1979
-        end_year: 2005
-        fx_files: [areacello]
-    additional_datasets:
-      # <model>  OBS_gridfile  NSIDC-BT  sat  SH  2000 2004 @{OBSPATH}/Tier2/NSIDC/
-      #      @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
-      # - {dataset: NSIDC-BT,    project: OBS, type: sat, tier: 2, start_year: 2000, end_year: 2004}
-      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      # No areacello file
-      # - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r1i1p1}
-      - {dataset: CCSM4,          ensemble: r2i1p1}
-      - {dataset: CCSM4,          ensemble: r3i1p1}
-      - {dataset: CCSM4,          ensemble: r4i1p1}
-      - {dataset: CCSM4,          ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r6i1p1}
-      # AttributeError: 'NoneType' object has no attribute 'units'
-      # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      # No areacello file
-      # - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      # - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
-    scripts:
-      sic_sp: &sic_sp
-        <<: *ta_sp100
-        script: seaice/ts_line.ncl
-        region: Antarctic
-        month: A
-        multi_model_mean: y
-        wdiag: ['SIE-SP_t', 'SIE-SP_c']
-        wdiag_title: ['SIE-SP_t', 'SIE-SP_c']
-        ref_dataset: ['NSDIC-BT']
-      select_for_mder:
-        <<: *sic_sp
-        script: mder/select_for_mder.ncl
-        ancestors: ['sic', 'sic_sp']
+  # sic_sp:
+  #   description: Calculate temperature trends and climatological means of sic.
+  #   variables:
+  #     sic:
+  #       project: CMIP5
+  #       mip: OImon
+  #       field: T2Ms
+  #       exp: historical
+  #       start_year: 1979
+  #       end_year: 2005
+  #       fx_files: [areacello]
+  #   additional_datasets:
+  #     # <model>  OBS_gridfile  NSIDC-BT  sat  SH  2000 2004 @{OBSPATH}/Tier2/NSIDC/
+  #     #      @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+  #     # - {dataset: NSIDC-BT,    project: OBS, type: sat, tier: 2, start_year: 2000, end_year: 2004}
+  #     - {dataset: ACCESS1-0,      ensemble: r1i1p1}
+  #     - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+  #     # No areacello file
+  #     # - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+  #     - {dataset: BNU-ESM,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        ensemble: r2i1p1}
+  #     - {dataset: CanESM2,        ensemble: r3i1p1}
+  #     - {dataset: CanESM2,        ensemble: r4i1p1}
+  #     - {dataset: CanESM2,        ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r1i1p1}
+  #     - {dataset: CCSM4,          ensemble: r2i1p1}
+  #     - {dataset: CCSM4,          ensemble: r3i1p1}
+  #     - {dataset: CCSM4,          ensemble: r4i1p1}
+  #     - {dataset: CCSM4,          ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          ensemble: r6i1p1}
+  #     # AttributeError: 'NoneType' object has no attribute 'units'
+  #     # - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+  #     - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+  #     - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+  #     - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+  #     - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+  #     # No areacello file
+  #     # - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+  #     # - {dataset: inmcm4,         ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+  #     - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         ensemble: r2i1p1}
+  #     - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+  #     - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+  #     - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+  #     - {dataset: NorESM1-M,      ensemble: r1i1p1}
+  #   scripts:
+  #     sic_sp: &sic_sp
+  #       <<: *ta_sp100
+  #       script: seaice/ts_line.ncl
+  #       region: Antarctic
+  #       month: A
+  #       multi_model_mean: y
+  #       wdiag: ['SIE-SP_t', 'SIE-SP_c']
+  #       wdiag_title: ['SIE-SP_t', 'SIE-SP_c']
+  #       ref_dataset: ['NSDIC-BT']
+  #     select_for_mder:
+  #       <<: *sic_sp
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['sic', 'sic_sp']
+
+  # mder:
+  #   description: Performs Multiple Diagnostic Ensemble Regression (MDER).
+  #   variables:
+  #     ua:
+  #       <<: *cmip5_amon_t0m_historical_1979_2005
+  #   additional_datasets: *ta_datasets
+  #     - {dataset: ERA-Interim,    project: OBS, type: reanaly, version: 1, tier: 3}
+  #     - {dataset: ACCESS1-0,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: ACCESS1-3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: bcc-csm1-1-m,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: BNU-ESM,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
+  #     - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: CMCC-CMS,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CNRM-CM5,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r7i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r9i1p1}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r10i1p1}
+  #     - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: inmcm4,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+  #     - {dataset: IPSL-CM5A-MR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: IPSL-CM5B-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: MIROC-ESM,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MIROC-ESM-CHEM, exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+  #     - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+  #     - {dataset: MRI-CGCM3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #     - {dataset: NorESM1-M,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+  #   scripts:
+  #     absolute_correlation:
+  #       script: mder/absolute_correlation.ncl
+  #       ancestors: ['*/select_for_mder']
+
 
 # <diag>
 #     <description> e-folding time of SAM (sam)   </description>
@@ -626,134 +689,4 @@ diagnostics:
 #   <diag_script cfg="cfg_efoldingtime_SAM_SAM-efold.ncl"> e-foldingtime_SAM.ncl </diag_script>
 # <!-- Select diagnostigaverage (diagnostic plot and output!) -->
 #   <diag_script cfg="cfg_efoldingtime_SAM_SAM-efold.ncl"> select_diag.ncl </diag_script>
-# </diag>
-
-
-# <diag>
-#    <description> calculates stepwise regression and the abs. corr. coef. on diagnostics </description>
-#     <variable_def_dir>                     ./variable_defs </variable_def_dir>
-#     <variable >                                     ua-jet </variable>
-#     <field_type>                                       T0M </field_type>
-#     <diag_script_cfg_dir>            ./nml/cfg_austral-jet </diag_script_cfg_dir>
-#     <!--<diag_script cfg="cfg_mder.ncl"> absolute-correlation-coefficient.ncl </diag_script>-->
-#     <diag_script cfg="cfg_mder.ncl"> regression-stepwise.ncl </diag_script>
-#     <tags>  T_EC, DM_sh, PT_scatter, ST_mder, ST_rmsd, ST_corr, ST_detrend, ST_mean </tags>
-#
-# <!-- Variable specific observations -->
-#      <model> OBS ERA-Interim reanaly 1 1979 2012 @{OBSPATH}/Tier3/ERA-Interim/  </model>
-#
-# <!-- Variable specific models -->
-# <!-- Historical experiment -->
-#   <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon historical r6i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-BGC      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CMCC-CMS       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r5i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r6i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r7i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r8i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r9i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0 Amon historical r10i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ HadGEM2-AO     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ inmcm4         Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r4i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r2i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r3i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MRI-CGCM3      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#
-# <!-- RCP4.5 experiment -->
-#   <model> CMIP5_ETHZ ACCESS1-0      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ ACCESS1-3      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ bcc-csm1-1-m   Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ BNU-ESM        Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon rcp45 r4i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CanESM2        Amon rcp45 r5i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r4i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r5i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CCSM4          Amon rcp45 r6i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-BGC      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CESM1-CAM5     Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CMCC-CMS       Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r4i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r5i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r6i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r7i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r8i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon rcp45 r9i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CSIRO-Mk3-6-0 Amon rcp45 r10i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2G     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-ESM2M     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ HadGEM2-AO     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ inmcm4         Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon rcp45 r4i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC5         Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-LR     Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon rcp45 r2i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MPI-ESM-MR     Amon rcp45 r3i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MRI-CGCM3      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ NorESM1-M      Amon rcp45 r1i1p1 2006 2100 @{MODELPATH}/ETHZ_CMIP5/ </model>
 # </diag>

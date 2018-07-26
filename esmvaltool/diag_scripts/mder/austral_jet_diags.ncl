@@ -272,18 +272,30 @@ begin
 
   ; Get plev and lat range from preprocessed data if variable is not derived
   else
-    plev = read_data(0, "plev", field_type0)
-    lat = read_data(0, "lat", field_type0)
-    if (dimsizes(plev) .eq. 1) then
-      lev = plev(0)
+    f = addfile(input_file_info@filename(0), "r")
+    if (isfilevar(f, "plev") .and. isfilevar(f, "lat")) then
+      plev = read_data(0, "plev", field_type0)
+      lat = read_data(0, "lat", field_type0)
+      if (dimsizes(plev) .eq. 1) then
+        lev = plev(0)
+      else
+        error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
+                  "only one supported")
+      end if
+      if (dimsizes(lat) .gt. 1) then
+        lat_range = (/min(lat), max(lat)/)
+      else
+        lat_range = read_data(0, "lat_bnds", field_type0)
+      end if
     else
-      error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
-                "only one supported")
-    end if
-    if (dimsizes(lat) .gt. 1) then
-      lat_range = (/min(lat), max(lat)/)
-    else
-      lat_range = read_data(0, "lat_bnds", field_type0)
+      if (isatt(f, "plev") .and. \
+          isatt(f, "lat_range_0") .and. \
+          isatt(f, "lat_range_1")) then
+        lev = f@plev
+        lat_range = (/f@lat_range_0, f@lat_range_1/)
+      else
+        error_msg("f", diag_script, "", "cannot read plev and latrange")
+      end if
     end if
     log_info("Retrieved pressure level " + lev + " and latitude range " + \
              lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
@@ -366,28 +378,8 @@ begin
     ; Process spatial data
     ; -------------------------------------------------------------------------
 
-    ; Process ua (jet position)
-    if (var0 .eq. "ua") then
-      tmpx   = dim_avg_Wrap(A0)
-      dummy1 = new(dimsizes(tmpx&time), typeof(A0&lat))
-
-      ; 2nd degree polynomial fit at maximum for all times to get jet position
-      do tt = 0, dimsizes(tmpx&time) - 1
-        idx = maxind(tmpx(tt, :))
-        scal_x = tmpx(tt, idx-1:idx+1)
-        scal_y = tmpx&lat(idx-1:idx+1)
-        pf = lspoly(scal_x, scal_y, 1.0, 3)
-        yfit = pf(0) + pf(1) * scal_x + pf(2) * scal_x ^ 2
-        dummy1(tt) = yfit(1)
-        delete([/pf, idx, yfit, scal_x, scal_y/])
-      end do
-      dummy1!0 = "time"
-      dummy1&time = A0&time
-      variable_info@units = "deg"
-      delete(tmpx)
-
     ; Process mmstf (SH Hadley cell boundary)
-    else if (var0 .eq. "mmstf") then
+    if (var0 .eq. "mmstf") then
       tmp = A0
       dummy1 = new(dimsizes(A0&time), typeof(A0&lat))
 
@@ -416,7 +408,7 @@ begin
     ; Other variables (no operations needed, done in preprocessing)
     else
         dummy1 = A0
-    end if
+    ; end if
     end if
     delete(A0)
 

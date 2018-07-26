@@ -77,7 +77,7 @@ end
 begin
 
   ; Check field type
-  if (.not. any(field_type0 .eq. (/"T3M", "T2Ms", "T2Mz", "T0D"/))) then
+  if (.not. any(field_type0 .eq. (/"T3M", "T2Ms", "T2Mz", "T0D", "T0M"/))) then
     error_msg("f", diag_script, "", "cannot use field " + field_type0)
   end if
 
