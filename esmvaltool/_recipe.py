@@ -120,7 +120,10 @@ def check_diagnostics(diagnostics):
             raise RecipeError("Missing scripts section in diagnostic {}"
                               .format(name))
         variable_names = tuple(diagnostic.get('variables', {}))
-        for script_name, script in diagnostic.get('scripts', {}).items():
+        scripts = diagnostic.get('scripts')
+        if scripts is None:
+            scripts = {}
+        for script_name, script in scripts.items():
             if script_name in variable_names:
                 raise RecipeError(
                     "Invalid script name {} encountered in diagnostic {}: "

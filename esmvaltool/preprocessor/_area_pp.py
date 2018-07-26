@@ -133,9 +133,7 @@ def area_average(cube, coord1, coord2):
     iris.cube.Cube
         collapsed cube.
     """
-    # CMOR ised data should already have bounds?
-    #    cube.coord(coord1).guess_bounds()
-    #    cube.coord(coord2).guess_bounds()
+    # check for bounds just in case
     for coord in (coord1, coord2):
         if not cube.coord(coord).has_bounds():
             cube.coord(coord).guess_bounds()

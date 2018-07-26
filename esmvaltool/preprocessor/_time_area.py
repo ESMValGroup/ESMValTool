@@ -7,11 +7,12 @@ averages; checks on data time frequencies (daily, monthly etc)
 """
 from datetime import timedelta
 import iris
+import iris.coord_categorisation
 import numpy as np
 
 
 # slice cube over a restricted time period
-def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
+def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     """
     Slice cube on time
 
@@ -21,36 +22,10 @@ def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
     time_slice(cube,2006,2,2,2010,1,1) or
     time_slice(cube,'2006','2','2','2010','1','1');
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        yr1: int
-            Year of at the start of the slice
-
-        mo1: int
-            Month of at the start of the slice
-
-        d1: int
-            Day of at the start of the slice
-
-        yr2: int
-            Year of at the end of the slice
-
-        mo2: int
-            Month of at the end of the slice
-
-        d2: int
-            Day of at the end of the slice
-
-    Returns
-    -------
-    iris.cube.Cube
-        Returns a cube
+    Returns a cube
     """
     import datetime
-    time_units = cube.coord('time').units
+    time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
         if d1 > 30:
             d1 = 30
@@ -59,13 +34,14 @@ def time_slice(cube, yr1, mo1, d1, yr2, mo2, d2):
     my_date1 = datetime.datetime(int(yr1), int(mo1), int(d1))
     my_date2 = datetime.datetime(int(yr2), int(mo2), int(d2))
 
-    time1 = time_units.date2num(my_date1)
-    time2 = time_units.date2num(my_date2)
+    t1 = time_units.date2num(my_date1)
+    t2 = time_units.date2num(my_date2)
     # TODO replace the block below for when using iris 2.0
     # my_constraint = iris.Constraint(time=lambda t: (
-    #     time1 < time_units.date2num(t.point) < time2))
-    my_constraint = iris.Constraint(time=lambda t: (time1 < t.point < time2))
-    cube_slice = cube.extract(my_constraint)
+    #     t1 < time_units.date2num(t.point) < t2))
+    my_constraint = iris.Constraint(time=lambda t: (
+        t1 < t.point < t2))
+    cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
 
@@ -80,7 +56,6 @@ def extract_season(cube, season):
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
     """
-    import iris.coord_categorisation
     iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
     return season_cube
@@ -97,7 +72,6 @@ def extract_month(mycube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
-    import iris.coord_categorisation
     season_cube = mycube.extract(iris.Constraint(month_number=month))
     return season_cube
 
@@ -105,6 +79,8 @@ def extract_month(mycube, month):
 # get the time average
 def time_average(cube):
     """
+    Compute time average
+
     Get the time average over the entire cube. The average is weighted by the
     bounds of the time coordinate.
 
@@ -134,32 +110,16 @@ def time_average(cube):
 
 
 # get the probability a value is greater than a threshold
-def proportion_greater(cube, coord1, threshold):
+def proportion_greater(mycube, coord1, threshold):
     """
     Proportion greater
 
     Return the probability that a cetain variable coord1 (string)
     is greater than a threshold threshold (float or string),
-    across a cube cube; returns a cube
-
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        coord1: str
-            name of coordinate to collapse along
-
-        threshold: float
-            value of threshold
-
-    Returns
-    -------
-    iris.cube.Cube
-        Seasonal mean cube
+    across a cube mycube; returns a cube
     """
     thr = float(threshold)
-    result = cube.collapsed(
+    result = mycube.collapsed(
         coord1, iris.analysis.PROPORTION, function=lambda values: values > thr)
     return result
 
@@ -207,7 +167,6 @@ class NoBoundsError(ValueError):
 
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
-
     def is_day(bound):
         """Count days"""
         time_span = timedelta(days=(bound[1] - bound[0]))
@@ -220,7 +179,6 @@ def is_daily(cube):
 
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
-
     def is_month(bound):
         """Count months"""
         time_span = timedelta(days=(bound[1] - bound[0]))
@@ -238,7 +196,6 @@ def is_seasonal(cube):
     A season is a period of 3 months, i.e.
     at least 89 days, and up to 92 days.
     """
-
     def is_season(bound):
         """Count seasons"""
         time_span = timedelta(days=(bound[1] - bound[0]))
@@ -253,7 +210,6 @@ def is_seasonal(cube):
 
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
-
     def is_year(bound):
         """Count years"""
         t_s = timedelta(days=(bound[1] - bound[0]))
