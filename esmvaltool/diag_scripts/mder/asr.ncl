@@ -21,8 +21,8 @@
 ;     Modifies dataset_info@dataset.
 ;
 ; Modification history
-;   * 20180725-A_schl_ma: ported to v2.0
-;   * 201303??-A_wenz_sa: written.
+;   * 20180725_A-schl_ma: ported to v2.0
+;   * 201303??_A-wenz_sa: written.
 ;
 ; #############################################################################
 
@@ -80,8 +80,10 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens .eq. "True") then
+    avgens = True
     idx_datasets = UNIQ(dataset_info@dataset)
   else
+    avgens = False
     idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
   end if
 
@@ -118,7 +120,7 @@ begin
     A0 = read_data(idat, var0, field_type0)
 
     ; Average over ensemble members if desired
-    if (avgens .eq. True) then
+    if (avgens) then
       ens = ind(dataset_info@dataset(idat) .eq. dataset_info@dataset)
       rank = dimsizes(dimsizes(A0))
 

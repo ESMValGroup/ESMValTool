@@ -34,14 +34,14 @@
 ;     Modifies dataset_info@dataset.
 ;
 ; Modification history:
-;   * 20180716-A_schl_ma: ported to v2.0
-;   * 20180329-A-wenz_sa: modified original script (eyring13jclim.ncl) to
+;   * 20180716_A_schl_ma: ported to v2.0
+;   * 20180329_A-wenz_sa: modified original script (eyring13jclim.ncl) to
 ;                         austral-jet_diags.ncl
-;   * 20170816-A_bock_ls: added tags for reporting
-;   * 20151209-A-laue_ax: code clean-up, added call to write_references,
+;   * 20170816_A_bock_ls: added tags for reporting
+;   * 20151209_A-laue_ax: code clean-up, added call to write_references,
 ;                         several bugfixes for processing zonal wind (ua)
 ;                         and handling missing variable attribute "units"
-;   * 201510??-A-cion_ir: written
+;   * 201510??_A-cion_ir: written
 ;
 ; #############################################################################
 
@@ -130,8 +130,10 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens .eq. "True") then
+    avgens = True
     idx_datasets = UNIQ(dataset_info@dataset)
   else
+    avgens = False
     idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
   end if
 
@@ -300,7 +302,7 @@ begin
     A0 = read_data(idat, var0, field_type0)
 
     ; Average over ensemble members if desired
-    if (avgens .eq. True) then
+    if (avgens) then
       ens = ind(dataset_info@dataset(idat) .eq. dataset_info@dataset)
       rank = dimsizes(dimsizes(A0))
 
