@@ -33,10 +33,40 @@ def find_files(dirname, filename):
 def get_start_end_year(filename):
     """Get the start and end year from a file name.
 
-    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
+    This works for filenames matching
+
+    *[-,_]YYYY*[-,_]YYYY*.*
+      or
+    *[-,_]YYYY*.*
+      or
+    YYYY*[-,_]*.*
+      or
+    YYYY*[-,_]YYYY*[-,_]*.*
+      or
+    YYYY*[-,_]*[-,_]YYYY*.* (Does this make sense? Is this worth catching?)
     """
     name = os.path.splitext(filename)[0]
-    dates = name.split('_')[-1].split('-')
+
+    filename = name.split(os.sep)[-1]
+    filename_list = [elem.split('-') for elem in filename.split('_')]
+    filename_list = [elem for sublist in filename_list for elem in sublist]
+
+    pos_ydates = [elem.isdigit() and len(elem) >= 4 for elem in filename_list]
+    pos_ydates_l = list(pos_ydates)
+    pos_ydates_r = list(pos_ydates)
+
+    for ind, _ in enumerate(pos_ydates_l):
+        if ind != 0:
+            pos_ydates_l[ind] = (pos_ydates_l[ind - 1] and pos_ydates_l[ind])
+
+    for ind, _ in enumerate(pos_ydates_r):
+        if ind != 0:
+            pos_ydates_r[- ind - 1] = (pos_ydates_r[- ind] and
+                                       pos_ydates_r[- ind - 1])
+
+    dates = [filename_list[ind] for ind, _ in enumerate(pos_ydates)
+             if pos_ydates_r[ind] or pos_ydates_l[ind]]
+
     if len(dates) == 1:
         start_year = int(dates[0][:4])
         end_year = start_year
@@ -45,6 +75,7 @@ def get_start_end_year(filename):
     else:
         raise ValueError('Name {0} dates do not match a recognized '
                          'pattern'.format(name))
+
     return start_year, end_year
 
 
