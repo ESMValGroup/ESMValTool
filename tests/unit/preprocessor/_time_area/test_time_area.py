@@ -15,8 +15,8 @@ from cf_units import Unit
 from iris.cube import Cube
 
 import tests
-from esmvaltool.preprocessor._time_pp import (extract_month, extract_season,
-                                              time_average)
+from esmvaltool.preprocessor._time_area import (extract_month, extract_season,
+                                                time_average)
 
 
 def _create_sample_cube():
