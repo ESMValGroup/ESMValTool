@@ -155,12 +155,13 @@ def _mask_with_shp(cube, shapefilename):
 
     # Create a set of x,y points from the cube
     # 1D regular grids
-    if cube.coord(axis='X').points.ndim < 2:
+    if cube.coord('longitude').points.ndim < 2:
         x_p, y_p = np.meshgrid(cube.coord(axis='X').points,
                                cube.coord(axis='Y').points)
     # 2D irregular grids
     else:
-        x_p, y_p = cube.coord(axis='X').points, cube.coord(axis='Y').points
+        x_p, y_p = cube.coord('longitude').points, \
+            cube.coord('latitude').points
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
