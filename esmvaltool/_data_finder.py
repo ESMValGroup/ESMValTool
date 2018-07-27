@@ -240,7 +240,10 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
         # Replace seaIce realm by ocean realm
         path_elements = dir2.split(os.path.sep)
         if "seaIce" in path_elements:
+            old_dir = dir2
             dir2 = dir2.replace("seaIce", "ocean")
+            logger.info("Replaced path to fx files %s by %s for seaIce"
+                        "diagnostics", old_dir, dir2)
 
         dirname_template = os.path.join(dir1, dir2)
         dirs.append(dirname_template)
