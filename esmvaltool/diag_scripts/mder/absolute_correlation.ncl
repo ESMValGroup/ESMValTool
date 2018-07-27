@@ -21,7 +21,7 @@
 ;     scale_time : a year to scale the timeseries with.
 ;     time_oper : select for opperation in time_opperation function.
 ;     time_opt : select for option in time_opperation function.
-;     calc_typ :
+;     calc_type :
 ;
 ; Optional recipe attributes:
 ;
@@ -164,10 +164,10 @@ begin
   else
     error_msg("f", diag_script, "", "requires attribute time_opt in recipe")
   end if
-  if (isatt(diag_script_info, "calc_typ"))then
-    calc_type = diag_script_info@calc_typ
+  if (isatt(diag_script_info, "calc_type"))then
+    calc_type = diag_script_info@calc_type
   else
-    error_msg("f", diag_script, "", "requires attribute calc_typ in recipe")
+    error_msg("f", diag_script, "", "requires attribute calc_type in recipe")
   end if
 
   ; Output dir
