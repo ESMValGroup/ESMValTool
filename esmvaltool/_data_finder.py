@@ -319,6 +319,10 @@ def get_input_fx_filelist(variable, rootpath, drs):
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
+            # root part1 could not exist at all
+            if not os.path.exists(part1):
+                fx_files[variable['fx_files'][j]] = None
+                return fx_files
             list_versions = os.listdir(part1)
             list_versions.sort(reverse=True)
             for version in list_versions:
