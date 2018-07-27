@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function
 
 import unittest
 
-import subprocess
+import os
 import iris
 import numpy as np
 
@@ -61,9 +61,7 @@ class Test(tests.Test):
         expected.mask = np.zeros((3, 3), bool)
         self.assertArrayEqual(result_sea.data, expected)
         # remove the fx.nc temporary file
-        proc = subprocess.Popen('rm fx.nc', stdout=subprocess.PIPE,
-                                shell=True)
-        proc.communicate()
+        os.remove('fx.nc')
 
         # mask with shp files
         new_cube_land = iris.cube.Cube(new_cube_data,
