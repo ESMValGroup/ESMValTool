@@ -16,17 +16,14 @@
 ;     interest and present-day diagnostic.
 ;
 ; Required recipe attributes:
-;     lat : latitude for area averaging.
-;     lon : longitude for area averaging.
 ;     p_time : time range for projections.
+;     p_step : averaging time range for target period.
 ;     scale_time : a year to scale the timeseries with.
-;     area_oper : select for opperation in area_opperation function.
 ;     time_oper : select for opperation in time_opperation function.
 ;     time_opt : select for option in time_opperation function.
+;     calc_typ :
 ;
 ; Optional recipe attributes:
-;     smooth : Smoothes time period with 1-2-1 filter.
-;     iter : Iteration for smoothing (only if 'smooth' is True).
 ;
 ; Caveats:
 ;     Modifies dataset_info@dataset and dataset_info@ensemble.
@@ -112,59 +109,81 @@ begin
   ; Read recipe and config data
   ; ---------------------------------------------------------------------------
 
-  ; Global attributes
-  ; if (isatt(diag_script_info,"lat"))then
-  ;   latrange = diag_script_info@lat
-  ; end if
-  ; if (isatt(diag_script_info,"lon"))then
-  ;   lonrange = diag_script_info@lon
-  ; end if
-  ; if (isatt(diag_script_info,"p_time"))then
-  ;   p_time = diag_script_info@p_time
-  ; end if
-  ; if (isatt(diag_script_info,"pstep"))then
-  ;   pstep = diag_script_info@pstep
-  ; end if
-  ; if (isatt(diag_script_info,"lev"))then
-  ;   level = diag_script_info@lev
-  ; end if
-  ; if (isatt(diag_script_info,"scal_time"))then
-  ;   scal_time = diag_script_info@scal_time
-  ; end if
-  ;
-  ; if (isatt(diag_script_info,"iter"))then
-  ;   iter = diag_script_info@iter
-  ; end if
-  ; if (isatt(diag_script_info,"area_oper"))then
-  ;   area_oper = diag_script_info@area_oper
-  ; end if
-  ; if (isatt(diag_script_info,"time_oper"))then
-  ;   time_oper = diag_script_info@time_oper
-  ; end if
-  ; if (isatt(diag_script_info,"time_opt"))then
-  ;   time_opt = diag_script_info@time_opt
-  ; end if
-  ; if (isatt(diag_script_info,"typ"))then
-  ;   calc_type = diag_script_info@typ
-  ; end if
-  ;
-  ; ;;Output dir
-  ; project_name = getenv("ESMValTool_project")
-  ; plot_dir = getenv("ESMValTool_plot_dir")
-  ; diag_script_base = basename(diag_script)
-  ; diri_out = get_output_dir(plot_dir, diag_script_base)
-  ; plot_num = integertochar(ispan(97, 122, 1))
-  ;
-  ; ;; File type
-  ; file_type = getenv("ESMValTool_output_file_type")
-  ; if (ismissing(file_type)) then
-  ;   file_type = "PS"
-  ; end if
-  ;
-  ; ;;Create variable arrays
-  ; xx = new((/dimsizes(p_time),DIM_DAT/),float)
+  ; Read latitude range and level from input files
+  f = addfile(input_file_info@filename(0), "r")
+  if (isfilevar(f, "plev") .and. isfilevar(f, "lat")) then
+    plev = read_data(0, "plev", field_type0)
+    lat = read_data(0, "lat", field_type0)
+    if (dimsizes(plev) .eq. 1) then
+      lev = plev(0)
+    else
+      error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
+                "only one supported")
+    end if
+    if (dimsizes(lat) .gt. 1) then
+      lat_range = (/min(lat), max(lat)/)
+    else
+      lat_range = read_data(0, "lat_bnds", field_type0)
+    end if
+  else
+    if (isatt(f, "plev") .and. \
+        isatt(f, "lat_range_0") .and. \
+        isatt(f, "lat_range_1")) then
+      lev = f@plev
+      lat_range = (/f@lat_range_0, f@lat_range_1/)
+    else
+      error_msg("f", diag_script, "", "cannot read plev and latrange")
+    end if
+  end if
+  log_info("Retrieved pressure level " + lev + " and latitude range " + \
+           lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
 
-;
+  ; Global attributes
+  if (isatt(diag_script_info, "p_time"))then
+    p_time = diag_script_info@p_time
+  else
+    error_msg("f", diag_script, "", "requires attribute p_time in recipe")
+  end if
+  if (isatt(diag_script_info, "p_step"))then
+    p_step = diag_script_info@p_step
+  else
+    error_msg("f", diag_script, "", "requires attribute p_step in recipe")
+  end if
+  if (isatt(diag_script_info, "scal_time"))then
+    scal_time = diag_script_info@scal_time
+  else
+    error_msg("f", diag_script, "", "requires attribute scal_time in recipe")
+  end if
+  if (isatt(diag_script_info, "time_oper"))then
+    time_oper = diag_script_info@time_oper
+  else
+    error_msg("f", diag_script, "", "requires attribute time_oper in recipe")
+  end if
+  if (isatt(diag_script_info, "time_opt"))then
+    time_opt = diag_script_info@time_opt
+  else
+    error_msg("f", diag_script, "", "requires attribute time_opt in recipe")
+  end if
+  if (isatt(diag_script_info, "calc_typ"))then
+    calc_type = diag_script_info@calc_typ
+  else
+    error_msg("f", diag_script, "", "requires attribute calc_typ in recipe")
+  end if
+
+  ; Output dir
+  diag_script_base = basename(diag_script)
+  plot_dir = config_user_info@plot_dir
+  plot_num = integertochar(ispan(97, 122, 1))
+
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
+  ; Output arrays
+  xx = new((/dimsizes(p_time), DIM_DAT/), float)
+
 ;   ;;===================================================================
 ;   ;;MAIN
 ;   ;;Call the variable of interest and merge to one timeline yy
@@ -227,9 +246,9 @@ begin
 ;     do pt = 0, dimsizes(p_time)-1
 ;
 ;         ;;Average over var time series
-;         tmps  = time_operations(tmpy,p_time(pt), (/p_time(pt) + pstep/), \
+;         tmps  = time_operations(tmpy,p_time(pt), (/p_time(pt) + p_step/), \
 ;                                 time_oper, time_opt, True)
-;         tmpj  = time_operations(tmps,p_time(pt), (/p_time(pt) + pstep/), \
+;         tmpj  = time_operations(tmps,p_time(pt), (/p_time(pt) + p_step/), \
 ;                                 "average", "yearly", True)
 ;
 ;         ;;Calculate the scaling factor between scal_time(0) and scal_time(1)
@@ -393,10 +412,10 @@ begin
 ;       ;;Call plot scripts
 ;       plot_file  = diag_script_base + "_" + var0 + "-" + calc_type + "_" + \
 ;                    models@experiment(DIM_OBS+DIM_HDAT) + "_" + p_time(pt) + \
-;                    "-" + (/p_time(pt) + pstep/)
-;       wks = gsn_open_wks(file_type, diri_out + plot_file)
+;                    "-" + (/p_time(pt) + p_step/)
+;       wks = gsn_open_wks(file_type, plot_dir + plot_file)
 ;
-;       MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + pstep/)
+;       MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + p_step/)
 ;       YStg = "Absolute Correlation Coefficient"
 ;       plot = error_bar_plot(acorr, corr_sig, wdiag, \
 ;       diag_sign(pt,:), MainStg, YStg, wks, "draw")
@@ -417,12 +436,12 @@ begin
 ;       id = diag_script + "_" + variables(0)
 ;       contrib_authors = (/"A_wenz_sa"/)
 ;
-;       ESMValMD(diri_out+plot_file + "." + file_type, alltags, caption, id, variables(0), \
+;       ESMValMD(plot_dir+plot_file + "." + file_type, alltags, caption, id, variables(0), \
 ;       allmodelnames, climofiles, diag_script, contrib_authors)
 ;
 ;       delete([/alltags, caption, id, climofiles, allmodelnames, wks, plot, MainStg, acorr/])
 ;
-;       print("gv "+diri_out+plot_file+".ps")
+;       print("gv "+plot_dir+plot_file+".ps")
 ;
 ;   end do
 

@@ -402,7 +402,7 @@ begin
       end do
       dummy1!0 = "time"
       dummy1&time = A0&time
-      variable_info@units = "deg"
+      variable_info@units = "degrees"
       delete(tmp)
 
     ; Other variables (no operations needed, done in preprocessing)

@@ -679,6 +679,12 @@ diagnostics:
         <<: *ta_sp100
         script: mder/absolute_correlation.ncl
         ancestors: ['uajet', '*/select_for_mder']
+        time_opt: DJF
+        time_oper: extract
+        calc_type: pos
+        p_time: [2015, 2040]
+        p_step: 19
+        scal_time: [1979, 1998]
 
 
 # <diag>
