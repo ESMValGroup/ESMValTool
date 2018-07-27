@@ -9,7 +9,7 @@
 ;     function weight_lin_plot : plots a time series together with with
 ;                                weighted model enseble and observations.
 ;     function mder_scatter_plot : creates a scatterplot with regression error
-;     function                     and xy-stddev of each model value.
+;                                  and xy-stddev of each model value.
 ;     function sqrt_error_plot   : plots the sqared error for various model
 ;                                  ensembles.
 ;
@@ -20,14 +20,6 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 load "interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
-
-
-begin
-
-  ; Get variable
-  var0 = variables(0)
-
-end
 
 
 ; #############################################################################
@@ -240,7 +232,7 @@ begin
   ;   p_step = (diag_script_info@pstep)
   ; end if
   ; climo_dir = getenv("ESMValTool_climo_dir")
-  ; diag_file = climo_dir + "/" + var0 + "_" + \
+  ; diag_file = climo_dir + "/" + variables(0) + "_" + \
   ;   input_file_info@experiment(dimsizes(models@experiment)-1)+"_"+\
   ;                           (p_step+1)+"ystep_diagnostics.txt"
   ;
