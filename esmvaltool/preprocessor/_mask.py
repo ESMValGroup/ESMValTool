@@ -18,15 +18,24 @@ from iris.util import rolling_window
 logger = logging.getLogger(__name__)
 
 
-def _get_fx_mask(fx_data, fx_option):
+def _get_fx_mask(fx_data, fx_option, mask_type):
     """Build a 50 percent land or sea mask"""
     inmask = np.zeros_like(fx_data, bool)
-    if fx_option == 'land':
-        # Mask land out
-        inmask[fx_data > 50.] = True
-    elif fx_option == 'sea':
-        # Mask sea out
-        inmask[fx_data <= 50.] = True
+    if mask_type == 'sftlf':
+        if fx_option == 'land':
+            # Mask land out
+            inmask[fx_data > 50.] = True
+        elif fx_option == 'sea':
+            # Mask sea out
+            inmask[fx_data <= 50.] = True
+    elif mask_type == 'sftof':
+        if fx_option == 'land':
+            # Mask land out
+            inmask[fx_data < 50.] = True
+        elif fx_option == 'sea':
+            # Mask sea out
+            inmask[fx_data >= 50.] = True
+
     return inmask
 
 
@@ -63,7 +72,10 @@ def mask_landsea(cube, fx_file, mask_out):
         # Try loading; some files may be broken
         try:
             fx_cube = iris.load_cube(fx_file)
-            landsea_mask = _get_fx_mask(fx_cube.data, mask_out)
+            if os.path.basename(fx_file).split('_')[0] == 'sftlf':
+                landsea_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftlf')
+            elif os.path.basename(fx_file).split('_')[0] == 'sftof':
+                landsea_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftof')
             cube.data = _apply_fx_mask(landsea_mask,
                                        cube.data)
         except iris.exceptions.TranslationError as msg:
