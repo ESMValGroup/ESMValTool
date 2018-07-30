@@ -33,7 +33,6 @@ class RecipeError(Exception):
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict"""
-
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map"""
 
@@ -498,7 +497,7 @@ def _update_fx_settings(settings, variable, config_user):
 
         # fx_files are not specified in variable
         else:
-            variable['fx_files'] = ['sftlf', 'sftof']
+            variable['fx_files'] = ['sftlf', 'sftof', 'areacello']
             fx_files_dict = get_input_fx_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
@@ -511,6 +510,9 @@ def _update_fx_settings(settings, variable, config_user):
         elif 'sftof' in fx_files_dict.keys():
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftof']
+        elif 'areacello' in fx_files_dict.keys():
+            settings['mask_landsea']['fx_file'] = \
+                fx_files_dict['areacello']
         # add more file options here with elif
         # else: return an empty value for Natural Earth mask use
         else:
