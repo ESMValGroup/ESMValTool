@@ -54,12 +54,6 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  print(dataset_info)
-  print(variable_info)
-  print(config_user_info)
-  print(input_file_info)
-  print(diag_script_info)
-
   ; Variable
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -173,6 +167,7 @@ begin
   ; Output dir
   diag_script_base = basename(diag_script)
   plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
   plot_num = integertochar(ispan(97, 122, 1))
 
   ; Plot file type
@@ -181,269 +176,252 @@ begin
     file_type = "ps"
   end if
 
-  ; Output arrays
+  ; Output array
   xx = new((/dimsizes(p_time), DIM_DAT/), float)
 
-;   ;;===================================================================
-;   ;;MAIN
-;   ;;Call the variable of interest and merge to one timeline yy
-;   do imod = 0,DIM_DAT-1
-;     i = idx_datasets(imod)
-;
-;     ;;Call projection simulations for regression analysis and time series,
-;     ;;scale time series and avg over 10-year period (see also cfg_mder.ncl)
-;     data = read_data(i, var0, field_type0)
-;     tmp = extract_data(i, data, -1, 0, 0)
-;     idxH = ind(dataset_info@dataset(i).eq.dataset_info@dataset(:DIM_OBS+DIM_HDAT-1))
-;     idxF = ind(dataset_info@dataset(i).eq.dataset_info@dataset(DIM_OBS+DIM_HDAT:))+DIM_OBS+DIM_HDAT
-;
-;     if (dimsizes(idxH).ge.1) then
-;       ;;Call historical simulations for time series
-;       tmph = extract_data(idxH(0), data, -1, 0, 0)
-;
-;       ;;Average over ensemble members if more than one exists (see namlist)
-;       if (getenv("ESMValTool_average_ens").eq."True") then
-;         if (dimsizes(idxF).gt.1) then
-;           if (dimsizes(idxF).eq.dimsizes(idxH)) then
-;             tmpAF = new((/dimsizes(idxF),dimsizes(tmp&time)/),typeof(tmp))
-;             copy_VarCoords(tmp,tmpAF(0,:))
-;             tmpAF(0,:) = tmp
-;             delete(tmp)
-;
-;             tmpAH = new((/dimsizes(idxH),dimsizes(tmph&time)/),typeof(tmph))
-;             copy_VarCoords(tmph,tmpAH(0,:))
-;             tmpAH(0,:) = tmph
-;             delete(tmph)
-;
-;             ;;Loop over ensemble members, read the data and save in arry
-;             do iens = 1,dimsizes(idxF)-1
-;               tmpF = extract_data(idxF(iens), data, -1, 0, 0)
-;               tmpAF(iens,:) = (/tmpF/)
-;
-;               tmpH = extract_data(idxH(iens), data, -1, 0, 0)
-;               tmpAH(iens,:) = (/tmpH/)
-;               delete([/tmpF,tmpH/])
-;             end do
-;
-;             ;;Average over ensemble members
-;             tmp = tofloat(dim_avg_n_Wrap(tmpAF, 0))
-;             tmph = tofloat(dim_avg_n_Wrap(tmpAH,0))
-;             copy_VarCoords(tmpAF(0,:),tmp)
-;             copy_VarCoords(tmpAH(0,:),tmph)
-;             delete([/tmpAF,tmpAH/])
-;           else
-;             print("fatal: inconsistend ensemble member size for model " \
-;                   + dataset_info@dataset(i) + " in " + diag_script)
-;             status_exit(1)
-;           end if
-;         end if
-;       end if
-;       tmpa = array_append_record(tmph,tmp,0)
-;       tmpy = tmpa
-;       delete([/tmp,tmpa,tmph,idxH,idxF/])
-;     end if
-;
-;     do pt = 0, dimsizes(p_time)-1
-;
-;         ;;Average over var time series
-;         tmps  = time_operations(tmpy,p_time(pt), (/p_time(pt) + p_step/), \
-;                                 time_oper, time_opt, True)
-;         tmpj  = time_operations(tmps,p_time(pt), (/p_time(pt) + p_step/), \
-;                                 "average", "yearly", True)
-;
-;         ;;Calculate the scaling factor between scal_time(0) and scal_time(1)
-;         if (scal_time(1).gt.toint(models@end_year(i-DIM_HDAT))) then
-;             scal_time(1) = toint(models@end_year(i-DIM_HDAT))
-;         end if
-;
-;         tmpxx = time_operations(tmpy,scal_time(0),scal_time(1),"extract",time_opt,True)
-;         tmpyy = time_operations(tmpxx,scal_time(0),scal_time(1),"average","yearly",True)
-;         tmppd = tofloat(avg(tmpyy))
-;
-;         if (calc_type.eq."trend") then
-;             xx(pt, imod) = tofloat(avg(tmpj))-tmppd
-;         else if (calc_type.eq."pos") then
-;             xx(pt, imod) = tofloat(avg(tmpj))
-;         end if
-;         end if
-;
-;         variable_info@units = "deg"
-;
-;         delete([/tmppd,tmps,tmpj/])
-;         delete([/tmpyy,tmpxx/])
-;
-;     end do
-;
-;     delete(tmpy)
-;     scal_time(1) = diag_script_info@scal_time(1)
-;
-;   end do ;end imod
-;
-;   ;;Save unique model names
-;   tmpm = dataset_info@dataset
-;   delete(dataset_info@dataset)
-;   dataset_info@dataset  = tmpm(idx_datasets)
-;   delete(tmpm)
-;
-;   ;;Call diagnostics
-;   ;; Read diagnostic list and add files together
-;   xml_name_char = tochar(getenv("ESMValTool_xml_name"))
-;   temp_dir = get_output_dir(getenv("ESMValTool_wrk_dir"), "temp") + \
-;             tostring(xml_name_char(:dimsizes(xml_name_char) - 6)) + \
-;             "_diagnostic.nc"
-;
-;   if (isfilepresent(temp_dir)) then
-;
-;     ;; Read diagnostic list
-;     temp_file = addfile(temp_dir, "r")
-;     temp_list = temp_file->temp_list
-;     file_list = tostring(temp_list)
-;     file_list@_FillValue = default_fillvalue(typeof(file_list))
-;
-;     delete(temp_list)
-;
-;     ;; Remove duplicates
-;     do ii = 0, dimsizes(file_list) - 1
-;       curr = file_list(ii)
-;       idx = ind(curr.eq.file_list)
-;       if (dimsizes(idx).gt.1) then
-;         file_list(idx) = file_list@_FillValue
-;         file_list(ii) = curr
-;       end if
-;       delete(curr)
-;       delete(idx)
-;     end do
-;     tmp = file_list(ind(.not.ismissing(file_list)))
-;     delete(file_list)
-;     file_list = tmp
-;     delete(tmp)
-;
-;     ;;Create diagnostic arreys
-;     dim_DIAG = dimsizes(file_list)
-;     diag_all = new((/dim_DIAG,DIM_DAT/),float)
-;     wdiag = new((/dim_DIAG/),string)           ;;array with diagnostic names
-;     obs0  = new((/dim_DIAG/),float)
-;
-;     ;; Loop over files in the list, append data
-;     do ii = 0, dim_DIAG - 1
-;         data_temp = ncdf_read(file_list(ii), "diagn")
-;
-;         do imod = 0,DIM_DAT-1
-;             info_output(dataset_info@dataset(imod),verbosity, 2)
-;             do dmod = 0,dimsizes(data_temp&models)-1
-;                 if (dataset_info@dataset(imod).eq.data_temp&models(dmod)) then
-;                     diag_all(ii,imod) = data_temp(0,dmod,0) ;;collect diagnostics in one array
-;                     if (isatt(data_temp,"wdiag")) then
-;                         wdiag(ii) = data_temp@wdiag
-;                     end if
-;                 end if
-;             end do
-;         end do
-;         delete(data_temp)
-;     end do
-;
-;     diag_all&diagnostics = wdiag
-;   else
-;     print("fatal: cannot find diagnostic list in " + diag_script)
-;     status_exit(1)
-;   end if
-;
-;   ;;===================================================================
-;   ;;Correlation calculations
-;
-;   corr     = new((/dimsizes(p_time),dim_DIAG/),float)
-;   diag_sign = new((/dimsizes(p_time),dim_DIAG/),string)
-;
-;   do pt = 0, dimsizes(p_time)-1
-;
-;       corr_sig = new((/2,dim_DIAG/),float)
-;       r_sig0  = new((/dim_DIAG/),float)
-;       r_sig1  = new((/dim_DIAG/),float)
-;       r_wdiag  = new((/dim_DIAG/),string)
-;
-;       do id = 0,dim_DIAG-1
-;           hlp   = diag_all(id,:)
-;           good  = ind(hlp.ne. 999.)
-;           ngood = dimsizes(good)
-;           corr(pt,id) = escorc(hlp(good),xx(pt,good))
-;           rc = regline(hlp(good),xx(pt,good))
-;           df = rc@nptxy-2
-;           z = 0.5*log((1.+abs(corr(pt,id)))/(1.-abs(corr(pt,id))))
-;           corr_sig(0,id) = tanh(z-1.96/(sqrt(ngood-3.)))
-;           corr_sig(1,id) = tanh(z+1.96/(sqrt(ngood-3.)))
-;
-;           t0    = abs(corr(pt,id))/sqrt((1-corr(pt,id)^2)/(ngood-2))
-;           sign0 = 1.-betainc(df/(df+rc@tval^2), df/2.0, 0.5)
-;
-;           info_output(wdiag(id) + " corr: " + corr(pt,id) + "  models: " \
-;           + ngood + "  stddv: " + sign0(0), verbosity, 1)
-;           delete([/hlp,good,ngood,rc,df/])
-;
-;       end do
-;
-;       ;;Sort abs(coerr. coef.) to degreacing order in array
-;       acorr = abs(corr(pt,:))
-;       qsort(acorr)
-;       acorr = acorr(::-1)
-;
-;       do id = 0,dim_DIAG-1
-;           i_diag = ind(abs(corr(pt,:)).eq.acorr(id))
-;           r_wdiag(id) = wdiag(i_diag)
-;           r_sig0(id) = corr_sig(0,i_diag)
-;           r_sig1(id) = corr_sig(1,i_diag)
-;           diag_sign(pt,id) = where(corr(pt,i_diag).gt.0.,"red","blue")
-;           delete(i_diag)
-;       end do
-;
-;       delete([/wdiag, corr_sig/])
-;       wdiag = r_wdiag
-;       corr_sig = new((/2,dim_DIAG/),float)
-;       corr_sig(0,:) = r_sig0
-;       corr_sig(1,:) = r_sig1
-;       delete([/r_wdiag, r_sig0, r_sig1, id/])
-;
-;       print(wdiag+": "+acorr)
-;
-;       acorr!0 = "diag"
-;       acorr&diag = wdiag
-;
-;       ;;===================================================================
-;       ;;Plot
-;       ;;Call plot scripts
-;       plot_file  = diag_script_base + "_" + var0 + "-" + calc_type + "_" + \
-;                    models@experiment(DIM_OBS+DIM_HDAT) + "_" + p_time(pt) + \
-;                    "-" + (/p_time(pt) + p_step/)
-;       wks = gsn_open_wks(file_type, plot_dir + plot_file)
-;
-;       MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + p_step/)
-;       YStg = "Absolute Correlation Coefficient"
-;       plot = error_bar_plot(acorr, corr_sig, wdiag, \
-;       diag_sign(pt,:), MainStg, YStg, wks, "draw")
-;
-;       ;; add meta data to plot (for reporting)
-;       climofiles = new(DIM_DAT, string)
-;       do ii = 0, DIM_DAT - 1
-;           climofiles(ii) = interface_get_inpaths(ii) + "/" \
-;           + interface_get_infile(variables(0), field_types(0), ii)
-;       end do
-;
-;       alltags = array_append_record(tags, (/"ST_mder","ST_spectrum", "ST_corr", "ST_range", \
-;       "PT_errorbar", "PT_scatter", "DM_et", \
-;       "DM_global", "DM_polar", "DM_sh", "DM_trop"/), 0)
-;       allmodelnames = dataset_info@dataset
-;       caption = "Absolute values of the correlation coefficient between " + variables(0) + \
-;       " and pressent-day diagnostics, similar to Wenzel et al., JClim, 2016, fig. 2"
-;       id = diag_script + "_" + variables(0)
-;       contrib_authors = (/"A_wenz_sa"/)
-;
-;       ESMValMD(plot_dir+plot_file + "." + file_type, alltags, caption, id, variables(0), \
-;       allmodelnames, climofiles, diag_script, contrib_authors)
-;
-;       delete([/alltags, caption, id, climofiles, allmodelnames, wks, plot, MainStg, acorr/])
-;
-;       print("gv "+plot_dir+plot_file+".ps")
-;
-;   end do
+  ; ---------------------------------------------------------------------------
+  ; Read and preprocess data
+  ; ---------------------------------------------------------------------------
+
+  ; Call the variable of interest and merge to one timeline
+  do i = 0, DIM_DAT - 1
+    idat = idx_datasets(i)
+
+    ; All projection simulations for regression analysis and time series,
+    ; scale time series and average over 10-year period
+    tmp = read_data(idat, var0, field_type0)
+    idx_hist = ind(dataset_info@dataset(idat) .eq. \
+                   dataset_info@dataset(:DIM_OBS + DIM_HDAT - 1))
+    idx_fut = ind(dataset_info@dataset(idat) .eq. \
+                  dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
+      DIM_OBS + DIM_HDAT
+
+    if (dimsizes(idx_hist) .ge. 1) then
+      ; all historical simulations for time series
+      tmp_hist = read_data(idx_hist(0), var0, field_type0)
+
+      ; Average over ensemble members if more than one exists (see namlist)
+      if (avgens) then
+        if (dimsizes(idx_fut) .gt. 1) then
+          if (dimsizes(idx_fut) .eq. dimsizes(idx_hist)) then
+            tmp_avg_fut = new((/dimsizes(idx_fut), dimsizes(tmp&time)/), \
+                              typeof(tmp))
+            tmp_avg_hist = new((/dimsizes(idx_hist), \
+                                dimsizes(tmp_hist&time)/), typeof(tmp_hist))
+            copy_VarCoords(tmp, tmp_avg_fut(0, :))
+            copy_VarCoords(tmp_hist, tmp_avg_hist(0, :))
+            tmp_avg_fut(0, :) = tmp
+            tmp_avg_hist(0, :) = tmp_hist
+            delete([/tmp, tmp_hist/])
+
+            ; Loop over ensemble members, read the data and save in arry
+            do iens = 1, dimsizes(idx_fut) - 1
+              tmp_fut = read_data(idx_fut(iens), var0, field_type0)
+              tmp_hist = read_data(idx_hist(iens), var0, field_type0)
+              tmp_avg_fut(iens, :) = (/tmp_fut/)
+              tmp_avg_hist(iens, :) = (/tmp_hist/)
+              delete([/tmp_fut, tmp_hist/])
+            end do
+
+            ; Average over ensemble members
+            tmp = tofloat(dim_avg_n_Wrap(tmp_avg_fut, 0))
+            tmp_hist = tofloat(dim_avg_n_Wrap(tmp_avg_hist, 0))
+            copy_VarCoords(tmp_avg_fut(0, :), tmp)
+            copy_VarCoords(tmp_avg_hist(0, :), tmp_hist)
+            delete([/tmp_avg_fut, tmp_avg_hist/])
+          else
+            error_msg("f", diag_script, "", "inconsistend ensemble member " + \
+                      "size for dataset " + dataset_info@dataset(idat))
+          end if
+        end if
+      end if
+      tmpy = array_append_record(tmp_hist, tmp, 0)
+      delete([/tmp, tmp_hist, idx_hist, idx_fut/])
+    end if
+
+    do pt = 0, dimsizes(p_time) - 1
+      ; Average over var time series
+      tmps = time_operations(tmpy, p_time(pt), (/p_time(pt) + p_step/), \
+                             time_oper, time_opt, True)
+      tmpj = time_operations(tmps, p_time(pt), (/p_time(pt) + p_step/), \
+                             "average", "yearly", True)
+
+      ; Calculate the scaling factor between scal_time(0) and scal_time(1)
+      if (scal_time(1) .gt. \
+          toint(input_file_info@end_year(idat - DIM_HDAT))) then
+        scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
+      end if
+
+      tmpxx = time_operations(tmpy, scal_time(0), scal_time(1), "extract", \
+                              time_opt, True)
+      tmpyy = time_operations(tmpxx, scal_time(0), scal_time(1), "average", \
+                              "yearly", True)
+      tmppd = tofloat(avg(tmpyy))
+
+      if (calc_type .eq. "trend") then
+          xx(pt, i) = tofloat(avg(tmpj)) - tmppd
+      else if (calc_type .eq. "pos") then
+          xx(pt, i) = tofloat(avg(tmpj))
+      else
+          error_msg("f", diag_script, "", "calc_type " + calc_type + \
+                    " not supported")
+      end if
+      end if
+      delete([/tmppd, tmps, tmpj, tmpyy, tmpxx/])
+
+    end do
+    delete(tmpy)
+
+  end do
+
+  ; Save unique dataset names (modifies dataset_info@dataset!)
+  tmpm = dataset_info@dataset
+  dataset_info@dataset := tmpm(idx_datasets)
+  delete(tmpm)
+
+  ; ---------------------------------------------------------------------------
+  ; Call diagnostics
+  ; ---------------------------------------------------------------------------
+
+  ; Get input directory (using ancestor diagnostics)
+  input_files = diag_script_info@input_files
+  input_dirs = input_files(ind(input_files .ne. \
+                               str_match(input_files, "_info.ncl")))
+
+  ; Get diagnostics
+  file_list = new(1, string)
+  do idx_dir = 0, dimsizes(input_dirs) - 1
+    file_list := array_append_record(\
+      file_list, \
+      systemfunc("ls " + input_dirs(idx_dir) + "/*.nc"), \
+      0)
+  end do
+  file_list := file_list(1:)
+
+  ; Create diagnostic arrays
+  DIM_DIAG = dimsizes(file_list)
+  diag_all = new((/DIM_DIAG, DIM_DAT/), float)
+  wdiag = new((/DIM_DIAG/), string)           ; Array with diagnostic names
+  obs0  = new((/DIM_DIAG/), float)
+
+  ; Loop over files in the list and append data
+  do idx_diag = 0, DIM_DIAG - 1
+    data_temp = ncdf_read(file_list(idx_diag), "diagn")
+
+    ; Loop over datasets and save diagnostic data
+    do i = 0, DIM_DAT - 1
+      do idat = 0, dimsizes(data_temp&datasets) - 1
+        if (dataset_info@dataset(i) .eq. data_temp&datasets(idat)) then
+          diag_all(idx_diag, i) = data_temp(0, idat, 0)
+          if (isatt(data_temp, "wdiag")) then
+            wdiag(idx_diag) = data_temp@wdiag
+          end if
+        end if
+      end do
+    end do
+    delete(data_temp)
+  end do
+  diag_all&diagnostics = wdiag
+
+  ; ---------------------------------------------------------------------------
+  ; Correlation calculations
+  ; ---------------------------------------------------------------------------
+
+  ; New arrays
+  corr = new((/dimsizes(p_time), DIM_DIAG/), float)
+  diag_sign = new((/dimsizes(p_time), DIM_DIAG/), string)
+
+  ; Iterate over p_time arrays
+  do pt = 0, dimsizes(p_time) - 1
+    corr_sig = new((/2, DIM_DIAG/), float)
+    r_sig0  = new((/DIM_DIAG/), float)
+    r_sig1  = new((/DIM_DIAG/), float)
+    r_wdiag  = new((/DIM_DIAG/), string)
+
+    ; Iterate over diagnostics
+    do idx_diag = 0, DIM_DIAG - 1
+      hlp = diag_all(idx_diag, :)
+      good = ind(hlp .ne. 999.0)
+      ngood = dimsizes(good)
+
+      ; Calculate correlations
+      corr(pt, idx_diag) = escorc(hlp(good), xx(pt, good))
+      rc = regline(hlp(good), xx(pt, good))
+      df = rc@nptxy - 2
+      z = 0.5 * log((1.0 + abs(corr(pt, idx_diag))) / \
+                    (1.0 - abs(corr(pt, idx_diag))))
+      corr_sig(0, idx_diag) = tanh(z - 1.96 / (sqrt(ngood - 3.0)))
+      corr_sig(1, idx_diag) = tanh(z + 1.96 / (sqrt(ngood - 3.0)))
+
+      t0 = abs(corr(pt, idx_diag)) / sqrt((1 - corr(pt, idx_diag) ^ 2) / \
+                                          (ngood-2))
+      sign0 = 1.0 - betainc(df / (df + rc@tval ^ 2), df / 2.0, 0.5)
+
+      log_info(wdiag(idx_diag) + " corr: " + corr(pt, idx_diag) + \
+               "  datasets: " + ngood + "  stddv: " + sign0(0))
+      delete([/hlp, good, ngood, rc, df/])
+    end do
+
+    ; Sort abs(coerr. coef.) to decreasing order in array
+    acorr = abs(corr(pt, :))
+    qsort(acorr)
+    acorr = acorr(::-1)
+    do idx_diag = 0, DIM_DIAG - 1
+      i_diag = ind(abs(corr(pt, :)) .eq. acorr(idx_diag))
+      r_wdiag(idx_diag) = wdiag(i_diag)
+      r_sig0(idx_diag) = corr_sig(0, i_diag)
+      r_sig1(idx_diag) = corr_sig(1, i_diag)
+      diag_sign(pt, idx_diag) = where(corr(pt, i_diag) .gt. 0.0, "red", "blue")
+      delete(i_diag)
+    end do
+    delete([/wdiag, corr_sig/])
+    wdiag = r_wdiag
+    corr_sig = new((/2, DIM_DIAG/), float)
+    corr_sig(0, :) = r_sig0
+    corr_sig(1, :) = r_sig1
+    delete([/r_wdiag, r_sig0, r_sig1/])
+    log_info(wdiag + ": " + acorr)
+    acorr!0 = "diag"
+    acorr&diag = wdiag
+
+    ; -------------------------------------------------------------------------
+    ; Plot
+    ; -------------------------------------------------------------------------
+
+    filename  = var0 + "-" + calc_type + "_" + \
+      dataset_info@exp(DIM_OBS + DIM_HDAT) + "_" + \
+      p_time(pt) + "-" + (/p_time(pt) + p_step/)
+    wks = gsn_open_wks(file_type, plot_dir + filename)
+    MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + p_step/)
+    YStg = "Absolute Correlation Coefficient"
+    plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), MainStg, \
+                          YStg, wks, "draw")
+
+    ; Add meta data (TODO)
+    ; climofiles = new(DIM_DAT, string)
+    ; do ii = 0, DIM_DAT - 1
+    ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+    ;     interface_get_infile(var0, field_type0, ii)
+    ; end do
+    ; alltags = array_append_record(tags, \
+    ;                               (/"ST_mder","ST_spectrum", "ST_corr", \
+    ;                                "ST_range", "PT_errorbar", "PT_scatter", \
+    ;                                "DM_et", "DM_global", "DM_polar", \
+    ;                                "DM_sh", "DM_trop"/), \
+    ;                               0)
+    ; alldatasetnames = dataset_info@dataset
+    ; caption = "Absolute values of the correlation coefficient between " + \
+    ;   var0  + " and pressent-day diagnostics, similar to Wenzel et al., " + \
+    ;   "JClim, 2016, fig. 2"
+    ; id = diag_script + "_" + var0
+    ; contrib_authors = (/"A_wenz_sa", "A_schl_ma"/)
+    ;
+    ; ESMValMD(plot_dir + filename + "." + file_type, alltags, caption, id, \
+    ;          var0, alldatasetnames, climofiles, diag_script, contrib_authors)
+    ;
+    ; delete([/alltags, caption, id, climofiles, alldatasetnames, wks, plot, \
+    ;         MainStg, acorr/])
+end do
 
   leave_msg(diag_script, "")
 
