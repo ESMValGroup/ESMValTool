@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        # 'scitools-iris', # Only iris 2 is on PyPI  
+        # 'scitools-iris',  # Only iris 2 is on PyPI
         'matplotlib',
         'netCDF4',
         'numba',
