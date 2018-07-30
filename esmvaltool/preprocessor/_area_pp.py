@@ -45,25 +45,11 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     start_latitude = float(start_latitude)
     end_latitude = float(end_latitude)
 
-    if start_longitude < 0.:
-        start_longitude += 360.
-    if end_longitude < 0.:
-        end_longitude += 360.
+    region_subset = cube.intersection(
+        longitude=(start_longitude, end_longitude),
+        latitude=(start_latitude, end_latitude))
+    region_subset = region_subset.intersection(longitude=(0., 360.))
 
-    if end_longitude < start_longitude:
-        # if you want to look at a region both sides of
-        # the zero longitude ie, such as the Atlantic Ocean!
-        sublon = iris.Constraint(
-            longitude=lambda cell: ((start_longitude <= cell <= 360.)
-                                    + (0. <= cell <= end_longitude)))
-    else:
-        sublon = iris.Constraint(
-            longitude=lambda cell: start_longitude <= cell <= end_longitude)
-
-    sublat = iris.Constraint(
-        latitude=lambda cell: start_latitude <= cell <= end_latitude)
-
-    region_subset = cube.extract(sublon & sublat)
     return region_subset
 
 
