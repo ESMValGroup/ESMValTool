@@ -492,16 +492,12 @@ def _update_fx_settings(settings, variable, config_user):
         logger.debug('Getting FX mask settings now...')
 
         # fx_files already in variable
-        if variable.get('fx_files'):
-            fx_files_dict = variable['fx_files']
-
-        # fx_files are not specified in variable
-        else:
-            variable['fx_files'] = ['sftlf', 'sftof', 'areacello']
-            fx_files_dict = get_input_fx_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'])
+        variable = dict(variable)
+        variable['fx_files'] = ['sftlf', 'sftof', 'areacello']
+        fx_files_dict = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
 
         # parse fx_files_dict for needed masking variable
         if 'sftlf' in fx_files_dict.keys():
