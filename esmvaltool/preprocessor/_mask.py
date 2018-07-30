@@ -8,6 +8,7 @@ and geographical area eslection
 from __future__ import print_function
 
 import os
+import sys
 import logging
 
 import iris
@@ -16,6 +17,29 @@ from iris.analysis import Aggregator
 from iris.util import rolling_window
 
 logger = logging.getLogger(__name__)
+
+
+def _check_dims(cube, mask_cube):
+    """Check for same dims for mask and data"""
+    x_dim = cube.coord('longitude').points.ndim
+    y_dim = cube.coord('latitude').points.ndim
+    mx_dim = mask_cube.coord('longitude').points.ndim
+    my_dim = mask_cube.coord('latitude').points.ndim
+    len_x = len(cube.coord('longitude').points)
+    len_y = len(cube.coord('latitude').points)
+    len_mx = len(mask_cube.coord('longitude').points)
+    len_my = len(mask_cube.coord('latitude').points)
+    if x_dim == mx_dim and y_dim == my_dim:
+        if len_x == len_mx and len_y == len_my:
+            logger.debug('Data cube and fx mask have same dims')
+            return True
+        else:
+            logger.error('Data cube and fx mask have different grids!')
+            sys.exit(1)
+    else:
+        logger.error('Data cube and fx mask differ in dims\n')
+        logger.error('x=(%i, %i), y=(%i, %i)', x_dim, mx_dim, y_dim, my_dim)
+        sys.exit(1)
 
 
 def _get_fx_mask(fx_data, fx_option, mask_type):
@@ -28,7 +52,7 @@ def _get_fx_mask(fx_data, fx_option, mask_type):
         elif fx_option == 'sea':
             # Mask sea out
             inmask[fx_data <= 50.] = True
-    elif mask_type == 'sftof' or mask_type == 'areacello':
+    elif mask_type == 'sftof':
         if fx_option == 'land':
             # Mask land out
             inmask[fx_data < 50.] = True
@@ -50,9 +74,7 @@ def _apply_fx_mask(fx_mask, var_data):
         var_mask |= var_data.mask
 
     # Build the new masked data
-    var_data = np.ma.array(var_data,
-                           mask=var_mask,
-                           fill_value=1e+20)
+    var_data = np.ma.array(var_data, mask=var_mask, fill_value=1e+20)
 
     return var_data
 
@@ -69,18 +91,23 @@ def mask_landsea(cube, fx_file, mask_out):
     }
 
     if fx_file:
-        # Try loading; some files may be broken
+        # Try loading; some fx files may be broken (example bcc)
         try:
             fx_cube = iris.load_cube(fx_file)
+            # preserve importance order: stflf then sftof
             if os.path.basename(fx_file).split('_')[0] == 'sftlf':
-                landsea_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftlf')
+                if _check_dims(cube, fx_cube):
+                    landsea_mask = _get_fx_mask(fx_cube.data, mask_out,
+                                                'sftlf')
+                    cube.data = _apply_fx_mask(landsea_mask, cube.data)
             elif os.path.basename(fx_file).split('_')[0] == 'sftof':
-                landsea_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftof')
-            elif os.path.basename(fx_file).split('_')[0] == 'areacello':
-                landsea_mask = _get_fx_mask(fx_cube.data,
-                                            mask_out, 'areacello')
-            cube.data = _apply_fx_mask(landsea_mask,
-                                       cube.data)
+                if _check_dims(cube, fx_cube):
+                    landsea_mask = _get_fx_mask(fx_cube.data, mask_out,
+                                                'sftof')
+                cube.data = _apply_fx_mask(landsea_mask, cube.data)
+            else:
+                logger.warning('Masking with %s file', shapefiles[mask_out])
+                cube = _mask_with_shp(cube, shapefiles[mask_out])
         except iris.exceptions.TranslationError as msg:
             logger.warning('Could not load fx file !')
             logger.warning(msg)
@@ -88,7 +115,7 @@ def mask_landsea(cube, fx_file, mask_out):
             cube = _mask_with_shp(cube, shapefiles[mask_out])
     else:
         # Mask with Natural Earth (NE) files
-        logger.info('Masking with %s file', shapefiles[mask_out])
+        logger.warning('Masking with %s file', shapefiles[mask_out])
         cube = _mask_with_shp(cube, shapefiles[mask_out])
 
     return cube
@@ -108,10 +135,10 @@ def masked_cube_simple(mycube, slicevar, v_min, v_max, threshold):
         coord = mycube.coord(slicevar)
         print('Masking on variable: %s' % coord.standard_name)
         cubeslice = mycube.extract(
-            iris.Constraint(
-                coord_values={
-                    coord.standard_name:
-                    lambda cell: v_min <= cell.point <= v_max}))
+            iris.Constraint(coord_values={
+                coord.standard_name:
+                lambda cell: v_min <= cell.point <= v_max
+            }))
         if cubeslice is not None:
             masked_cubeslice = cubeslice.copy()
             masked_cubeslice.data = ma.masked_greater(cubeslice.data,
@@ -171,12 +198,14 @@ def _mask_with_shp(cube, shapefilename):
     # Create a set of x,y points from the cube
     # 1D regular grids
     if cube.coord('longitude').points.ndim < 2:
-        x_p, y_p = np.meshgrid(cube.coord(axis='X').points,
-                               cube.coord(axis='Y').points)
-    # 2D irregular grids
+        x_p, y_p = np.meshgrid(
+            cube.coord(axis='X').points, cube.coord(axis='Y').points)
+    # 2D irregular grids; spit an error for now
     else:
-        x_p, y_p = cube.coord('longitude').points, \
-            cube.coord('latitude').points
+        logger.error('No fx-files found (sftlf or sftof)!\n \
+                     2D grids are suboptimally masked with\n \
+                     Natural Earth masks. Exiting.')
+        sys.exit(1)
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)

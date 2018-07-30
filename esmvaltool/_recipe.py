@@ -493,22 +493,22 @@ def _update_fx_settings(settings, variable, config_user):
 
         # fx_files already in variable
         variable = dict(variable)
-        variable['fx_files'] = ['sftlf', 'sftof', 'areacello']
+        variable['fx_files'] = ['sftlf', 'sftof']
         fx_files_dict = get_input_fx_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
 
-        # parse fx_files_dict for needed masking variable
-        if 'sftlf' in fx_files_dict.keys():
+        # order of importance: sftlf first, sftof second
+        if fx_files_dict['sftlf']:
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftlf']
-        if 'sftof' in fx_files_dict.keys():
+        elif fx_files_dict['sftof']:
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftof']
-        if 'areacello' in fx_files_dict.keys():
-            settings['mask_landsea']['fx_file'] = \
-                fx_files_dict['areacello']
+        else:
+            logger.warning('No sftlf or sftof files found!')
+            settings['mask_landsea']['fx_file'] = None
 
 
 def _get_input_files(variable, config_user):
