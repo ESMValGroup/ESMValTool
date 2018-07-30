@@ -42,14 +42,14 @@ class Test(tests.Test):
             coord_system=crd_sys)
         coords_spec = [(lats, 0), (lons, 1)]
         fx_mask = iris.cube.Cube(fx_data, dim_coords_and_dims=coords_spec)
-        iris.save(fx_mask, 'fx.nc')
+        iris.save(fx_mask, 'sftlf_test.nc')
         new_cube_land = iris.cube.Cube(new_cube_data,
                                        dim_coords_and_dims=coords_spec)
         new_cube_sea = iris.cube.Cube(new_cube_data,
                                       dim_coords_and_dims=coords_spec)
         # mask with fx files
-        result_land = mask.mask_landsea(new_cube_land, 'fx.nc', 'land')
-        result_sea = mask.mask_landsea(new_cube_sea, 'fx.nc', 'sea')
+        result_land = mask.mask_landsea(new_cube_land, 'sftlf_test.nc', 'land')
+        result_sea = mask.mask_landsea(new_cube_sea, 'sftlf_test.nc', 'sea')
         expected = np.ma.empty((3, 3))
         expected.data[:] = 200.
         expected.mask = np.ones((3, 3), bool)
@@ -61,7 +61,7 @@ class Test(tests.Test):
         expected.mask = np.zeros((3, 3), bool)
         self.assertArrayEqual(result_sea.data, expected)
         # remove the fx.nc temporary file
-        os.remove('fx.nc')
+        os.remove('sftlf_test.nc')
 
         # mask with shp files
         new_cube_land = iris.cube.Cube(new_cube_data,
