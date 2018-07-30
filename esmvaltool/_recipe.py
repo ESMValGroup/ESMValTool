@@ -503,17 +503,12 @@ def _update_fx_settings(settings, variable, config_user):
         if 'sftlf' in fx_files_dict.keys():
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftlf']
-        elif 'sftof' in fx_files_dict.keys():
+        if 'sftof' in fx_files_dict.keys():
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftof']
-        elif 'areacello' in fx_files_dict.keys():
+        if 'areacello' in fx_files_dict.keys():
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['areacello']
-        # add more file options here with elif
-        # else: return an empty value for Natural Earth mask use
-        else:
-            logger.debug('No sft-like FX file found...')
-            settings['mask_landsea']['fx_file'] = None
 
 
 def _get_input_files(variable, config_user):
