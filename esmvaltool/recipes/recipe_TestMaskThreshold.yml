@@ -74,7 +74,7 @@ preprocessors:
 
   prep_timeseries_3: # For 2D fields
     custom_order: true 
-    mask_inside_threshold:
+    mask_inside_range:
       minimum: 280.
       maximum: 285.      
     average_region:
@@ -86,7 +86,7 @@ preprocessors:
 
   prep_timeseries_4: # For 2D fields
     custom_order: true 
-    mask_outside_threshold:
+    mask_outside_range:
       minimum: 280.
       maximum: 285.      
     average_region:

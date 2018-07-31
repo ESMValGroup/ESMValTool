@@ -285,25 +285,21 @@ def mask_above_threshold(mycube, threshold):
     """
     Mask above a specific threshold value.
 
-    Takes a MINIMUM value `threshold'
-    and removes by masking off anything that's below it in the cube data
+    Takes a value `threshold' and masks off anything that is above
+    it in the cube data. Values equal to the threshold are not masked.
     """
-    import numpy.ma as ma
-    # apply masking for threshold of MINIMUM value threshold
-    mycube.data = ma.masked_where(mycube.data > threshold, mycube.data)
+    mycube.data = np.ma.masked_where(mycube.data > threshold, mycube.data)
     return mycube
 
 
 def mask_below_threshold(mycube, threshold):
     """
-    Mask above a specific threshold value.
+    Mask below a specific threshold value.
 
-    Takes a MAXIMUM value `threshold'
-    and removes by masking off anything that's above it in the cube data
+    Takes a value `threshold' and masks off anything that is below
+    it in the cube data. Values equal to the threshold are not masked.
     """
-    import numpy.ma as ma
-    # apply masking for threshold of MAXIMUM value threshold
-    mycube.data = ma.masked_where(mycube.data < threshold, mycube.data)
+    mycube.data = np.ma.masked_where(mycube.data < threshold, mycube.data)
     return mycube
 
 
@@ -311,12 +307,10 @@ def mask_inside_range(mycube, minimum, maximum):
     """
     Mask inside a specific threshold range.
 
-    Takes a MINIMUM and a MAXIMUM value for the `threshold',
-    and masks off anything that's between the two in the cube data.
+    Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
+    that's between the two in the cube data.
     """
-    import numpy.ma as ma
-    # apply masking for threshold of MAXIMUM value threshold
-    mycube.data = ma.masked_inside(mycube.data, minimum, maximum)
+    mycube.data = np.ma.masked_inside(mycube.data, minimum, maximum)
     return mycube
 
 
@@ -324,12 +318,10 @@ def mask_outside_range(mycube, minimum, maximum):
     """
     Mask outside a specific threshold range.
 
-    Takes a MINIMUM and a MAXIMUM value for the `threshold',
-    and masks off anything that's outside the two in the cube data.
+    Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
+    that's outside the two in the cube data.
     """
-    import numpy.ma as ma
-    # apply masking for threshold of MAXIMUM value threshold
-    mycube.data = ma.masked_outside(mycube.data, minimum, maximum)
+    mycube.data = np.ma.masked_outside(mycube.data, minimum, maximum)
     return mycube
 
 
