@@ -98,6 +98,7 @@ def mask_landsea(cube, fx_file, mask_out):
                                                 'sftlf')
                     cube.data = _apply_fx_mask(landsea_mask, cube.data)
                 else:
+                    # if mask is malformed try using NE for 1D grids
                     if cube.coord('longitude').points.ndim < 2:
                         cube = _mask_with_shp(cube, shapefiles[mask_out])
                     else:
@@ -108,6 +109,7 @@ def mask_landsea(cube, fx_file, mask_out):
                                                 'sftof')
                     cube.data = _apply_fx_mask(landsea_mask, cube.data)
                 else:
+                    # if mask is malformed try using NE for 1D grids
                     if cube.coord('longitude').points.ndim < 2:
                         cube = _mask_with_shp(cube, shapefiles[mask_out])
                     else:
