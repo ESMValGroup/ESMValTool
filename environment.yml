@@ -13,6 +13,7 @@ dependencies:
   - esmpy
   # Multi language support:
   - ncl
+  - ncurses=6.1=hfc679d8_1
   # TODO: add R, julia
 
   - pip:

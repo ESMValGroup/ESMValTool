@@ -22,7 +22,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
-      exclude: [NCEP]   
+      exclude: [NCEP]
 
   preprocessor_2:
     custom_order: true
@@ -70,6 +70,7 @@ diagnostics:
       ta:
         preprocessor: preprocessor_2
         field: T3M
+    scripts: null
 
   diagnostic_3_and_4:
     description: Preprocessor test diagnostic.
