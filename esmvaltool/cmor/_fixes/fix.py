@@ -113,8 +113,7 @@ class Fix(object):
         fixes = []
         try:
             fixes_module = importlib.import_module(
-                'esmvaltool.cmor._fixes.{0}.{1}'.format(
-                    project, dataset))
+                'esmvaltool.cmor._fixes.{0}.{1}'.format(project, dataset))
             for fix_name in ('allvars', variable):
                 try:
                     fixes.append(getattr(fixes_module, fix_name)())

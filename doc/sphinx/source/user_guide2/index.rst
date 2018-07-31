@@ -2,5 +2,5 @@
 User's guide
 #######################
 
-.. include:: intro.rst
-.. include:: install.rst
+.. include:: intro.inc
+.. include:: install.inc

@@ -13,7 +13,7 @@ This is the development branch for version 2 of ESMValTool. To get started devel
 
 ### Getting started
 To install in development mode, follow these instructions.
-- [Download and install conda](https://conda.io/docs/user-guide/install/linux.html)
+- [Download and install conda](https://conda.io/docs/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
 - If using (t)csh shell, do not prepend the installation path (`<prefix>`) to the environment variable PATH (as recommended by the installation procedure), but add `source <prefix>/etc/profile.d/conda.csh` to the `.cshrc`/`.tcshrc` file instead
 - Update conda: `conda update -y conda`
 - Create a conda environment: `conda create -y -n esmvaltool python=3`
