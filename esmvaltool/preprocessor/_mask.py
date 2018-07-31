@@ -281,23 +281,6 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     return counts_windowed_cube, newmask, masked_cube
 
 
-def mask_threshold(mycube, threshold):
-    """
-    Mask with threshold
-
-    This method is redundant with  mask_below_threshold, below.
-    But it kept in case anyone is still using it.
-
-    Takes a MINIMUM value `threshold'
-    and removes by masking off anything that's below it in the cube data
-    """
-    import numpy.ma as ma
-    mcube = mycube.copy()
-    # apply masking for threshold of MINIMUM value threshold
-    mcube.data = ma.masked_less(mycube.data, threshold)
-    return mcube
-
-
 def mask_above_threshold(mycube, threshold):
     """
     Mask above a specific threshold value.
@@ -306,10 +289,9 @@ def mask_above_threshold(mycube, threshold):
     and removes by masking off anything that's below it in the cube data
     """
     import numpy.ma as ma
-    mcube = mycube.copy()
     # apply masking for threshold of MINIMUM value threshold
-    mcube.data = ma.masked_greater(mycube.data, threshold)
-    return mcube
+    mycube.data = ma.masked_where(mycube.data > threshold, mycube.data)
+    return mycube
 
 
 def mask_below_threshold(mycube, threshold):
@@ -320,10 +302,9 @@ def mask_below_threshold(mycube, threshold):
     and removes by masking off anything that's above it in the cube data
     """
     import numpy.ma as ma
-    mcube = mycube.copy()
     # apply masking for threshold of MAXIMUM value threshold
-    mcube.data = ma.masked_less(mycube.data, threshold)
-    return mcube
+    mycube.data = ma.masked_where(mycube.data < threshold, mycube.data)
+    return mycube
 
 
 def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
