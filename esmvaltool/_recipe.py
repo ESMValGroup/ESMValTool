@@ -508,16 +508,10 @@ def _update_fx_settings(settings, variable, config_user):
         if fx_files_dict['sftlf']:
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftlf']
-            logger.info('Dataset %s fx file %s', variable['dataset'],
-                        fx_files_dict['sftlf'])
         elif fx_files_dict['sftof']:
             settings['mask_landsea']['fx_file'] = \
                 fx_files_dict['sftof']
-            logger.info('Dataset %s fx file %s', variable['dataset'],
-                        fx_files_dict['sftof'])
         else:
-            logger.warning('Dataset %s:', variable['dataset'])
-            logger.warning('No sftlf or sftof files found!')
             settings['mask_landsea']['fx_file'] = None
 
 
