@@ -8,7 +8,6 @@ and geographical area eslection
 from __future__ import print_function
 
 import os
-import sys
 import logging
 
 import iris
@@ -35,11 +34,9 @@ def _check_dims(cube, mask_cube):
             return True
         else:
             logger.error('Data cube and fx mask have different grids!')
-            sys.exit(1)
     else:
         logger.error('Data cube and fx mask differ in dims\n')
         logger.error('x=(%i, %i), y=(%i, %i)', x_dim, mx_dim, y_dim, my_dim)
-        sys.exit(1)
 
 
 def _get_fx_mask(fx_data, fx_option, mask_type):
@@ -205,7 +202,6 @@ def _mask_with_shp(cube, shapefilename):
         logger.error('No fx-files found (sftlf or sftof)!\n \
                      2D grids are suboptimally masked with\n \
                      Natural Earth masks. Exiting.')
-        sys.exit(1)
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
