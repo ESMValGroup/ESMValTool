@@ -223,7 +223,6 @@ def calc_swcre(cubes):
         Constraint(name='toa_outgoing_shortwave_flux_assuming_clear_sky'))
 
     swcre = rsutcs_cube - rsut_cube
-    swcre.units = rsut_cube.units
 
     return swcre
 
@@ -286,7 +285,6 @@ def calc_rtnt(cubes):
 
     # rtnt = (rsdt - rsut) - rlut
     rtnt = rsdt_cube - rsut_cube - rlut_cube
-    rtnt.units = rlut_cube.units
 
     return rtnt
 
@@ -312,7 +310,6 @@ def calc_rsnt(cubes):
 
     # rsnt = rsdt - rsut
     rsnt = rsdt_cube - rsut_cube
-    rsnt.units = rsut_cube.units
 
     return rsnt
 
@@ -339,7 +336,6 @@ def calc_rsns(cubes):
 
     # rsns = rsds - rsus
     rsns = rsds_cube - rsus_cube
-    rsns.units = rsus_cube.units
 
     return rsns
 
@@ -366,14 +362,13 @@ def calc_rlns(cubes):
 
     # rlns = rlds - rlus
     rlns = rlds_cube - rlus_cube
-    rlns.units = rlus_cube.units
 
     return rlns
 
 
 # TODO - write the actual derivation of the 6 cl* vars below
 # from the ncl files; all else is already here
-def calc_cllmtisccp(cubes):
+def calc_cllmtisccp():  # (cubes)
     """Compute cllmtisccp:
 
     long name: ISCCP Low Level Medium-Thickness Cloud Area Fraction
@@ -390,17 +385,14 @@ def calc_cllmtisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # cllmtisccp=
-    cllmtisccp = 'Mattia_please_help'
-    cllmtisccp.units = clisccp_cube.units
-
-    return cllmtisccp
+    # cllmtisccp = clisccp_cube
+    raise NotImplementedError
 
 
-def calc_clltkisccp(cubes):
+def calc_clltkisccp():  # (cubes)
     """Compute clltkisccp:
 
     long name: ISCCP low level thick cloud area fraction
@@ -417,17 +409,14 @@ def calc_clltkisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # clltkisccp=
-    clltkisccp = 'Mattia_please_help'
-    clltkisccp.units = clisccp_cube.units
-
-    return clltkisccp
+    # clltkisccp = clisccp_cube
+    raise NotImplementedError
 
 
-def calc_clmmtisccp(cubes):
+def calc_clmmtisccp():  # (cubes)
     """Compute clmmtisccp:
 
     long name: ISCCP Middle Level Medium-Thickness Cloud Area Fraction
@@ -444,17 +433,14 @@ def calc_clmmtisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # clmmtisccp=
-    clmmtisccp = 'Mattia_please_help'
-    clmmtisccp.units = clisccp_cube.units
-
-    return clmmtisccp
+    # clmmtisccp = clisccp_cube
+    raise NotImplementedError
 
 
-def calc_clmtkisccp(cubes):
+def calc_clmtkisccp():  # (cubes)
     """Compute clmtkisccp:
 
     long name: ISCCP Middle Level Thick Cloud Area Fraction
@@ -471,17 +457,14 @@ def calc_clmtkisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # clmtkisccp=
-    clmtkisccp = 'Mattia_please_help'
-    clmtkisccp.units = clisccp_cube.units
-
-    return clmtkisccp
+    # clmtkisccp = clisccp_cube
+    raise NotImplementedError
 
 
-def calc_clhmtisccp(cubes):
+def calc_clhmtisccp():  # (cubes)
     """Compute clhmtisccp:
 
     long name: ISCCP High Level Medium-Thickness Cloud Area Fraction
@@ -498,17 +481,14 @@ def calc_clhmtisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # clhmtisccp=
-    clhmtisccp = 'Mattia_please_help'
-    clhmtisccp.units = clisccp_cube.units
-
-    return clhmtisccp
+    # clhmtisccp = clisccp_cube
+    raise NotImplementedError
 
 
-def calc_clhtkisccp(cubes):
+def calc_clhtkisccp():  # (cubes)
     """Compute clhtkisccp:
 
     long name: ISCCP high level thick cloud area fraction
@@ -525,14 +505,11 @@ def calc_clhtkisccp(cubes):
         Units: %
 
     """
-    clisccp_cube = cubes.extract_strict(
-        Constraint(name='isccp_cloud_area_fraction'))
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
 
-    # clhtkisccp=
-    clhtkisccp = 'Mattia_please_help'
-    clhtkisccp.units = clisccp_cube.units
-
-    return clhtkisccp
+    # clhtkisccp = clisccp_cube
+    raise NotImplementedError
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
