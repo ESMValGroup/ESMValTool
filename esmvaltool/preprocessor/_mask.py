@@ -97,11 +97,21 @@ def mask_landsea(cube, fx_file, mask_out):
                     landsea_mask = _get_fx_mask(fx_cube.data, mask_out,
                                                 'sftlf')
                     cube.data = _apply_fx_mask(landsea_mask, cube.data)
+                else:
+                    if cube.coord('longitude').points.ndim < 2:
+                        cube = _mask_with_shp(cube, shapefiles[mask_out])
+                    else:
+                        logger.error('2D grids cant be masked w/shapefile')
             elif os.path.basename(fx_file).split('_')[0] == 'sftof':
                 if _check_dims(cube, fx_cube):
                     landsea_mask = _get_fx_mask(fx_cube.data, mask_out,
                                                 'sftof')
                     cube.data = _apply_fx_mask(landsea_mask, cube.data)
+                else:
+                    if cube.coord('longitude').points.ndim < 2:
+                        cube = _mask_with_shp(cube, shapefiles[mask_out])
+                    else:
+                        logger.error('2D grids cant be masked w/shapefile')
             else:
                 logger.warning('Masking with %s file', shapefiles[mask_out])
                 cube = _mask_with_shp(cube, shapefiles[mask_out])
