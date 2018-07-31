@@ -98,7 +98,6 @@ def check_recipe(filename):
         raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
             'preprocessors', {})
 
-    # TODO: add more checks?
     check_preprocessors(raw_recipe['preprocessors'])
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
