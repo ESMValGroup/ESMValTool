@@ -11,6 +11,8 @@ import tests
 
 from esmvaltool.preprocessor._mask import mask_above_threshold
 from esmvaltool.preprocessor._mask import mask_below_threshold
+from esmvaltool.preprocessor._mask import mask_inside_range
+from esmvaltool.preprocessor._mask import mask_outside_range
 
 
 class Test(tests.Test):
@@ -47,6 +49,20 @@ class Test(tests.Test):
         result = mask_below_threshold(self.arr, 1.5)
         expected = np.ma.array(self.data2,
                                mask=[[True, True], [False, False]])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_mask_inside_threshold(self):
+        """Test to mask inside a threshold."""
+        result = mask_inside_range(self.arr, 0.5, 2.5)
+        expected = np.ma.array(self.data2,
+                               mask=[[False, True], [True, False]])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_mask_outside_threshold(self):
+        """Test to mask outside a threshold."""
+        result = mask_outside_range(self.arr, 0.5, 2.5)
+        expected = np.ma.array(self.data2,
+                               mask=[[True, False], [False, True]])
         self.assertArrayEqual(result.data, expected)
 
 

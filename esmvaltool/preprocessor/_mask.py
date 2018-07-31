@@ -307,6 +307,32 @@ def mask_below_threshold(mycube, threshold):
     return mycube
 
 
+def mask_inside_range(mycube, minimum, maximum):
+    """
+    Mask inside a specific threshold range.
+
+    Takes a MINIMUM and a MAXIMUM value for the `threshold',
+    and masks off anything that's between the two in the cube data.
+    """
+    import numpy.ma as ma
+    # apply masking for threshold of MAXIMUM value threshold
+    mycube.data = ma.masked_inside(mycube.data, minimum, maximum)
+    return mycube
+
+
+def mask_outside_range(mycube, minimum, maximum):
+    """
+    Mask outside a specific threshold range.
+
+    Takes a MINIMUM and a MAXIMUM value for the `threshold',
+    and masks off anything that's outside the two in the cube data.
+    """
+    import numpy.ma as ma
+    # apply masking for threshold of MAXIMUM value threshold
+    mycube.data = ma.masked_outside(mycube.data, minimum, maximum)
+    return mycube
+
+
 def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
                     time_window=1):
     """Get the final fillvalues mask"""

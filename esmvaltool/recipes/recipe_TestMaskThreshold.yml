@@ -72,6 +72,31 @@ preprocessors:
       span: overlap
       statistics: [mean ]
 
+  prep_timeseries_3: # For 2D fields
+    custom_order: true 
+    mask_inside_threshold:
+      minimum: 280.
+      maximum: 285.      
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  prep_timeseries_4: # For 2D fields
+    custom_order: true 
+    mask_outside_threshold:
+      minimum: 280.
+      maximum: 285.      
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+
 
 diagnostics:
   # --------------------------------------------------
@@ -96,4 +121,24 @@ diagnostics:
     scripts:
       Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries2
         script: ocean/diagnostic_timeseries.py
+
+  diag_timeseries_3:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_3
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries3
+        script: ocean/diagnostic_timeseries.py
         
+  diag_timeseries_4:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_4
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries4
+        script: ocean/diagnostic_timeseries.py
+                        
