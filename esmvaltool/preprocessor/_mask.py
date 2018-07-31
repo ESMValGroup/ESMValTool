@@ -101,7 +101,7 @@ def mask_landsea(cube, fx_file, mask_out):
                 if _check_dims(cube, fx_cube):
                     landsea_mask = _get_fx_mask(fx_cube.data, mask_out,
                                                 'sftof')
-                cube.data = _apply_fx_mask(landsea_mask, cube.data)
+                    cube.data = _apply_fx_mask(landsea_mask, cube.data)
             else:
                 logger.warning('Masking with %s file', shapefiles[mask_out])
                 cube = _mask_with_shp(cube, shapefiles[mask_out])
