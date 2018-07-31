@@ -7,6 +7,8 @@ averages; checks on data time frequencies (daily, monthly etc)
 """
 from datetime import timedelta
 import iris
+import iris.coord_categorisation
+import numpy as np
 
 
 # slice cube over a restricted time period
@@ -54,7 +56,6 @@ def extract_season(cube, season):
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
     """
-    import iris.coord_categorisation
     iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
     return season_cube
@@ -71,33 +72,41 @@ def extract_month(mycube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
-    import iris.coord_categorisation
     season_cube = mycube.extract(iris.Constraint(month_number=month))
     return season_cube
 
 
-# slice cube over a restricted area (box)
-def area_slice(mycube, long1, long2, lat1, lat2):
-    """
-    Subset a cube on area
-
-    Function that subsets a cube on a box (long1,long2,lat1,lat2)
-    This function is a restriction of masked_cube_lonlat();
-    Returns a cube
-    """
-    sublon = iris.Constraint(
-        longitude=lambda cell: float(long1) <= cell <= float(long2))
-    sublat = iris.Constraint(
-        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
-    region_subset = mycube.extract(sublon & sublat)
-    return region_subset
-
-
 # get the time average
-def time_average(mycube):
-    """Get the time average over MEAN; returns a cube"""
-    var_mean = mycube.collapsed('time', iris.analysis.MEAN)
-    return var_mean
+def time_average(cube):
+    """
+    Compute time average
+
+    Get the time average over the entire cube. The average is weighted by the
+    bounds of the time coordinate.
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+    Returns
+    -------
+    iris.cube.Cube
+        time averaged cube.
+    """
+    time = cube.coord('time')
+    time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
+
+    # The weights need to match the dimensionality of the cube.
+    slices = [None for i in cube.shape]
+    coord_dim = cube.coord_dims('time')[0]
+    slices[coord_dim] = slice(None)
+    time_thickness = np.abs(time_thickness[tuple(slices)])
+    ones = np.ones_like(cube.data)
+    time_weights = time_thickness * ones
+
+    return cube.collapsed('time', iris.analysis.MEAN,
+                          weights=time_weights)
 
 
 # get the probability a value is greater than a threshold
@@ -115,60 +124,28 @@ def proportion_greater(mycube, coord1, threshold):
     return result
 
 
-# get zonal means
-def zonal_means(mycube, coord1, mean_type):
-    """
-    Get zonal means
-
-    Function that returns zonal means along a coordinate coord1;
-    the type of mean is controlled by mean_type variable (string):
-        'mean' -> MEAN
-        'stdev' -> STD_DEV
-        'variance' -> VARIANCE
-    Returns a cube
-    """
-    if mean_type == 'mean':
-        result = mycube.collapsed(coord1, iris.analysis.MEAN)
-    elif mean_type == 'stdev':
-        result = mycube.collapsed(coord1, iris.analysis.STD_DEV)
-    elif mean_type == 'variance':
-        result = mycube.collapsed(coord1, iris.analysis.VARIANCE)
-    return result
-
-
-# get the area average
-def area_average(mycube, coord1, coord2):
-    """
-    Determine the area average.
-
-    Can be used with coord1 and coord2 (strings,
-    usually 'longitude' and 'latitude' but depends on the cube);
-    Returns a cube
-    """
-    import iris.analysis.cartography
-    for coord in (coord1, coord2):
-        if not mycube.coord(coord).has_bounds():
-            mycube.coord(coord).guess_bounds()
-    grid_areas = iris.analysis.cartography.area_weights(mycube)
-    result = mycube.collapsed(
-        [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
-    return result
-
-
 # get the seasonal mean
-def seasonal_mean(mycube):
+def seasonal_mean(cube):
     """
     Function to compute seasonal means with MEAN
 
     Chunks time in 3-month periods and computes means over them;
-    Returns a cube
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Seasonal mean cube
     """
-    import iris.coord_categorisation
-    iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
+    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     iris.coord_categorisation.add_season_year(
-        mycube, 'time', name='season_year')
-    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
-                                                iris.analysis.MEAN)
+        cube, 'time', name='season_year')
+    annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
+                                              iris.analysis.MEAN)
 
     def spans_three_months(time):
         """Check for three months"""
@@ -176,40 +153,6 @@ def seasonal_mean(mycube):
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return annual_seasonal_mean.extract(three_months_bound)
-
-
-# operate along a trajectory line
-def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
-                    plat2, samplecounts):
-    """
-    Build a trajectory
-
-    Function that subsets a cube on a box (long1,long2,lat1,lat2)
-    then creates a trajectory with waypoints (plong1,plong2,plat1, plat2),
-    populates it with samplecounts number of points
-    and subsets the cube along the trajectory
-    """
-    from iris.analysis import trajectory
-    sublon = iris.Constraint(
-        longitude=lambda cell: float(long1) <= cell <= float(long2))
-    sublat = iris.Constraint(
-        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
-    wspd_subset = mycube.extract(sublon & sublat)
-    pnts = [{
-        'longitude': float(plong1),
-        'latitude': float(plat1)
-    }, {
-        'longitude': float(plong2),
-        'latitude': float(plat2)
-    }]
-    traj = trajectory.Trajectory(pnts, sample_count=int(samplecounts))
-    lon = [d['longitude'] for d in traj.sampled_points]
-    lat = [d['latitude'] for d in traj.sampled_points]
-    sampled_points = [('longitude', lon), ('latitude', lat)]
-    section = trajectory.interpolate(wspd_subset, sampled_points)
-    lon = wspd_subset.coord('longitude').points
-    lat = wspd_subset.coord('latitude').points
-    return section, lon, lat
 
 
 # set of time axis checks

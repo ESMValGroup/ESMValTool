@@ -92,10 +92,12 @@ def check_recipe(filename):
     # computed entries have been filled in by creating a Recipe object.
     check_recipe_with_schema(filename)
     with open(filename, 'r') as file:
-        raw_recipe = ordered_safe_load(file)
+        contents = file.read()
+        raw_recipe = yaml.safe_load(contents)
+        raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
+            'preprocessors', {})
 
-    # TODO: add more checks?
-    check_preprocessors(raw_recipe.get('preprocessors', {}))
+    check_preprocessors(raw_recipe['preprocessors'])
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -144,6 +146,7 @@ def check_preprocessor_settings(settings):
             raise RecipeError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
                     step, ', '.join(preprocessor.DEFAULT_ORDER)))
+
         function = getattr(preprocessor, step)
         argspec = inspect.getargspec(function)
         args = argspec.args[1:]
@@ -152,7 +155,9 @@ def check_preprocessor_settings(settings):
         if invalid_args:
             raise RecipeError(
                 "Invalid argument(s): {} encountered for preprocessor "
-                "function {}".format(', '.join(invalid_args), step))
+                "function {}. \nValid arguments are: [{}]".format(
+                    ', '.join(invalid_args), step, ', '.join(args)))
+
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
@@ -822,8 +827,6 @@ class Recipe(object):
 
     def _initialize_variables(self, raw_variable, raw_datasets):
         """Define variables for all datasets."""
-        # TODO: rename `variables` to `attributes` and store in dict
-        # using filenames as keys?
         variables = []
 
         datasets = self._initialize_datasets(
