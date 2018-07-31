@@ -125,7 +125,7 @@ begin
   ; Check dimensions
   dims = getvardims(A0)
   rank = dimsizes(dims)
-  print(rank)
+
   if (dimsizes(dims) .lt. 3) then
     error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
               "need 3 or 4")
@@ -173,7 +173,7 @@ begin
                   typeof(A0), Fill)
   end if
   end if
-;  printVarSummary(IAV_mmm)
+
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
       delete(A0)
@@ -198,7 +198,7 @@ begin
     ind_end = dimsizes(time) - 1
     end_yr = cd_calendar(time(ind_end), 0)
     if ((end_yr(0, 0) - start_yr(0, 0) + 1) .lt. 500) then
-      print("warning: Control run is less than 500 years.")
+      log_info("warning: Control run is less than 500 years.")
     end if
     new_start_yr = toint((start_yr(0, 0) + 100))
     end_yr_int = toint(end_yr(0, 0))

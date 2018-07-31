@@ -203,7 +203,6 @@ begin
                           True)
 
   do imod = 0, dim_MOD - 1
-    print(dataset_info@dataset(imod))
     if (imod .ne. 0) then
       A0 = read_data(imod, var0, field_type0)
       data1 = time_operations(A0, -1, -1, "average", "annualclim", True)
@@ -255,7 +254,6 @@ begin
     end if
     delete(A0)
   end do
-  printVarSummary(var_reg)
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
       ; calculate multi-model mean of iav
@@ -324,7 +322,7 @@ begin
           to_plot_base(i, :, :) = base_avg
         end if
         ; determine sigma and sign for significance
-        print("determine sigma and sign for significance")
+        log_debug("determine sigma and sign for significance")
         var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
                                          to_plot@_FillValue) .eq. 1., 0)
         var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
@@ -379,9 +377,7 @@ begin
   end if
   copy_VarMeta(to_plot, to_plot_signif)
   copy_VarMeta(to_plot, to_plot_not_signif)
-  printVarSummary(to_plot)
-  printVarSummary(to_plot_signif)
-  printVarSummary(to_plot_not_signif)
+
   ; ###########################################
   ; # Other Metadata: diag_script, var        #
   ; ###########################################
@@ -461,7 +457,7 @@ begin
   ; # Output to netCDF                        #
   ; ###########################################
   ; Optional output (controlled by diag_script_info)
-  print("Write to netcdf")
+  log_info("Write to netcdf")
   to_plot@ncdf = variable_info@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"

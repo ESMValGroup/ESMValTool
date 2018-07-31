@@ -59,9 +59,6 @@ begin
 end
 
 begin
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)  ; Needed?
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
@@ -248,7 +245,11 @@ begin
     end if
     to_plot@res_gsnRightString = ""
 
-    to_plot@res_mpProjection      = diag_script_info@projection
+    if(isatt(diag_script_info, "projection")) then
+      to_plot@res_mpProjection      = diag_script_info@projection
+    else
+      to_plot@res_mpProjection      = "Robinson"
+    end if
     ; Set explicit contour levels
     if(isatt(diag_script_info, "diff_levs")) then
       to_plot@res_cnLevelSelectionMode = "ExplicitLevels"
