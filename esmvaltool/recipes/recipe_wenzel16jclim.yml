@@ -345,28 +345,28 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'tpp_sh50']
 
-  mmstf_sh500:
-    description: Calculate temperature trends and climatological means of mmstf.
-    variables:
-      va:
-        <<: *cmip5_amon_t3m_historical_1979_2005
-      ps:
-        <<: *cmip5_amon_t3m_historical_1979_2005
-        field: T2Ms
-    additional_datasets: *ta_datasets
-    scripts:
-      mmstf_sh500: &mmstf_sh500
-        <<: *ta_sp100
-        e13fig10_season: ['DJF']
-        wdiag: ['H-SH_t', 'H-SH_c']
-        wdiag_title: ['H-SH_t', 'H-SH_c']
-        derive_var: mmstf
-        derive_lev: 50000
-        derive_latrange: [-80, -20]
-      select_for_mder:
-        <<: *mmstf_sh500
-        script: mder/select_for_mder.ncl
-        ancestors: ['va', 'ps', 'mmstf_sh500']
+  # mmstf_sh500:
+  #   description: Calculate temperature trends and climatological means of mmstf.
+  #   variables:
+  #     va:
+  #       <<: *cmip5_amon_t3m_historical_1979_2005
+  #     ps:
+  #       <<: *cmip5_amon_t3m_historical_1979_2005
+  #       field: T2Ms
+  #   additional_datasets: *ta_datasets
+  #   scripts:
+  #     mmstf_sh500: &mmstf_sh500
+  #       <<: *ta_sp100
+  #       e13fig10_season: ['DJF']
+  #       wdiag: ['H-SH_t', 'H-SH_c']
+  #       wdiag_title: ['H-SH_t', 'H-SH_c']
+  #       derive_var: mmstf
+  #       derive_lev: 50000
+  #       derive_latrange: [-80, -20]
+  #     select_for_mder:
+  #       <<: *mmstf_sh500
+  #       script: mder/select_for_mder.ncl
+  #       ancestors: ['va', 'ps', 'mmstf_sh500']
 
   asr_sh:
     description: Calculate temperature trends and climatological means of asr.
@@ -640,7 +640,7 @@ diagnostics:
       - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+      - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2099, ensemble: r1i1p1}
       - {dataset: inmcm4,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
