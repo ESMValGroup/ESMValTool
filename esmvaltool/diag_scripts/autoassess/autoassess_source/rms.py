@@ -87,7 +87,7 @@ class RMSCLASS:
         self.exper = exper
         self.control = control
 
-        # TODO: Store following information in dictionary
+        # This could be a dictionary in the future; not now tho
 
         # Store the region boundaries
         if region == 'north':
