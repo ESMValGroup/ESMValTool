@@ -527,6 +527,7 @@ diagnostics:
       sic_sp: &sic_sp
         <<: *ta_sp100
         script: seaice/ts_line.ncl
+        styleset: CMIP5_highlight_esa_obs
         region: Antarctic
         month: A
         multi_model_mean: y
