@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
+"""
+Provides mapping of a cube
+"""
 
 import collections
 import itertools
 
-import iris
 import numpy as np
 import six
+
+import iris
 
 
 def _is_single_item(testee):
     """
+    Checks if testee is a single item
+
     Return whether this is a single item, rather than an iterable.
     We count string types as 'single', also.
     """
@@ -18,16 +24,13 @@ def _is_single_item(testee):
 
 
 def _as_list_of_coords(cube, names_or_coords):
-    """
-    Convert a name, coord, or list of names/coords to a list of coords.
-    """
+    """Convert a name, coord, or list of names/coords to a list of coords."""
     # If not iterable, convert to list of a single item
     if _is_single_item(names_or_coords):
         names_or_coords = [names_or_coords]
     coords = []
     for name_or_coord in names_or_coords:
-        if (isinstance(name_or_coord, six.string_types) or
-                isinstance(name_or_coord, iris.coords.Coord)):
+        if isinstance(name_or_coord, (iris.coords.Coord, six.string_types)):
             coords.append(cube.coord(name_or_coord))
         else:
             # Don't know how to handle this type
@@ -76,10 +79,10 @@ def ref_to_dims_index(cube, ref_to_slice):
 def get_associated_coords(cube, dimensions):
     dims = []
     dim_set = set()
-    for d in dimensions:
-        if d not in dim_set:
-            dims.append(d)
-            dim_set.add(d)
+    for dim in dimensions:
+        if dim not in dim_set:
+            dims.append(dim)
+            dim_set.add(dim)
     dim_coords = set(itertools.chain.from_iterable(
         [cube.coords(contains_dimension=i, dim_coords=True)
          for i in dims]
@@ -108,13 +111,13 @@ def check_slice_spec(shape, dim_coords):
     if shape is None:
         shape = tuple(c.shape[0] for c in dim_coords)
     if dim_coords is not None:
-        for s, c in zip(shape, dim_coords):
-            assert(s == c.shape[0])
+        for length, coord in zip(shape, dim_coords):
+            assert length == coord.shape[0]
     return shape
 
 
 def index_iterator(dims_to_slice, shape):
-    dst_slices = (slice(None, None),)*len(dims_to_slice)
+    dst_slices = (slice(None, None),) * len(dims_to_slice)
     dims = [1 if n in dims_to_slice else i for n, i in enumerate(shape)]
     for index_tuple in np.ndindex(*dims):
         src_ind = tuple(
@@ -129,7 +132,7 @@ def index_iterator(dims_to_slice, shape):
 def map_slices(src, func, src_rep, dst_rep):
     ref_to_slice = src_rep.coords(dim_coords=True)
     src_slice_dims = ref_to_dims_index(src, ref_to_slice)
-    src_keep_dims = list(set(range(src.ndim))-set(src_slice_dims))
+    src_keep_dims = list(set(range(src.ndim)) - set(src_slice_dims))
     src_keep_spec = get_slice_spec(src, src_keep_dims)
     res_shape = src_keep_spec[0] + dst_rep.shape
     dim_coords = src_keep_spec[1] + dst_rep.coords(dim_coords=True)

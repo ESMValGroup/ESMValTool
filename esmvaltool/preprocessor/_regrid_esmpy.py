@@ -1,11 +1,14 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Provides regridding for irregular grids
+"""
+
+import numpy as np
 
 import ESMF
 import iris
 from iris.exceptions import CoordinateNotFoundError
 from ._mapping import ref_to_dims_index, get_empty_data, map_slices
-import numpy as np
 
 ESMF_MANAGER = ESMF.Manager(debug=False)
 
@@ -29,11 +32,11 @@ ESMF_REGRID_METHODS = {
 
 def coords_iris_to_esmpy(lat, lon, circular):
     dim = len(lat.shape)
-    assert(dim == len(lon.shape))
+    assert dim == len(lon.shape)
     if dim == 1:
-        for c in [lat, lon]:
-            if not c.has_bounds():
-                c.guess_bounds()
+        for coord in [lat, lon]:
+            if not coord.has_bounds():
+                coord.guess_bounds()
         esmpy_lat, esmpy_lon = np.meshgrid(lat.points, lon.points)
         lat_corners = np.concatenate([lat.bounds[:, 0], lat.bounds[-1:, 1]])
         if circular:
@@ -140,9 +143,9 @@ def cube_to_empty_field(cube, circular_lon=None, remove_mask=False):
 
 def get_representant(cube, ref_to_slice):
     slice_dims = ref_to_dims_index(cube, ref_to_slice)
-    rep_ind = [0]*cube.ndim
-    for d in slice_dims:
-        rep_ind[d] = slice(None, None)
+    rep_ind = [0] * cube.ndim
+    for dim in slice_dims:
+        rep_ind[dim] = slice(None, None)
     rep_ind = tuple(rep_ind)
     return cube[rep_ind]
 
@@ -176,10 +179,10 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
 
         def regridder(src):
             res = get_empty_data(dst_rep.shape)
-            d = src.data
-            if np.ma.is_masked(d):
-                d = d.data
-            src_field.data[...] = d.T
+            data = src.data
+            if np.ma.is_masked(data):
+                data = data.data
+            src_field.data[...] = data.T
             regr_field = field_regridder(src_field, dst_field)
             res.data[...] = regr_field.data[...].T
             res.mask[...] = dst_mask
@@ -224,19 +227,15 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             res = get_empty_data(dst_rep.shape)
             for i, (src_field, esmf_regridder, dst_mask) \
                     in enumerate(zip(src_fields, esmf_regridders, dst_masks)):
-                d = src[i].data
-                if np.ma.is_masked(d):
-                    d = d.data
-                src_field.data[...] = d.T
+                data = src[i].data
+                if np.ma.is_masked(data):
+                    data = data.data
+                src_field.data[...] = data.T
                 regr_field = esmf_regridder(src_field, dst_field)
                 res.data[i, ...] = regr_field.data[...].T
                 res.mask[i, ...] = dst_mask
             return res
     return regridder
-
-
-def correct_metadata(cube):
-    pass
 
 
 def get_grid_representant(cube, horizontal_only=False):
@@ -305,5 +304,4 @@ def regrid(src, dst, method='linear'):
     src_rep, dst_rep = get_grid_representants(src, dst)
     regridder = build_regridder(src_rep, dst_rep, method)
     res = map_slices(src, regridder, src_rep, dst_rep)
-    correct_metadata(res)
     return res
