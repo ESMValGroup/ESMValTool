@@ -1547,26 +1547,6 @@ begin
     delete(temp)
   end if
 
-  ; Highlight ESA OBS
-  do i = 0, dimsizes(input_file_info@dataset) - 1
-    if (input_file_info@dataset(i).eq."ESACCI-SSMI") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 0
-    else if (input_file_info@dataset(i).eq."ESACCI-AMSR") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 1
-    else if (input_file_info@dataset(i).eq."NSIDC-NT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 2
-    else if (input_file_info@dataset(i).eq."NSIDC-BT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 12
-    end if
-    end if
-    end if
-    end if
-  end do
-
   ; Set/copy resources
   res                   = True
   res@xyLineColors      = colors  ; change line color
@@ -1588,22 +1568,22 @@ begin
 
   ; Add multi model mean and stddev
   if (diag_script_info@multi_model_mean .eq. "y") then
-      ; Stddev
+    ; Stddev
     res_stddev = True
     copy_VarMeta(res, res_stddev)
     res_stddev@gsnXYFillColors = "LightGrey"
     delete(res_stddev@xyLineColors)
 
     ; We don't want the line, so make it transparent.
-    res_stddev@xyLineColor     = -1
-    shading_plot  = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
+    res_stddev@xyLineColor = -1
+    shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
                                res_stddev)
     overlay(plot, shading_plot)
-    ; mmm
+    ; MMM
     delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
     res@xyLineThicknesses = thicks_mmm
-    res@xyLineColors      = colors_mmm
-    res@xyDashPatterns    = dashes_mmm
+    res@xyLineColors = colors_mmm
+    res@xyDashPatterns = dashes_mmm
     mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
     overlay(plot, mmm)
   end if
