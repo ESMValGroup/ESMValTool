@@ -496,6 +496,10 @@ def _update_fx_settings(settings, variable, config_user):
         # Configure ingestion of land/sea masks
         logger.debug('Getting FX mask settings now...')
 
+        # settings[mask_landsea][fx_file] is a list to store ALL
+        # available masks
+        settings['mask_landsea']['fx_file'] = []
+
         # fx_files already in variable
         variable = dict(variable)
         variable['fx_files'] = ['sftlf', 'sftof']
@@ -504,15 +508,11 @@ def _update_fx_settings(settings, variable, config_user):
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
 
-        # order of importance: sftlf first, sftof second
+        # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
-            settings['mask_landsea']['fx_file'] = \
-                fx_files_dict['sftlf']
-        elif fx_files_dict['sftof']:
-            settings['mask_landsea']['fx_file'] = \
-                fx_files_dict['sftof']
-        else:
-            settings['mask_landsea']['fx_file'] = None
+            settings['mask_landsea']['fx_file'].append(fx_files_dict['sftlf'])
+        if fx_files_dict['sftof']:
+            settings['mask_landsea']['fx_file'].append(fx_files_dict['sftof'])
 
 
 def _get_input_files(variable, config_user):
