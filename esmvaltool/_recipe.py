@@ -498,7 +498,7 @@ def _update_fx_settings(settings, variable, config_user):
 
         # settings[mask_landsea][fx_file] is a list to store ALL
         # available masks
-        settings['mask_landsea']['fx_file'] = []
+        settings['mask_landsea']['fx_files'] = []
 
         # fx_files already in variable
         variable = dict(variable)
@@ -510,9 +510,9 @@ def _update_fx_settings(settings, variable, config_user):
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
-            settings['mask_landsea']['fx_file'].append(fx_files_dict['sftlf'])
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
         if fx_files_dict['sftof']:
-            settings['mask_landsea']['fx_file'].append(fx_files_dict['sftof'])
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
 
 
 def _get_input_files(variable, config_user):
