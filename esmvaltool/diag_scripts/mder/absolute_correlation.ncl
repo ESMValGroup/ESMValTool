@@ -93,7 +93,6 @@ begin
   ; Get dataset variables
   DIM_DAT = dimsizes(dataset_info@dataset(idx_datasets))
   dataset_info@ensemble := dataset_info@ensemble(idx_datasets)
-  obs_name = dataset_info@dataset(IDX_OBS)
 
 end
 
@@ -302,7 +301,6 @@ begin
   DIM_DIAG = dimsizes(file_list)
   diag_all = new((/DIM_DIAG, DIM_DAT/), float)
   wdiag = new((/DIM_DIAG/), string)           ; Array with diagnostic names
-  obs0  = new((/DIM_DIAG/), float)
 
   ; Loop over files in the list and append data
   do idx_diag = 0, DIM_DIAG - 1
@@ -313,8 +311,12 @@ begin
       do idat = 0, dimsizes(data_temp&datasets) - 1
         if (dataset_info@dataset(i) .eq. data_temp&datasets(idat)) then
           diag_all(idx_diag, i) = data_temp(0, idat, 0)
-          if (isatt(data_temp, "wdiag")) then
-            wdiag(idx_diag) = data_temp@wdiag
+          if (isdim(data_temp, "diagnostics")) then
+            wdiag(idx_diag) = tostring(data_temp&diagnostics(0))
+          else
+            error_msg("f", diag_script, "", "Cannot read diagnostic name " + \
+                      "from data " + data_temp + ", need dimension " + \
+                      "'diagnostics'")
           end if
         end if
       end do
@@ -341,6 +343,8 @@ begin
     ; Iterate over diagnostics
     do idx_diag = 0, DIM_DIAG - 1
       hlp = diag_all(idx_diag, :)
+
+      ; Only use models with data (filter missing values)
       good = ind(hlp .ne. 999.0)
       ngood = dimsizes(good)
 
@@ -374,6 +378,7 @@ begin
       diag_sign(pt, idx_diag) = where(corr(pt, i_diag) .gt. 0.0, "red", "blue")
       delete(i_diag)
     end do
+    backup_wdiag = wdiag
     delete([/wdiag, corr_sig/])
     wdiag = r_wdiag
     corr_sig = new((/2, DIM_DIAG/), float)
@@ -421,7 +426,11 @@ begin
     ;
     ; delete([/alltags, caption, id, climofiles, alldatasetnames, wks, plot, \
     ;         MainStg, acorr/])
-end do
+
+    ; Restore old order
+    wdiag = backup_wdiag
+    delete([/corr_sig, acorr, backup_wdiag/])
+  end do
 
   leave_msg(diag_script, "")
 

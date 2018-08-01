@@ -35,7 +35,7 @@ function error_bar_plot(Ydata[*] : numeric, \
 ;
 ; Arguments:
 ;     Ydata : array for plotting on Y-axis
-;     Yerror : array with + and - 95% confidence intervals of Ydata
+;     Ystd : array with + and - 95% confidence intervals of Ydata
 ;     XBname : array with X-axis label names
 ;     color : array indicating pos or neg values
 ;     MainStg : hedar string for plot
