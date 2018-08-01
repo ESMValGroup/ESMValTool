@@ -48,8 +48,9 @@ class Test(tests.Test):
         new_cube_sea = iris.cube.Cube(new_cube_data,
                                       dim_coords_and_dims=coords_spec)
         # mask with fx files
-        result_land = mask.mask_landsea(new_cube_land, 'sftlf_test.nc', 'land')
-        result_sea = mask.mask_landsea(new_cube_sea, 'sftlf_test.nc', 'sea')
+        result_land = mask.mask_landsea(new_cube_land,
+                                        ['sftlf_test.nc'], 'land')
+        result_sea = mask.mask_landsea(new_cube_sea, ['sftlf_test.nc'], 'sea')
         expected = np.ma.empty((3, 3))
         expected.data[:] = 200.
         expected.mask = np.ones((3, 3), bool)
