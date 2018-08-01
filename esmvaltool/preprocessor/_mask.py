@@ -28,17 +28,15 @@ def _check_dims(cube, mask_cube):
     len_y = len(cube.coord('latitude').points)
     len_mx = len(mask_cube.coord('longitude').points)
     len_my = len(mask_cube.coord('latitude').points)
-    if x_dim == mx_dim and y_dim == my_dim:
-        if len_x == len_mx and len_y == len_my:
-            logger.debug('Data cube and fx mask have same dims')
-            return True
-        else:
-            logger.error('Data cube and fx mask have different grids!')
-            return False
+    if (x_dim == mx_dim and y_dim == my_dim and
+            len_x == len_mx and len_y == len_my):
+        logger.debug('Data cube and fx mask have same dims')
+        return True
     else:
         logger.error(
             'Data cube and fx mask differ in dims: '
-            'x=(%i, %i), y=(%i, %i)', x_dim, mx_dim, y_dim, my_dim)
+            'cube: ((%i, %i), grid=(%i, %i)), mask: ((%i, %i), grid=(%i, %i))',
+            x_dim, y_dim, len_x, len_y, mx_dim, my_dim, len_mx, len_my)
         return False
 
 
