@@ -43,11 +43,9 @@ def get_required(short_name, field=None):
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
         ],
-        'rtnt': [
-            ('rsdt', 'T2' + frequency + 's'),
-            ('rsut', 'T2' + frequency + 's'),
-            ('rlut', 'T2' + frequency + 's')
-        ],
+        'rtnt': [('rsdt', 'T2' + frequency + 's'),
+                 ('rsut', 'T2' + frequency + 's'), ('rlut',
+                                                    'T2' + frequency + 's')],
         'rsnt': [
             ('rsdt', 'T2' + frequency + 's'),
             ('rsut', 'T2' + frequency + 's'),
@@ -60,24 +58,12 @@ def get_required(short_name, field=None):
             ('rlds', 'T2' + frequency + 's'),
             ('rlus', 'T2' + frequency + 's'),
         ],
-        'cllmtisccp': [
-            ('clisccp', 'T4' + frequency)
-        ],
-        'clltkisccp': [
-            ('clisccp', 'T4' + frequency)
-        ],
-        'clmmtisccp': [
-            ('clisccp', 'T4' + frequency)
-        ],
-        'clmtkisccp': [
-            ('clisccp', 'T4' + frequency)
-        ],
-        'clhmtisccp': [
-            ('clisccp', 'T4' + frequency)
-        ],
-        'clhtkisccp': [
-            ('clisccp', 'T4' + frequency)
-        ]
+        'cllmtisccp': [('clisccp', 'T4' + frequency)],
+        'clltkisccp': [('clisccp', 'T4' + frequency)],
+        'clmmtisccp': [('clisccp', 'T4' + frequency)],
+        'clmtkisccp': [('clisccp', 'T4' + frequency)],
+        'clhmtisccp': [('clisccp', 'T4' + frequency)],
+        'clhtkisccp': [('clisccp', 'T4' + frequency)]
     }
 
     if short_name in required:
@@ -193,8 +179,9 @@ def calc_lwp(cubes):
     ]
     if ((project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets)
             or (project == 'OBS' and dataset == 'UWisc')):
-        logger.info("Assuming that variable clwvi from %s dataset %s "
-                    "contains only liquid water", project, dataset)
+        logger.info(
+            "Assuming that variable clwvi from %s dataset %s "
+            "contains only liquid water", project, dataset)
         lwp_cube = clwvi_cube
     else:
         lwp_cube = clwvi_cube - clivi_cube
@@ -366,9 +353,7 @@ def calc_rlns(cubes):
     return rlns
 
 
-# TODO - write the actual derivation of the 6 cl* vars below
-# from the ncl files; all else is already here
-def calc_cllmtisccp():  # (cubes)
+def calc_cllmtisccp(cubes):
     """Compute cllmtisccp:
 
     long name: ISCCP Low Level Medium-Thickness Cloud Area Fraction
@@ -385,14 +370,29 @@ def calc_cllmtisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # cllmtisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
+    plev = iris.Constraint(air_pressure=lambda p: p > 68000.)
+    cllmtisccp_cube = clisccp_cube
+    cllmtisccp_cube = cllmtisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in cllmtisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        cllmtisccp_cube = cllmtisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        cllmtisccp_cube = cllmtisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return cllmtisccp_cube
 
 
-def calc_clltkisccp():  # (cubes)
+def calc_clltkisccp(cubes):
     """Compute clltkisccp:
 
     long name: ISCCP low level thick cloud area fraction
@@ -409,14 +409,29 @@ def calc_clltkisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # clltkisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: t > 23.)
+    plev = iris.Constraint(air_pressure=lambda p: p > 68000.)
+    clltkisccp_cube = clisccp_cube
+    clltkisccp_cube = clltkisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in clltkisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        clltkisccp_cube = clltkisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        clltkisccp_cube = clltkisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return clltkisccp_cube
 
 
-def calc_clmmtisccp():  # (cubes)
+def calc_clmmtisccp(cubes):
     """Compute clmmtisccp:
 
     long name: ISCCP Middle Level Medium-Thickness Cloud Area Fraction
@@ -433,14 +448,29 @@ def calc_clmmtisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # clmmtisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
+    plev = iris.Constraint(air_pressure=lambda p: 44000. < p <= 68000.)
+    clmmtisccp_cube = clisccp_cube
+    clmmtisccp_cube = clmmtisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in clmmtisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        clmmtisccp_cube = clmmtisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        clmmtisccp_cube = clmmtisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return clmmtisccp_cube
 
 
-def calc_clmtkisccp():  # (cubes)
+def calc_clmtkisccp(cubes):
     """Compute clmtkisccp:
 
     long name: ISCCP Middle Level Thick Cloud Area Fraction
@@ -457,14 +487,29 @@ def calc_clmtkisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # clmtkisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: t > 23.)
+    plev = iris.Constraint(air_pressure=lambda p: 44000. < p <= 68000.)
+    clmtkisccp_cube = clisccp_cube
+    clmtkisccp_cube = clmtkisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in clmtkisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        clmtkisccp_cube = clmtkisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        clmtkisccp_cube = clmtkisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return clmtkisccp_cube
 
 
-def calc_clhmtisccp():  # (cubes)
+def calc_clhmtisccp(cubes):
     """Compute clhmtisccp:
 
     long name: ISCCP High Level Medium-Thickness Cloud Area Fraction
@@ -481,14 +526,29 @@ def calc_clhmtisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # clhmtisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
+    plev = iris.Constraint(air_pressure=lambda p: p < 44000.)
+    clhmtisccp_cube = clisccp_cube
+    clhmtisccp_cube = clhmtisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in clhmtisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        clhmtisccp_cube = clhmtisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        clhmtisccp_cube = clhmtisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return clhmtisccp_cube
 
 
-def calc_clhtkisccp():  # (cubes)
+def calc_clhtkisccp(cubes):
     """Compute clhtkisccp:
 
     long name: ISCCP high level thick cloud area fraction
@@ -505,11 +565,26 @@ def calc_clhtkisccp():  # (cubes)
         Units: %
 
     """
-    # clisccp_cube = cubes.extract_strict(
-    #     Constraint(name='isccp_cloud_area_fraction'))
+    clisccp_cube = cubes.extract_strict(
+        Constraint(name='isccp_cloud_area_fraction'))
 
-    # clhtkisccp = clisccp_cube
-    raise NotImplementedError
+    tau = iris.Constraint(
+        atmosphere_optical_thickness_due_to_cloud=lambda t: t > 23.)
+    plev = iris.Constraint(air_pressure=lambda p: p < 44000.)
+    clhtkisccp_cube = clisccp_cube
+    clhtkisccp_cube = clhtkisccp_cube.extract(tau & plev)
+    coord_names = [
+        coord.standard_name for coord in clhtkisccp_cube.coords()
+        if len(coord.points) > 1
+    ]
+    if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
+        clhtkisccp_cube = clhtkisccp_cube.collapsed(
+            'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
+    if 'air_pressure' in coord_names:
+        clhtkisccp_cube = clhtkisccp_cube.collapsed('air_pressure',
+                                                    iris.analysis.SUM)
+
+    return clhtkisccp_cube
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
