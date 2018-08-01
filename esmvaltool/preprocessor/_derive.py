@@ -50,6 +50,41 @@ def get_required(short_name, field=None):
         'uajet': [
             ('ua', 'T3' + frequency),
         ],
+        'rtnt': [
+            ('rsdt', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+            ('rlut', 'T2' + frequency + 's')
+        ],
+        'rsnt': [
+            ('rsdt', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+        ],
+        'rsns': [
+            ('rsds', 'T2' + frequency + 's'),
+            ('rsus', 'T2' + frequency + 's'),
+        ],
+        'rlns': [
+            ('rlds', 'T2' + frequency + 's'),
+            ('rlus', 'T2' + frequency + 's'),
+        ],
+        'cllmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clltkisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clmmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clmtkisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clhmtisccp': [
+            ('clisccp', 'T4' + frequency)
+        ],
+        'clhtkisccp': [
+            ('clisccp', 'T4' + frequency)
+        ]
     }
 
     if short_name in required:
@@ -73,6 +108,16 @@ def derive(cubes, variable):
         'swcre': calc_swcre,
         'toz': calc_toz,
         'uajet': calc_uajet,
+        'rtnt': calc_rtnt,
+        'rsnt': calc_rsnt,
+        'rsns': calc_rsns,
+        'rlns': calc_rlns,
+        'cllmtisccp': calc_cllmtisccp,
+        'clltkisccp': calc_clltkisccp,
+        'clmmtisccp': calc_clmmtisccp,
+        'clmtkisccp': calc_clmtkisccp,
+        'clhmtisccp': calc_clhmtisccp,
+        'clhtkisccp': calc_clhtkisccp
     }
 
     if short_name not in functions:
@@ -192,6 +237,7 @@ def calc_lwp(cubes):
 
 def calc_swcre(cubes):
     """Compute shortwave cloud radiative effect from all-sky and clear-sky
+
        flux.
 
     Arguments
@@ -210,7 +256,6 @@ def calc_swcre(cubes):
         Constraint(name='toa_outgoing_shortwave_flux_assuming_clear_sky'))
 
     swcre = rsutcs_cube - rsut_cube
-    swcre.units = rsut_cube.units
 
     return swcre
 
@@ -297,6 +342,257 @@ def calc_uajet(cubes):
                     'lat_range_1': lat[1]})
 
     return uajet_cube
+
+
+def calc_rtnt(cubes):
+    """Compute rtnt: TOA Net downward Total Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing rsut (toa_outgoing_shortwave_flux) and
+               rsdt (toa_incoming_shortwave_flux) and
+               rlut (toa_outgoing_longwave_flux).
+
+    Returns
+    -------
+        Cube containing TOA Net downward Total Radiation.
+        Units: W m-2
+
+    """
+    rsdt_cube = cubes.extract_strict(
+        Constraint(name='toa_incoming_shortwave_flux'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+    rlut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux'))
+
+    # rtnt = (rsdt - rsut) - rlut
+    rtnt = rsdt_cube - rsut_cube - rlut_cube
+
+    return rtnt
+
+
+def calc_rsnt(cubes):
+    """Compute rsnt: TOA Net downward Shortwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing rsut (toa_outgoing_shortwave_flux) and
+               rsdt (toa_incoming_shortwave_flux).
+
+    Returns
+    -------
+        Cube containing TOA Net downward Shortwave Radiation.
+        Units: W m-2
+
+    """
+    rsdt_cube = cubes.extract_strict(
+        Constraint(name='toa_incoming_shortwave_flux'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+
+    # rsnt = rsdt - rsut
+    rsnt = rsdt_cube - rsut_cube
+
+    return rsnt
+
+
+def calc_rsns(cubes):
+    """Compute rsns: Surface Net downward Shortwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               rsus (surface_upwelling_shortwave_flux_in_air) and
+               rsds (surface_downwelling_shortwave_flux_in_air).
+
+    Returns
+    -------
+        Cube containing Surface Net downward Shortwave Radiation.
+        Units: W m-2
+
+    """
+    rsds_cube = cubes.extract_strict(
+        Constraint(name='surface_downwelling_shortwave_flux_in_air'))
+    rsus_cube = cubes.extract_strict(
+        Constraint(name='surface_upwelling_shortwave_flux_in_air'))
+
+    # rsns = rsds - rsus
+    rsns = rsds_cube - rsus_cube
+
+    return rsns
+
+
+def calc_rlns(cubes):
+    """Compute rlns: Surface Net downward Longwave Radiation.
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               rlds (surface_downwelling_longwave_flux_in_air) and
+               rlus (surface_upwelling_longwave_flux_in_air).
+
+    Returns
+    -------
+        Cube containing Surface Net downward Longwave Radiation.
+        Units: W m-2
+
+    """
+    rlds_cube = cubes.extract_strict(
+        Constraint(name='surface_downwelling_longwave_flux_in_air'))
+    rlus_cube = cubes.extract_strict(
+        Constraint(name='surface_upwelling_longwave_flux_in_air'))
+
+    # rlns = rlds - rlus
+    rlns = rlds_cube - rlus_cube
+
+    return rlns
+
+
+# TODO - write the actual derivation of the 6 cl* vars below
+# from the ncl files; all else is already here
+def calc_cllmtisccp():  # (cubes)
+    """Compute cllmtisccp:
+
+    long name: ISCCP Low Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Low Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # cllmtisccp = clisccp_cube
+    raise NotImplementedError
+
+
+def calc_clltkisccp():  # (cubes)
+    """Compute clltkisccp:
+
+    long name: ISCCP low level thick cloud area fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP low level thick cloud area fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # clltkisccp = clisccp_cube
+    raise NotImplementedError
+
+
+def calc_clmmtisccp():  # (cubes)
+    """Compute clmmtisccp:
+
+    long name: ISCCP Middle Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Middle Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # clmmtisccp = clisccp_cube
+    raise NotImplementedError
+
+
+def calc_clmtkisccp():  # (cubes)
+    """Compute clmtkisccp:
+
+    long name: ISCCP Middle Level Thick Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP Middle Level Thick Cloud Area Fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # clmtkisccp = clisccp_cube
+    raise NotImplementedError
+
+
+def calc_clhmtisccp():  # (cubes)
+    """Compute clhmtisccp:
+
+    long name: ISCCP High Level Medium-Thickness Cloud Area Fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP High Level Medium-Thickness Cloud Area Fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # clhmtisccp = clisccp_cube
+    raise NotImplementedError
+
+
+def calc_clhtkisccp():  # (cubes)
+    """Compute clhtkisccp:
+
+    long name: ISCCP high level thick cloud area fraction
+    short name: same
+
+    Arguments
+    ----
+        cubes: cubelist containing
+               clisccp(isccp_cloud_area_fraction)
+
+    Returns
+    -------
+        Cube: ISCCP high level thick cloud area fraction.
+        Units: %
+
+    """
+    # clisccp_cube = cubes.extract_strict(
+    #     Constraint(name='isccp_cloud_area_fraction'))
+
+    # clhtkisccp = clisccp_cube
+    raise NotImplementedError
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
