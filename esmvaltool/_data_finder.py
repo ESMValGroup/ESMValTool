@@ -61,11 +61,13 @@ def get_start_end_year(filename):
 
     for ind, _ in enumerate(pos_ydates_r):
         if ind != 0:
-            pos_ydates_r[- ind - 1] = (pos_ydates_r[- ind] and
-                                       pos_ydates_r[- ind - 1])
+            pos_ydates_r[-ind - 1] = (pos_ydates_r[-ind]
+                                      and pos_ydates_r[-ind - 1])
 
-    dates = [filename_list[ind] for ind, _ in enumerate(pos_ydates)
-             if pos_ydates_r[ind] or pos_ydates_l[ind]]
+    dates = [
+        filename_list[ind] for ind, _ in enumerate(pos_ydates)
+        if pos_ydates_r[ind] or pos_ydates_l[ind]
+    ]
 
     if len(dates) == 1:
         start_year = int(dates[0][:4])
@@ -382,12 +384,24 @@ def get_input_fx_filelist(variable, rootpath, drs):
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
+            # root part1 could not exist at all
+            if not os.path.exists(part1):
+                fx_files[variable['fx_files'][j]] = None
+                return fx_files
             list_versions = os.listdir(part1)
             list_versions.sort(reverse=True)
+            if 'latest' in list_versions:
+                list_versions.insert(
+                    0, list_versions.pop(list_versions.index('latest')))
             for version in list_versions:
-                dirname = os.path.join(part1, version, part2)
-                if os.path.isdir(dirname):
-                    break
+                if version == 'latest':
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        break
+                else:
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        break
         else:
             dirname = dirname_template
 

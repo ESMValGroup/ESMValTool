@@ -33,7 +33,6 @@ class RecipeError(Exception):
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict"""
-
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map"""
 
@@ -222,12 +221,15 @@ def _get_value(key, datasets):
     """Get a value for key by looking at the other datasets."""
     values = {dataset[key] for dataset in datasets if key in dataset}
 
-    if len(values) == 1:
-        return values.pop()
-
     if len(values) > 1:
         raise RecipeError("Ambigous values {} for property {}".format(
             values, key))
+
+    value = None
+    if len(values) == 1:
+        value = values.pop()
+
+    return value
 
 
 def _update_from_others(variable, keys, datasets):
@@ -488,6 +490,31 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
+def _update_fx_settings(settings, variable, config_user):
+    """Find and set the FX mask settings"""
+    if 'mask_landsea' in settings.keys():
+        # Configure ingestion of land/sea masks
+        logger.debug('Getting fx mask settings now...')
+
+        # settings[mask_landsea][fx_file] is a list to store ALL
+        # available masks
+        settings['mask_landsea']['fx_files'] = []
+
+        # fx_files already in variable
+        variable = dict(variable)
+        variable['fx_files'] = ['sftlf', 'sftof']
+        fx_files_dict = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+
+        # allow both sftlf and sftof
+        if fx_files_dict['sftlf']:
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
+        if fx_files_dict['sftof']:
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
+
+
 def _get_input_files(variable, config_user):
     """Get the input files for a single dataset"""
     # Find input files locally.
@@ -571,6 +598,9 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_fx_settings(settings=settings,
+                            variable=variable,
+                            config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
