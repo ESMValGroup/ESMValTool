@@ -531,7 +531,7 @@ def calc_clhmtisccp(cubes):
 
     tau = iris.Constraint(
         atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
-    plev = iris.Constraint(air_pressure=lambda p: p < 44000.)
+    plev = iris.Constraint(air_pressure=lambda p: p <= 44000.)
     clhmtisccp_cube = clisccp_cube
     clhmtisccp_cube = clhmtisccp_cube.extract(tau & plev)
     coord_names = [
@@ -570,7 +570,7 @@ def calc_clhtkisccp(cubes):
 
     tau = iris.Constraint(
         atmosphere_optical_thickness_due_to_cloud=lambda t: t > 23.)
-    plev = iris.Constraint(air_pressure=lambda p: p < 44000.)
+    plev = iris.Constraint(air_pressure=lambda p: p <= 44000.)
     clhtkisccp_cube = clisccp_cube
     clhtkisccp_cube = clhtkisccp_cube.extract(tau & plev)
     coord_names = [
