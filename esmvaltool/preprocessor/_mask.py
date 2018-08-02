@@ -116,21 +116,26 @@ def mask_landsea(cube, fx_files, mask_out):
                         "Applying land-sea mask from Natural Earth"
                         " shapefile: \n%s", shapefiles[mask_out])
                 else:
-                    logger.error("Use of shapefiles with irregular grids not"
+                    logger.error("Use of shapefiles with irregular grids not "
                                  "yet implemented, land-sea mask not applied")
         except iris.exceptions.TranslationError as msg:
-            logger.warning('Could not load fx file!')
-            logger.warning(msg)
+            if cube.coord('longitude').points.ndim < 2:
+                cube = _mask_with_shp(cube, shapefiles[mask_out])
+                logger.debug(
+                    "Applying land-sea mask from Natural Earth"
+                    " shapefile: \n%s", shapefiles[mask_out])
+            else:
+                logger.error("Use of shapefiles with irregular grids not "
+                             "yet implemented, land-sea mask not applied")
+    else:
+        if cube.coord('longitude').points.ndim < 2:
+            cube = _mask_with_shp(cube, shapefiles[mask_out])
             logger.debug(
                 "Applying land-sea mask from Natural Earth"
                 " shapefile: \n%s", shapefiles[mask_out])
-            cube = _mask_with_shp(cube, shapefiles[mask_out])
-    else:
-        # Mask with Natural Earth (NE) files
-        cube = _mask_with_shp(cube, shapefiles[mask_out])
-        logger.debug(
-            "Applying land-sea mask from Natural Earth"
-            " shapefile: \n%s", shapefiles[mask_out])
+        else:
+            logger.error("Use of shapefiles with irregular grids not "
+                         "yet implemented, land-sea mask not applied")
 
     return cube
 

@@ -494,7 +494,7 @@ def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX mask settings"""
     if 'mask_landsea' in settings.keys():
         # Configure ingestion of land/sea masks
-        logger.debug('Getting FX mask settings now...')
+        logger.debug('Getting fx mask settings now...')
 
         # settings[mask_landsea][fx_file] is a list to store ALL
         # available masks
