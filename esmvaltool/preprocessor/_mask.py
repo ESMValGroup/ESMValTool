@@ -89,36 +89,25 @@ def mask_landsea(cube, fx_files, mask_out):
     }
 
     if fx_files:
-        # Try loading fx file
-        try:
-            fx_cubes = {}
-            for fx_file in fx_files:
-                fx_root = os.path.basename(fx_file).split('_')[0]
-                fx_cubes[fx_root] = iris.load_cube(fx_file)
+        fx_cubes = {}
+        for fx_file in fx_files:
+            fx_root = os.path.basename(fx_file).split('_')[0]
+            fx_cubes[fx_root] = iris.load_cube(fx_file)
 
-            # preserve importance order: try stflf first then sftof
-            if ('sftlf' in fx_cubes.keys() and
-                    _check_dims(cube, fx_cubes['sftlf'])):
-                landsea_mask = _get_fx_mask(fx_cubes['sftlf'].data, mask_out,
-                                            'sftlf')
-                cube.data = _apply_fx_mask(landsea_mask, cube.data)
-                logger.debug("Applying land-sea mask: sftlf")
-            elif ('sftof' in fx_cubes.keys() and
-                  _check_dims(cube, fx_cubes['sftof'])):
-                landsea_mask = _get_fx_mask(fx_cubes['sftof'].data, mask_out,
-                                            'sftof')
-                cube.data = _apply_fx_mask(landsea_mask, cube.data)
-                logger.debug("Applying land-sea mask: sftof")
-            else:
-                if cube.coord('longitude').points.ndim < 2:
-                    cube = _mask_with_shp(cube, shapefiles[mask_out])
-                    logger.debug(
-                        "Applying land-sea mask from Natural Earth"
-                        " shapefile: \n%s", shapefiles[mask_out])
-                else:
-                    logger.error("Use of shapefiles with irregular grids not "
-                                 "yet implemented, land-sea mask not applied")
-        except iris.exceptions.TranslationError as msg:
+        # preserve importance order: try stflf first then sftof
+        if ('sftlf' in fx_cubes.keys() and
+                _check_dims(cube, fx_cubes['sftlf'])):
+            landsea_mask = _get_fx_mask(fx_cubes['sftlf'].data, mask_out,
+                                        'sftlf')
+            cube.data = _apply_fx_mask(landsea_mask, cube.data)
+            logger.debug("Applying land-sea mask: sftlf")
+        elif ('sftof' in fx_cubes.keys() and
+              _check_dims(cube, fx_cubes['sftof'])):
+            landsea_mask = _get_fx_mask(fx_cubes['sftof'].data, mask_out,
+                                        'sftof')
+            cube.data = _apply_fx_mask(landsea_mask, cube.data)
+            logger.debug("Applying land-sea mask: sftof")
+        else:
             if cube.coord('longitude').points.ndim < 2:
                 cube = _mask_with_shp(cube, shapefiles[mask_out])
                 logger.debug(
