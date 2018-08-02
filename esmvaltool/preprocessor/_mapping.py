@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Provides mapping of a cube
-"""
+"""Provides mapping of a cube"""
 
 import collections
 import itertools
@@ -14,7 +12,7 @@ import iris
 
 def _is_single_item(testee):
     """
-    Checks if testee is a single item
+    Check if testee is a single item
 
     Return whether this is a single item, rather than an iterable.
     We count string types as 'single', also.
@@ -42,6 +40,24 @@ def _as_list_of_coords(cube, names_or_coords):
 
 
 def ref_to_dims_index(cube, ref_to_slice):
+    """
+    Map a list of :class:`iris.coords.DimCoord` to a tuple of indices
+
+    This method finds the indices of the dimensions in a cube that collectively
+    correspond to the given list of :class:`iris.coords.DimCoord`.
+
+    Parameters
+    ----------
+    cube: :class:`iris.cube.Cube`
+        The cube to examine.
+    ref_to_slice: iterable of or single :class:`iris.coords.DimCoord`
+        Specification of the dimensions in terms of coordinates.
+
+    Returns
+    -------
+    tuple:
+        A tuple of indices corresponding to the given dimensions.
+    """
     # Required to handle a mix between types
     if _is_single_item(ref_to_slice):
         ref_to_slice = [ref_to_slice]
@@ -49,7 +65,7 @@ def ref_to_dims_index(cube, ref_to_slice):
     for ref in ref_to_slice:
         try:
             # attempt to handle as coordinate
-            coord = cube._as_list_of_coords(ref)[0]
+            coord = _as_list_of_coords(cube, ref)[0]
             dims = cube.coord_dims(coord)
             if not dims:
                 msg = ('Requested an iterator over a coordinate ({}) '
@@ -77,6 +93,12 @@ def ref_to_dims_index(cube, ref_to_slice):
 
 
 def get_associated_coords(cube, dimensions):
+    """
+    Returns all coords containing any of the given dimensions.
+
+    Returns all coords, dimensional and auxiliary, that contain any of
+    the given dimensions.
+    """
     dims = []
     dim_set = set()
     for dim in dimensions:
@@ -95,12 +117,24 @@ def get_associated_coords(cube, dimensions):
 
 
 def get_empty_data(shape):
+    """
+    Create an empty data object of the given shape.
+
+    Creates an emtpy data object of the given shape, potentially of the lazy
+    kind from biggus or dask, depending on the used iris version.
+    """
     data = np.empty(shape)
     mask = np.empty(shape, dtype=bool)
     return np.ma.masked_array(data, mask)
 
 
 def get_slice_spec(cube, ref_to_slice):
+    """
+    Turn a slice reference into a specification for the slice
+
+    Turns a slice reference into a specification comprised of the shape as well
+    as the relevant dimensional and auxiliary coordinates.
+    """
     slice_dims = ref_to_dims_index(cube, ref_to_slice)
     slice_shape = tuple(cube.shape[d] for d in slice_dims)
     dim_coords, aux_coords = get_associated_coords(cube, slice_dims)
@@ -108,6 +142,7 @@ def get_slice_spec(cube, ref_to_slice):
 
 
 def check_slice_spec(shape, dim_coords):
+    """Check consistency of slice specification"""
     if shape is None:
         shape = tuple(c.shape[0] for c in dim_coords)
     if dim_coords is not None:
@@ -117,6 +152,12 @@ def check_slice_spec(shape, dim_coords):
 
 
 def index_iterator(dims_to_slice, shape):
+    """
+    An iterator for subsets of multidimensional objects
+
+    An iterator over a multidimensional object, giving both source and
+    destination indices.
+    """
     dst_slices = (slice(None, None),) * len(dims_to_slice)
     dims = [1 if n in dims_to_slice else i for n, i in enumerate(shape)]
     for index_tuple in np.ndindex(*dims):
@@ -130,6 +171,38 @@ def index_iterator(dims_to_slice, shape):
 
 
 def map_slices(src, func, src_rep, dst_rep):
+    """
+    Map slices of a cube, replacing them with different slices
+
+    This method is similar to the standard cube collapsed and aggregated_by
+    methods, however, where they completely remove the mapped dimensions, this
+    method allows for their replacement with other dimensions.
+    The new dimensions are specified with a destination representant and will
+    be the last dimensions of the resulting cube, even if the removed
+    dimensions are can be any of the source cubes dimensions.
+
+    Parameters
+    ----------
+    src: :class:`iris.cube.Cube`
+        Source cube to be mapped.
+    func: callable
+        Callable that takes a single cube and returns a single cube.
+    src_rep: :class:`iris.cube.Cube`
+        Source representant that specifies the dimensions to be removed from
+        the source cube.
+    dst_rep: :class:`iris.cube.Cube`
+        Destination representant that specifies the shape of the new
+        dimensions.
+
+    Returns
+    -------
+    :class:`iris.cube.Cube`:
+        New cube that has the shape of the source cube with the removed
+        dimensions replaced with the destination dimensions.
+        All coordinates that span any of the removed dimensions are removed;
+        :class:`iris.coords.DimCoord` for the new dimensions are taken from
+        `dst_rep`.
+    """
     ref_to_slice = src_rep.coords(dim_coords=True)
     src_slice_dims = ref_to_dims_index(src, ref_to_slice)
     src_keep_dims = list(set(range(src.ndim)) - set(src_slice_dims))

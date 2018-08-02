@@ -201,7 +201,7 @@ def regrid(src_cube, target_grid, scheme):
         lon_dim = src_cube.coord('longitude').ndim
         if lat_dim == lon_dim == 2:
             attempt_irregular_regridding = True
-    except:
+    except iris.exceptions.CoordinateNotFoundError:
         pass
     if attempt_irregular_regridding:
         result = _regrid_esmpy.regrid(src_cube, target_grid, scheme)

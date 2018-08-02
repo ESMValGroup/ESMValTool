@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Provides regridding for irregular grids
-"""
+"""Provides regridding for irregular grids"""
 
 import numpy as np
 
@@ -31,6 +29,7 @@ ESMF_REGRID_METHODS = {
 
 
 def coords_iris_to_esmpy(lat, lon, circular):
+    """Build ESMF compatible coordinate information from iris coords"""
     dim = len(lat.shape)
     assert dim == len(lon.shape)
     if dim == 1:
@@ -68,6 +67,7 @@ def coords_iris_to_esmpy(lat, lon, circular):
 
 def get_grid(esmpy_lat, esmpy_lon,
              esmpy_lat_corners, esmpy_lon_corners, circular):
+    """Build EMSF grid from given coordinate information"""
     if circular:
         num_peri_dims = 1
     else:
@@ -89,6 +89,7 @@ def get_grid(esmpy_lat, esmpy_lon,
 
 
 def get_empty_field(cube, grid, remove_mask=False):
+    """Build empty ESMF field from cube with given grid"""
     field = ESMF.Field(grid, name=cube.long_name,
                        staggerloc=ESMF.StaggerLoc.CENTER)
     center_mask = grid.get_item(ESMF.GridItem.MASK, ESMF.StaggerLoc.CENTER)
@@ -105,6 +106,7 @@ def get_empty_field(cube, grid, remove_mask=False):
 
 
 def is_lon_circular(lat, lon):
+    """Determine if longitudes are circular"""
     if isinstance(lon, iris.coords.DimCoord):
         circular = lon.circular
     elif isinstance(lon, iris.coords.AuxCoord):
@@ -129,6 +131,7 @@ def is_lon_circular(lat, lon):
 
 
 def cube_to_empty_field(cube, circular_lon=None, remove_mask=False):
+    """Build an empty ESMF field from a cube"""
     lat = cube.coord('latitude')
     lon = cube.coord('longitude')
     if circular_lon is None:
@@ -142,6 +145,7 @@ def cube_to_empty_field(cube, circular_lon=None, remove_mask=False):
 
 
 def get_representant(cube, ref_to_slice):
+    """Get a representative slice from a cube"""
     slice_dims = ref_to_dims_index(cube, ref_to_slice)
     rep_ind = [0] * cube.ndim
     for dim in slice_dims:
@@ -151,6 +155,7 @@ def get_representant(cube, ref_to_slice):
 
 
 def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
+    """Build regridders from representants"""
     regrid_method = ESMF_REGRID_METHODS[method]
     if src_rep.ndim == 2:
         dst_field = cube_to_empty_field(dst_rep)
@@ -178,6 +183,7 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
                                       dst_mask_values=np.array([1]))
 
         def regridder(src):
+            """Regrid 2d for irregular grids"""
             res = get_empty_data(dst_rep.shape)
             data = src.data
             if np.ma.is_masked(data):
@@ -224,6 +230,7 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             )
 
         def regridder(src):
+            """Regrid 2.5d for irregular grids"""
             res = get_empty_data(dst_rep.shape)
             for i, (src_field, esmf_regridder, dst_mask) \
                     in enumerate(zip(src_fields, esmf_regridders, dst_masks)):
@@ -239,6 +246,7 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
 
 
 def get_grid_representant(cube, horizontal_only=False):
+    """Extract the spatial grid from a cube"""
     horizontal_slice = ['latitude', 'longitude']
     if horizontal_only:
         ref_to_slice = horizontal_slice
@@ -252,6 +260,25 @@ def get_grid_representant(cube, horizontal_only=False):
 
 
 def get_grid_representants(src, dst):
+    """
+    Constructs cubes representing the source and destination grid
+
+    This method constructs two new cubes that representant the grids,
+    i.e. the spatial dimensions of the given cubes.
+
+    Parameters
+    ----------
+    src: :class:`iris.cube.Cube`
+        Cube to be regridded. Typically a time series of 2d or 3d slices.
+    dst: :class:`iris.cube.Cube`
+        Cube defining the destination grid. Usually just a 2d or 3d cube.
+
+    Returns
+    -------
+    tuple of :class:`iris.cube.Cube`:
+        A tuple containing two cubes, representing the source grid and the
+        destination grid, respectively.
+    """
     src_rep = get_grid_representant(src)
     dst_horiz_rep = get_grid_representant(dst, horizontal_only=True)
     if src_rep.ndim == 3:
@@ -278,28 +305,30 @@ def get_grid_representants(src, dst):
 
 def regrid(src, dst, method='linear'):
     """
-    Regrids src_cube to the grid defined by dst_cube.
+    Regrid src_cube to the grid defined by dst_cube.
 
-    Regrids the data in src_cube onto the grid defined by dst_cube.
+    Regrid the data in src_cube onto the grid defined by dst_cube.
 
-    Args:
-
-    * src_cube (:class:`iris.cube.Cube`)
+    Parameters
+    ----------
+    src_cube: :class:`iris.cube.Cube`
         Source data. Must have latitude and longitude coords.
         These can be 1d or 2d and should have bounds.
-
-    * dst_cube (:class:`iris.cube.Cube`)
+    dst_cube: :class:`iris.cube.Cube`
         Defines the target grid.
-
-    * regrid_method
+    regrid_method:
         Selects the regridding method.
         Can be 'linear', 'area_weighted',
-        or 'nearest'. See ESMPy_
+        or 'nearest'. See ESMPy_.
 
-    .. _ESMPy:
-    http://www.earthsystemmodeling.org/esmf_releases/non_public/ESMF_7_0_0/
-    esmpy_doc/html/RegridMethod.html#ESMF.api.constants.RegridMethod
+    Returns
+    -------
+    :class:`iris.cube.Cube`:
+        The regridded cube.
 
+
+    .. _ESMPy: http://www.earthsystemmodeling.org/esmf_releases/non_public/\
+ESMF_7_0_0/esmpy_doc/html/RegridMethod.html#ESMF.api.constants.RegridMethod
     """
     src_rep, dst_rep = get_grid_representants(src, dst)
     regridder = build_regridder(src_rep, dst_rep, method)
