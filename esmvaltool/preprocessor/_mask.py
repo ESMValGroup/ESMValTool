@@ -32,12 +32,12 @@ def _check_dims(cube, mask_cube):
             len_x == len_mx and len_y == len_my):
         logger.debug('Data cube and fx mask have same dims')
         return True
-    else:
-        logger.error(
-            'Data cube and fx mask differ in dims: '
-            'cube: ((%i, %i), grid=(%i, %i)), mask: ((%i, %i), grid=(%i, %i))',
-            x_dim, y_dim, len_x, len_y, mx_dim, my_dim, len_mx, len_my)
-        return False
+
+    logger.debug(
+        'Data cube and fx mask differ in dims: '
+        'cube: ((%i, %i), grid=(%i, %i)), mask: ((%i, %i), grid=(%i, %i))',
+        x_dim, y_dim, len_x, len_y, mx_dim, my_dim, len_mx, len_my)
+    return False
 
 
 def _get_fx_mask(fx_data, fx_option, mask_type):
@@ -102,33 +102,33 @@ def mask_landsea(cube, fx_files, mask_out):
                 landsea_mask = _get_fx_mask(fx_cubes['sftlf'].data, mask_out,
                                             'sftlf')
                 cube.data = _apply_fx_mask(landsea_mask, cube.data)
-                logger.info("Applying land-sea mask: sftlf")
+                logger.debug("Applying land-sea mask: sftlf")
             elif ('sftof' in fx_cubes.keys() and
                   _check_dims(cube, fx_cubes['sftof'])):
                 landsea_mask = _get_fx_mask(fx_cubes['sftof'].data, mask_out,
                                             'sftof')
                 cube.data = _apply_fx_mask(landsea_mask, cube.data)
-                logger.info("Applying land-sea mask: sftof")
+                logger.debug("Applying land-sea mask: sftof")
             else:
                 if cube.coord('longitude').points.ndim < 2:
                     cube = _mask_with_shp(cube, shapefiles[mask_out])
-                    logger.info(
+                    logger.debug(
                         "Applying land-sea mask from Natural Earth"
                         " shapefile: \n%s", shapefiles[mask_out])
                 else:
-                    logger.error("Use of shapefiles with irregular grids "
-                                 "not yet implemented")
+                    logger.error("Use of shapefiles with irregular grids not"
+                                 "yet implemented, land-sea mask not applied")
         except iris.exceptions.TranslationError as msg:
-            logger.warning('Could not load fx file !')
+            logger.warning('Could not load fx file!')
             logger.warning(msg)
-            logger.warning(
+            logger.debug(
                 "Applying land-sea mask from Natural Earth"
                 " shapefile: \n%s", shapefiles[mask_out])
             cube = _mask_with_shp(cube, shapefiles[mask_out])
     else:
         # Mask with Natural Earth (NE) files
         cube = _mask_with_shp(cube, shapefiles[mask_out])
-        logger.warning(
+        logger.debug(
             "Applying land-sea mask from Natural Earth"
             " shapefile: \n%s", shapefiles[mask_out])
 
