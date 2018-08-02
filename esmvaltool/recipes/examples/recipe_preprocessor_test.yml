@@ -14,6 +14,8 @@ preprocessors:
       # This also works, but allows specifying the pressure coordinate name
       # levels: {dataset: ERA-Interim, coordinate: air_pressure}
       scheme: linear
+    mask_landsea:
+      mask_out: land #if land, will mask land out; if sea, will mask seas and oceans out
     regrid:
       target_grid: ERA-Interim
       scheme: linear
