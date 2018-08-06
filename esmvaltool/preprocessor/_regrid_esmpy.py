@@ -31,7 +31,6 @@ ESMF_REGRID_METHODS = {
 def coords_iris_to_esmpy(lat, lon, circular):
     """Build ESMF compatible coordinate information from iris coords"""
     dim = len(lat.shape)
-    assert dim == len(lon.shape)
     if dim == 1:
         for coord in [lat, lon]:
             if not coord.has_bounds():
@@ -168,8 +167,8 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             'ignore_degenerate': True,
         }
         if np.ma.is_masked(src_rep.data):
-            mask_regridder = ESMF.Regrid(**regridding_arguments,
-                                         src_mask_values=np.array([]))
+            mask_regridder = ESMF.Regrid(src_mask_values=np.array([]),
+                                         **regridding_arguments)
             src_field.data[...] = src_rep.data.mask.T
             regr_field = mask_regridder(src_field, dst_field)
             dst_mask = regr_field.data[...].T > mask_threshold
@@ -261,7 +260,7 @@ def get_grid_representant(cube, horizontal_only=False):
 
 def get_grid_representants(src, dst):
     """
-    Constructs cubes representing the source and destination grid
+    Construct cubes representing the source and destination grid
 
     This method constructs two new cubes that representant the grids,
     i.e. the spatial dimensions of the given cubes.
@@ -327,8 +326,9 @@ def regrid(src, dst, method='linear'):
         The regridded cube.
 
 
-    .. _ESMPy: http://www.earthsystemmodeling.org/esmf_releases/non_public/\
-ESMF_7_0_0/esmpy_doc/html/RegridMethod.html#ESMF.api.constants.RegridMethod
+    .. _ESMPy: http://www.earthsystemmodeling.org/
+       esmf_releases/non_public/ESMF_7_0_0/esmpy_doc/html/
+       RegridMethod.html#ESMF.api.constants.RegridMethod
     """
     src_rep, dst_rep = get_grid_representants(src, dst)
     regridder = build_regridder(src_rep, dst_rep, method)

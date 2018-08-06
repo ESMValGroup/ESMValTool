@@ -94,9 +94,9 @@ def ref_to_dims_index(cube, ref_to_slice):
 
 def get_associated_coords(cube, dimensions):
     """
-    Returns all coords containing any of the given dimensions.
+    Return all coords containing any of the given dimensions.
 
-    Returns all coords, dimensional and auxiliary, that contain any of
+    Return all coords, dimensional and auxiliary, that contain any of
     the given dimensions.
     """
     dims = []
@@ -147,7 +147,9 @@ def check_slice_spec(shape, dim_coords):
         shape = tuple(c.shape[0] for c in dim_coords)
     if dim_coords is not None:
         for length, coord in zip(shape, dim_coords):
-            assert length == coord.shape[0]
+            if length != coord.shape[0]:
+                raise ValueError('Invalid slice: shape and '
+                                 'dim_coord sizes disagree.')
     return shape
 
 
