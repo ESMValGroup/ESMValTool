@@ -177,9 +177,9 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             center_mask[...] = dst_mask.T
         else:
             dst_mask = False
-        field_regridder = ESMF.Regrid(**regridding_arguments,
-                                      src_mask_values=np.array([1]),
-                                      dst_mask_values=np.array([1]))
+        field_regridder = ESMF.Regrid(src_mask_values=np.array([1]),
+                                      dst_mask_values=np.array([1]),
+                                      **regridding_arguments)
 
         def regridder(src):
             """Regrid 2d for irregular grids"""
@@ -210,9 +210,9 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
             center_mask = dst_field.grid.get_item(ESMF.GridItem.MASK,
                                                   ESMF.StaggerLoc.CENTER)
             if np.ma.is_masked(src_rep.data):
-                mask_regridder = ESMF.Regrid(**regridding_arguments,
-                                             srcfield=src_field,
-                                             src_mask_values=np.array([]))
+                mask_regridder = ESMF.Regrid(srcfield=src_field,
+                                             src_mask_values=np.array([]),
+                                             **regridding_arguments)
                 src_field.data[...] = src_rep[level].data.mask.T
                 regr_field = mask_regridder(src_field, dst_field)
                 dst_mask = regr_field.data[...].T > mask_threshold
@@ -222,10 +222,10 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
                 dst_masks.append(False)
                 center_mask[...] = 0
             esmf_regridders.append(
-                ESMF.Regrid(**regridding_arguments,
-                            srcfield=src_field,
+                ESMF.Regrid(srcfield=src_field,
                             src_mask_values=np.array([1]),
-                            dst_mask_values=np.array([1]))
+                            dst_mask_values=np.array([1]),
+                            **regridding_arguments)
             )
 
         def regridder(src):
