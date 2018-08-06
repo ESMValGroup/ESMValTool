@@ -8,7 +8,7 @@
 ; #############################################################################
 ; Description
 ;     Collects output from other diagnostics and saves them in a temporary
-;     file. It requires precalculation by other diagnostis scripts.
+;     file. It requires precalculation by other diagnostic scripts.
 ;
 ; Required recipe attributes:
 ;     region: selected region
@@ -162,7 +162,7 @@ begin
     ;        we always use 1 variable
     ; DIM_REF = dimsizes(diag_script_info@ref_dataset)
     ; val = new((/DIM_VAR, DIM_DAT , DIM_REF, 2/), float)
-    val = new((/DIM_VAR, DIM_DAT, 2/), float)
+    val = new((/1, DIM_DAT, 2/), float)
     val!0 = "diagnostics"
     val!1 = "datasets"
     val!2 = "stat"
@@ -208,7 +208,7 @@ begin
     val@title = "selected diagnostic"
     val@long_name = "Diagnostic for Multiple Diagnostic Ensemble Regression"
     val@diag_script = (/diag_script/)
-    val@var = "diagn"
+    val@var = "diag"
 
     ; Write NetCDF output
     ncdf_outfile = ncdf_write(val, val@ncdf_file)

@@ -26,7 +26,7 @@ function diag_file_name(dataset_idx[1]: integer, \
 ;                            @period_avg   (year-, month- or season name)
 ;                            @level        (specify plev range)
 ;                            @region       (specify lat and/or lon range)
-
+;
 ; Return value:
 ;   file_name : returns the file name of the calculated climatological
 ;               diagnostic inclusive directory

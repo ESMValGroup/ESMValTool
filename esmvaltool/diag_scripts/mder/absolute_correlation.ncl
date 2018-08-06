@@ -56,19 +56,34 @@ begin
 
   ; Variable
   var0 = variables(0)
+  target_var = var0
   field_type0 = field_types(0)
+  if (var0 .eq. "sic") then
+    target_var = "SIE"  ; sea ice extent
+    target_var@units = diag_script_info@units
+  end if
+
+  ; Check field type: need 1-d field
+  ; supported_vars = (/"sic"/)  ; List of non-1-d variables that are supported
+  supported_vars = (/""/)
+  if (.not. isStrSubset(field_type0, "0")) then
+    if (.not. any(var0 .eq. supported_vars)) then
+    error_msg("f", diag_script, "", "Variable " + var0 + " not supported yet.")
+    end if
+  end if
 
   ; Extract observations from model-list
-  IDX_OBS = ind(dataset_info@project .eq. "OBS")
+  IDX_OBS = str_match_ind_ic(dataset_info@project, "OBS")   ; Case insensitive
   DIM_OBS = dimsizes(IDX_OBS)
 
   ; Extract historical simulations from datasets
-  IDX_HDAT = ind(input_file_info@start_year .ne. \
-                 max(tofloat(input_file_info@start_year)) .and. \
-                 dataset_info@project .ne. "OBS")
+  IDX_HDAT_tmp = ind(input_file_info@start_year .ne. \
+                     max(tofloat(input_file_info@start_year)))
+  IDX_HDAT = IDX_HDAT_tmp(ind(IDX_HDAT_tmp .ne. IDX_OBS))
   DIM_HDAT = dimsizes(IDX_HDAT)
+  delete(IDX_HDAT_tmp)
 
-  ; Extract individual RCP 4.5 simulations from datasets (= unique models)
+  ; Extract individual future projections from datasets (= unique models)
   avgens = False
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
@@ -175,8 +190,9 @@ begin
     file_type = "ps"
   end if
 
-  ; Output array
+  ; Output arrays
   xx = new((/dimsizes(p_time), DIM_DAT/), float)
+  future_diag = xx(0, :)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
@@ -195,11 +211,24 @@ begin
                   dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
       DIM_OBS + DIM_HDAT
 
+    ; Calculate derived var (i.e. make it 1-d)
+    ; TODO: Sea-ice extent
+    ; if (var0 .eq. "sic") then  ; Calculate sea ice extent
+    ;   if (isatt(diag_script_info, "region")) then
+    ;     region = diag_script_info@region
+    ;   else
+    ;     error_msg("w", diag_script, "", "No region for sea ice extent " + \
+    ;               "selected in cfg file, selecting Arctic.")
+    ;     region = "Arctic"
+    ;   end if
+    ; tmp := sea_ice_area(tmp, i, data, region, "all", "extent", True)
+    ; end if
+
     if (dimsizes(idx_hist) .ge. 1) then
       ; all historical simulations for time series
       tmp_hist = read_data(idx_hist(0), var0, field_type0)
 
-      ; Average over ensemble members if more than one exists (see namlist)
+      ; Average over ensemble members if more than one exists (see recipe)
       if (avgens) then
         if (dimsizes(idx_fut) .gt. 1) then
           if (dimsizes(idx_fut) .eq. dimsizes(idx_hist)) then
@@ -213,10 +242,19 @@ begin
             tmp_avg_hist(0, :) = tmp_hist
             delete([/tmp, tmp_hist/])
 
-            ; Loop over ensemble members, read the data and save in arry
+            ; Loop over ensemble members, read the data and save in array
             do iens = 1, dimsizes(idx_fut) - 1
               tmp_fut = read_data(idx_fut(iens), var0, field_type0)
               tmp_hist = read_data(idx_hist(iens), var0, field_type0)
+
+              ; TODO: calculate sea ice extent
+              ; if (var0 .eq. "sic") then
+              ;   tmp_fut := sea_ice_area(tmp_fut, idx_fut(iens), data, \
+              ;                           region, "all", "extent", True)
+              ;   tmp_hist := sea_ice_area(tmp_hist, idx_hist(iens), data, \
+              ;                            region, "all", "extent", True)
+              ; end if
+
               tmp_avg_fut(iens, :) = (/tmp_fut/)
               tmp_avg_hist(iens, :) = (/tmp_hist/)
               delete([/tmp_fut, tmp_hist/])
@@ -229,7 +267,7 @@ begin
             copy_VarCoords(tmp_avg_hist(0, :), tmp_hist)
             delete([/tmp_avg_fut, tmp_avg_hist/])
           else
-            error_msg("f", diag_script, "", "inconsistend ensemble member " + \
+            error_msg("f", diag_script, "", "inconsistent ensemble member " + \
                       "size for dataset " + dataset_info@dataset(idat))
           end if
         end if
@@ -237,6 +275,15 @@ begin
       tmpy = array_append_record(tmp_hist, tmp, 0)
       delete([/tmp, tmp_hist, idx_hist, idx_fut/])
     end if
+
+    ; Calculate future diagnostic for diagnostic scatter plot
+    future_tmps = time_operations(tmpy, p_time(0), \
+                                  (/p_time(dimsizes(p_time) - 1) + p_step/), \
+                                  time_oper, time_opt, True)
+    future_diag(imod) = tofloat(avg(time_operations( \
+        future_tmps, p_time(0), (/p_time(dimsizes(p_time)-1) + p_step/), \
+        "average", "yearly", True)))
+    delete(future_tmps)
 
     do pt = 0, dimsizes(p_time) - 1
       ; Average over var time series
@@ -304,7 +351,7 @@ begin
 
   ; Loop over files in the list and append data
   do idx_diag = 0, DIM_DIAG - 1
-    data_temp = ncdf_read(file_list(idx_diag), "diagn")
+    data_temp = ncdf_read(file_list(idx_diag), "diag")
 
     ; Loop over datasets and save diagnostic data
     do i = 0, DIM_DAT - 1
@@ -324,6 +371,10 @@ begin
     delete(data_temp)
   end do
   diag_all&diagnostics = wdiag
+
+  ; Create scatterplots for each diagnostic
+  res_scat = True
+  scatterplots = diag_scatter(res_scat, diag_all, future_diag, target_var)
 
   ; ---------------------------------------------------------------------------
   ; Correlation calculations
@@ -393,7 +444,7 @@ begin
     ; Plot
     ; -------------------------------------------------------------------------
 
-    filename  = var0 + "-" + calc_type + "_" + \
+    filename  = target_var + "-" + calc_type + "_" + \
       dataset_info@exp(DIM_OBS + DIM_HDAT) + "_" + \
       p_time(pt) + "-" + (/p_time(pt) + p_step/)
     wks = gsn_open_wks(file_type, plot_dir + filename)

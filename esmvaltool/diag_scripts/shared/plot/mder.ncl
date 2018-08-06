@@ -20,6 +20,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 load "interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
+load "./diag_scripts/shared/plot/scatterplot.ncl"
 
 
 ; #############################################################################
@@ -45,7 +46,7 @@ function error_bar_plot(Ydata[*] : numeric, \
 ;       "draw" : draws the plot directly and returnes logical
 ;       "panel" : returnes plotvalue for pannel plot
 ;
-; Modification history
+; Modification history:
 ;     20180726_A-schl_ma: ported to v2.0
 ;     201402??_A-wenz_sa: written
 ;     201411??_A-wenz_sa: added collor code for pos and ne values
@@ -233,7 +234,7 @@ begin
   ; end if
   ; climo_dir = getenv("ESMValTool_climo_dir")
   ; diag_file = climo_dir + "/" + variables(0) + "_" + \
-  ;   input_file_info@experiment(dimsizes(models@experiment)-1)+"_"+\
+  ;   input_file_info@exp(dimsizes(input_file_info@exp)-1)+"_"+\
   ;                           (p_step+1)+"ystep_diagnostics.txt"
   ;
   ; if (isfilepresent(diag_file)) then
@@ -307,209 +308,209 @@ local plot_array, plot, colors, dashes, thicks, plot_num, res, bres, tline, \
   zline
 begin
 
-    ; Check for valid data
-    if (all(ismissing(Ydata(:, :)))) then
-      log_info("No data available, skipping")
-      return(0)
-    end if
+  ; Check for valid data
+  if (all(ismissing(Ydata(:, :)))) then
+    log_info("No data available, skipping")
+    return(0)
+  end if
 
-    ; Define line colors (first color is used for the observations)
-    dashes = project_style(diag_script_info, "dashes")
+  ; Define line colors (first color is used for the observations)
+  dashes = project_style(diag_script_info, "dashes")
 
-    i_OBS = ind(models@project .eq. "OBS")
-    DIM_OBS = dimsizes(i_OBS)
+  i_OBS = ind(dataset_info@project .eq. "OBS")
+  DIM_OBS = dimsizes(i_OBS)
 
-    if (diag_script_info@typ .eq. "pos") then
-      lg_labels = new((/3 + DIM_OBS/), string)
-      lg_colors = new((/3 + DIM_OBS/), string)
-      item_type = new((/3 + DIM_OBS/), string)
+  if (diag_script_info@typ .eq. "pos") then
+    lg_labels = new((/3 + DIM_OBS/), string)
+    lg_colors = new((/3 + DIM_OBS/), string)
+    item_type = new((/3 + DIM_OBS/), string)
 
-      OBSdashes = (/4, 2, 0, 9/)
-      lg_labels(DIM_OBS + 1) = "CMIP5 models"   ; dataset_info@dataset(2)
-      lg_labels(DIM_OBS + 2) = dataset_info@dataset(1)
-      lg_colors(DIM_OBS + 1) = "grey50"         ; "blue2";"slateblue4";colors
-      lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
-      item_type(DIM_OBS + 1) = "Lines"
-      item_type(DIM_OBS + 2) = "Markers"
-    else if (diag_script_info@typ .eq. "trend") then
-      lg_labels = new((/2 + DIM_OBS/), string)
-      lg_colors = new((/2 + DIM_OBS/), string)
-      item_type = new((/2 + DIM_OBS/), string)
+    OBSdashes = (/4, 2, 0, 9/)
+    lg_labels(DIM_OBS + 1) = "CMIP5 models"   ; dataset_info@dataset(2)
+    lg_labels(DIM_OBS + 2) = dataset_info@dataset(1)
+    lg_colors(DIM_OBS + 1) = "grey50"         ; "blue2";"slateblue4";colors
+    lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
+    item_type(DIM_OBS + 1) = "Lines"
+    item_type(DIM_OBS + 2) = "Markers"
+  else if (diag_script_info@typ .eq. "trend") then
+    lg_labels = new((/2 + DIM_OBS/), string)
+    lg_colors = new((/2 + DIM_OBS/), string)
+    item_type = new((/2 + DIM_OBS/), string)
 
-      OBSdashes = (/4, 2, 9/)
-      lg_labels(DIM_OBS + 1) = dataset_info@dataset(1)
-      lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
-      item_type(DIM_OBS + 1) = "Markers"
-    end if
-    end if
+    OBSdashes = (/4, 2, 9/)
+    lg_labels(DIM_OBS + 1) = dataset_info@dataset(1)
+    lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
+    item_type(DIM_OBS + 1) = "Markers"
+  end if
+  end if
 
-    ; Define array with legend names
-    lg_labels(:DIM_OBS - 1) = Yobs@name
-    lg_labels(DIM_OBS) = dataset_info@dataset(0)
+  ; Define array with legend names
+  lg_labels(:DIM_OBS - 1) = Yobs@name
+  lg_labels(DIM_OBS) = dataset_info@dataset(0)
 
-    ; Define array with colors
-    lg_colors(:DIM_OBS - 1) = "orange"
-    lg_colors(DIM_OBS) = "red"
+  ; Define array with colors
+  lg_colors(:DIM_OBS - 1) = "orange"
+  lg_colors(DIM_OBS) = "red"
 
-    ; Define item types
-    item_type(:DIM_OBS) = "Lines"
+  ; Define item types
+  item_type(:DIM_OBS) = "Lines"
 
-    error_bar = new(dimsizes(Ydata&time), graphic)
-    error_barend = new(dimsizes(Ydata&time), graphic)
+  error_bar = new(dimsizes(Ydata&time), graphic)
+  error_barend = new(dimsizes(Ydata&time), graphic)
 
-    ; Resources
-    res = True
-    res@gsnDraw = False                 ; Do not draw plot
-    res@gsnFrame = False                ; Do not advance frame
-    res@gsnMaximize = True
+  ; Resources
+  res = True
+  res@gsnDraw = False                 ; Do not draw plot
+  res@gsnFrame = False                ; Do not advance frame
+  res@gsnMaximize = True
 
-    res@txFontHeightF = 0.025
-    res@tiXAxisString = "Year"
-    res@tiXAxisFontHeightF = 0.025
-    res@tiYAxisString = YStg
-    res@tiYAxisFontHeightF = 0.025
-    res@tiMainFontHeightF = 0.025
-    res@tiMainString  = MainStg
+  res@txFontHeightF = 0.025
+  res@tiXAxisString = "Year"
+  res@tiXAxisFontHeightF = 0.025
+  res@tiYAxisString = YStg
+  res@tiYAxisFontHeightF = 0.025
+  res@tiMainFontHeightF = 0.025
+  res@tiMainString  = MainStg
 
-    res@vpHeightF = 0.4                 ; change aspect ratio of plot
-    res@vpWidthF = 0.6
+  res@vpHeightF = 0.4                 ; change aspect ratio of plot
+  res@vpWidthF = 0.6
 
-    res@trXMinF = min(Ydata&time)
-    res@trXMaxF = 2060                  ; max(Ydata&time) - 1
-    res@trYMinF = min(Ydata) - 0.02 * (abs(avg(Ydata)))
-    res@trYMaxF = max(Ydata) + 0.02 * (abs(avg(Ydata)))
+  res@trXMinF = min(Ydata&time)
+  res@trXMaxF = 2060                  ; max(Ydata&time) - 1
+  res@trYMinF = min(Ydata) - 0.02 * (abs(avg(Ydata)))
+  res@trYMaxF = max(Ydata) + 0.02 * (abs(avg(Ydata)))
 
-    ; Create a plot with filled area between both curves
-    ; if (diag_script_info@typ .eq. "pos") then
-    ;   res@xyLineColor = "skyblue1"
-    ;   res@gsnXYAboveFillColors = "skyblue1"
-    ; else
-    res@xyLineColor          = "white"
-    res@gsnXYAboveFillColors = "white"
-    ; end if
+  ; Create a plot with filled area between both curves
+  ; if (diag_script_info@typ .eq. "pos") then
+  ;   res@xyLineColor = "skyblue1"
+  ;   res@gsnXYAboveFillColors = "skyblue1"
+  ; else
+  res@xyLineColor          = "white"
+  res@gsnXYAboveFillColors = "white"
+  ; end if
 
-    ; Create plot
-    plot_array = gsn_csm_xy(wks, Ydata&time, Ywerror(:, :), res)
+  ; Create plot
+  plot_array = gsn_csm_xy(wks, Ydata&time, Ywerror(:, :), res)
 
-    ; Add MDER to plot
-    if (diag_script_info@typ .eq. "pos") then
-      mder = True
-      mder@gsLineDashPattern = 4
-      mder@xyMonoLineColor = False
-      mder@gsLineColor = "slateblue4"
-      mder@gsLineThicknessF = 3
-      ; wmmm = gsn_add_polyline(wks,plot_array,Ydata&time,Ydata(2,:),mder)
-    end if
-
-    lres = True
-    lres@xyMonoDashPattern = False
-    lres@gsLineColor = "grey50"
-    lres@gsLineThicknessF = 2
-    plotm = new((/dimsizes(Ydata(3:, 0))/), graphic)
-    do idat = 3, dimsizes(Ydata(:, 0)) - 1
-      lres@gsLineDashPattern = dashes(idat)
-      plotm(idat - 3) = gsn_add_polyline(wks, plot_array, Ydata&time, \
-                                         Ydata(idat, :), lres)
-    end do
-
-    ; Add OBS to plot
-    mres = True
-    mres@gsLineColor = "orange"
-    mres@gsLineThicknessF = 3
-    ploto = new((/dimsizes(Yobs(:, 0))/), graphic)
-    do iobs = 0, dimsizes(Yobs(:, 0)) - 1
-      mres@gsLineDashPattern = OBSdashes(iobs)
-      ploto(iobs) = gsn_add_polyline(wks, plot_array, Yobs&time, \
-                                     Yobs(iobs, :), mres)
-    end do
-
-    ; Add uMMM to plot
-    mres@gsLineColor = "red"
-    mres@gsLineThicknessF = 3
-    mres@gsLineDashPattern = 2
-    ummm = gsn_add_polyline(wks, plot_array, Ydata&time, Ydata(0, :), mres)
-
-    ; Add error bars to dependent MDER-markers
-    erres = True
-    erres@gsLineColor = "blue2"         ; "slateblue4"
-    erres@gsLineThicknessF = 3
-    do tt = 0, dimsizes(Ydata&time) - 1
-      if (.not. ismissing(Ywterror(0, tt))) then
-        error_bar(tt) = gsn_add_polyline(wks, plot_array, \
-                                         (/Ydata&time(tt), Ydata&time(tt)/), \
-                                         (/Ywterror(0, tt), \
-                                          Ywterror(1, tt)/), \
-                                         erres)
-        error_barend(tt) = gsn_add_polyline(wks, plot_array, \
-                                            (/Ydata&time(tt) - 2.0, \
-                                             Ydata&time(tt) + 2.0, \
-                                             Ydata&time(tt), \
-                                             Ydata&time(tt), \
-                                             Ydata&time(tt) - 2.0, \
-                                             Ydata&time(tt) + 2.0/), \
-                                            (/Ywterror(0, tt), \
-                                             Ywterror(0, tt), \
-                                             Ywterror(0, tt), \
-                                             Ywterror(1, tt), \
-                                             Ywterror(1, tt), \
-                                             Ywterror(1, tt)/), \
-                                            erres)
-      end if
-    end do
-
-    ; Add time dependent MDER to plot
+  ; Add MDER to plot
+  if (diag_script_info@typ .eq. "pos") then
     mder = True
-    mder@gsMarkerColor = "blue2"        ; "slateblue4"
-    mder@gsMarkerIndex = 9
-    mder@gsMarkerThicknessF = 3
-    mder@gsMarkerSizeF = 0.01
-    wtmmm = gsn_add_polymarker(wks, plot_array, Ydata&time, Ydata(1, :), mder)
+    mder@gsLineDashPattern = 4
+    mder@xyMonoLineColor = False
+    mder@gsLineColor = "slateblue4"
+    mder@gsLineThicknessF = 3
+    ; wmmm = gsn_add_polyline(wks,plot_array,Ydata&time,Ydata(2,:),mder)
+  end if
 
-    lres = True
-    lres@gsLineColor = "black"
-    lres@gsLineThicknessF = 1
-    zline = gsn_add_polyline(wks, plot_array, (/1900, 2100/), (/0, 0/), lres)
+  lres = True
+  lres@xyMonoDashPattern = False
+  lres@gsLineColor = "grey50"
+  lres@gsLineThicknessF = 2
+  plotm = new((/dimsizes(Ydata(3:, 0))/), graphic)
+  do idat = 3, dimsizes(Ydata(:, 0)) - 1
+    lres@gsLineDashPattern = dashes(idat)
+    plotm(idat - 3) = gsn_add_polyline(wks, plot_array, Ydata&time, \
+                                       Ydata(idat, :), lres)
+  end do
 
-    if (opt.eq."draw") then
-      lgres = True
-      lgres@lgPerimOn = False
-      lgres@lgMonoitem_typee = False
-      lgres@lgitem_typees = item_type
-      lgres@vpWidthF = 0.30
-      lgres@vpHeightF = 0.025 * dimsizes(OBSdashes)
-      lgres@lgLabelFontHeightF = 0.20
-      lgres@lgLineColors = lg_colors
-      lgres@lgDashIndexes = OBSdashes
-      lgres@lgLineThicknessF = 2
-      OBSdashes(:dimsizes(OBSdashes) - 2) = -1
-      lgres@lgMarkerIndexes = OBSdashes
-      lgres@lgMarkerSizeF = 0.009
-      lgres@lgMarkerThicknessF = 3
-      lbid = gsn_create_legend(wks, dimsizes(OBSdashes), lg_labels, lgres)
+  ; Add OBS to plot
+  mres = True
+  mres@gsLineColor = "orange"
+  mres@gsLineThicknessF = 3
+  ploto = new((/dimsizes(Yobs(:, 0))/), graphic)
+  do iobs = 0, dimsizes(Yobs(:, 0)) - 1
+    mres@gsLineDashPattern = OBSdashes(iobs)
+    ploto(iobs) = gsn_add_polyline(wks, plot_array, Yobs&time, \
+                                   Yobs(iobs, :), mres)
+  end do
 
-      amres = True
-      amres@amParallelPosF = 0.25
-      amres@amOrthogonalPosF = -0.37
-      annoid = gsn_add_annotation(plot_array, lbid, amres)
+  ; Add uMMM to plot
+  mres@gsLineColor = "red"
+  mres@gsLineThicknessF = 3
+  mres@gsLineDashPattern = 2
+  ummm = gsn_add_polyline(wks, plot_array, Ydata&time, Ydata(0, :), mres)
 
-      str1 = unique_string("annoid")
-      plot_array@$str1$ = annoid
-
-      draw(plot_array)
-      frame(wks)
-      delete([/plot_array, ploto/])
-      delete([/lbid, annoid/])
-      delete([/wtmmm, ummm, zline/])
-
-      ; if (diag_script_info@typ.eq."pos") then
-      ;   delete(wmmm)
-      ; end if
-      return(0)
+  ; Add error bars to dependent MDER-markers
+  erres = True
+  erres@gsLineColor = "blue2"         ; "slateblue4"
+  erres@gsLineThicknessF = 3
+  do tt = 0, dimsizes(Ydata&time) - 1
+    if (.not. ismissing(Ywterror(0, tt))) then
+      error_bar(tt) = gsn_add_polyline(wks, plot_array, \
+                                       (/Ydata&time(tt), Ydata&time(tt)/), \
+                                       (/Ywterror(0, tt), \
+                                        Ywterror(1, tt)/), \
+                                       erres)
+      error_barend(tt) = gsn_add_polyline(wks, plot_array, \
+                                          (/Ydata&time(tt) - 2.0, \
+                                           Ydata&time(tt) + 2.0, \
+                                           Ydata&time(tt), \
+                                           Ydata&time(tt), \
+                                           Ydata&time(tt) - 2.0, \
+                                           Ydata&time(tt) + 2.0/), \
+                                          (/Ywterror(0, tt), \
+                                           Ywterror(0, tt), \
+                                           Ywterror(0, tt), \
+                                           Ywterror(1, tt), \
+                                           Ywterror(1, tt), \
+                                           Ywterror(1, tt)/), \
+                                          erres)
     end if
+  end do
 
-    if (opt .eq. "panel") then
-      return(plot_array)
-    end if
+  ; Add time dependent MDER to plot
+  mder = True
+  mder@gsMarkerColor = "blue2"        ; "slateblue4"
+  mder@gsMarkerIndex = 9
+  mder@gsMarkerThicknessF = 3
+  mder@gsMarkerSizeF = 0.01
+  wtmmm = gsn_add_polymarker(wks, plot_array, Ydata&time, Ydata(1, :), mder)
+
+  lres = True
+  lres@gsLineColor = "black"
+  lres@gsLineThicknessF = 1
+  zline = gsn_add_polyline(wks, plot_array, (/1900, 2100/), (/0, 0/), lres)
+
+  if (opt.eq."draw") then
+    lgres = True
+    lgres@lgPerimOn = False
+    lgres@lgMonoitem_typee = False
+    lgres@lgitem_typees = item_type
+    lgres@vpWidthF = 0.30
+    lgres@vpHeightF = 0.025 * dimsizes(OBSdashes)
+    lgres@lgLabelFontHeightF = 0.20
+    lgres@lgLineColors = lg_colors
+    lgres@lgDashIndexes = OBSdashes
+    lgres@lgLineThicknessF = 2
+    OBSdashes(:dimsizes(OBSdashes) - 2) = -1
+    lgres@lgMarkerIndexes = OBSdashes
+    lgres@lgMarkerSizeF = 0.009
+    lgres@lgMarkerThicknessF = 3
+    lbid = gsn_create_legend(wks, dimsizes(OBSdashes), lg_labels, lgres)
+
+    amres = True
+    amres@amParallelPosF = 0.25
+    amres@amOrthogonalPosF = -0.37
+    annoid = gsn_add_annotation(plot_array, lbid, amres)
+
+    str1 = unique_string("annoid")
+    plot_array@$str1$ = annoid
+
+    draw(plot_array)
+    frame(wks)
+    delete([/plot_array, ploto/])
+    delete([/lbid, annoid/])
+    delete([/wtmmm, ummm, zline/])
+
+    ; if (diag_script_info@typ.eq."pos") then
+    ;   delete(wmmm)
+    ; end if
+    return(0)
+  end if
+
+  if (opt .eq. "panel") then
+    return(plot_array)
+  end if
 
 end
 
@@ -545,165 +546,177 @@ function mder_scatter_plot(Xdata[*] : numeric, \
 local plot_array, plot, colors, dashes, thicks, res, bres
 begin
 
-    ; Check for valid data
-    if (all(ismissing(Xdata))) then
-        log_info("No data available, skipping")
-        return(0)
+  ; Check for valid data
+  if (all(ismissing(Xdata))) then
+      log_info("No data available, skipping")
+      return(0)
+  end if
+
+  ; Define line colors (first color is used for the observations)
+  colors = project_style(diag_script_info, "colors")
+  dashes = project_style(diag_script_info, "dashes")
+  thicks = project_style(diag_script_info, "thicks")
+  lg_labels = unique_labels_min((/"name", "ensemble"/))
+
+  plot = new((/dimsizes(Xdata)/), graphic)
+  plot_m = new((/dimsizes(Xdata)/), graphic)
+  Xerror = new((/dimsizes(Xdata)/), graphic)
+  Xerror_end = new((/dimsizes(Xdata)/), graphic)
+  Yerror = new((/dimsizes(Xdata)/), graphic)
+  Yerror_end = new((/dimsizes(Xdata)/), graphic)
+
+  ; Resources
+  res = True
+  res@gsnDraw = False                 ; Do not draw plot
+  res@gsnFrame = False                ; Do not advance frame
+  res@gsnMaximize = True
+
+  res@txFontHeightF = 0.025
+  res@tiXAxisString = XStg
+  res@tiXAxisFontHeightF = 0.022
+  res@tiYAxisString = YStg
+  res@tiYAxisFontHeightF = 0.025
+  res@tiMainFontHeightF = 0.025
+  res@tiMainString = MainStg
+
+  res@vpHeightF = 0.6                 ; change aspect ratio of plot
+  res@vpWidthF = 0.6
+
+  res@trYMinF = min(Ydata) - 0.2 * (abs(min(Ydata)) / 8)
+  res@trYMaxF = max(Ydata) + 0.2 * (abs(max(Ydata)) / 8)
+  res@trXMinF = max((/res@trYMinF, min(Yfit)/))
+  res@trXMaxF = min((/res@trYMaxF, max(Yfit)/))
+
+  ; Create a plot with filled area between both curves
+  res@xyLineColor = "grey85"
+  res@gsnXYFillColors = "grey85"
+
+  ; Create plot
+  plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
+
+  fres = True
+  fres@gsLineColor = "orange"
+  fres@gsFillColor = "orange"
+  fres@gsLineDashPattern = 0
+  plot_obs  = gsn_add_polygon(wks, plot_array, \
+                              (/Xdata(1) + Xerr(1), Xdata(1) - Xerr(1), \
+                               Xdata(1) - Xerr(1), Xdata(1) + Xerr(1)/), \
+                              (/100.0, 100.0, -100.0, -100.0/), \
+                              fres)
+  fres@gsLineColor = "slateblue4"
+  fres@gsLineThicknessF  = 3
+  fres@gsLineDashPattern = 0
+  plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
+  if (isatt(diag_script_info, "loglin")) then
+    if (diag_script_info@loglin) then
+      plot_yfit := gsn_add_polyline(wks, plot_array, Xdata(2:), Yfit, fres)
     end if
+  end if
+  fres@gsLineDashPattern = 1
+  plot_mder = gsn_add_polyline(wks, plot_array, \
+                               (/-100.0, Xdata(1), Xdata(1)/), \
+                               (/Ydata(1), Ydata(1), -100.0/), \
+                               fres)
+  fres@gsLineColor = "red"
+  fres@gsLineDashPattern = 3
+  plot_ummm = gsn_add_polyline(wks, plot_array, (/100.0, -100.0/), \
+                               (/Ydata(0), Ydata(0)/), fres)
 
-    ; Define line colors (first color is used for the observations)
-    colors = project_style(diag_script_info, "colors")
-    dashes = project_style(diag_script_info, "dashes")
-    thicks = project_style(diag_script_info, "thicks")
-    lg_labels = unique_labels_min((/"name", "ensemble"/))
+  bres = True
+  bres@gsLineColor = "black"
+  bres@gsLineThicknessF = 1.5
+  bres@gsMarkerThicknessF = 1.5
+  bres@gsMarkerSizeF = 0.01
+  bres@gsMarkerColor = "black"
+  bres@gsMarkerIndex = 1
+  Xbend = 0.01 * (res@trYMaxF - res@trYMinF)
+  Ybend = 0.01 * (res@trXMaxF - res@trXMinF)
 
-    plot = new((/dimsizes(Xdata)/), graphic)
-    plot_m = new((/dimsizes(Xdata)/), graphic)
-    Xerror = new((/dimsizes(Xdata)/), graphic)
-    Xerror_end = new((/dimsizes(Xdata)/), graphic)
-    Yerror = new((/dimsizes(Xdata)/), graphic)
-    Yerror_end = new((/dimsizes(Xdata)/), graphic)
+  txres = True
+  txres@txFontColor = "black"
+  txres@txFontHeightF = 0.016
+  txres@txJust = "TopLeft"
 
-    ; Resources
-    res = True
-    res@gsnDraw = False                 ; Do not draw plot
-    res@gsnFrame = False                ; Do not advance frame
-    res@gsnMaximize = True
-
-    res@txFontHeightF = 0.025
-    res@tiXAxisString = XStg
-    res@tiXAxisFontHeightF = 0.022
-    res@tiYAxisString = YStg
-    res@tiYAxisFontHeightF = 0.025
-    res@tiMainFontHeightF = 0.025
-    res@tiMainString = MainStg
-
-    res@vpHeightF = 0.6                 ; change aspect ratio of plot
-    res@vpWidthF = 0.6
-
-    res@trYMinF = min(Ydata) - 0.2 * (abs(min(Ydata)) / 8)
-    res@trYMaxF = max(Ydata) + 0.2 * (abs(max(Ydata)) / 8)
-    res@trXMinF = max((/res@trYMinF, min(Yfit)/))
-    res@trXMaxF = min((/res@trYMaxF, max(Yfit)/))
-
-    ; Create a plot with filled area between both curves
-    res@xyLineColor = "grey85"
-    res@gsnXYFillColors = "grey85"
-
-    ; Create plot
-    plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
-
-    fres = True
-    fres@gsLineColor = "orange"
-    fres@gsFillColor = "orange"
-    fres@gsLineDashPattern = 0
-    plot_obs  = gsn_add_polygon(wks, plot_array, \
-                                (/Xdata(1) + Xerr(1), Xdata(1) - Xerr(1), \
-                                 Xdata(1) - Xerr(1), Xdata(1) + Xerr(1)/), \
-                                (/100.0, 100.0, -100.0, -100.0/), \
-                                fres)
-    fres@gsLineColor = "slateblue4"
-    fres@gsLineThicknessF  = 3
-    fres@gsLineDashPattern = 0
-    plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
-    fres@gsLineDashPattern = 1
-    plot_mder = gsn_add_polyline(wks, plot_array, \
-                                 (/-100.0, Xdata(1), Xdata(1)/), \
-                                 (/Ydata(1), Ydata(1), -100.0/), \
-                                 fres)
-    fres@gsLineColor = "red"
-    fres@gsLineDashPattern = 3
-    plot_ummm = gsn_add_polyline(wks, plot_array, (/100.0, -100.0/), \
-                                 (/Ydata(0), Ydata(0)/), fres)
-
-    bres = True
-    bres@gsLineColor = "black"
-    bres@gsLineThicknessF = 1.5
-    bres@gsMarkerThicknessF = 1.5
-    bres@gsMarkerSizeF = 0.01
-    bres@gsMarkerColor = "black"
-    bres@gsMarkerIndex = 1
-    Xbend = 0.01 * (res@trYMaxF - res@trYMinF)
-    Ybend = 0.01 * (res@trXMaxF - res@trXMinF)
-
-    txres = True
-    txres@txFontColor = "black"
-    txres@txFontHeightF = 0.016
-    txres@txJust = "TopLeft"
-
-    do idat = 1, dimsizes(Xdata)-1
-      ; bres@gsMarkerColor = colors(idat)
-      ; bres@gsMarkerIndex = thicks(idat)
-      if (.not. ismissing(Yerr(idat)) .and. .not. ismissing(Xerr(idat))) then
-        Xerror(idat) = gsn_add_polyline(wks, plot_array, \
-                                        (/Xdata(idat) + Xerr(idat), \
-                                         Xdata(idat) - Xerr(idat)/), \
-                                        (/Ydata(idat), Ydata(idat)/), bres)
-        Xerror_end(idat) = gsn_add_polyline(wks, plot_array, \
-                                            (/Xdata(idat) + Xerr(idat), \
-                                             Xdata(idat) + Xerr(idat), \
-                                             Xdata(idat) + Xerr(idat), \
-                                             Xdata(idat) - Xerr(idat), \
-                                             Xdata(idat) - Xerr(idat), \
-                                             Xdata(idat) - Xerr(idat)/), \
-                                            (/Ydata(idat) - Xbend, \
-                                             Ydata(idat) + Xbend, \
-                                             Ydata(idat), Ydata(idat), \
-                                             Ydata(idat) - Xbend, \
-                                             Ydata(idat) + Xbend/), bres)
-        Yerror(idat) = gsn_add_polyline(wks, plot_array, \
-                                        (/Xdata(idat), Xdata(idat)/), \
-                                        (/Ydata(idat) + Yerr(idat), \
-                                         Ydata(idat) - Yerr(idat)/), bres)
-        Yerror_end(idat) = gsn_add_polyline(wks, plot_array, \
-                                            (/Xdata(idat) - Ybend, \
-                                             Xdata(idat) + Ybend, \
-                                             Xdata(idat), Xdata(idat), \
-                                             Xdata(idat) - Ybend, \
-                                             Xdata(idat) + Ybend/), \
-                                            (/Ydata(idat) + Yerr(idat), \
-                                             Ydata(idat) + Yerr(idat), \
-                                             Ydata(idat) + Yerr(idat), \
-                                             Ydata(idat) - Yerr(idat), \
-                                             Ydata(idat) - Yerr(idat), \
-                                             Ydata(idat) - Yerr(idat)/), bres)
-      end if
-      plot_m(idat) = gsn_add_polymarker(wks, plot_array, Xdata(idat), \
-                                        Ydata(idat), bres)
+  do idat = 1, dimsizes(Xdata)-1
+    ; bres@gsMarkerColor = colors(idat)
+    ; bres@gsMarkerIndex = thicks(idat)
+    if (.not. ismissing(Yerr(idat)) .and. .not. ismissing(Xerr(idat))) then
+      Xerror(idat) = gsn_add_polyline(wks, plot_array, \
+                                      (/Xdata(idat) + Xerr(idat), \
+                                       Xdata(idat) - Xerr(idat)/), \
+                                      (/Ydata(idat), Ydata(idat)/), bres)
+      Xerror_end(idat) = gsn_add_polyline(wks, plot_array, \
+                                          (/Xdata(idat) + Xerr(idat), \
+                                           Xdata(idat) + Xerr(idat), \
+                                           Xdata(idat) + Xerr(idat), \
+                                           Xdata(idat) - Xerr(idat), \
+                                           Xdata(idat) - Xerr(idat), \
+                                           Xdata(idat) - Xerr(idat)/), \
+                                          (/Ydata(idat) - Xbend, \
+                                           Ydata(idat) + Xbend, \
+                                           Ydata(idat), Ydata(idat), \
+                                           Ydata(idat) - Xbend, \
+                                           Ydata(idat) + Xbend/), bres)
+      Yerror(idat) = gsn_add_polyline(wks, plot_array, \
+                                      (/Xdata(idat), Xdata(idat)/), \
+                                      (/Ydata(idat) + Yerr(idat), \
+                                       Ydata(idat) - Yerr(idat)/), bres)
+      Yerror_end(idat) = gsn_add_polyline(wks, plot_array, \
+                                          (/Xdata(idat) - Ybend, \
+                                           Xdata(idat) + Ybend, \
+                                           Xdata(idat), Xdata(idat), \
+                                           Xdata(idat) - Ybend, \
+                                           Xdata(idat) + Ybend/), \
+                                          (/Ydata(idat) + Yerr(idat), \
+                                           Ydata(idat) + Yerr(idat), \
+                                           Ydata(idat) + Yerr(idat), \
+                                           Ydata(idat) - Yerr(idat), \
+                                           Ydata(idat) - Yerr(idat), \
+                                           Ydata(idat) - Yerr(idat)/), bres)
+    end if
+    plot_m(idat) = gsn_add_polymarker(wks, plot_array, Xdata(idat), \
+                                      Ydata(idat), bres)
+    if (isatt(Xdata, "model_numbers")) then
+      plot(idat) = gsn_add_text(wks, plot_array, \
+                                sprinti("%-0.2hi", \
+                                        Xdata@model_numbers(idat)), \
+                                Xdata(idat), Ydata(idat), txres)
+    else
       plot(idat) = gsn_add_text(wks, plot_array, sprinti("%-0.2hi", idat), \
                                 Xdata(idat), Ydata(idat), txres)
-      ; gsn_add_polymarker(wks, plot_array, Xdata(idat), Ydata(idat), bres)
-    end do
-
-    if (opt .eq. "draw") then
-      lgres = True
-      lgres@lgPerimOn = False
-      lgres@lgitem_typee = "Markers"
-      lgres@lgMonoMarkerColor = False
-      lgres@lgMonoMarkerIndex = False
-      lgres@vpWidthF = 0.18
-      lgres@lgLabelFontHeightF = 0.15
-      lgres@lgMarkerSizeF = 0.01
-
-      amres = True
-      amres@amOrthogonalPosF = 0.
-      amres@amParallelPosF = 0.67
-      lgres@vpHeightF = 0.6
-
-      lgres@lgMarkerColors = colors(2:)
-      lgres@lgMarkerIndexes = thicks(2:)
-      lbid = gsn_create_legend(wks, dimsizes(Xdata) - 2, lg_labels(2:), lgres)
-      ; annoid1 = gsn_add_annotation(plot_array, lbid, amres)
-
-      draw(plot_array)
-      frame(wks)
-      delete(plot_array)
-      return(0)
     end if
+    ; gsn_add_polymarker(wks, plot_array, Xdata(idat), Ydata(idat), bres)
+  end do
 
-    if (opt .eq. "panel") then
-      return(plot_array)
-    end if
+  if (opt .eq. "draw") then
+    lgres = True
+    lgres@lgPerimOn = False
+    lgres@lgitem_typee = "Markers"
+    lgres@lgMonoMarkerColor = False
+    lgres@lgMonoMarkerIndex = False
+    lgres@vpWidthF = 0.18
+    lgres@lgLabelFontHeightF = 0.15
+    lgres@lgMarkerSizeF = 0.01
+
+    amres = True
+    amres@amOrthogonalPosF = 0.
+    amres@amParallelPosF = 0.67
+    lgres@vpHeightF = 0.6
+
+    lgres@lgMarkerColors = colors(2:)
+    lgres@lgMarkerIndexes = thicks(2:)
+    lbid = gsn_create_legend(wks, dimsizes(Xdata) - 2, lg_labels(2:), lgres)
+    ; annoid1 = gsn_add_annotation(plot_array, lbid, amres)
+
+    draw(plot_array)
+    frame(wks)
+    delete(plot_array)
+    return(0)
+  end if
+
+  if (opt .eq. "panel") then
+    return(plot_array)
+  end if
 
 end
 
@@ -822,6 +835,63 @@ begin
   if (opt .eq. "panel") then
     return(plot)
   end if
+
+end
+
+
+; #############################################################################
+undef("diag_scatter")
+function diag_scatter(res_in[1] : logical, \
+                      diag_all : numeric, \
+                      future_diag : numeric, \
+                      target_var : string)
+;
+; Description:
+;   Scatterplot for each diagnostic of historical simulation vs projection
+;
+; Return value:
+;   plotnames : array of strings containing plotnames
+;
+; Arguments:
+;   res_in: resources, must be given as attributes with "res_" prefix
+;   diag_all: [dim_diags x dim_datasets], coordinates must contain
+;   names of diagnostics and datasets, respectively
+;   future_diag: [dim_diags], target diagnostic of projections
+;   target_var: name of target variable, needs attribute 'units'
+;
+; Modification history:
+;   * 20180806-A_schl_ma: ported to v2.0
+;   * 201806??-A_senf_da: written.
+;
+local dim_diag, dim_model, diags, datasets, wks, plot
+begin
+
+  diag_all!0 = "diags"
+  diag_all!1 = "datasets"
+  diags = diag_all&diags
+  datasets = diag_all&datasets
+  plotnames = new(dimsizes(diags), string)
+
+  do id = 0, dimsizes(diags) - 1
+    wks = get_wks(0, diag_script, target_var + "_" + diags(id))
+    plotnames(id) = wks@fullname
+    x_var = (/diag_all(id, :), future_diag/)
+    x_var!1 = "datasets"
+    x_var&datasets = datasets
+    copy_VarAtts(res_in, x_var)  ; pass resources
+    x_var@res_tiMainString  = "Correlation between " + diags(id) + \
+      " and " + target_var
+    x_var@res_tiXAxisString = diags(id)
+    x_var@res_tiYAxisString = target_var + " [" + target_var@units + "]"
+    x_var@res_trXMinF = min(x_var(0, :))
+    x_var@res_trXMaxF = max(x_var(0, :))
+    x_var@res_trYMinF = min(x_var(1, :))
+    x_var@res_trYMaxF = max(x_var(1, :))
+    plot = scatterplot(wks, x_var, target_var, True, False)
+    delete([/wks, x_var, plot/])
+  end do
+
+  return(plotnames)
 
 end
 ; #############################################################################
