@@ -5,7 +5,7 @@
 # conda build esmvaltool -c conda-forge -c birdhouse
 
 # Package version number
-{% set version = "2.0a0" %}
+{% set version = "2.0a1" %}
 
 package:
   name: esmvaltool
