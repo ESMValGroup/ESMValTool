@@ -860,8 +860,8 @@ function diag_scatter(res_in[1] : logical, \
 ;   target_var: name of target variable, needs attribute 'units'
 ;
 ; Modification history:
-;   * 20180806-A_schl_ma: ported to v2.0
-;   * 201806??-A_senf_da: written.
+;   * 20180806_A-schl_ma: ported to v2.0
+;   * 201806??_A-senf_da: written.
 ;
 local dim_diag, dim_model, diags, datasets, wks, plot
 begin
