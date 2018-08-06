@@ -8,8 +8,9 @@ dependencies:
   # Python packages that cannot be installed from PyPI:
   # TODO when switching to iris 2.x, switch straight to 2.1+
   - basemap
-  - iris=1.13
+  - iris=1.13  # Only available on PyPI from version 2
   - python-stratify
+  - cis  # Version on PyPI is outdated
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1
