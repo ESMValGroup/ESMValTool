@@ -29,6 +29,7 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     'install': [
         'basemap',
+        'cis',
         'cartopy',
         'cdo',
         'cf_units',
@@ -215,6 +216,7 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
+                'prepare_observations = esmvaltool.utils.prepare_observations:_main',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             ],
         },

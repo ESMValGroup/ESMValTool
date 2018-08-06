@@ -38,6 +38,7 @@ requirements:
     - python-stratify
     # Normally installed via pip:
     - cartopy
+    - cis
     - cf_units
     - cython
     - matplotlib
