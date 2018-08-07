@@ -18,6 +18,7 @@
 ;    function normalize_metric
 ;    function distrib_stats
 ;    function lognormal_dist
+;    function filter121
 ;
 ; #############################################################################
 
@@ -1724,4 +1725,55 @@ begin
   leave_msg(scriptname, funcname)
   return(fout)
 
+end
+
+; #############################################################################
+undef("filter121")
+function filter121(var:numeric, \
+                   iter:numeric)
+;
+; Arguments
+;     var: a 1-D array.
+;     iter: number of iterations.
+;
+; Return value
+;     Array of size and type of var.
+;
+; Description
+;     Smoothes a time series by 1-2-1 filter in iter time steps.
+;
+; Modification history
+;     20180807_A-schl_ma: ported to v2.0
+;     20140721_A-wenz_sa: written.
+;
+local yy_sm, y_sm0, n_max
+begin
+
+  funcname = "filter121"
+  scriptname = "diag_scripts/shared/statistics.ncl"
+  enter_msg(scriptname, funcname)
+
+  rank = dimsizes(dimsizes(var))
+  n_max = dimsizes(var)
+
+  if (rank .eq. 1) then
+    yy_sm = var
+    yy_sm0 = yy_sm
+
+    ; Iteration
+    do ia = 0, iter
+      yy_sm0 = yy_sm
+      do it = 1, n_max - 2
+        yy_sm(it) = (yy_sm0(it - 1) + 2.0 * yy_sm0(it) + yy_sm0(it + 1)) / 4.0
+      end do
+    end do
+    out = yy_sm
+    delete([/yy_sm, yy_sm0/])
+  else
+    error_msg("f", scriptname, funcname, "smooting is currently not " + \
+              "implemented for more than 1 dimension")
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(out)
 end
