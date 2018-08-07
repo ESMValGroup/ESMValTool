@@ -57,6 +57,7 @@ begin
   ; Variable
   var0 = variables(0)
   target_var = var0
+  target_var@units = variable_info@units
   field_type0 = field_types(0)
   if (var0 .eq. "sic") then
     target_var = "SIE"  ; sea ice extent
@@ -192,7 +193,7 @@ begin
 
   ; Output arrays
   xx = new((/dimsizes(p_time), DIM_DAT/), float)
-  future_diag = xx(0, :)
+  future_diag = new((/DIM_DAT/), float)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
@@ -280,7 +281,7 @@ begin
     future_tmps = time_operations(tmpy, p_time(0), \
                                   (/p_time(dimsizes(p_time) - 1) + p_step/), \
                                   time_oper, time_opt, True)
-    future_diag(imod) = tofloat(avg(time_operations( \
+    future_diag(i) = tofloat(avg(time_operations( \
         future_tmps, p_time(0), (/p_time(dimsizes(p_time)-1) + p_step/), \
         "average", "yearly", True)))
     delete(future_tmps)

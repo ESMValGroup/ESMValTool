@@ -42,6 +42,7 @@
 ;
 ; Modification history
 ;   * 20180806_A-schl_ma: ported to v2.0
+;   * 201808??_A-senf_da: added option to plot log-linear regression
 ;   * 201303??_A-wenz_sa: written
 ;
 ; #############################################################################

@@ -10,8 +10,10 @@
 ;                                weighted model enseble and observations.
 ;     function mder_scatter_plot : creates a scatterplot with regression error
 ;                                  and xy-stddev of each model value.
-;     function sqrt_error_plot   : plots the sqared error for various model
-;                                  ensembles.
+;     function sqrt_error_plot : plots the sqared error for various model
+;                                ensembles.
+;     function diag_scatter : plots scatterplot for each diagnostic of
+;                             historical simulation vs projection
 ;
 ; #############################################################################
 
@@ -543,13 +545,19 @@ function mder_scatter_plot(Xdata[*] : numeric, \
 ;         "draw" : draws the plot directly and returnes logical
 ;         "panel" : returnes plotvalue for pannel plot
 ;
-local plot_array, plot, colors, dashes, thicks, res, bres
+local loglin, plot_array, plot, colors, dashes, thicks, res, bres
 begin
 
   ; Check for valid data
   if (all(ismissing(Xdata))) then
       log_info("No data available, skipping")
       return(0)
+  end if
+
+  ; Check for log-linear regression
+  loglin = False
+  if (isatt(diag_script_info, "loglin")) then
+    loglin = diag_script_info@loglin
   end if
 
   ; Define line colors (first color is used for the observations)
@@ -592,7 +600,11 @@ begin
   res@gsnXYFillColors = "grey85"
 
   ; Create plot
-  plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
+  if (loglin) then
+    plot_array = gsn_csm_xy(wks, Xdata(2:), Yfit_err, res)
+  else
+    plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
+  end if
 
   fres = True
   fres@gsLineColor = "orange"
@@ -606,11 +618,12 @@ begin
   fres@gsLineColor = "slateblue4"
   fres@gsLineThicknessF  = 3
   fres@gsLineDashPattern = 0
-  plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
-  if (isatt(diag_script_info, "loglin")) then
-    if (diag_script_info@loglin) then
-      plot_yfit := gsn_add_polyline(wks, plot_array, Xdata(2:), Yfit, fres)
-    end if
+
+  ; Create plot
+  if (loglin) then
+    plot_yfit = gsn_add_polyline(wks, plot_array, Xdata(2:), Yfit, fres)
+  else
+    plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
   end if
   fres@gsLineDashPattern = 1
   plot_mder = gsn_add_polyline(wks, plot_array, \
@@ -887,7 +900,9 @@ begin
     x_var@res_trXMaxF = max(x_var(0, :))
     x_var@res_trYMinF = min(x_var(1, :))
     x_var@res_trYMaxF = max(x_var(1, :))
-    plot = scatterplot(wks, x_var, target_var, True, False)
+    plot = scatterplot(wks, x_var, target_var, False, False)
+    draw(plot)
+    frame(wks)
     delete([/wks, x_var, plot/])
   end do
 
