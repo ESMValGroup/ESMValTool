@@ -18,10 +18,10 @@
 ; Required recipe attributes:
 ;     p_time : time range for projections.
 ;     p_step : averaging time range for target period.
-;     scale_time : a year to scale the timeseries with.
+;     scal_time : a year to scale the timeseries with.
 ;     time_oper : select for opperation in time_opperation function.
 ;     time_opt : select for option in time_opperation function.
-;     calc_type :
+;     calc_type : trend/pos
 ;
 ; Optional recipe attributes:
 ;
@@ -203,7 +203,7 @@ begin
   do i = 0, DIM_DAT - 1
     idat = idx_datasets(i)
 
-    ; All projection simulations for regression analysis and time series,
+    ; Call projection simulations for regression analysis and time series,
     ; scale time series and average over 10-year period
     tmp = read_data(idat, var0, field_type0)
     idx_hist = ind(dataset_info@dataset(idat) .eq. \
@@ -226,7 +226,7 @@ begin
     ; end if
 
     if (dimsizes(idx_hist) .ge. 1) then
-      ; all historical simulations for time series
+      ; Call historical simulations for time series
       tmp_hist = read_data(idx_hist(0), var0, field_type0)
 
       ; Average over ensemble members if more than one exists (see recipe)
@@ -273,6 +273,8 @@ begin
           end if
         end if
       end if
+
+      ; Append future array to historical array
       tmpy = array_append_record(tmp_hist, tmp, 0)
       delete([/tmp, tmp_hist, idx_hist, idx_fut/])
     end if
@@ -286,11 +288,12 @@ begin
         "average", "yearly", True)))
     delete(future_tmps)
 
+    ; Loop over different target periods
     do pt = 0, dimsizes(p_time) - 1
       ; Average over var time series
-      tmps = time_operations(tmpy, p_time(pt), (/p_time(pt) + p_step/), \
+      tmps = time_operations(tmpy, p_time(pt), p_time(pt) + p_step, \
                              time_oper, time_opt, True)
-      tmpj = time_operations(tmps, p_time(pt), (/p_time(pt) + p_step/), \
+      tmpj = time_operations(tmps, p_time(pt), p_time(pt) + p_step, \
                              "average", "yearly", True)
 
       ; Calculate the scaling factor between scal_time(0) and scal_time(1)
@@ -299,26 +302,26 @@ begin
         scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
       end if
 
+      ; Calculate average over starting period for trend calculation
       tmpxx = time_operations(tmpy, scal_time(0), scal_time(1), "extract", \
                               time_opt, True)
       tmpyy = time_operations(tmpxx, scal_time(0), scal_time(1), "average", \
                               "yearly", True)
       tmppd = tofloat(avg(tmpyy))
 
+      ; Perform calculation type
       if (calc_type .eq. "trend") then
-          xx(pt, i) = tofloat(avg(tmpj)) - tmppd
+        xx(pt, i) = tofloat(avg(tmpj)) - tmppd
       else if (calc_type .eq. "pos") then
-          xx(pt, i) = tofloat(avg(tmpj))
+        xx(pt, i) = tofloat(avg(tmpj))
       else
-          error_msg("f", diag_script, "", "calc_type " + calc_type + \
-                    " not supported")
+        error_msg("f", diag_script, "", "calc_type " + calc_type + \
+                  " not supported")
       end if
       end if
       delete([/tmppd, tmps, tmpj, tmpyy, tmpxx/])
-
     end do
     delete(tmpy)
-
   end do
 
   ; Save unique dataset names (modifies dataset_info@dataset!)
@@ -334,6 +337,12 @@ begin
   input_files = diag_script_info@input_files
   input_dirs = input_files(ind(input_files .ne. \
                                str_match(input_files, "_info.ncl")))
+
+  ; Abort when no diagnostics are given
+  if (dimsizes(input_dirs) .lt. 1) then
+    error_msg("f", diag_script, "", "no diagnositcs given (use ancestors " + \
+              "key in recipe")
+  end if
 
   ; Get diagnostics
   file_list = new(1, string)
@@ -385,7 +394,7 @@ begin
   corr = new((/dimsizes(p_time), DIM_DIAG/), float)
   diag_sign = new((/dimsizes(p_time), DIM_DIAG/), string)
 
-  ; Iterate over p_time arrays
+  ; Loop over different target periods
   do pt = 0, dimsizes(p_time) - 1
     corr_sig = new((/2, DIM_DIAG/), float)
     r_sig0  = new((/DIM_DIAG/), float)
