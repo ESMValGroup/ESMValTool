@@ -1450,9 +1450,144 @@ diagnostics:
 
 ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ########################################################################################################
 
+  od550aer:
+    description: Aerosol optical depth at 550 nm
+    variables:
+      od550aer:
+        preprocessor: ppNOLEV2
+        reference_dataset: ESACCI-AEROSOL
+        alternative_dataset: MODIS-L3-C5
+        mip: aero
+        field: T2Ms
+        derive: false
+        force_derivation: false
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start_year: 2003,  end_year: 2005,  tier: 2}
+      - {dataset: MODIS,            project: OBS,  type: sat,  version: L3-C6,     start_year: 2003,  end_year: 2005,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
 ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ########################################################################################################
 
+  od870aer:
+    description: Aerosol optical depth at 870 nm
+    variables:
+      od870aer:
+        preprocessor: ppNOLEV1
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        field: T2Ms
+        derive: false
+        force_derivation: false
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start_year: 2003,  end_year: 2005,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+        
+
+### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ####################################################################################################
+
+  abs550aer:
+    description: Absorption optical depth at 550 nm
+    variables:
+      abs550aer:
+        preprocessor: ppNOLEV1
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        field: T2Ms
+        derive: false
+        force_derivation: false
+    additional_datasets:
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start_year: 2003,  end_year: 2005,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
 ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ###########################################################################################
+
+  od550lt1aer:
+    description: Fine mode optical depth at 550 nm
+    variables:
+      od550lt1aer:
+        preprocessor: ppNOLEV1
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        field: T2Ms
+        derive: false
+        force_derivation: false
+    additional_datasets:
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2003, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2005}
+      - {dataset: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start_year: 2003,  end_year: 2005,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
 
 ### toz: TOTAL COLUMN OZONE ##########################################################################################################################
 
