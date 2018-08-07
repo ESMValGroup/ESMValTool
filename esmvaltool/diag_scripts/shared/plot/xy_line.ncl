@@ -1520,20 +1520,20 @@ begin
 
   ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "input_file_info"
-    temp = input_file_info
+    ; Project_style evaluates metadata of variable "dataset_info"
+    temp = dataset_info
 
-    ; -> keep original "input_file_info" in "temp" and restore later
-    copy_VarMeta(input_file_info, temp)
-    delete(input_file_info)
+    ; -> keep original "dataset_info" in "temp" and restore later
+    copy_VarMeta(dataset_info, temp)
+    delete(dataset_info)
 
-    ; Use "input_file_info" to pass on attribute names
-    input_file_info = getvaratts(temp)
-    do i = 0, dimsizes(input_file_info) - 1
+    ; Use "dataset_info" to pass on attribute names
+    dataset_info = getvaratts(temp)
+    do i = 0, dimsizes(dataset_info) - 1
       ; Define all original attributes again, but empty
-      input_file_info@$input_file_info(i)$ = ""
+      dataset_info@$dataset_info(i)$ = ""
     end do
-    input_file_info@dataset = "model_mean"
+    dataset_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -1541,9 +1541,9 @@ begin
     thicks_mmm = project_style(diag_script_info, "thicks")
     annots_mmm = project_style(diag_script_info, "annots")
     avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(input_file_info)
-    input_file_info = temp  ; restore original "input_file_info"
-    copy_VarMeta(temp, input_file_info)
+    delete(dataset_info)
+    dataset_info = temp  ; restore original "dataset_info"
+    copy_VarMeta(temp, dataset_info)
     delete(temp)
   end if
 
@@ -1577,7 +1577,7 @@ begin
     ; We don't want the line, so make it transparent.
     res_stddev@xyLineColor = -1
     shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
-                               res_stddev)
+                              res_stddev)
     overlay(plot, shading_plot)
     ; MMM
     delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
