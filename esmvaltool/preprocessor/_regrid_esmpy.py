@@ -132,7 +132,7 @@ def cube_to_empty_field(cube, circular_lon=None, remove_mask=False):
     else:
         circular = circular_lon
     esmpy_coords = coords_iris_to_esmpy(lat, lon, circular)
-    grid = get_grid(*esmpy_coords, circular)
+    grid = get_grid(*esmpy_coords, circular=circular)
     field = get_empty_field(cube, grid, remove_mask)
     return field
 
@@ -190,7 +190,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
 def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
     # pylint: disable=too-many-locals
     # The necessary refactoring will be done for the full 3d regridding.
-    "Build regridder for 2.5d regridding"""
+    """Build regridder for 2.5d regridding"""
     dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
     src_fields = []
     esmf_regridders = []
