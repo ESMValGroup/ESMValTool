@@ -129,61 +129,6 @@ def mask_landsea(cube, fx_files, mask_out):
     return cube
 
 
-def masked_cube_simple(mycube, slicevar, v_min, v_max, threshold):
-    """
-    Mask function 1 -- simple cube cropping
-
-    masking for a specific variable slicevar (string)
-    arguments: cube, variable, min value, max value, threshold
-
-    """
-    import numpy.ma as ma
-    coord_names = [coord.name() for coord in mycube.coords()]
-    if slicevar in coord_names:
-        coord = mycube.coord(slicevar)
-        print('Masking on variable: %s' % coord.standard_name)
-        cubeslice = mycube.extract(
-            iris.Constraint(coord_values={
-                coord.standard_name:
-                lambda cell: v_min <= cell.point <= v_max
-            }))
-        if cubeslice is not None:
-            masked_cubeslice = cubeslice.copy()
-            masked_cubeslice.data = ma.masked_greater(cubeslice.data,
-                                                      threshold)
-            return masked_cubeslice
-        else:
-            logger.info('NOT masking the cube')
-            return mycube
-    else:
-        logger.info('Var is not a cube dimension, leaving cube untouched')
-        return mycube
-
-
-def masked_cube_lonlat(mycube, lonlat_list, threshold):
-    """
-    Mask function 2 -- simple cube cropping on (min,max) lon,lat
-
-    Builds a box and keeps only the values inside the box
-    args: cube, min value, max value, where value=(lon, lat), threshold
-
-    """
-    import numpy.ma as ma
-    lon1, lon2, lat1, lat2 = lonlat_list
-    cubeslice = mycube.extract(
-        iris.Constraint(
-            longitude=lambda v: lon1 <= v.point <= lon2,
-            latitude=lambda v: lat1 <= v.point <= lat2))
-    if cubeslice is not None:
-        masked_cubeslice = cubeslice.copy()
-        masked_cubeslice.data = ma.masked_greater(cubeslice.data, threshold)
-        print('Masking cube on lon-lat')
-        return masked_cubeslice
-    else:
-        print('NOT masking the cube')
-        return mycube
-
-
 def _get_geometry_from_shp(shapefilename):
     """Get the mask geometry out from a shapefile"""
     import cartopy.io.shapereader as shpreader
@@ -235,36 +180,6 @@ def _mask_with_shp(cube, shapefilename):
         cube.data = np.ma.masked_array(cube.data, mask)
 
     return cube
-
-
-def polygon_shape(xlist, ylist):
-    """
-    Make a polygon
-
-    Function that takes a list of x-coordinates and a list of y-coordinates
-    and returns a polygon and its (x,y) points on the polygon's border
-    """
-    from shapely.geometry import Polygon
-    poly = Polygon(xlist, ylist)
-    x_p, y_p = poly.exterior.coords.xy
-    return poly, x_p, y_p
-
-
-"""
-Calculating a custom statistic
-==============================
-
-This example shows how to define and use a custom
-:class:`iris.analysis.Aggregator`, that provides a new statistical operator for
-use with cube aggregation functions such as :meth:`~iris.cube.Cube.collapsed`,
-:meth:`~iris.cube.Cube.aggregated_by` or
-:meth:`~iris.cube.Cube.rolling_window`.
-
-In this case, we have a time sequence of measurements (time unit dt), and we
-want to calculate how many times N the measurements exceed a certain threshold
-R over a sliding window dT (multiple of dt). The threshold could be 0 for any
-unwanted value for instance.
-"""
 
 
 # Define a function to perform the custom statistical operation.
