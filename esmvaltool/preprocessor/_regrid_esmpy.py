@@ -46,16 +46,10 @@ def coords_iris_to_esmpy(lat, lon, circular):
                                                            lon_corners)
     elif dim == 2:
         esmpy_lat, esmpy_lon = lat.points.T.copy(), lon.points.T.copy()
-        if circular:
-            lat_corners = np.concatenate([lat.bounds[:, :, 0],
-                                          lat.bounds[-1:, :, 1]])
-            lon_corners = np.concatenate([lon.bounds[:, :, 0],
-                                          lon.bounds[-1:, :, 1]])
-        else:
-            lat_corners = np.concatenate([lat.bounds[:, :, 0],
-                                          lat.bounds[-1:, :, 1]])
-            lon_corners = np.concatenate([lon.bounds[:, :, 0],
-                                          lon.bounds[-1:, :, 1]])
+        lat_corners = np.concatenate([lat.bounds[:, :, 0],
+                                      lat.bounds[-1:, :, 1]])
+        lon_corners = np.concatenate([lon.bounds[:, :, 0],
+                                      lon.bounds[-1:, :, 1]])
         esmpy_lat_corners = lat_corners.T
         esmpy_lon_corners = lon_corners.T
     else:
