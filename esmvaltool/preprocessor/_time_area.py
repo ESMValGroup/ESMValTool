@@ -10,30 +10,32 @@ import numpy as np
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, yr1, mo1, day_1, yr2, mo2, day_2):
+def time_slice(mycube, start_year, start_month, start_day,
+               end_year, end_month, end_day):
     """
     Slice cube on time
 
     Function that returns a subset of the original cube (slice)
-    given two dates of interest date1 and date2
-    date1 and date2 should be given in a yr,mo,d (int)format e.g.
-    time_slice(cube,2006,2,2,2010,1,1) or
-    time_slice(cube,'2006','2','2','2010','1','1');
+    given two dates of interest start date and end date
+    start date and end date should be given in a yr,mo,d (int)format e.g.
+    time_slice(cube, 2006, 2, 2, 2010, 1, 1) or
+    time_slice(cube, '2006', '2', '2', '2010', '1', '1');
 
     Returns a cube
     """
     import datetime
     time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
-        if day_1 > 30:
-            day_1 = 30
-        if day_2 > 30:
-            day_2 = 30
-    my_date1 = datetime.datetime(int(yr1), int(mo1), int(day_1))
-    my_date2 = datetime.datetime(int(yr2), int(mo2), int(day_2))
+        if start_day > 30:
+            start_day = 30
+        if end_day > 30:
+            end_day = 30
+    start_date = datetime.datetime(int(start_year),
+                                   int(start_month), int(start_day))
+    end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
 
-    t_1 = time_units.date2num(my_date1)
-    t_2 = time_units.date2num(my_date2)
+    t_1 = time_units.date2num(start_date)
+    t_2 = time_units.date2num(end_date)
     # TODO replace the block below for when using iris 2.0
     # my_constraint = iris.Constraint(time=lambda t: (
     #     t_1 < time_units.date2num(t.point) < t_2))

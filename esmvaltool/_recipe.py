@@ -452,12 +452,12 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Configure time extraction
     settings['extract_time'] = {
-        'yr1': variable['start_year'],
-        'yr2': variable['end_year'] + 1,
-        'mo1': 1,
-        'mo2': 1,
-        'd1': 1,
-        'd2': 1,
+        'start_year': variable['start_year'],
+        'end_year': variable['end_year'] + 1,
+        'start_month': 1,
+        'end_month': 1,
+        'start_day': 1,
+        'end_day': 1,
     }
 
     if derive:
