@@ -29,7 +29,6 @@ function scatterplot(wks_in[1],
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
-;    logmode: if true, log scale will be used on both axes.
 ;    reflines: show/hide reference lines (1:1 and +/- factor 2).
 ;    stats: show/hide summary of statistical values on the plot.
 ;
@@ -48,13 +47,14 @@ function scatterplot(wks_in[1],
 ;
 ; Caveats
 ;    Linear axes are used as default, log axis can be optionally provided by
-;    the calling diag_script.
+;    the calling diag_script (option: diag_script_info@scatter_log).
 ;
 ; Modification history
 ;    20140228-A_righ_ma: written.
 ;
 local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
-  resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str
+  resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str,
+  scatter_log
 begin
 
   funcname = "scatterplot"
@@ -66,6 +66,14 @@ begin
     data = ncdf_read(source, varname)
   else
     data = source
+  end if
+
+  ; Get scatter_log option
+  scatter_log = False
+  if (isatt(diag_script_info, "scatter_log")) then
+    if (diag_script_info@scatter_log .eq. "True") then
+      scatter_log = True
+    end if
   end if
 
   ; Style options
@@ -107,7 +115,7 @@ begin
   end if
   res@tiXAxisString = data&datasets(0)
   res@tiYAxisString = data&datasets(1)
-  if (diag_script_info@scatter_log) then
+  if (scatter_log) then
     res@trXAxisType = "LogAxis"
     res@trYAxisType = "LogAxis"
     xpts = where(xpts.le.0, xpts@_FillValue, xpts)
@@ -144,7 +152,7 @@ begin
                              (/res@trYMinF, res@trYMaxF/), resL)
     plot@linec = linec
     resL@gsLineDashPattern = 1
-    if (diag_script_info@scatter_log) then
+    if (scatter_log) then
       lineh = gsn_add_polyline(wks_in, plot, \
                                (/res@trXMinF, res@trXMaxF / 2./), \
                                (/2 * res@trYMinF, res@trYMaxF/), resL)
@@ -176,7 +184,7 @@ begin
     text = new(nstats, graphic)
 
     ; Define labels horizontal position
-    if (diag_script_info@scatter_log) then
+    if (scatter_log) then
       step = (log10(res@trYMaxF) - log10(res@trYMinF)) / 20.
       xpos = 10 ^ (log10(res@trYMinF) + step)
     else
@@ -187,7 +195,7 @@ begin
     ; Define labels vertical position
     ypos = new(nstats, float)
     do ii = 0, nstats - 1
-      if (diag_script_info@scatter_log) then
+      if (scatter_log) then
         tmp = log10(res@trYMaxF) - step * (ii + 1)
         ypos(ii) = 10 ^ tmp
         delete(tmp)
