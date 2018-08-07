@@ -106,6 +106,7 @@ class Test(tests.Test):
         mfv = mask.mask_fillvalues([cube_1, cube_2], 0.95,
                                    min_value=-1.e10, time_window=1)
         self.assertArrayEqual(mfv[1].data.mask, data_2.mask)
+        self.assertArrayEqual(mfv[0].data, data_1)
 
 
 if __name__ == '__main__':
