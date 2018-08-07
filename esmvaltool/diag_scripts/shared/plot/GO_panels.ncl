@@ -105,7 +105,7 @@ begin
   ; -------------------------------------
   ; Plot model entry (first plot)
   ; -------------------------------------
-  main_title_prefix = ""  ; model_info@model(idx_mod)
+  main_title_prefix = ""  ; dataset_info@dataset(idx_mod)
   main_title_suffix = ""
   res = panel_two_by_one(res, 0)  ; Update resource for second plot
 
@@ -300,7 +300,7 @@ begin
 
   ; Plot mean of differences of first and second data set, first
   ; interpolate to the reference data set grid (conservative interpolation)
-  diff_model_ref = get_model_minus_ref(curr, ref)
+  diff_model_ref = get_dataset_minus_ref(curr, ref)
   plot_settings@type = "diff"
   plot_settings@skip_default_title = True
   statistics = True
@@ -358,7 +358,7 @@ local aux_title_info, cn_levels_string, curr, diag_description, \
   textres, var0, wks, diff_model_ref, txres
 begin
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -467,7 +467,7 @@ local aux_title_info, cn_levels_string, curr, diag_description, \
   textres, var0, wks, diff_model_ref, txres
 begin
 
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -659,7 +659,7 @@ begin
   plot_settings@idx = idx_mod
 
   ; Interpolate to reference grid for pattern correlation calculation
-  diff_model_ref = get_model_minus_ref(speed, speed_ref)
+  diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
 
   statistics = True
   statistics = \
@@ -694,9 +694,9 @@ begin
   ; Plot mean of differnces of first and second data set, first
   ; interpolate to the reference data set grid (bilinear interpolation)
 
-  diff_model_ref = get_model_minus_ref(speed, speed_ref)
-  diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
-  diff_model_va_ref = get_model_minus_ref(va, va_ref)
+  diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
+  diff_model_ua_ref = get_dataset_minus_ref(ua, ua_ref)
+  diff_model_va_ref = get_dataset_minus_ref(va, va_ref)
 
   main_title = "(1) - (2)"
   res = panel_three_by_one(res, 2)  ; Update resource for third plot
@@ -773,7 +773,7 @@ local aux_title_info, cn_levels_string, curr, diag_description, \
   output_file_path, plot, plot_diff, plot_ref, ref, res, storage_record, \
   textres, var0, wks, wks_debug, txres
 begin
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   var1 = variables(1)
@@ -1000,7 +1000,7 @@ begin
     statistics = compute_stat((/"yrs"/), valid_statistics, curr, dummy_array)
     if (plot_settings@type .eq. "diff") then
       statistics = compute_stat((/"rmse"/), valid_statistics, curr, ref)
-      diff_model_ref = get_model_minus_ref(curr, ref)
+      diff_model_ref = get_dataset_minus_ref(curr, ref)
       delete(curr)
       curr = diff_model_ref
       delete(diff_model_ref)
@@ -1147,7 +1147,7 @@ begin
 
   ; Which model goes where on each page?
   figure_panel_placement = new((/sum(figures_per_page)/), integer)
-  place_models_on_pages(model_info, \
+  place_models_on_pages(dataset_info, \
                         plot_settings@idx_ref, \
                         figures_per_page, \
                         model_panel_placement, \
@@ -1410,9 +1410,9 @@ begin
       statistics = compute_stat((/"rmse"/), valid_statistics, speed, speed_ref)
 
       ; ua/va/speed field interpolation
-      diff_model_ref = get_model_minus_ref(speed, speed_ref)
-      diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
-      diff_model_va_ref = get_model_minus_ref(va, va_ref)
+      diff_model_ref = get_dataset_minus_ref(speed, speed_ref)
+      diff_model_ua_ref = get_dataset_minus_ref(ua, ua_ref)
+      diff_model_va_ref = get_dataset_minus_ref(va, va_ref)
 
       delete(speed)
       speed = diff_model_ref
@@ -1530,7 +1530,7 @@ local aux_title_info, blank_plot, cn_levels_string, cols, curr_fig, \
   total_no_of_pages, txres, type_specifier, ua, ua_ref, va, var0, var1, \
   va_ref, wks, plot_ref_v
 begin
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -1578,7 +1578,7 @@ begin
 
   ; Which model goes where on each page?
   figure_panel_placement = new((/sum(figures_per_page)/), integer)
-  place_models_on_pages(model_info, \
+  place_models_on_pages(dataset_info, \
                         plot_settings@idx_ref, \
                         figures_per_page, \
                         model_panel_placement, \
@@ -1707,7 +1707,7 @@ local am_infobox_id, am_labelbar_id, amres, debugbox, diag_script_base, \
   precip_seasonal_maxY,   precip_seasonal_minY, precip_seasonal_spreadY, res, \
   storage_record, txres, var0, wks, xaxis, var1, field_type1
 begin
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -1785,7 +1785,7 @@ begin
   ; Plot loop
   ; ---------
   do idx_mod = 0, dim_MOD - 1
-    labels(idx_mod) = model_info@model(idx_mod)
+    labels(idx_mod) = dataset_info@dataset(idx_mod)
     res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
     ; Shift plot to the right and draw/redraw
@@ -1865,7 +1865,7 @@ local annots, annots_mmm, avgstd, avgstd_mmm, colors, colors_mmm, dashes, \
   storage_record, temp, thicks, thicks_mmm, values, values_stddev, \
   values_stddev, var0, var1, wks, wks_debug
 begin
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -1930,9 +1930,9 @@ begin
     models = getvaratts(temp)
     do i = 0, dimsizes(models) - 1
       ; Define all original attributes again, but empty
-      model_info@$models(i)$ = ""
+      dataset_info@$models(i)$ = ""
     end do
-    model_info@model = "model_mean"
+    dataset_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -2010,7 +2010,7 @@ local annots, avgstd, diag_script_base, dim_VAR, field_type0, field_type1, \
   storage_record, temp, val_area_stddev, values, values_stddev, var0, var1, \
   wks, wks_debug
 begin
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(dataset_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -2054,8 +2054,8 @@ begin
   end if
 
   ; Determine time range
-  start_year = min(stringtoint(model_info@start_year))
-  end_year = max(stringtoint(model_info@end_year))
+  start_year = min(stringtoint(dataset_info@start_year))
+  end_year = max(stringtoint(dataset_info@end_year))
 
   ; Select attributes
   annots = project_style(diag_script_info, "annots")

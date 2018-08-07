@@ -245,6 +245,31 @@ jobs:
       - store_artifacts:
           path: /logs
 
+  conda_install:
+    # Test conda package installation
+    working_directory: /esmvaltool
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - run:
+          command: |
+            set -x
+            # Install prerequisites
+            mkdir /logs
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda update -y conda > /logs/conda.txt 2>&1
+            # Create and activate conda environment
+            conda create -y --name esmvaltool python=3
+            set +x; source activate esmvaltool; set -x
+            # Install
+            conda install -y esmvaltool -c esmvalgroup -c conda-forge -c birdhouse
+            # Log versions
+            conda env export > /logs/environment.yml
+            # Test installation
+            esmvaltool -h
+            ncl -V
+
   ncl:
     # Test ncl conda package
     working_directory: /ncl
@@ -296,4 +321,5 @@ workflows:
       - develop
       - doc
       - conda_build
+      - conda_install
       - ncl
