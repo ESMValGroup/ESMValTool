@@ -28,6 +28,8 @@
 ;     time_oper : select for operation in time_operation function.
 ;     time_opt : select for option in time_operation function.
 ;     calc_type : trend/pos
+;     wregr : exit criterion for stepwise regression (True/False)
+;     wexit : exit criterion for stepwise regression (True/False)
 ;
 ; Optional recipe attributes:
 ;     units : units of target variable.
@@ -35,6 +37,7 @@
 ;     smooth : smoothes time period with 1-2-1 filter.
 ;     iter : iteration for smoothing.
 ;     cross_validation_mode : perform cross validation.
+;     p_value : p value for F-test in stepwise regression (default: p=0.05)
 ;
 ; Caveats:
 ;     Adds dataset_info@units.
@@ -246,9 +249,9 @@ begin
   yy_obs = new((/DIM_OBS, n_max/), float)
   weights_t = new((/1, DIM_DAT, dimsizes(p_time)/), float)
   cfint_t = new((/DIM_DAT, dimsizes(p_time)/), float)
-  coeff_y_est = new((/DIM_DAT, dimsizes(p_time)/), float)
-  Y_WEIGHT = new((/dimsizes(p_time)/), float)
-  MCORR = new((/dimsizes(p_time)/), float)
+  coeff_y_est = new((/DIM_DAT, dimsizes(p_time)/), double)
+  Y_WEIGHT = new((/dimsizes(p_time)/), double)
+  MCORR = new((/dimsizes(p_time)/), double)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess model data
@@ -549,7 +552,7 @@ begin
   diag_all_std&diagnostics = wdiag
   DIM_DIAG = dimsizes(good_diag_idx)
   DIM_DIAG_ALL = dimsizes(diag_a(:, 0))
-  delete([/diag_a, diag_a_std, good_diag_idx, missing_datasets/])
+  delete([/diag_a, diag_a_std, good_diag_idx/])
 
   ; ---------------------------------------------------------------------------
   ; Regression calculations
@@ -557,6 +560,8 @@ begin
 
   ; Loop over different target periods
   do pt = 0, dimsizes(p_time) - 1
+    log_info("Starting calculations for target period " + p_time(pt) + "-" + \
+             (p_time(pt) + p_step))
 
     ; Skip calculation if values are missing
     if (any(ismissing(xx(:, pt)))) then
@@ -564,411 +569,404 @@ begin
     end if
 
     ; Regression model: cross-validation cycle
-    ; if (cross_validation_mode .eq. True) then
-    ;   do i = 0, DIM_DAT - 1
-    ;     good = ind(dataset_info@dataset .ne. dataset_info@dataset(i))
-    ;     coef = regress_stepwise(diag_all(:, good), xx(good, pt))
-    ;     const = coef@const
-    ;     terms = toint(coef@terms)
-    ;     nterms = coef@nterms
-    ;     YFIT = coef@YFIT
-    ;     mcorr = coef@MCORRELATION
-    ;     corr = coef@correlation
+    if (cross_validation_mode .eq. True) then
+      do i = 0, DIM_DAT - 1
+        log_debug("Starting cross-validation cycle for dataset " + \
+                  dataset_info@dataset(i))
+        good = ind(dataset_info@dataset .ne. dataset_info@dataset(i))
+        coef = regress_stepwise(diag_all(:, good), xx(good, pt))
+        const = coef@const
+        terms = toint(coef@terms)
+        nterms = coef@nterms
+        YFIT = coef@YFIT
+        mcorr = coef@MCORRELATION
+        corr = coef@correlation
+        log_debug("Cross-validation mode. Dataset: " + \
+                  dataset_info@dataset(i) + ", constant: " + const)
+        if (nterms .gt. 0) then
+          do it = 0, dimsizes(coef) - 1
+            log_debug(wdiag(terms(it)) + ", " + coef(it) + ", " + corr(it))
+          end do
+        end if
+        log_debug("Multiple correlation: " + mcorr)
+        log_debug("")
+        delete([/const, terms, nterms, YFIT, mcorr, corr, coef, good/])
+      end do
+    end if
 
-    ;     log_debug("Cross-validation mode. Dataset: " + \
-    ;               dataset_info@dataset(i) + ", constant: " + const)
-    ;     if (nterms .gt. 0) then
-    ;       do it = 0, dimsizes(coef) - 1
-    ;         log_debug(wdiag(terms(it)) + ", " + coef(it) + ", " + corr(it))
-    ;       end do
-    ;     end if
-    ;     log_debug("Multiple correlation: " + mcorr)
-    ;     log_debug("")
+    ; Building the final regression
+    coef := regress_stepwise(diag_all, xx(:, pt))
+    const = coef@const
+    terms := toint(coef@terms)
+    nterms := coef@nterms
+    YFIT := coef@YFIT
+    mcorr := coef@MCORRELATION
+    corr := coef@correlation
 
-    ;     delete([/const, terms, nterms, YFIT, mcorr, corr, coef, good/])
-    ;   end do
-    ; end if
+    ; Print final regression model
+    log_info("The final model (" + scal_time(0) + "-" + \
+             (p_time(pt) + p_step) + "):")
+    log_info("Constant: " + const)
+    if (nterms .gt. 0) then
+      do it = 0, dimsizes(coef) - 1
+        log_debug(wdiag(terms(it)) + ", " + coef(it) + ", " + corr(it))
+      end do
+    end if
+    log_info("Multiple correlation: " + mcorr)
+    log_info("")
 
+    ; -------------------------------------------------------------------------
+    ; Model weighting
+    ; -------------------------------------------------------------------------
 
+    x_diag := transpose(diag_all(terms, :))
+    good_diag := ind(.not. ismissing(x_diag(:, 0)))
+    x := x_diag(good_diag, :)
 
-;     ;;Building the final regression
-;     if (all(isvar((/"coef","terms"/))).eq.True) then
-;       delete([/coef,terms/])
-;     end if
-;     coef = regress_stepwise(diag_all,xx(:,pt))
-; ;
-;     const  = coef@const
-;     terms  = toint(coef@terms)
-;     nterms = coef@nterms
-;     YFIT   = coef@YFIT
-;     mcorr  = coef@MCORRELATION
-;     corr   = coef@correlation
-; ;
-;     info_output("The final model ("+scal_time(0)+"-"+(p_time(pt)+p_step)+"):",verbosity, 0)
-;     info_output("Constant:"+const,verbosity, 0)
-;     if (verbosity.ge.0) then
-;       if (nterms.gt.0) then
-;         do it = 0,dimsizes(coef)-1
-;           print("info:   "+wdiag(terms(it))+" , "+coef(it)+" , "+corr(it))
-;         end do
-;       end if
-;     end if
-;     info_output("Multiple correlation: "+mcorr,verbosity, 0)
-;     info_output("",verbosity, 0)
-; ;
-;     ;;Model weighting
-;     x_diag = transpose(diag_all(terms,:))
-;     good_diag = ind(.not.ismissing(x_diag(:,0)))
-;     x = x_diag(good_diag,:)
-; ;
-;     ;tmp_MOD = DIM_DAT
-;     tmp_MOD = dimsizes(x(:,0))
-; ;
-;     ;;Create Design Matrix D
-;     if (isvar("D").eq.True) then
-;       delete(D)
-;     end if
-;     D = new((/tmp_MOD,dimsizes(terms)+1/),typeof(diag_all))
-;     D = 1
-;     do id = 0,dimsizes(x(:,0))-1
-;       D(id,1:) = x(id,:)
-;     end do
-; ;
-;     xobs = new((/1,dimsizes(terms)+1/),typeof(diag_all),getFillValue(diag_all))
-;     xobs = 1.
-;     xobs(0,1:) = obs0(terms)
-; ;
-;     df = tmp_MOD-dimsizes(xobs(0,:))
-; ;
-;     I = new((/tmp_MOD,tmp_MOD/),typeof(diag_all))
-;     I = 0.
-;     do imod = 0,tmp_MOD-1
-;       I(imod,imod) = 1.
-;     end do
-; ;
-;     y = xx(good_diag,pt)
-; ;
-;     m  = new((/tmp_MOD,1/),float)  ;;column vector ;REPLICATE(1.,nmods)
-;     m  = 1.
-;     n  = new((/tmp_MOD,1/),float)  ;;column vector ;REPLICATE(1./nmods,nmods)
-;     n  = (/1./tmp_MOD/)
-; ;
-; ;
-;     weights = (transpose(n)+(xobs(:,1:)-transpose(n)#x)#inverse_matrix(transpose(x)#x-transpose(x)#m#transpose(n)#x)#(transpose(x)-transpose(x)#m#transpose(n)))
-; print(weights)
-;     cfint  = cdft_t(0.05/2., df)^2*(1.+xobs#inverse_matrix(transpose(D)#D)#transpose(xobs))
-;     SSE1   = y#(I-D#inverse_matrix(transpose(D)#D)#transpose(D))
-;     sigmae = (1./df)*SSE1
-;     tmp_cf = cfint(0,0)*sigmae
-;     delete(cfint)
-; ;
-;     ;;Weighted mean and std
-;     y_weight = (weights#y)
-;     cf = sqrt(tmp_cf#y)
-; ;
-;     uM = avg(y)
-;     uM_std = stddev(y)/sqrt(DIM_DAT)
-; ;
-;     info_output("uMMM     = "+uM+" +/- "+uM_std,verbosity,0)
-;     info_output("y_weight = "+y_weight,verbosity,0)
-;     info_output("cf       = "+cf,verbosity,0)
-;     info_output(" ",verbosity,1)
-; ;
-;     do imod = 0,DIM_DAT-1
-;       do gdiad = 0,dimsizes(good_diag)-1
-;         if (imod.eq.good_diag(gdiad))
-;           weights_t(:,imod,pt) = weights(:,gdiad)
-;           cfint_t(imod,pt)     = tmp_cf(gdiad)
-;         end if
-;       end do
-;     end do
-; ;
-;     info_output("Model weights: ",verbosity,0)
-;     do imod = 0,DIM_DAT-1
-;       info_output(weights_t(:,imod,pt)+" : "+dataset_info@dataset(imod),verbosity,0)
-;     end do
-;     info_output(" ",verbosity,0)
-; ;
-;     ;;Save Y-estimates and multiple correllation coeficients
-;     coeff_y_est(:,pt) = coef@Yest
-;     MCORR(pt) = mcorr
-;     Y_WEIGHT(pt) = y_weight
-; ;
-;     ;;Save coefficients and terms of regression model in array
-;     if (isvar("mderrm")) then
-;       idx = max((/dimsizes(coef),dimsizes(mderrm(0,1:))/))
-;       tmprm = mderrm
-;       tmptr = termsrm
-;       tmpt  = termst
-;       delete([/mderrm,termsrm,termst/])
-; ;
-;       mderrm  = new((/pt+1,idx+1/),typeof(tmprm))
-;       termsrm = new((/pt+1,idx+1/),typeof(tmptr))
-;       termst  = new((/pt+1,idx+1/),typeof(tmpt))
-; ;
-;       mderrm(:pt-1,:dimsizes(tmprm(0,:))-1) = tmprm
-;       termsrm(:pt-1,:dimsizes(tmptr(0,:))-1) = tmptr
-;       termst(:pt-1,:dimsizes(tmpt(0,:))-1) = tmpt
-;       mderrm(pt,0) = const
-;       mderrm(pt,1:dimsizes(coef)) = coef
-;       termsrm(pt,1:dimsizes(wdiag(terms))) = wdiag(terms)
-;       termst(pt,1:dimsizes(terms)) = terms
-;       delete([/tmprm,tmptr,tmpt,idx/])
-;     else
-;       mderrm  = new((/pt+1,dimsizes(coef)+1/),float)
-;       termsrm = new((/pt+1,dimsizes(coef)+1/),string)
-;       termst  = new((/pt+1,dimsizes(coef)+1/),typeof(terms))
-; ;
-;       mderrm(pt,0)  = const
-;       mderrm(pt,1:) = coef
-;       termsrm(pt,1:) = wdiag(terms)
-;       termst(pt,1:) = terms
-;     end if
-; ;
-;     delete([/y,corr,mcorr/])
-;     delete([/x,x_diag,good_diag/])
-;     delete([/xobs,cf,tmp_cf,weights,uM,uM_std/]);,cfint,t_diff,tmp_t/])
+    ; tmp_dat = DIM_DAT
+    tmp_dat := dimsizes(x(:, 0))
+
+    ; Create Design Matrix D
+    D := new((/tmp_dat, dimsizes(terms) + 1/), typeof(diag_all))
+    D = 1
+    do id = 0, dimsizes(x(:, 0)) - 1
+      D(id, 1:) = x(id, :)
+    end do
+
+    ; Observations
+    xobs := new((/1, dimsizes(terms) + 1/), typeof(diag_all), \
+                getFillValue(diag_all))
+    xobs = 1.0
+    xobs(0, 1:) = obs0(terms)
+    df = tmp_dat - dimsizes(xobs(0, :))
+
+    ; Identity matrix
+    Id := new((/tmp_dat, tmp_dat/), typeof(diag_all))
+    Id = 0.0
+    do idat = 0, tmp_dat - 1
+      Id(idat, idat) = 1.0
+    end do
+
+    ; Auxiliary vectors
+    m := new((/tmp_dat, 1/), float)    ; column vector
+    m = 1.0
+    n := new((/tmp_dat, 1/), float)    ; column vector
+    n = (/1.0 / tmp_dat/)
+
+    ; Future projections
+    y := xx(good_diag, pt)
+
+    ; Calculate model weights (see Karpechko et al. 2013, eq. (4))
+    weights := (transpose(n) + (xobs(:, 1:) - transpose(n) # x) # \
+                inverse_matrix(transpose(x) # x - transpose(x) # m # \
+                               transpose(n) # x) # \
+                (transpose(x) - transpose(x) # m # transpose(n)))
+
+    ; Confidence interval
+    cfint = cdft_t(0.05 / 2.0, df) ^ 2 * \
+      (1.0 + xobs # inverse_matrix(transpose(D) # D) # transpose(xobs))
+    SSE1 := y # (Id - D # inverse_matrix(transpose(D) # D) # transpose(D))
+    sigmae := (1.0 / df) * SSE1
+    tmp_cf := cfint(0, 0) * sigmae
+    delete(cfint)
+
+    ; Weighted mean and std
+    y_weight := (weights # y)
+    cf := sqrt(tmp_cf # y)
+    uM = avg(y)
+    uM_std = stddev(y) / sqrt(DIM_DAT)
+    log_info("uMMM = " + uM + " +/- " + uM_std)
+    log_info("y_weight = " + y_weight)
+    log_info("cf = " + cf)
+    log_info("")
+
+    ; Save weights and confidence intervals in one array
+    do idat = 0, DIM_DAT - 1
+      do gdiad = 0, dimsizes(good_diag) - 1
+        if (idat .eq. good_diag(gdiad))
+          weights_t(:, idat, pt) = weights(:, gdiad)
+          cfint_t(idat, pt) = tmp_cf(gdiad)
+        end if
+      end do
+    end do
+
+    ; Output
+    log_info("Model weights: ")
+    do idat = 0, DIM_DAT - 1
+      log_info(dataset_info@dataset(idat) + ": " + weights_t(:, idat, pt))
+    end do
+    log_info("")
+
+    ; Save Y-estimates and multiple correllation coeficients
+    coeff_y_est(:, pt) = coef@Yest
+    MCORR(pt) = mcorr
+    Y_WEIGHT(pt) = y_weight
+
+    ; Save coefficients and terms of regression model in array
+    if (isvar("mderrm")) then
+      idx = max((/dimsizes(coef), dimsizes(mderrm(0, 1:))/))
+      tmprm = mderrm
+      tmptr = termsrm
+      tmpt  = termst
+      delete([/mderrm, termsrm, termst/])
+
+      mderrm = new((/pt + 1, idx + 1/), typeof(tmprm))
+      termsrm = new((/pt + 1, idx + 1/), typeof(tmptr))
+      termst = new((/pt + 1, idx + 1/), typeof(tmpt))
+
+      mderrm(:pt - 1, :dimsizes(tmprm(0, :)) - 1) = tmprm
+      termsrm(:pt - 1, :dimsizes(tmptr(0, :)) - 1) = tmptr
+      termst(:pt-1, :dimsizes(tmpt(0, :)) - 1) = tmpt
+      mderrm(pt, 0) = const
+      mderrm(pt, 1:dimsizes(coef)) = coef
+      termsrm(pt, 1:dimsizes(wdiag(terms))) = wdiag(terms)
+      termst(pt, 1:dimsizes(terms)) = terms
+      delete([/tmprm, tmptr, tmpt, idx/])
+    else
+      mderrm = new((/pt + 1, dimsizes(coef) + 1/), double)
+      termsrm = new((/pt + 1, dimsizes(coef) + 1/), string)
+      termst = new((/pt + 1, dimsizes(coef) + 1/), typeof(terms))
+
+      mderrm(pt, 0) = const
+      mderrm(pt, 1:) = coef
+      termsrm(pt, 1:) = wdiag(terms)
+      termst(pt, 1:) = terms
+    end if
+
+    delete([/y, corr, mcorr, x, x_diag, good_diag, xobs, cf, tmp_cf, \
+            weights, uM, uM_std/])
   end do    ; Loop over different target periods
-;
-;   ;;Calculate diverse multy model means
-;   tmpm = models@name
-;   delete(models@name)
-;   models@name = new(DIM_DAT+3,string)
-;   models@name(0)  = "uMMM"
-;   models@name(1)  = "MDER time dependent"
-;   models@name(2)  = "MDER"
-;   models@name(3:) = tmpm
-;   delete(tmpm)
-;
-;   do pt = 0,dimsizes(p_time)-1
-;     ;ptt = 0
-;     tmp_yy  = new(dimsizes(yy),typeof(yy))
-;     tmp_yywt = new(dimsizes(yywt),typeof(yywt))
-;     do tt = 0,n_max-2
-;       yy(0,tt) = avg(yy(3:,tt))
-;       if (tt.ge.p_time(pt)-ny_min.and.tt.lt.(p_time(pt)+p_step+1-ny_min)) then
-;           tmp_yy(1,tt)  = sum(yy(3:,tt)*weights_t(0,:,pt))
-;           tmp_yywt(0,tt) = tmp_yy(1,tt)+sqrt(abs(sum(yy(3:,tt)*cfint_t(:,pt))))
-;           tmp_yywt(1,tt) = tmp_yy(1,tt)-sqrt(abs(sum(yy(3:,tt)*cfint_t(:,pt))))
-;       end if
-;       if (tt.eq.(p_time(pt)+p_step-ny_min)) then
-;           yy(1,tt-(p_step+1)/2)  = avg(tmp_yy(1,tt-p_step:tt))
-;           yywt(0,tt-(p_step+1)/2) = avg(tmp_yywt(0,tt-p_step:tt))
-;           yywt(1,tt-(p_step+1)/2) = avg(tmp_yywt(1,tt-p_step:tt))
-;       end if
-;       yy(2,tt) = sum(yy(3:,tt)*weights_t(0,:,pt))
-;       yyw(0,tt) = yy(2,tt)+sqrt(abs(sum(yy(3:,tt)*cfint_t(:,pt))))
-;       yyw(1,tt) = yy(2,tt)-sqrt(abs(sum(yy(3:,tt)*cfint_t(:,pt))))
-;     end do
-;   end do
-;
-;   tmpm = models@name
-;   delete(models@name)
-;   models@name = tmpm(3:)
-;   delete(tmpm)
-;
-;   ;;---------------------------------------------------------------------------
-;   ;;This is for plotting the regression line
-; ;  nfit     = fspan(0,49,50)
-;   diag_reg = new((/dimsizes(p_time),DIM_DAT+2/),float)
-;
-;   nfit     = fspan(0, dimsizes(diag_reg(0,2:))-1,dimsizes(diag_reg(0,2:)))
-;
-;   diag_std = new((/dimsizes(p_time),DIM_DAT+2/),float)
-;   wy       = new((/dimsizes(p_time),DIM_DAT+2/),float)
-;   wy_std   = new((/dimsizes(p_time),DIM_DAT+2/),float)
-;   yfit_reg = new((/dimsizes(p_time),dimsizes(nfit)/),float)
-;   yfit_std = new((/dimsizes(p_time),2,dimsizes(nfit)/),float)
-;
-;   do ppt = 0, dimsizes(p_time)-1
-;
-;     xgood    = ind(.not.ismissing(termst(ppt,:)))
-;     hlp_tmp  = new((/dimsizes(mderrm(ppt,xgood)),dimsizes(nfit)/),float)
-;     hlp      = new((/1,dimsizes(mderrm(ppt,xgood))+1/),float)
-;     diag_reg(ppt,:) = mderrm(ppt,0);const
-;     diag_std(ppt,:) = 0.
-;     yfit_reg(ppt,:) = mderrm(ppt,0);const
-;     hlp             = 1.
-;
-;     wy(ppt,0) = avg(xx(:,ppt))
-;     wy(ppt,1) = Y_WEIGHT(ppt)
-;     wy(ppt,2:) = xx(:,ppt)
-;     wy_std(ppt,2:) = xx_val(:,ppt,1);cfint_t(:,ppt)
-;
-;     do ii = 1,dimsizes(mderrm(ppt,:))-1
-;       if (.not.ismissing(mderrm(ppt,ii))) then
-;         diag_reg(ppt,1)  = diag_reg(ppt,1) + mderrm(ppt,ii) * \
-;                                              obs0(termst(ppt,ii))
-;         diag_std(ppt,1)  = diag_std(ppt,1) + (mderrm(ppt,ii) * \
-;                                              (obs0_std(termst(ppt,ii))))^2
-;         diag_reg(ppt,2:) = coeff_y_est(:,ppt)
-;                            ;diag_reg(2:)+coef(ii)*diag_all(terms(ii),:)
-;         diag_std(ppt,2:) = diag_std(ppt,2:) + (mderrm(ppt,ii) * \
-;                                           (diag_all_std(termst(ppt,ii),:)))^2
-;
-;         minx = min(diag_all(termst(ppt,ii),:)) - 1.1 * \
-;               (max(diag_all(termst(ppt,ii),:)) - \
-;                min(diag_all(termst(ppt,ii),:)))
-;         maxx = max(diag_all(termst(ppt,ii),:)) + 1.1 * \
-;               (max(diag_all(termst(ppt,ii),:)) - \
-;                min(diag_all(termst(ppt,ii),:)))
-;         diag_var = minx+(maxx-minx)*nfit/dimsizes(nfit)
-;
-;         hlp_tmp(ii-1,:) = diag_var
-;         delete([/diag_var,minx,maxx/])
-;       end if
-;     end do
-;
-;     diag_std = sqrt(diag_std)
-;
-;     x_diag = transpose(diag_all(termst(ppt,xgood),:))
-;     good_diag = ind(.not.ismissing(x_diag(:,0)))
-;     x = x_diag(good_diag,:)
-;
-;     ;;Create Design Matrix D and Einheits Matrix I for pt = 1
-;     if (isvar("D").eq.True) then
-;       delete(D)
-;     end if
-;     D = new((/dimsizes(x(:,0)),dimsizes(termst(ppt,xgood))+1/),typeof(diag_all))
-;     D = 1
-;     do id = 0,dimsizes(x(:,0))-1
-;       D(id,1:) = x(id,:)
-;     end do
-;
-;     df = tmp_MOD-dimsizes(obs0(termst(ppt,xgood)))+1
-;
-;     I = new((/dimsizes(x(:,0)),dimsizes(x(:,0))/),typeof(diag_all))
-;     I = 0.
-;     do imod = 0,tmp_MOD-1
-;       I(imod,imod) = 1.
-;     end do
-;
-;     SSE=xx(:,ppt)#(I-D#inverse_matrix(transpose(D)#D)#transpose(D))#transpose(xx(:,ppt))
-;     sigmae2 = sqrt((1./df)*SSE)
-;
-;     ;;Calculate 95% confidence interval bounds
-;     if (.not.loglin) then
-;       miny = min(xx(:,ppt)) - 1.1 * (max(xx(:,ppt)) - min(xx(:,ppt)))
-;       maxy = max(xx(:,ppt)) + 1.1 * (max(xx(:,ppt)) - min(xx(:,ppt)))
-;       yfit_reg(ppt,:) = miny+(maxy-miny)*nfit/dimsizes(nfit)
-;       delete([/miny, maxy/])
-;       do ti = 0,dimsizes(nfit)-1
-;         hlp(0,1:) = (/hlp_tmp(:,ti)/)
-;         yfit_std(ppt,0,ti) = yfit_reg(ppt,ti) + cdft_t(0.05/2., df) * sigmae2 * \
-;           sqrt((1.+hlp#inverse_matrix(transpose(D)#D)#transpose(hlp)))
-;         yfit_std(ppt,1,ti) = yfit_reg(ppt,ti) - cdft_t(0.05/2., df) * sigmae2 * \
-;           sqrt((1.+hlp#inverse_matrix(transpose(D)#D)#transpose(hlp)))
-;       end do
-;     else  ; log-linear regression
-;       isort_tmp = dim_pqsort_n(diag_reg(ppt,2:), 1, 0)
-;       isort     = new(dimsizes(isort_tmp)+2, integer)
-;       isort(0)  = 0
-;       isort(1)  = 1
-;       isort(2:) = isort_tmp + 2
-;       diag_reg(ppt,:) = diag_reg(ppt,isort)
-;       diag_std(ppt,:) = diag_std(ppt,isort)
-;       wy(ppt,:)       = wy(ppt,isort)
-;       wy_std(ppt,:)   = wy_std(ppt,isort)
-;       model_numbers   = ispan( 0, dimsizes(diag_reg(ppt,:))-1, 1)
-;       diag_reg@model_numbers = model_numbers(isort)  ; memorize order of models
-;       rc = regline_stats(diag_reg(ppt,2:), log(wy(ppt,2:)))
-;       yfit_reg(ppt,:)   = exp(rc@b(0) + rc@b(1) * diag_reg(ppt,2:))
-;       yfit_std(ppt,:,:) = (/ exp( rc@y95(0) + rc@b95(0) * diag_reg(ppt,2:) ), \
-;                              exp( rc@y95(1) + rc@b95(1) * diag_reg(ppt,2:) ) /)
-;       wy(ppt,1)         = exp(rc@b(0) + rc@b(1) * diag_reg(ppt,1))  ; yfit(obs)
-;       delete([/isort_tmp, isort, model_numbers, rc/])
-;     end if
-;
-;     ;; Clean up
-;     delete([/xgood,hlp_tmp,hlp,x_diag,good_diag,x,D,df,SSE,sigmae2/])
-;
-;   end do  ;ppt
-;
-;   ;;---------------------------------------------------------------------------
-;   ;;This is for plotting the squared differences between ensemble mean
-;   ;;and the total change in pseudoreality
-;   grade_all = new((/DIM_DIAG_ALL,DIM_DAT-1,DIM_DAT/),float)
-;               ;;1. #grades, 2. #pseudorealities
-;   xx_pre    = new((/DIM_DAT,dimsizes(p_time)/),float)
-;
-;   grade_trans  = dim_avg_n_Wrap(grade_all(:,:,:),0)
-;   do im = 0,DIM_DAT-1
-;     good = ind(models@name(im).ne.models@name)
-;     do pt = 0, dimsizes(p_time)-1
-;       xx_pre(im,pt)   = avg(xx(good,pt))
-;     end do
-;     delete(good)
-;   end do
-;
-;   ;Calculating statistics
-;   x25  = round(.25*DIM_DAT,3)-1 ;;-1 to account for NCL indexing starting at 0
-;   x75  = round(.75*DIM_DAT,3)-1
-;
-;   presq     = new((/dimsizes(p_time),DIM_DAT/),float)
-;   premdersq = new((/dimsizes(p_time),DIM_DAT/),float)
-;   BSS = new((/dimsizes(p_time)/),float)
-;
-;   do pt = 0, dimsizes(p_time)-1
-;     presq(pt,:)     = (xx(:,pt)-xx_pre(:,pt))^2
-;     premdersq(pt,:) = (xx(:,pt)-coeff_y_est(:,pt))^2
-;
-;     qsort(presq(pt,:))
-;     qsort(premdersq(pt,:))
-;
-;     tmpRDS = (/(/presq(pt,x25),presq(pt,x25),dim_median(presq(pt,:)),presq(pt,x75),presq(pt,x75)/),\
-;                        (/premdersq(pt,x25),premdersq(pt,x25),dim_median(premdersq(pt,:))\
-;                         ,premdersq(pt,x75),premdersq(pt,x75)/)/)
-;     tmpAVG = (/avg(presq(pt,:)),avg(premdersq(pt,:))/)
-;     tmpPRE = (/presq(pt,:),premdersq(pt,:)/)
-;
-;     if (all(isvar((/"preRDS","preAVG","prePRE"/)))) then
-;       aarRDS = preRDS
-;       aarAVG = preAVG
-;       aarPRE = prePRE
-;       delete([/preRDS,preAVG,prePRE/])
-;       preRDS = array_append_record(aarRDS,sqrt(tmpRDS),0)
-;       preAVG = array_append_record(aarAVG,sqrt(tmpAVG),0)
-;       prePRE = array_append_record(aarPRE,sqrt(tmpPRE),0)
-;       delete([/aarRDS,aarAVG,aarPRE/])
-;     else
-;       preRDS = sqrt(tmpRDS)
-;       preAVG = sqrt(tmpAVG)
-;       prePRE = sqrt(tmpPRE)
-;     end if
-;     delete([/tmpRDS,tmpAVG,tmpPRE/])
-;
-;     info_output("RMSE ("+p_time(pt)+"-"+(p_time(pt)+p_step)+"), uMMM: "+sqrt(avg(presq(pt,:)))+", MDER: "+sqrt(avg(premdersq(pt,:))),verbosity, 0)
-;   end do
-;
-;   tmpm = models@name
-;   delete(models@name)
-;   models@name = new(DIM_DAT+3,string)
-;   models@name(0)  = "uMMM"
-;   models@name(1)  = "MDER time dependent"
-;   models@name(2)  = "MDER"
-;   models@name(3:) = tmpm
-;   delete(tmpm)
-;   DIM_DAT = DIM_DAT+2
-;
-;   ;;===========================================================================
-;   ;;Write regression model equations to ASCII table
-;   RegStg = new((/dimsizes(p_time)/),string)
-;   PStg = new((/dimsizes(p_time)/),string)
-;   do pt = 0, dimsizes(p_time)-1
-;     RegStg(pt) = sprintf("%4.2f",mderrm(pt,0))
-;     do ii = 1,dimsizes(mderrm(pt,:))-1
-;       if (.not.ismissing(mderrm(pt,ii))) then
-;         if (mderrm(pt,ii).gt.0.) then
-;           RegStg(pt) = RegStg(pt)+" +"+sprintf("%4.2f",mderrm(pt,ii))+" x "+termsrm(pt,ii)
-;         else
-;           RegStg(pt) = RegStg(pt)+" "+sprintf("%4.2f",mderrm(pt,ii))+" x "+termsrm(pt,ii)
-;         end if
-;       end if
-;     end do
-;     p1_time = p_time(pt)+p_step-2000;p_time(0)
-;     PStg(pt) = p_time(pt)+"-"+sprinti("%0.2hi",p1_time)
-;   end do
-;
+
+  ; Iterate over target periods and save MDER results
+  do pt = 0, dimsizes(p_time) - 1
+    tmp_yy = new(dimsizes(yy), typeof(yy))
+    tmp_yywt = new(dimsizes(yywt), typeof(yywt))
+    do tt = 0, n_max - 2
+      yy(0, tt) = avg(yy(3:, tt))
+      if (tt .ge. p_time(pt) - ny_min .and. \
+          tt .lt. (p_time(pt) + p_step + 1 - ny_min)) then
+        tmp_yy(1, tt) = sum(yy(3:, tt) * weights_t(0, :, pt))
+        tmp_yywt(0, tt) = tmp_yy(1, tt) + sqrt(abs(sum(yy(3:, tt) * \
+                                               cfint_t(:, pt))))
+        tmp_yywt(1, tt) = tmp_yy(1, tt) - sqrt(abs(sum(yy(3:, tt) * \
+                                               cfint_t(:, pt))))
+      end if
+      if (tt .eq. (p_time(pt) + p_step - ny_min)) then
+        yy(1, tt - (p_step + 1) / 2)  = avg(tmp_yy(1, tt-p_step:tt))
+        yywt(0, tt - (p_step + 1) / 2) = avg(tmp_yywt(0, tt - p_step:tt))
+        yywt(1, tt - (p_step + 1) / 2) = avg(tmp_yywt(1, tt - p_step:tt))
+      end if
+      yy(2, tt) = sum(yy(3:, tt) * weights_t(0, :, pt))
+      yyw(0, tt) = yy(2, tt) + sqrt(abs(sum(yy(3:, tt) * cfint_t(:, pt))))
+      yyw(1, tt) = yy(2, tt) - sqrt(abs(sum(yy(3:, tt) * cfint_t(:, pt))))
+    end do
+  end do
+
+  ; ---------------------------------------------------------------------------
+  ; Plot preparations
+  ; ---------------------------------------------------------------------------
+
+  ; Plot regression line
+  diag_reg = new((/dimsizes(p_time), DIM_DAT + 2/), double)
+  nfit = fspan(0, dimsizes(diag_reg(0, 2:)) - 1, dimsizes(diag_reg(0, 2:)))
+  ; nfit = fspan(0, 49, 50)
+  diag_std = new((/dimsizes(p_time), DIM_DAT + 2/), double)
+  wy = new((/dimsizes(p_time), DIM_DAT + 2/), double)
+  wy_std = new((/dimsizes(p_time), DIM_DAT + 2/), float)
+  yfit_reg = new((/dimsizes(p_time), dimsizes(nfit)/), double)
+  yfit_std = new((/dimsizes(p_time), 2, dimsizes(nfit)/), double)
+
+  ; Iterate over target periods
+  do ppt = 0, dimsizes(p_time) - 1
+    xgood = ind(.not. ismissing(termst(ppt, :)))
+    hlp_tmp = new((/dimsizes(mderrm(ppt, xgood)), dimsizes(nfit)/), float)
+    hlp = new((/1, dimsizes(mderrm(ppt, xgood)) + 1/), float)
+    diag_reg(ppt, :) = mderrm(ppt, 0)         ; const
+    diag_std(ppt, :) = 0.0
+    yfit_reg(ppt, :) = mderrm(ppt, 0)         ; const
+    hlp = 1.0
+
+    wy(ppt, 0) = avg(xx(:, ppt))
+    wy(ppt, 1) = Y_WEIGHT(ppt)
+    wy(ppt, 2:) = xx(:, ppt)
+    wy_std(ppt, 2:) = xx_val(:, ppt, 1)       ; cfint_t(:, ppt)
+
+    do ii = 1, dimsizes(mderrm(ppt, :)) - 1
+      if (.not. ismissing(mderrm(ppt, ii))) then
+        diag_reg(ppt, 1) = diag_reg(ppt, 1) + mderrm(ppt, ii) * \
+                                              obs0(termst(ppt, ii))
+        diag_std(ppt, 1) = diag_std(ppt, 1) + (mderrm(ppt, ii) * \
+                                               (obs0_std(termst(ppt, ii)))) ^ 2
+        diag_reg(ppt, 2:) = coeff_y_est(:, ppt)
+
+        ; diag_reg(2:) + coef(ii) * diag_all(terms(ii), :)
+        diag_std(ppt, 2:) = diag_std(ppt, 2:) + \
+          (mderrm(ppt, ii) * (diag_all_std(termst(ppt, ii), :))) ^ 2
+
+        minx = min(diag_all(termst(ppt, ii), :)) - 1.1 * \
+          (max(diag_all(termst(ppt, ii), :)) - \
+           min(diag_all(termst(ppt, ii), :)))
+        maxx = max(diag_all(termst(ppt, ii), :)) + 1.1 * \
+          (max(diag_all(termst(ppt, ii), :)) - \
+           min(diag_all(termst(ppt, ii), :)))
+        diag_var = minx + (maxx - minx) * nfit / dimsizes(nfit)
+        hlp_tmp(ii - 1, :) = diag_var
+        delete([/diag_var, minx, maxx/])
+      end if
+    end do
+
+    diag_std = sqrt(diag_std)
+    x_diag = transpose(diag_all(termst(ppt, xgood), :))
+    good_diag = ind(.not. ismissing(x_diag(:, 0)))
+    x = x_diag(good_diag, :)
+
+    ; Create Design matrix D and Identity matrix Id for pt = 1
+    D := new((/dimsizes(x(:, 0)), dimsizes(termst(ppt, xgood)) + 1/), \
+             typeof(diag_all))
+    D = 1.0
+    do id = 0, dimsizes(x(:, 0)) - 1
+      D(id, 1:) = x(id, :)
+    end do
+    df = tmp_dat - dimsizes(obs0(termst(ppt, xgood))) + 1
+    Id = new((/dimsizes(x(:, 0)), dimsizes(x(:, 0))/), typeof(diag_all))
+    Id = 0.0
+    do idat = 0, tmp_dat - 1
+      Id(idat, idat) = 1.0
+    end do
+
+    ; Error
+    SSE = xx(:, ppt) # (Id - D # inverse_matrix(transpose(D) # D) # \
+                        transpose(D)) # transpose(xx(:, ppt))
+    sigmae2 = sqrt((1.0 / df) * SSE)
+
+    ; Calculate 95% confidence interval bounds
+    if (.not. loglin) then
+      miny = min(xx(:, ppt)) - 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
+      maxy = max(xx(:, ppt)) + 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
+      yfit_reg(ppt, :) = miny + (maxy - miny) * nfit / dimsizes(nfit)
+      delete([/miny, maxy/])
+      do ti = 0, dimsizes(nfit) - 1
+        hlp(0, 1:) = (/hlp_tmp(:, ti)/)
+        yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cdft_t(0.05 / 2.0, df) * \
+          sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
+                         transpose(hlp))
+        yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cdft_t(0.05 /2.0, df) * \
+          sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
+                         transpose(hlp))
+      end do
+
+    ; Log-linear regression
+    else
+      isort_tmp = dim_pqsort_n(diag_reg(ppt, 2:), 1, 0)
+      isort = new(dimsizes(isort_tmp) + 2, integer)
+      isort(0) = 0
+      isort(1) = 1
+      isort(2:) = isort_tmp + 2
+      diag_reg(ppt, :) = diag_reg(ppt, isort)
+      diag_std(ppt, :) = diag_std(ppt, isort)
+      wy(ppt, :) = wy(ppt, isort)
+      wy_std(ppt, :) = wy_std(ppt, isort)
+      model_numbers = ispan(0, dimsizes(diag_reg(ppt, :)) - 1, 1)
+
+      ; Save order of datasets
+      diag_reg@model_numbers = model_numbers(isort)
+      rc = regline_stats(diag_reg(ppt, 2:), log(wy(ppt, 2:)))
+      yfit_reg(ppt, :) = exp(rc@b(0) + rc@b(1) * diag_reg(ppt, 2:))
+      yfit_std(ppt, :, :) = (/exp(rc@y95(0) + rc@b95(0) * diag_reg(ppt, 2:)), \
+                             exp(rc@y95(1) + rc@b95(1) * diag_reg(ppt, 2:))/)
+      wy(ppt, 1) = exp(rc@b(0) + rc@b(1) * diag_reg(ppt, 1))   ; yfit(obs)
+      delete([/isort_tmp, isort, model_numbers, rc/])
+    end if
+
+    ; Clean up
+    delete([/xgood, hlp_tmp, hlp, x_diag, good_diag, x, D, df, SSE, sigmae2/])
+  end do
+
+  ; Plot squared differences between ensemble mean and the total change in
+  ; pseudoreality
+  ; 1. #grades, 2. #pseudorealities
+  grade_all = new((/DIM_DIAG_ALL, DIM_DAT - 1, DIM_DAT/), float)
+  xx_pre = new((/DIM_DAT, dimsizes(p_time)/), float)
+  grade_trans = dim_avg_n_Wrap(grade_all(:, :, :), 0)
+  do im = 0, DIM_DAT - 1
+    good = ind(dataset_info@dataset(im) .ne. dataset_info@dataset)
+    do pt = 0, dimsizes(p_time) - 1
+      xx_pre(im, pt) = avg(xx(good, pt))
+    end do
+    delete(good)
+  end do
+
+  ; Calculating statistics
+  x25 = round(0.25 * DIM_DAT, 3) - 1
+  x75 = round(0.75 * DIM_DAT, 3) - 1
+
+  presq = new((/dimsizes(p_time), DIM_DAT/), double)
+  premdersq = new((/dimsizes(p_time), DIM_DAT/), double)
+  BSS = new((/dimsizes(p_time)/), float)
+
+  ; Iterate over target periods
+  do pt = 0, dimsizes(p_time) - 1
+    presq(pt, :) = (xx(:, pt) - xx_pre(:, pt)) ^ 2
+    premdersq(pt, :) = (xx(:, pt) - coeff_y_est(:, pt)) ^ 2
+    qsort(presq(pt, :))
+    qsort(premdersq(pt, :))
+
+    tmpRDS = (/(/presq(pt, x25), presq(pt, x25), dim_median(presq(pt, :)), \
+                presq(pt, x75), presq(pt, x75)/), \
+              (/premdersq(pt, x25), premdersq(pt, x25), \
+               dim_median(premdersq(pt, :)), premdersq(pt, x75), \
+               premdersq(pt, x75)/)/)
+    tmpAVG = (/avg(presq(pt, :)), avg(premdersq(pt, :))/)
+    tmpPRE = (/presq(pt, :), premdersq(pt, :)/)
+
+    if (all(isvar((/"preRDS", "preAVG", "prePRE"/)))) then
+      preRDS := array_append_record(preRDS, sqrt(tmpRDS), 0)
+      preAVG := array_append_record(preAVG, sqrt(tmpAVG), 0)
+      prePRE := array_append_record(prePRE, sqrt(tmpPRE), 0)
+    else
+      preRDS = sqrt(tmpRDS)
+      preAVG = sqrt(tmpAVG)
+      prePRE = sqrt(tmpPRE)
+    end if
+    delete([/tmpRDS, tmpAVG, tmpPRE/])
+    log_info("RMSE (" + p_time(pt) + "-" + (p_time(pt) + p_step) + \
+             "), uMMM: " + sqrt(avg(presq(pt, :))) + ", MDER: " + \
+             sqrt(avg(premdersq(pt, :))))
+  end do
+
+  ; Add uMMM and MDER to dataset_info@dataset
+  tmpm = dataset_info@dataset
+  dataset_info@dataset := new(DIM_DAT + 3, string)
+  dataset_info@dataset(0) = "uMMM"
+  dataset_info@dataset(1) = "MDER time dependent"
+  dataset_info@dataset(2) = "MDER"
+  dataset_info@dataset(3:) = tmpm
+  delete(tmpm)
+  DIM_DAT = DIM_DAT + 2
+
+  ; ---------------------------------------------------------------------------
+  ; Write regression model equations to ASCII table
+  ; ---------------------------------------------------------------------------
+
+  RegStg = new((/dimsizes(p_time)/), string)
+  PStg = new((/dimsizes(p_time)/), string)
+  do pt = 0, dimsizes(p_time) - 1
+    RegStg(pt) = sprintf("%4.2f", mderrm(pt, 0))
+    do ii = 1, dimsizes(mderrm(pt, :)) - 1
+      if (.not. ismissing(mderrm(pt, ii))) then
+        if (mderrm(pt, ii) .gt. 0.0) then
+          RegStg(pt) = RegStg(pt) + " +" + sprintf("%4.2f", mderrm(pt, ii)) + \
+            " x " + termsrm(pt, ii)
+        else
+          RegStg(pt) = RegStg(pt) + " " + sprintf("%4.2f", mderrm(pt, ii)) + \
+            " x " + termsrm(pt, ii)
+        end if
+      end if
+    end do
+    p1_time = p_time(pt) + p_step - 2000      ; p_time(0)
+    PStg(pt) = p_time(pt) + "-" + sprinti("%0.2hi", p1_time)
+  end do
+
 ;   header = (/"Target Period             Model Equation  R^2",\
 ;              "                          "+models@experiment(0+DIM_OBS+dim_hMOD)+"         "/)
 ;   hlist = [/header/]
@@ -983,7 +981,7 @@ begin
 ;              "ystep_diagnostics.txt", termsrm)
 ;   ;;--------------------------------------------------------------------------
 ;   ;;Write weights to NetCDF
-;   model_list = models@name(3:)
+;   model_list = dataset_info@dataset(3:)
 ;   do pt = 0, dimsizes(p_time)-1
 ;     weights_out = weights_t(0,:,pt)
 ;     weights_filename = plot_dir + plot_file + "_weights_" + \
@@ -1008,7 +1006,7 @@ begin
 ;       climofiles(ii) = interface_get_inpaths(ii) + "/" \
 ;                        + interface_get_infile(variables(0), field_types(0), ii)
 ;   end do
-;   allmodelnames = models@name
+;   allmodelnames = dataset_info@dataset
 ;   zz = diag_script + "_" + variables(0)
 ;   contrib_authors = (/"A_wenz_sa"/)
 ;

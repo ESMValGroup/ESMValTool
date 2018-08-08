@@ -679,6 +679,12 @@ diagnostics:
       regression_stepwise:
         <<: *absolute_correlation
         script: mder/regression_stepwise.ncl
+        p_value: 0.05
+        wreg: False
+        wexit: False
+        smooth: True
+        iter: 29
+        cross_validation_mode: False
 
 # TODO: Add diagnostic
 # <diag>
