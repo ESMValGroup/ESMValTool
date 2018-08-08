@@ -59,7 +59,7 @@ begin
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
   end if
-  if (avgens .eq. "True") then
+  if (avgens) then
     idx_datasets = UNIQ(dataset_info@dataset)
     dataset_names = dataset_info@dataset(idx_datasets)
   else

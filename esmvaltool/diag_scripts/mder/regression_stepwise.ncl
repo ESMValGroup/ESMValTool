@@ -106,10 +106,9 @@ begin
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
   end if
-  if (avgens .eq. "True") then
+  if (avgens) then
     idx_datasets = UNIQ(dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
                    DIM_OBS + DIM_HDAT
-    avgens = True
   else
     idx_datasets = ispan(DIM_OBS + DIM_HDAT, \
                          dimsizes(dataset_info@dataset) - 1, 1)
@@ -120,7 +119,6 @@ begin
       delete(all_datasets)
     end if
     delete(idx_hist)
-    avgens = False
   end if
 
   ; Get dataset variables
@@ -207,15 +205,11 @@ begin
   end if
   loglin = False
   if (isatt(diag_script_info, "loglin")) then
-    if (diag_script_info@loglin .eq. "True") then
-      loglin = True
-    end if
+    loglin = diag_script_info@loglin
   end if
   smooth = False
   if (isatt(diag_script_info, "smooth")) then
-    if (diag_script_info@smooth .eq. "True") then
-      smooth = True
-    end if
+    smooth = diag_script_info@smooth
     if (isatt(diag_script_info, "iter")) then
       iter = diag_script_info@iter
     else
@@ -225,9 +219,7 @@ begin
   end if
   cross_validation_mode = False
   if (isatt(diag_script_info, "cross_validation_mode")) then
-    if (diag_script_info@cross_validation_mode .eq. "True") then
-      cross_validation_mode = True
-    end if
+    cross_validation_mode = diag_script_info@cross_validation_mode
   end if
 
   ; Output dir

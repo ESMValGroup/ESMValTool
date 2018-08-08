@@ -89,10 +89,9 @@ begin
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
   end if
-  if (avgens .eq. "True") then
+  if (avgens) then
     idx_datasets = UNIQ(dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
                    DIM_OBS + DIM_HDAT
-    avgens = True
   else
     idx_datasets = ispan(DIM_OBS + DIM_HDAT, \
                          dimsizes(dataset_info@dataset) - 1, 1)
@@ -103,7 +102,6 @@ begin
       delete(all_datasets)
     end if
     delete(idx_hist)
-    avgens = False
   end if
 
   ; Get dataset variables
