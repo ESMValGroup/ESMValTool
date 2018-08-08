@@ -75,6 +75,39 @@ class Test(tests.Test):
         expected.mask = np.zeros((3, 3), bool)
         self.assertArrayEqual(result_land.data, expected)
 
+    def test_mask_fillvalues(self):
+        """Test the fillvalues mask: func mask_fillvalues"""
+        data_1 = np.ma.empty((4, 3, 3))
+        data_1[:] = 10.
+        data_2 = np.ma.empty((4, 3, 3))
+        data_2[:] = 10.
+        data_2.mask = np.ones((4, 3, 3), bool)
+        crd_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+        lons = iris.coords.DimCoord(
+            [0, 1.5, 3],
+            standard_name='longitude',
+            bounds=[[0, 1], [1, 2], [2, 3]],
+            units='degrees_east',
+            coord_system=crd_sys)
+        lats = iris.coords.DimCoord(
+            [0, 1.5, 3],
+            standard_name='latitude',
+            bounds=[[0, 1], [1, 2], [2, 3]],
+            units='degrees_north',
+            coord_system=crd_sys)
+        times = iris.coords.DimCoord(
+            [0, 1.5, 2.5, 3.5],
+            standard_name='time',
+            bounds=[[0, 1], [1, 2], [2, 3], [3, 4]],
+            units='hours')
+        coords_spec = [(times, 0), (lats, 1), (lons, 2)]
+        cube_1 = iris.cube.Cube(data_1, dim_coords_and_dims=coords_spec)
+        cube_2 = iris.cube.Cube(data_2, dim_coords_and_dims=coords_spec)
+        mfv = mask.mask_fillvalues([cube_1, cube_2], 0.95,
+                                   min_value=-1.e10, time_window=1)
+        self.assertArrayEqual(mfv[1].data.mask, data_2.mask)
+        self.assertArrayEqual(mfv[0].data, data_1)
+
 
 if __name__ == '__main__':
     unittest.main()
