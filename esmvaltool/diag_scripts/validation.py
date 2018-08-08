@@ -1,39 +1,111 @@
 """
-Port to Version 2 with implementation of v2-specific changes
+Validation Diagnostic
 
-Uses: ESMValTool v2, Python3.x
-Valeriu Predoi, UREAD, July 2018
-
-Porting replicates the functionality to minimum errors.
-
-Original Description from Version 1 Diagnostic:
-;;###########################################################################
-;; AutoAssess_radiation_rms.py
-;; Author: Yoko Tsushima (Met Office, UK)
-;; CMUG project
-;;###########################################################################
-;; Description
-;;    This script is the RMS error metric script of
-;;    AutoAssess radiation
-;;
-;;
-;; Modification history
-;;    20180712- autoassess_radiation_rms: porting to v2
-;;    20170323-_AutoAssess_radiation_rms: Test finished.
-;;    20160819-_test_AutoAssess_radiation_rms: written based on calc_rms code.
-;;
-;; ###########################################################################
+This diagnostic uses two datasets (control and experiment),
+applies operations on their data, and plots one against the other.
+It can optionally use a number of OBS, OBS4MIPS datasets.
 """
 
 import os
 import logging
+
+import numpy as np
+
 import iris
-import autoassess_source.rms as rms
-import autoassess_source.valmod_radiation as vm
+import iris.analysis.maths as imath
+import iris.quickplot as qplt
+
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
+from esmvaltool.preprocessor._area_pp import area_slice
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt  # noqa
+
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def plot_contour(cube, plt_title, file_name):
+    """Plot a contour with iris.quickplot (qplot)"""
+    qplt.contourf(cube, cmap='RdYlBu_r', bbox_inches='tight')
+    plt.title(plt_title)
+    plt.gca().coastlines()
+    plt.tight_layout()
+    plt.savefig(file_name)
+    plt.close()
+
+
+def plot_latlon_cubes(cube_1, cube_2, cfg, data_names, obs_name=None):
+    """
+    Plot different things
+
+    cube_1: first cube (dataset: dat1)
+    cube_2: second cube (dataset: dat2)
+    cfg: configuration dictionary
+    data_names: var + '_' + dat1 + '_vs_' + dat2
+    """
+    plot_name = cfg['analysis_type'] + '_' + data_names + '.png'
+    plot_title = cfg['analysis_type'] + ': ' + data_names
+    cubes = [cube_1, cube_2]
+
+    # plot difference: cube_1 - cube_2; use iris subtract=idiff
+    plot_contour(imath.subtract(cube_1, cube_2),
+                 'Difference ' + plot_title,
+                 os.path.join(cfg['plot_dir'], 'Difference_' + plot_name))
+
+    # plot each cube
+    var = data_names.split('_')[0]
+    if not obs_name:
+        cube_names = [data_names.split('_')[1], data_names.split('_')[3]]
+        for cube, cube_name in zip(cubes, cube_names):
+            plot_contour(cube,
+                         cube_name + ' ' + cfg['analysis_type'] + ' ' + var,
+                         os.path.join(cfg['plot_dir'],
+                                      cube_name + '_' + var + '.png'))
+    else:
+        # obs is always cube_2
+        plot_contour(cube_2,
+                     obs_name + ' ' + cfg['analysis_type'] + ' ' + var,
+                     os.path.join(cfg['plot_dir'],
+                                  obs_name + '_' + var + '.png'))
+
+
+def plot_lon_cubes(cube_1, cube_2, cfg, data_names):
+    """Plot cubes vs latitude"""
+    var = data_names.split('_')[0]
+    cube_names = [data_names.split('_')[1], data_names.split('_')[3]]
+    lat_points = cube_1.coord('latitude').points
+    plt.plot(lat_points, cube_1.data, label=cube_names[0])
+    plt.plot(lat_points, cube_2.data, label=cube_names[1])
+    plt.title('Zonal mean on longitude: ' + data_names)
+    plt.xlabel('Latitude (deg)')
+    plt.ylabel(var)
+    plt.tight_layout()
+    plt.grid()
+    plt.legend()
+    plt.savefig(os.path.join(cfg['plot_dir'],
+                             'Zonal_Means_LON_' + data_names + '.png'))
+    plt.close()
+
+
+def plot_lat_cubes(cube_1, cube_2, cfg, data_names):
+    """Plot cubes vs longitude"""
+    var = data_names.split('_')[0]
+    cube_names = [data_names.split('_')[1], data_names.split('_')[3]]
+    lat_points = cube_1.coord('longitude').points
+    plt.plot(lat_points, cube_1.data, label=cube_names[0])
+    plt.plot(lat_points, cube_2.data, label=cube_names[1])
+    plt.title('Zonal mean on latitude: ' + data_names)
+    plt.xlabel('Longitude (deg)')
+    plt.ylabel(var)
+    plt.tight_layout()
+    plt.grid()
+    plt.legend()
+    plt.savefig(os.path.join(cfg['plot_dir'],
+                             'Zonal_Means_LAT_' + data_names + '.png'))
+    plt.close()
 
 
 def apply_supermeans(ctrl, exper, obs_list):
@@ -63,20 +135,48 @@ def apply_supermeans(ctrl, exper, obs_list):
     return ctrl_cube, exper_cube, obs_cube_list
 
 
-def apply_rms(data_1, data_2, cfg, component_dict, var_name):
-    """Compute RMS for any data1-2 combination"""
-    data_names = [model['dataset'] for model in component_dict.values()]
-    plot_title = var_name + ': ' + data_names[0] + ' vs ' + data_names[1]
-    rms_list = rms.start(data_names[0], data_names[1])
+def apply_analysis(data_set, cfg):
+    """Configure stats for any dataset"""
+    # see what analysis needs performing
     analysis_type = cfg['analysis_type']
-    landsea_mask_file = os.path.join(
-        os.path.dirname(__file__), 'autoassess_source', cfg['landsea_mask'])
-    landsea_mask_cube = iris.load_cube(landsea_mask_file)
-    data1_vs_data2 = vm.perform_equation(data_1, data_2, analysis_type)
 
-    # call to rms.calc_all() to compute rms; rms.end() to write results
-    rms.calc_all(rms_list, data1_vs_data2, landsea_mask_cube, plot_title)
-    rms.end(rms_list, cfg['work_dir'])
+    # if subset on LAT-LON
+    if 'lat_lon_slice' in cfg:
+        start_longitude = cfg['lat_lon_slice']['start_longitude']
+        end_longitude = cfg['lat_lon_slice']['end_longitude']
+        start_latitude = cfg['lat_lon_slice']['start_latitude']
+        end_latitude = cfg['lat_lon_slice']['end_latitude']
+        data_set = area_slice(data_set, start_longitude, end_longitude,
+                              start_latitude, end_latitude)
+
+    # if apply mask
+    if '2d_mask' in cfg:
+        mask_file = os.path.join(cfg['2d_mask'])
+        mask_cube = iris.load_cube(mask_file)
+        if 'mask_threshold' in cfg:
+            thr = cfg['mask_threshold']
+            data_set.data = np.ma.masked_array(data_set.data,
+                                               mask=(mask_cube.data > thr))
+        else:
+            logger.warning('Could not find masking threshold')
+            logger.warning('Please specify it if needed')
+            logger.warning('Masking on 0-values = True (masked value)')
+            data_set.data = np.ma.masked_array(data_set.data,
+                                               mask=(mask_cube.data == 0))
+
+    # if zonal mean on LON
+    if analysis_type == 'zonal_mean_longitude':
+        data_set = data_set.collapsed('longitude', iris.analysis.MEAN)
+
+    # if zonal mean on LAT
+    if analysis_type == 'zonal_mean_latitude':
+        data_set = data_set.collapsed('latitude', iris.analysis.MEAN)
+
+    # if vertical mean
+    elif analysis_type == 'vertical_mean':
+        data_set = data_set.collapsed('pressure', iris.analysis.MEAN)
+
+    return data_set
 
 
 def do_preamble(cfg):
@@ -136,46 +236,36 @@ def main(cfg):
     for short_name in grouped_input_data:
         logger.info("Processing variable %s", short_name)
 
-        # control, experiment and obs's
-        ctrl, exper, obslist = get_all_datasets(short_name, input_data, cfg)
+        # control, experiment and obs's and the names
+        ctrl, exper, obs = get_all_datasets(short_name, input_data, cfg)
+        ctrl_name = ctrl['dataset']
+        exper_name = exper['dataset']
 
         # apply the supermeans
-        ctrl_sm, exper_sm, obs_sm_list = apply_supermeans(ctrl, exper, obslist)
+        ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
 
-        # assemble a dict that contains various params depending
-        # on the data combinations for RMS computations
-        # control-experiment
-        data_component_dict = {'ct-ex': {'ctrl': ctrl, 'exper': exper}}
-        logger.info("Computing CONTROL-EXPERIMENT RMS...")
-        apply_rms(ctrl_sm, exper_sm, cfg, data_component_dict['ct-ex'],
-                  short_name)
-        if obs_sm_list:
-            for obs, obsfile in zip(obs_sm_list, obslist):
-                data_component_dict = {
-                    'ct-obs': {
-                        'ctrl': ctrl,
-                        'obs': obsfile
-                    },
-                    'ex-obs': {
-                        'exper': exper,
-                        'obs': obsfile
-                    }
-                }
+        # apply the desired analysis
+        ctrl = apply_analysis(ctrl, cfg)
+        exper = apply_analysis(exper, cfg)
 
-                # ctrl-obs
-                logger.info("Computing CONTROL-OBS RMS...")
-                apply_rms(ctrl_sm, obs, cfg, data_component_dict['ct-obs'],
-                          short_name)
-                # exper-obs
-                logger.info("Computing EXPERIMENT-OBS RMS...")
-                apply_rms(exper_sm, obs, cfg, data_component_dict['ex-obs'],
-                          short_name)
-        else:
-            # only ctrl-exper
-            data_component_dict = {'ct-ex': {'ctrl': ctrl, 'exper': exper}}
-            logger.info("Computing CONTROL-EXPERIMENT RMS...")
-            apply_rms(ctrl_sm, exper_sm, cfg, data_component_dict['ct-ex'],
-                      short_name)
+        # plot
+        plot_key = short_name + '_' + ctrl_name + '_vs_' + exper_name
+        if cfg['analysis_type'] == 'lat_lon':
+            plot_latlon_cubes(ctrl, exper, cfg, plot_key)
+        elif cfg['analysis_type'] == 'zonal_mean_longitude':
+            plot_lon_cubes(ctrl, exper, cfg, plot_key)
+        elif cfg['analysis_type'] == 'zonal_mean_latitude':
+            plot_lat_cubes(ctrl, exper, cfg, plot_key)
+
+        # apply desired analysis on obs's
+        if obs_list:
+            for obs_i, obsfile in zip(obs_list, obs):
+                obs_analyzed = apply_analysis(obs_i, cfg)
+                obs_name = obsfile['dataset']
+                plot_key = short_name + '_' + ctrl_name + '_vs_' + obs_name
+                if cfg['analysis_type'] == 'lat_lon':
+                    plot_latlon_cubes(ctrl, obs_analyzed, cfg,
+                                      plot_key, obs_name=obs_name)
 
 
 if __name__ == '__main__':
