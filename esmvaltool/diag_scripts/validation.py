@@ -11,17 +11,16 @@ import logging
 
 import numpy as np
 
-import iris
-import iris.analysis.maths as imath
-import iris.quickplot as qplt
-
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
 from esmvaltool.preprocessor._area_pp import area_slice
 
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt  # noqa
+import matplotlib.pyplot as plt      # noqa
+import iris                          # noqa
+import iris.analysis.maths as imath  # noqa
+import iris.quickplot as qplt        # noqa
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -51,7 +50,7 @@ def plot_latlon_cubes(cube_1, cube_2, cfg, data_names, obs_name=None):
     cubes = [cube_1, cube_2]
 
     # plot difference: cube_1 - cube_2; use iris subtract=idiff
-    plot_contour(imath.subtract(cube_1, cube_2),
+    plot_contour(imath.abs(cube_1) - imath.abs(cube_2),
                  'Difference ' + plot_title,
                  os.path.join(cfg['plot_dir'], 'Difference_' + plot_name))
 
