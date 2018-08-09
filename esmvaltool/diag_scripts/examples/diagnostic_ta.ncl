@@ -66,7 +66,7 @@ begin
 
   ; 'datasets', 'variables' and 'field_types' are fetched from the
   ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
+  dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -85,7 +85,7 @@ begin
 
   ; Get data and average time
   imod = 0  ; get data from first dataset
-  log_debug("processing " + dataset_info@dataset(imod))
+  log_debug("processing " + input_file_info@dataset(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
