@@ -362,7 +362,7 @@ def get_input_filelist(variable, rootpath, drs):
                         valid_dirs.append(dirname)
                         break
             else:
-                raise NotADirectoryError(
+                raise IOError(
                     'Path {} does not exist'.format(part1))
 
     # Set the filename glob
