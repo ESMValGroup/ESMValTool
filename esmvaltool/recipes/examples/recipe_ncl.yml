@@ -12,7 +12,7 @@ preprocessors:
       levels: 85000
       scheme: nearest
     regrid: false
-    mask_landocean: false
+    mask_landsea: false
     multi_model_statistics: false
 
 diagnostics:
