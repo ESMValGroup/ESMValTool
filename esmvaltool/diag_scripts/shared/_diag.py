@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 # Global variables
 DEFAULT_INFO = 'not_specified'
-INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
@@ -37,26 +36,28 @@ Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
 
 
 class Variables(object):
-    """Class to easily access a recipe's variables.
-
-    This class is designed to easily access variables in the diagnostic script.
+    """Class to easily access a recipe's variables in a diagnostic.
 
     Examples
     --------
     Get all variables of a recipe configuration `cfg`::
 
-        vars = Variables(cfg)
+        variables = Variables(cfg)
 
-    Access `short_name` (as str) of a variable `tas`::
+    Access information of a variable `tas`::
 
-        vars.tas
+        variables.short_name('tas')
+        variables.standard_name('tas')
+        variables.long_name('tas')
+        variables.units('tas')
 
-    Access all other information of a variable `tas`::
+    Access :mod:`iris`-suitable dictionary of a variable `tas`::
 
-        vars.TAS.short_name
-        vars.TAS.standard_name
-        vars.TAS.long_name
-        vars.TAS.units
+        variables.iris_dict('tas')
+
+    Check if variables `tas` and `pr` are available::
+
+        variables.vars_available('tas', 'pr')
 
     """
 
@@ -67,9 +68,9 @@ class Variables(object):
         ----------
         cfg : dict, optional
             Configuation dictionary of the recipe.
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
         self._dict = {}
@@ -78,7 +79,7 @@ class Variables(object):
         if cfg is not None:
             success = True
             if isinstance(cfg, dict):
-                data = cfg.get(INPUT_DATA)
+                data = cfg.get(n.INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
                         name = info.get(n.SHORT_NAME, DEFAULT_INFO)
@@ -100,18 +101,19 @@ class Variables(object):
                            "scripts (using 'ancestors' key)")
 
         # Add costum variables
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        self.add_vars(**names)
         if not self._dict:
             logger.warning("No variables found!")
 
     def __repr__(self):
         """Representation of the class."""
-        return repr(self.short_names())
+        output = ''
+        for (name, attr) in self._dict.items():
+            output += '{}: {}\n'.format(name, attr)
+        return output
 
     def _add_to_dict(self, name, attr):
-        """Add variable to class (internal method).
+        """Add variable to class dictionary.
 
         Parameters
         ----------
@@ -123,23 +125,112 @@ class Variables(object):
         """
         if name not in self._dict:
             logger.debug("Added variable '%s' to collection", name)
-        setattr(self, name, name)
-        setattr(self, name.upper(), attr)
         self._dict[name] = attr
 
-    def add_var(self, **names):
-        """Add a costum variable to the class member.
+    def add_vars(self, **names):
+        """Add costum variables to the class.
 
         Parameters
         ----------
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        for (name, attr) in names.items():
+            if isinstance(attr, Variable):
+                attr_var = attr
+            else:
+                attr_var = Variable(
+                    name,
+                    attr.get(n.STANDARD_NAME, DEFAULT_INFO),
+                    attr.get(n.LONG_NAME, DEFAULT_INFO),
+                    attr.get(n.UNITS, DEFAULT_INFO))
+            self._add_to_dict(name, attr_var)
+
+    def iris_dict(self, var):
+        """Access :mod:`iris` dictionary of the variable.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all attributes of the variable which can be
+            used directly in :mod:`iris` (`short_name` replaced by `var_name`).
+
+        """
+        iris_dict = self._dict[var]._asdict()
+        iris_dict[n.VAR_NAME] = iris_dict.pop(n.SHORT_NAME)
+        return iris_dict
+
+    def long_name(self, var):
+        """Access long name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Long name of the variable.
+
+        """
+        return getattr(self._dict[var], n.LONG_NAME)
+
+    def modify_var(self, var, **names):
+        """Modify an already existing  variable of the class.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the existing variable.
+        **names
+            Keyword arguments of the form `short_name=tas`.
+
+        Raises
+        ------
+        ValueError
+            If `var` is not an existing variable.
+        TypeError
+            If a non-valid keyword argument is given.
+
+        """
+        if var not in self._dict:
+            raise ValueError("Variable '{}' does not exist yet and cannot be "
+                             "modified".format(var))
+        old_var = self._dict.pop(var)
+        new_var = {}
+        for name in Variable._fields:
+            new_var[name] = names.pop(name, getattr(old_var, name))
+
+        # Check if names is not empty (=non-valid keyword argument given)
+        if names:
+            raise TypeError("Non-valid keyword arguments "
+                            "given: {}".format(names))
+        new_var = Variable(**new_var)
+        self._add_to_dict(var, new_var)
+
+    def short_name(self, var):
+        """Access short name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Short name of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
 
     def short_names(self):
         """Get list of all `short_names`.
@@ -152,6 +243,22 @@ class Variables(object):
         """
         return list(self._dict)
 
+    def standard_name(self, var):
+        """Access standard name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Standard name of the variable.
+
+        """
+        return getattr(self._dict[var], n.STANDARD_NAME)
+
     def standard_names(self):
         """Get list of all `standard_names`.
 
@@ -161,14 +268,62 @@ class Variables(object):
             List of all `standard_names`.
 
         """
-        return [getattr(self._dict[name], n.STANDARD_NAME) for
-                name in self._dict]
+        return [self.standard_name(name) for name in self._dict]
+
+    def units(self, var):
+        """Access units.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Units of the variable.
+
+        """
+        return getattr(self._dict[var], n.UNITS)
+
+    def var_name(self, var):
+        """Access var name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Var name (=short name) of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
+
+    def vars_available(self, *args):
+        """Check if given variables are available.
+
+        Parameters
+        ----------
+        *args
+            Short names of the variables to be tested.
+
+        Returns
+        -------
+        bool
+            `True` if variables are available, `False` if not.
+
+        """
+        for var in args:
+            if var not in self._dict:
+                return False
+        return True
 
 
 class Datasets(object):
-    """Class to easily access a recipe's datasets.
-
-    This class is designed to easily access datasets in the diagnostic script.
+    """Class to easily access a recipe's datasets in a diagnostic script.
 
     Examples
     --------
@@ -184,7 +339,7 @@ class Datasets(object):
 
         datasets.get_dataset_info(path=dataset_path)
 
-    Access the data of all datasets with `exp=piControl'::
+    Access the data of all datasets with `exp=piControl`::
 
         datasets.get_data_list(exp=piControl)
 
@@ -194,7 +349,8 @@ class Datasets(object):
         """Load datasets.
 
         Load all datasets of the recipe and store them in three internal
-        dictionaries/lists (`self._paths`, `self._data` and `self._datasets`).
+        :obj:`dict`/:obj:`list` containers: `self._paths`, `self._data` and
+        `self._datasets`.
 
         Parameters
         ----------
@@ -212,7 +368,7 @@ class Datasets(object):
         self._data = {}
         success = True
         if isinstance(cfg, dict):
-            input_data = cfg.get(INPUT_DATA)
+            input_data = cfg.get(n.INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
                     dataset_info = input_data[path]
@@ -227,8 +383,8 @@ class Datasets(object):
         else:
             success = False
         if not success:
-            raise TypeError("{} is not a valid ".format(repr(cfg)) +
-                            "configuration file")
+            raise TypeError("{} is not a valid configuration "
+                            "file".format(repr(cfg)))
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
@@ -266,7 +422,7 @@ class Datasets(object):
         Returns
         -------
         bool
-            True if valid path, False if not.
+            `True` if valid path, `False` if not.
 
         """
         if path in self._paths:
@@ -318,9 +474,9 @@ class Datasets(object):
         ----------
         path : str
             (Unique) path to the dataset.
-        data, optional
+        data: optional
             Arbitrary object to be saved as data for the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -346,7 +502,7 @@ class Datasets(object):
             Element to be added to the dataset's data.
         path : str, optional
             Path to the dataset
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -378,13 +534,13 @@ class Datasets(object):
         ----------
         path : str, optional
             Path to the dataset
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
         Returns
         -------
-        data_object
+        `data_object`
             Data of the selected dataset.
 
         Raises
@@ -411,7 +567,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -436,7 +592,7 @@ class Datasets(object):
         ----------
         path : str, optional
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -469,7 +625,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -497,7 +653,7 @@ class Datasets(object):
             Desired dictionary key.
         path : str
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -538,7 +694,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -565,7 +721,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -594,7 +750,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -620,7 +776,7 @@ class Datasets(object):
             Element to be set as the dataset's data.
         path : str, optional
             Path to the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
