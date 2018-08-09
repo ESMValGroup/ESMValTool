@@ -45,6 +45,7 @@ requirements:
     - numba
     - numpy
     - pillow
+    - prov
     - psutil
     - python-cdo
     - pyyaml
