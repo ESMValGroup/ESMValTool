@@ -50,6 +50,7 @@ diagnostics:
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: lat_lon  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        seasonal_analysis: False
       zonal_mean_longitude:
         script: validation.py
         title: ""
@@ -57,6 +58,7 @@ diagnostics:
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: zonal_mean_longitude  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        seasonal_analysis: True
       zonal_mean_latitude:
         script: validation.py
         title: ""
@@ -64,4 +66,5 @@ diagnostics:
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: zonal_mean_latitude  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        seasonal_analysis: True
 
