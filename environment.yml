@@ -9,6 +9,7 @@ dependencies:
   # TODO when switching to iris 2.x, switch straight to 2.1+
   - basemap
   - iris=1.13
+  - graphviz
   - python-stratify
   # Multi language support:
   - ncl

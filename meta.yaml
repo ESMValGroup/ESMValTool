@@ -34,6 +34,7 @@ requirements:
     # esmvaltool
     - python
     - basemap
+    - graphviz    
     - iris=1.13
     - python-stratify
     # Normally installed via pip:
