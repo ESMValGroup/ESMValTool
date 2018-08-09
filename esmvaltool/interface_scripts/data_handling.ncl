@@ -135,7 +135,7 @@ begin
   ; Return missing if variable not available
   if (infile.eq."None") then
     error_msg("w", scriptname, funcname, "fx variable " + variable + \
-              " not found for dataset " + dataset_info@dataset(index))
+              " not found for dataset " + input_file_info@dataset(index))
     out = new(1, float)
     out = default_fillvalue(typeof(out))
     return(out)
