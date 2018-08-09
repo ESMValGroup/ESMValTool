@@ -47,6 +47,7 @@ requirements:
     - pillow
     - prov
     - psutil
+    - pydot
     - python-cdo
     - pyyaml
     - shapely
