@@ -36,8 +36,8 @@ load "./diag_scripts/shared/mder.ncl"
 
 begin
 
-  if (.not. isdefined("dataset_info")) then
-    error_msg("f", diag_script, "", "no dataset_info available, " + \
+  if (.not. isdefined("input_file_info")) then
+    error_msg("f", diag_script, "", "no input_file_info available, " + \
               "variable has to be selected as ancestor in the recipe")
   end if
 
@@ -60,10 +60,10 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset)
-    dataset_names = dataset_info@dataset(idx_datasets)
+    idx_datasets = UNIQ(input_file_info@dataset)
+    dataset_names = input_file_info@dataset(idx_datasets)
   else
-    idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
+    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
     dataset_names = unique_labels_min((/"dataset", "ensemble"/))
   end if
 
@@ -152,7 +152,7 @@ begin
       ; Skip dataset if no data is available
       else
         log_info("No data available for dataset: " + \
-                 dataset_info@dataset(idat))
+                 input_file_info@dataset(idat))
         log_info("Skipping")
       end if
     end do

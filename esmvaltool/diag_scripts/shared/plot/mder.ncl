@@ -63,7 +63,7 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = dataset_info@dataset
+  lg_labels = input_file_info@dataset
   DIM_VAR  = dimsizes(Ydata(:))
   error_bar = new(DIM_VAR, graphic)
   error_barend = new(DIM_VAR, graphic)
@@ -171,7 +171,7 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = dataset_info@dataset
+  lg_labels = input_file_info@dataset
   dim_X = dimsizes(Ydata(0, :))
   dim_Y = dimsizes(Ydata(:, 0))
 
@@ -319,7 +319,7 @@ begin
   ; Define line colors (first color is used for the observations)
   dashes = project_style(diag_script_info, "dashes")
 
-  i_OBS = ind(dataset_info@project .eq. "OBS")
+  i_OBS = ind(input_file_info@project .eq. "OBS")
   DIM_OBS = dimsizes(i_OBS)
 
   if (diag_script_info@typ .eq. "pos") then
@@ -328,8 +328,8 @@ begin
     item_type = new((/3 + DIM_OBS/), string)
 
     OBSdashes = (/4, 2, 0, 9/)
-    lg_labels(DIM_OBS + 1) = "CMIP5 models"   ; dataset_info@dataset(2)
-    lg_labels(DIM_OBS + 2) = dataset_info@dataset(1)
+    lg_labels(DIM_OBS + 1) = "CMIP5 models"   ; input_file_info@dataset(2)
+    lg_labels(DIM_OBS + 2) = input_file_info@dataset(1)
     lg_colors(DIM_OBS + 1) = "grey50"         ; "blue2";"slateblue4";colors
     lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Lines"
@@ -340,7 +340,7 @@ begin
     item_type = new((/2 + DIM_OBS/), string)
 
     OBSdashes = (/4, 2, 9/)
-    lg_labels(DIM_OBS + 1) = dataset_info@dataset(1)
+    lg_labels(DIM_OBS + 1) = input_file_info@dataset(1)
     lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Markers"
   end if
@@ -348,7 +348,7 @@ begin
 
   ; Define array with legend names
   lg_labels(:DIM_OBS - 1) = Yobs@name
-  lg_labels(DIM_OBS) = dataset_info@dataset(0)
+  lg_labels(DIM_OBS) = input_file_info@dataset(0)
 
   ; Define array with colors
   lg_colors(:DIM_OBS - 1) = "orange"
@@ -774,7 +774,7 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = dataset_info@dataset
+  lg_labels = input_file_info@dataset
   DIM_VAR = dimsizes(Ymean)
   Xdata = ispan(0, DIM_VAR - 1, 1)
   dumAVG = new(DIM_VAR, graphic)

@@ -18,7 +18,7 @@
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
-;     Modifies dataset_info@dataset.
+;     Modifies input_file_info@dataset.
 ;
 ; Modification history
 ;   * 20180725_A-schl_ma: ported to v2.0
@@ -80,9 +80,9 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset)
+    idx_datasets = UNIQ(input_file_info@dataset)
   else
-    idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
+    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
   end if
 
   ; Array sizes
@@ -93,7 +93,7 @@ begin
   val_grad!0 = "case"
   val_grad&case = (/"val", "stddev"/)
   val_grad!1 = "dataset"
-  val_grad&dataset = dataset_info@dataset(idx_datasets)
+  val_grad&dataset = input_file_info@dataset(idx_datasets)
 
   ; Get lat range from preprocessed data
   lat = read_data(0, "lat", field_type0)
@@ -112,14 +112,14 @@ begin
   ; Iterate over datasets
   do i = 0, DIM_DAT-1
     idat = idx_datasets(i)
-    log_info(dataset_info@dataset(idat))
+    log_info(input_file_info@dataset(idat))
 
     ; Read data
     A0 = read_data(idat, var0, field_type0)
 
     ; Average over ensemble members if desired
     if (avgens) then
-      ens = ind(dataset_info@dataset(idat) .eq. dataset_info@dataset)
+      ens = ind(input_file_info@dataset(idat) .eq. input_file_info@dataset)
       rank = dimsizes(dimsizes(A0))
 
       ; Check if there is more than one ensemble member
@@ -179,7 +179,7 @@ begin
 
     delete([/dummy0, grad, A0/])
   end do
-  dataset_names = dataset_info@dataset(idx_datasets)
+  dataset_names = input_file_info@dataset(idx_datasets)
 
   ; ---------------------------------------------------------------------------
   ; Plots
@@ -187,7 +187,7 @@ begin
 
   ; Basic plotting settings
   if (config_user_info@write_plots) then
-    dataset_info@dataset := dataset_names   ; Used by unique_labels_min
+    input_file_info@dataset := dataset_names   ; Used by unique_labels_min
     colors = project_style(diag_script_info, "colors")
     thicks = project_style(diag_script_info, "thicks")
     lg_labels = unique_labels_min((/"dataset", "ensemble"/))

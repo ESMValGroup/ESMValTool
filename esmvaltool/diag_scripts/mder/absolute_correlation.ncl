@@ -26,7 +26,7 @@
 ; Optional recipe attributes:
 ;
 ; Caveats:
-;     Modifies dataset_info@dataset and dataset_info@ensemble.
+;     Modifies input_file_info@dataset and input_file_info@ensemble.
 ;
 ; Modification history:
 ;   * 20180726_A-schl_ma: ported to v2.0
@@ -73,8 +73,8 @@ begin
     end if
   end if
 
-  ; Extract observations from model-list
-  IDX_OBS = str_match_ind_ic(dataset_info@project, "OBS")   ; Case insensitive
+  ; Extract observations from model-list (case insensitive)
+  IDX_OBS = str_match_ind_ic(input_file_info@project, "OBS")
   DIM_OBS = dimsizes(IDX_OBS)
 
   ; Extract historical simulations from datasets
@@ -90,23 +90,23 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
+    idx_datasets = UNIQ(input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
                    DIM_OBS + DIM_HDAT
   else
     idx_datasets = ispan(DIM_OBS + DIM_HDAT, \
-                         dimsizes(dataset_info@dataset) - 1, 1)
-    idx_hist = UNIQ(dataset_info@dataset(DIM_OBS:DIM_OBS + DIM_HDAT))
+                         dimsizes(input_file_info@dataset) - 1, 1)
+    idx_hist = UNIQ(input_file_info@dataset(DIM_OBS:DIM_OBS + DIM_HDAT))
     if (dimsizes(idx_hist) .gt. 1) then
       all_datasets = unique_labels_min((/"dataset", "ensemble"/))
-      dataset_info@dataset := all_datasets
+      input_file_info@dataset := all_datasets
       delete(all_datasets)
     end if
     delete(idx_hist)
   end if
 
   ; Get dataset variables
-  DIM_DAT = dimsizes(dataset_info@dataset(idx_datasets))
-  dataset_info@ensemble := dataset_info@ensemble(idx_datasets)
+  DIM_DAT = dimsizes(input_file_info@dataset(idx_datasets))
+  input_file_info@ensemble := input_file_info@ensemble(idx_datasets)
 
 end
 
@@ -204,10 +204,10 @@ begin
     ; Call projection simulations for regression analysis and time series,
     ; scale time series and average over 10-year period
     tmp = read_data(idat, var0, field_type0)
-    idx_hist = ind(dataset_info@dataset(idat) .eq. \
-                   dataset_info@dataset(:DIM_OBS + DIM_HDAT - 1))
-    idx_fut = ind(dataset_info@dataset(idat) .eq. \
-                  dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
+    idx_hist = ind(input_file_info@dataset(idat) .eq. \
+                   input_file_info@dataset(:DIM_OBS + DIM_HDAT - 1))
+    idx_fut = ind(input_file_info@dataset(idat) .eq. \
+                  input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
       DIM_OBS + DIM_HDAT
 
     ; Calculate derived var (i.e. make it 1-d)
@@ -267,7 +267,7 @@ begin
             delete([/tmp_avg_fut, tmp_avg_hist/])
           else
             error_msg("f", diag_script, "", "inconsistent ensemble member " + \
-                      "size for dataset " + dataset_info@dataset(idat))
+                      "size for dataset " + input_file_info@dataset(idat))
           end if
         end if
       end if
@@ -322,9 +322,9 @@ begin
     delete(tmpy)
   end do
 
-  ; Save unique dataset names (modifies dataset_info@dataset!)
-  tmpm = dataset_info@dataset
-  dataset_info@dataset := tmpm(idx_datasets)
+  ; Save unique dataset names (modifies input_file_info@dataset!)
+  tmpm = input_file_info@dataset
+  input_file_info@dataset := tmpm(idx_datasets)
   delete(tmpm)
 
   ; ---------------------------------------------------------------------------
@@ -364,7 +364,7 @@ begin
     ; Loop over datasets and save diagnostic data
     do i = 0, DIM_DAT - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
-        if (dataset_info@dataset(i) .eq. data_temp&datasets(idat)) then
+        if (input_file_info@dataset(i) .eq. data_temp&datasets(idat)) then
           diag_all(idx_diag, i) = data_temp(0, idat, 0)
           if (isdim(data_temp, "diagnostics")) then
             wdiag(idx_diag) = tostring(data_temp&diagnostics(0))
@@ -453,7 +453,7 @@ begin
     ; -------------------------------------------------------------------------
 
     filename  = target_var + "-" + calc_type + "_" + \
-      dataset_info@exp(DIM_OBS + DIM_HDAT) + "_" + \
+      input_file_info@exp(DIM_OBS + DIM_HDAT) + "_" + \
       p_time(pt) + "-" + (/p_time(pt) + p_step/)
     wks = gsn_open_wks(file_type, plot_dir + filename)
     MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + p_step/)
@@ -473,7 +473,7 @@ begin
     ;                                "DM_et", "DM_global", "DM_polar", \
     ;                                "DM_sh", "DM_trop"/), \
     ;                               0)
-    ; alldatasetnames = dataset_info@dataset
+    ; alldatasetnames = input_file_info@dataset
     ; caption = "Absolute values of the correlation coefficient between " + \
     ;   var0  + " and pressent-day diagnostics, similar to Wenzel et al., " + \
     ;   "JClim, 2016, fig. 2"

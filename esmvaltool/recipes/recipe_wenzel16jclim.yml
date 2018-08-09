@@ -681,7 +681,6 @@ diagnostics:
         script: mder/regression_stepwise.ncl
         p_value: 0.05
         wreg: False
-        wexit: False
         smooth: True
         iter: 29
         cross_validation_mode: False

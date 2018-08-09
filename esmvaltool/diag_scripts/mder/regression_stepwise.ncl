@@ -28,8 +28,7 @@
 ;     time_oper : select for operation in time_operation function.
 ;     time_opt : select for option in time_operation function.
 ;     calc_type : trend/pos
-;     wregr : exit criterion for stepwise regression (True/False)
-;     wexit : exit criterion for stepwise regression (True/False)
+;     wregr : perform stepwise regression (True/False)
 ;
 ; Optional recipe attributes:
 ;     units : units of target variable.
@@ -40,8 +39,8 @@
 ;     p_value : p value for F-test in stepwise regression (default: p=0.05)
 ;
 ; Caveats:
-;     Adds dataset_info@units.
-;     Modifies dataset_info@dataset and dataset_info@ensemble.
+;     Adds input_file_info@units.
+;     Modifies input_file_info@dataset and input_file_info@ensemble.
 ;     Modifies variable_info@units.
 ;
 ; Modification history
@@ -92,10 +91,10 @@ begin
     end if
   end if
 
-  ; Extract observations from model-list
-  IDX_OBS = str_match_ind_ic(dataset_info@project, "OBS")   ; Case insensitive
+  ; Extract observations from model-list (case insensitive)
+  IDX_OBS = str_match_ind_ic(input_file_info@project, "OBS")
   DIM_OBS = dimsizes(IDX_OBS)
-  OBS_NAME = dataset_info@dataset(IDX_OBS)
+  OBS_NAME = input_file_info@dataset(IDX_OBS)
 
   ; Extract historical simulations from datasets
   IDX_HDAT_tmp = ind(input_file_info@start_year .ne. \
@@ -110,23 +109,23 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
+    idx_datasets = UNIQ(input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
                    DIM_OBS + DIM_HDAT
   else
     idx_datasets = ispan(DIM_OBS + DIM_HDAT, \
-                         dimsizes(dataset_info@dataset) - 1, 1)
-    idx_hist = UNIQ(dataset_info@dataset(DIM_OBS:DIM_OBS + DIM_HDAT))
+                         dimsizes(input_file_info@dataset) - 1, 1)
+    idx_hist = UNIQ(input_file_info@dataset(DIM_OBS:DIM_OBS + DIM_HDAT))
     if (dimsizes(idx_hist) .gt. 1) then
       all_datasets = unique_labels_min((/"dataset", "ensemble"/))
-      dataset_info@dataset := all_datasets
+      input_file_info@dataset := all_datasets
       delete(all_datasets)
     end if
     delete(idx_hist)
   end if
 
   ; Get dataset variables
-  DIM_DAT = dimsizes(dataset_info@dataset(idx_datasets))
-  dataset_info@ensemble := dataset_info@ensemble(idx_datasets)
+  DIM_DAT = dimsizes(input_file_info@dataset(idx_datasets))
+  input_file_info@ensemble := input_file_info@ensemble(idx_datasets)
 
 end
 
@@ -230,8 +229,8 @@ begin
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
   plot_num = integertochar(ispan(97, 122, 1))
-  plot_file = dataset_info@project(DIM_OBS) + "_" + target_var + \
-    "-" + calc_type + "_" + dataset_info@exp(DIM_OBS + DIM_HDAT) + \
+  plot_file = input_file_info@project(DIM_OBS) + "_" + target_var + \
+    "-" + calc_type + "_" + input_file_info@exp(DIM_OBS + DIM_HDAT) + \
     "_" + (p_step + 1) + "ystep"
 
   ; Plot file type
@@ -260,15 +259,15 @@ begin
   ; Call the variable of interest and save in one array yy
   do i = 0, DIM_DAT - 1
     idat = idx_datasets(i)
-    log_debug(dataset_info@dataset(idat))
+    log_debug(input_file_info@dataset(idat))
 
     ; Call projection simulations for regression analysis and time series,
     ; scale time series and average over 10-year period
     tmp = read_data(idat, var0, field_type0)
-    idx_hist = ind(dataset_info@dataset(idat) .eq. \
-                   dataset_info@dataset(:DIM_OBS + DIM_HDAT - 1))
-    idx_fut = ind(dataset_info@dataset(idat) .eq. \
-                  dataset_info@dataset(DIM_OBS + DIM_HDAT:)) + \
+    idx_hist = ind(input_file_info@dataset(idat) .eq. \
+                   input_file_info@dataset(:DIM_OBS + DIM_HDAT - 1))
+    idx_fut = ind(input_file_info@dataset(idat) .eq. \
+                  input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
       DIM_OBS + DIM_HDAT
 
     ; Calculate derived var (i.e. make it 1-d)
@@ -334,7 +333,7 @@ begin
             delete([/tmp_avg_fut, tmp_avg_hist/])
           else
             error_msg("f", diag_script, "", "inconsistent ensemble member " + \
-                      "size for dataset " + dataset_info@dataset(idat))
+                      "size for dataset " + input_file_info@dataset(idat))
           end if
         end if
       end if
@@ -402,9 +401,9 @@ begin
   yy&time = ispan(ny_min, ny_max, 1)      ; tmpsc&year
   yy&time@calendar = "standard"
 
-  ; Save unique dataset names (modifies dataset_info@dataset!)
-  tmpm = dataset_info@dataset
-  dataset_info@dataset := tmpm(idx_datasets)
+  ; Save unique dataset names (modifies input_file_info@dataset!)
+  tmpm = input_file_info@dataset
+  input_file_info@dataset := tmpm(idx_datasets)
   delete(tmpm)
 
   ; ---------------------------------------------------------------------------
@@ -492,7 +491,7 @@ begin
     ; Loop over datasets and save diagnostic data
     do i = 0, DIM_DAT - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
-        if (dataset_info@dataset(i) .eq. data_temp&datasets(idat)) then
+        if (input_file_info@dataset(i) .eq. data_temp&datasets(idat)) then
           diag_a(idx_diag, i) = data_temp(0, idat, 0)
           diag_a_std(idx_diag, i) = data_temp(0, idat, 1)
           if (isdim(data_temp, "diagnostics")) then
@@ -572,33 +571,35 @@ begin
     if (cross_validation_mode .eq. True) then
       do i = 0, DIM_DAT - 1
         log_debug("Starting cross-validation cycle for dataset " + \
-                  dataset_info@dataset(i))
-        good = ind(dataset_info@dataset .ne. dataset_info@dataset(i))
+                  input_file_info@dataset(i))
+        good = ind(input_file_info@dataset .ne. input_file_info@dataset(i))
         coef = regress_stepwise(diag_all(:, good), xx(good, pt))
         const = coef@const
-        terms = toint(coef@terms)
-        nterms = coef@nterms
+        idx_used_diags = toint(coef@idx_used_diags)
+        n_terms = coef@n_terms
         YFIT = coef@YFIT
         mcorr = coef@MCORRELATION
         corr = coef@correlation
         log_debug("Cross-validation mode. Dataset: " + \
-                  dataset_info@dataset(i) + ", constant: " + const)
-        if (nterms .gt. 0) then
+                  input_file_info@dataset(i) + ", constant: " + const)
+        if (n_terms .gt. 0) then
           do it = 0, dimsizes(coef) - 1
-            log_debug(wdiag(terms(it)) + ", " + coef(it) + ", " + corr(it))
+            log_debug(wdiag(idx_used_diags(it)) + ", " + coef(it) + ", " + \
+                      corr(it))
           end do
         end if
         log_debug("Multiple correlation: " + mcorr)
         log_debug("")
-        delete([/const, terms, nterms, YFIT, mcorr, corr, coef, good/])
+        delete([/const, idx_used_diags, n_terms, YFIT, mcorr, corr, coef, \
+                good/])
       end do
     end if
 
     ; Building the final regression
     coef := regress_stepwise(diag_all, xx(:, pt))
     const = coef@const
-    terms := toint(coef@terms)
-    nterms := coef@nterms
+    idx_used_diags := toint(coef@idx_used_diags)
+    n_terms := coef@n_terms
     YFIT := coef@YFIT
     mcorr := coef@MCORRELATION
     corr := coef@correlation
@@ -607,9 +608,10 @@ begin
     log_info("The final model (" + scal_time(0) + "-" + \
              (p_time(pt) + p_step) + "):")
     log_info("Constant: " + const)
-    if (nterms .gt. 0) then
+    if (n_terms .gt. 0) then
       do it = 0, dimsizes(coef) - 1
-        log_debug(wdiag(terms(it)) + ", " + coef(it) + ", " + corr(it))
+        log_debug(wdiag(idx_used_diags(it)) + ", " + coef(it) + ", " + \
+                  corr(it))
       end do
     end if
     log_info("Multiple correlation: " + mcorr)
@@ -619,7 +621,7 @@ begin
     ; Model weighting
     ; -------------------------------------------------------------------------
 
-    x_diag := transpose(diag_all(terms, :))
+    x_diag := transpose(diag_all(idx_used_diags, :))
     good_diag := ind(.not. ismissing(x_diag(:, 0)))
     x := x_diag(good_diag, :)
 
@@ -627,17 +629,17 @@ begin
     tmp_dat := dimsizes(x(:, 0))
 
     ; Create Design Matrix D
-    D := new((/tmp_dat, dimsizes(terms) + 1/), typeof(diag_all))
+    D := new((/tmp_dat, dimsizes(idx_used_diags) + 1/), typeof(diag_all))
     D = 1
     do id = 0, dimsizes(x(:, 0)) - 1
       D(id, 1:) = x(id, :)
     end do
 
     ; Observations
-    xobs := new((/1, dimsizes(terms) + 1/), typeof(diag_all), \
+    xobs := new((/1, dimsizes(idx_used_diags) + 1/), typeof(diag_all), \
                 getFillValue(diag_all))
     xobs = 1.0
-    xobs(0, 1:) = obs0(terms)
+    xobs(0, 1:) = obs0(idx_used_diags)
     df = tmp_dat - dimsizes(xobs(0, :))
 
     ; Identity matrix
@@ -693,7 +695,7 @@ begin
     ; Output
     log_info("Model weights: ")
     do idat = 0, DIM_DAT - 1
-      log_info(dataset_info@dataset(idat) + ": " + weights_t(:, idat, pt))
+      log_info(input_file_info@dataset(idat) + ": " + weights_t(:, idat, pt))
     end do
     log_info("")
 
@@ -704,34 +706,44 @@ begin
 
     ; Save coefficients and terms of regression model in array
     if (isvar("mderrm")) then
-      idx = max((/dimsizes(coef), dimsizes(mderrm(0, 1:))/))
+      max_dim = max((/dimsizes(coef), dimsizes(mderrm(0, 1:))/))
       tmprm = mderrm
       tmptr = termsrm
       tmpt  = termst
       delete([/mderrm, termsrm, termst/])
 
-      mderrm = new((/pt + 1, idx + 1/), typeof(tmprm))
-      termsrm = new((/pt + 1, idx + 1/), typeof(tmptr))
-      termst = new((/pt + 1, idx + 1/), typeof(tmpt))
+      mderrm = new((/pt + 1, max_dim + 1/), typeof(tmprm))
+      termsrm = new((/pt + 1, max_dim + 1/), typeof(tmptr))
+      termst = new((/pt + 1, max_dim + 1/), typeof(tmpt))
 
       mderrm(:pt - 1, :dimsizes(tmprm(0, :)) - 1) = tmprm
       termsrm(:pt - 1, :dimsizes(tmptr(0, :)) - 1) = tmptr
       termst(:pt-1, :dimsizes(tmpt(0, :)) - 1) = tmpt
       mderrm(pt, 0) = const
       mderrm(pt, 1:dimsizes(coef)) = coef
-      termsrm(pt, 1:dimsizes(wdiag(terms))) = wdiag(terms)
-      termst(pt, 1:dimsizes(terms)) = terms
-      delete([/tmprm, tmptr, tmpt, idx/])
+      termsrm(pt, 1:dimsizes(wdiag(idx_used_diags))) = wdiag(idx_used_diags)
+      termst(pt, 1:dimsizes(idx_used_diags)) = idx_used_diags
+      delete([/tmprm, tmptr, tmpt, max_dim/])
     else
       mderrm = new((/pt + 1, dimsizes(coef) + 1/), double)
       termsrm = new((/pt + 1, dimsizes(coef) + 1/), string)
-      termst = new((/pt + 1, dimsizes(coef) + 1/), typeof(terms))
+      termst = new((/pt + 1, dimsizes(coef) + 1/), typeof(idx_used_diags))
 
       mderrm(pt, 0) = const
       mderrm(pt, 1:) = coef
-      termsrm(pt, 1:) = wdiag(terms)
-      termst(pt, 1:) = terms
+      termsrm(pt, 1:) = wdiag(idx_used_diags)
+      termst(pt, 1:) = idx_used_diags
     end if
+
+    print(mderrm)
+    print("")
+    print(termsrm)
+    print("")
+    print(termst)
+    print("")
+    print(idx_used_diags)
+    print("")
+    print(n_terms)
 
     delete([/y, corr, mcorr, x, x_diag, good_diag, xobs, cf, tmp_cf, \
             weights, uM, uM_std/])
@@ -889,7 +901,7 @@ begin
   xx_pre = new((/DIM_DAT, dimsizes(p_time)/), float)
   grade_trans = dim_avg_n_Wrap(grade_all(:, :, :), 0)
   do im = 0, DIM_DAT - 1
-    good = ind(dataset_info@dataset(im) .ne. dataset_info@dataset)
+    good = ind(input_file_info@dataset(im) .ne. input_file_info@dataset)
     do pt = 0, dimsizes(p_time) - 1
       xx_pre(im, pt) = avg(xx(good, pt))
     end do
@@ -934,13 +946,13 @@ begin
              sqrt(avg(premdersq(pt, :))))
   end do
 
-  ; Add uMMM and MDER to dataset_info@dataset
-  tmpm = dataset_info@dataset
-  dataset_info@dataset := new(DIM_DAT + 3, string)
-  dataset_info@dataset(0) = "uMMM"
-  dataset_info@dataset(1) = "MDER time dependent"
-  dataset_info@dataset(2) = "MDER"
-  dataset_info@dataset(3:) = tmpm
+  ; Add uMMM and MDER to input_file_info@dataset
+  tmpm = input_file_info@dataset
+  input_file_info@dataset := new(DIM_DAT + 3, string)
+  input_file_info@dataset(0) = "uMMM"
+  input_file_info@dataset(1) = "MDER time dependent"
+  input_file_info@dataset(2) = "MDER"
+  input_file_info@dataset(3:) = tmpm
   delete(tmpm)
   DIM_DAT = DIM_DAT + 2
 
@@ -967,21 +979,24 @@ begin
     PStg(pt) = p_time(pt) + "-" + sprinti("%0.2hi", p1_time)
   end do
 
-;   header = (/"Target Period             Model Equation  R^2",\
-;              "                          "+models@experiment(0+DIM_OBS+dim_hMOD)+"         "/)
-;   hlist = [/header/]
-;   alist = [/PStg,RegStg,MCORR/]
-;
-;   write_table(plot_dir+plot_file+".txt", "w", hlist, "%s")
-;   write_table(plot_dir+plot_file+".txt", "a", alist, "%s %s %f")
-;   delete([/header,hlist,alist/])
-;
-;   asciiwrite(climo_dir + "/" + target_var + "_" + \
-;              models@experiment(0+DIM_OBS+dim_hMOD) + "_" +(p_step+1) + \
-;              "ystep_diagnostics.txt", termsrm)
+  ; header = (/"Target Period             Model Equation  R^2",\
+  ;            "                          "+models@experiment(0+DIM_OBS+dim_hMOD)+"         "/)
+  ; hlist = [/header/]
+  ; alist = [/PStg,RegStg,MCORR/]
+
+  ; write_table(plot_dir+plot_file+".txt", "w", hlist, "%s")
+  ; write_table(plot_dir+plot_file+".txt", "a", alist, "%s %s %f")
+  ; delete([/header,hlist,alist/])
+
+  ; asciiwrite(climo_dir + "/" + target_var + "_" + \
+  ;            models@experiment(0+DIM_OBS+dim_hMOD) + "_" +(p_step+1) + \
+  ;            "ystep_diagnostics.txt", termsrm)
+
+
+
 ;   ;;--------------------------------------------------------------------------
 ;   ;;Write weights to NetCDF
-;   model_list = dataset_info@dataset(3:)
+;   model_list = input_file_info@dataset(3:)
 ;   do pt = 0, dimsizes(p_time)-1
 ;     weights_out = weights_t(0,:,pt)
 ;     weights_filename = plot_dir + plot_file + "_weights_" + \
@@ -1006,7 +1021,7 @@ begin
 ;       climofiles(ii) = interface_get_inpaths(ii) + "/" \
 ;                        + interface_get_infile(variables(0), field_types(0), ii)
 ;   end do
-;   allmodelnames = dataset_info@dataset
+;   allmodelnames = input_file_info@dataset
 ;   zz = diag_script + "_" + variables(0)
 ;   contrib_authors = (/"A_wenz_sa"/)
 ;

@@ -24,7 +24,7 @@
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
-;     Modifies dataset_info@dataset.
+;     Modifies input_file_info@dataset.
 ;
 ; Modification history:
 ;   * 20180725-A_schl_ma: ported to v2.0
@@ -136,11 +136,11 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset)
+    idx_datasets = UNIQ(input_file_info@dataset)
   else
-    idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
+    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
   end if
-  dataset_names = dataset_info@dataset(idx_datasets)
+  dataset_names = input_file_info@dataset(idx_datasets)
 
   ; Determine time range
   start_year = min(stringtoint(input_file_info@start_year))
@@ -375,7 +375,7 @@ begin
       idat = idx_datasets(i)
 
       ; Check if there is more than one ensemble member
-      ens = ind(dataset_info@dataset(idat) .eq. dataset_info@dataset)
+      ens = ind(input_file_info@dataset(idat) .eq. input_file_info@dataset)
       if (dimsizes(ens) .gt. 1) then
         tmpA0_ext = val_ext(ens, :)
         tmpA0_area = val_area(ens, :)
@@ -401,7 +401,7 @@ begin
     val_area&time = int2dble(all_years)
     delete([/sic_ext, sic_area, dims_ext, dims_area/])
   else
-    if (dimsizes(UNIQ(dataset_info@dataset)) .eq. 1) then
+    if (dimsizes(UNIQ(input_file_info@dataset)) .eq. 1) then
       dataset_names := unique_labels_min((/"dataset", "ensemble"/))
     end if
   end if
@@ -466,7 +466,7 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
   if (config_user_info@write_plots) then
-    dataset_info@dataset := dataset_names   ; Used by unique_labels_min
+    input_file_info@dataset := dataset_names   ; Used by unique_labels_min
 
     if (dimsizes(val_ext&time) .eq. 1) then
       log_debug("Skipping tsline: plot needs at least two time values, has 1")

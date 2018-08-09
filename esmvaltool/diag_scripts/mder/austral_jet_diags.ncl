@@ -31,7 +31,7 @@
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
-;     Modifies dataset_info@dataset.
+;     Modifies input_file_info@dataset.
 ;
 ; Modification history:
 ;   * 20180716_A_schl_ma: ported to v2.0
@@ -130,9 +130,9 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(dataset_info@dataset)
+    idx_datasets = UNIQ(input_file_info@dataset)
   else
-    idx_datasets = ispan(0, dimsizes(dataset_info@dataset) - 1, 1)
+    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
   end if
 
   ; Array sizes
@@ -143,12 +143,12 @@ begin
   val_trend!0 = "case"
   val_trend&case = (/"val", "stddev"/)
   val_trend!1 = "dataset"
-  val_trend&dataset = dataset_info@dataset(idx_datasets)
+  val_trend&dataset = input_file_info@dataset(idx_datasets)
   val_mean = new((/2, DIM_DAT/), "float")
   val_mean!0 = "case"
   val_mean&case = (/"val", "stddev"/)
   val_mean!1 = "dataset"
-  val_mean&dataset = dataset_info@dataset(idx_datasets)
+  val_mean&dataset = input_file_info@dataset(idx_datasets)
 
   ; ---------------------------------------------------------------------------
   ; Derive variables
@@ -175,7 +175,7 @@ begin
              lat_range(0) + " to " + lat_range(1) + " from recipe")
 
     ; Iterate over all datasets
-    do i = 0, dimsizes(dataset_info@dataset) - 1
+    do i = 0, dimsizes(input_file_info@dataset) - 1
 
       ; Read file and skip if already derived
       filename = input_file_info@filename(i)
@@ -306,14 +306,14 @@ begin
   ; Iterate over datasets
   do i = 0, DIM_DAT - 1
     idat = idx_datasets(i)
-    log_info(dataset_info@dataset(idat))
+    log_info(input_file_info@dataset(idat))
 
     ; Read data
     A0 = read_data(idat, var0, field_type0)
 
     ; Average over ensemble members if desired
     if (avgens) then
-      ens = ind(dataset_info@dataset(idat) .eq. dataset_info@dataset)
+      ens = ind(input_file_info@dataset(idat) .eq. input_file_info@dataset)
       rank = dimsizes(dimsizes(A0))
 
       ; Check if there is more than one ensemble member
@@ -471,7 +471,7 @@ begin
     DIM_DAT = DIM_DAT + dim_rsondes
     dataset_names = new(DIM_DAT, string)
     dataset_names(:dim_rsondes-1) = rsondes
-    dataset_names(dim_rsondes:) = dataset_info@dataset(idx_dataset)
+    dataset_names(dim_rsondes:) = input_file_info@dataset(idx_dataset)
 
     ; Trend
     val_trend   = new((/2, DIM_DAT/), "float")
@@ -542,7 +542,7 @@ begin
       delete([/ttmp, rc, A0/])
     end do
   else
-    dataset_names = dataset_info@dataset(idx_datasets)
+    dataset_names = input_file_info@dataset(idx_datasets)
   end if
 
   ; ---------------------------------------------------------------------------
@@ -551,7 +551,7 @@ begin
 
   ; Basic plotting settings
   if (config_user_info@write_plots) then
-    dataset_info@dataset := dataset_names   ; Used by unique_labels_min
+    input_file_info@dataset := dataset_names   ; Used by unique_labels_min
     colors = project_style(diag_script_info, "colors")
     thicks = project_style(diag_script_info, "thicks")
     lg_labels = unique_labels_min((/"dataset", "ensemble"/))

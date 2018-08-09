@@ -116,12 +116,7 @@ function reg_multlin_stats_rap(Y[*]: numeric, \
 ;         opr@print_anova= True: print ANOVA information
 ;
 ; Return value:
-;     const = constant of regression (beta_0)
-;     terms = array with diagn used for regression model (beta vector)
-;     nterms = dimensionsize of terms
-;     YFIT = array with y values from linear regression
-;     MCORRELATION = correlation coefficient of multicorrelation
-;     correlation  = correlation coefficient of individual correlations
+;     See reg_mullin_stats
 ;
 ; Description:
 ;     This function is based on the NCL-function "reg_multlin_stats". The
@@ -423,26 +418,29 @@ function regress_stepwise(xarr_f[*][*]: numeric, \
 ;     yarr_f: array with variable to which should be regressed
 ;
 ; Return value:
-;     const: constant of regression (beta_0)
-;     terms: array with diagn used for regression model (beta vector)
-;     nterms: dimensionsize of terms
-;     YFIT: array with y values from linear regression
-;     MCORRELATION: correlation coefficient of multicorrelation
-;     correlation: correlation coefficient of individual correlations
+;     coef: coefficients of the regression (beta vector).
+;         coef@const: constant of regression (beta_0).
+;         coef@idx_used_diags: array with indices of diagnostics used in the
+;                              regression model.
+;         coef@n_terms: number of terms in the regression model (= number of
+;                       used diagnostics).
+;         coef@YFIT: array with y values from linear regression.
+;         coef@MCORRELATION: correlation coefficient of multicorrelation.
+;         coef@correlation: correlation coefficient of individual correlations.
 ;
 ; Description:
 ;     Performs a multi diagnostic ensemble regression following Karpechko et
 ;     al., 2013.
 ;
 ; Caveats:
-;     Needs attributes diag_script_info@wregr and diag_script_info@wexit,
+;     Needs attributes diag_script_info@wregr.
 ;     optionally diag_scripts@p_value.
 ;
 ; Modification history:
 ;   * 20180807_A-schl_ma: ported to v2.0
 ;   * 201303??-A_schl_ma: written
 ;
-local p_value, im, wregr, wexit, dim_diag, dim_dat, f_value_b, ssr0, sst, \
+local p_value, im, wregr, dim_diag, dim_dat, f_value_b, ssr0, sst, \
       used_diags, iiter, igd, jgd, nii, cvf, xarr, yarr
 
 begin
@@ -452,13 +450,11 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Recipe attributes
-  if (isatt(diag_script_info, "wregr") .and. \
-      isatt(diag_script_info, "wexit")) then
+  if (isatt(diag_script_info, "wregr")) then
     wregr = diag_script_info@wregr
-    wexit = diag_script_info@wexit
   else
     error_msg("f", scriptname, funcname, "Exit criteria need to be " + \
-              "defined in 'wregr' and 'wexit' in recipe")
+              "defined in 'wregr' in recipe")
   end if
   if (isatt(diag_script_info, "p_value")) then
     p_value = diag_script_info@p_value
@@ -525,13 +521,14 @@ begin
 
   ; Start stepwise regression
   iiter = 1
-  do while ((.not. wregr) .or. (.not. wexit))
+  do while (wregr)
     ; .or.(f_prob .ge. f_value .and. f_prob .lt. f_value_b)
     log_debug("stepwise regression: iteration " + iiter)
 
     ; 1. Diagnostics to be tried in forward selection
     n_good_diag = dim_diag + 1 - dimsizes(used_diags)
     if (n_good_diag .le. 0) then
+      log_debug("No diagnostics left to test: stopping iteration")
       break
     end if
 
@@ -556,7 +553,6 @@ begin
     ssr1 = new(n_good_diag, double)
     sse1 = new(n_good_diag, double)
     F_val = new(n_good_diag, double)
-
     yfit := new((/n_good_diag, dim_dat/), double)
 
     ; Iterate over good diagnostics
@@ -603,11 +599,10 @@ begin
                 ", " + ssr0 + ", " + sse1(im) + ", " + dfe)
       log_debug("The diagnostic " + diag_names(good_diags(im)) + \
                 " is not included into the regression model, skipping " + \
-                "backward elimination")
+                "backward elimination and stopping iteration")
 
       ; If the diagnostic is not included then backward elimination step is
       ; not needed.
-      wexit = True
       break
     end if
     if (f_value .gt. f_prob) then
@@ -627,21 +622,23 @@ begin
       sse0 = sse1(im)
     end if
 
-    ; Break if only one diagnostic is used
+    ; Only one diagnostic used: break after more than two iterations
     if (dimsizes(used_diags) .eq. 2) then
       delete([/good_diags, ssr1, sse1/])
       if (iiter .ge. 2) then
+        log_debug("Only one diagnotic used and more than 2 iterations: " + \
+                  "stopping iteration")
         break
       else
         log_debug("Only one diagnostic used, skipping backward elimination")
-        wregr = True
+        wregr = False
         iiter = iiter + 1
         continue
       end if
     end if
 
     ; 5. Trying the diagnostics in backward elimination
-    wregr = True
+    wregr = False
     log_debug("The following diagnostics are tried at backward step " + \
               iiter + ": " + diag_names(used_diags(1:)))
     ssr1 := new(dimsizes(used_diags) - 1, double)
@@ -721,9 +718,10 @@ begin
   end do      ; Stepwise regression
 
   ; Final model
-  if (wregr) then
-    terms = used_diags(1:)
-    nterms = dimsizes(used_diags) - 1
+  if (.not. wregr) then
+    log_debug("regress_stepwise correctly returned regression model")
+    idx_used_diags = used_diags(1:)
+    n_terms = dimsizes(used_diags) - 1
     finald = xarr(used_diags(1:), :)
     rc = reg_multlin_stats(yarr, transpose(finald), opt)
     MCORRELATION = rc@r2
@@ -732,23 +730,25 @@ begin
     YFIT = rc@Yest
     const = rc(0)
   else
+    error_msg("w", scriptname, funcname, "regress_stepwise returned " + \
+              "empty model")
     const = avg(yarr)
-    terms = 0.0
+    idx_used_diags := 0
     YFIT = new(dim_dat, double)
     YFIT = const
     rc = reg_multlin_stats(yarr, transpose(yfit), opt)
     MCORRELATION = rc@r
     correlation = escorc(yfit, yarr)
     coef = 0.0
-    nterms = 0
+    n_terms = 0
     coef@Yest = new(dim_dat, double)
     coef@Yest(:) = const
   end if
 
   ; Return elements
   coef@const = const
-  coef@terms = terms
-  coef@nterms = nterms
+  coef@idx_used_diags = idx_used_diags
+  coef@n_terms = n_terms
   coef@YFIT = YFIT
   coef@MCORRELATION = MCORRELATION
   coef@correlation = correlation
