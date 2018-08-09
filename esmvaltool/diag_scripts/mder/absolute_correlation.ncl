@@ -461,7 +461,7 @@ begin
     plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), MainStg, \
                           YStg, wks, "draw")
 
-    ; Add meta data (TODO)
+    ; TODO: Add meta data
     ; climofiles = new(DIM_DAT, string)
     ; do ii = 0, DIM_DAT - 1
     ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \

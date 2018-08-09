@@ -37,6 +37,7 @@
 ;     iter : iteration for smoothing.
 ;     cross_validation_mode : perform cross validation.
 ;     p_value : p value for F-test in stepwise regression (default: p=0.05)
+;     plot_mder_time_series : plot whole time series of MDER results.
 ;
 ; Caveats:
 ;     Adds input_file_info@units.
@@ -83,6 +84,7 @@ begin
   end if
 
   ; Check field type: need 1-d field
+  ; TODO: add sic
   ; supported_vars = (/"sic"/)  ; List of non-1-d variables that are supported
   supported_vars = (/""/)
   if (.not. isStrSubset(field_type0, "0")) then
@@ -224,12 +226,13 @@ begin
     cross_validation_mode = diag_script_info@cross_validation_mode
   end if
 
-  ; Output dir
-  diag_script_base = basename(diag_script)
+  ; Output dirs
   plot_dir = config_user_info@plot_dir
+  work_dir = config_user_info@work_dir
   system("mkdir -p " + plot_dir)
+  system("mkdir -p " + work_dir)
   plot_num = integertochar(ispan(97, 122, 1))
-  plot_file = input_file_info@project(DIM_OBS) + "_" + target_var + \
+  filename = input_file_info@project(DIM_OBS) + "_" + target_var + \
     "-" + calc_type + "_" + input_file_info@exp(DIM_OBS + DIM_HDAT) + \
     "_" + (p_step + 1) + "ystep"
 
@@ -242,21 +245,21 @@ begin
   ; Output arrays
   xx = new((/DIM_DAT, dimsizes(p_time)/), float)
   xx_val = new((/DIM_DAT, dimsizes(p_time), 2/), float)
-  yy = new((/DIM_DAT + 3, n_max/), float)         ; incl. uMMM and wMMM
-  yyw = new((/2, n_max/), float)
-  yywt = new((/2, n_max/), float)
+  YY = new((/DIM_DAT + 3, n_max/), float)         ; incl. uMMM and wMMM
+  t_mder_errors = new((/2, n_max/), float)
+  mder_errors = new((/2, n_max/), float)
   yy_obs = new((/DIM_OBS, n_max/), float)
   weights_t = new((/1, DIM_DAT, dimsizes(p_time)/), float)
   cfint_t = new((/DIM_DAT, dimsizes(p_time)/), float)
-  coeff_y_est = new((/DIM_DAT, dimsizes(p_time)/), double)
-  Y_WEIGHT = new((/dimsizes(p_time)/), double)
-  MCORR = new((/dimsizes(p_time)/), double)
+  coeff_y_est = new((/DIM_DAT, dimsizes(p_time)/), double)  ; Type of coef
+  Y_WEIGHT = new((/dimsizes(p_time)/), double)              ; Type of coef
+  MCORR = new((/dimsizes(p_time)/), double)                 ; Type of coef
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess model data
   ; ---------------------------------------------------------------------------
 
-  ; Call the variable of interest and save in one array yy
+  ; Call the variable of interest and save in one array YY
   do i = 0, DIM_DAT - 1
     idat = idx_datasets(i)
     log_debug(input_file_info@dataset(idat))
@@ -388,18 +391,18 @@ begin
       tmpsm = tmpsc
     end if
     if (calc_type .eq. "trend") then
-      yy(i + 3, 0:dimsizes(tmpsm) - 1) = tofloat(tmpsm - tmppd)
+      YY(i + 3, 0:dimsizes(tmpsm) - 1) = tofloat(tmpsm - tmppd)
     else if (calc_type .eq. "pos") then
-      yy(i + 3, 0:dimsizes(tmpsm) - 1) = tofloat(tmpsm)
+      YY(i + 3, 0:dimsizes(tmpsm) - 1) = tofloat(tmpsm)
     end if
     end if
     delete([/tmppd, tmpyy, tmpxx, tmpy, tmpsm, tmpsc, tmpst/])
   end do
 
   ; Add attributes to models time series
-  yy!1 = "time"
-  yy&time = ispan(ny_min, ny_max, 1)      ; tmpsc&year
-  yy&time@calendar = "standard"
+  YY!1 = "time"
+  YY&time = ispan(ny_min, ny_max, 1)      ; tmpsc&year
+  YY&time@calendar = "standard"
 
   ; Save unique dataset names (modifies input_file_info@dataset!)
   tmpm = input_file_info@dataset
@@ -447,7 +450,7 @@ begin
 
   ; Add attributes to observations time series
   yy_obs!1 = "time"
-  yy_obs&time = yy&time
+  yy_obs&time = YY&time
   yy_obs&time@calendar = "standard"
   yy_obs@name = OBS_NAME
 
@@ -484,6 +487,7 @@ begin
   obs0_std = new((/DIM_DIAG/), float)
   wdiag = new((/DIM_DIAG/), string)
 
+  log_info("")
   ; Loop over files in the list and append data
   do idx_diag = 0, DIM_DIAG - 1
     data_temp = ncdf_read(file_list(idx_diag), "diag")
@@ -542,6 +546,7 @@ begin
                 diag_a&datasets(missing_datasets))
     end if
   end do
+  log_info("")
 
   ; Save "good" diagnostics without missing datasets
   wdiag := wdiag(good_diag_idx)
@@ -575,7 +580,7 @@ begin
         good = ind(input_file_info@dataset .ne. input_file_info@dataset(i))
         coef = regress_stepwise(diag_all(:, good), xx(good, pt))
         const = coef@const
-        idx_used_diags = toint(coef@idx_used_diags)
+        used_diags = toint(coef@idx_used_diags)
         n_terms = coef@n_terms
         YFIT = coef@YFIT
         mcorr = coef@MCORRELATION
@@ -584,13 +589,13 @@ begin
                   input_file_info@dataset(i) + ", constant: " + const)
         if (n_terms .gt. 0) then
           do it = 0, dimsizes(coef) - 1
-            log_debug(wdiag(idx_used_diags(it)) + ", " + coef(it) + ", " + \
+            log_debug(wdiag(used_diags(it)) + ", " + coef(it) + ", " + \
                       corr(it))
           end do
         end if
         log_debug("Multiple correlation: " + mcorr)
         log_debug("")
-        delete([/const, idx_used_diags, n_terms, YFIT, mcorr, corr, coef, \
+        delete([/const, used_diags, n_terms, YFIT, mcorr, corr, coef, \
                 good/])
       end do
     end if
@@ -598,7 +603,7 @@ begin
     ; Building the final regression
     coef := regress_stepwise(diag_all, xx(:, pt))
     const = coef@const
-    idx_used_diags := toint(coef@idx_used_diags)
+    used_diags := toint(coef@idx_used_diags)
     n_terms := coef@n_terms
     YFIT := coef@YFIT
     mcorr := coef@MCORRELATION
@@ -607,21 +612,21 @@ begin
     ; Print final regression model
     log_info("The final model (" + scal_time(0) + "-" + \
              (p_time(pt) + p_step) + "):")
-    log_info("Constant: " + const)
+    log_info("    Constant: " + const)
     if (n_terms .gt. 0) then
       do it = 0, dimsizes(coef) - 1
-        log_debug(wdiag(idx_used_diags(it)) + ", " + coef(it) + ", " + \
-                  corr(it))
+        log_info("    " + wdiag(used_diags(it)) + ": " + coef(it) + \
+                 ", (corr = " + corr(it) + ")")
       end do
     end if
-    log_info("Multiple correlation: " + mcorr)
+    log_info("    " + "Multiple correlation: " + mcorr)
     log_info("")
 
     ; -------------------------------------------------------------------------
     ; Model weighting
     ; -------------------------------------------------------------------------
 
-    x_diag := transpose(diag_all(idx_used_diags, :))
+    x_diag := transpose(diag_all(used_diags, :))
     good_diag := ind(.not. ismissing(x_diag(:, 0)))
     x := x_diag(good_diag, :)
 
@@ -629,17 +634,17 @@ begin
     tmp_dat := dimsizes(x(:, 0))
 
     ; Create Design Matrix D
-    D := new((/tmp_dat, dimsizes(idx_used_diags) + 1/), typeof(diag_all))
+    D := new((/tmp_dat, dimsizes(used_diags) + 1/), typeof(diag_all))
     D = 1
     do id = 0, dimsizes(x(:, 0)) - 1
       D(id, 1:) = x(id, :)
     end do
 
     ; Observations
-    xobs := new((/1, dimsizes(idx_used_diags) + 1/), typeof(diag_all), \
+    xobs := new((/1, dimsizes(used_diags) + 1/), typeof(diag_all), \
                 getFillValue(diag_all))
     xobs = 1.0
-    xobs(0, 1:) = obs0(idx_used_diags)
+    xobs(0, 1:) = obs0(used_diags)
     df = tmp_dat - dimsizes(xobs(0, :))
 
     ; Identity matrix
@@ -693,7 +698,7 @@ begin
     end do
 
     ; Output
-    log_info("Model weights: ")
+    log_info("Model weights:")
     do idat = 0, DIM_DAT - 1
       log_info(input_file_info@dataset(idat) + ": " + weights_t(:, idat, pt))
     end do
@@ -705,45 +710,37 @@ begin
     Y_WEIGHT(pt) = y_weight
 
     ; Save coefficients and terms of regression model in array
-    if (isvar("mderrm")) then
-      max_dim = max((/dimsizes(coef), dimsizes(mderrm(0, 1:))/))
-      tmprm = mderrm
-      tmptr = termsrm
-      tmpt  = termst
-      delete([/mderrm, termsrm, termst/])
+    ; Array sizes are first known at runtime (-> build at runtime)
+    if (isvar("mder_coefs")) then
+      max_dim = max((/dimsizes(coef), dimsizes(mder_coefs(pt - 1, 1:))/))
+      tmp_mder_coefs = mder_coefs
+      tmp_names = names_used_diags
+      tmpt  = idx_used_diags
+      delete([/mder_coefs, names_used_diags, idx_used_diags/])
 
-      mderrm = new((/pt + 1, max_dim + 1/), typeof(tmprm))
-      termsrm = new((/pt + 1, max_dim + 1/), typeof(tmptr))
-      termst = new((/pt + 1, max_dim + 1/), typeof(tmpt))
+      mder_coefs = new((/pt + 1, max_dim + 1/), typeof(tmp_mder_coefs))
+      names_used_diags = new((/pt + 1, max_dim + 1/), typeof(tmp_names))
+      idx_used_diags = new((/pt + 1, max_dim + 1/), typeof(tmpt))
 
-      mderrm(:pt - 1, :dimsizes(tmprm(0, :)) - 1) = tmprm
-      termsrm(:pt - 1, :dimsizes(tmptr(0, :)) - 1) = tmptr
-      termst(:pt-1, :dimsizes(tmpt(0, :)) - 1) = tmpt
-      mderrm(pt, 0) = const
-      mderrm(pt, 1:dimsizes(coef)) = coef
-      termsrm(pt, 1:dimsizes(wdiag(idx_used_diags))) = wdiag(idx_used_diags)
-      termst(pt, 1:dimsizes(idx_used_diags)) = idx_used_diags
-      delete([/tmprm, tmptr, tmpt, max_dim/])
+      mder_coefs(:pt - 1, :dimsizes(tmp_mder_coefs(0, :)) - 1) = tmp_mder_coefs
+      names_used_diags(:pt - 1, :dimsizes(tmp_names(0, :)) - 1) = tmp_names
+      idx_used_diags(:pt-1, :dimsizes(tmpt(0, :)) - 1) = tmpt
+      mder_coefs(pt, 0) = const
+      mder_coefs(pt, 1:dimsizes(coef)) = coef
+      names_used_diags(pt, 1:dimsizes(wdiag(used_diags))) = wdiag(used_diags)
+      idx_used_diags(pt, 1:dimsizes(used_diags)) = used_diags
+
+      delete([/tmp_mder_coefs, tmp_names, tmpt, max_dim/])
     else
-      mderrm = new((/pt + 1, dimsizes(coef) + 1/), double)
-      termsrm = new((/pt + 1, dimsizes(coef) + 1/), string)
-      termst = new((/pt + 1, dimsizes(coef) + 1/), typeof(idx_used_diags))
+      mder_coefs = new((/1, dimsizes(coef) + 1/), typeof(coef))
+      names_used_diags = new((/1, dimsizes(coef) + 1/), string)
+      idx_used_diags = new((/1, dimsizes(coef) + 1/), typeof(used_diags))
 
-      mderrm(pt, 0) = const
-      mderrm(pt, 1:) = coef
-      termsrm(pt, 1:) = wdiag(idx_used_diags)
-      termst(pt, 1:) = idx_used_diags
+      mder_coefs(pt, 0) = const
+      mder_coefs(pt, 1:) = coef
+      names_used_diags(pt, 1:) = wdiag(used_diags)
+      idx_used_diags(pt, 1:) = used_diags
     end if
-
-    print(mderrm)
-    print("")
-    print(termsrm)
-    print("")
-    print(termst)
-    print("")
-    print(idx_used_diags)
-    print("")
-    print(n_terms)
 
     delete([/y, corr, mcorr, x, x_diag, good_diag, xobs, cf, tmp_cf, \
             weights, uM, uM_std/])
@@ -751,26 +748,34 @@ begin
 
   ; Iterate over target periods and save MDER results
   do pt = 0, dimsizes(p_time) - 1
-    tmp_yy = new(dimsizes(yy), typeof(yy))
-    tmp_yywt = new(dimsizes(yywt), typeof(yywt))
+    tmp_yy = new(dimsizes(YY), typeof(YY))
+    tmp_mder_errors = new(dimsizes(mder_errors), typeof(mder_errors))
     do tt = 0, n_max - 2
-      yy(0, tt) = avg(yy(3:, tt))
+      YY(0, tt) = avg(YY(3:, tt))
+
+      ; MDER errors for time periods
       if (tt .ge. p_time(pt) - ny_min .and. \
           tt .lt. (p_time(pt) + p_step + 1 - ny_min)) then
-        tmp_yy(1, tt) = sum(yy(3:, tt) * weights_t(0, :, pt))
-        tmp_yywt(0, tt) = tmp_yy(1, tt) + sqrt(abs(sum(yy(3:, tt) * \
-                                               cfint_t(:, pt))))
-        tmp_yywt(1, tt) = tmp_yy(1, tt) - sqrt(abs(sum(yy(3:, tt) * \
-                                               cfint_t(:, pt))))
+        tmp_yy(1, tt) = sum(YY(3:, tt) * weights_t(0, :, pt))
+        tmp_mder_errors(0, tt) = tmp_yy(1, tt) + \
+          sqrt(abs(sum(YY(3:, tt) * cfint_t(:, pt))))
+        tmp_mder_errors(1, tt) = tmp_yy(1, tt) - \
+          sqrt(abs(sum(YY(3:, tt) * cfint_t(:, pt))))
       end if
       if (tt .eq. (p_time(pt) + p_step - ny_min)) then
-        yy(1, tt - (p_step + 1) / 2)  = avg(tmp_yy(1, tt-p_step:tt))
-        yywt(0, tt - (p_step + 1) / 2) = avg(tmp_yywt(0, tt - p_step:tt))
-        yywt(1, tt - (p_step + 1) / 2) = avg(tmp_yywt(1, tt - p_step:tt))
+        YY(1, tt - (p_step + 1) / 2)  = avg(tmp_yy(1, tt-p_step:tt))
+        mder_errors(0, tt - (p_step + 1) / 2) = \
+          avg(tmp_mder_errors(0, tt - p_step:tt))
+        mder_errors(1, tt - (p_step + 1) / 2) = \
+          avg(tmp_mder_errors(1, tt - p_step:tt))
       end if
-      yy(2, tt) = sum(yy(3:, tt) * weights_t(0, :, pt))
-      yyw(0, tt) = yy(2, tt) + sqrt(abs(sum(yy(3:, tt) * cfint_t(:, pt))))
-      yyw(1, tt) = yy(2, tt) - sqrt(abs(sum(yy(3:, tt) * cfint_t(:, pt))))
+
+      ; MDER errors for whole time span
+      YY(2, tt) = sum(YY(3:, tt) * weights_t(0, :, pt))
+      t_mder_errors(0, tt) = YY(2, tt) + \
+        sqrt(abs(sum(YY(3:, tt) * cfint_t(:, pt))))
+      t_mder_errors(1, tt) = YY(2, tt) - \
+        sqrt(abs(sum(YY(3:, tt) * cfint_t(:, pt))))
     end do
   end do
 
@@ -779,23 +784,29 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Plot regression line
-  diag_reg = new((/dimsizes(p_time), DIM_DAT + 2/), double)
-  nfit = fspan(0, dimsizes(diag_reg(0, 2:)) - 1, dimsizes(diag_reg(0, 2:)))
+  ;   y_mder_results(:, 0): const
+  ;   y_mder_results(:, 1): fitted observations (with MDER coefficients)
+  ;   y_mder_results(:, 2:): fitted models (with model weights)
+  y_mder_results = new((/dimsizes(p_time), DIM_DAT + 2/), typeof(mder_coefs))
+  y_mder_results_std = new((/dimsizes(p_time), DIM_DAT + 2/), \
+                           typeof(mder_coefs))
+
+  nfit = fspan(0, dimsizes(y_mder_results(0, 2:)) - 1, \
+               dimsizes(y_mder_results(0, 2:)))
   ; nfit = fspan(0, 49, 50)
-  diag_std = new((/dimsizes(p_time), DIM_DAT + 2/), double)
-  wy = new((/dimsizes(p_time), DIM_DAT + 2/), double)
+  wy = new((/dimsizes(p_time), DIM_DAT + 2/), typeof(mder_coefs))
   wy_std = new((/dimsizes(p_time), DIM_DAT + 2/), float)
-  yfit_reg = new((/dimsizes(p_time), dimsizes(nfit)/), double)
-  yfit_std = new((/dimsizes(p_time), 2, dimsizes(nfit)/), double)
+  yfit_reg = new((/dimsizes(p_time), dimsizes(nfit)/), typeof(mder_coefs))
+  yfit_std = new((/dimsizes(p_time), 2, dimsizes(nfit)/), typeof(mder_coefs))
 
   ; Iterate over target periods
   do ppt = 0, dimsizes(p_time) - 1
-    xgood = ind(.not. ismissing(termst(ppt, :)))
-    hlp_tmp = new((/dimsizes(mderrm(ppt, xgood)), dimsizes(nfit)/), float)
-    hlp = new((/1, dimsizes(mderrm(ppt, xgood)) + 1/), float)
-    diag_reg(ppt, :) = mderrm(ppt, 0)         ; const
-    diag_std(ppt, :) = 0.0
-    yfit_reg(ppt, :) = mderrm(ppt, 0)         ; const
+    xgood = ind(.not. ismissing(idx_used_diags(ppt, :)))
+    hlp_tmp = new((/dimsizes(mder_coefs(ppt, xgood)), dimsizes(nfit)/), float)
+    hlp = new((/1, dimsizes(mder_coefs(ppt, xgood)) + 1/), float)
+    y_mder_results(ppt, :) = mder_coefs(ppt, 0)          ; const
+    y_mder_results_std(ppt, :) = 0.0
+    yfit_reg(ppt, :) = mder_coefs(ppt, 0)                 ; const
     hlp = 1.0
 
     wy(ppt, 0) = avg(xx(:, ppt))
@@ -803,43 +814,45 @@ begin
     wy(ppt, 2:) = xx(:, ppt)
     wy_std(ppt, 2:) = xx_val(:, ppt, 1)       ; cfint_t(:, ppt)
 
-    do ii = 1, dimsizes(mderrm(ppt, :)) - 1
-      if (.not. ismissing(mderrm(ppt, ii))) then
-        diag_reg(ppt, 1) = diag_reg(ppt, 1) + mderrm(ppt, ii) * \
-                                              obs0(termst(ppt, ii))
-        diag_std(ppt, 1) = diag_std(ppt, 1) + (mderrm(ppt, ii) * \
-                                               (obs0_std(termst(ppt, ii)))) ^ 2
-        diag_reg(ppt, 2:) = coeff_y_est(:, ppt)
+    do ii = 1, dimsizes(mder_coefs(ppt, :)) - 1
+      if (.not. ismissing(mder_coefs(ppt, ii))) then
+        y_mder_results(ppt, 1) = y_mder_results(ppt, 1) + \
+          mder_coefs(ppt, ii) * obs0(idx_used_diags(ppt, ii))
+        y_mder_results_std(ppt, 1) = y_mder_results_std(ppt, 1) + \
+          (mder_coefs(ppt, ii) * (obs0_std(idx_used_diags(ppt, ii)))) ^ 2
 
-        ; diag_reg(2:) + coef(ii) * diag_all(terms(ii), :)
-        diag_std(ppt, 2:) = diag_std(ppt, 2:) + \
-          (mderrm(ppt, ii) * (diag_all_std(termst(ppt, ii), :))) ^ 2
+        y_mder_results(ppt, 2:) = coeff_y_est(:, ppt)
+        ; = y_mder_results(2:) + coef(ii) * diag_all(terms(ii), :)
 
-        minx = min(diag_all(termst(ppt, ii), :)) - 1.1 * \
-          (max(diag_all(termst(ppt, ii), :)) - \
-           min(diag_all(termst(ppt, ii), :)))
-        maxx = max(diag_all(termst(ppt, ii), :)) + 1.1 * \
-          (max(diag_all(termst(ppt, ii), :)) - \
-           min(diag_all(termst(ppt, ii), :)))
+        y_mder_results_std(ppt, 2:) = y_mder_results_std(ppt, 2:) + \
+          (mder_coefs(ppt, ii) * \
+           (diag_all_std(idx_used_diags(ppt, ii), :))) ^ 2
+
+        minx = min(diag_all(idx_used_diags(ppt, ii), :)) - 1.1 * \
+          (max(diag_all(idx_used_diags(ppt, ii), :)) - \
+           min(diag_all(idx_used_diags(ppt, ii), :)))
+        maxx = max(diag_all(idx_used_diags(ppt, ii), :)) + 1.1 * \
+          (max(diag_all(idx_used_diags(ppt, ii), :)) - \
+           min(diag_all(idx_used_diags(ppt, ii), :)))
         diag_var = minx + (maxx - minx) * nfit / dimsizes(nfit)
         hlp_tmp(ii - 1, :) = diag_var
         delete([/diag_var, minx, maxx/])
       end if
     end do
 
-    diag_std = sqrt(diag_std)
-    x_diag = transpose(diag_all(termst(ppt, xgood), :))
+    y_mder_results_std = sqrt(y_mder_results_std)
+    x_diag = transpose(diag_all(idx_used_diags(ppt, xgood), :))
     good_diag = ind(.not. ismissing(x_diag(:, 0)))
     x = x_diag(good_diag, :)
 
     ; Create Design matrix D and Identity matrix Id for pt = 1
-    D := new((/dimsizes(x(:, 0)), dimsizes(termst(ppt, xgood)) + 1/), \
+    D := new((/dimsizes(x(:, 0)), dimsizes(idx_used_diags(ppt, xgood)) + 1/), \
              typeof(diag_all))
     D = 1.0
     do id = 0, dimsizes(x(:, 0)) - 1
       D(id, 1:) = x(id, :)
     end do
-    df = tmp_dat - dimsizes(obs0(termst(ppt, xgood))) + 1
+    df = tmp_dat - dimsizes(obs0(idx_used_diags(ppt, xgood))) + 1
     Id = new((/dimsizes(x(:, 0)), dimsizes(x(:, 0))/), typeof(diag_all))
     Id = 0.0
     do idat = 0, tmp_dat - 1
@@ -869,24 +882,25 @@ begin
 
     ; Log-linear regression
     else
-      isort_tmp = dim_pqsort_n(diag_reg(ppt, 2:), 1, 0)
+      isort_tmp = dim_pqsort_n(y_mder_results(ppt, 2:), 1, 0)
       isort = new(dimsizes(isort_tmp) + 2, integer)
       isort(0) = 0
       isort(1) = 1
       isort(2:) = isort_tmp + 2
-      diag_reg(ppt, :) = diag_reg(ppt, isort)
-      diag_std(ppt, :) = diag_std(ppt, isort)
+      y_mder_results(ppt, :) = y_mder_results(ppt, isort)
+      y_mder_results_std(ppt, :) = y_mder_results_std(ppt, isort)
       wy(ppt, :) = wy(ppt, isort)
       wy_std(ppt, :) = wy_std(ppt, isort)
-      model_numbers = ispan(0, dimsizes(diag_reg(ppt, :)) - 1, 1)
+      model_numbers = ispan(0, dimsizes(y_mder_results(ppt, :)) - 1, 1)
 
       ; Save order of datasets
-      diag_reg@model_numbers = model_numbers(isort)
-      rc = regline_stats(diag_reg(ppt, 2:), log(wy(ppt, 2:)))
-      yfit_reg(ppt, :) = exp(rc@b(0) + rc@b(1) * diag_reg(ppt, 2:))
-      yfit_std(ppt, :, :) = (/exp(rc@y95(0) + rc@b95(0) * diag_reg(ppt, 2:)), \
-                             exp(rc@y95(1) + rc@b95(1) * diag_reg(ppt, 2:))/)
-      wy(ppt, 1) = exp(rc@b(0) + rc@b(1) * diag_reg(ppt, 1))   ; yfit(obs)
+      y_mder_results@model_numbers = model_numbers(isort)
+      rc = regline_stats(y_mder_results(ppt, 2:), log(wy(ppt, 2:)))
+      yfit_reg(ppt, :) = exp(rc@b(0) + rc@b(1) * y_mder_results(ppt, 2:))
+      yfit_std(ppt, :, :) = \
+        (/exp(rc@y95(0) + rc@b95(0) * y_mder_results(ppt, 2:)), \
+         exp(rc@y95(1) + rc@b95(1) * y_mder_results(ppt, 2:))/)
+      wy(ppt, 1) = exp(rc@b(0) + rc@b(1) * y_mder_results(ppt, 1))  ; yfit(obs)
       delete([/isort_tmp, isort, model_numbers, rc/])
     end if
 
@@ -912,8 +926,8 @@ begin
   x25 = round(0.25 * DIM_DAT, 3) - 1
   x75 = round(0.75 * DIM_DAT, 3) - 1
 
-  presq = new((/dimsizes(p_time), DIM_DAT/), double)
-  premdersq = new((/dimsizes(p_time), DIM_DAT/), double)
+  presq = new((/dimsizes(p_time), DIM_DAT/), typeof(mder_coefs))
+  premdersq = new((/dimsizes(p_time), DIM_DAT/), typeof(mder_coefs))
   BSS = new((/dimsizes(p_time)/), float)
 
   ; Iterate over target periods
@@ -960,152 +974,169 @@ begin
   ; Write regression model equations to ASCII table
   ; ---------------------------------------------------------------------------
 
-  RegStg = new((/dimsizes(p_time)/), string)
-  PStg = new((/dimsizes(p_time)/), string)
+  log_info("")
+
+  ; Create arrays
+  times_str = new((/dimsizes(p_time) + 1/), string)
+  terms_str = new((/dimsizes(p_time) + 1/), string)
+  mcorr_str = new((/dimsizes(p_time) + 1/), string)
+
+  ; Header
+  times_str(0) = "Target period"
+  terms_str(0) = "Model equation"
+  mcorr_str(0) = "Correlation R^2"
+
+  ; Contents
   do pt = 0, dimsizes(p_time) - 1
-    RegStg(pt) = sprintf("%4.2f", mderrm(pt, 0))
-    do ii = 1, dimsizes(mderrm(pt, :)) - 1
-      if (.not. ismissing(mderrm(pt, ii))) then
-        if (mderrm(pt, ii) .gt. 0.0) then
-          RegStg(pt) = RegStg(pt) + " +" + sprintf("%4.2f", mderrm(pt, ii)) + \
-            " x " + termsrm(pt, ii)
+    terms_str(pt + 1) = sprintf("%4.2f", mder_coefs(pt, 0))
+    do ii = 1, dimsizes(mder_coefs(pt, :)) - 1
+      if (.not. ismissing(mder_coefs(pt, ii))) then
+        if (mder_coefs(pt, ii) .gt. 0.0) then
+          terms_str(pt + 1) = terms_str(pt + 1) + " +" + \
+            sprintf("%4.2f", mder_coefs(pt, ii)) + " x " + \
+            names_used_diags(pt, ii)
         else
-          RegStg(pt) = RegStg(pt) + " " + sprintf("%4.2f", mderrm(pt, ii)) + \
-            " x " + termsrm(pt, ii)
+          terms_str(pt + 1) = terms_str(pt + 1) + " " + \
+            sprintf("%4.2f", mder_coefs(pt, ii)) + " x " + \
+            names_used_diags(pt, ii)
         end if
       end if
     end do
-    p1_time = p_time(pt) + p_step - 2000      ; p_time(0)
-    PStg(pt) = p_time(pt) + "-" + sprinti("%0.2hi", p1_time)
+    p1_time = p_time(pt) + (p_step - 2000)
+    times_str(pt + 1) = p_time(pt) + "-" + sprinti("%0.2hi", p1_time)
+    mcorr_str(pt + 1) = sprintf("%.3f", MCORR(pt))
   end do
 
-  ; header = (/"Target Period             Model Equation  R^2",\
-  ;            "                          "+models@experiment(0+DIM_OBS+dim_hMOD)+"         "/)
-  ; hlist = [/header/]
-  ; alist = [/PStg,RegStg,MCORR/]
+  ; Write files
+  table_path = work_dir + filename + ".txt"
+  ascii_path = work_dir + var0 + "_" + \
+    input_file_info@exp(0 + DIM_OBS + DIM_HDAT) + "_" + (p_step + 1) + \
+    "ystep_diagnostics.txt"
+  write_table(table_path, "w", [/times_str, terms_str, mcorr_str/], \
+              "%s    %s    %s")
+  asciiwrite(ascii_path, names_used_diags)
+  log_info("Wrote " + ascii_path)
+  log_info("Wrote " + table_path)
+  delete([/table_path, ascii_path/])
 
-  ; write_table(plot_dir+plot_file+".txt", "w", hlist, "%s")
-  ; write_table(plot_dir+plot_file+".txt", "a", alist, "%s %s %f")
-  ; delete([/header,hlist,alist/])
+  ; ---------------------------------------------------------------------------
+  ; Write NetCDF files
+  ; ---------------------------------------------------------------------------
 
-  ; asciiwrite(climo_dir + "/" + target_var + "_" + \
-  ;            models@experiment(0+DIM_OBS+dim_hMOD) + "_" +(p_step+1) + \
-  ;            "ystep_diagnostics.txt", termsrm)
+  dataset_list = input_file_info@dataset(3:)
+  do pt = 0, dimsizes(p_time) - 1
+    weights_out = weights_t(0, :, pt)
+    weights_path = work_dir + filename + "_weights_" + \
+      p_time(pt) + "-" + (p_time(pt) + p_step) + ".nc"
+    weights_out!0 = "dataset"
+    weights_out&dataset = dataset_list
+    weights_out@diag_script = diag_script
+    weights_out@var = "weight"
+    weights_out@description = "Weights from MDER"
+    if (target_var .eq. "SIE") then
+      weights_out@description = "Weights for September Arctic sea ice extent"
+    end if
+    weights_file = ncdf_write(weights_out, weights_path)
+    delete([/weights_out, weights_path, weights_file/])
+  end do
 
+  ; ---------------------------------------------------------------------------
+  ; Plots
+  ; ---------------------------------------------------------------------------
 
+  ; Line plot showing the time series including MDER weights
+  plot_name_1 = filename + "_FIG1"
+  wks = get_wks(0, diag_script, plot_name_1)
+  MainStg = ""
+  YStg = target_var + " [" + variable_info@units + "]"
+  plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
+                         YStg, wks, "draw")
+  log_info("Wrote " + plot_dir + plot_name_1 + "." + file_type)
 
-;   ;;--------------------------------------------------------------------------
-;   ;;Write weights to NetCDF
-;   model_list = input_file_info@dataset(3:)
-;   do pt = 0, dimsizes(p_time)-1
-;     weights_out = weights_t(0,:,pt)
-;     weights_filename = plot_dir + plot_file + "_weights_" + \
-;                        p_time(pt) + "-" + (p_time(pt)+p_step)
-;     weights_out!0           = "model"
-;     weights_out&model       = model_list
-;     weights_out@diag_script = diag_script
-;     weights_out@var         = "weight"
-;     weights_out@description = "Weights from MDER"
-;     if (target_var.eq."SIE") then
-;       weights_out@description = "Weights for September Arctic sea ice extent"
-;     end if
-;     weights_file            = ncdf_write(weights_out, weights_filename+".nc")
-;     delete([/weights_out, weights_filename, weights_file/])
-;   end do
-;   ;;--------------------------------------------------------------------------
-;   ;;PLOT
-;
-;   ;; add meta data to plot (for reporting)
-;   climofiles = new(DIM_DAT, string)
-;   do ii = 0, DIM_DAT - 1
-;       climofiles(ii) = interface_get_inpaths(ii) + "/" \
-;                        + interface_get_infile(variables(0), field_types(0), ii)
-;   end do
-;   allmodelnames = input_file_info@dataset
-;   zz = diag_script + "_" + variables(0)
-;   contrib_authors = (/"A_wenz_sa"/)
-;
-;   ;; Line plot showing the time series including MDER weights
-;   wks     = get_wks(0, diag_script, plot_file + "_FIG1")
-;   MainStg = ""
-;   YStg    = target_var+" ["+variable_info@units+"]"
-;   plot    = weight_lin_plot(yy,yywt,yyw,yy_obs,MainStg,YStg,wks,"draw")
-;
-;   alltags = array_append_record(tags, (/"ST_mder", "ST_corr", "ST_range", \
-;                                         "ST_stddev", "PT_times", "DM_sh"/), 0)
-;   caption = "Time series of " + variables(0) + " for " + models@ensemble(0) + \
-;             " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
-;
-;   plot_fname = wks@fullname
-;   ESMValMD(plot_fname, alltags, caption, zz, variables(0), \
-;            allmodelnames, climofiles, diag_script, contrib_authors)
-;   delete([/alltags, caption, wks, plot_fname/])
-;
-;   do ppt=0, dimsizes(p_time)-1
-;     wks     = get_wks(0, diag_script, plot_file + "_FIG2" + plot_num(ppt))
-;     MainStg = plot_num(ppt)+") "+p_time(ppt)+"-"+(p_time(ppt)+p_step)
-;     XStg    = RegStg(ppt)+" ["+variable_info@units+"]"
-;     YStg    = target_var+" ["+variable_info@units+"]"
-; print(diag_reg(ppt,:))
-; print(diag_std(ppt,:))
-; print(wy(ppt,:))
-; print(wy_std(ppt,:))
-; print(yfit_reg(ppt,:))
-; print(yfit_std(ppt,:,:))
-;     plot2   = mder_scatter_plot(diag_reg(ppt,:), diag_std(ppt,:), \
-;                                 wy(ppt,:), wy_std(ppt,:), \
-;                                 yfit_reg(ppt,:), yfit_std(ppt,:,:), \
-;                                 MainStg, XStg, YStg, wks, "draw")
-;     alltags = array_append_record(tags, (/"ST_mder", "ST_corr", "ST_range", \
-;                                           "ST_stddev", "ST_corr", "PT_scatter",\
-;                                           "T_EC", "DM_sh"/), 0)
-;     caption = "Scatterplot showing the correlation between future " + \
-;               variables(0) + " and the quantity resulting from MDER analysis" +\
-;               " on the x-axes, similar to Wenzel et al., JClim, 2016, fig. 3"
-;     plot_fname = wks@fullname
-;     ESMValMD(plot_fname, alltags, caption, zz, variables(0), \
-;              allmodelnames, climofiles, diag_script, contrib_authors)
-;     delete([/alltags, caption, wks, plot_fname/])
-;   end do  ; ppt
-; exit
-;
-;   YStg   = "RMSE projection error ["+variable_info@units+"]"
-;   XBname = new(dimsizes(PStg)*2,string)
-;
-;   if (dimsizes(XBname).eq.2) then
-;       XBname = (/"uMMM","MDER"/)
-;   else if (dimsizes(XBname).eq.4) then
-;       XBname(0::2) = (/"uMMM~C~"+PStg/)
-;       XBname(1::2) = (/"MDER~C~"+PStg/)
-;   else
-;       XBname(0::2) = (/" "/)
-;       XBname(1::2) = PStg
-;   end if
-;   end if
-;
-;   ;; Boxplot of RMSE of different weigting methods inkl pseudoreality check
-;   wks     = get_wks(0, diag_script, plot_file + "_FIG3")
-;   MainStg = ""
-;   Xtitle  = PStg(0)
-;   do pt = 1, dimsizes(p_time)-1
-;     Xtitle = Xtitle+"  "+PStg(pt)
-;   end do
-;   plot3   = sqrt_error_plot(preRDS,preAVG,prePRE,\
-;                            MainStg,XBname,Xtitle,YStg,wks,"draw")
-;
-;   alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", "ST_stddev", \
-;                                 "ST_mean", "PT_bar", "PT_errorbar", "DM_sh"/),0)
-;   caption = "RMSE difference between the ensemble mean future climatological" +\
-;             " mean " + variables(0) + "and its equivalent in pseudoreality " +\
-;             "under " + models@ensemble(0) + " scenario, similar to Wenzel " +\
-;             "et al., JClim, 2016, fig. 4"
-;   plot_fname = wks@fullname
-;   ESMValMD(plot_fname, alltags, caption, zz, variables(0), \
-;            allmodelnames, climofiles, diag_script, contrib_authors)
-;   delete([/alltags, caption, zz, climofiles, allmodelnames, plot_fname/])
-;
-;   ;; Remove temporary diagnostic list
-;   system("rm -f " + temp_dir)
+  ; TODO: Add meta data
+  ; climofiles = new(DIM_DAT, string)
+  ; do ii = 0, DIM_DAT - 1
+  ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+  ;                    interface_get_infile(var0, field_type0, ii)
+  ; end do
+  ; alldatasetnames = input_file_info@dataset
+  ; zz = diag_script + "_" + target_var
+  ; contrib_authors = (/"A_wenz_sa, A_schl_ma"/)
+  ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", "ST_range", \
+  ;                                      "ST_stddev", "PT_times", "DM_sh"/), 0)
+  ; caption = "Time series of " + target_var + " for " + \
+  ;   input_file_info@ensemble(0) + \
+  ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
+
+  ; plot_fname = wks@fullname
+  ; ESMValMD(plot_fname, alltags, caption, zz, variables(0), \
+  ;          alldatasetnames, climofiles, diag_script, contrib_authors)
+  ; delete([/alltags, caption, wks, plot_fname/])
+
+  ; MDER scatter plots for all time periods
+  do ppt = 0, dimsizes(p_time) - 1
+    plot_name_2 = filename + "_FIG2" + plot_num(ppt)
+    wks = get_wks(0, diag_script, plot_name_2)
+    MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
+      (p_time(ppt) + p_step)
+    XStg = terms_str(ppt + 1) + " [" + variable_info@units + "]"
+    YStg = target_var + " [" + variable_info@units + "]"
+    plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
+                              y_mder_results_std(ppt, :), \
+                              wy(ppt, :), wy_std(ppt, :), \
+                              yfit_reg(ppt, :), \
+                              yfit_std(ppt, :, :), \
+                              MainStg, XStg, YStg, wks, "draw")
+    log_info("Wrote " + plot_dir + plot_name_2 + "." + file_type)
+
+    ; TODO: Add meta data
+    ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
+    ;                                      "ST_range", "ST_stddev", \
+    ;                                      "ST_corr", "PT_scatter", \
+    ;                                      "T_EC", "DM_sh"/), 0)
+    ; caption = "Scatterplot showing the correlation between future " + \
+    ;           target_var + " and the quantity resulting from MDER " + \
+    ;           "analysis on the x-axes, similar to Wenzel et al., " + \
+    ;           "JClim, 2016, fig. 3"
+    ; plot_fname = wks@fullname
+    ; ESMValMD(plot_fname, alltags, caption, zz, var0, \
+    ;          alldatasetnames, climofiles, diag_script, contrib_authors)
+    ; delete([/alltags, caption, wks, plot_fname/])
+  end do
+
+  ; Boxplot of RMSE of different weigting methods inkl pseudoreality check
+  plot_name_3 = filename + "_FIG3"
+  YStg = "RMSE projection error [" + variable_info@units + "]"
+  XBname = new((dimsizes(times_str) - 1) * 2, string)
+  if (dimsizes(XBname) .eq. 2) then
+    XBname = (/"uMMM", "MDER"/)
+  else if (dimsizes(XBname) .eq. 4) then
+    XBname(0::2) = (/"uMMM~C~" + times_str(1:)/)
+    XBname(1::2) = (/"MDER~C~" + times_str(1:)/)
+  else
+    XBname(0::2) = (/" "/)
+    XBname(1::2) = times_str(1:)
+  end if
+  end if
+
+  wks = get_wks(0, diag_script, plot_name_3)
+  MainStg = ""
+  plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
+                             wks, "draw")
+  log_info("Wrote " + plot_dir + plot_name_3 + "." + file_type)
+
+  ; TODO: Add meta data
+  ; alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", \
+  ;                                      "ST_stddev", "ST_mean", "PT_bar", \
+  ;                                      "PT_errorbar", "DM_sh"/), 0)
+  ; caption = "RMSE difference between the ensemble mean future " + \
+  ;   "climatological mean " + target_var + "and its equivalent in " + \
+  ;   "pseudoreality under " + input_file_info@ensemble(0) + " scenario, " + \
+  ;   "similar to Wenzel et al., JClim, 2016, fig. 4"
+  ; plot_fname = wks@fullname
+  ; ESMValMD(plot_fname, alltags, caption, zz, var0, \
+  ;          alldatasetnames, climofiles, diag_script, contrib_authors)
+  ; delete([/alltags, caption, zz, climofiles, alldatasetnames, plot_fname/])
 
   leave_msg(diag_script, "")
 

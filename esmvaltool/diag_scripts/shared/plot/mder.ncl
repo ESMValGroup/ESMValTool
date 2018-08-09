@@ -10,8 +10,8 @@
 ;                                weighted model enseble and observations.
 ;     function mder_scatter_plot : creates a scatterplot with regression error
 ;                                  and xy-stddev of each model value.
-;     function sqrt_error_plot : plots the sqared error for various model
-;                                ensembles.
+;     function squared_error_plot : plots the squared error for various model
+;                                   ensembles.
 ;     function diag_scatter : plots scatterplot for each diagnostic of
 ;                             historical simulation vs projection
 ;
@@ -55,6 +55,10 @@ function error_bar_plot(Ydata[*] : numeric, \
 ;
 local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels
 begin
+
+  funcname = "error_bar_plot"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   ; Check for valid data
   if (all(ismissing(Ydata(:)))) then
@@ -124,10 +128,11 @@ begin
                                         t + 0.25/), pollyres)
   end do
 
+  leave_msg(scriptname, funcname)
+
   if (opt .eq. "draw") then
     draw(plot)
     frame(wks)
-    delete(plot)
     return(0)
   end if
 
@@ -161,8 +166,12 @@ function time_raster_plot(Ydata[*][*] : numeric, \
 ;     20180726_A-schl_ma: ported to v2.0
 ;     201504??_A-wenz_sa: written
 ;
-local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels
+local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels, pxi
 begin
+
+  funcname = "time_raster_plot"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   ; Check for valid data
   if (all(ismissing(Ydata(:, :)))) then
@@ -229,48 +238,49 @@ begin
   ; Create plot
   plot = gsn_csm_contour(wks, Ydata, res)
 
-  ; Add Crosses (FIXME for v2.0 --> diag_file?)
-  ; if (isatt(diag_script_info, "pt_time")) then
-  ;   p_time = diag_script_info@pt_time
-  ;   p_step = (diag_script_info@pstep)
-  ; end if
-  ; climo_dir = getenv("ESMValTool_climo_dir")
-  ; diag_file = climo_dir + "/" + variables(0) + "_" + \
-  ;   input_file_info@exp(dimsizes(input_file_info@exp)-1)+"_"+\
-  ;                           (p_step+1)+"ystep_diagnostics.txt"
-  ;
-  ; if (isfilepresent(diag_file)) then
-  ;   diag_terms = asciiread(diag_file, -1, "string")
-  ;   pdx = dimsizes(diag_terms) / dimsizes(res@sfXArray)
-  ;   respoly = True
-  ;   respoly@gsMarkerColor = "black"
-  ;   respoly@gsMarkerIndex = 5
-  ;   respoly@gsMarkerThicknessF = 2
-  ;   respoly@gsMarkerSizeF = 30
-  ;   pxi = new((/dimsizes(res@sfXArray), dimsizes(res@sfYArray)/), graphic)
-  ;   do xi = 0, dimsizes(res@sfXArray) - 1
-  ;     idx = diag_terms(xi * pdx: xi * pdx + pdx - 1)
-  ;     do yi = 0, dimsizes(res@sfYArray) - 1
-  ;       do di = 0, dimsizes(idx) - 1
-  ;         if (.not. ismissing(idx(di))) then
-  ;           if (YLname(yi) .eq. idx(di)) then
-  ;             pxi(xi, yi) = gsn_add_polymarker(wks, \
-  ;                                             plot, \
-  ;                                             res@tmXBValues(xi), \
-  ;                                             res@tmYLValues(yi), \
-  ;                                             respoly)
-  ;           end if
-  ;         end if
-  ;       end do
-  ;     end do
-  ;     delete(idx)
-  ;   end do
-  ; end if
+  ; Plot crosses
+  if (isatt(diag_script_info, "p_step")) then
+    p_step = diag_script_info@pstep
+  else
+    error_msg("f", scriptname, funcname, "requires attribute p_step in recipe")
+  end if
+  climo_dir = getenv("ESMValTool_climo_dir")
+  diag_file = config_user_info@work_dir + variables(0) + "_" + \
+    input_file_info@exp(dimsizes(input_file_info@exp) - 1) + "_" + \
+    (p_step + 1) + "ystep_diagnostics.txt"
+  if (isfilepresent(diag_file)) then
+    diag_terms = asciiread(diag_file, -1, "string")
+    pdx = dimsizes(diag_terms) / dimsizes(res@sfXArray)
+    respoly = True
+    respoly@gsMarkerColor = "black"
+    respoly@gsMarkerIndex = 5
+    respoly@gsMarkerThicknessF = 2
+    respoly@gsMarkerSizeF = 30
+    pxi = new((/dimsizes(res@sfXArray), dimsizes(res@sfYArray)/), graphic)
+    do xi = 0, dimsizes(res@sfXArray) - 1
+      idx = diag_terms(xi * pdx: xi * pdx + pdx - 1)
+      do yi = 0, dimsizes(res@sfYArray) - 1
+        do di = 0, dimsizes(idx) - 1
+          if (.not. ismissing(idx(di))) then
+            if (YLname(yi) .eq. idx(di)) then
+              pxi(xi, yi) = gsn_add_polymarker(wks, \
+                                               plot, \
+                                               res@tmXBValues(xi), \
+                                               res@tmYLValues(yi), \
+                                               respoly)
+            end if
+          end if
+        end do
+      end do
+      delete(idx)
+    end do
+  end if
+
+  leave_msg(scriptname, funcname)
 
   if (opt .eq. "draw") then
     draw(plot)
     frame(wks)
-    delete(pxi)
     return(0)
   end if
 
@@ -293,27 +303,39 @@ function weight_lin_plot(Ydata[*][*] : numeric, \
                          opt[1] : string)
 ;
 ; Arguments:
-;     Ydata : array with Y data for each model
-;     Yweight : array with weighted Y data for each model
-;     MainStg : plot hedar string
-;     YStg : Y-axis string
-;     wks : workstation for were to draw the plot
+;     Ydata : array with Y data for each model.
+;     Ywterror : error of MDER results.
+;     Ywerror: error of time-dependent MDER results.
+;     Yobs : array with Y data for observations.
+;     MainStg : plot hedar string.
+;     YStg : Y-axis string.
+;     wks : workstation for were to draw the plot.
 ;     opt : type of operations:
-;       "draw" : draws the plot directly and returnes logical
-;       "panel" : returnes plotvalue for pannel plot
+;       "draw" : draws the plot directly and returnes logical.
+;       "panel" : returnes plotvalue for pannel plot.
 ;
 ; Modification history
 ;     20180726_A-schl_ma: ported to v2.0
 ;     201410??_A-wenz_sa: written
 ;
-local plot_array, plot, colors, dashes, thicks, plot_num, res, bres, tline, \
-  zline
+local plot_array, plot, ploto, lbid, annoid, wtmmm, ummm, colors, dashes, \
+  thicks, plot_num, res, bres, tline, zline, wmmm
 begin
+
+  funcname = "weight_lin_plot"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   ; Check for valid data
   if (all(ismissing(Ydata(:, :)))) then
     log_info("No data available, skipping")
     return(0)
+  end if
+
+  ; Check for plotting of whole MDER time series
+  plot_mder_time_series = False
+  if (isatt(diag_script_info, "plot_mder_time_series")) then
+    plot_mder_time_series = diag_script_info@plot_mder_time_series
   end if
 
   ; Define line colors (first color is used for the observations)
@@ -322,7 +344,7 @@ begin
   i_OBS = ind(input_file_info@project .eq. "OBS")
   DIM_OBS = dimsizes(i_OBS)
 
-  if (diag_script_info@typ .eq. "pos") then
+  if (diag_script_info@calc_type .eq. "pos") then
     lg_labels = new((/3 + DIM_OBS/), string)
     lg_colors = new((/3 + DIM_OBS/), string)
     item_type = new((/3 + DIM_OBS/), string)
@@ -334,7 +356,7 @@ begin
     lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Lines"
     item_type(DIM_OBS + 2) = "Markers"
-  else if (diag_script_info@typ .eq. "trend") then
+  else if (diag_script_info@calc_type .eq. "trend") then
     lg_labels = new((/2 + DIM_OBS/), string)
     lg_colors = new((/2 + DIM_OBS/), string)
     item_type = new((/2 + DIM_OBS/), string)
@@ -343,6 +365,9 @@ begin
     lg_labels(DIM_OBS + 1) = input_file_info@dataset(1)
     lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Markers"
+  else
+    error_msg("f", diag_script, "", "calc_type " + \
+              diag_script_info@calc_type + " not supported")
   end if
   end if
 
@@ -382,28 +407,27 @@ begin
   res@trYMinF = min(Ydata) - 0.02 * (abs(avg(Ydata)))
   res@trYMaxF = max(Ydata) + 0.02 * (abs(avg(Ydata)))
 
-  ; Create a plot with filled area between both curves
-  ; if (diag_script_info@typ .eq. "pos") then
-  ;   res@xyLineColor = "skyblue1"
-  ;   res@gsnXYAboveFillColors = "skyblue1"
-  ; else
-  res@xyLineColor          = "white"
-  res@gsnXYAboveFillColors = "white"
-  ; end if
-
-  ; Create plot
+  ; Plot error bar of time-dependent MDER results
+  if (plot_mder_time_series .and. (diag_script_info@calc_type .eq. "pos")) then
+    res@xyLineColor = "skyblue1"
+    res@gsnXYAboveFillColors = "skyblue1"
+  else
+    res@xyLineColor = "white"
+    res@gsnXYAboveFillColors = "white"
+  end if
   plot_array = gsn_csm_xy(wks, Ydata&time, Ywerror(:, :), res)
 
-  ; Add MDER to plot
-  if (diag_script_info@typ .eq. "pos") then
+  ; Plot time-dependent MDER results
+  if (plot_mder_time_series .and. (diag_script_info@calc_type .eq. "pos")) then
     mder = True
     mder@gsLineDashPattern = 4
     mder@xyMonoLineColor = False
     mder@gsLineColor = "slateblue4"
     mder@gsLineThicknessF = 3
-    ; wmmm = gsn_add_polyline(wks,plot_array,Ydata&time,Ydata(2,:),mder)
+    wmmm = gsn_add_polyline(wks, plot_array, Ydata&time, Ydata(2, :), mder)
   end if
 
+  ; Plot models
   lres = True
   lres@xyMonoDashPattern = False
   lres@gsLineColor = "grey50"
@@ -415,7 +439,7 @@ begin
                                        Ydata(idat, :), lres)
   end do
 
-  ; Add OBS to plot
+  ; Plot observations
   mres = True
   mres@gsLineColor = "orange"
   mres@gsLineThicknessF = 3
@@ -426,13 +450,13 @@ begin
                                    Yobs(iobs, :), mres)
   end do
 
-  ; Add uMMM to plot
+  ; Plot uMMM
   mres@gsLineColor = "red"
   mres@gsLineThicknessF = 3
   mres@gsLineDashPattern = 2
   ummm = gsn_add_polyline(wks, plot_array, Ydata&time, Ydata(0, :), mres)
 
-  ; Add error bars to dependent MDER-markers
+  ; Plot error bars of MDER results
   erres = True
   erres@gsLineColor = "blue2"         ; "slateblue4"
   erres@gsLineThicknessF = 3
@@ -460,7 +484,7 @@ begin
     end if
   end do
 
-  ; Add time dependent MDER to plot
+  ; Plot means of MDER results
   mder = True
   mder@gsMarkerColor = "blue2"        ; "slateblue4"
   mder@gsMarkerIndex = 9
@@ -468,16 +492,19 @@ begin
   mder@gsMarkerSizeF = 0.01
   wtmmm = gsn_add_polymarker(wks, plot_array, Ydata&time, Ydata(1, :), mder)
 
+  ; Plot line at Y = 0
   lres = True
   lres@gsLineColor = "black"
   lres@gsLineThicknessF = 1
   zline = gsn_add_polyline(wks, plot_array, (/1900, 2100/), (/0, 0/), lres)
 
+  leave_msg(scriptname, funcname)
+
   if (opt.eq."draw") then
     lgres = True
     lgres@lgPerimOn = False
-    lgres@lgMonoitem_typee = False
-    lgres@lgitem_typees = item_type
+    ; lgres@lgMonoitem_type = False
+    ; lgres@lgitem_types = item_type
     lgres@vpWidthF = 0.30
     lgres@vpHeightF = 0.025 * dimsizes(OBSdashes)
     lgres@lgLabelFontHeightF = 0.20
@@ -500,13 +527,6 @@ begin
 
     draw(plot_array)
     frame(wks)
-    delete([/plot_array, ploto/])
-    delete([/lbid, annoid/])
-    delete([/wtmmm, ummm, zline/])
-
-    ; if (diag_script_info@typ.eq."pos") then
-    ;   delete(wmmm)
-    ; end if
     return(0)
   end if
 
@@ -532,9 +552,11 @@ function mder_scatter_plot(Xdata[*] : numeric, \
                            opt[1] : string)
 ;
 ; Arguments:
-;     Xdata : array with Y data for each model
-;     Yfit[*] : arrey with regression values
-;     Yfit_err : arrey with error regression values
+;     Xdata : array with X data for each model
+;     Xerr : array with error values for X
+;     Ydata : array with Y data for each model
+;     Yfit[*] : array with regression values
+;     Yfit_err : array with error regression values
 ;     Xobs : OBS value
 ;     Xobs_std : OBS error value
 ;     MainStg : plot hedar string
@@ -545,8 +567,12 @@ function mder_scatter_plot(Xdata[*] : numeric, \
 ;         "draw" : draws the plot directly and returnes logical
 ;         "panel" : returnes plotvalue for pannel plot
 ;
-local loglin, plot_array, plot, colors, dashes, thicks, res, bres
+local plot_array, plot, colors, dashes, thicks, res, bres
 begin
+
+  funcname = "mder_scatter_plot"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   ; Check for valid data
   if (all(ismissing(Xdata))) then
@@ -554,17 +580,11 @@ begin
       return(0)
   end if
 
-  ; Check for log-linear regression
-  loglin = False
-  if (isatt(diag_script_info, "loglin")) then
-    loglin = diag_script_info@loglin
-  end if
-
   ; Define line colors (first color is used for the observations)
   colors = project_style(diag_script_info, "colors")
   dashes = project_style(diag_script_info, "dashes")
   thicks = project_style(diag_script_info, "thicks")
-  lg_labels = unique_labels_min((/"name", "ensemble"/))
+  lg_labels = unique_labels_min((/"dataset", "exp", "ensemble"/))
 
   plot = new((/dimsizes(Xdata)/), graphic)
   plot_m = new((/dimsizes(Xdata)/), graphic)
@@ -573,7 +593,7 @@ begin
   Yerror = new((/dimsizes(Xdata)/), graphic)
   Yerror_end = new((/dimsizes(Xdata)/), graphic)
 
-  ; Resources
+  ; Basic resources
   res = True
   res@gsnDraw = False                 ; Do not draw plot
   res@gsnFrame = False                ; Do not advance frame
@@ -595,17 +615,12 @@ begin
   res@trXMinF = max((/res@trYMinF, min(Yfit)/))
   res@trXMaxF = min((/res@trYMaxF, max(Yfit)/))
 
-  ; Create a plot with filled area between both curves
+  ; Plot regression errors (filled area between curves)
   res@xyLineColor = "grey85"
   res@gsnXYFillColors = "grey85"
+  plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
 
-  ; Create plot
-  if (loglin) then
-    plot_array = gsn_csm_xy(wks, Xdata(2:), Yfit_err, res)
-  else
-    plot_array = gsn_csm_xy(wks, Yfit, Yfit_err, res)
-  end if
-
+  ; Plot observations
   fres = True
   fres@gsLineColor = "orange"
   fres@gsFillColor = "orange"
@@ -615,26 +630,26 @@ begin
                                Xdata(1) - Xerr(1), Xdata(1) + Xerr(1)/), \
                               (/100.0, 100.0, -100.0, -100.0/), \
                               fres)
+
+  ; Plot regression line
   fres@gsLineColor = "slateblue4"
   fres@gsLineThicknessF  = 3
   fres@gsLineDashPattern = 0
+  plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
 
-  ; Create plot
-  if (loglin) then
-    plot_yfit = gsn_add_polyline(wks, plot_array, Xdata(2:), Yfit, fres)
-  else
-    plot_yfit = gsn_add_polyline(wks, plot_array, Yfit, Yfit, fres)
-  end if
+  ; Plot observation fit (MDER result)
   fres@gsLineDashPattern = 1
   plot_mder = gsn_add_polyline(wks, plot_array, \
                                (/-100.0, Xdata(1), Xdata(1)/), \
                                (/Ydata(1), Ydata(1), -100.0/), \
                                fres)
+  ; Plot uMMM line
   fres@gsLineColor = "red"
   fres@gsLineDashPattern = 3
   plot_ummm = gsn_add_polyline(wks, plot_array, (/100.0, -100.0/), \
                                (/Ydata(0), Ydata(0)/), fres)
 
+  ; Plot models and errors
   bres = True
   bres@gsLineColor = "black"
   bres@gsLineThicknessF = 1.5
@@ -644,16 +659,16 @@ begin
   bres@gsMarkerIndex = 1
   Xbend = 0.01 * (res@trYMaxF - res@trYMinF)
   Ybend = 0.01 * (res@trXMaxF - res@trXMinF)
-
   txres = True
   txres@txFontColor = "black"
   txres@txFontHeightF = 0.016
   txres@txJust = "TopLeft"
-
   do idat = 1, dimsizes(Xdata)-1
     ; bres@gsMarkerColor = colors(idat)
     ; bres@gsMarkerIndex = thicks(idat)
     if (.not. ismissing(Yerr(idat)) .and. .not. ismissing(Xerr(idat))) then
+
+      ; Model error bars
       Xerror(idat) = gsn_add_polyline(wks, plot_array, \
                                       (/Xdata(idat) + Xerr(idat), \
                                        Xdata(idat) - Xerr(idat)/), \
@@ -687,8 +702,12 @@ begin
                                            Ydata(idat) - Yerr(idat), \
                                            Ydata(idat) - Yerr(idat)/), bres)
     end if
+
+    ; Model means
     plot_m(idat) = gsn_add_polymarker(wks, plot_array, Xdata(idat), \
                                       Ydata(idat), bres)
+
+    ; Model numbers
     if (isatt(Xdata, "model_numbers")) then
       plot(idat) = gsn_add_text(wks, plot_array, \
                                 sprinti("%-0.2hi", \
@@ -698,13 +717,14 @@ begin
       plot(idat) = gsn_add_text(wks, plot_array, sprinti("%-0.2hi", idat), \
                                 Xdata(idat), Ydata(idat), txres)
     end if
-    ; gsn_add_polymarker(wks, plot_array, Xdata(idat), Ydata(idat), bres)
   end do
+
+  leave_msg(scriptname, funcname)
 
   if (opt .eq. "draw") then
     lgres = True
     lgres@lgPerimOn = False
-    lgres@lgitem_typee = "Markers"
+    ; lgres@lgitem_type = "Markers"
     lgres@lgMonoMarkerColor = False
     lgres@lgMonoMarkerIndex = False
     lgres@vpWidthF = 0.18
@@ -723,7 +743,6 @@ begin
 
     draw(plot_array)
     frame(wks)
-    delete(plot_array)
     return(0)
   end if
 
@@ -735,37 +754,40 @@ end
 
 
 ; #############################################################################
-undef("sqrt_error_plot")
-function sqrt_error_plot(Ydata[*][*] : numeric, \
-                         Ymean[*] : numeric, \
-                         Ysqrd[*][*] : numeric, \
-                         MainStg[1] : string, \
-                         XStg[*] : string, \
-                         Xtitle[1] : string, \
-                         YStg[1] : string, \
-                         wks[1], \
-                         opt[1] : string)
+undef("squared_error_plot")
+function squared_error_plot(Ydata[*][*] : numeric, \
+                            Ymean[*] : numeric, \
+                            Ysqrd[*][*] : numeric, \
+                            MainStg[1] : string, \
+                            XStg[*] : string, \
+                            YStg[1] : string, \
+                            wks[1], \
+                            opt[1] : string)
 ;
 ; Arguments:
 ;   Ydata : array, where the rightmost dimension contains the box plot
 ;           reference pt. data:
-;           y(n,0)=bottom_value,
-;           y(n,1)=bottom_value_of_box,
-;           y(n,2)=mid-value_of_box,
-;           y(n,3)=top_value_of_box,
-;           y(n,4)=top_value.
-;   Ymean : array containing the average of the pt. data
-;   Ysqrd : arrey containing the sqared error
-;   MainStg : plot hedar string
-;   XStg : X-axis string
-;   YStg : Y-axis string
-;   wks : workstation for were to draw the plot
+;           y(n, 0) = bottom_value,
+;           y(n, 1) = bottom_value_of_box,
+;           y(n, 2) = mid-value_of_box,
+;           y(n, 3) = top_value_of_box,
+;           y(n, 4) = top_value.
+;   Ymean : array containing the multi-model-average of the squared errors.
+;   Ysqrd : array containing the models' squared errors.
+;   MainStg : plot header strings.
+;   XStg : X-axis string.
+;   YStg : Y-axis string.
+;   wks : workstation for were to draw the plot.
 ;   opt : type of operations:
-;     "draw": draws the plot directly and returnes logical
-;     "panel" : returnes plotvalue for pannel plot
+;     "draw": draws the plot directly and returnes logical.
+;     "panel" : returnes plotvalue for pannel plot.
 ;
 local plot, res, llres, mres, sres
 begin
+
+  funcname = "squared_error_plot"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   ; Check for valid data
   if (all(ismissing(Ydata))) then
@@ -806,19 +828,18 @@ begin
   res@trYMinF = -0.2
   res@trYMaxF = max(Ysqrd) + 0.05 * (max(Ysqrd))
 
+  ; Plot boxes
   llres = True
   llres@gsLineThicknessF = 3            ; line thickness
-
   opti = True
   opti@boxWidth = 0.8                   ; Width of box (x units)
   boxColors = new(dimsizes(Xdata), string)
   boxColors(0::2) = (/"red"/)
   boxColors(1::2) = (/"slateblue4"/)
   opti@boxColors = boxColors            ; Color of box(es)
-
-  ; Create plot
   plot = boxplot(wks, Xdata, Ydata, opti, res, llres)
 
+  ; Plot models (weighted and unweighted)
   mres = True                           ; marker mods desired
   mres@gsMarkerIndex = 5                ; polymarker style
   mres@gsMarkerThicknessF = 2
@@ -831,17 +852,22 @@ begin
 
   do ivar = 0, DIM_VAR - 1
     do ip = 0, dimsizes(Ysqrd(ivar, :)) - 1
+
+      ; Plot models
       dumSQRT(ivar, ip) = gsn_add_polymarker(wks, plot, Xdata(ivar), \
                                              Ysqrd(ivar, ip), sres)
     end do
+
+    ; Plot multi-model means
     dumAVG(ivar) = gsn_add_polymarker(wks, plot, Xdata(ivar), Ymean(ivar), \
                                       mres)
   end do
 
+  leave_msg(scriptname, funcname)
+
   if (opt .eq. "draw") then
     draw(plot)
     frame(wks)
-    delete(plot)
     return(0)
   end if
 
@@ -876,8 +902,12 @@ function diag_scatter(res_in[1] : logical, \
 ;   * 20180806_A-schl_ma: ported to v2.0
 ;   * 201806??_A-senf_da: written.
 ;
-local dim_diag, dim_model, diags, datasets, wks, plot
+local dim_diag, dim_model, diags, datasets, x_var, wks, plot
 begin
+
+  funcname = "diag_scatter"
+  scriptname = "diag_scripts/shared/plot/mder.ncl"
+  enter_msg(scriptname, funcname)
 
   diag_all!0 = "diags"
   diag_all!1 = "datasets"
@@ -903,10 +933,9 @@ begin
     plot = scatterplot(wks, x_var, target_var, False, False)
     draw(plot)
     frame(wks)
-    delete([/wks, x_var, plot/])
   end do
 
+  leave_msg(scriptname, funcname)
   return(plotnames)
 
 end
-; #############################################################################

@@ -731,7 +731,7 @@ begin
     const = rc(0)
   else
     error_msg("w", scriptname, funcname, "regress_stepwise returned " + \
-              "empty model")
+              "empty regression model")
     const = avg(yarr)
     idx_used_diags := 0
     YFIT = new(dim_dat, double)
