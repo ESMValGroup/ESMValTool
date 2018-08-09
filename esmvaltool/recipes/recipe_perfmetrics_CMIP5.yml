@@ -1630,7 +1630,7 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_year: 2002
+        start_year: 2003
         end_year: 2004
     additional_datasets:
       - {dataset: ACCESS1-0}
