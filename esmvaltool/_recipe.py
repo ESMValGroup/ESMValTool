@@ -11,6 +11,7 @@ import yamale
 import yaml
 
 from . import __version__, preprocessor
+from ._config import replace_tags
 from ._data_finder import (get_input_filelist, get_input_filename,
                            get_input_fx_filelist, get_output_file,
                            get_start_end_year, get_statistic_output_file)
@@ -33,6 +34,7 @@ class RecipeError(Exception):
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict"""
+
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map"""
 
@@ -598,9 +600,8 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
-        _update_fx_settings(settings=settings,
-                            variable=variable,
-                            config_user=config_user)
+        _update_fx_settings(
+            settings=settings, variable=variable, config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
@@ -763,6 +764,8 @@ class Recipe(object):
         """Parse a recipe file into an object."""
         self._cfg = config_user
         self._recipe_file = os.path.basename(recipe_file)
+        self.documentation = self._initalize_documentation(
+            raw_recipe.get('documentation', {}))
         self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
@@ -785,6 +788,18 @@ class Recipe(object):
                     return True
         return False
 
+    @staticmethod
+    def _initalize_documentation(raw_documentation):
+        """Parse the documentation section."""
+        doc = copy.deepcopy(raw_documentation)
+        if 'description' not in doc:
+            doc['description'] = ''
+
+        for section in ('authors', 'references', 'projects'):
+            doc[section] = replace_tags(section, doc.get(section, []))
+
+        return doc
+
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
         """Define diagnostics in recipe"""
         logger.debug("Retrieving diagnostics from recipe")
@@ -794,6 +809,9 @@ class Recipe(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
+            for key in ('themes', 'realms'):
+                diagnostic[key] = replace_tags(key, raw_diagnostic.get(
+                    key, []))
             diagnostic['preprocessor_output'] = \
                 self._initialize_preprocessor_output(
                     name,
