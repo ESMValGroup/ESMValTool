@@ -157,7 +157,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
         file.write('\n')
 
 
-class AbstractTask(object):
+class BaseTask(object):
     """Base class for defining task classes"""
 
     def __init__(self, settings, output_dir, ancestors=None):
@@ -208,7 +208,7 @@ class DiagnosticError(Exception):
     """Error in diagnostic"""
 
 
-class DiagnosticTask(AbstractTask):
+class DiagnosticTask(BaseTask):
     """Task for running a diagnostic"""
 
     def __init__(self, script, settings, output_dir, ancestors=None):
@@ -529,9 +529,10 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
         if len(scheduled) != n_scheduled or len(running) != n_running:
             n_scheduled, n_running = len(scheduled), len(running)
             n_done = n_tasks - n_scheduled - n_running
-            logger.info("Progress: %s tasks running or queued, %s tasks "
-                        "waiting for ancestors, %s/%s done", n_running,
-                        n_scheduled, n_done, n_tasks)
+            logger.info(
+                "Progress: %s tasks running or queued, %s tasks waiting for "
+                "ancestors, %s/%s done", n_running, n_scheduled, n_done,
+                n_tasks)
 
     pool.close()
     pool.join()

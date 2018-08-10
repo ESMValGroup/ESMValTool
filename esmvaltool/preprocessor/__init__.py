@@ -4,27 +4,27 @@ import os
 
 from iris.cube import Cube
 
-from .._task import AbstractTask
+from .._task import BaseTask
 from ._area_pp import area_average as average_region
 from ._area_pp import area_slice as extract_region
 from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
-from ._mask import (mask_fillvalues, mask_landsea, mask_above_threshold,
-                    mask_below_threshold, mask_inside_range,
+from ._mask import (mask_above_threshold, mask_below_threshold,
+                    mask_fillvalues, mask_inside_range, mask_landsea,
                     mask_outside_range)
 from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import regrid
 from ._regrid import vinterp as extract_levels
+from ._time_area import (extract_month, extract_season, seasonal_mean,
+                         time_average)
+from ._time_area import time_slice as extract_time
 from ._volume_pp import depth_integration, extract_trajectory, extract_transect
 from ._volume_pp import volume_average as average_volume
 from ._volume_pp import volume_slice as extract_volume
-from ._time_area import time_slice as extract_time
-from ._time_area import (extract_month, extract_season, seasonal_mean,
-                         time_average)
 
 logger = logging.getLogger(__name__)
 
@@ -255,7 +255,7 @@ def preprocess(items, settings, order, debug=False):
     return items
 
 
-class PreprocessingTask(AbstractTask):
+class PreprocessingTask(BaseTask):
     """Task for running the preprocessor"""
 
     def __init__(self,
