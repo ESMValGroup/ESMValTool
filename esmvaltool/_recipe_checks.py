@@ -1,3 +1,4 @@
+"""Module with functions to check a recipe."""
 import inspect
 import logging
 import os
