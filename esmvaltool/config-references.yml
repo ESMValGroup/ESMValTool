@@ -6,7 +6,7 @@
 #
 
 authors:
-### Core Team (PI and core developers)
+  # Core Team (PI and core developers)
   eyri_ve:
     name: Eyring, Veronika
     institute: DLR, Germany
@@ -47,7 +47,7 @@ authors:
     name: Vegas-Regidor, Javier
     institute: BSC, Spain
     email: javier.vegas 'at' bsc.es
-### Development team
+  # Development team
   anav_al:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -243,7 +243,7 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     email: keith.williams 'at' metoffice.gov.uk
-### Viewers (not active developers)
+  # Viewers (not active developers)
   bala_ve:
     name: Balaji, Venkatramani
     institute: GFDL, USA
@@ -312,7 +312,7 @@ authors:
     name: Wyser, Klaus
     institute: SMHI, Sweden
     email: klaus.wyser 'at' smhi.se
-### Former developers
+  # Former developers
   brae_me:
     name: Braeu, Melanie
     institute: DLR, Germany
@@ -363,7 +363,7 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     email: stevens 'at' ucar.edu
-### Former viewers (not active viewers)
+  # Former viewers (not active viewers)
   butc_ne:
     name: Butchart, Neal
     institute: MetOffice, UK
@@ -501,6 +501,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
+  c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
 
 realms:
   aerosol: aerosol
@@ -551,7 +552,7 @@ plot_types:
   taylor: taylor diagram
   times: time series
   zonal: zonal mean
-  pro: profile #(any other kind of line chart)
+  pro: profile  # (any other kind of line chart)
   other: other plot types
 
 statistics:
