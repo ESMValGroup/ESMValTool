@@ -204,8 +204,7 @@ begin
   to_plot@res_cnLineLabelsOn    = False           ; Contour lines
   to_plot@res_cnLinesOn         = False
   if (isatt(diag_script_info, "colormap")) then
-    col = read_colormap_file("./diag_scripts/shared/plot/rgb/" + \
-                             diag_script_info@colormap)
+    col = read_colormap_file(diag_script_info@colormap)
   else
     col = "BlueYellowRed"
   end if
@@ -304,7 +303,7 @@ begin
   if ((tf) .and. (nhori * nvert .lt. nmap)) then
     nhori = nmap
   end if
-  maps = new(nmap, graphic)  ; collect individual "map"s in a graphic array
+  maps = new(nmap, graphic)  ; collect individual maps in a graphic array
   do i = 0, nmap - 1  ; this stupid loop creates nmap times the same plot
     if(isatt(diag_script_info, "label")) then
       to_plot@res_tiMainString = diag_script_info@label(i)
@@ -324,42 +323,14 @@ begin
 
     to_plot@res_mpPerimOn         = False
     if (isatt(diag_script_info, "plotmask")) then
-      if (diag_script_info@plotmask .eq. "ocean") then
-        to_plot@res_mpGridLineColor = "transparent"
-        to_plot@res_mpFillOn = True
-        to_plot@res_mpOceanFillColor = 0
-        to_plot@res_mpInlandWaterFillColor = 0
-        to_plot@res_mpLandFillColor = -1
-        to_plot@res_mpCenterLonF = 10.
-        ; change latitude line spacing
-        to_plot@res_mpGridLatSpacingF = 90.
-        ; change longitude line spacing
-        to_plot@res_mpGridLonSpacingF = 180.
-        to_plot@res_cnFillDrawOrder = "Predraw"
-        to_plot@res_cnFillColor = 1
-        to_plot@res_cnLineDrawOrder = "Predraw"
-        to_plot@res_mpAreaMaskingOn       = 1
-        to_plot@res_mpMaskAreaSpecifiers  = "land"
-        to_plot@res_mpFillAreaSpecifiers = "water"
-      else if (diag_script_info@plotmask .eq. "land") then
-        to_plot@res_mpGridLineColor = "transparent"
-        to_plot@res_mpFillOn = True
-        to_plot@res_mpOceanFillColor = 0
-        to_plot@res_mpInlandWaterFillColor = 0
-        to_plot@res_mpLandFillColor = -1
-        to_plot@res_mpCenterLonF = 10.
-        ; change latitude  line spacing
-        to_plot@res_mpGridLatSpacingF = 90.
-        ; change longitude line spacing
-        to_plot@res_mpGridLonSpacingF = 180.
-        to_plot@res_cnFillDrawOrder = "Predraw"
-        to_plot@res_cnFillColor = 1
-        to_plot@res_cnLineDrawOrder = "Predraw"
-        to_plot@res_mpAreaMaskingOn       = 1
-        to_plot@res_mpMaskAreaSpecifiers  = "water"
-        to_plot@res_mpFillAreaSpecifiers = "land"
-      end if
-      end if
+      ; turn on lat/lon lines
+      to_plot@mpGridAndLimbOn   = True
+      ; change latitude line spacing
+      to_plot@res_mpGridLatSpacingF = 90.
+      ; change longitude line spacing
+      to_plot@res_mpGridLonSpacingF = 180.
+      ; trick ncl into drawing perimeter
+      to_plot@res_mpGridLineColor = "transparent"
     end if
 
     maps(i) = contour_map(wks, to_plot(i, :, :), var0)
