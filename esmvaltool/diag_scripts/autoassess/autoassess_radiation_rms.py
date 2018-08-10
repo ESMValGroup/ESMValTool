@@ -33,8 +33,8 @@ import iris
 import autoassess_source.rms as rms
 import autoassess_source.valmod_radiation as vm
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            get_control_exper_obs)
-from esmvaltool.preprocessor._time_area import apply_supermeans
+                                            get_control_exper_obs,
+                                            apply_supermeans)
 
 
 logger = logging.getLogger(os.path.basename(__file__))

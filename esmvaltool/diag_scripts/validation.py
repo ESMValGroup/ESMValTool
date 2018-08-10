@@ -14,10 +14,10 @@ import logging
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            get_control_exper_obs)
+                                            get_control_exper_obs,
+                                            apply_supermeans)
 from esmvaltool.preprocessor._area_pp import area_slice
-from esmvaltool.preprocessor._time_area import (extract_season,
-                                                apply_supermeans)
+from esmvaltool.preprocessor._time_area import extract_season
 
 import matplotlib
 matplotlib.use('Agg')
