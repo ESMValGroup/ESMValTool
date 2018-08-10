@@ -141,3 +141,37 @@ def seasonal_mean(cube):
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return annual_seasonal_mean.extract(three_months_bound)
+
+
+# apply supermeans: handy function that loads CONTROL, EXPERIMENT
+# and OBS (if any) files and applies time_average() to mean the cubes
+def apply_supermeans(ctrl, exper, obs_list):
+    """
+    Apply supermeans on data components ie MEAN on time
+
+    This function is an extension of time_average() meant to ease the
+    time-meaning procedure when dealing with CONTROL, EXPERIMENT and OBS
+    (if any) datasets.
+    ctrl: dictionary of CONTROL dataset
+    exper: dictionary of EXPERIMENT dataset
+    obs_lis: list of dicts for OBS datasets (0, 1 or many)
+
+    Returns: control and experiment cubes and list of obs cubes
+    """
+    ctrl_file = ctrl['filename']
+    exper_file = exper['filename']
+    ctrl_cube = iris.load_cube(ctrl_file)
+    exper_cube = iris.load_cube(exper_file)
+    ctrl_cube = time_average(ctrl_cube)
+    exper_cube = time_average(exper_cube)
+    if obs_list:
+        obs_cube_list = []
+        for obs in obs_list:
+            obs_file = obs['filename']
+            obs_cube = iris.load_cube(obs_file)
+            obs_cube = time_average(obs_cube)
+            obs_cube_list.append(obs_cube)
+    else:
+        obs_cube_list = None
+
+    return ctrl_cube, exper_cube, obs_cube_list

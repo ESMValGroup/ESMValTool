@@ -4,6 +4,8 @@ Validation Diagnostic
 This diagnostic uses two datasets (control and experiment),
 applies operations on their data, and plots one against the other.
 It can optionally use a number of OBS, OBS4MIPS datasets.
+
+This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 """
 
 import os
@@ -12,9 +14,10 @@ import logging
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata)
+                                            get_control_exper_obs)
 from esmvaltool.preprocessor._area_pp import area_slice
-from esmvaltool.preprocessor._time_area import extract_season
+from esmvaltool.preprocessor._time_area import (extract_season,
+                                                apply_supermeans)
 
 import matplotlib
 matplotlib.use('Agg')
@@ -24,6 +27,9 @@ import iris.analysis.maths as imath  # noqa
 import iris.quickplot as qplt  # noqa
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+_CMIP_TYPE = 'CMIP5'
 
 
 def plot_contour(cube, plt_title, file_name):
@@ -90,33 +96,6 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     plt.close()
 
 
-def apply_supermeans(ctrl, exper, obs_list):
-    """Apply supermeans on data components"""
-    ctrl_file = ctrl['filename']
-    exper_file = exper['filename']
-    logger.info("Loading %s", ctrl_file)
-    logger.info("Loading %s", exper_file)
-    ctrl_cube = iris.load_cube(ctrl_file)
-    exper_cube = iris.load_cube(exper_file)
-    ctrl_cube = ctrl_cube.collapsed('time', iris.analysis.MEAN)
-    logger.debug("Time-averaged control %s", ctrl_cube)
-    exper_cube = exper_cube.collapsed('time', iris.analysis.MEAN)
-    logger.debug("Time-averaged experiment %s", exper_cube)
-    if obs_list:
-        obs_cube_list = []
-        for obs in obs_list:
-            obs_file = obs['filename']
-            logger.info("Loading %s", obs_file)
-            obs_cube = iris.load_cube(obs_file)
-            obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
-            logger.debug("Time-averaged obs %s", obs_cube)
-            obs_cube_list.append(obs_cube)
-    else:
-        obs_cube_list = None
-
-    return ctrl_cube, exper_cube, obs_cube_list
-
-
 def apply_seasons(data_set_dict):
     """Extract seaons and apply a time mean per season"""
     data_file = data_set_dict['filename']
@@ -179,10 +158,6 @@ def coordinate_collapse(data_set, cfg):
 def do_preamble(cfg):
     """Execute some preamble functionality"""
     # prepare output dirs
-    if not os.path.exists(cfg['plot_dir']):
-        os.makedirs(cfg['plot_dir'])
-    if not os.path.exists(cfg['work_dir']):
-        os.makedirs(cfg['work_dir'])
     time_chunks = ['alltime', 'DJF', 'MAM', 'JJA', 'SON']
     time_plot_dirs = [
         os.path.join(cfg['plot_dir'], t_dir) for t_dir in time_chunks
@@ -197,37 +172,6 @@ def do_preamble(cfg):
         input_data, 'short_name', sort='dataset')
 
     return input_data, grouped_input_data
-
-
-def get_all_datasets(short_name, input_data, cfg):
-    """Get control, exper and obs datasets"""
-    dataset_selection = select_metadata(
-        input_data, short_name=short_name, project='CMIP5')
-
-    # get the obs datasets
-    if 'observational_datasets' in cfg.keys():
-        obs_selection = [
-            select_metadata(
-                input_data, short_name=short_name, dataset=obs_dataset)[0]
-            for obs_dataset in cfg['observational_datasets']
-        ]
-    else:
-        obs_selection = []
-
-    # determine CONTROL and EXPERIMENT datasets
-    for model in dataset_selection:
-        if model['dataset'] == cfg['control_model']:
-            logger.info("Control dataset %s", model['dataset'])
-            control = model
-        elif model['dataset'] == cfg['exper_model']:
-            logger.info("Experiment dataset %s", model['dataset'])
-            experiment = model
-
-    if obs_selection:
-        logger.info("Observations dataset(s) %s",
-                    [obs['dataset'] for obs in obs_selection])
-
-    return control, experiment, obs_selection
 
 
 def plot_ctrl_exper(ctrl, exper, cfg, plot_key):
@@ -264,8 +208,10 @@ def main(cfg):
     for short_name in grouped_input_data:
         logger.info("Processing variable %s", short_name)
 
-        # control, experiment and obs's and the names
-        ctrl, exper, obs = get_all_datasets(short_name, input_data, cfg)
+        # get the control, experiment and obs dicts
+        ctrl, exper, obs = get_control_exper_obs(short_name, input_data,
+                                                 cfg, _CMIP_TYPE)
+        # find out their names
         ctrl_name = ctrl['dataset']
         exper_name = exper['dataset']
         # set a plot key holding info on var and data set names
@@ -283,7 +229,7 @@ def main(cfg):
             ]
             plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key)
 
-        # apply the supermeans, collapse a coord and plot
+        # apply the supermeans (MEAN on time), collapse a coord and plot
         ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
         ctrl = coordinate_collapse(ctrl, cfg)
         exper = coordinate_collapse(exper, cfg)

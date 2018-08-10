@@ -163,6 +163,49 @@ def _get_input_data_files(cfg):
     return input_files
 
 
+def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
+    """
+    Get control, exper and obs datasets
+
+    This function is used when running recipes that need
+    a clear distinction between a control dataset, an experiment
+    dataset and have optional obs (OBS, obs4mips etc) datasets;
+    such recipes include recipe_validation, and all the autoassess
+    ones;
+    short_name: variable short name
+    input_data: dict containing the input data info
+    cfg: config file as used in this module
+    """
+    # select data per short name and CMIP type
+    dataset_selection = select_metadata(
+        input_data, short_name=short_name, project=cmip_type)
+
+    # get the obs datasets if specified in recipe
+    if 'observational_datasets' in cfg:
+        obs_selection = [
+            select_metadata(
+                input_data, short_name=short_name, dataset=obs_dataset)[0]
+            for obs_dataset in cfg['observational_datasets']
+        ]
+    else:
+        obs_selection = []
+
+    # determine CONTROL and EXPERIMENT datasets
+    for model in dataset_selection:
+        if model['dataset'] == cfg['control_model']:
+            logger.info("Control dataset %s", model['dataset'])
+            control = model
+        elif model['dataset'] == cfg['exper_model']:
+            logger.info("Experiment dataset %s", model['dataset'])
+            experiment = model
+
+    if obs_selection:
+        logger.info("Observations dataset(s) %s",
+                    [obs['dataset'] for obs in obs_selection])
+
+    return control, experiment, obs_selection
+
+
 @contextlib.contextmanager
 def run_diagnostic():
     """Run a diagnostic.
