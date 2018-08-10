@@ -1,23 +1,23 @@
 """Recipe parser"""
 import copy
 import fnmatch
-import inspect
 import logging
 import os
-import subprocess
 from collections import OrderedDict
 
-import yamale
 import yaml
 
-from . import __version__, preprocessor
+from . import __version__
+from . import _recipe_checks as check
 from ._config import replace_tags
 from ._data_finder import (get_input_filelist, get_input_filename,
                            get_input_fx_filelist, get_output_file,
-                           get_start_end_year, get_statistic_output_file)
-from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
+                           get_statistic_output_file)
+from ._recipe_checks import RecipeError
+from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
-from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
+from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
+                           PreprocessingTask, split_settings)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -26,10 +26,6 @@ from .preprocessor._regrid import get_cmor_levels, get_reference_levels
 logger = logging.getLogger(__name__)
 
 TASKSEP = os.sep
-
-
-class RecipeError(Exception):
-    """Recipe contains an error."""
 
 
 def ordered_safe_load(stream):
@@ -49,174 +45,27 @@ def ordered_safe_load(stream):
     return yaml.load(stream, OrderedSafeLoader)
 
 
-def read_recipe_file(filename, config_user, initialize_tasks=True):
-    """Read a recipe from file."""
-    raw_recipe = check_recipe(filename)
-    return Recipe(
-        raw_recipe, config_user, initialize_tasks, recipe_file=filename)
-
-
-def check_ncl_version():
-    """Check the NCL version"""
-    ncl = which('ncl')
-    if not ncl:
-        raise RecipeError("Recipe contains NCL scripts, but cannot find "
-                          "an NCL installation.")
-    try:
-        cmd = [ncl, '-V']
-        version = subprocess.check_output(cmd, universal_newlines=True)
-    except subprocess.CalledProcessError:
-        logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
-        raise RecipeError("Recipe contains NCL scripts, but your NCL "
-                          "installation appears to be broken.")
-
-    version = version.strip()
-    logger.info("Found NCL version %s", version)
-
-    major, minor = (int(i) for i in version.split('.')[:2])
-    if major < 6 or (major == 6 and minor < 4):
-        raise RecipeError("NCL version 6.4 or higher is required to run "
-                          "a recipe containing NCL scripts.")
-
-
-def check_recipe_with_schema(filename):
-    """Check if the recipe content matches schema."""
-    schema_file = os.path.join(os.path.dirname(__file__), 'recipe_schema.yml')
-    logger.debug("Checking recipe against schema %s", schema_file)
-    recipe = yamale.make_data(filename)
-    schema = yamale.make_schema(schema_file)
-    yamale.validate(schema, recipe)
-
-
-def check_recipe(filename):
+def load_raw_recipe(filename):
     """Check a recipe file and return it in raw form."""
     # Note that many checks can only be performed after the automatically
     # computed entries have been filled in by creating a Recipe object.
-    check_recipe_with_schema(filename)
+    check.recipe_with_schema(filename)
     with open(filename, 'r') as file:
         contents = file.read()
         raw_recipe = yaml.safe_load(contents)
         raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
             'preprocessors', {})
 
-    check_preprocessors(raw_recipe['preprocessors'])
-    check_diagnostics(raw_recipe['diagnostics'])
+    check.preprocessors(raw_recipe['preprocessors'])
+    check.diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
 
-def check_preprocessors(preprocessors):
-    """Check preprocessors in recipe"""
-    valid_functions = set(preprocessor.DEFAULT_ORDER)
-    for name, profile in preprocessors.items():
-        invalid_functions = set(profile) - {'custom_order'} - valid_functions
-        if invalid_functions:
-            raise RecipeError(
-                "Unknown function(s) {} in preprocessor {}, choose from: "
-                "{}".format(', '.join(invalid_functions), name,
-                            ', '.join(preprocessor.DEFAULT_ORDER)))
-
-
-def check_diagnostics(diagnostics):
-    """Check diagnostics in recipe"""
-    for name, diagnostic in diagnostics.items():
-        if 'scripts' not in diagnostic:
-            raise RecipeError("Missing scripts section in diagnostic {}"
-                              .format(name))
-        variable_names = tuple(diagnostic.get('variables', {}))
-        scripts = diagnostic.get('scripts')
-        if scripts is None:
-            scripts = {}
-        for script_name, script in scripts.items():
-            if script_name in variable_names:
-                raise RecipeError(
-                    "Invalid script name {} encountered in diagnostic {}: "
-                    "scripts cannot have the same name as variables.".format(
-                        script_name, name))
-            if not script.get('script'):
-                raise RecipeError(
-                    "No script defined for script {} in diagnostic {}".format(
-                        script_name, name))
-
-
-def check_preprocessor_settings(settings):
-    """Check preprocessor settings."""
-    # The inspect functions getargspec and getcallargs are deprecated
-    # in Python 3, but their replacements are not available in Python 2.
-    # TODO: Use the new Python 3 inspect API
-    for step in settings:
-        if step not in preprocessor.DEFAULT_ORDER:
-            raise RecipeError(
-                "Unknown preprocessor function '{}', choose from: {}".format(
-                    step, ', '.join(preprocessor.DEFAULT_ORDER)))
-
-        function = getattr(preprocessor, step)
-        argspec = inspect.getargspec(function)
-        args = argspec.args[1:]
-        # Check for invalid arguments
-        invalid_args = set(settings[step]) - set(args)
-        if invalid_args:
-            raise RecipeError(
-                "Invalid argument(s): {} encountered for preprocessor "
-                "function {}. \nValid arguments are: [{}]".format(
-                    ', '.join(invalid_args), step, ', '.join(args)))
-
-        # Check for missing arguments
-        defaults = argspec.defaults
-        end = None if defaults is None else -len(defaults)
-        missing_args = set(args[:end]) - set(settings[step])
-        if missing_args:
-            raise RecipeError(
-                "Missing required argument(s) {} for preprocessor "
-                "function {}".format(missing_args, step))
-        # Final sanity check in case the above fails to catch a mistake
-        try:
-            inspect.getcallargs(function, None, **settings[step])
-        except TypeError:
-            logger.error(
-                "Wrong preprocessor function arguments in "
-                "function '%s'", step)
-            raise
-
-
-def check_duplicate_datasets(datasets):
-    """Check for duplicate datasets."""
-    checked_datasets_ = []
-    for dataset in datasets:
-        if dataset in checked_datasets_:
-            raise RecipeError(
-                "Duplicate dataset {} in datasets section".format(dataset))
-        checked_datasets_.append(dataset)
-
-
-def check_variable(variable, required_keys):
-    """Check variables as derived from recipe"""
-    required = set(required_keys)
-    missing = required - set(variable)
-    if missing:
-        raise RecipeError(
-            "Missing keys {} from variable {} in diagnostic {}".format(
-                missing, variable.get('short_name'),
-                variable.get('diagnostic')))
-
-
-def check_data_availability(input_files, variable):
-    """Check if the required input data is available"""
-    if not input_files:
-        raise RecipeError("No input files found for variable {}"
-                          .format(variable))
-
-    required_years = set(
-        range(variable['start_year'], variable['end_year'] + 1))
-    available_years = set()
-    for filename in input_files:
-        start, end = get_start_end_year(filename)
-        available_years.update(range(start, end + 1))
-
-    missing_years = required_years - available_years
-    if missing_years:
-        raise RecipeError(
-            "No input data available for years {} in files {}".format(
-                ", ".join(str(year) for year in missing_years), input_files))
+def read_recipe_file(filename, config_user, initialize_tasks=True):
+    """Read a recipe from file."""
+    raw_recipe = load_raw_recipe(filename)
+    return Recipe(
+        raw_recipe, config_user, initialize_tasks, recipe_file=filename)
 
 
 def _get_value(key, datasets):
@@ -290,7 +139,7 @@ def _add_cmor_info(variable, override=False):
                     variable)
 
     # Check that keys are available
-    check_variable(variable, required_keys=cmor_keys)
+    check.variable(variable, required_keys=cmor_keys)
 
 
 def _special_name_to_dataset(variable, special_name):
@@ -368,7 +217,7 @@ def _dataset_to_file(dataset, variables, config_user):
                     variable=variable,
                     rootpath=config_user['rootpath'],
                     drs=config_user['drs'])
-            check_data_availability(files, variable)
+            check.data_availability(files, variable)
             return files[0]
 
     raise RecipeError(
@@ -533,7 +382,7 @@ def _get_input_files(variable, config_user):
     logger.info("Using input files for variable %s of dataset %s:\n%s",
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
-    check_data_availability(input_files, variable)
+    check.data_availability(input_files, variable)
 
     return input_files
 
@@ -607,28 +456,11 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
-        check_preprocessor_settings(settings)
+        check.preprocessor_settings(settings)
         all_settings[variable['filename']] = settings
 
-    _check_multi_model_settings(all_settings)
+    check.multi_model_settings(all_settings)
     return all_settings
-
-
-def _check_multi_model_settings(all_settings):
-    """Check that multi dataset settings are identical for all datasets."""
-    multi_model_steps = (step for step in preprocessor.MULTI_MODEL_FUNCTIONS
-                         if any(step in settings
-                                for settings in all_settings.values()))
-    for step in multi_model_steps:
-        result = None
-        for filename, settings in all_settings.items():
-            if result is None:
-                result = settings[step]
-            elif result != settings[step]:
-                raise RecipeError(
-                    "Unable to combine differing multi-dataset settings "
-                    "{} and {} for output file {}".format(
-                        result, settings[step], filename))
 
 
 def _extract_preprocessor_order(profile):
@@ -643,7 +475,7 @@ def _extract_preprocessor_order(profile):
 def _split_derive_profile(profile):
     """Split the derive preprocessor profile"""
     order = _extract_preprocessor_order(profile)
-    before, after = preprocessor.split_settings(profile, 'derive', order)
+    before, after = split_settings(profile, 'derive', order)
     after['derive'] = {}
     if order != DEFAULT_ORDER:
         before['custom_order'] = True
@@ -671,7 +503,7 @@ def _get_single_preprocessor_task(variables,
 
     output_dir = os.path.dirname(variables[0]['filename'])
 
-    task = preprocessor.PreprocessingTask(
+    task = PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
         ancestors=ancestors,
@@ -784,7 +616,7 @@ class Recipe(object):
             for script in diagnostic['scripts'].values():
                 if script.get('script', '').lower().endswith('.ncl'):
                     logger.info("NCL script detected, checking NCL version")
-                    check_ncl_version()
+                    check.ncl_version()
                     return True
         return False
 
@@ -834,7 +666,7 @@ class Recipe(object):
             for key in dataset:
                 DATASET_KEYS.add(key)
 
-        check_duplicate_datasets(datasets)
+        check.duplicate_datasets(datasets)
         return datasets
 
     def _initialize_variables(self, raw_variable, raw_datasets):
@@ -859,7 +691,7 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
-            check_variable(variable, required_keys)
+            check.variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
             if 'fx_files' in variable:
