@@ -8,7 +8,7 @@ from cf_units import Unit
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CESM1_BGC import allvars, co2, nbp
+from esmvaltool.cmor._fixes.CMIP5.CESM1_BGC import co2, nbp
 
 
 class TestCo2(unittest.TestCase):
