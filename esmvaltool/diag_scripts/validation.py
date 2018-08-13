@@ -11,20 +11,19 @@ This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 import os
 import logging
 
-import numpy as np
-
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             get_control_exper_obs,
                                             apply_supermeans)
-from esmvaltool.preprocessor._area_pp import area_slice
-from esmvaltool.preprocessor._time_area import extract_season
+from esmvaltool.preprocessor import (extract_region, extract_season)
 
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa
 import iris  # noqa
 import iris.analysis.maths as imath  # noqa
 import iris.quickplot as qplt  # noqa
+
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -122,8 +121,8 @@ def coordinate_collapse(data_set, cfg):
         end_longitude = cfg['lat_lon_slice']['end_longitude']
         start_latitude = cfg['lat_lon_slice']['start_latitude']
         end_latitude = cfg['lat_lon_slice']['end_latitude']
-        data_set = area_slice(data_set, start_longitude, end_longitude,
-                              start_latitude, end_latitude)
+        data_set = extract_region(data_set, start_longitude, end_longitude,
+                                  start_latitude, end_latitude)
 
     # if apply mask
     if '2d_mask' in cfg:

@@ -2,7 +2,7 @@
 import os
 import logging
 import iris
-from esmvaltool.preprocessor._time_area import time_average
+from esmvaltool.preprocessor import time_average
 from esmvaltool.diag_scripts.shared import select_metadata
 
 

@@ -56,10 +56,8 @@ def extract_season(cube, season):
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
     """
-    try:
+    if not cube.coord('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
-    except ValueError:
-        pass
     season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
     return season_cube
 
