@@ -33,7 +33,10 @@ _CMIP_TYPE = 'CMIP5'
 
 def plot_contour(cube, plt_title, file_name):
     """Plot a contour with iris.quickplot (qplot)"""
-    qplt.contourf(cube, cmap='RdYlBu_r', bbox_inches='tight')
+    if len(cube.shape) == 2:
+        qplt.contourf(cube, cmap='RdYlBu_r', bbox_inches='tight')
+    else:
+        qplt.contourf(cube[0], cmap='RdYlBu_r', bbox_inches='tight')
     plt.title(plt_title)
     plt.gca().coastlines()
     plt.tight_layout()
