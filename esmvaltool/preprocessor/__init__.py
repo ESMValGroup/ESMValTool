@@ -11,7 +11,9 @@ from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
-from ._mask import mask_fillvalues, mask_landocean
+from ._mask import (mask_fillvalues, mask_landsea, mask_above_threshold,
+                    mask_below_threshold, mask_inside_range,
+                    mask_outside_range)
 from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
@@ -47,11 +49,16 @@ __all__ = [
     'fix_data',
     # Level extraction
     'extract_levels',
+    # Mask landsea (fx or Natural Earth)
+    'mask_landsea',
     # Regridding
     'regrid',
-    # Masking
-    'mask_landocean',
+    # Masking missing values
     'mask_fillvalues',
+    'mask_above_threshold',
+    'mask_below_threshold',
+    'mask_inside_range',
+    'mask_outside_range',
     # Region selection
     'extract_region',
     'extract_volume',

@@ -65,10 +65,9 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``var_attr_ref(1)``                             | ``variable_info@alternative_dataset``               | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models``                                      | ``dataset_info`` or ``input_file_info``             | all .ncl scripts |
+| ``models``                                      | ``input_file_info``                                 | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models@name``                                 | ``dataset_info@dataset`` or                         | all .ncl scripts |
-|                                                 | ``input_file_info@dataset``                         |                  |
+| ``models@name``                                 | ``input_file_info@dataset``                         | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``verbosity``                                   | ``config_user_info@log_level``                      | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
@@ -129,7 +128,7 @@ The following changes may also have to be considered:
 - namelists are now called recipes and collected in ``esmvaltool/recipes``;
 - models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``dataset_info`` and ``input_file_info`` logicals and their attributes;
+- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` logical and its attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics are to be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they go in ``shared/``);
 - upper case characters have to be avoided in script names, if possible.
