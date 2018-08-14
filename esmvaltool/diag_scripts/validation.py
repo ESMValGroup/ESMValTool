@@ -218,11 +218,9 @@ def main(cfg):
         # get the control, experiment and obs dicts
         ctrl, exper, obs = get_control_exper_obs(short_name, input_data,
                                                  cfg, _CMIP_TYPE)
-        # find out their names
-        ctrl_name = ctrl['dataset']
-        exper_name = exper['dataset']
         # set a plot key holding info on var and data set names
-        plot_key = short_name + '_' + ctrl_name + '_vs_' + exper_name
+        plot_key = short_name + '_' + ctrl['dataset'] \
+            + '_vs_' + exper['dataset']
 
         # get seasons if needed then apply analysis
         if cfg['seasonal_analysis']:
@@ -247,7 +245,7 @@ def main(cfg):
             for obs_i, obsfile in zip(obs_list, obs):
                 obs_analyzed = coordinate_collapse(obs_i, cfg)
                 obs_name = obsfile['dataset']
-                plot_key = short_name + '_' + ctrl_name + '_vs_' + obs_name
+                plot_key = short_name + '_CONTROL_vs_' + obs_name
                 if cfg['analysis_type'] == 'lat_lon':
                     plot_latlon_cubes(
                         ctrl, obs_analyzed, cfg, plot_key, obs_name=obs_name)
