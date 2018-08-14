@@ -1,39 +1,39 @@
-;;#############################################################################
-;; DIAGNOSTIC SCRIPT TO CREATE MVI-IAV-TREND PLOT
-;; Author: Alessandro Anav (University of Exeter, UK)
-;; EMBRACE project
-;;#############################################################################
-;;
-;; Description
-;;    Calculates the model variability index (MVI), interannual variability
-;;    (IAV) and mean, and draws them in a 3D scatter plot.
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    grid: target grid for the regridding
-;;    region: region to be averaged
-;;    ref_dataset: reference for the MVI calculation
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;
-;; Required variable_info attributes (variable specific)
-;;
-;; Optional variable_info attributes (variable specific)
-;;
-;; Caveats
-;;    The derived variables pr-mmday and tas-degC needs to be used in order
-;;    to get the correct linear trend. For land variables nbp, gpp and lai, it
-;;    is recommended to use the masked version (NBP, GPP and LAI, respectively)
-;;    in order to have a consistent land mask for all datasets.
-;;
-;; Modification history
-;;    20180619-A_wenz_sa: adopted script to v2
-;;    20151130-A_laue_ax: moved call to write_references to beginning of code
-;;    20151104-A_righ_ma: graphic part moved to external plot_scripts.
-;;    20151102-A_righ_ma: replacing area functions with ESMValTool functions.
-;;    201507??-A_wenz_sa: adapted to ESMValTool structure.
-;;    201505??-A_anav_al: written.
-;;
-;;#############################################################################
+; #############################################################################
+; carbon_cycle/mvi.ncl
+; #############################################################################
+; DIAGNOSTIC SCRIPT TO CREATE MVI-IAV-TREND PLOT
+; Author: Alessandro Anav (University of Exeter, UK)
+; EMBRACE project
+; #############################################################################
+;
+; Description
+;    Calculates the model variability index (MVI), interannual variability
+;    (IAV) and mean, and draws them in a 3D scatter plot.
+;
+; Required recipe attributes:
+;     grid: target grid for the regridding.
+;     region: region to be averaged.
+;     ref_dataset: reference for the MVI calculation.
+;
+; Optional recipe attributes:
+;
+; Caveats:
+;     The derived variables pr-mmday and tas-degC needs to be used in order
+;     to get the correct linear trend. For land variables nbp, gpp and lai, it
+;     is recommended to use the masked version (NBP, GPP and LAI, respectively)
+;     in order to have a consistent land mask for all datasets.
+;
+; Modification history
+;   * 20180814-A_schl_ma: continued porting to v2.0
+;   * 20180619-A_wenz_sa: adopted script to v2
+;   * 20151130-A_laue_ax: moved call to write_references to beginning of code
+;   * 20151104-A_righ_ma: graphic part moved to external plot_scripts.
+;   * 20151102-A_righ_ma: replacing area functions with ESMValTool functions.
+;   * 201507??-A_wenz_sa: adapted to ESMValTool structure.
+;   * 201505??-A_anav_al: written.
+;
+; #############################################################################
+
 load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
@@ -43,6 +43,7 @@ load "./diag_scripts/shared/scaling.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
+
 
 begin
 
@@ -350,8 +351,8 @@ begin
     plot = scatterplot3D(wks, data_arr, var0, levs)
     draw(plot)
     frame(wks)
-    
-    ;; Attach Metadata to plot    
+
+    ;; Attach Metadata to plot
     ;alltags = array_append_record(tags, region@DM_tag, 0)
     ;alltags := array_append_record(alltags,\
     ;       (/"PT_scatter", "PT_zonal", "ST_mean", "ST_trend", \
@@ -373,7 +374,7 @@ begin
     ;;NOTE: not implemented in v2 yet
     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, dataset_info@dataset, climofiles, diag_script, contrib_authors)
 
-    ;delete([/alltags, caption, id, climofiles/])    
+    ;delete([/alltags, caption, id, climofiles/])
     delete(data_arr)
 
     leave_msg(diag_script, "")
