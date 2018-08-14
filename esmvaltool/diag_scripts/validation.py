@@ -26,8 +26,8 @@ try:
     import iris  # noqa
     import iris.analysis.maths as imath  # noqa
     import iris.quickplot as qplt  # noqa
-except:
-    raise Exception
+except Exception as excp:
+    raise excp
 
 
 logger = logging.getLogger(os.path.basename(__file__))
