@@ -86,13 +86,19 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     lat_points = cube_1.coord(xcoordinate).points
     plt.plot(lat_points, cube_1.data, label=cube_names[0])
     plt.plot(lat_points, cube_2.data, label=cube_names[1])
-    plt.title(period + ' Zonal Mean for ' + var + ' ' + data_names)
+    if xcoordinate == 'latitude':
+        plt.title(period + ' Zonal Mean for ' + var + ' ' + data_names)
+    elif xcoordinate == 'longitude':
+        plt.title(period + ' Meridional Mean for ' + var + ' ' + data_names)
     plt.xlabel(xcoordinate + ' (deg)')
     plt.ylabel(var)
     plt.tight_layout()
     plt.grid()
     plt.legend()
-    png_name = 'Zonal_Means_' + xcoordinate + '_' + data_names + '.png'
+    if xcoordinate == 'latitude':
+        png_name = 'Zonal_Mean_' + xcoordinate + '_' + data_names + '.png'
+    elif xcoordinate == 'longitude':
+        png_name = 'Merid_Mean_' + xcoordinate + '_' + data_names + '.png'
     plt.savefig(os.path.join(cfg['plot_dir'], period, png_name))
     plt.close()
 
