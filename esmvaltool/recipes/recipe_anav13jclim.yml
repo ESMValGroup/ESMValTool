@@ -1,4 +1,3 @@
-###############################################################################
 # recipe_anav13jclim.xml
 ---
 documentation:
@@ -9,7 +8,7 @@ documentation:
     - anav_an
     - wenz_sa
     - righ_ma
-    
+
   references:
     - anav13jclim
 
@@ -19,30 +18,22 @@ documentation:
 datasets:
 # Datasets which do not provide all variables are defined within each diag block block
 # MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
-  - {dataset: CanESM2,         project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: GFDL-ESM2G,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: GFDL-ESM2M,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: HadGEM2-CC,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2004}
-  - {dataset: HadGEM2-ES,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2004}
-  - {dataset: IPSL-CM5A-LR,    project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: IPSL-CM5A-MR,    project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: IPSL-CM5B-LR,    project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: MIROC-ESM-CHEM,  project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: MPI-ESM-LR,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: MPI-ESM-MR,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
-  - {dataset: NorESM1-ME,      project: CMIP5,   exp: historical,  ensemble:  r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2004}
+  - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
 
 
 preprocessors:
-  ppAtmos:
-    extract_levels: false
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-    mask_fillvalues: false
-    multi_model_statistics: false
-    
-  ppLand:
+  atmos:
     extract_levels: false
     regrid:
       target_grid: 2x2
@@ -50,62 +41,75 @@ preprocessors:
     mask_fillvalues: false
     multi_model_statistics: false
 
-#  ppGrading:
-#    extract_levels: false
-#    target_grid:    ref_dataset
-#    regrid_scheme:  linear
-#    mask_fillvalue: True
+  land:
+    extract_levels: false
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+  grading:
+    extract_levels: false
+    target_grid:    ref_dataset
+    regrid_scheme:  linear
+    mask_fillvalue: True
 
 
 diagnostics:
 
-#  DIAG_tasMVI: &diagMVI
-#    description: MVI scatter plot surface temperature (Figure 1)
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      tas:
-#        preprocessor: ppAtmos
-#        reference_dataset: CRU
-#        mip: Amon
-#        field: T2Ms
-#        plot_units: degC
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-#    scripts:
-#      mvi_global: &mvi_glob
-#        script: carboncycle/CarbonCycle_MVI.ncl
-#        legend_year_outside: true
-#        sort: true
-#        styleset: CMIP5
-#        region: Global
-#        grid: 2deg
-#      mvi_nh: &mvi_nh
-#        <<: *mvi_glob
-#        region: Northern Hemisphere
-#      mvi_sh: &mvi_sh
-#        <<: *mvi_glob
-#        region: Southern Hemisphere                
-#      mvi_trop: &mvi_trop
-#        <<: *mvi_glob
-#        region: Tropics
+  diag_tas_mvi: &diag_mvi
+    description: MVI scatter plot surface temperature (Figure 1)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: atmos
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: CRU
+        mip: Amon
+        field: T2Ms
+        plot_units: degC
+    additional_datasets:
+      - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CESM1-BGC}
+      - {dataset: inmcm4}
+      - {dataset: MIROC-ESM}
+      - {dataset: NorESM1-M}
+    scripts:
+      mvi_global: &mvi_glob
+        script: carbon_cycle/mvi.ncl
+        legend_year_outside: true
+        sort: true
+        styleset: CMIP5
+        region: Global
+        grid: 2deg
+      mvi_nh: &mvi_nh
+        <<: *mvi_glob
+        region: Northern Hemisphere
+      mvi_sh: &mvi_sh
+        <<: *mvi_glob
+        region: Southern Hemisphere
+      mvi_trop: &mvi_trop
+        <<: *mvi_glob
+        region: Tropics
 
-      
+
 #  DIAG_prMVI:
 #    description: MVI scatter plot precipitation (Figure 2)
-#    <<: *diagMVI
+#    <<: *diag_mvi
 #    variables:
 #      pr:
-#        preprocessor: ppAtmos
+#        preprocessor: atmos
 #        field: T2Ms
 #        mip: Amon
 #        reference_dataset: CRU
@@ -121,15 +125,15 @@ diagnostics:
 #      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
 #    scripts:
 #      mvi_global:
-#        <<: *mvi_glob        
+#        <<: *mvi_glob
 #      mvi_nh:
-#        <<: *mvi_nh                
+#        <<: *mvi_nh
 #      mvi_sh:
-#        <<: *mvi_sh                
+#        <<: *mvi_sh
 #      mvi_trop:
 #        <<: *mvi_trop
-              
-      
+
+
 #  DIAG_nbpMAIN: &diagMAIN
 #    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
 #    themes:
@@ -138,7 +142,7 @@ diagnostics:
 #      - land
 #    variables:
 #      nbp:
-#        preprocessor: ppLand
+#        preprocessor: land
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: JMA-TRANSCOM
@@ -154,7 +158,7 @@ diagnostics:
 #      #- {dataset: GCP,  project: OBS,  type: reanaly,  version: 1,  start_year: 1959,  end_year: 2015,  tier: 2}
 #    scripts:
 #      main_global: &main_glob
-#        script: carboncycle/CarbonCycle_main.ncl
+#        script: carbon_cycle/main.ncl
 #        legend_year_outside: false
 #        legend_outside: false
 #        sort: true
@@ -177,16 +181,16 @@ diagnostics:
 #      main_trop: &main_trop
 #        <<: *main_glob
 #        region: Tropics
-              
-     
+
+
 #  DIAG_gppMVI:
 #    description: MVI scatter plot gpp (Figure 8)
-#    <<: *diagMVI
+#    <<: *diag_mvi
 #    realms:
 #      - land
 #    variables:
 #      gpp:
-#        preprocessor: ppLand
+#        preprocessor: land
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: MTE
@@ -198,23 +202,23 @@ diagnostics:
 #      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,   tier: 2}
-#    scripts: 
+#    scripts:
 #      mvi_global:
-#        <<: *mvi_glob              
+#        <<: *mvi_glob
 #      mvi_nh:
-#        <<: *mvi_nh                
+#        <<: *mvi_nh
 #      mvi_sh:
-#        <<: *mvi_sh                
+#        <<: *mvi_sh
 #      mvi_trop:
 #        <<: *mvi_trop
 
-  
+
 #  DIAG_gppMAIN:
 #    description: Seasonal cycle plot gpp (Figure 9)
 #    <<: *diagMAIN
 #    variables:
 #      gpp:
-#        preprocessor: ppLand
+#        preprocessor: land
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: MTE
@@ -236,15 +240,15 @@ diagnostics:
 #      main_trop:
 #        <<: *main_trop
 
-              
+
 #  DIAG_laiMVI:
 #    description: MVI scatter plot LAI (Figure 10)
-#    <<: *diagMVI
+#    <<: *diag_mvi
 #    realms:
 #      - land
 #    variables:
 #      lai:
-#        preprocessor: ppLand
+#        preprocessor: land
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: LAI3g
@@ -260,19 +264,19 @@ diagnostics:
 #      mvi_global:
 #        <<: *mvi_glob
 #      mvi_nh:
-#        <<: *mvi_nh                
+#        <<: *mvi_nh
 #      mvi_sh:
-#        <<: *mvi_sh                
+#        <<: *mvi_sh
 #      mvi_trop:
 #        <<: *mvi_trop
 
-              
+
 #  DIAG_laiMAIN:
 #    description: Seasonal cycle plot LAI (Figure 11)
 #    <<: *diagMAIN
 #    variables:
 #      lai:
-#        preprocessor: ppLand
+#        preprocessor: land
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: LAI3g
@@ -294,54 +298,54 @@ diagnostics:
 #      main_trop:
 #        <<: *main_trop
 
-              
-  DIAG_scatter2:
-    description: Two-variable scatter plot cSoil-cVeg (Figure 12)
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      cSoil:
-        preprocessor: ppLand
-        field: T2Ms
-        mip: Lmon
-        reference_dataset: HWSD
-        plot_units: PgC
-        additional_datasets:
-          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
-      cVeg:
-        preprocessor: ppLand
-        field: T2Ms
-        mip: Lmon
-        alternative_dataset: NDP
-        plot_units: PgC
-        additional_datasets:
-          - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-          - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
-    scripts:
-      scat_global: &scat_glob
-        script: carboncycle/CarbonCycle_2vars.ncl
-        legend_year_outside: false
-        styleset: CMIP5
-        region: Global
-      scat_nh:
-        <<: *scat_glob
-        region: Northern Hemisphere
-      scat_nh:
-        <<: *scat_glob
-        region: Southern Hemisphere
-      scat_nh:
-        <<: *scat_glob
-        region: Tropics
-                 
+
+  # DIAG_scatter2:
+  #   description: Two-variable scatter plot cSoil-cVeg (Figure 12)
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - land
+  #   variables:
+  #     cSoil:
+  #       preprocessor: land
+  #       field: T2Ms
+  #       mip: Lmon
+  #       reference_dataset: HWSD
+  #       plot_units: PgC
+  #       additional_datasets:
+  #         - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
+  #     cVeg:
+  #       preprocessor: land
+  #       field: T2Ms
+  #       mip: Lmon
+  #       alternative_dataset: NDP
+  #       plot_units: PgC
+  #       additional_datasets:
+  #         - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  #         - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
+  #   scripts:
+  #     scat_global: &scat_glob
+  #       script: carbon_cycle/two_variables.ncl
+  #       legend_year_outside: false
+  #       styleset: CMIP5
+  #       region: Global
+  #     scat_nh:
+  #       <<: *scat_glob
+  #       region: Northern Hemisphere
+  #     scat_nh:
+  #       <<: *scat_glob
+  #       region: Southern Hemisphere
+  #     scat_nh:
+  #       <<: *scat_glob
+  #       region: Tropics
+
 
 # THIS DIAGNOSTIC DOES NOT SUPPORT IRREGULAR GRIDS YET
   # DIAG_mainFGCO2:
@@ -358,19 +362,21 @@ diagnostics:
   #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
   #      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
 
-    
+
 # GRADING GLOBAL #################################################################################################
 
 
 
 
 #------------------------------------------------------------------------------------------------------------------
+# To be ported...
+#------------------------------------------------------------------------------------------------------------------
 
 #  DIAG_gradtasglob:
 #    description: Grading precalculations
 #    variables:
 #     - {dataset: tas,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocessor: ppGrading
+#    preprocessor: grading
 #    scripts:
 #      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
 #      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
@@ -383,7 +389,7 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year:    1986,  end_year: 2005,  tier: 3}
-      
+
 #
 #  DIAG_gradprglob:
 #    description: Grading precalculations
@@ -486,13 +492,13 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 ##      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-      
-          
+
+
 #  DIAG_portraitglob:
 #    description: Portrait diagram
 #    scripts:
 #      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
-    
+
 
 # GRADING TROPICS ######################################################################################################
 
@@ -516,7 +522,7 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-      
+
 
 #  DIAG_gradprtrop:
 #    description: Grading precalculations
@@ -619,8 +625,8 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-#      
-#          
+#
+#
 #  DIAG_portraittrop:
 #    description: Portrait diagram
 #    scripts:
@@ -648,7 +654,7 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-      
+
 
 #  DIAG_gradprNH:
 #    description: Grading precalculations
@@ -751,8 +757,8 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-      
-          
+
+
 #  DIAG_portraitNH:
 #    description: Portrait diagram
 #    scripts:
@@ -780,7 +786,7 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-      
+
 
 #  DIAG_gradprSH:
 #    description: Grading precalculations
@@ -883,8 +889,8 @@ diagnostics:
 #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
 #      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-      
-          
+
+
 #  DIAG_portraitSH:
 #    description: Portrait diagram
 #    scripts:
