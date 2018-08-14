@@ -1,5 +1,6 @@
 """Fixes for CCSM4 model"""
 import numpy as np
+
 from ..fix import Fix
 
 

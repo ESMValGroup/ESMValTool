@@ -1,7 +1,6 @@
 """Fixes for FGOALS-g2 model"""
 from cf_units import Unit
 
-
 from ..fix import Fix
 
 

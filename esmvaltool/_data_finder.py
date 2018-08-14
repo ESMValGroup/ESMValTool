@@ -33,10 +33,42 @@ def find_files(dirname, filename):
 def get_start_end_year(filename):
     """Get the start and end year from a file name.
 
-    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
+    This works for filenames matching
+
+    *[-,_]YYYY*[-,_]YYYY*.*
+      or
+    *[-,_]YYYY*.*
+      or
+    YYYY*[-,_]*.*
+      or
+    YYYY*[-,_]YYYY*[-,_]*.*
+      or
+    YYYY*[-,_]*[-,_]YYYY*.* (Does this make sense? Is this worth catching?)
     """
     name = os.path.splitext(filename)[0]
-    dates = name.split('_')[-1].split('-')
+
+    filename = name.split(os.sep)[-1]
+    filename_list = [elem.split('-') for elem in filename.split('_')]
+    filename_list = [elem for sublist in filename_list for elem in sublist]
+
+    pos_ydates = [elem.isdigit() and len(elem) >= 4 for elem in filename_list]
+    pos_ydates_l = list(pos_ydates)
+    pos_ydates_r = list(pos_ydates)
+
+    for ind, _ in enumerate(pos_ydates_l):
+        if ind != 0:
+            pos_ydates_l[ind] = (pos_ydates_l[ind - 1] and pos_ydates_l[ind])
+
+    for ind, _ in enumerate(pos_ydates_r):
+        if ind != 0:
+            pos_ydates_r[-ind - 1] = (pos_ydates_r[-ind]
+                                      and pos_ydates_r[-ind - 1])
+
+    dates = [
+        filename_list[ind] for ind, _ in enumerate(pos_ydates)
+        if pos_ydates_r[ind] or pos_ydates_l[ind]
+    ]
+
     if len(dates) == 1:
         start_year = int(dates[0][:4])
         end_year = start_year
@@ -45,6 +77,7 @@ def get_start_end_year(filename):
     else:
         raise ValueError('Name {0} dates do not match a recognized '
                          'pattern'.format(name))
+
     return start_year, end_year
 
 
@@ -68,6 +101,8 @@ def replace_tags(path, variable, j=None, i=None):
     tlist = re.findall(r'\[([^]]*)\]', path)
 
     for tag in tlist:
+        original_tag = tag
+        tag, lower, upper = _get_caps_options(tag)
 
         if tag == 'var':
             replacewith = variable['short_name']
@@ -100,13 +135,35 @@ def replace_tags(path, variable, j=None, i=None):
                     "your recipe entry".format(tag, variable['project']))
 
         if not isinstance(replacewith, list):
-            path = path.replace('[' + tag + ']', replacewith)
+            path = path.replace('[' + original_tag + ']',
+                                _apply_caps(replacewith, lower, upper))
         else:
             path = [
-                path.replace('[' + tag + ']', dkrz_place)
+                path.replace('[' + original_tag + ']',
+                             _apply_caps(dkrz_place, lower, upper))
                 for dkrz_place in replacewith
             ][j]
     return path
+
+
+def _get_caps_options(tag):
+    lower = False
+    upper = False
+    if tag.endswith('.lower'):
+        lower = True
+        tag = tag[0:-6]
+    elif tag.endswith('.upper'):
+        upper = True
+        tag = tag[0:-6]
+    return tag, lower, upper
+
+
+def _apply_caps(original, lower, upper):
+    if lower:
+        return original.lower()
+    elif upper:
+        return original.upper()
+    return original
 
 
 def get_input_dirname_template(variable, rootpath, drs):
@@ -181,6 +238,15 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
             raise KeyError(
                 'drs {} for {} project not specified in config-developer file'
                 .format(_drs, project))
+
+        # Replace seaIce realm by ocean realm
+        path_elements = dir2.split(os.path.sep)
+        if "seaIce" in path_elements:
+            old_dir = dir2
+            dir2 = dir2.replace("seaIce", "ocean")
+            logger.info(
+                "Replaced path to fx files %s by %s for seaIce"
+                "diagnostics", old_dir, dir2)
 
         dirname_template = os.path.join(dir1, dir2)
         dirs.append(dirname_template)
@@ -287,11 +353,17 @@ def get_input_filelist(variable, rootpath, drs):
             if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
+                if 'latest' in list_versions:
+                    list_versions.insert(
+                        0, list_versions.pop(list_versions.index('latest')))
                 for version in list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
                         valid_dirs.append(dirname)
                         break
+            else:
+                raise IOError(
+                    'Path {} does not exist'.format(part1))
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
@@ -319,12 +391,24 @@ def get_input_fx_filelist(variable, rootpath, drs):
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
+            # root part1 could not exist at all
+            if not os.path.exists(part1):
+                fx_files[variable['fx_files'][j]] = None
+                return fx_files
             list_versions = os.listdir(part1)
             list_versions.sort(reverse=True)
+            if 'latest' in list_versions:
+                list_versions.insert(
+                    0, list_versions.pop(list_versions.index('latest')))
             for version in list_versions:
-                dirname = os.path.join(part1, version, part2)
-                if os.path.isdir(dirname):
-                    break
+                if version == 'latest':
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        break
+                else:
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        break
         else:
             dirname = dirname_template
 

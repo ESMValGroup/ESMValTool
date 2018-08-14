@@ -52,9 +52,9 @@ begin
               "contain the range_option attribute")
   end if
   if (diag_script_info@range_option.eq.0) then
-    start_year = toint(dataset_info@start_year(dataset_index))
+    start_year = toint(input_file_info@start_year(dataset_index))
   else if (diag_script_info@range_option.eq.1) then
-    start_year = max(toint(dataset_info@start_year))
+    start_year = max(toint(input_file_info@start_year))
   else
     error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
               "properly set, must be either 0 or 1")
@@ -100,9 +100,9 @@ begin
               "contain the range_option attribute")
   end if
   if (diag_script_info@range_option.eq.0) then
-    end_year = toint(dataset_info@end_year(dataset_index))
+    end_year = toint(input_file_info@end_year(dataset_index))
   else if (diag_script_info@range_option.eq.1) then
-    end_year = min(toint(dataset_info@end_year))
+    end_year = min(toint(input_file_info@end_year))
   else
     error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
               "properly set, must be either 0 or 1")
@@ -141,8 +141,8 @@ function multi_model_stats(idx[*]:integer,
 ; Return value
 ;    A field with target grid spatial dimensions (lat, lon) or
 ;    (plev, lat, lon), time coordinate, datasets coordinate.
-;    The "datasets" coordinate contains the strings from dataset_info@dataset
-;    and statistics.
+;    The "datasets" coordinate contains the strings from
+;    input_file_info@dataset and statistics.
 ;    Covers the overlapping time period of all datasets only.
 ;
 ; Description
@@ -192,8 +192,8 @@ begin
   end if
 
   ; Determine overlapping time period
-  start_year = max(toint(dataset_info@start_year))
-  end_year = min(toint(dataset_info@end_year))
+  start_year = max(toint(input_file_info@start_year))
+  end_year = min(toint(input_file_info@end_year))
   log_info("overlapping time period: " + tostring(start_year) + \
            " - " + tostring(end_year))
 
@@ -205,7 +205,7 @@ begin
 
   ; Loop over mmm datasets
   do i = 0, dimsizes(idx) - 1
-    dataset = dataset_info@dataset(idx(i))
+    dataset = input_file_info@dataset(idx(i))
 
     ; extract full data
     var_tmp = extract_data(i, data_mmm, -1, 0, 0)
@@ -247,7 +247,7 @@ begin
       stats = (/"model_mean", "stddev"/)
       nstats = dimsizes(stats)
       var_grd&datasets = \
-        array_append_record(stats, dataset_info@dataset(idx), 0)
+        array_append_record(stats, input_file_info@dataset(idx), 0)
 
       ; select return fields
       tmp = new(dimsizes(var_grd&datasets), integer)

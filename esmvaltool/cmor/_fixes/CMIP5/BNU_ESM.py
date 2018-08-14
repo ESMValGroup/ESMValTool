@@ -40,7 +40,10 @@ class fgco2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 12.0 / 44.0
+        metadata = cube.metadata
+        cube *= 12.0 / 44.0
+        cube.metadata = metadata
+        return cube
 
 
 class ch4(Fix):
@@ -79,7 +82,10 @@ class ch4(Fix):
         iris.cube.Cube
 
         """
-        return cube * 29.0 / 16.0 * 1.e9
+        metadata = cube.metadata
+        cube *= 29.0 / 16.0 * 1.e9
+        cube.metadata = metadata
+        return cube
 
 
 class co2(Fix):
@@ -118,7 +124,10 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 29.0 / 44.0 * 1.e6
+        metadata = cube.metadata
+        cube *= 29.0 / 44.0 * 1.e6
+        cube.metadata = metadata
+        return cube
 
 
 class spco2(Fix):
@@ -139,7 +148,10 @@ class spco2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1.e6
+        metadata = cube.metadata
+        cube *= 1.e6
+        cube.metadata = metadata
+        return cube
 
 
 # No clear way to apply this fix now that we are working with cubes, not files

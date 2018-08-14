@@ -32,12 +32,12 @@ function profile_plev(wks_in[1],
 ; Arguments
 ;    wks_in: workstations (graphic object or default will be used).
 ;    source: data to be plotted or a NetCDF filename:
-;            Must have "plev" dimension & can have "datasets", "quantity".
+;            Must have "plev" dimension & can have "models", "quantity".
 ;              @ptop: controls pressure axis range (Default: full range).
 ;              @pbot: controls pressure axis range (Default: full range).
 ;              @zoom: controls x axis range (Default: "yes").
 ;              @font: font type to use
-;              @Refdataset: reference dataset (Default: first in datasets dimension)
+;              @Refmodel: reference model (Default: first in models dimension)
 ;              @long_name: long variable name (Default: var)
 ;              @short_name: short variable name (Default: var)
 ;              @units: variable units (Default: missing)
@@ -50,7 +50,7 @@ function profile_plev(wks_in[1],
 ;
 ; Description
 ;    Creates a plot of profile(s) with vertical pressure axis.
-;    Adds percentiles or stddev of first dataset (if available) as whiskers.
+;    Adds percentiles or stddev of first model (if available) as whiskers.
 ;    Opens default wks, if not provided as argument of type "graphic".
 ;    Defines default ressources, which are overridden by argument res.
 ;    Creates plot, according to wks & res.
@@ -79,7 +79,7 @@ begin
   ; Set hardcoded parameters
   border = 0.04  ; factor to extent y- & x-range (except @ top)
   font_size_fac = 1.5  ; factor to change all font sizes (w.r.t. to defaults)
-  i_ref = 0  ; hardcode first dataset as reference -> generalize, if needed
+  i_ref = 0  ; hardcode first model as reference -> generalize, if needed
 
   ; Get data, either directly or via netCDF file
   if (typeof(source) .eq. "string") then
@@ -111,19 +111,19 @@ begin
     delete(temp)
   end if
 
-  ; Position of reference dataset
-  if (isdim(data, "datasets")) then
-    Refdataset = att2var_default(data, "Refdataset", "missing", 0)
-    if (Refdataset.ne."missing") then
-      i_ref = ind(data&datasets.eq.Refdataset)
+  ; Position of reference model
+  if (isdim(data, "models")) then
+    Refmodel = att2var_default(data, "Refmodel", "missing", 0)
+    if (Refmodel.ne."missing") then
+      i_ref = ind(data&models.eq.Refmodel)
       if (all(ismissing(i_ref))) then
-        error_msg("w", scriptname, funcname, "Refdataset " + Refdataset + \
+        error_msg("w", scriptname, funcname, "Refmodel " + Refmodel + \
                   "not found, using first")
         i_ref = 0
       else
         if (dimsizes(i_ref).ne.1) then
-          error_msg("f", scriptname, funcname, "Refdataset " + \
-                    Refdataset + "not unique")
+          error_msg("f", scriptname, funcname, "Refmodel " + \
+                    Refmodel + "not unique")
         end if
       end if
     end if
@@ -133,8 +133,8 @@ begin
   legend = att2var(data, "legend")  ; mode for legend: inline/separate/none
   valid_legends = (/"inline", "separate"/)
   if (any(legend .eq. valid_legends)) then
-    if (.not. iscoord(data, "datasets")) then
-      log_debug("warning: No 'datasets' coordinate found.")
+    if (.not. iscoord(data, "models")) then
+      log_debug("warning: No 'models' coordinate found.")
       log_debug("warning:  -> No legend in profile_plev")
     end if
   else
@@ -167,22 +167,22 @@ begin
 
   ; Extract data to plot & check for missing values
   ; in preparation to determine vertical range
-  if (isdim(data, "quantity") .and. isdim(data, "datasets")) then
-    data2plot = data(datasets|:, plev|:, quantity|i_quantity)
+  if (isdim(data, "quantity") .and. isdim(data, "models")) then
+    data2plot = data(models|:, plev|:, quantity|i_quantity)
     if (target.eq."mean") then  ; mean +/- stddev
       data2plot(:, :, 1) = data2plot(:, :, 2) - data2plot(:, :, 1)
       data2plot(:, :, 3) = data2plot(:, :, 2) + data2plot(:, :, 3)
     end if
     i_plev = ind(.not. ismissing(data2plot(i_ref, :, 2)))
-  else if (isdim(data, "quantity") .and. .not.isdim(data, "datasets")) then
+  else if (isdim(data, "quantity") .and. .not.isdim(data, "models")) then
     data2plot = data(plev|:, quantity|i_quantity)
     if (target.eq."mean") then  ; mean +/- stddev
       data2plot(:, 1) = data2plot(:, 2) - data2plot(:, 1)
       data2plot(:, 3) = data2plot(:, 2) + data2plot(:, 3)
     end if
     i_plev = ind(.not. ismissing(data2plot(:, 2)))
-  else if (isdim(data, "datasets") .and. .not.isdim(data, "quantity")) then
-    data2plot = data(datasets|:, plev|:)
+  else if (isdim(data, "models") .and. .not.isdim(data, "quantity")) then
+    data2plot = data(models|:, plev|:)
     i_plev = ind(.not. ismissing(data2plot(i_ref, :)))
   else
     data2plot = data(plev|:)
@@ -215,7 +215,7 @@ begin
 
   ; Determine min & max values of x-axis, and arrow positions
   ; to indicate cutoff.
-  if (isdim(data, "quantity") .and. isdim(data, "datasets")) then
+  if (isdim(data, "quantity") .and. isdim(data, "models")) then
     if (zoom.eq."yes") then
       if (isatt(zoom, "range")) then
         xmin = zoom@range(0)
@@ -234,7 +234,7 @@ begin
       xmin = min(data2plot(:, i_plev, :))
       xmax = max(data2plot(:, i_plev, :))
     end if
-  else if (isdim(data, "quantity") .and. .not.isdim(data, "datasets")) then
+  else if (isdim(data, "quantity") .and. .not.isdim(data, "models")) then
     if (zoom.eq."yes") then
       if (isatt(zoom, "range")) then
         xmin = zoom@range(0)
@@ -251,7 +251,7 @@ begin
       xmin = min(data2plot(i_plev, :))
       xmax = max(data2plot(i_plev, :))
     end if
-  else if (isdim(data, "datasets") .and. .not.isdim(data, "quantity")) then
+  else if (isdim(data, "models") .and. .not.isdim(data, "quantity")) then
     if (zoom.eq."yes" .and. isatt(zoom, "range")) then
       xmin = zoom@range(0)
       xmax = zoom@range(1)
@@ -280,7 +280,7 @@ begin
   end if
 
   ; Get default style parameters (diag_scripts/shared/plot/style.ncl)
-  ; NOTE: These may or may not contain the reference dataset
+  ; NOTE: These may or may not contain the reference model
   if (.not.isatt(diag_script_info, "styleset")) then
     diag_script_info@styleset = "DEFAULT"
   end if
@@ -322,8 +322,8 @@ begin
   res@trXMinF           = xmin - border * (xmax - xmin)
   res@trXMaxF           = xmax + border * (xmax - xmin)
   res@trYMaxF           = ymax + border * (ymax - ymin)
-  ; Do not limit top to show datasets reaching higher
-  ; One or more dataset lines are cut at res@trYMinF
+  ; Do not limit top to show models reaching higher
+  ; One or more model lines are cut at res@trYMinF
   ;     for some mysterious reason -> do not consider border here.
   res@trYMinF           = ymin  ; - border * (ymax - ymin)
 
@@ -341,7 +341,7 @@ begin
 
   ; inline legend
   if (legend.eq."inline") then
-    lgLabels = data&datasets
+    lgLabels = data&models
     res@pmLegendDisplayMode    = "Always"  ; turn on legend
     res@pmLegendSide           = "Right"
     res@lgJustification = "CenterLeft"
@@ -376,7 +376,7 @@ begin
   res_markers@gsMarkerColor = res@xyLineColors(i_ref)
 
   ; Plotting
-  if (isdim(data, "quantity") .and. isdim(data, "datasets")) then
+  if (isdim(data, "quantity") .and. isdim(data, "models")) then
 
     ; mean / median
     plot = gsn_csm_xy(wks, data2plot(:, :, 2), data2plot&plev, res)
@@ -417,7 +417,7 @@ begin
     add_markers(wks, plot, res_markers, \
                 data2plot(i_ref, :, 2), data2plot&plev)
 
-    else if (isdim(data, "quantity") .and. .not.isdim(data, "datasets")) then
+    else if (isdim(data, "quantity") .and. .not.isdim(data, "models")) then
 
       ; mean / median
       plot = gsn_csm_xy(wks, data2plot(:, 2), data2plot&plev, res)
@@ -495,13 +495,13 @@ function aerosol_profile(wks_in[1],
 ;
 ; Arguments
 ;    wks_in: workstations (graphic object or default will be used).
-;    source_m: dataset data to be plotted or a NetCDF filename with data.
+;    source_m: model data to be plotted or a NetCDF filename with data.
 ;    source_o: observations data to be plotted or a NetCDF filename with data.
 ;    varname: variable name in the file.
 ;
 ; Source_m prototype
 ;    source[*][*][*]
-;    source!0 = dataset
+;    source!0 = model
 ;    source!1 = statistic
 ;    source!2 = plev
 ;
@@ -533,12 +533,12 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ; Get dataset data, either directly or via netCDF file
+  ; Get model data, either directly or via netCDF file
   if (typeof(source_m) .eq. "string") then
-    dataset = ncdf_read(source_m, varname)
+    model = ncdf_read(source_m, varname)
   else
-    dataset = source_m
-    copy_VarMeta(source_m, dataset)
+    model = source_m
+    copy_VarMeta(source_m, model)
   end if
 
   ; Get observational data, either directly or via netCDF file
@@ -552,7 +552,7 @@ begin
   ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
-    var = att2var(dataset, "var")
+    var = att2var(model, "var")
   else
     var = varname
   end if
@@ -582,8 +582,8 @@ begin
   res@tmXTMinorPerMajor = 8
   res@tmYLMinorPerMajor = 8
   res@tmYRMinorPerMajor = 8
-  res@tiXAxisString = varname + " [" + format_units(dataset@units) + "]"
-  res@tiYAxisString = "Pressure [" + format_units(dataset&plev@units) + "]"
+  res@tiXAxisString = varname + " [" + format_units(model@units) + "]"
+  res@tiYAxisString = "Pressure [" + format_units(model&plev@units) + "]"
   res@gsnCenterStringFontHeightF = 0.015
 
   ; Lines
@@ -605,32 +605,32 @@ begin
   resM = True
 
   ; Override defaults with "res_" attributes of "data"
-  res_new = att2var(dataset, "res_")
+  res_new = att2var(model, "res_")
   copy_VarMeta(res_new, res)
 
-  ; Set number of datasets
-  ndatasets = dimsizes(annots)
+  ; Set number of models
+  nmodels = dimsizes(annots)
 
   ; Set number of cases
   ncases = dimsizes(obser&case)
 
   ; Set the index for the various statistics
-  i_N      = ind(dataset&statistic.eq."N")
-  i_mean   = ind(dataset&statistic.eq."mean")
-  i_stddev = ind(dataset&statistic.eq."stddev")
-  i_min    = ind(dataset&statistic.eq."min")
-  i_max    = ind(dataset&statistic.eq."max")
-  i_5      = ind(dataset&statistic.eq."5")
-  i_10     = ind(dataset&statistic.eq."10")
-  i_25     = ind(dataset&statistic.eq."25")
-  i_median = ind(dataset&statistic.eq."median")
-  i_75     = ind(dataset&statistic.eq."75")
-  i_90     = ind(dataset&statistic.eq."90")
-  i_95     = ind(dataset&statistic.eq."95")
+  i_N      = ind(model&statistic.eq."N")
+  i_mean   = ind(model&statistic.eq."mean")
+  i_stddev = ind(model&statistic.eq."stddev")
+  i_min    = ind(model&statistic.eq."min")
+  i_max    = ind(model&statistic.eq."max")
+  i_5      = ind(model&statistic.eq."5")
+  i_10     = ind(model&statistic.eq."10")
+  i_25     = ind(model&statistic.eq."25")
+  i_median = ind(model&statistic.eq."median")
+  i_75     = ind(model&statistic.eq."75")
+  i_90     = ind(model&statistic.eq."90")
+  i_95     = ind(model&statistic.eq."95")
 
   ; Set plot ranges
-  datasetmin = min((/min(dataset(:, i_mean, :)), min(dataset(:, i_median, :))/))
-  datasetmax = max((/max(dataset(:, i_mean, :)), max(dataset(:, i_median, :))/))
+  modelmin = min((/min(model(:, i_mean, :)), min(model(:, i_median, :))/))
+  modelmax = max((/max(model(:, i_mean, :)), max(model(:, i_median, :))/))
   obsermin = min((/min(obser(:, i_mean, :)), min(obser(:, i_median, :))/))
   obsermax = max((/max(obser(:, i_mean, :)), max(obser(:, i_median, :))/))
   res@tmXBMode = "Explicit"
@@ -638,8 +638,8 @@ begin
   res@trYReverse = True
 
   ; Set X-axis labels
-  res@trXMinF = min((/datasetmin, obsermin/)) / 2.
-  res@trXMaxF = 2 * max((/datasetmax, obsermax/))
+  res@trXMinF = min((/modelmin, obsermin/)) / 2.
+  res@trXMaxF = 2 * max((/modelmax, obsermax/))
   res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
   res@tmXBLabels = res@tmXBValues
   res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
@@ -753,15 +753,15 @@ begin
     shade_name = (/"5_95", "10_90", "25_75"/)
     do shID = 0, dimsizes(shade_flag_m) - 1
 
-      ; Dataset
+      ; Model
       if (shade_flag_m(shID)) then
         resP@gsFillOpacityF = shade_opac(shID)
-        g_obj = new(ndatasets, graphic)
-        do ii = 0, ndatasets - 1
+        g_obj = new(nmodels, graphic)
+        do ii = 0, nmodels - 1
           resP@gsFillColor = colors(ii)
-          x1 = dataset(ii, shade_idx1(shID), :)
-          x2 = dataset(ii, shade_idx2(shID), :)
-          y1 = dataset&plev
+          x1 = model(ii, shade_idx1(shID), :)
+          x2 = model(ii, shade_idx2(shID), :)
+          y1 = model&plev
           y2 = y1
           xx = array_append_record( \
             array_append_record(x1, x2(::-1), 0), x1(0), 0)
@@ -769,16 +769,16 @@ begin
             array_append_record(y1, y2(::-1), 0), y1(0), 0)
           q = ind(.not.ismissing(xx))
           if (dimsizes(q).ne.dimsizes(xx)) then
-            log_debug("Some missing values in dataset percentiles")
+            log_debug("Some missing values in model percentiles")
           end if
           if (.not.all(ismissing(q))) then
             g_obj(ii) = gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
           else
-            log_info("All values in dataset percentiles are missing (skipping)")
+            log_info("All values in model percentiles are missing (skipping)")
           end if
           delete([/x1, x2, y1, y2, xx, yy, q/])
         end do
-        str = "dataset_" + shade_name(shID)
+        str = "model_" + shade_name(shID)
         plot@$str$ = g_obj
         delete(g_obj)
         delete(str)
@@ -819,25 +819,25 @@ begin
   ; Draw median as solid lines
   if (l_median) then
 
-    ; Dataset
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    ; Model
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_median
-      xx = dataset(ii, i_median, :)
-      yy = dataset&plev
+      xx = model(ii, i_median, :)
+      yy = model&plev
       q = ind(.not.ismissing(xx))
       if (dimsizes(q).ne.dimsizes(xx)) then
-        log_debug("Some missing values in dataset median")
+        log_debug("Some missing values in model median")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset median are missing (skipping)")
+        log_info("All values in model median are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_median = g_obj
+    plot@model_median = g_obj
     delete(g_obj)
 
     ; Observations
@@ -872,49 +872,49 @@ begin
 
   end if
 
-  ; Draw mean and standard deviation as dashed/dotted (dataset) and dots/bars
+  ; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
   ; (observations)
   if (l_mean) then
 
-    ; Dataset mean and std. dev.
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    ; Model mean and std. dev.
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_mean
-      xx = dataset(ii, i_mean, :)
-      yy = dataset&plev
+      xx = model(ii, i_mean, :)
+      yy = model&plev
       q = ind(.not.ismissing(xx))
       if (dimsizes(q).ne.dimsizes(xx)) then
-        log_debug("Some missing values in dataset mean")
+        log_debug("Some missing values in model mean")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset mean are missing (skipping)")
+        log_info("All values in model mean are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_mean = g_obj
+    plot@model_mean = g_obj
     delete(g_obj)
 
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_stddev
-      xx = dataset(ii, i_mean, :) + dataset(ii, i_stddev, :)
-      yy = dataset&plev
+      xx = model(ii, i_mean, :) + model(ii, i_stddev, :)
+      yy = model&plev
       q = ind(.not.ismissing(xx))
       if (dimsizes(q).ne.dimsizes(xx)) then
-        log_debug("Some missing values in dataset std. dev.")
+        log_debug("Some missing values in model std. dev.")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset std. dev. are missing (skipping)")
+        log_info("All values in model std. dev. are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_stddev = g_obj
+    plot@model_stddev = g_obj
     delete(g_obj)
 
     ; Observations mean (dots or lines, depending on standard deviation)
@@ -1001,13 +1001,13 @@ function aerosol_sizedist(wks_in[1],
 ;
 ; Arguments
 ;    wks_in: workstations (graphic object or default will be used).
-;    source_m: dataset data to be plotted or a NetCDF filename with data.
+;    source_m: model data to be plotted or a NetCDF filename with data.
 ;    source_o: observations data to be plotted or a NetCDF filename with data.
 ;    varname: variable name in the file.
 ;
 ; Source_m prototype
 ;    source[*][*][*]
-;    source!0 = dataset
+;    source!0 = model
 ;    source!1 = statistic
 ;    source!2 = plev
 ;
@@ -1036,12 +1036,12 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ; Get dataset data, either directly or via netCDF file
+  ; Get model data, either directly or via netCDF file
   if (typeof(source_m) .eq. "string") then
-    dataset = ncdf_read(source_m, varname)
+    model = ncdf_read(source_m, varname)
   else
-    dataset = source_m
-    copy_VarMeta(source_m, dataset)
+    model = source_m
+    copy_VarMeta(source_m, model)
   end if
 
   ; Get observational data, either directly or via netCDF file
@@ -1055,7 +1055,7 @@ begin
   ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
-    var = att2var(dataset, "var")
+    var = att2var(model, "var")
   else
     var = varname
   end if
@@ -1085,8 +1085,8 @@ begin
   res@tmXTMinorPerMajor = 8
   res@tmYLMinorPerMajor = 8
   res@tmYRMinorPerMajor = 8
-  res@tiYAxisString = varname + " [" + format_units(dataset@units) + "]"
-  res@tiXAxisString = "Diameter [" + format_units(dataset&diam@units) + "]"
+  res@tiYAxisString = varname + " [" + format_units(model@units) + "]"
+  res@tiXAxisString = "Diameter [" + format_units(model&diam@units) + "]"
   res@gsnCenterStringFontHeightF = 0.015
 
   ; Lines
@@ -1109,32 +1109,32 @@ begin
   resM = True
 
   ; Override defaults with "res_" attributes of "data"
-  res_new = att2var(dataset, "res_")
+  res_new = att2var(model, "res_")
   copy_VarMeta(res_new, res)
 
-  ; Set number of datasets
-  ndatasets = dimsizes(annots)
+  ; Set number of models
+  nmodels = dimsizes(annots)
 
   ; Set number of cases
   ncases = dimsizes(obser&case)
 
   ; Set the index for the various statistics
-  i_N      = ind(dataset&statistic.eq."N")
-  i_mean   = ind(dataset&statistic.eq."mean")
-  i_stddev = ind(dataset&statistic.eq."stddev")
-  i_min    = ind(dataset&statistic.eq."min")
-  i_max    = ind(dataset&statistic.eq."max")
-  i_5      = ind(dataset&statistic.eq."5")
-  i_10     = ind(dataset&statistic.eq."10")
-  i_25     = ind(dataset&statistic.eq."25")
-  i_median = ind(dataset&statistic.eq."median")
-  i_75     = ind(dataset&statistic.eq."75")
-  i_90     = ind(dataset&statistic.eq."90")
-  i_95     = ind(dataset&statistic.eq."95")
+  i_N      = ind(model&statistic.eq."N")
+  i_mean   = ind(model&statistic.eq."mean")
+  i_stddev = ind(model&statistic.eq."stddev")
+  i_min    = ind(model&statistic.eq."min")
+  i_max    = ind(model&statistic.eq."max")
+  i_5      = ind(model&statistic.eq."5")
+  i_10     = ind(model&statistic.eq."10")
+  i_25     = ind(model&statistic.eq."25")
+  i_median = ind(model&statistic.eq."median")
+  i_75     = ind(model&statistic.eq."75")
+  i_90     = ind(model&statistic.eq."90")
+  i_95     = ind(model&statistic.eq."95")
 
   ; Set plot ranges
-  datasetmin = min((/min(dataset(:, i_mean, :)), min(dataset(:, i_median, :))/))
-  datasetmax = max((/max(dataset(:, i_mean, :)), max(dataset(:, i_median, :))/))
+  modelmin = min((/min(model(:, i_mean, :)), min(model(:, i_median, :))/))
+  modelmax = max((/max(model(:, i_mean, :)), max(model(:, i_median, :))/))
   obsermin = min((/min(obser(:, i_mean, :)), min(obser(:, i_median, :))/))
   obsermax = max((/max(obser(:, i_mean, :)), max(obser(:, i_median, :))/))
   res@tmXBMode = "Explicit"
@@ -1148,7 +1148,7 @@ begin
   res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
 
   ; Set Y-axis labels
-  res@trYMaxF = 2 * max((/datasetmax, obsermax/))
+  res@trYMaxF = 2 * max((/modelmax, obsermax/))
   res@trYMinF = res@trYMaxF / 1.e5
   res@tmYLValues = set_log_ticks(res@trYMinF, res@trYMaxF, "major")
   res@tmYLLabels = res@tmYLValues
@@ -1237,15 +1237,15 @@ begin
     shade_name = (/"5_95", "10_90", "25_75"/)
     do shID = 0, dimsizes(shade_flag_m) - 1
 
-      ; Dataset
+      ; Model
       if (shade_flag_m(shID)) then
         resP@gsFillOpacityF = shade_opac(shID)
-        g_obj = new(ndatasets, graphic)
-        do ii = 0, ndatasets - 1
+        g_obj = new(nmodels, graphic)
+        do ii = 0, nmodels - 1
           resP@gsFillColor = colors(ii)
-          y1 = dataset(ii, shade_idx1(shID), :)
-          y2 = dataset(ii, shade_idx2(shID), :)
-          x1 = dataset&diam
+          y1 = model(ii, shade_idx1(shID), :)
+          y2 = model(ii, shade_idx2(shID), :)
+          x1 = model&diam
           x2 = x1
           xx = array_append_record( \
             array_append_record(x1, x2(::-1), 0), x1(0), 0)
@@ -1253,16 +1253,16 @@ begin
             array_append_record(y1, y2(::-1), 0), y1(0), 0)
           q = ind(.not.ismissing(yy))
           if (dimsizes(q).ne.dimsizes(yy)) then
-            log_debug("Some missing values in dataset percentiles")
+            log_debug("Some missing values in model percentiles")
           end if
           if (.not.all(ismissing(q))) then
             g_obj(ii) = gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
           else
-            log_info("All values in dataset percentiles are missing (skipping)")
+            log_info("All values in model percentiles are missing (skipping)")
           end if
           delete([/x1, x2, y1, y2, xx, yy, q/])
         end do
-        str = "dataset_" + shade_name(shID)
+        str = "model_" + shade_name(shID)
         plot@$str$ = g_obj
         delete(g_obj)
         delete(str)
@@ -1304,25 +1304,25 @@ begin
   ; Draw median as solid lines
   if (l_median) then
 
-    ; Dataset
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    ; Model
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_median
-      xx = dataset&diam
-      yy = dataset(ii, i_median, :)
+      xx = model&diam
+      yy = model(ii, i_median, :)
       q = ind(.not.ismissing(yy))
       if (dimsizes(q).ne.dimsizes(yy)) then
-        log_debug("Some missing values in dataset median")
+        log_debug("Some missing values in model median")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset median are missing (skipping)")
+        log_info("All values in model median are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_median = g_obj
+    plot@model_median = g_obj
     delete(g_obj)
 
     ; Observations
@@ -1347,49 +1347,49 @@ begin
 
   end if
 
-  ; Draw mean and standard deviation as dashed/dotted (dataset) and dots/bars
+  ; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
   ; (observations)
   if (l_mean) then
 
-    ; Dataset
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    ; Model
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_mean
-      xx = dataset&diam
-      yy = dataset(ii, i_mean, :)
+      xx = model&diam
+      yy = model(ii, i_mean, :)
       q = ind(.not.ismissing(yy))
       if (dimsizes(q).ne.dimsizes(yy)) then
-        log_debug("Some missing values in dataset mean")
+        log_debug("Some missing values in model mean")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset mean are missing (skipping)")
+        log_info("All values in model mean are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_mean = g_obj
+    plot@model_mean = g_obj
     delete(g_obj)
 
-    g_obj = new(ndatasets, graphic)
-    do ii = 0, ndatasets - 1
+    g_obj = new(nmodels, graphic)
+    do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
       resL@gsLineDashPattern = dash_stddev
-      xx = dataset&diam
-      yy = dataset(ii, i_mean, :) + dataset(ii, i_stddev, :)
+      xx = model&diam
+      yy = model(ii, i_mean, :) + model(ii, i_stddev, :)
       q = ind(.not.ismissing(yy))
       if (dimsizes(q).ne.dimsizes(yy)) then
-        log_debug("Some missing values in dataset std. dev.")
+        log_debug("Some missing values in model std. dev.")
       end if
       if (.not.all(ismissing(q))) then
         g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
       else
-        log_info("All values in dataset std. dev. are missing (skipping)")
+        log_info("All values in model std. dev. are missing (skipping)")
       end if
       delete([/xx, yy, q/])
     end do
-    plot@dataset_stddev = g_obj
+    plot@model_stddev = g_obj
     delete(g_obj)
 
         ; Observations (dots or lines, depending on standard deviation)
@@ -1481,7 +1481,7 @@ procedure xy_line(wks[1],
 ;    source: data to be plotted (no netCDF input possible yet)
 ;    source_x: x-axis of array to be plotted (e.g. source&time, ... )
 ;    source_stddev: standard deviation of input, needed if
-;                   diag_script_info@multi_dataset_mean is set to "y"
+;                   diag_script_info@multi_model_mean is set to "y"
 ;    res_in: diag_script-specific resources passed from diag_script
 ;    debuginfo: description about diagnostic rendered onto plot
 ;
@@ -1490,8 +1490,8 @@ procedure xy_line(wks[1],
 ; Description
 ;    Defines default ressources, which are overridden by argument res.
 ;    Creates an xy-plot, according to wks & res.
-;    Adds multi dataset mean and standard deviation if
-;    diag_script_info@multi_dataset_mean is set to "y".
+;    Adds multi model mean and standard deviation if
+;    diag_script_info@multi_model_mean is set to "y".
 ;
 ; Caveats
 ;
@@ -1518,22 +1518,22 @@ begin
   annots = project_style(diag_script_info, "annots")
   avgstd = project_style(diag_script_info, "avgstd")
 
-  ; Select colors and other plotting attributes for multi-dataset mean
-  if (diag_script_info@multi_dataset_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "datasets"
-    temp = datasets
+  ; Select colors and other plotting attributes for multi-model mean
+  if (diag_script_info@multi_model_mean .eq. "y") then
+    ; Project_style evaluates metadata of variable "input_file_info"
+    temp = input_file_info
 
-    ; -> keep original "datasets" in "temp" and restore later
-    copy_VarMeta(datasets, temp)
-    delete(datasets)
+    ; -> keep original "input_file_info" in "temp" and restore later
+    copy_VarMeta(input_file_info, temp)
+    delete(input_file_info)
 
-    ; Use "datasets" to pass on attribute names
-    datasets = getvaratts(temp)  ; use "datasets" to pass on attribute names
-    do i = 0, dimsizes(datasets) - 1
+    ; Use "input_file_info" to pass on attribute names
+    input_file_info = getvaratts(temp)
+    do i = 0, dimsizes(input_file_info) - 1
       ; Define all original attributes again, but empty
-      datasets@$datasets(i)$ = ""
+      input_file_info@$input_file_info(i)$ = ""
     end do
-    datasets@name = "dataset_mean"
+    input_file_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -1541,31 +1541,11 @@ begin
     thicks_mmm = project_style(diag_script_info, "thicks")
     annots_mmm = project_style(diag_script_info, "annots")
     avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(datasets)
-    datasets = temp  ; restore original "datasets"
-    copy_VarMeta(temp, datasets)
+    delete(input_file_info)
+    input_file_info = temp  ; restore original "input_file_info"
+    copy_VarMeta(temp, input_file_info)
     delete(temp)
   end if
-
-  ; Highlight ESA OBS
-  do i = 0, dimsizes(datasets@name) - 1
-    if (datasets@name(i).eq."ESACCI-SSMI") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 0
-    else if (datasets@name(i).eq."ESACCI-AMSR") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 1
-    else if (datasets@name(i).eq."NSIDC-NT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 2
-    else if (datasets@name(i).eq."NSIDC-BT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 12
-    end if
-    end if
-    end if
-    end if
-  end do
 
   ; Set/copy resources
   res                   = True
@@ -1586,24 +1566,24 @@ begin
   ; Plot
   plot = gsn_csm_xy(wks, source_x, source, res)
 
-  ; Add multi dataset mean and stddev
-  if (diag_script_info@multi_dataset_mean .eq. "y") then
-      ; Stddev
+  ; Add multi model mean and stddev
+  if (diag_script_info@multi_model_mean .eq. "y") then
+    ; Stddev
     res_stddev = True
     copy_VarMeta(res, res_stddev)
     res_stddev@gsnXYFillColors = "LightGrey"
     delete(res_stddev@xyLineColors)
 
     ; We don't want the line, so make it transparent.
-    res_stddev@xyLineColor     = -1
-    shading_plot  = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
-                               res_stddev)
+    res_stddev@xyLineColor = -1
+    shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
+                              res_stddev)
     overlay(plot, shading_plot)
-    ; mmm
+    ; MMM
     delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
     res@xyLineThicknesses = thicks_mmm
-    res@xyLineColors      = colors_mmm
-    res@xyDashPatterns    = dashes_mmm
+    res@xyLineColors = colors_mmm
+    res@xyDashPatterns = dashes_mmm
     mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
     overlay(plot, mmm)
   end if
@@ -1624,13 +1604,13 @@ begin
     diag_script_info@EMs_in_lg = True  ; Set default
   end if
   if (.not.diag_script_info@EMs_in_lg) then
-    idcs_datasetnames = UNIQ(dataset_info@dataset)
-    colors := colors(idcs_datasetnames)
-    dashes := dashes(idcs_datasetnames)
-    thicks := thicks(idcs_datasetnames)
-    annots := dataset_info@dataset(idcs_datasetnames)
+    idcs_modelnames = UNIQ(input_file_info@dataset)
+    colors := colors(idcs_modelnames)
+    dashes := dashes(idcs_modelnames)
+    thicks := thicks(idcs_modelnames)
+    annots := input_file_info@dataset(idcs_modelnames)
   end if
-  if (diag_script_info@multi_dataset_mean .eq. "y") then
+  if (diag_script_info@multi_model_mean .eq. "y") then
     lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
     lgres@lgDashIndexes     = array_append_record(dashes, dashes_mmm, 0)
     lgres@lgLineThicknesses = array_append_record(thicks, thicks_mmm, 0) + 0.5
@@ -1767,7 +1747,7 @@ function timeseries_station(wks_in[1],
 ;
 ; Source prototype
 ;    source[*][*]
-;    source!0 = dataset
+;    source!0 = model
 ;    source!1 = time or year
 ;
 ; Return value
@@ -1858,13 +1838,13 @@ begin
     resL = True
     xpos = 0.215
     ypos = 0.785
-    do mID = 0, dimsizes(data&dataset) - 1
+    do mID = 0, dimsizes(data&model) - 1
       resL@gsLineColor = res@xyLineColors(mID)
       resL@gsLineThicknessF = res@xyLineThicknesses(mID)
       resL@gsLineDashPattern = res@xyDashPatterns(mID)
       gsn_polyline_ndc(wks_out, (/xpos, xpos + 0.045/), \
                        (/ypos, ypos/), resL)
-      gsn_text_ndc(wks_out, data&dataset(mID), xpos + 0.055, ypos, resT)
+      gsn_text_ndc(wks_out, data&model(mID), xpos + 0.055, ypos, resT)
       ypos = ypos - 0.022
     end do
   end if
@@ -1924,7 +1904,7 @@ function cycle_plot(wks_in[1],
 ;
 ; Source prototype
 ;    source(*, *, 2)
-;    source!0 = dataset
+;    source!0 = model
 ;    source!1 = month or season
 ;    source!2 = statistic
 ;    source@legend_outside = draw a legend withing the plot or in a separate
@@ -2039,7 +2019,7 @@ begin
       res_stddev@gsFillOpacityF = 0.15
 
       ; Assign edges of polygons, second round reverted
-      data_new = new((/dimsizes(data&dataset), 2 * dimsizes(x_axis)/), float)
+      data_new = new((/dimsizes(data&model), 2 * dimsizes(x_axis)/), float)
       data_new(:, 0:dimsizes(x_axis) - 1) = data(:, :, 0)
       data_new(:, 0:dimsizes(x_axis) - 1) = data(:, :, 0) + data(:, :, 1)
       data_new(:, dimsizes(x_axis):) = data(:, ::-1, 0)
@@ -2047,18 +2027,18 @@ begin
       data_new&$coord_names(1)$(0:dimsizes(x_axis) - 1) = x_axis_num
       data_new&$coord_names(1)$(dimsizes(x_axis):) = x_axis_num(::-1)
 
-      ;: Loop over datasets
+      ;: Loop over models
       shading = new((/dimsizes(data(:, 0, 0))/), "graphic")
       do imod = 0, dimsizes(shading) - 1
         if ((any(data@plot_stddev.eq.annots(imod))).or.\
             (data@plot_stddev.eq."all").or.\
-            ((data@plot_stddev.eq."ref_dataset").and.\
-            (any(data@ref_dataset.eq.annots(imod))))) then
+            ((data@plot_stddev.eq."ref_model").and.\
+            (any(data@ref_model.eq.annots(imod))))) then
           if (dimsizes(dimsizes(colors)).eq.2) then
-            ; Assign dataset corresponding color (RGB arrays)
+            ; Assign model corresponding color (RGB arrays)
             res_stddev@gsFillColor = colors(imod, :)
           else
-            ; Assign dataset corresponding color (String arrays)
+            ; Assign model corresponding color (String arrays)
             res_stddev@gsFillColor = colors(imod)
           end if
           shading(imod) = \
@@ -2144,7 +2124,7 @@ function errorbar_plot(wks_in[1],
 ;    source(0, :) = mean
 ;    source(1, :) = standard deviation
 ;    source!0 = statistic
-;    source!1 = dataset
+;    source!1 = model
 ;
 ; Caveats
 ;
@@ -2197,14 +2177,14 @@ begin
   res@tiMainFontHeightF = 0.025
   res@tmXBMode = "Explicit"
   res@trXMinF = -1
-  res@trXMaxF = dimsizes(data&dataset)
-  res@tmXBValues = ispan(0, dimsizes(data&dataset) - 1, 1)
+  res@trXMaxF = dimsizes(data&model)
+  res@tmXBValues = ispan(0, dimsizes(data&model) - 1, 1)
   res@trYMinF = min(data(0, :) - data(1, :) / 2.)
   res@trYMinF = where(res@trXMinF.lt.0, 1.1 * res@trYMinF, 0.9 * res@trYMinF)
   res@trYMaxF = max(data(0, :) + data(1, :) / 2.)
   res@trYMaxF = where(res@trXMaxF.gt.0, 1.1 * res@trYMaxF, 0.9 * res@trYMaxF)
   res@tiMainString = varname + " - " + diag_script_info@region
-  res@tmXBLabels = data&dataset
+  res@tmXBLabels = data&model
   res@tmXBLabelAngleF = 45.
   res@tmXBLabelJust = "CenterRight"
 
@@ -2218,8 +2198,8 @@ begin
   ; Draw errorbars
   resL = True
   resL@gsLineThicknessF = 1.
-  error_bar = new(dimsizes(data&dataset), graphic)
-  do imod = 0, dimsizes(data&dataset) - 1
+  error_bar = new(dimsizes(data&model), graphic)
+  do imod = 0, dimsizes(data&model) - 1
     error_bar(imod) = \
       gsn_add_polyline(wks, plot, (/imod, imod/), \
                        (/data(0, imod) + data(1, imod) / 2, \

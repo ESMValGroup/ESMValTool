@@ -62,8 +62,8 @@ def get_path_to_mpl_style(style_file=None):
     if style_file is None:
         style_file = 'default.mplstyle'
     if not isinstance(style_file, str):
-        raise TypeError("Invalid input: {} is not ".format(style_file) +
-                        "a string")
+        raise TypeError("Invalid input: {} is not a "
+                        "string".format(style_file))
     base_dir = os.path.dirname(__file__)
     filepath = os.path.join(base_dir, 'styles_python', 'matplotlib',
                             style_file)
@@ -85,7 +85,7 @@ def get_dataset_style(dataset, style_file=None):
         with open(filepath, 'r') as infile:
             style = yaml.safe_load(infile)
     else:
-        raise IOError("Invalid input: could not open style file " +
+        raise IOError("Invalid input: could not open style file "
                       "'{}'".format(filepath))
     logger.debug("Using style file %s for dataset %s", filepath, dataset)
 
@@ -93,13 +93,13 @@ def get_dataset_style(dataset, style_file=None):
     default_dataset = 'default'
     options = ['color', 'dash', 'thick', 'mark', 'avgstd', 'facecolor']
     if default_dataset not in style:
-        raise IOError("Style file '{}' does not ".format(filepath) +
-                      "contain default information for unknown datasets")
+        raise IOError("Style file '{}' does not contain default information "
+                      "for unknown datasets".format(filepath))
     for option in options:
         if option not in style[default_dataset]:
-            raise IOError("Style file '{}' ".format(filepath) +
-                          "does not contain '{}' ".format(option) +
-                          "default information for unknown datasets")
+            raise IOError("Style file '{}' does not contain '{}' default "
+                          "information for unknown "
+                          "datasets".format(filepath, option))
 
     # Check if dataset is available
     if not style.get(dataset):
@@ -133,19 +133,19 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     Notes
     -----
-    Allowed keyword arguments::
+    Allowed keyword arguments:
 
-        mpl_style_file : str, optional
-            Path to the matplotlib style file.
-        dataset_style_file : str, optional
-            Path to the dataset styles file.
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
-        save_kwargs : dict, optional
-            Keyword arguments for saving the plot.
-        axes_functions : dict, optional
-            Arbitrary functions for axes, i.e.
-            `axes.function(*args, **kwargs)`.
+    * `mpl_style_file` (:obj:`str`):  Path to the matplotlib style file.
+
+    * `dataset_style_file` (:obj:`str`): Path to the dataset style file.
+
+    * `plot_kwargs` (`array-like`): Keyword arguments for the plot (e.g.
+      `label`, `makersize`, etc.).
+
+    * `save_kwargs` (:obj:`dict`): Keyword arguments for saving the plot.
+
+    * `axes_functions` (:obj:`dict`): Arbitrary functions for axes, i.e.
+      `axes.set_title('title')`.
 
     Parameters
     ----------
@@ -163,9 +163,8 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     Raises
     ------
     TypeError
-        - A non-valid keyword argument is given.
-        - `x_data`, `y_data`, `datasets` or (if given) `plot_kwargs` are not
-           array-like.
+        A non-valid keyword argument is given or `x_data`, `y_data`, `datasets`
+        or (if given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data`, `datasets` or `plot_kwargs` do not have the same
          size.
@@ -190,16 +189,20 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
-    fig, axes = plt.subplots()
+    (fig, axes) = plt.subplots()
 
     # Plot data
     for (idx, dataset) in enumerate(datasets):
         style = get_dataset_style(dataset, kwargs.get('dataset_styles_file'))
 
+        # Fix problem when plotting ps file
+        facecolor = style['color'] if filepath.endswith('ps') else \
+            style['facecolor']
+
         # Plot
         axes.plot(x_data[idx], y_data[idx],
                   markeredgecolor=style['color'],
-                  markerfacecolor=style['facecolor'],
+                  markerfacecolor=facecolor,
                   marker=style['mark'],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
@@ -218,17 +221,17 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     Notes
     -----
-    Allowed keyword arguments::
+    Allowed keyword arguments:
 
-        mpl_style_file : str, optional
-            Path to the matplotlib style file.
-        plot_kwargs : array-like, optional
-            Keyword arguments for the plot (e.g. `label`, `makersize`, etc.).
-        save_kwargs : dict, optional
-            Keyword arguments for saving the plot.
-        axes_functions : dict, optional
-            Arbitrary functions for axes, i.e.
-            `axes.function(*args, **kwargs)`.
+    * `mpl_style_file` (:obj:`str`):  Path to the matplotlib style file.
+
+    * `plot_kwargs` (`array-like`): Keyword arguments for the plot (e.g.
+      `label`, `makersize`, etc.).
+
+    * `save_kwargs` (:obj:`dict`): Keyword arguments for saving the plot.
+
+    * `axes_functions` (:obj:`dict`): Arbitrary functions for axes, i.e.
+      `axes.set_title('title')`.
 
     Parameters
     ----------
@@ -244,8 +247,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     Raises
     ------
     TypeError
-        - A non-valid keyword argument is given.
-        - `x_data`, `y_data` or (if given) `plot_kwargs` are not array-like.
+        A non-valid keyword argument is given or `x_data`, `y_data` or (if
+        given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data` or `plot_kwargs` do not have the same size.
 
@@ -268,10 +271,17 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     # Create matplotlib instances
     plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
-    fig, axes = plt.subplots()
+    (fig, axes) = plt.subplots()
 
     # Plot data
     for (idx, x_vals) in enumerate(x_data):
+        plot_kwargs = kwargs.get('plot_kwargs', empty_dict)[idx]
+
+        # Fix problem when plotting ps file
+        if 'markerfacecolor' in plot_kwargs and filepath.endswith('ps'):
+            plot_kwargs.pop('markerfacecolor')
+
+        # Plot
         axes.plot(x_vals, y_data[idx],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 

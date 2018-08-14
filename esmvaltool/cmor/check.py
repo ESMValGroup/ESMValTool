@@ -96,12 +96,12 @@ class CMORCheck(object):
         if logger is None:
             logger = logging.getLogger(__name__)
 
-        self._check_rank()
         self._check_var_metadata()
         self._check_fill_value()
         self._check_dim_names()
         self._check_coords()
         self._check_time_coord()
+        self._check_rank()
 
         self.report_warnings(logger)
         self.report_errors()
@@ -245,16 +245,26 @@ class CMORCheck(object):
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
         rank = 0
+        dimensions = []
         for coordinate in self._cmor_var.coordinates.values():
-            if coordinate.generic_level or not coordinate.value:
+            if coordinate.generic_level:
                 rank += 1
+            elif not coordinate.value:
+                try:
+                    for dim in self._cube.coord_dims(coordinate.standard_name):
+                        dimensions.append(dim)
+                except iris.exceptions.CoordinateNotFoundError:
+                    # Error reported at other stages
+                    pass
+        rank += len(set(dimensions))
+
         # Check number of dimension coords matches rank
         if self._cube.ndim != rank:
             self.report_error(self._does_msg, self._cube.var_name,
                               'match coordinate rank')
 
     def _check_dim_names(self):
-        for (axis, coordinate) in self._cmor_var.coordinates.items():
+        for (_, coordinate) in self._cmor_var.coordinates.items():
             if coordinate.generic_level:
                 continue
             else:
@@ -277,8 +287,7 @@ class CMORCheck(object):
 
             # Get coordinate var_name as it exists!
             try:
-                coord = self._cube.coord(
-                    var_name=var_name, dim_coords=True)
+                coord = self._cube.coord(var_name=var_name, dim_coords=True)
             except iris.exceptions.CoordinateNotFoundError:
                 continue
 
@@ -293,13 +302,12 @@ class CMORCheck(object):
 
             # Get coordinate var_name as it exists!
             try:
-                coord = self._cube.coord(
-                    var_name=var_name, dim_coords=True)
+                coord = self._cube.coord(var_name=var_name, dim_coords=True)
             except iris.exceptions.CoordinateNotFoundError:
                 continue
 
-            self._check_coord_monotonicity_and_direction(coordinate, coord,
-                                                         var_name)
+            self._check_coord_monotonicity_and_direction(
+                coordinate, coord, var_name)
 
     def _check_coord(self, cmor, coord, var_name):
         if coord.var_name == 'time':
@@ -536,8 +544,9 @@ def _get_cmor_checker(table,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
     if table not in CMOR_TABLES:
-        raise NotImplementedError("No CMOR checker implemented for table {}"
-                                  .format(table))
+        raise NotImplementedError("No CMOR checker implemented for table {}."
+                                  "\nThe following options are available: {}"
+                                  .format(table, ', '.join(CMOR_TABLES)))
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
@@ -558,7 +567,7 @@ def cmor_check_metadata(cube, cmor_table, mip, short_name):
 
     None of the checks at this step will force the cube to load the data
 
-    Parameters:
+    Parameters
     ----------
     cube: iris.cube.Cube
         Data cube to check
@@ -604,7 +613,7 @@ def cmor_check(cube, cmor_table, mip, short_name):
 
     Equivalent to calling cmor_check_metadata and cmor_check_data consecutively
 
-    Parameters:
+    Parameters
     ----------
     cube: iris.cube.Cube
         Data cube to check
