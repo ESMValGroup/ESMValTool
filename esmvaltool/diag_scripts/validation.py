@@ -8,27 +8,21 @@ It can optionally use a number of OBS, OBS4MIPS datasets.
 This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 """
 
-import os
 import logging
+import os
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            get_control_exper_obs,
-                                            apply_supermeans)
-from esmvaltool.preprocessor import (extract_region, extract_season)
-
-import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # noqa
 
-# try-except since codacy complains about import ordering
-try:
-    import matplotlib.pyplot as plt  # noqa
-    import iris  # noqa
-    import iris.analysis.maths as imath  # noqa
-    import iris.quickplot as qplt  # noqa
-except Exception as excp:
-    raise excp
+import iris
+import iris.analysis.maths as imath
+import iris.quickplot as qplt
+import matplotlib.pyplot as plt
+import numpy as np
 
+from esmvaltool.diag_scripts.shared import (
+    apply_supermeans, get_control_exper_obs, group_metadata, run_diagnostic)
+from esmvaltool.preprocessor import extract_region, extract_season
 
 logger = logging.getLogger(os.path.basename(__file__))
 
