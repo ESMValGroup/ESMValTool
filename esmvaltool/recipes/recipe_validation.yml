@@ -49,22 +49,22 @@ diagnostics:
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
-        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        analysis_type: lat_lon  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
         seasonal_analysis: False
-      zonal_mean_longitude:
+      zonal_mean:
         script: validation.py
         title: ""
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
-        analysis_type: zonal_mean_longitude  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        analysis_type: zonal_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
         seasonal_analysis: True
-      zonal_mean_latitude:
+      meridional_mean:
         script: validation.py
         title: ""
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
-        analysis_type: zonal_mean_latitude  # use any of: lat_lon, zonal_mean_latitude, zonal_mean_longitude, vertical_mean[not implemented]
+        analysis_type: meridional_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
         seasonal_analysis: True
 

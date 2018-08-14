@@ -143,11 +143,11 @@ def coordinate_collapse(data_set, cfg):
                 data_set.data, mask=(mask_cube.data == 0))
 
     # if zonal mean on LON
-    if analysis_type == 'zonal_mean_longitude':
+    if analysis_type == 'zonal_mean':
         data_set = data_set.collapsed('longitude', iris.analysis.MEAN)
 
     # if zonal mean on LAT
-    if analysis_type == 'zonal_mean_latitude':
+    if analysis_type == 'meridional_mean':
         data_set = data_set.collapsed('latitude', iris.analysis.MEAN)
 
     # if vertical mean
@@ -180,10 +180,10 @@ def plot_ctrl_exper(ctrl, exper, cfg, plot_key):
     """Call plotting functions and make plots depending on case"""
     if cfg['analysis_type'] == 'lat_lon':
         plot_latlon_cubes(ctrl, exper, cfg, plot_key)
-    elif cfg['analysis_type'] == 'zonal_mean_longitude':
+    elif cfg['analysis_type'] == 'zonal_mean':
         plot_info = [plot_key, 'latitude', 'alltime']
         plot_zonal_cubes(ctrl, exper, cfg, plot_info)
-    elif cfg['analysis_type'] == 'zonal_mean_latitude':
+    elif cfg['analysis_type'] == 'meridional_mean':
         plot_info = [plot_key, 'longitude', 'alltime']
         plot_zonal_cubes(ctrl, exper, cfg, plot_info)
 
@@ -191,11 +191,11 @@ def plot_ctrl_exper(ctrl, exper, cfg, plot_key):
 def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
     """Call plotting functions and make plots with seasons"""
     seasons = ['DJF', 'MAM', 'JJA', 'SON']
-    if cfg['analysis_type'] == 'zonal_mean_longitude':
+    if cfg['analysis_type'] == 'zonal_mean':
         for c_i, e_i, s_n in zip(ctrl_seasons, exper_seasons, seasons):
             plot_info = [plot_key, 'latitude', s_n]
             plot_zonal_cubes(c_i, e_i, cfg, plot_info)
-    elif cfg['analysis_type'] == 'zonal_mean_latitude':
+    elif cfg['analysis_type'] == 'meridional_mean':
         for c_i, e_i, s_n in zip(ctrl_seasons, exper_seasons, seasons):
             plot_info = [plot_key, 'longitude', s_n]
             plot_zonal_cubes(c_i, e_i, cfg, plot_info)
