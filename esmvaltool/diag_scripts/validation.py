@@ -19,10 +19,15 @@ from esmvaltool.preprocessor import (extract_region, extract_season)
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt  # noqa
-import iris  # noqa
-import iris.analysis.maths as imath  # noqa
-import iris.quickplot as qplt  # noqa
+
+# try-except since codacy complains about import ordering
+try:
+    import matplotlib.pyplot as plt  # noqa
+    import iris  # noqa
+    import iris.analysis.maths as imath  # noqa
+    import iris.quickplot as qplt  # noqa
+except:
+    raise Exception
 
 
 logger = logging.getLogger(os.path.basename(__file__))
