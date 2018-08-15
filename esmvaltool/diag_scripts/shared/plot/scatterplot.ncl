@@ -228,7 +228,7 @@ begin
     st(3) = res@tiYAxisString + " / " + res@tiXAxisString + " = " + \
       sprintf("%4.2f", avg(ypts) / avg(xpts))
 
-    ; Fraction of dataset points within factor 2 of the observations
+    ; Fraction of model points within factor 2 of the observations
     ratio = xpts / ypts
     fac2p = tofloat(num(ratio .ge. 0.5 .and. ratio .le. 2.0)) \
       / tofloat(num(.not. ismissing(ratio))) * 100

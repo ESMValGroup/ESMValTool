@@ -18,42 +18,36 @@ documentation:
 datasets:
 # Datasets which do not provide all variables are defined within each diag block block
 # MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
-  - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2004}
-  - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2004}
-  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble:  r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  # - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
+  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
 
 
 preprocessors:
   atmos:
-    extract_levels: false
     regrid:
       target_grid: 2x2
       scheme: linear
-    mask_fillvalues: false
-    multi_model_statistics: false
 
   land:
-    extract_levels: false
     regrid:
       target_grid: 2x2
       scheme: linear
-    mask_fillvalues: false
-    multi_model_statistics: false
 
   grading:
-    extract_levels: false
-    target_grid:    ref_dataset
-    regrid_scheme:  linear
-    mask_fillvalue: True
+    regrid:
+      target_grid: ref_dataset
+      regrid_scheme: linear
+    mask_fillvalues: True
 
 
 diagnostics:
@@ -72,9 +66,9 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        reference_dataset: CRU
         mip: Amon
         field: T2Ms
+        reference_dataset: CRU
         plot_units: degC
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -92,7 +86,6 @@ diagnostics:
         sort: true
         styleset: CMIP5
         region: Global
-        grid: 2deg
       mvi_nh: &mvi_nh
         <<: *mvi_glob
         region: Northern Hemisphere
@@ -368,9 +361,9 @@ diagnostics:
 
 
 
-#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # To be ported...
-#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
 #  DIAG_gradtasglob:
 #    description: Grading precalculations
