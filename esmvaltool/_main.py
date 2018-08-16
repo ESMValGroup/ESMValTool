@@ -85,6 +85,10 @@ def get_args():
         '--max-datasets',
         type=int,
         help='Try to limit the number of datasets used to MAX_DATASETS.')
+    parser.add_argument(
+        '--max-years',
+        type=int,
+        help='Limit the number of years to MAX_YEARS.')
     args = parser.parse_args()
     return args
 
@@ -127,6 +131,9 @@ def main(args):
 
     cfg['synda_download'] = args.synda_download
     cfg['max_datasets'] = args.max_datasets
+    cfg['max_years'] = args.max_years
+    if args.max_years < 1:
+        raise ValueError("--max-years should be larger than 0.")
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
@@ -193,8 +200,9 @@ def process_recipe(recipe_file, config_user):
     out_refs = glob.glob(
         os.path.join(config_user['output_dir'], '*', '*',
                      'references-acknowledgements.txt'))
-    logger.info("For the required references/acknowledgements of these "
-                "diagnostics see:\n%s", '\n'.join(out_refs))
+    logger.info(
+        "For the required references/acknowledgements of these "
+        "diagnostics see:\n%s", '\n'.join(out_refs))
 
 
 def run():
