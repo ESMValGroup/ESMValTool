@@ -13,6 +13,8 @@ from ._config import replace_tags
 from ._data_finder import (get_input_filelist, get_input_filename,
                            get_input_fx_filelist, get_output_file,
                            get_statistic_output_file)
+from ._provenance import (add_preprocessor_provenance, get_recipe_provenance,
+                          write_provenance)
 from ._recipe_checks import RecipeError
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
@@ -486,6 +488,7 @@ def _split_derive_profile(profile):
 def _get_single_preprocessor_task(variables,
                                   profile,
                                   config_user,
+                                  name,
                                   ancestors=None):
     """Create preprocessor tasks for a set of datasets."""
     # Configure preprocessor
@@ -508,6 +511,7 @@ def _get_single_preprocessor_task(variables,
         output_dir=output_dir,
         ancestors=ancestors,
         input_files=input_files,
+        name=name,
         order=order,
         debug=config_user['save_intermediary_cubes'])
 
@@ -517,6 +521,7 @@ def _get_single_preprocessor_task(variables,
 def _get_preprocessor_task(variables,
                            profiles,
                            config_user,
+                           task_name,
                            write_ncl_interface=False):
     """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
@@ -569,8 +574,12 @@ def _get_preprocessor_task(variables,
                     derive_input[short_name].append(variable)
 
         for derive_variables in derive_input.values():
-            task = _get_single_preprocessor_task(derive_variables,
-                                                 derive_profile, config_user)
+            derive_name = task_name + '_prepare_derive_input_' + derive_variables[0]['short_name']
+            task = _get_single_preprocessor_task(
+                derive_variables,
+                derive_profile,
+                config_user,
+                name=derive_name)
             derive_tasks.append(task)
 
     # Add CMOR info
@@ -580,7 +589,11 @@ def _get_preprocessor_task(variables,
     # Create (final) preprocessor task
     profile['extract_metadata'] = {'write_ncl': write_ncl_interface}
     task = _get_single_preprocessor_task(
-        variables, profile, config_user, ancestors=derive_tasks)
+        variables,
+        profile,
+        config_user,
+        ancestors=derive_tasks,
+        name=task_name)
 
     return task
 
@@ -605,6 +618,7 @@ class Recipe(object):
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
+        self.provenance = None
 
     @staticmethod
     def _need_ncl(raw_diagnostics):
@@ -804,6 +818,7 @@ class Recipe(object):
                     variables=diagnostic['preprocessor_output'][variable_name],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
+                    task_name=task_id,
                     write_ncl_interface=self._support_ncl)
                 tasks[task_id] = task
 
@@ -817,7 +832,8 @@ class Recipe(object):
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],
-                    settings=script_cfg['settings'])
+                    settings=script_cfg['settings'],
+                    name=task_id)
                 tasks[task_id] = task
 
         # Resolve diagnostic ancestors
@@ -834,5 +850,9 @@ class Recipe(object):
 
     def run(self):
         """Run all tasks in the recipe."""
+        self.provenance = get_recipe_provenance(self.documentation)
+        for task in get_independent_tasks(self.tasks):
+            add_preprocessor_provenance(task, self.provenance)
         run_tasks(
             self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
+        write_provenance(self.provenance, self._cfg['output_dir'])

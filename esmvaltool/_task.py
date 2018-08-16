@@ -160,12 +160,13 @@ def write_ncl_settings(settings, filename, mode='wt'):
 class BaseTask(object):
     """Base class for defining task classes"""
 
-    def __init__(self, settings, output_dir, ancestors=None):
+    def __init__(self, settings, output_dir, ancestors=None, name=''):
         """Initialize task."""
         self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
         self.output_dir = output_dir
         self.output_files = None
+        self.name = name
 
     def flatten(self):
         """Return a flattened set of all ancestor tasks and task itself."""
@@ -211,10 +212,13 @@ class DiagnosticError(Exception):
 class DiagnosticTask(BaseTask):
     """Task for running a diagnostic"""
 
-    def __init__(self, script, settings, output_dir, ancestors=None):
+    def __init__(self, script, settings, output_dir, ancestors=None, name=''):
         """Initialize"""
         super(DiagnosticTask, self).__init__(
-            settings=settings, output_dir=output_dir, ancestors=ancestors)
+            settings=settings,
+            output_dir=output_dir,
+            ancestors=ancestors,
+            name=name)
         self.script = script
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
