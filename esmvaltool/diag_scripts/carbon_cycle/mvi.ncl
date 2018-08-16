@@ -11,7 +11,6 @@
 ;    (IAV) and mean, and draws them in a 3D scatter plot.
 ;
 ; Required recipe attributes:
-;     grid: target grid for the regridding.
 ;     region: region to be averaged.
 ;     ref_dataset: reference for the MVI calculation.
 ;
@@ -23,23 +22,22 @@
 ;     is recommended to use the masked version (NBP, GPP and LAI, respectively)
 ;     in order to have a consistent land mask for all datasets.
 ;
-; Modification history
+; Modification history:
 ;   * 20180814_A-schl_ma: continued porting to v2.0
 ;   * 20180619_A-wenz_sa: adopted script to v2
 ;   * 20151130_A-laue_ax: moved call to write_references to beginning of code
-;   * 20151104_A-righ_ma: graphic part moved to external plot_scripts.
-;   * 20151102_A-righ_ma: replacing area functions with ESMValTool functions.
-;   * 201507??_A-wenz_sa: adapted to ESMValTool structure.
-;   * 201505??_A-anav_al: written.
+;   * 20151104_A-righ_ma: graphic part moved to external plot_scripts
+;   * 20151102_A-righ_ma: replacing area functions with ESMValTool functions
+;   * 201507??_A-wenz_sa: adapted to ESMValTool structure
+;   * 201505??_A-anav_al: written
 ;
 ; #############################################################################
 
 load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/regridding.ncl"
 load "./diag_scripts/shared/scaling.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
@@ -66,8 +64,8 @@ begin
 
   ; Write references (TODO)
   ; write_references(diag_script, \
-  ;                  (/"A_anav_al"/), \
-  ;                  (/"A_wenz_sa", "A_righ_ma", "A_schl_ma"/), \
+  ;                  (/"A-anav_al"/), \
+  ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
   ;                  (/"D_anav13jclim"/), \
   ;                  (/""/), \
   ;                  (/"P_embrace"/))
@@ -135,7 +133,7 @@ begin
                                   toint(input_file_info@end_year(idat)), \
                                   "average", "yearly", True)
 
-    ; Collect data in arrays
+    ; Collect data in global array
     if (.not. isvar("all_data_yearly")) then
       all_data_yearly = \
         new((/DIM_DAT, DIM_TIME, DIM_LAT, DIM_LON/), float)
