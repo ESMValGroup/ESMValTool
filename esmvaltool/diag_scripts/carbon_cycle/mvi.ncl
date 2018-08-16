@@ -266,7 +266,7 @@ begin
   regional_mvi&dataset = input_file_info@dataset
 
   ; Set type of area operation (flux vs. non-flux variables)
-  if (all_data_mean@units .eq. "kg m-2 s-1") then
+  if (all_data_mean@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
     sp_opt = "sum"
   else
     sp_opt = "average"
@@ -294,6 +294,7 @@ begin
       trend_tmp = convert_units(regional_trend, new_units)
     else
       trend_tmp = regional_trend
+      trend_tmp@units = "degC"
     end if
     if (input_file_info@mip(0) .eq. "Lmon") then
       regional_trend = trend_tmp

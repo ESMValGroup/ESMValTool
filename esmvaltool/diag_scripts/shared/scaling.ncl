@@ -161,6 +161,12 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
+    if (any(units_to.eq.(/"mm y-1", "mm yr-1", "mm/yr"/))) then
+      out = out * 24 * 3600 * 365
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
   end if
 
   if (units_from.eq."kg m-2") then
