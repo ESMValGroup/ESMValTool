@@ -50,38 +50,3 @@ class TestCo2(unittest.TestCase):
         cube = self.fix.fix_data(self.cube)
         self.assertEqual(cube.data[0], 28.966 / 44.0)
         self.assertEqual(cube.units, Unit('J'))
-
-
-class TestNbp(unittest.TestCase):
-    def setUp(self):
-        """Prepare temp folder for test"""
-        self.fix = nbp()
-        self.temp_folder = tempfile.mkdtemp()
-
-    def tearDown(self):
-        """Prepare temp folder for test"""
-        shutil.rmtree(self.temp_folder)
-
-    def test_fix_file(self):
-        """Test fix on nbp files to set correct missing and fill values"""
-        temp_handler, temp_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
-        os.close(temp_handler)
-        output_dir = os.path.join(self.temp_folder, 'fixed')
-
-        dataset = netCDF4.Dataset(temp_path, "w")
-        dataset.createDimension('dim', 1)
-        var = dataset.createVariable('nbp', float, dimensions=('dim',),
-                                     fill_value=1.0e20)
-        var.missing_value = 1.0e20
-        var[0] = 1.0
-        dataset.close()
-
-        new_file = self.fix.fix_file(temp_path, output_dir)
-
-        self.assertNotEqual(
-            os.path.realpath(temp_path), os.path.realpath(new_file))
-
-        dataset = netCDF4.Dataset(new_file)
-        var = dataset.variables['nbp']
-        self.assertEqual(var.missing_value, 1.0e33)
-        self.assertEqual(var._FillValue, 1.0e33)
