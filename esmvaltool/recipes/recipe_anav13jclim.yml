@@ -147,7 +147,7 @@ diagnostics:
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: BNU-ESM}
       - {dataset: CESM1-BGC}
-      # - {dataset: inmcm4}
+      - {dataset: inmcm4}
       - {dataset: MIROC-ESM}
       - {dataset: NorESM1-M}
     scripts:
