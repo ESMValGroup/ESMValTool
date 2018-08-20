@@ -1,3 +1,4 @@
+"""Tests for inmcm4 fixes."""
 import os
 import shutil
 import tempfile
@@ -33,18 +34,19 @@ class TestLai(unittest.TestCase):
 
 
 class TestNbp(unittest.TestCase):
+    """Tests for nbp."""
     def setUp(self):
-        """Prepare temp folder for test"""
+        """Prepare temp folder for test."""
         self.cube = Cube([1], var_name='nbp')
         self.fix = nbp()
         self.temp_folder = tempfile.mkdtemp()
 
     def tearDown(self):
-        """Delete temp folder"""
+        """Delete temp folder."""
         shutil.rmtree(self.temp_folder)
 
     def test_fix_file(self):
-        """Test fix on nbp files to set standard_name"""
+        """Test fix on nbp files to set standard_name."""
         temp_handler, temp_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
         os.close(temp_handler)
         output_dir = os.path.join(self.temp_folder, 'fixed')
