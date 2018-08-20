@@ -532,7 +532,7 @@ def _update_fx_settings(settings, variable, config_user):
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
 
-        # allow both sftlf and sftof
+        # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
             settings['mask_landseaice']['fx_files'].append(
                 fx_files_dict['sftgif'])

@@ -85,8 +85,33 @@ def _apply_fx_mask(fx_mask, var_data):
 
 
 def mask_landsea(cube, fx_files, mask_out):
-    """Apply a land/sea mask"""
-    # mask_out: is either 'land' or 'sea'
+    """
+    Mask out either land or sea
+
+    Function that masks out either land mass or seas (oceans, seas and lakes)
+
+    It uses dedicated fx files (sftlf or sftof) or, in their absence, it
+    applies a Natural Earth mask (land or ocean contours). Not that the
+    Natural Earth masks have different resolutions: 10m for land, and 50m
+    for seas; these are more than enough for ESMValTool puprpose.
+
+    Args:
+    -----
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "land" to mask out land mass or "sea" to mask out seas.
+
+    Returns:
+    --------
+    masked iris cube
+
+    """
     # Dict to store the Natural Earth masks
     cwd = os.path.dirname(__file__)
     # ne_10m_land is fast; ne_10m_ocean is very slow
@@ -137,24 +162,41 @@ def mask_landsea(cube, fx_files, mask_out):
 
 
 def mask_landseaice(cube, fx_files, mask_out):
-    """Apply a land/ice mask"""
-    # mask_out: is either 'land' or 'ice'
+    """
+    Mask out either landsea (combined) or ice
 
+    Function that masks out either landsea (land and seas) or ice (Antarctica
+    and Greenland and some wee glaciers). It uses dedicated fx files (sftgif).
+
+    Args:
+    -----
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "landsea" to mask out landsea or "ice" to mask out ice.
+
+    Returns:
+    --------
+    masked iris cube
+
+    """
     # sftgif is the only one so far
     if fx_files:
-        fx_cubes = {}
         for fx_file in fx_files:
-            fx_root = os.path.basename(fx_file).split('_')[0]
-            fx_cubes[fx_root] = iris.load_cube(fx_file)
+            fx_cube = iris.load_cube(fx_file)
 
-        if ('sftgif' in fx_cubes.keys() and
-                _check_dims(cube, fx_cubes['sftgif'])):
-            landice_mask = _get_fx_mask(fx_cubes['sftgif'].data, mask_out,
-                                        'sftgif')
-            cube.data = _apply_fx_mask(landice_mask, cube.data)
-            logger.debug("Applying landsea-ice mask: sftgif")
+            if _check_dims(cube, fx_cube):
+                landice_mask = _get_fx_mask(fx_cube.data, mask_out,
+                                            'sftgif')
+                cube.data = _apply_fx_mask(landice_mask, cube.data)
+                logger.debug("Applying landsea-ice mask: sftgif")
     else:
-        logger.error("Landsea-ice mask could not be found ")
+        logger.warning("Landsea-ice mask could not be found ")
 
     return cube
 
