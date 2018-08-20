@@ -57,6 +57,13 @@ def _get_fx_mask(fx_data, fx_option, mask_type):
         elif fx_option == 'sea':
             # Mask sea out
             inmask[fx_data >= 50.] = True
+    elif mask_type == 'sftgif':
+        if fx_option == 'ice':
+            # Mask ice out
+            inmask[fx_data > 50.] = True
+        elif fx_option == 'landsea':
+            # Mask landsea out
+            inmask[fx_data <= 50.] = True
 
     return inmask
 
@@ -125,6 +132,29 @@ def mask_landsea(cube, fx_files, mask_out):
         else:
             logger.error("Use of shapefiles with irregular grids not "
                          "yet implemented, land-sea mask not applied")
+
+    return cube
+
+
+def mask_landseaice(cube, fx_files, mask_out):
+    """Apply a land/ice mask"""
+    # mask_out: is either 'land' or 'ice'
+
+    # sftgif is the only one so far
+    if fx_files:
+        fx_cubes = {}
+        for fx_file in fx_files:
+            fx_root = os.path.basename(fx_file).split('_')[0]
+            fx_cubes[fx_root] = iris.load_cube(fx_file)
+
+        if ('sftgif' in fx_cubes.keys() and
+                _check_dims(cube, fx_cubes['sftgif'])):
+            landice_mask = _get_fx_mask(fx_cubes['sftgif'].data, mask_out,
+                                        'sftgif')
+            cube.data = _apply_fx_mask(landice_mask, cube.data)
+            logger.debug("Applying landsea-ice mask: sftgif")
+    else:
+        logger.error("Landsea-ice mask could not be found ")
 
     return cube
 
