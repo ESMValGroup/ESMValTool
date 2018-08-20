@@ -130,10 +130,13 @@ def main(args):
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     cfg['synda_download'] = args.synda_download
-    cfg['max_datasets'] = args.max_datasets
-    cfg['max_years'] = args.max_years
-    if args.max_years < 1:
-        raise ValueError("--max-years should be larger than 0.")
+    for limit in ('max_datasets', 'max_years'):
+        value = getattr(args, limit)
+        if value is not None:
+            if value < 1:
+                raise ValueError("--{} should be larger than 0.".format(
+                    limit.replace('_', '-')))
+            cfg[limit] = value
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
