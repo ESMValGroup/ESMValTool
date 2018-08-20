@@ -80,8 +80,8 @@ class nbp(Fix):
         """
         new_path = Fix.get_fixed_filepath(output_dir, filepath)
         cube = iris.load_cube(filepath)
-        cube.standard_name = 'surface_net_downward_mass_flux_of_carbon_' \
-                             'dioxide_expressed_as_carbon_due_to_all_land_' \
-                             'processes'
+        cube.standard_name = ('surface_net_downward_mass_flux_of_carbon_'
+                              'dioxide_expressed_as_carbon_due_to_all_land_'
+                              'processes')
         iris.save(cube, new_path)
         return new_path

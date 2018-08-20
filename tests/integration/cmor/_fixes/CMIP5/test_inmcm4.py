@@ -35,6 +35,7 @@ class TestLai(unittest.TestCase):
 
 class TestNbp(unittest.TestCase):
     """Tests for nbp."""
+
     def setUp(self):
         """Prepare temp folder for test."""
         self.cube = Cube([1], var_name='nbp')
