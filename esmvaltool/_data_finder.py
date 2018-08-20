@@ -241,10 +241,12 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
             dirs2 = []
             if isinstance(insts, list):
                 for j in range(len(insts)):
-                    dir2 = replace_tags(input_dir[_drs], variable, j=j, i=fx_ind)
+                    dir2 = replace_tags(
+                        input_dir[_drs], variable, j=j, i=fx_ind)
                     dirs2.append(dir2)
             else:
-                dir2 = replace_tags(input_dir[_drs], variable, j=None, i=fx_ind)
+                dir2 = replace_tags(
+                    input_dir[_drs], variable, j=None, i=fx_ind)
                 dirs2.append(dir2)
         else:
             raise KeyError(
@@ -374,8 +376,7 @@ def get_input_filelist(variable, rootpath, drs):
                         valid_dirs.append(dirname)
                         break
             else:
-                raise IOError(
-                    'Path {} does not exist'.format(part1))
+                raise IOError('Path {} does not exist'.format(part1))
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
