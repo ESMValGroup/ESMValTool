@@ -159,6 +159,7 @@ begin
   maxyear_ind = ind(ispan(start_year, end_year, 1) .eq. mean_maxyear)
 
   ; Array sizes
+  DIM_VAR = dimsizes(variables)
   DIM_DAT = dimsizes(input_file_info@dataset)
   DIM_DAT_ORIG = DIM_DAT
   DIM_TIME = dimsizes(all_years)
@@ -361,7 +362,7 @@ begin
   ; Write NETCDF
   ; ---------------------------------------------------------------------------
 
-  ;; Optional output to NetCDF
+  ; Optional output to NetCDF
   if (config_user_info@write_netcdf) then
     work_dir = config_user_info@work_dir
     system("mkdir -p " + work_dir)
@@ -382,67 +383,64 @@ begin
     delete([/new_path, ncdf_outfile/])
   end if
 
-;     ;; Seasonal cycle plot
-;     if (diag_script_info@seasonal_cycle_plot) then
+  ; ---------------------------------------------------------------------------
+  ; Plots
+  ; ---------------------------------------------------------------------------
 
-;         ;; Collect data
-;         data_arr = all_data_monthly
-;         data_arr@legend_outside = diag_script_info@legend_outside
+  ; Seasonal cycle plot
+  if (diag_script_info@seasonal_cycle_plot) then
 
-;         ;; Add option for PgC/month y-axis that is used in Anav2013 plots 7, 9
-;         if (isatt(diag_script_info, "anav_month")).and. \
-;                           diag_script_info@anav_month then
-;             data_arr = data_arr/12.
-;             data_arr@units = "PgC/month"
-;         end if
+    ; Collect data
+    data_arr = all_data_monthly
+    data_arr@legend_outside = diag_script_info@legend_outside
 
-;         ;; Draw plot
-;         outfile = plot_dir + diag_script + "_" + var0 + "_cycle_" + \
-;             region@name
-;         wks = gsn_open_wks(file_type, outfile)
-;         wks@legendfile = outfile + "_legend"
-;         data_arr@res_tiYAxisString = var0 + " [" + \
-;             format_units(data_arr@units) + "]"
-;         data_arr@res_tiMainString = region@name
-;         plot = cycle_plot(wks, data_arr, var0)
-;         draw(plot)
-;         frame(wks)
+    ; Add option for PgC/month y-axis that is used in Anav2013 plots 7 and 9
+    if (isatt(diag_script_info, "anav_month") .and. \
+        diag_script_info@anav_month) then
+      data_arr = data_arr / 12.0
+      data_arr@units = "PgC/month"
+    end if
 
-;         ;; Attach Metadata to plot
+    ; Draw plot
+    outfile = plot_dir + var0 + "_cycle_" + region@name
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    data_arr@res_tiYAxisString = var0 + " [" + \
+      format_units(data_arr@units) + "]"
+    data_arr@res_tiMainString = region@name
+    plot = cycle_plot(wks, data_arr, var0)
+    draw(plot)
+    frame(wks)
 
-;         ;alltags = array_append_record(tags, region@DM_tag, 0)
-;         ;alltags := array_append_record(alltags,\
-;         ;       (/"PT_seas", "ST_mean"/), 0)
-;         ;caption = "Seasonal Cycle plot for " + variables(0) + \
-;        ;           " over the period " + start_year + \
-;        ;           "-" + end_year + ", similar to Anav et al., 2013, Fig. 9."
-;       ;  id = diag_script
-;      ;   isize = DIM_DAT_ORIG * dimsizes(variables)
-;       ;  if (isatt(diag_script_info, "obsfile")) then
-;       ;      isize = isize + 1
-;       ;;  end if
-;        ; climofiles = new(isize, string)
-;        ; do n_var = 0, dimsizes(variables) - 1
-;        ;     do idat = 0, DIM_DAT_ORIG - 1
-;        ;         climofiles(n_var * DIM_DAT_ORIG + idat) = \
-;        ;                     interface_get_inpaths(idat) + "/" + \
-;        ;                     interface_get_infile(variables(n_var), field_types(n_var), idat)
-;        ;     end do
-;        ; end do
-;        ; if (isatt(diag_script_info, "obsfile")) then
-;        ;     climofiles(isize - 1) = diag_script_info@obsfile
-;        ; end if
-;       ;  contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+    ; ; Add meta data (TODO)
+    ; alltags = array_append_record(tags, region@DM_tag, 0)
+    ; alltags := array_append_record(alltags, (/"PT_seas", "ST_mean"/), 0)
+    ; caption = "Seasonal Cycle plot for " + var0 + " over the period " + \
+    ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, Fig. 9."
+    ; id = diag_script
+    ; isize = DIM_DAT_ORIG * DIM_VAR
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   isize = isize + 1
+    ; end if
+    ; climofiles = new(isize, string)
+    ; do n_var = 0, DIM_VAR - 1
+    ;   do idat = 0, DIM_DAT_ORIG - 1
+    ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
+    ;       interface_get_inpaths(idat) + "/" + \
+    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
+    ;   end do
+    ; end do
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   climofiles(isize - 1) = diag_script_info@obsfile
+    ; end if
+    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
+    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
+    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          contrib_authors)
 
-;         ;;NOTE: not implemented in v2 yet
-;     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, input_file_info@dataset, climofiles, diag_script, contrib_authors)
-
-;         ;delete([/alltags, caption, id, climofiles/])
-
-;         delete(plot)
-;         delete(wks)
-;         delete(data_arr)
-;     end if
+    ; delete([/alltags, caption, id, climofiles/])
+    delete([/plot, wks, data_arr/])
+  end if
 
 ;     ;; Error-bar plot
 ;     if (diag_script_info@errorbar_plot) then
@@ -497,12 +495,12 @@ begin
 ;         ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 6."
 ;         ;id = diag_script
 
-;         ;isize = DIM_DAT_ORIG * dimsizes(variables)
+;         ;isize = DIM_DAT_ORIG * DIM_VAR
 ;         ;if (isatt(diag_script_info, "obsfile")) then
 ;         ;    isize = isize + 1
 ;         ;end if
 ;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, dimsizes(variables) - 1
+;         ;do n_var = 0, DIM_VAR - 1
 ;        ;     do idat = 0, DIM_DAT_ORIG - 1
 ;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
 ;         ;                    interface_get_inpaths(idat) + "/" + \
@@ -581,12 +579,12 @@ begin
 ;         ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 17."
 ;         ;id = diag_script
 
-;         ;isize = DIM_DAT_ORIG * dimsizes(variables)
+;         ;isize = DIM_DAT_ORIG * DIM_VAR
 ;         ;if (isatt(diag_script_info, "obsfile")) then
 ;         ;    isize = isize + 1
 ;         ;end if
 ;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, dimsizes(variables) - 1
+;         ;do n_var = 0, DIM_VAR - 1
 ;         ;    do idat = 0, DIM_DAT_ORIG - 1
 ;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
 ;         ;                    interface_get_inpaths(idat) + "/" + \
@@ -772,12 +770,12 @@ begin
 ;         ;          ", similar to Anav et al., 2013, Fig." + fignum
 ;         ;id = diag_script
 
-;         ;isize = DIM_DAT_ORIG * dimsizes(variables)
+;         ;isize = DIM_DAT_ORIG * DIM_VAR
 ;         ;if (isatt(diag_script_info, "obsfile")) then
 ;         ;    isize = isize + 1
 ;         ;end if
 ;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, dimsizes(variables) - 1
+;         ;do n_var = 0, DIM_VAR - 1
 ;         ;    do idat = 0, DIM_DAT_ORIG - 1
 ;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
 ;         ;                    interface_get_inpaths(idat) + "/" + \

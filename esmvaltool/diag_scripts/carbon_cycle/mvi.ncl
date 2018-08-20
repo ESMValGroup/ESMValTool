@@ -102,6 +102,7 @@ begin
   all_years = ispan(start_year, end_year, 1)
 
   ; Array sizes
+  DIM_VAR = dimsizes(variables)
   DIM_DAT = dimsizes(input_file_info@dataset)
   DIM_TIME = dimsizes(all_years)
 
@@ -371,7 +372,7 @@ begin
   frame(wks)
 
   ; ; Add meta data (TODO)
-  ; climofiles = new(dimsizes(input_file_info@dataset) * dimsizes(variables), \
+  ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
   ;                  string)
   ; alltags = array_append_record(tags, region@DM_tag, 0)
   ; alltags := array_append_record(alltags, \
@@ -381,14 +382,14 @@ begin
   ;            " in x axis, its linear trend in y axis, and MVI." + \
   ;            " Like Anav et al. Fig 1 bottom"
   ; id = diag_script
-  ; do n_var = 0, dimsizes(variables) - 1
+  ; do n_var = 0, DIM_VAR - 1
   ;    do idat = 0, dimsizes(input_file_info@dataset) - 1
   ;     climofiles(n_var * dimsizes(input_file_info@dataset) + idat) = \
   ;       interface_get_inpaths(idat) + "/" + \
   ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
   ;   end do
   ; end do
-  ; contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma", "A_schl_ma"/)
+  ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
 
   ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
   ;          input_file_info@dataset, climofiles, diag_script, contrib_authors)
