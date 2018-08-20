@@ -21,7 +21,7 @@ datasets:
   - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  # - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
+  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
   # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
   - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
