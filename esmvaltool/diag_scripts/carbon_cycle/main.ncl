@@ -340,46 +340,47 @@ begin
     DIM_DAT = dims
   end if
 
-;     ;; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
-;     if (isatt(variable_info, "plot_units")) then
-;         all_data_yearly = convert_units(all_data_yearly, variable_info@plot_units)
-;         all_data_monthly = convert_units(all_data_monthly, variable_info@plot_units)
-;     end if
-;     ;; Don't know how to do this in var_defs without losing irreg grid info
-;     if (var0.eq."tos") then
-;         all_data_yearly = all_data_yearly - 273.15
-;         all_data_yearly@units = "degC"
-;         all_data_monthly = all_data_monthly - 273.15
-;         all_data_monthly@units = "degC"
-;     end if
+  ; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
+  if (isatt(variable_info, "plot_units")) then
+    all_data_yearly = convert_units(all_data_yearly, \
+                                    variable_info@plot_units)
+    all_data_monthly = convert_units(all_data_monthly, \
+                                     variable_info@plot_units)
+  end if
 
-;     ;; Optional output to NetCDF
-;     if (config_user_info@write_netcdf.eq."True") then
+  ; FIXME: necessary?
+  ; Don't know how to do this in var_defs without losing irreg grid info
+  ; if (var0 .eq. "tos") then
+  ;   all_yearly = all_yearly - 273.15
+  ;   all_yearly@units = "degC"
+  ;   all_monthly = all_monthly - 273.15
+  ;   all_monthly@units = "degC"
+  ; end if
 
-;       ;; Set path for saving processed data
-;       if (.not.isfilepresent(config_user_info@work_dir)) then
-;         system("mkdir -p " + config_user_info@work_dir)
-;       end if
+  ; ---------------------------------------------------------------------------
+  ; Write NETCDF
+  ; ---------------------------------------------------------------------------
 
-;         ;; Yearly data
-;         new_path = config_user_info@work_dir + \
-;                    basename(diag_script) + "_yearly_" + var0 + "_" + \
-;             region@name + ".nc"
-;         all_data_yearly@var = var0
-;         all_data_yearly@diag_script = diag_script
-;         all_data_yearly@ncdf = new_path
-;         ncdf_outfile = ncdf_write(all_data_yearly, new_path)
+  ;; Optional output to NetCDF
+  if (config_user_info@write_netcdf) then
+    work_dir = config_user_info@work_dir
+    system("mkdir -p " + work_dir)
 
-;         ;; Monthly data
-;         new_path = config_user_info@work_dir + \
-;                    basename(diag_script) + "_monthly_" + var0 + "_" + \
-;             region@name + ".nc"
-;         all_data_monthly@var = var0
-;         all_data_monthly@diag_script = diag_script
-;         all_data_monthly@ncdf = new_path
-;         ncdf_outfile = ncdf_write(all_data_monthly, new_path)
+    ; Yearly data
+    new_path = work_dir + "_yearly_" + var0 + "_" + region@name + ".nc"
+    all_data_yearly@var = var0
+    all_data_yearly@diag_script = diag_script
+    all_data_yearly@ncdf = new_path
+    ncdf_outfile = ncdf_write(all_data_yearly, new_path)
 
-;     end if
+    ; Monthly data
+    new_path = work_dir + "_monthly_" + var0 + "_" + region@name + ".nc"
+    all_data_monthly@var = var0
+    all_data_monthly@diag_script = diag_script
+    all_data_monthly@ncdf = new_path
+    ncdf_outfile = ncdf_write(all_data_monthly, new_path)
+    delete([/new_path, ncdf_outfile/])
+  end if
 
 ;     ;; Seasonal cycle plot
 ;     if (diag_script_info@seasonal_cycle_plot) then

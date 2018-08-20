@@ -22,7 +22,8 @@ datasets:
   - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
-  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
+  # Only r5i1pi, reading fx files fails (#577)
+  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r5i1p1, start_year: 1986, end_year: 2004}
   - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   # - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
@@ -143,7 +144,8 @@ diagnostics:
         plot_units: PgC y-1
         fx_files: [sftlf]
     additional_datasets:
-      # - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
+      # Datasat can be read but check_metadata fails because latitude and longitude are missing
+      # - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, field: T0M, start_year: 1959, end_year: 2015}
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: BNU-ESM}
       - {dataset: CESM1-BGC}
