@@ -233,7 +233,19 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(input_dir, variable, i=fx_ind)
         elif _drs in input_dir:
-            dir2 = replace_tags(input_dir[_drs], variable, i=fx_ind)
+            try:
+                insts = cmip5_dataset2inst(variable['dataset'])
+            except KeyError as msg:
+                logger.debug('CMIP5 dataset2inst: %s', msg)
+                insts = 0
+            dirs2 = []
+            if isinstance(insts, list):
+                for j in range(len(insts)):
+                    dir2 = replace_tags(input_dir[_drs], variable, j=j, i=fx_ind)
+                    dirs2.append(dir2)
+            else:
+                dir2 = replace_tags(input_dir[_drs], variable, j=None, i=fx_ind)
+                dirs2.append(dir2)
         else:
             raise KeyError(
                 'drs {} for {} project not specified in config-developer file'
