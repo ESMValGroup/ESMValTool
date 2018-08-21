@@ -33,6 +33,7 @@ class RecipeError(Exception):
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict"""
+
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map"""
 
@@ -598,9 +599,8 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
-        _update_fx_settings(settings=settings,
-                            variable=variable,
-                            config_user=config_user)
+        _update_fx_settings(
+            settings=settings, variable=variable, config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
@@ -832,6 +832,10 @@ class Recipe(object):
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
+            if 'end_year' in variable and 'max_years' in self._cfg:
+                variable['end_year'] = min(
+                    variable['end_year'],
+                    variable['start_year'] + self._cfg['max_years'] - 1)
             variables.append(variable)
 
         required_keys = {

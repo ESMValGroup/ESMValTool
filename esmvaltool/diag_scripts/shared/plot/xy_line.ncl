@@ -1520,20 +1520,20 @@ begin
 
   ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "dataset_info"
-    temp = dataset_info
+    ; Project_style evaluates metadata of variable "input_file_info"
+    temp = input_file_info
 
-    ; -> keep original "dataset_info" in "temp" and restore later
-    copy_VarMeta(dataset_info, temp)
-    delete(dataset_info)
+    ; -> keep original "input_file_info" in "temp" and restore later
+    copy_VarMeta(input_file_info, temp)
+    delete(input_file_info)
 
-    ; Use "dataset_info" to pass on attribute names
-    dataset_info = getvaratts(temp)
-    do i = 0, dimsizes(dataset_info) - 1
+    ; Use "input_file_info" to pass on attribute names
+    input_file_info = getvaratts(temp)
+    do i = 0, dimsizes(input_file_info) - 1
       ; Define all original attributes again, but empty
-      dataset_info@$dataset_info(i)$ = ""
+      input_file_info@$input_file_info(i)$ = ""
     end do
-    dataset_info@dataset = "model_mean"
+    input_file_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -1541,9 +1541,9 @@ begin
     thicks_mmm = project_style(diag_script_info, "thicks")
     annots_mmm = project_style(diag_script_info, "annots")
     avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(dataset_info)
-    dataset_info = temp  ; restore original "dataset_info"
-    copy_VarMeta(temp, dataset_info)
+    delete(input_file_info)
+    input_file_info = temp  ; restore original "input_file_info"
+    copy_VarMeta(temp, input_file_info)
     delete(temp)
   end if
 
@@ -1604,11 +1604,11 @@ begin
     diag_script_info@EMs_in_lg = True  ; Set default
   end if
   if (.not.diag_script_info@EMs_in_lg) then
-    idcs_modelnames = UNIQ(dataset_info@dataset)
+    idcs_modelnames = UNIQ(input_file_info@dataset)
     colors := colors(idcs_modelnames)
     dashes := dashes(idcs_modelnames)
     thicks := thicks(idcs_modelnames)
-    annots := dataset_info@dataset(idcs_modelnames)
+    annots := input_file_info@dataset(idcs_modelnames)
   end if
   if (diag_script_info@multi_model_mean .eq. "y") then
     lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)

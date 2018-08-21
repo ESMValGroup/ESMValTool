@@ -244,8 +244,9 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
         if "seaIce" in path_elements:
             old_dir = dir2
             dir2 = dir2.replace("seaIce", "ocean")
-            logger.info("Replaced path to fx files %s by %s for seaIce"
-                        "diagnostics", old_dir, dir2)
+            logger.info(
+                "Replaced path to fx files %s by %s for seaIce"
+                "diagnostics", old_dir, dir2)
 
         dirname_template = os.path.join(dir1, dir2)
         dirs.append(dirname_template)
@@ -352,11 +353,17 @@ def get_input_filelist(variable, rootpath, drs):
             if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
+                if 'latest' in list_versions:
+                    list_versions.insert(
+                        0, list_versions.pop(list_versions.index('latest')))
                 for version in list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
                         valid_dirs.append(dirname)
                         break
+            else:
+                raise IOError(
+                    'Path {} does not exist'.format(part1))
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
