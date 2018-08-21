@@ -229,7 +229,17 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
+
+    # Loop through fx_files types
     for fx_ind in range(len(variable['fx_files'])):
+
+        # Need to reassign the mip so we can find sftlf/of
+        variable = dict(variable)
+        if variable['fx_files'][fx_ind] == 'sftlf':
+            variable['mip'] = 'Amon'
+        elif variable['fx_files'][fx_ind] == 'sftof':
+            variable['mip'] = 'Omon'
+
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(input_dir, variable, i=fx_ind)
         elif _drs in input_dir:
