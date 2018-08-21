@@ -236,11 +236,11 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
         # Need to reassign the mip so we can find sftlf/of
         # make a copy of variable -> new_variable for this
         new_variable = dict(variable)
-        if new_variable['fx_files'][fx_ind] == 'sftlf' or \
-                new_variable['fx_files'][fx_ind] == 'areacella':
+        if (new_variable['fx_files'][fx_ind] == 'sftlf' or
+                new_variable['fx_files'][fx_ind] == 'areacella'):
             new_variable['mip'] = 'Amon'
-        elif new_variable['fx_files'][fx_ind] == 'sftof' or \
-                new_variable['fx_files'][fx_ind] == 'areacello':
+        elif (new_variable['fx_files'][fx_ind] == 'sftof' or
+              new_variable['fx_files'][fx_ind] == 'areacello'):
             new_variable['mip'] = 'Omon'
 
         if isinstance(input_dir, six.string_types):
