@@ -161,11 +161,11 @@ diagnostics:
         seasonal_cycle_plot: True
         anav_month: True
         errorbar_plot: True
-        mean_IAV_plot: False
+        mean_IAV_plot: True
         styleset: CMIP5
         region: Global
-        evolution_plot: False
-        # evolution_plot_volcanoes: True
+        evolution_plot: True
+        evolution_plot_volcanoes: True
         # evolution_plot_ref_model: GCP
         # obsname: GCP
       main_nh: &main_nh

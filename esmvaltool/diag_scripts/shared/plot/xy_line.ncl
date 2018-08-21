@@ -2124,7 +2124,7 @@ function errorbar_plot(wks_in[1],
 ;    source(0, :) = mean
 ;    source(1, :) = standard deviation
 ;    source!0 = statistic
-;    source!1 = model
+;    source!1 = dataset
 ;
 ; Caveats
 ;
@@ -2177,14 +2177,14 @@ begin
   res@tiMainFontHeightF = 0.025
   res@tmXBMode = "Explicit"
   res@trXMinF = -1
-  res@trXMaxF = dimsizes(data&model)
-  res@tmXBValues = ispan(0, dimsizes(data&model) - 1, 1)
+  res@trXMaxF = dimsizes(data&dataset)
+  res@tmXBValues = ispan(0, dimsizes(data&dataset) - 1, 1)
   res@trYMinF = min(data(0, :) - data(1, :) / 2.)
   res@trYMinF = where(res@trXMinF.lt.0, 1.1 * res@trYMinF, 0.9 * res@trYMinF)
   res@trYMaxF = max(data(0, :) + data(1, :) / 2.)
   res@trYMaxF = where(res@trXMaxF.gt.0, 1.1 * res@trYMaxF, 0.9 * res@trYMaxF)
   res@tiMainString = varname + " - " + diag_script_info@region
-  res@tmXBLabels = data&model
+  res@tmXBLabels = data&dataset
   res@tmXBLabelAngleF = 45.
   res@tmXBLabelJust = "CenterRight"
 
@@ -2198,8 +2198,8 @@ begin
   ; Draw errorbars
   resL = True
   resL@gsLineThicknessF = 1.
-  error_bar = new(dimsizes(data&model), graphic)
-  do imod = 0, dimsizes(data&model) - 1
+  error_bar = new(dimsizes(data&dataset), graphic)
+  do imod = 0, dimsizes(data&dataset) - 1
     error_bar(imod) = \
       gsn_add_polyline(wks, plot, (/imod, imod/), \
                        (/data(0, imod) + data(1, imod) / 2, \

@@ -387,10 +387,11 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
+  ; ---------------------------------------------------------------------------
   ; Seasonal cycle plot
-  if (diag_script_info@seasonal_cycle_plot) then
+  ; ---------------------------------------------------------------------------
 
-    ; Collect data
+  if (diag_script_info@seasonal_cycle_plot) then
     data_arr = all_data_monthly
     data_arr@legend_outside = diag_script_info@legend_outside
 
@@ -442,167 +443,152 @@ begin
     delete([/plot, wks, data_arr/])
   end if
 
-;     ;; Error-bar plot
-;     if (diag_script_info@errorbar_plot) then
+  ; ---------------------------------------------------------------------------
+  ; Error-bar plot
+  ; ---------------------------------------------------------------------------
 
-;         annual_mean = dim_avg_Wrap(all_data_yearly(:, minyear_ind:maxyear_ind, 0))
-;         annual_std = dim_stddev_Wrap(all_data_yearly(:, minyear_ind:maxyear_ind, 0))
+  if (diag_script_info@errorbar_plot) then
+    annual_mean = dim_avg_Wrap(all_data_yearly(:, minyear_ind:maxyear_ind, 0))
+    annual_std = dim_stddev_Wrap(all_data_yearly(:, \
+                                                 minyear_ind:maxyear_ind, 0))
 
-;         ;; Sort dataset in alphabetical order (observations at the beginning)
-;         if (isatt(diag_script_info, "sort")) then
-;             if (diag_script_info@sort) then
-;                 pid = sort_alphabetically(annual_mean&dataset, \
-;                                           ind(input_file_info@project.eq."OBS"), \
-;                                           "begin")
-;                 annual_mean_s = annual_mean(pid)
-;                 annual_mean_s&dataset = annual_mean&dataset(pid)
-;                 annual_mean = annual_mean_s
-;                 annual_std_s = annual_std(pid)
-;                 annual_std_s&dataset = annual_std&dataset(pid)
-;                 annual_std = annual_std_s
-;                 delete([/annual_mean_s, annual_std_s, pid/])
-;             end if
-;         end if
+    ; Sort dataset in alphabetical order (observations at the beginning)
+    if (isatt(diag_script_info, "sort")) then
+      if (diag_script_info@sort) then
+        pid = sort_alphabetically(annual_mean&dataset, \
+                                  ind(input_file_info@project .eq. "OBS"), \
+                                  "begin")
+        annual_mean_s = annual_mean(pid)
+        annual_mean_s&dataset = annual_mean&dataset(pid)
+        annual_mean = annual_mean_s
+        annual_std_s = annual_std(pid)
+        annual_std_s&dataset = annual_std&dataset(pid)
+        annual_std = annual_std_s
+        delete([/annual_mean_s, annual_std_s, pid/])
+      end if
+    end if
 
-;         ;; Collect data
-;         data_arr = new((/2, dimsizes(annual_mean)/), float)
-;         data_arr!0 = "statistic"
-;         data_arr!1 = "dataset"
-;         data_arr&statistic = (/"mean", "standard deviation"/)
-;         data_arr&dataset = annual_mean&dataset
-;         data_arr(0, :) = (/annual_mean/)
-;         data_arr(1, :) = (/annual_std/)
-;         data_arr@units = annual_mean@units
-;         delete(annual_mean)
-;         delete(annual_std)
+    ; Collect data
+    data_arr = new((/2, dimsizes(annual_mean)/), float)
+    data_arr!0 = "statistic"
+    data_arr!1 = "dataset"
+    data_arr&statistic = (/"mean", "standard deviation"/)
+    data_arr&dataset = annual_mean&dataset
+    data_arr(0, :) = (/annual_mean/)
+    data_arr(1, :) = (/annual_std/)
+    data_arr@units = annual_mean@units
+    delete([/annual_mean, annual_std/])
 
-;         ;; Draw plot
-;         outfile = plot_dir + diag_script + "_" + var0 + "_errorbar_" + \
-;             region@name
-;         wks = gsn_open_wks(file_type, outfile)
-;         data_arr@res_tiMainString = var0 + " - " + region@name
-;         plot = errorbar_plot(wks, data_arr, var0)
-;         draw(plot)
-;         frame(wks)
+    ; Draw plot
+    outfile = plot_dir + var0 + "_errorbar_" + region@name
+    wks = gsn_open_wks(file_type, outfile)
+    data_arr@res_tiMainString = var0 + " - " + region@name
+    plot = errorbar_plot(wks, data_arr, var0)
+    draw(plot)
+    frame(wks)
 
-;         ;; Attach Metadata to plot
+    ; ; Add meta data (TODO)
+    ; alltags = array_append_record(tags, region@DM_tag, 0)
+    ; alltags := array_append_record(alltags, (/"PT_errorbar", "ST_stddev", \
+    ;                                          "ST_mean"/),  0)
+    ; caption = "Errorbar plot for " + var0 + " over the period " + \
+    ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, Fig. 6."
+    ; id = diag_script
+    ; isize = DIM_DAT_ORIG * DIM_VAR
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   isize = isize + 1
+    ; end if
+    ; climofiles = new(isize, string)
+    ; do n_var = 0, DIM_VAR - 1
+    ;   do idat = 0, DIM_DAT_ORIG - 1
+    ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
+    ;       interface_get_inpaths(idat) + "/" + \
+    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
+    ;   end do
+    ; end do
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   climofiles(isize - 1) = diag_script_info@obsfile
+    ; end if
+    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
+    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
+    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          contrib_authors)
+    ; delete([/alltags, caption, id, climofiles/])
+    delete([/plot, wks, data_arr/])
+  end if
 
-;         ;alltags = array_append_record(tags, region@DM_tag, 0)
-;         ;alltags := array_append_record(alltags,\
-;         ;       (/"PT_errorbar", "ST_stddev", "ST_mean"/), 0)
-;         ;caption = "Errorbar plot for " + variables(0) + \
-;         ;          " over the period " + start_year + \
-;         ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 6."
-;         ;id = diag_script
+  ; ---------------------------------------------------------------------------
+  ; Mean, IAV plot
+  ; ---------------------------------------------------------------------------
 
-;         ;isize = DIM_DAT_ORIG * DIM_VAR
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;    isize = isize + 1
-;         ;end if
-;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, DIM_VAR - 1
-;        ;     do idat = 0, DIM_DAT_ORIG - 1
-;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
-;         ;                    interface_get_inpaths(idat) + "/" + \
-;         ;                    interface_get_infile(variables(n_var), field_types(n_var), idat)
-;         ;    end do
-;         ;end do
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;;    climofiles(isize - 1) = diag_script_info@obsfile
-;         ;end if
+  if (diag_script_info@mean_IAV_plot) then
 
-;         ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+    ; Prepare data
+    annual_mean = new((/DIM_DAT/), float)
+    annual_std = new((/DIM_DAT/), float)
+    annual_mean@_FillValue = all_data_yearly@_FillValue
+    annual_std@_FillValue = all_data_yearly@_FillValue
+    annual_mean@units = all_data_yearly@units
+    annual_std@units = all_data_yearly@units
 
-;         ;;NOTE: not implemented in v2 yet
-;     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, input_file_info@dataset, climofiles, diag_script, contrib_authors)
+    ; Loop over datasets and compute means and standard deviations
+    do idat = 0, DIM_DAT - 1
+      annual_mean(idat) = dim_avg( \
+        all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
+      annual_std(idat) = dim_stddev( \
+        all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
+    end do
 
-;         ;delete([/alltags, caption, id, climofiles/])
+    ; Collect data
+    data_arr = new((/2, DIM_DAT/), float)
+    data_arr!0 = "statistic"
+    data_arr!1 = "dataset"
+    data_arr&statistic = (/"mean", "interannual variability"/)
+    data_arr&dataset = input_file_info@dataset
+    data_arr(0, :) = (/annual_mean/)
+    data_arr(1, :) = (/annual_std/)
+    data_arr@units = (/annual_mean@units, annual_std@units/)
+    data_arr@legend_outside = diag_script_info@legend_outside
+    delete([/annual_mean, annual_std/])
 
-;         delete(plot)
-;         delete(wks)
-;         delete(data_arr)
+    ; Draw plot
+    outfile = plot_dir + var0 + "_scatter_" + region@name
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    data_arr@res_tiMainString = var0 + " - " + region@name
+    plot = scatterplot_markers(wks, data_arr, var0)
+    draw(plot)
+    frame(wks)
 
-;     end if
-
-;     ;; Mean, IAV plot
-;     if (diag_script_info@mean_IAV_plot) then
-
-;         ;; Prepare data
-;         annual_mean            = new((/DIM_DAT/), float)
-;         annual_std             = new((/DIM_DAT/), float)
-;         annual_mean@_FillValue = all_data_yearly@_FillValue
-;         annual_std@_FillValue  = all_data_yearly@_FillValue
-;         annual_mean@units      = all_data_yearly@units
-;         annual_std@units       = all_data_yearly@units
-
-;         ;; Loop over datasets
-;         do idat = 0, DIM_DAT - 1
-;             ;; Compute the spatial mean over time
-;             annual_mean(idat) = dim_avg(all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
-;             ;; Compute the std over time for the region
-;             annual_std(idat) = dim_stddev(all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
-;         end do
-
-;         ;; Collect data
-;         data_arr = new((/2, DIM_DAT/), float)
-;         data_arr!0 = "statistic"
-;         data_arr!1 = "dataset"
-;         data_arr&statistic = (/"mean", "interannual variability"/)
-;         data_arr&dataset = input_file_info@dataset
-;         data_arr(0, :) = (/annual_mean/)
-;         data_arr(1, :) = (/annual_std/)
-;         data_arr@units = (/annual_mean@units, annual_std@units/)
-;         data_arr@legend_outside = diag_script_info@legend_outside
-;         delete(annual_mean)
-;         delete(annual_std)
-
-;         ;; Draw plot
-;         outfile = plot_dir + diag_script + "_" + var0 + "_scatter_" + \
-;             region@name
-;         wks = gsn_open_wks(file_type, outfile)
-;         wks@legendfile = outfile + "_legend"
-;         data_arr@res_tiMainString = var0 + " - " + region@name
-;         plot = scatterplot_markers(wks, data_arr, var0)
-;         draw(plot)
-;         frame(wks)
-;         delete(plot)
-;         delete(wks)
-;         delete(data_arr)
-
-;         ;; Attach Metadata to plot
-
-;         ;alltags = array_append_record(tags, region@DM_tag, 0)
-;         ;alltags := array_append_record(alltags,\
-;         ;       (/"PT_scatter", "ST_mean"/), 0)
-;         ;caption = "Scatterplot for " + variables(0) + \
-;         ;          " over the period " + start_year + \
-;         ;          "-" + end_year + ", similar to Anav et al., 2013, Fig. 17."
-;         ;id = diag_script
-
-;         ;isize = DIM_DAT_ORIG * DIM_VAR
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;    isize = isize + 1
-;         ;end if
-;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, DIM_VAR - 1
-;         ;    do idat = 0, DIM_DAT_ORIG - 1
-;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
-;         ;                    interface_get_inpaths(idat) + "/" + \
-;         ;                    interface_get_infile(variables(n_var), field_types(n_var), idat)
-;         ;    end do
-;         ;end do
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;    climofiles(isize - 1) = diag_script_info@obsfile
-;         ;;end if
-
-;         ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
-
-;         ;;NOTE: not implemented in v2 yet
-;     ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, input_file_info@dataset, climofiles, diag_script, contrib_authors)
-
-;         ;delete([/alltags, caption, id, climofiles/])
-
-;     end if
+    ; ; Add meta data (TODO)
+    ; alltags = array_append_record(tags, region@DM_tag, 0)
+    ; alltags := array_append_record(alltags, (/"PT_scatter", "ST_mean"/), 0)
+    ; caption = "Scatterplot for " + var0 + " over the period " + \
+    ;   start_year + "-" + end_year + \
+    ;   ", similar to Anav et al., 2013, Fig. 17."
+    ; id = diag_script
+    ; isize = DIM_DAT_ORIG * DIM_VAR
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   isize = isize + 1
+    ; end if
+    ; climofiles = new(isize, string)
+    ; do n_var = 0, DIM_VAR - 1
+    ;   do idat = 0, DIM_DAT_ORIG - 1
+    ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
+    ;       interface_get_inpaths(idat) + "/" + \
+    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
+    ;   end do
+    ; end do
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   climofiles(isize - 1) = diag_script_info@obsfile
+    ; end if
+    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
+    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
+    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          contrib_authors)
+    ; delete([/alltags, caption, id, climofiles/])
+    delete([/plot, wks, data_arr/])
+  end if
 
 ;     ;; Time evolution plot
 
