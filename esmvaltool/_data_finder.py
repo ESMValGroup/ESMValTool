@@ -234,29 +234,23 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     for fx_ind in range(len(variable['fx_files'])):
 
         # Need to reassign the mip so we can find sftlf/of
-        variable = dict(variable)
-        if variable['fx_files'][fx_ind] == 'sftlf':
-            variable['mip'] = 'Amon'
-        elif variable['fx_files'][fx_ind] == 'sftof':
-            variable['mip'] = 'Omon'
+        # make a copy of variable -> new_variable for this
+        new_variable = dict(variable)
+        if new_variable['fx_files'][fx_ind] == 'sftlf' or \
+                new_variable['fx_files'][fx_ind] == 'areacella':
+            new_variable['mip'] = 'Amon'
+        elif new_variable['fx_files'][fx_ind] == 'sftof' or \
+                new_variable['fx_files'][fx_ind] == 'areacello':
+            new_variable['mip'] = 'Omon'
 
         if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(input_dir, variable, i=fx_ind)
+            dir2 = replace_tags(input_dir, new_variable, i=fx_ind)
         elif _drs in input_dir:
-            dir2 = replace_tags(input_dir[_drs], variable, i=fx_ind)
+            dir2 = replace_tags(input_dir[_drs], new_variable, i=fx_ind)
         else:
             raise KeyError(
                 'drs {} for {} project not specified in config-developer file'
                 .format(_drs, project))
-
-        # Replace seaIce realm by ocean realm
-        path_elements = dir2.split(os.path.sep)
-        if "seaIce" in path_elements:
-            old_dir = dir2
-            dir2 = dir2.replace("seaIce", "ocean")
-            logger.info(
-                "Replaced path to fx files %s by %s for seaIce"
-                "diagnostics", old_dir, dir2)
 
         dirname_template = os.path.join(dir1, dir2)
         dirs.append(dirname_template)
@@ -372,8 +366,7 @@ def get_input_filelist(variable, rootpath, drs):
                         valid_dirs.append(dirname)
                         break
             else:
-                raise IOError(
-                    'Path {} does not exist'.format(part1))
+                raise IOError('Path {} does not exist'.format(part1))
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
