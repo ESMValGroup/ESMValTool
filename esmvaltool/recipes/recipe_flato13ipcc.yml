@@ -65,17 +65,13 @@ diagnostics:
       - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
       - {dataset: MIROC5,        exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+      - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1800, end_year: 1949}
+      - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
       - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 2015, end_year: 2164}
       - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
       # - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
-      # Because of issues in the date format, these models raise an
-      # AttributeError: 'NoneType' object has no attribute 'units'
-      # Can be solved by removing lines 104-106 of ESMValTool/esmvaltool/cmor/_fixes/CMIP5/MIROC_ESM.py,
-      # but leads to failing tests
-      # - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1800, end_year: 1949}
-      # - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
     scripts:
       ecs:
         script: climate_metrics/ecs.py
@@ -114,17 +110,13 @@ diagnostics:
       - {dataset: IPSL-CM5B-LR,  exp: historical,  start_year: 1961, end_year: 1990}
       - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
       - {dataset: MIROC5,        exp: historical,  start_year: 1961, end_year: 1990}
+      - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1800, end_year: 1949}
+      - {dataset: MIROC-ESM,     exp: historical,  start_year: 1961, end_year: 1990}
       - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 2015, end_year: 2164}
       - {dataset: MPI-ESM-LR,    exp: historical,  start_year: 1961, end_year: 1990}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
       # - {dataset: ACCESS1-0,     exp: historical,  start_year: 1961, end_year: 1990}
-      # Because of issues in the date format, these models raise an
-      # AttributeError: 'NoneType' object has no attribute 'units'
-      # Can be solved by removing lines 104-106 of ESMValTool/esmvaltool/cmor/_fixes/CMIP5/MIROC_ESM.py,
-      # but leads to failing tests
-      # - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1800, end_year: 1949}
-      # - {dataset: MIROC-ESM,     exp: historical,  start_year: 1961, end_year: 1990}
     scripts:
       fig09-42a:
         script: ipcc_ar5/ch09_fig09_42a.py
