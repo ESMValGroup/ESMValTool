@@ -334,6 +334,11 @@ class CMORCheck(object):
         if not coord.is_monotonic():
             self.report_error(self._is_msg, var_name, 'monotonic')
 
+        if len(coord.points) < 2:
+            self.report_warning("Coordinate {} contains less than two values, "
+                                "skipping direction check".format(var_name))
+            return
+
         if cmor.stored_direction:
             if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
