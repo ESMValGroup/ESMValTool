@@ -379,19 +379,23 @@ def get_input_filelist(variable, rootpath, drs):
                         valid_dirs.append(dirname)
                         break
             else:
-                raise IOError('Path {} does not exist'.format(part1))
+                # demote to warning so multi-institutes will not fail
+                logger.warning('Path %s does not exist', part1)
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
 
-    for dir_name in valid_dirs:
-        # Find files
-        files = find_files(dir_name, filename_glob)
+    if valid_dirs:
+        for dir_name in valid_dirs:
+            # Find files
+            files = find_files(dir_name, filename_glob)
 
-        # Select files within the required time interval
-        files = select_files(files, variable['start_year'],
-                             variable['end_year'])
-        all_files.extend(files)
+            # Select files within the required time interval
+            files = select_files(files, variable['start_year'],
+                                 variable['end_year'])
+            all_files.extend(files)
+    else:
+        all_files = []
 
     return all_files
 
