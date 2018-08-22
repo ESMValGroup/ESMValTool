@@ -443,7 +443,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
                 # Grab the first file only; fx vars should have a single file
                 fx_files[variable['fx_files'][fx_idx]] = [
                     f_x for f_x in fx_file_list if f_x
-                ][0]
+                ][0][0]
         else:
             # No files
             fx_files[variable['fx_files'][fx_idx]] = None
