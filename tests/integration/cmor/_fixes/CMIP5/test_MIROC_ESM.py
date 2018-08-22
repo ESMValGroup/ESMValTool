@@ -55,21 +55,6 @@ class TestAll(unittest.TestCase):
 
         self.fix = allvars()
 
-    def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
-        time = cube.coord('time')
-        self.assertEqual(time.units.origin, 'days since 1849-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'gregorian')
-
-    def test_fix_metadata_1_1(self):
-        time = self.cube.coord('time')
-        time.units = Unit("days since 1-1-1", time.units.calendar)
-        cube = self.fix.fix_metadata(self.cube)
-
-        time = cube.coord('time')
-        self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'gregorian')
-
     def test_fix_metadata_plev(self):
         time = self.cube.coord('time')
         time.units = Unit("days since 1-1-1", time.units.calendar)
