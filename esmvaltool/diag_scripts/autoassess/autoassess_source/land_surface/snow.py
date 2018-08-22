@@ -25,6 +25,8 @@ def land_swe_top(run):
     SUPERMEAN_DATA_DIR = os.path.join(run['data_root'],
                                       run['runid'],
                                       run['_area'] + '_supermeans')
+    print('SUPERMEAN', SUPERMEAN_DATA_DIR)
+    # create: /group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu/landsurface/recipe_autoassess_landsurface_20180821_161123/work/aa_strato/autoassess_strato_test_1/MPI-ESM-LR/land_surface_supermeans
 
     snow_seasons = ['son', 'djf', 'mam']
 

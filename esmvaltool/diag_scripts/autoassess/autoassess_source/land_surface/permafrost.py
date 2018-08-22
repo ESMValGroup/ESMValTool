@@ -14,7 +14,7 @@ import iris.util as ut
 from .loaddata import load_run_ss
 from .supermeans import get_supermean
 
-import permafrost_koven_sites
+from . import permafrost_koven_sites
 
 
 # main permafrost subroutine
