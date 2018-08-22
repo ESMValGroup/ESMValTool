@@ -230,11 +230,22 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     input_dir = cfg['fx_dir']
     dirs = []
     for fx_ind in range(len(variable['fx_files'])):
+
+        # Need to reassign the mip so we can find sftlf/of
+        # make a copy of variable -> new_variable for this
+        new_variable = dict(variable)
+        if (new_variable['fx_files'][fx_ind] == 'sftlf'
+                or new_variable['fx_files'][fx_ind] == 'areacella'):
+            new_variable['mip'] = 'Amon'
+        elif (new_variable['fx_files'][fx_ind] == 'sftof'
+              or new_variable['fx_files'][fx_ind] == 'areacello'):
+            new_variable['mip'] = 'Omon'
+
         if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(input_dir, variable, i=fx_ind)
+            dir2 = replace_tags(input_dir, new_variable, i=fx_ind)
         elif _drs in input_dir:
             try:
-                insts = cmip5_dataset2inst(variable['dataset'])
+                insts = cmip5_dataset2inst(new_variable['dataset'])
             except KeyError as msg:
                 logger.debug('CMIP5 dataset2inst: %s', msg)
                 insts = 0
@@ -242,11 +253,11 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
             if isinstance(insts, list):
                 for j in range(len(insts)):
                     dir2 = replace_tags(
-                        input_dir[_drs], variable, j=j, i=fx_ind)
+                        input_dir[_drs], new_variable, j=j, i=fx_ind)
                     dirs2.append(dir2)
             else:
                 dir2 = replace_tags(
-                    input_dir[_drs], variable, j=None, i=fx_ind)
+                    input_dir[_drs], new_variable, j=None, i=fx_ind)
                 dirs2.append(dir2)
         else:
             raise KeyError(
@@ -387,18 +398,15 @@ def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
     fx_files = {}
+    dirnames = []
 
-    for j, dirname_template in zip(
-            range(len(dirname_templates)), dirname_templates):
+    for dirname_template in dirname_templates:
         # Find latest version if required
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
             # root part1 could not exist at all
-            if not os.path.exists(part1):
-                fx_files[variable['fx_files'][j]] = None
-                dirname = None
-            else:
+            if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
                 if 'latest' in list_versions:
@@ -413,27 +421,30 @@ def get_input_fx_filelist(variable, rootpath, drs):
                         dirname = os.path.join(part1, version, part2)
                         if os.path.isdir(dirname):
                             break
+            else:
+                dirname = None
         else:
             dirname = dirname_template
+        dirnames.append(dirname)
 
-        if dirname:
+    for fx_idx in range(len(variable['fx_files'])):
+        if dirnames:
             # Set the filename glob
-            # try/except because we could have two
-            # institutions that one may not have the correct file
-            try:
-                filename_glob = _get_fx_filename(variable, drs, j)
-            except IndexError:
-                j = j - 1
-                filename_glob = _get_fx_filename(variable, drs, j)
+            filename_glob = _get_fx_filename(variable, drs, fx_idx)
 
             # Find files
-            fx_file_list = find_files(dirname, filename_glob)
+            fx_file_list = [
+                find_files(dir_name, filename_glob) for dir_name in dirnames
+                if dir_name
+            ]
             if fx_file_list:
                 # Grab the first file only; fx vars should have a single file
-                fx_files[variable['fx_files'][j]] = fx_file_list[0]
-            else:
-                # No files
-                fx_files[variable['fx_files'][j]] = None
+                fx_files[variable['fx_files'][fx_idx]] = [
+                    f_x for f_x in fx_file_list if f_x
+                ][0]
+        else:
+            # No files
+            fx_files[variable['fx_files'][fx_idx]] = None
 
     return fx_files
 
