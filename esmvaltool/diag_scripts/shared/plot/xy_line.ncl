@@ -13,6 +13,7 @@
 ;    function timeseries_station
 ;    function cycle_plot
 ;    function errorbar_plot
+;    function evolution_base_plot
 ;
 ; #############################################################################
 
@@ -2207,6 +2208,247 @@ begin
     str = "bar" + imod
     plot@$str$ = error_bar(imod)
   end do
+
+  leave_msg(scriptname, funcname)
+  return(plot)
+
+end
+
+; #############################################################################
+undef("evolution_base_plot")
+function evolution_base_plot(wks_in[1],
+                             source,
+                             varname[1] : string,
+                             anomaly)
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;    anomaly: anomaly plot or not - used in axis labels
+;
+; Source prototype
+;    source(5, *)
+;    source!0 = reference dataset
+;    source!1 = multi model mean
+;    source!2 = multi model min
+;    source!3 = multi model max
+;    source!4 = years
+;    source!5 = multi model std
+;    source@legend_outside = draw a legend within the plot or in a separate
+;                            file
+;   source@dim_Mod = number of models
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Draw an evolution plot from yearly means, including multi-model mean
+;    and uncertainty
+;
+; Caveats
+;
+; Modification history
+;    20180822_A-schl_ma: ported to v2.0
+;    20170308_A-gier_be: written.
+;
+local funcname, scriptname, verbosity, wks_out, wks_in, data, source, res, \
+  atts, base, varname, multi_model, refmean
+
+begin
+
+  funcname = "evolution_plot"
+  scriptname = "plot_scripts/ncl/xy_line.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Get data, either directly or via netCDF file
+  if(typeof(source) .eq. "string") then
+    data = ncdf_read(source, varname)
+  else
+    data = source
+    copy_VarMeta(source, data)
+  end if
+
+  ; Retrieve basic metadata from data
+  defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
+  if (any(varname .eq. defaults)) then
+    var = att2var(data, "var")
+    diag_script = att2var(data, "diag_script")
+  else
+    var = varname
+  end if
+  if (.not.isatt(diag_script_info, "styleset")) then
+    diag_script_info@styleset = "DEFAULT"
+  end if
+
+  ; Check if a valid wks has been provided, otherwise invoke default
+  wks_out = get_wks(wks_in, diag_script, var)
+
+  ; Calculation for confidence polygons
+  n_val = 17
+  new_arr2 = new((/n_val, 2*dimsizes(data(4, :))/), float)
+  new_arr2!0 = "intervals"
+  new_arr2&intervals = fspan(0.9, 0.1, n_val)
+  new_arr2!1 = "dtime"
+  new_arr2&dtime = array_append_record(data(4, :), data(4, ::-1), 0)
+  do n = 0, n_val - 1
+    do time_i = 0, (dimsizes(data(4, :)) - 1)
+      t_var = cdft_t(0.5 - new_arr2&intervals(n) / 2, (data@dim_Mod - 1))
+
+      ; Offset from mean, use symmetry of t-distribution
+      y_off = t_var * data(5, time_i) / sqrt(data@dim_Mod - 1)
+      new_arr2(n, time_i) = data(1, time_i) - y_off
+      new_arr2(n, dimsizes(new_arr2&dtime) - 1 - time_i) = \
+        data(1, time_i) + y_off
+    end do
+  end do
+
+  ; Define default plot resources
+  res = True
+  res@gsnDraw = False
+  res@gsnFrame = False
+  res@gsnMaximize = True
+  res@gsnPaperOrientation = "landscape"
+  res@xyLineThicknesses = (/2, 2/)
+  res@xyLineColors = (/"black", "white"/)
+  res@xyDashPatterns = (/0.0, 0.0/)            ; make all lines solid
+  ; res@xyMonoDashPattern = False
+  ; res@xyDashPatterns = dashes
+
+  coord_names = getvardims(data)
+  ; x_axis = data&$coord_names(1)$
+  x_axis_num = data(4, :)
+  ; x_axis_num = ispan(1, dimsizes(data&$coord_names(1)$), 1)
+
+  res@trXMinF = min(x_axis_num)
+  res@trXMaxF = max(x_axis_num)
+  ymax = max((/max(data(3, :)), max(data(0, :))/))
+  ymin = min((/min(data(2, :)), min(data(0, :))/))
+  res@trYMinF = ymin - 0.05 * (ymax - ymin)
+  res@trYMaxF = ymax + 0.15 * (ymax - ymin)
+  res@tiMainFontHeightF = 0.025
+  res@vpHeightF = 0.4
+  res@vpWidthF = 0.8
+  res@tmXBMode = "Explicit"
+  res@tmXTOn = False
+  res@tiXAxisString = "Time [years]"        ; x-axis should always be time
+
+  ; Axis title
+  if (anomaly) then
+    res@tiYAxisString = varname + " Anomaly [" + data@units + "]"
+  else
+    res@tiYAxisString = varname + " [" + data@units + "]"
+  end if
+
+  ; After overlaying the plots, add titles and legend manually
+  res_text = True                           ; text mods desired
+  res_text@txFontHeightF = 0.01             ; change text size
+  res_text@txJust = "CenterLeft"            ; text justification
+  res_lines = True                          ; polyline mods desired
+  res_lines@gsLineDashPattern = 0.0         ; solid line
+  res_lines@gsLineThicknessF  = 5.0         ; line thicker
+  res_lines@gsLineColor = "gray50"          ; line color
+  delete(res@xyLineColors)
+  res@gsnXYFillColors = "gray60"
+  res@xyLineColor = -1        ; We don't want the line, so make it transparent.
+
+  ; Set contour color
+  res_contour = True
+  if isatt(data, "contour_color") then
+    contour_color = data@contour_color
+  else
+    contour_color = 0         ; default: red
+    if (str_lower(var) .eq. "fgco2") then
+      contour_color = 200
+    end if
+    if (str_lower(var) .eq. "nbp") then
+      contour_color = 100
+    end if
+    if (str_lower(var) .eq. "tas-degc") then
+      contour_color = 0
+    end if
+    if (str_lower(var) .eq. "pr-mmday") then
+      contour_color = 230
+    end if
+    if (str_lower(var) .eq. "tos") then
+      contour_color = 40
+    end if
+  end if
+
+  ; cmap = read_colormap_file("MPL_Reds")
+  ; opt = True
+  ; opt@NumColorsInTable = n_val + 2
+  ; cmap = span_named_colors((/"gray", contour_color/), opt)
+  ; interval_colors = cmap(2:, :)
+
+  hsv_colors = new((/n_val, 3/), "float")
+  hsv_colors(:, 0) = contour_color            ; hue
+  hsv_colors(:, 1) = fspan(0, 1, n_val)       ; saturation
+  hsv_colors(:, 2) = 0.9                      ; value
+  interval_colors = hsvrgb(hsv_colors)
+
+  ; Override defaults with "res_" attributes of "data"
+  res_new = att2var(data, "res_")
+  copy_VarMeta(res_new, res)
+
+  ; Create fille xy plot
+  plot = gsn_csm_xy(wks_out, x_axis_num, data(2:3, :), res)
+  plot@outfile = wks_out@name
+
+  ; Add legend manually
+  xx = (/(min(x_axis_num) + 0.01 * (max(x_axis_num) - min(x_axis_num))), \
+        (min(x_axis_num) + 0.05 * (max(x_axis_num) - min(x_axis_num)))/)
+  yy = (/(ymax + 0.07 * (ymax - ymin)), (ymax + 0.07 * (ymax - ymin))/)
+
+  res_lines@gsLineColor = "black"
+  plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                 res_lines)
+  plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, data@ref_name, \
+                                             (xx(1) + 0.3 * (xx(1) - xx(0))), \
+                                             yy(0), res_text)
+
+  yy = (/ymax, ymax/)
+  delete(res_lines@gsLineColor)
+  res_lines@gsLineColor = interval_colors(n_val-1, :)
+  plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                 res_lines)
+  plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, "CMIP5", \
+                                             (xx(1) + 0.3 * (xx(1) - xx(0))), \
+                                             yy(0), res_text)
+
+  ; Add confidence contours as polygons
+  do n = 0, n_val - 1
+    res_contour@gsFillColor = interval_colors(n, :)
+    plot@$unique_string("dum")$ = gsn_add_polygon(wks_out, plot, \
+                                                  new_arr2&dtime, \
+                                                  new_arr2(n, :), \
+                                                  res_contour)
+  end do
+
+  lbres = True
+  lbres@vpWidthF = 0.25                             ; width
+  lbres@vpHeightF = 0.05                            ; height
+  lbres@lbPerimOn = False                           ; Turn off perimeter
+  lbres@lbOrientation = "Horizontal"                ; Default is vertical
+  ; lbres@lbLabelAlignment = "ExternalEdges"        ; Default is "BoxCenters"
+  lbres@cnLabelBarEndStyle = "IncludeMinMaxLabels"  ; turn on end labels
+  lbres@lbFillColors = interval_colors(::-1, :)     ; colors for boxes
+  lbres@lbMonoFillPattern = True                    ; fill them all solid
+  lbres@lbLabelFontHeightF = 0.008                  ; label font height
+  lbres@lbTitleString = "Confidence (%)"
+  lbres@lbTitlePosition = "Bottom"
+  ; lbres@lbTitleDirection = "Across"
+  lbres@lbBoxLinesOn = False
+  lbres@lbLabelStride = 2
+
+  labels = tostring_with_format(fspan(10, 90, n_val), "%2.0f")
+
+  ; Override defaults with "res_" attributes of "data"
+  ; lbres_new = att2var(data, "lbres_")
+  ; copy_VarMeta(lbres_new, lbres)
+
+  gsn_labelbar_ndc(wks_out, n_val, labels, 0.3, 0.74, lbres)
+  ; drawNDCGrid(wks_out)
 
   leave_msg(scriptname, funcname)
   return(plot)

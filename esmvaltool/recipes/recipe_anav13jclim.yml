@@ -39,11 +39,6 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
 
-  land:
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-
   grading:
     regrid:
       target_grid: ref_dataset
@@ -131,7 +126,6 @@ diagnostics:
       - land
     variables:
       nbp:
-        preprocessor: land
         project: CMIP5
         mip: Lmon
         field: T2Ms
@@ -140,12 +134,11 @@ diagnostics:
         start_year: 1986
         end_year: 2005
         reference_dataset: JMA-TRANSCOM
-        # alternative_dataset: GCP
+        alternative_dataset: GCP
         plot_units: PgC y-1
         fx_files: [sftlf]
     additional_datasets:
-      # Datasat can be read but check_metadata fails because latitude and longitude are missing
-      # - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, field: T0M, start_year: 1959, end_year: 2015}
+      - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: BNU-ESM}
       - {dataset: CESM1-BGC}
@@ -166,8 +159,8 @@ diagnostics:
         region: Global
         evolution_plot: True
         evolution_plot_volcanoes: True
-        # evolution_plot_ref_model: GCP
-        # obsname: GCP
+        evolution_plot_ref_dataset: GCP
+        obsname: GCP
       main_nh: &main_nh
         <<: *main_glob
         region: Northern Hemisphere

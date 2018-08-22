@@ -16,14 +16,14 @@
 ;     seasonal_cycle_plot: draw seasonal cycle plot [False/True].
 ;     errorbar_plot: draw errorbar plot [False/True].
 ;     mean_IAV_plot: draw Mean (x-axis), IAV (y-axis) plot [False/True].
+;     evolution_plot: time evolution of a variable comparing obs to
+;         multi-dataset mean; requires ref_dataset in recipe and at least one
+;         dataset and one observation.
 ;
 ; Optional recipe attributes:
 ;     sort: sort dataset in alphabetical order.
 ;     anav_month : Conversion of y-axis to PgC/month instead of /year,
 ;         following Anav2013 fig 7, 9 (cycle plot).
-;     evolution_plot: time evolution of a variable comparing obs to
-;         multi-dataset mean; requires ref_dataset in recipe and at least one
-;         dataset and one observation.
 ;     fignum: Reference to figure in Anav paper for evolution plot. "1 top"
 ;         as default.
 ;     evolution_plot_ref_dataset: reference dataset for evolution_plot.
@@ -32,7 +32,6 @@
 ;         automatically.
 ;     evolution_plot_volcanoes: Turns on/off lines of volcano eruptions.
 ;     evolution_plot_color: Hue of the contours; default: red = 0.
-;     dst_grid: Destination grid for regridding
 ;
 ;     For external dataset input:
 ;     diag_script_info@obsname : Name of ext dataset to read in
@@ -73,7 +72,6 @@ load "./interface_scripts/interface.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/scaling.ncl"
 load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/regridding.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
@@ -129,7 +127,7 @@ begin
 
   ; Check required diag_script_info attributes
   req_atts = (/"region", "legend_outside", "seasonal_cycle_plot", \
-              "errorbar_plot", "mean_IAV_plot"/)
+              "errorbar_plot", "evolution_plot", "mean_IAV_plot"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 
   ; Set region - supports 2D array for lat and strings
@@ -204,6 +202,7 @@ begin
     if (isatt(diag_script_info, "ref_dataset") .and. \
         variable_info@reference_dataset .eq."CRU") then
       aux_vars = read_fx_data(idat, "sftlf")
+
       sftlf = where(aux_vars .gt. 1.0, 1.0, aux_vars)
 
       ; Mask Antarctica
@@ -212,16 +211,6 @@ begin
       ; Apply mask
       data_var = data_var * conform(data_var, sftlf, (/1, 2/))
       delete([/aux_vars, sftlf/])
-
-      ; f = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-      ; a = f->LSMASK
-      ; sftlf = byte2flt(landsea_mask(a, data_var&lat, data_var&lon))
-      ; sftlf = where(sftlf.gt.1., 1., sftlf)
-      ; ;; Mask out Antarctica (below 60degS)
-      ; sftlf({:-60}, :) = sftlf@_FillValue
-      ; ;; Apply mask
-      ; data_var = data_var * conform(data_var, sftlf, (/1, 2/))
-      ; delete([/sftlf, a, f/])
     end if
 
     ; Calculate annual mean
@@ -247,12 +236,18 @@ begin
                            data_monthly@_FillValue)
     end if
 
-    ; Calculate spatial means and total global area
-    y_mean = area_operations(data_yearly, region(0), region(1), \
-                             region(2), region(3), sp_opt, True)
-    m_mean = area_operations(data_monthly, region(0), region(1), \
-                             region(2), region(3), sp_opt, True)
-    area = map_area(data_var&lat, data_var&lon)
+    ; Calculate spatial means and total global area (not necessary for GCP)
+    if (input_file_info@dataset(idat) .ne. "GCP") then
+      y_mean = area_operations(data_yearly, region(0), region(1), \
+                               region(2), region(3), sp_opt, True)
+      m_mean = area_operations(data_monthly, region(0), region(1), \
+                               region(2), region(3), sp_opt, True)
+      area = map_area(data_var&lat, data_var&lon)
+    else
+      y_mean = data_yearly
+      m_mean = data_monthly
+      area = 5.10072e14
+    end if
 
     ; Calculate standard deviations
     ; FIXME: results to be checked
@@ -267,8 +262,8 @@ begin
     ; delete([/subr, tmp/])
 
     ; Assign to global arrays
-    idx_1 = ind(min(y_mean&year).eq.all_data_yearly&year)
-    idx_2 = ind(max(y_mean&year).eq.all_data_yearly&year)
+    idx_1 = ind(min(y_mean&year) .eq. all_data_yearly&year)
+    idx_2 = ind(max(y_mean&year) .eq. all_data_yearly&year)
     all_data_yearly(idat, idx_1:idx_2, 0) = (/y_mean/)
     all_data_yearly(idat, idx_1:idx_2, 1) = 0.0
     ; FIXME: all_data_yearly(idat, idx_1:idx_2, 1) = (/y_std/)
@@ -518,7 +513,7 @@ begin
   end if
 
   ; ---------------------------------------------------------------------------
-  ; Mean, IAV plot
+  ; Mean and IAV plot
   ; ---------------------------------------------------------------------------
 
   if (diag_script_info@mean_IAV_plot) then
@@ -590,200 +585,200 @@ begin
     delete([/plot, wks, data_arr/])
   end if
 
-;     ;; Time evolution plot
+  ; ---------------------------------------------------------------------------
+  ; Time evolution plot
+  ; ---------------------------------------------------------------------------
 
-;     if (isatt(diag_script_info, "evolution_plot")).and. \
-;                                  diag_script_info@evolution_plot then
-;         ;; Check if it's supposed to be an anomaly plot
-;         if (isatt(diag_script_info, "evolution_plot_anomaly")).and. \
-;                          diag_script_info@evolution_plot_anomaly then
-;             anomaly = True
-;         else
-;             anomaly = False
-;         end if
+  if (diag_script_info@evolution_plot) then
 
-;         outfile = plot_dir + diag_script + "_" + var0 + "_evolution_" + \
-;            region@name
+    ; Check if it's supposed to be an anomaly plot
+    anomaly = False
+    if (isatt(diag_script_info, "evolution_plot_anomaly")) then
+      if (diag_script_info@evolution_plot_anomaly) then
+        anomaly = True
+      end if
+    end if
 
-;         ;; Find out ref dataset index
-;         obs_ind = ind(input_file_info@dataset.eq.diag_script_info@evolution_plot_ref_dataset)
+    ; Get name of plot
+    outfile = plot_dir + var0 + "_evolution_" + region@name
 
-;         ;; Set list of observations/input_file_info to exclude in the statistics
-;         ex_mod = ind(input_file_info@project.eq."OBS")
-;         if (isatt(diag_script_info, "evolution_plot_ignore")) then
-;             ex_mod1 = array_append_record(ex_mod, ind(input_file_info@dataset.eq. \
-;                                  diag_script_info@evolution_plot_ignore), 0)
-;             delete(ex_mod)
-;             ex_mod = ex_mod1
-;             delete(ex_mod1)
-;         end if
-;         ;; To not get a warning about fillvalues from get1Dindex_Exclude
-;         ind_mods = ispan(0, dimsizes(input_file_info@dataset) -1, 1)
-;         ind_mods@_FillValue = default_fillvalue("integer")
-;         mod_ind = get1Dindex_Exclude(ind_mods, ex_mod)
-;         delete([/ex_mod, ind_mods/])
+    ; Get index of reference dataset
+    obs_ind = ind(input_file_info@dataset .eq. \
+                  diag_script_info@evolution_plot_ref_dataset)
 
-;         ;;data_arr = all_data_yearly                   ;; all_data_yearly:  dataset, year, std = 0
-;         data_arr = new((/6, dimsizes(all_data_yearly&year)/), float)
-;         dataset_mean = dim_avg_n(all_data_yearly(mod_ind,:,0), 0)
-;         dataset_std = new((/dimsizes(dataset_mean)/), float)
+    ; Set list of observations/input_file_info to exclude in the statistics
+    exclude_data = ind(input_file_info@project .eq. "OBS")
+    if (isatt(diag_script_info, "evolution_plot_ignore")) then
+      exclude_data := array_append_record( \
+        exclude_data, ind(input_file_info@dataset .eq. \
+                          diag_script_info@evolution_plot_ignore), 0)
+    end if
 
-;         data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
-;         data_arr@units = all_data_yearly@units
-;         data_arr@dim_Mod = dimsizes(mod_ind)
+    ; To not get a warning about fillvalues from get1Dindex_Exclude
+    ind_dats = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
+    ind_dats@_FillValue = default_fillvalue("integer")
+    model_ind = get1Dindex_Exclude(ind_dats, exclude_data)
+    delete([/exclude_data, ind_dats/])
 
-;         ;; Subtract mean 1901-1930 (coded as till 1930) if anomaly plot
-;         ind_1930 = ind(all_data_yearly&year.eq.1930)
+    ; data_arr = all_data_yearly -> all_data_yearly: dataset, year, std = 0
+    data_arr = new((/6, dimsizes(all_data_yearly&year)/), float)
+    total_mean = dim_avg_n(all_data_yearly(model_ind, :, 0), 0)
+    total_std = new((/dimsizes(total_mean)/), float)
+    data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
+    data_arr@units = all_data_yearly@units
+    data_arr@dim_Mod = dimsizes(model_ind)
 
-;         if anomaly then
-;             data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/) - \
-;                               avg(all_data_yearly(obs_ind, :ind_1930, 0))
-;             mod_means = dim_avg_n(all_data_yearly(mod_ind, :ind_1930, 0), 1)
-;             data_arr(1, :) =(/dataset_mean/) - avg(mod_means)
-;             do time_i = 0, dimsizes(all_data_yearly&year)-1
-;                 data_arr(2, time_i) = dim_min_n(all_data_yearly(mod_ind,time_i,0) - mod_means, 0)
-;                 data_arr(3, time_i) = dim_max_n(all_data_yearly(mod_ind,time_i,0) - mod_means, 0)
-;                 dataset_std(time_i)  = dim_stddev_n(all_data_yearly(mod_ind,time_i,0) - mod_means, 0)
-;             end do
-;         else
-;             data_arr(1, :) = (/dataset_mean/)
-;             data_arr(2, :) = dim_min_n(all_data_yearly(mod_ind,:,0), 0)
-;             data_arr(3, :) = dim_max_n(all_data_yearly(mod_ind,:,0), 0)
-;             data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
-;             dataset_std  = dim_stddev_n(all_data_yearly(mod_ind,:,0), 0)
+    ; Subtract mean 1901-1930 (coded as "until 1930") if anomaly plot
+    ind_1930 = ind(all_data_yearly&year .eq. 1930)
+    if (anomaly) then
+      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/) - \
+        avg(all_data_yearly(obs_ind, :ind_1930, 0))
+      ref_mean = dim_avg_n(all_data_yearly(model_ind, :ind_1930, 0), 1)
+      data_arr(1, :) = (/total_mean/) - avg(ref_mean)
+      do time_i = 0, dimsizes(all_data_yearly&year) - 1
+        data_arr(2, time_i) = dim_min_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
+        data_arr(3, time_i) = dim_max_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
+        total_std(time_i)  = dim_stddev_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
+      end do
+    else
+      data_arr(1, :) = (/total_mean/)
+      data_arr(2, :) = dim_min_n(all_data_yearly(model_ind, :, 0), 0)
+      data_arr(3, :) = dim_max_n(all_data_yearly(model_ind, :, 0), 0)
+      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
+      total_std  = dim_stddev_n(all_data_yearly(model_ind, :, 0), 0)
+    end if
+    data_arr(4, :) = (/all_data_yearly&year/)
+    data_arr(5, :) = (/total_std/)
 
-;         end if
+    ; Get contour color
+    if (isatt(diag_script_info, "evolution_plot_color")) then
+      data_arr@contour_color = diag_script_info@evolution_plot_color
+    end if
 
-;         data_arr(4, :) = (/all_data_yearly&year/)
-;         data_arr(5, :) = (/dataset_std/)
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
 
-;         ;; Pass on contour color
-;         if (isatt(diag_script_info, "evolution_plot_color")) then
-;             data_arr@contour_color = diag_script_info@evolution_plot_color
-;         end if
+    ; After overlaying the plots add titles and legend manually
+    res = True
+    res_text = True                     ; text mods desired
+    res_text@txFontHeightF = 0.01       ; change text size
+    res_text@txJust = "CenterLeft"      ; text justification
+    res_lines = True                    ; polyline mods desired
+    res_lines@gsLineDashPattern = 0.0   ; solid line
+    res_lines@gsLineThicknessF = 5.0    ; line thicker
+    res_lines@gsLineColor = "gray60"    ; line color
+    wks_out = get_wks(wks, diag_script, var0)
 
-;         wks = gsn_open_wks(file_type, outfile)
-;         wks@legendfile = outfile + "_legend"
-;         plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
+    ; Create lines for Volcanic eruptions
+    if (isatt(diag_script_info, "evolution_plot_volcanoes") .and. \
+        diag_script_info@evolution_plot_volcanoes) then
+      ymax = max((/max(data_arr(3, :)), max(data_arr(0, :))/))
+      ymin = min((/min(data_arr(2, :)), min(data_arr(0, :))/))
+      ytop = ymax + 0.1*(ymax - ymin)
+      yy = (/(ymin - 0.05 * (ymax - ymin)), (ymax + 0.15*(ymax-ymin))/)
 
-;         res = True
-;         ; After overlaying the plots, add titles and legend manually
-;         res_text                    = True                  ; text mods desired
-;         res_text@txFontHeightF      = 0.01                 ; change text size
-;         res_text@txJust             = "CenterLeft"          ; text justification
+      ; Agung
+      xx = (/1963.0, 1963.0/)
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
+                                                      res_lines)
+      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "Agung", \
+                                                  (xx(1) + 0.5), (ytop), \
+                                                  res_text)
 
-;         res_lines                   = True                  ; polyline mods desired
-;         res_lines@gsLineDashPattern = 0.                    ; solid line
-;         res_lines@gsLineThicknessF  = 5.                    ; line thicker
-;         res_lines@gsLineColor       = "gray60"               ; line color
-;         wks_out = get_wks(wks, diag_script, var0)
+      ; El Chichon
+      xx = (/1982.0, 1982.0/)
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
+                                                      res_lines)
+      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, \
+                                                  "El Chichon", \
+                                                  (xx(1)), (ytop), res_text)
 
-;         ;; Create lines for Volcanic eruptions
+      ; Pinatubo
+      xx = (/1991.0, 1991.0/)
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
+                                                      res_lines)
+      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "Pinatubo", \
+                                                  (xx(1)), (ytop), res_text)
 
-;         if (isatt(diag_script_info, "evolution_plot_volcanoes")).and. \
-;             diag_script_info@evolution_plot_volcanoes then
-;             ymax = max((/max(data_arr(3,:)), max(data_arr(0, :))/))
-;             ymin = min((/min(data_arr(2,:)), min(data_arr(0, :))/))
-;             ytop = ymax + 0.1*(ymax-ymin)
-;             xx = (/1963., 1963./)
-;             yy = (/(ymin - 0.05 * (ymax - ymin)),(ymax + 0.15*(ymax-ymin))/)
+      ; El Nino
+      res_lines@gsLineColor = "orange"
+      xx = (/1998.0, 1998.0/)
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
+                                                      res_lines)
+      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "El Nino", \
+                                                  (xx(1) + 0.5), (ytop), \
+                                                  res_text)
+    end if
 
-;             plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out,plot1,xx,yy,res_lines)
-;             plot1@$unique_string("dum")$ = gsn_add_text(wks_out,plot1,"Agung",\
-;                                       (xx(1)+0.5),(ytop),res_text)
+    res_lines@gsLineColor = "black"
+    res_lines@gsLineDashPattern = 16
+    res_lines@gsLineThicknessF = 3.0
+    if (.not. anomaly) then
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, \
+                                                      (/start_year, \
+                                                       end_year/), \
+                                                      (/0.0, 0.0/), res_lines)
+    end if
 
-;             xx = (/1982., 1982./)
-;             plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out,plot1,xx,yy,res_lines)
-;             plot1@$unique_string("dum")$ = gsn_add_text(wks_out,plot1,"El Chichon",\
-;                                       (xx(1)),(ytop),res_text)
+    res@gsnDraw = False
+    res@gsnFrame = False
+    res@gsnMaximize = True
+    res@gsnPaperOrientation = "landscape"
+    res@xyLineThicknesses = (/2, 2/)
+    res@xyLineColors = (/"black", "white"/)
+    res@xyDashPatterns = (/0.0, 0.0/)      ; make all lines solid
 
-;             xx = (/1991., 1991./)
-;             plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out,plot1,xx,yy,res_lines)
-;             plot1@$unique_string("dum")$ = gsn_add_text(wks_out,plot1,"Pinatubo",\
-;                                       (xx(1)),(ytop),res_text)
+    plot3 = gsn_csm_xy(wks_out, data_arr(4, :), data_arr(:1, :), res)
 
-;             res_lines@gsLineColor = "orange"
-;             xx = (/1998, 1998./)
-;             plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out,plot1,xx,yy,res_lines)
-;             plot1@$unique_string("dum")$ = gsn_add_text(wks_out,plot1,"El Nino",\
-;                                       (xx(1)+0.5),(ytop),res_text)
+    NhlAddOverlay(plot1, plot3, plot1)
+    draw(plot1)
+    frame(wks)
 
-;         end if
-;         res_lines@gsLineColor = "black"
-;         res_lines@gsLineDashPattern = 16
-;         res_lines@gsLineThicknessF = 3.
-;         if .not.anomaly then
-;             plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, \
-;                    (/start_year, end_year/), \
-;                    (/0., 0./), res_lines)
-;         end if
-
-;         res@gsnDraw          = False
-;         res@gsnFrame         = False
-;         res@gsnMaximize      = True
-;         res@gsnPaperOrientation = "landscape"
-;         res@xyLineThicknesses = (/2,2/)
-;         res@xyLineColors      = (/"black","white"/)
-;         res@xyDashPatterns	 = (/0.,0./)      ; make all lines solid
-
-;         plot3 = gsn_csm_xy(wks_out, data_arr(4, :), data_arr(:1, :), res)
-
-;         NhlAddOverlay(plot1, plot3, plot1)
-
-;         draw(plot1)
-;         frame(wks)
-
-;         ;; Attach Metadata to plot
-
-;         ;alltags = array_append_record(tags, region@DM_tag, 0)
-;         ;alltags := array_append_record(alltags,\
-;         ;       (/"PT_times"/), 0)
-;         ;if (anomaly) then
-;         ;    alltags := array_append_record(alltags,\
-;         ;           (/"ST_anomaly"/), 0)
-;         ;    tagstr = " (anomalies) "
-;         ;else
-;         ;    alltags := array_append_record(alltags,\
-;         ;           (/"ST_mean"/), 0)
-;         ;    tagstr = " "
-;         ;end if
-;         ;if isatt(diag_script_info, "fignum") then
-;         ;    fignum = diag_script_info@fignum
-;         ;else
-;         ;    fignum = "1 top"
-;         ;end if
-;         ;caption = "Time series of " + variables(0) + tagstr + \
-;         ;          ", similar to Anav et al., 2013, Fig." + fignum
-;         ;id = diag_script
-
-;         ;isize = DIM_DAT_ORIG * DIM_VAR
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;    isize = isize + 1
-;         ;end if
-;         ;climofiles = new(isize, string)
-;         ;do n_var = 0, DIM_VAR - 1
-;         ;    do idat = 0, DIM_DAT_ORIG - 1
-;         ;        climofiles(n_var * DIM_DAT_ORIG + idat) = \
-;         ;                    interface_get_inpaths(idat) + "/" + \
-;         ;                    interface_get_infile(variables(n_var), field_types(n_var), idat)
-;         ;    end do
-;         ;end do
-;         ;if (isatt(diag_script_info, "obsfile")) then
-;         ;    climofiles(isize - 1) = diag_script_info@obsfile
-;         ;end if
-
-;         ;contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
-
-;         ;;NOTE: not implemented in v2 yet
-;         ;ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, input_file_info@dataset, climofiles, diag_script, contrib_authors)
-
-;         ;delete([/alltags, caption, id, climofiles/])
-
-;         delete([/data_arr, anomaly/])
-
-;     end if
+    ; ; Add meta data (TODO)
+    ; alltags = array_append_record(tags, region@DM_tag, 0)
+    ; alltags := array_append_record(alltags, (/"PT_times"/), 0)
+    ; if (anomaly) then
+    ;   alltags := array_append_record(alltags, (/"ST_anomaly"/), 0)
+    ;   tagstr = " (anomalies) "
+    ; else
+    ;   alltags := array_append_record(alltags, (/"ST_mean"/), 0)
+    ;   tagstr = " "
+    ; end if
+    ; if isatt(diag_script_info, "fignum") then
+    ;   fignum = diag_script_info@fignum
+    ; else
+    ;   fignum = "1 top"
+    ; end if
+    ; caption = "Time series of " + var0 + tagstr + \
+    ;   ", similar to Anav et al., 2013, Fig." + fignum
+    ; id = diag_script
+    ; isize = DIM_DAT_ORIG * DIM_VAR
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   isize = isize + 1
+    ; end if
+    ; climofiles = new(isize, string)
+    ; do n_var = 0, DIM_VAR - 1
+    ;   do idat = 0, DIM_DAT_ORIG - 1
+    ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
+    ;       interface_get_inpaths(idat) + "/" + \
+    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
+    ;   end do
+    ; end do
+    ; if (isatt(diag_script_info, "obsfile")) then
+    ;   climofiles(isize - 1) = diag_script_info@obsfile
+    ; end if
+    ; contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma", "A_schl_ma"/)
+    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
+    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          contrib_authors)
+    ; delete([/alltags, caption, id, climofiles/])
+    delete([/data_arr, anomaly/])
+  end if
 
   leave_msg(diag_script, "")
 
 end
-
