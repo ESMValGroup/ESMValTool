@@ -255,7 +255,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
         dirs.extend([os.path.join(dir1, dir_2) for dir_2 in dirs2])
 
-    print('DIRS', dirs)
     return dirs
 
 
@@ -301,8 +300,6 @@ def get_input_fx_filename(variable, rootpath, drs):
 
         # Set the filename
         filename = _get_fx_filename(variable, drs, j)
-
-        print('DIRNAME', dirname)
 
         # Full path to files
         files.append(os.path.join(dirname, filename))
