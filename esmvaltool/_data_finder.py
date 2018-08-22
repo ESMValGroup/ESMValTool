@@ -216,7 +216,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
     cfg = get_project_config(project)
 
-    dirs = []
     # Set the rootpath
     if project in rootpath:
         dir1 = rootpath[project]
@@ -229,6 +228,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
+    dirs = []
     for fx_ind in range(len(variable['fx_files'])):
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(input_dir, variable, i=fx_ind)
@@ -253,7 +253,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                 'drs {} for {} project not specified in config-developer file'
                 .format(_drs, project))
 
-        dirname_template = [os.path.join(dir1, dir_2) for dir_2 in dirs2]
+        dirs.extend([os.path.join(dir1, dir_2) for dir_2 in dirs2])
 
     return dirs
 
