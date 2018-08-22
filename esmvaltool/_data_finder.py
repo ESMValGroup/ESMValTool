@@ -254,7 +254,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                 .format(_drs, project))
 
         dirname_template = [os.path.join(dir1, dir_2) for dir_2 in dirs2]
-        dirs.append(dirname_template)
 
     return dirs
 
