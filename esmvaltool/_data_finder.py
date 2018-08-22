@@ -255,6 +255,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
         dirs.extend([os.path.join(dir1, dir_2) for dir_2 in dirs2])
 
+    print('DIRS', dirs)
     return dirs
 
 
@@ -300,6 +301,8 @@ def get_input_fx_filename(variable, rootpath, drs):
 
         # Set the filename
         filename = _get_fx_filename(variable, drs, j)
+
+        print('DIRNAME', dirname)
 
         # Full path to files
         files.append(os.path.join(dirname, filename))
@@ -397,35 +400,43 @@ def get_input_fx_filelist(variable, rootpath, drs):
             # root part1 could not exist at all
             if not os.path.exists(part1):
                 fx_files[variable['fx_files'][j]] = None
-                return fx_files
-            list_versions = os.listdir(part1)
-            list_versions.sort(reverse=True)
-            if 'latest' in list_versions:
-                list_versions.insert(
-                    0, list_versions.pop(list_versions.index('latest')))
-            for version in list_versions:
-                if version == 'latest':
-                    dirname = os.path.join(part1, version, part2)
-                    if os.path.isdir(dirname):
-                        break
-                else:
-                    dirname = os.path.join(part1, version, part2)
-                    if os.path.isdir(dirname):
-                        break
+                dirname = None
+            else:
+                list_versions = os.listdir(part1)
+                list_versions.sort(reverse=True)
+                if 'latest' in list_versions:
+                    list_versions.insert(
+                        0, list_versions.pop(list_versions.index('latest')))
+                for version in list_versions:
+                    if version == 'latest':
+                        dirname = os.path.join(part1, version, part2)
+                        if os.path.isdir(dirname):
+                            break
+                    else:
+                        dirname = os.path.join(part1, version, part2)
+                        if os.path.isdir(dirname):
+                            break
         else:
             dirname = dirname_template
 
-        # Set the filename glob
-        filename_glob = _get_fx_filename(variable, drs, j)
+        if dirname:
+            # Set the filename glob
+            # try/except because we could have two
+            # institutions that one may not have the correct file
+            try:
+                filename_glob = _get_fx_filename(variable, drs, j)
+            except IndexError:
+                j = j - 1
+                filename_glob = _get_fx_filename(variable, drs, j)
 
-        # Find files
-        fx_file_list = find_files(dirname, filename_glob)
-        if fx_file_list:
-            # Grab the first file only; fx vars should have a single file
-            fx_files[variable['fx_files'][j]] = fx_file_list[0]
-        else:
-            # No files
-            fx_files[variable['fx_files'][j]] = None
+            # Find files
+            fx_file_list = find_files(dirname, filename_glob)
+            if fx_file_list:
+                # Grab the first file only; fx vars should have a single file
+                fx_files[variable['fx_files'][j]] = fx_file_list[0]
+            else:
+                # No files
+                fx_files[variable['fx_files'][j]] = None
 
     return fx_files
 
