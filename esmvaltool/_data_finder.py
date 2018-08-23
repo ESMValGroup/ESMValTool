@@ -94,7 +94,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, j=None, i=None):
+def replace_tags(path, variable, j=None, fx_var=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -107,7 +107,7 @@ def replace_tags(path, variable, j=None, i=None):
         if tag == 'var':
             replacewith = variable['short_name']
         elif tag == 'fx_var':
-            replacewith = variable['fx_files'][i]
+            replacewith = fx_var
         elif tag == 'field':
             replacewith = variable['field']
         elif tag in ('institute', 'freq', 'realm'):
@@ -194,8 +194,8 @@ def get_input_dirname_template(variable, rootpath, drs):
             insts = 0
         dirs2 = []
         if isinstance(insts, list):
-            for j in range(len(insts)):
-                dir2 = replace_tags(input_dir[_drs], variable, j)
+            for inst_idx in range(len(insts)):
+                dir2 = replace_tags(input_dir[_drs], variable, j=inst_idx)
                 dirs2.append(dir2)
         else:
             dir2 = replace_tags(input_dir[_drs], variable)
@@ -239,7 +239,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
         if isinstance(input_dir, six.string_types):
             dir2 = replace_tags(
-                input_dir, new_variable, i=variable['fx_files'].index(fx_file))
+                input_dir, new_variable, fx_var=fx_file)
         elif _drs in input_dir:
             try:
                 insts = cmip5_dataset2inst(new_variable['dataset'])
@@ -248,19 +248,19 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                 insts = 0
             dirs2 = []
             if isinstance(insts, list):
-                for j in range(len(insts)):
+                for inst_idx in range(len(insts)):
                     dir2 = replace_tags(
                         input_dir[_drs],
                         new_variable,
-                        j=j,
-                        i=variable['fx_files'].index(fx_file))
+                        j=inst_idx,
+                        fx_var=fx_file)
                     dirs2.append(dir2)
             else:
                 dir2 = replace_tags(
                     input_dir[_drs],
                     new_variable,
                     j=None,
-                    i=variable['fx_files'].index(fx_file))
+                    fx_var=fx_file)
                 dirs2.append(dir2)
         else:
             raise KeyError(
@@ -338,7 +338,7 @@ def _get_filename(variable, drs):
     return filename
 
 
-def _get_fx_filename(variable, drs, j):
+def _get_fx_filename(variable, drs, fx_var):
     project = variable['project']
     cfg = get_project_config(project)
 
@@ -351,7 +351,7 @@ def _get_fx_filename(variable, drs, j):
             raise KeyError(
                 'drs {} for {} project not specified for input_file '
                 'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable, i=j)
+    filename = replace_tags(input_file, variable, fx_var=fx_var)
     return filename
 
 
@@ -418,18 +418,12 @@ def get_input_fx_filelist(variable, rootpath, drs):
                 if 'latest' in list_versions:
                     list_versions.insert(
                         0, list_versions.pop(list_versions.index('latest')))
-                for version in list_versions:
-                    if version == 'latest':
-                        dirname = os.path.join(part1, version, part2)
-                        if os.path.isdir(dirname):
-                            break
-                    else:
-                        dirname = os.path.join(part1, version, part2)
-                        if os.path.isdir(dirname):
-                            break
 
-                # append to dirnames list
-                dirnames.append(dirname)
+                for version in ['latest'] + list_versions:
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        dirnames.append(dirname)
+                        break
 
         else:
             dirname = dirname_template
@@ -449,8 +443,7 @@ def _filter_all_fx_files(dirnames, variable, drs):
             fx_files[fx_var] = None
         else:
             # Set the filename glob
-            filename_glob = _get_fx_filename(
-                variable, drs, variable['fx_files'].index(fx_var))
+            filename_glob = _get_fx_filename(variable, drs, fx_var)
 
             # Find all possible files
             all_files = [
