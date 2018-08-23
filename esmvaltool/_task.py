@@ -221,8 +221,7 @@ class DiagnosticTask(AbstractTask):
         self.resource_log = os.path.join(settings['run_dir'],
                                          'resource_usage.txt')
 
-    @staticmethod
-    def _initialize_cmd(script):
+    def _initialize_cmd(self, script):
         """Create a an executable command from script."""
         diagnostics_root = os.path.join(
             os.path.dirname(__file__), 'diag_scripts')
@@ -236,11 +235,22 @@ class DiagnosticTask(AbstractTask):
         cmd = []
         if not os.access(script_file, os.X_OK):  # if not executable
             extension = os.path.splitext(script)[1].lower()[1:]
-            executables = {
-                'py': [which('python')],
-                'ncl': [which('ncl'), '-n', '-p'],
-                'r': [which('Rscript'), '--slave', '--quiet'],
-            }
+            if not self.settings['profile_diagnostic']:
+                executables = {
+                    'py': [which('python')],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+            else:
+                profile_file = os.path.join(self.settings['run_dir'],
+                                            'profile.bin')
+                executables = {
+                    'py': [which('python'), '-m', 'cProfile',
+                           '-o', profile_file],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+
             if extension not in executables:
                 raise DiagnosticError(
                     "Cannot execute script {} ({}): non-executable file "
@@ -434,6 +444,16 @@ class DiagnosticTask(AbstractTask):
                 # wait, but not long because the stdout buffer may fill up:
                 # https://docs.python.org/3.6/library/subprocess.html#subprocess.Popen.stdout
                 time.sleep(0.001)
+
+        if self.settings['profile_diagnostic']:
+            import pstats
+            profile_file = os.path.join(self.settings['run_dir'],
+                                        'profile.bin')
+            with open(profile_file + '.txt', 'w') as txt_file:
+                stats = pstats.Stats(profile_file, stream=txt_file)
+                stats.sort_stats('cumulative')
+                stats.print_stats(self.script)
+                stats.print_stats(500)
 
         if returncode == 0:
             return [self.output_dir]
