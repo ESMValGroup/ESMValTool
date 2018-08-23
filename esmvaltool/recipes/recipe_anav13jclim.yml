@@ -8,6 +8,7 @@ documentation:
     - anav_an
     - wenz_sa
     - righ_ma
+    - schl_ma
 
   references:
     - anav13jclim
@@ -55,7 +56,7 @@ diagnostics:
     realms:
       - atmos
     variables:
-      tas: &atmos_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
+      tas: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
         preprocessor: regridding
         project: CMIP5
         mip: Amon
@@ -66,7 +67,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CRU
         plot_units: degC
-    additional_datasets:
+    additional_datasets: &tas_datasets
       - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
@@ -93,21 +94,13 @@ diagnostics:
         region: Tropics
 
   diag_pr_mvi:
-    description: MVI scatter plot precipitation (Figure 2).
     <<: *diag_mvi
+    description: MVI scatter plot precipitation (Figure 2).
     variables:
       pr:
-        <<: *atmos_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
+        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
         plot_units: mm yr-1
-    additional_datasets:
-      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1, tier: 3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CESM1-BGC}
-      - {dataset: inmcm4}
-      - {dataset: MIROC-ESM}
-      - {dataset: NorESM1-M}
+    additional_datasets: *tas_datasets
     scripts:
       mvi_global:
         <<: *mvi_glob
@@ -172,23 +165,17 @@ diagnostics:
         region: Tropics
 
   diag_gpp_mvi:
-    description: MVI scatter plot gpp (Figure 8).
     <<: *diag_mvi
+    description: MVI scatter plot gpp (Figure 8).
     realms:
       - land
     variables:
-      gpp:
-        preprocessor: regridding
-        project: CMIP5
+      gpp: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
         mip: Lmon
-        field: T2Ms
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1986
-        end_year: 2005
         reference_dataset: MTE
         plot_units: PgC y-1
-    additional_datasets:
+    additional_datasets: &gpp_datasets
       - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: bcc-csm1-1}
       - {dataset: BNU-ESM}
@@ -205,33 +192,25 @@ diagnostics:
       mvi_trop:
         <<: *mvi_trop
 
-
-#  DIAG_gppMAIN:
-#    description: Seasonal cycle plot gpp (Figure 9)
-#    <<: *diag_main
-#    variables:
-#      gpp:
-#        preprocessor: regridding
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: MTE
-#        plot_units: PgC y-1
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 2}
-#    scripts:
-#      main_global:
-#        <<: *main_glob
-#      main_nh:
-#        <<: *main_nh
-#      main_sh:
-#        <<: *main_sh
-#      main_trop:
-#        <<: *main_trop
+  diag_gpp_main:
+    <<: *diag_main
+    description: Seasonal cycle plot gpp (Figure 9).
+    variables:
+      gpp: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+    additional_datasets: *gpp_datasets
+    scripts:
+      main_global:
+        <<: *main_glob
+        evolution_plot_ref_dataset: MTE
+      main_nh:
+        <<: *main_nh
+        evolution_plot_ref_dataset: MTE
+      main_sh:
+        <<: *main_sh
+        evolution_plot_ref_dataset: MTE
+      main_trop:
+        <<: *main_trop
+        evolution_plot_ref_dataset: MTE
 
 
 #  DIAG_laiMVI:

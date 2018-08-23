@@ -34,9 +34,9 @@
 ;     evolution_plot_color: Hue of the contours; default: red = 0.
 ;
 ;     For external dataset input:
+;     diag_script_info@obsfile : Filename of external obs to read in
 ;     diag_script_info@obsname : Name of ext dataset to read in
 ;     diag_script_info@ref_varname: Varname in attributes of ext file
-;     diag_script_info@obsfile : Filename of external obs to read in
 ;
 ; Caveats:
 ;     Regridding is not required since spatial averages are calculated for all
@@ -189,7 +189,10 @@ begin
     log_debug("Processing " + dataset_name)
 
     ; Read data
-    data_var := read_data(idat, var0, field_type0)
+    data_var = read_data(idat, var0, field_type0)
+    if (typeof(data_var) .eq. "double") then
+      data_var := dble2flt(data_var)
+    end if
 
     ; Set type of area operation (flux vs. non-flux variables)
     if (data_var@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
@@ -644,10 +647,10 @@ begin
           all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
       end do
     else
+      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
       data_arr(1, :) = (/total_mean/)
       data_arr(2, :) = dim_min_n(all_data_yearly(model_ind, :, 0), 0)
       data_arr(3, :) = dim_max_n(all_data_yearly(model_ind, :, 0), 0)
-      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
       total_std  = dim_stddev_n(all_data_yearly(model_ind, :, 0), 0)
     end if
     data_arr(4, :) = (/all_data_yearly&year/)
