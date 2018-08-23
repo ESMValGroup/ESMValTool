@@ -12,7 +12,7 @@ import re
 import six
 
 from ._config import (cmip5_dataset2inst, cmip5_mip2realm_freq,
-                      get_project_config)
+                      get_project_config, replace_mip_fx)
 
 logger = logging.getLogger(__name__)
 
@@ -231,20 +231,15 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     dirs = []
 
     # Loop through fx_files types
-    for fx_ind in range(len(variable['fx_files'])):
-
+    for fx_file in variable['fx_files']:
         # Need to reassign the mip so we can find sftlf/of
         # make a copy of variable -> new_variable for this
         new_variable = dict(variable)
-        if (new_variable['fx_files'][fx_ind] == 'sftlf' or
-                new_variable['fx_files'][fx_ind] == 'areacella'):
-            new_variable['mip'] = 'Amon'
-        elif (new_variable['fx_files'][fx_ind] == 'sftof' or
-              new_variable['fx_files'][fx_ind] == 'areacello'):
-            new_variable['mip'] = 'Omon'
+        new_variable['mip'] = replace_mip_fx(fx_file)
 
         if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(input_dir, new_variable, i=fx_ind)
+            dir2 = replace_tags(
+                input_dir, new_variable, i=variable['fx_files'].index(fx_file))
         elif _drs in input_dir:
             try:
                 insts = cmip5_dataset2inst(new_variable['dataset'])
@@ -255,11 +250,17 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
             if isinstance(insts, list):
                 for j in range(len(insts)):
                     dir2 = replace_tags(
-                        input_dir[_drs], new_variable, j=j, i=fx_ind)
+                        input_dir[_drs],
+                        new_variable,
+                        j=j,
+                        i=variable['fx_files'].index(fx_file))
                     dirs2.append(dir2)
             else:
                 dir2 = replace_tags(
-                    input_dir[_drs], new_variable, j=None, i=fx_ind)
+                    input_dir[_drs],
+                    new_variable,
+                    j=None,
+                    i=variable['fx_files'].index(fx_file))
                 dirs2.append(dir2)
         else:
             raise KeyError(
@@ -379,8 +380,7 @@ def get_input_filelist(variable, rootpath, drs):
                         valid_dirs.append(dirname)
                         break
             else:
-                # demote to warning so multi-institutes will not fail
-                logger.warning('Path %s does not exist', part1)
+                logger.debug('Path %s does not exist', part1)
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
@@ -403,7 +403,6 @@ def get_input_filelist(variable, rootpath, drs):
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    fx_files = {}
     dirnames = []
 
     for dirname_template in dirname_templates:
@@ -411,7 +410,8 @@ def get_input_fx_filelist(variable, rootpath, drs):
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
-            # root part1 could not exist at all
+
+            # if part1 exists, check versioning
             if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
@@ -427,30 +427,42 @@ def get_input_fx_filelist(variable, rootpath, drs):
                         dirname = os.path.join(part1, version, part2)
                         if os.path.isdir(dirname):
                             break
-            else:
-                dirname = None
+
+                # append to dirnames list
+                dirnames.append(dirname)
+
         else:
             dirname = dirname_template
-        dirnames.append(dirname)
+            dirnames.append(dirname)
 
-    for fx_idx in range(len(variable['fx_files'])):
-        if dirnames:
-            # Set the filename glob
-            filename_glob = _get_fx_filename(variable, drs, fx_idx)
+    filtered_fx_files = _filter_all_fx_files(dirnames, variable, drs)
 
-            # Find files
-            fx_file_list = [
-                find_files(dir_name, filename_glob) for dir_name in dirnames
-                if dir_name
-            ]
-            if fx_file_list:
-                # Grab the first file only; fx vars should have a single file
-                fx_files[variable['fx_files'][fx_idx]] = [
-                    f_x for f_x in fx_file_list if f_x
-                ][0][0]
-        else:
+    return filtered_fx_files
+
+
+def _filter_all_fx_files(dirnames, variable, drs):
+    """Filter through and return all needed fx files"""
+    fx_files = {}
+    for fx_var in variable['fx_files']:
+        if not dirnames:
             # No files
-            fx_files[variable['fx_files'][fx_idx]] = None
+            fx_files[fx_var] = None
+        else:
+            # Set the filename glob
+            filename_glob = _get_fx_filename(
+                variable, drs, variable['fx_files'].index(fx_var))
+
+            # Find all possible files
+            all_files = [
+                find_files(dir_name, filename_glob) for dir_name in dirnames
+            ]
+            # filter out empty entries
+            all_files = [l for l in all_files if l]
+            if not all_files:
+                fx_files[fx_var] = None
+            else:
+                # Keep only the first entry
+                fx_files[fx_var] = [fx_ls[0] for fx_ls in all_files][0]
 
     return fx_files
 
