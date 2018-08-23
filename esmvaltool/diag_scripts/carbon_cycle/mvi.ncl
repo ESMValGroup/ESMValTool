@@ -6,7 +6,7 @@
 ; EMBRACE project
 ; #############################################################################
 ;
-; Description
+; Description:
 ;    Calculates the model variability index (MVI), interannual variability
 ;    (IAV) and mean, and draws them in a 3D scatter plot.
 ;

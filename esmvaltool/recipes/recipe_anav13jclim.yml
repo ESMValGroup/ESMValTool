@@ -112,7 +112,7 @@ diagnostics:
         <<: *mvi_trop
 
   diag_npb_main: &diag_main
-    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
+    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7).
     themes:
       - phys
     realms:
@@ -212,96 +212,91 @@ diagnostics:
         <<: *main_trop
         evolution_plot_ref_dataset: MTE
 
+  diag_lai_mvi:
+    <<: *diag_mvi
+    description: MVI scatter plot lai (Figure 10).
+    realms:
+      - land
+    variables:
+      lai:
+      lai: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refLAI3g
+        preprocessor: regridding
+        project: CMIP5
+        mip: Lmon
+        field: T2Ms
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: LAI3g
+    additional_datasets: &lai_datasets
+      - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: BNU-ESM}
+      - {dataset: CESM1-BGC}
+      - {dataset: inmcm4}
+      - {dataset: MIROC-ESM}
+      - {dataset: NorESM1-M}
+    scripts:
+      mvi_global:
+        <<: *mvi_glob
+      mvi_nh:
+        <<: *mvi_nh
+      mvi_sh:
+        <<: *mvi_sh
+      mvi_trop:
+        <<: *mvi_trop
 
-#  DIAG_laiMVI:
-#    description: MVI scatter plot LAI (Figure 10)
-#    <<: *diag_mvi
-#    realms:
-#      - land
-#    variables:
-#      lai:
-#        preprocessor: regridding
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: LAI3g
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-#    scripts:
-#      mvi_global:
-#        <<: *mvi_glob
-#      mvi_nh:
-#        <<: *mvi_nh
-#      mvi_sh:
-#        <<: *mvi_sh
-#      mvi_trop:
-#        <<: *mvi_trop
+  diag_lai_main:
+    <<: *diag_main
+    description: Seasonal cycle plot lai (Figure 11).
+    realms:
+      - land
+    variables:
+      lai: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refLAI3g
+    additional_datasets: *lai_datasets
+    scripts:
+      main_global:
+        <<: *main_glob
+        evolution_plot_ref_dataset: LAI3g
+      main_nh:
+        <<: *main_nh
+        evolution_plot_ref_dataset: LAI3g
+      main_sh:
+        <<: *main_sh
+        evolution_plot_ref_dataset: LAI3g
+      main_trop:
+        <<: *main_trop
+        evolution_plot_ref_dataset: LAI3g
 
-
-#  DIAG_laiMAIN:
-#    description: Seasonal cycle plot LAI (Figure 11)
-#    <<: *diag_main
-#    variables:
-#      lai:
-#        preprocessor: regridding
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: LAI3g
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  tier: 3}
-#    scripts:
-#      main_global:
-#        <<: *main_glob
-#      main_nh:
-#        <<: *main_nh
-#      main_sh:
-#        <<: *main_sh
-#      main_trop:
-#        <<: *main_trop
-
-
-  # DIAG_scatter2:
-  #   description: Two-variable scatter plot cSoil-cVeg (Figure 12)
+  # NCL does not support multiple variables yet (#531)
+  # diag_scatter_two_vars:
+  #   description: Two-variable scatter plot cSoil-cVeg (Figure 12).
   #   themes:
   #     - phys
   #   realms:
   #     - land
   #   variables:
   #     cSoil:
-  #       preprocessor: regridding
-  #       field: T2Ms
-  #       mip: Lmon
+  #       <<: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
-  #         - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
   #         - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
+  #         - {dataset: bcc-csm1-1}
+  #         - {dataset: inmcm4}
+  #         - {dataset: MIROC-ESM}
+  #         - {dataset: NorESM1-M}
   #     cVeg:
-  #       preprocessor: regridding
-  #       field: T2Ms
-  #       mip: Lmon
+  #       <<: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
   #       alternative_dataset: NDP
   #       plot_units: PgC
   #       additional_datasets:
-  #         - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #         - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
   #         - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
+  #         - {dataset: bcc-csm1-1}
+  #         - {dataset: inmcm4}
+  #         - {dataset: MIROC-ESM}
+  #         - {dataset: NorESM1-M}
   #   scripts:
   #     scat_global: &scat_glob
   #       script: carbon_cycle/two_variables.ncl
