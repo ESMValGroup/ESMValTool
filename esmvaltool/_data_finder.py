@@ -296,31 +296,6 @@ def get_input_filename(variable, rootpath, drs):
         return os.path.join(dirname, filename)
 
 
-def get_input_fx_filename(variable, rootpath, drs):
-    """Simulate a path to input file.
-
-    This function should match the function get_input_filelist below.
-    """
-    files = []
-    dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    for j, dirname_template in zip(
-            range(len(dirname_templates)), dirname_templates):
-        # Simulate a latest version if required
-        if '[latestversion]' in dirname_template:
-            part1, part2 = dirname_template.split('[latestversion]')
-            dirname = os.path.join(part1, 'latestversion', part2)
-        else:
-            dirname = dirname_template
-
-        # Set the filename
-        filename = _get_fx_filename(variable, drs, j)
-
-        # Full path to files
-        files.append(os.path.join(dirname, filename))
-
-    return files
-
-
 def _get_filename(variable, drs):
     project = variable['project']
     cfg = get_project_config(project)
