@@ -208,18 +208,19 @@ begin
     end if
 
     ; CRU is only land based - Need landmask and also cut off Antarctica
-    if (isatt(diag_script_info, "ref_dataset") .and. \
+    ; (land mask is applied in preprocessor)
+    if (isatt(variable_info, "reference_dataset") .and. \
         variable_info@reference_dataset .eq. "CRU") then
-      aux_vars = read_fx_data(idat, "sftlf")
-
-      sftlf = where(aux_vars .gt. 1.0, 1.0, aux_vars)
 
       ; Mask Antarctica
-      sftlf({:-60}, :) = sftlf@_FillValue
+      log_info("Masking Antarctica")
+      data_var(:, {:-60}, :) = data_var@_FillValue
 
-      ; Apply mask
-      data_var = data_var * conform(data_var, sftlf, (/1, 2/))
-      delete([/aux_vars, sftlf/])
+      new_path = config_user_info@work_dir + dataset_name + "_test.nc"
+      data_var@var = var0
+      data_var@diag_script = diag_script
+      data_var@ncdf = new_path
+      ncdf_outfile = ncdf_write(data_var, new_path)
     end if
 
     ; Calculate annual mean

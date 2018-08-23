@@ -16,30 +16,15 @@ documentation:
   projects:
     - embrace
 
-datasets:
-# Datasets which do not provide all variables are defined within each diag block block
-# MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
-  - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
-  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r5i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  # No data on mistral
-  # - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-
-
 preprocessors:
   regridding:
     regrid:
       target_grid: 2x2
       scheme: linear
+
+  land_mask:
+    mask_landsea:
+      mask_out: sea
 
   grading:
     regrid:
@@ -51,20 +36,20 @@ preprocessors:
 diagnostics:
 
   diag_tas_mvi: &diag_mvi
-    description: MVI scatter plot surface temperature (Figure 1).
+    description: MVI scatter plot for tas (Figure 1).
     themes:
       - phys
     realms:
       - atmos
     variables:
-      tas: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
+      tas: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
         preprocessor: regridding
         project: CMIP5
         mip: Amon
         field: T2Ms
         exp: historical
         ensemble: r1i1p1
-        start_year: 1986
+        start_year: 1901
         end_year: 2005
         reference_dataset: CRU
         plot_units: degC
@@ -73,10 +58,22 @@ diagnostics:
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
-      - {dataset: NorESM1-M}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global: &mvi_glob
         script: carbon_cycle/mvi.ncl
@@ -94,12 +91,56 @@ diagnostics:
         <<: *mvi_glob
         region: Tropics
 
+  diag_tas_main: &diag_main
+    description: Error bar, sasonal cycle and evolution plots for tas (Figure 1).
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas: &landmask_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        preprocessor: land_mask
+        project: CMIP5
+        mip: Amon
+        field: T2Ms
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1901
+        end_year: 2005
+        reference_dataset: CRU
+        plot_units: degC
+    additional_datasets: *tas_datasets
+    scripts:
+      main_global: &main_glob
+        script: carbon_cycle/main.ncl
+        legend_year_outside: False
+        legend_outside: False
+        sort: True
+        seasonal_cycle_plot: True
+        errorbar_plot: True
+        mean_IAV_plot: True
+        styleset: CMIP5
+        region: Global
+        evolution_plot: True
+        evolution_plot_volcanoes: True
+        evolution_plot_ref_dataset: CRU
+        evolution_plot_anomaly: True
+      main_nh: &main_nh
+        <<: *main_glob
+        region: Northern Hemisphere
+      main_sh: &main_sh
+        <<: *main_glob
+        region: Southern Hemisphere
+      main_trop: &main_trop
+        <<: *main_glob
+        region: Tropics
+
   diag_pr_mvi:
     <<: *diag_mvi
-    description: MVI scatter plot precipitation (Figure 2).
+    description: MVI scatter plot for pr (Figure 2).
     variables:
       pr:
-        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
+        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
         plot_units: mm yr-1
     additional_datasets: *tas_datasets
     scripts:
@@ -112,77 +153,196 @@ diagnostics:
       mvi_trop:
         <<: *mvi_trop
 
-  diag_npb_main: &diag_main
-    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7).
-    themes:
-      - phys
+  diag_pr_main:
+    <<: *diag_main
+    description: Error bar, sasonal cycle and evolution plots for pr (Figure 2).
+    variables:
+      pr:
+        <<: *landmask_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        plot_units: mm yr-1
+    additional_datasets: *tas_datasets
+    scripts:
+      mvi_global:
+        <<: *main_glob
+      mvi_nh:
+        <<: *main_nh
+      mvi_sh:
+        <<: *main_sh
+      mvi_trop:
+        <<: *main_trop
+
+  # FIXME: irregular regridding not supported yet (#550)
+  # diag_tos_mvi:
+  #   <<: *diag_mvi
+  #   description: MVI scatter plot for tos (Figure 3).
+  #   realms:
+  #     - ocean
+  #   variables:
+  #     tos:
+  #       <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+  #       mip: Omon
+  #       reference_dataset: HadISST
+  #   additional_datasets: &tos_datasets
+  #     - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+  #     - {dataset: bcc-csm1-1}
+  #     - {dataset: bcc-csm1-1-m}
+  #     # No data
+  #     # - {dataset: BNU-ESM}
+  #     - {dataset: CanESM2}
+  #     - {dataset: CESM1-BGC}
+  #     - {dataset: GFDL-ESM2G}
+  #     # Wrong standard_name -> Fix needed
+  #     # - {dataset: GFDL-ESM2M}
+  #     - {dataset: HadGEM2-CC}
+  #     # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #     # - {dataset: HadGEM2-ES}
+  #     - {dataset: inmcm4}
+  #     - {dataset: IPSL-CM5A-LR}
+  #     - {dataset: IPSL-CM5A-MR}
+  #     - {dataset: IPSL-CM5B-LR}
+  #     # No data
+  #     # - {dataset: MIROC-ESM}
+  #     # - {dataset: MIROC-ESM-CHEM}
+  #     - {dataset: MPI-ESM-LR}
+  #     - {dataset: MPI-ESM-MR}
+  #     - {dataset: NorESM1-ME}
+  #   scripts:
+  #     mvi_global:
+  #       <<: *mvi_glob
+  #     mvi_nh:
+  #       <<: *mvi_nh
+  #     mvi_sh:
+  #       <<: *mvi_sh
+  #     mvi_trop:
+  #       <<: *mvi_trop
+
+  # diag_tos_main:
+  #   <<: *diag_main
+  #   description: Error bar, sasonal cycle and evolution plots for pr (Figure 3).
+  #   realms:
+  #     - ocean
+  #   variables:
+  #     tos:
+  #       project: CMIP5
+  #       mip: Omon
+  #       field: T2Ms
+  #       exp: historical
+  #       ensemble: r1i1p1
+  #       start_year: 1901
+  #       end_year: 2005
+  #       reference_dataset: HadISST
+  #       plot_units: degC
+  #   additional_datasets: *tos_datasets
+  #   scripts:
+  #     main_global:
+  #       <<: *main_glob
+  #       evolution_plot_ref_dataset: HadISST
+  #     main_nh:
+  #       <<: *main_nh
+  #       evolution_plot_ref_dataset: HadISST
+  #     main_sh:
+  #       <<: *main_sh
+  #       evolution_plot_ref_dataset: HadISST
+  #     main_trop:
+  #       <<: *main_trop
+  #       evolution_plot_ref_dataset: HadISST
+
+  diag_npb_main:
+    <<: *diag_main
+    description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
     realms:
       - land
     variables:
-      nbp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refJMA
+      nbp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
         project: CMIP5
         mip: Lmon
         field: T2Ms
         exp: historical
         ensemble: r1i1p1
-        start_year: 1986
+        start_year: 1901
         end_year: 2005
         reference_dataset: JMA-TRANSCOM
-        alternative_dataset: GCP
         plot_units: PgC y-1
-        fx_files: [sftlf]
     additional_datasets: &nbp_datasets
       - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
-      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+      # No data
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Two overlapping files -> iris: cannot concatenate cubes (#538)
+      # - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
-      - {dataset: NorESM1-M}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
-      main_global: &main_glob
-        script: carbon_cycle/main.ncl
-        legend_year_outside: False
-        legend_outside: False
-        sort: True
-        seasonal_cycle_plot: True
-        anav_month: True
-        errorbar_plot: True
-        mean_IAV_plot: True
-        styleset: CMIP5
-        region: Global
-        evolution_plot: True
-        evolution_plot_volcanoes: True
+      main_global:
+        <<: *main_glob
         evolution_plot_ref_dataset: GCP
-        obsname: GCP
-      main_nh: &main_nh
-        <<: *main_glob
-        region: Northern Hemisphere
-      main_sh: &main_sh
-        <<: *main_glob
-        region: Southern Hemisphere
-      main_trop: &main_trop
-        <<: *main_glob
-        region: Tropics
+        evolution_plot_anomaly: False
+        anav_month: True
+      main_nh:
+        <<: *main_nh
+        evolution_plot_ref_dataset: GCP
+        evolution_plot_anomaly: False
+        anav_month: True
+      main_sh:
+        <<: *main_sh
+        evolution_plot_ref_dataset: GCP
+        evolution_plot_anomaly: False
+        anav_month: True
+      main_trop:
+        <<: *main_trop
+        evolution_plot_ref_dataset: GCP
+        evolution_plot_anomaly: False
+        anav_month: True
 
   diag_gpp_mvi:
     <<: *diag_mvi
-    description: MVI scatter plot gpp (Figure 8).
+    description: MVI scatter plot for gpp (Figure 8).
     realms:
       - land
     variables:
       gpp: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
-        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
+        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
         mip: Lmon
+        start_year: 1986
         reference_dataset: MTE
         plot_units: PgC y-1
     additional_datasets: &gpp_datasets
       - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
-      - {dataset: NorESM1-M}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Two overlapping files -> iris: cannot concatenate cubes (#538)
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_glob
@@ -195,32 +355,41 @@ diagnostics:
 
   diag_gpp_main:
     <<: *diag_main
-    description: Seasonal cycle plot gpp (Figure 9).
+    description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
+    realms:
+      - land
     variables:
-      gpp: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+      gpp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+        <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
+        start_year: 1986
+        reference_dataset: MTE
+        plot_units: PgC y-1
     additional_datasets: *gpp_datasets
     scripts:
       main_global:
         <<: *main_glob
         evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
 
   diag_lai_mvi:
     <<: *diag_mvi
-    description: MVI scatter plot lai (Figure 10).
+    description: MVI scatter plot for lai (Figure 10).
     realms:
       - land
     variables:
-      lai:
-      lai: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refLAI3g
+      lai: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
         preprocessor: regridding
         project: CMIP5
         mip: Lmon
@@ -233,11 +402,25 @@ diagnostics:
     additional_datasets: &lai_datasets
       - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Two overlapping files -> iris: cannot concatenate cubes (#538)
+      # - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
-      - {dataset: NorESM1-M}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_glob
@@ -250,29 +433,41 @@ diagnostics:
 
   diag_lai_main:
     <<: *diag_main
-    description: Seasonal cycle plot lai (Figure 11).
+    description: Error bar, sasonal cycle and evolution plots for lai (Figure 11).
     realms:
       - land
     variables:
-      lai: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refLAI3g
+      lai: &CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
+        project: CMIP5
+        mip: Lmon
+        field: T2Ms
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: LAI3g
     additional_datasets: *lai_datasets
     scripts:
       main_global:
         <<: *main_glob
         evolution_plot_ref_dataset: LAI3g
+        evolution_plot_anomaly: False
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: LAI3g
+        evolution_plot_anomaly: False
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: LAI3g
+        evolution_plot_anomaly: False
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: LAI3g
+        evolution_plot_anomaly: False
 
   # FIXME: NCL does not support multiple variables yet (#531)
   # diag_scatter_two_vars:
-  #   description: Two-variable scatter plot cSoil-cVeg (Figure 12).
+  #   description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
   #   themes:
   #     - phys
   #   realms:
@@ -283,21 +478,50 @@ diagnostics:
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
-  #         - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
+  #         - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
   #         - {dataset: bcc-csm1-1}
+  #         - {dataset: bcc-csm1-1-m}
+  #         - {dataset: BNU-ESM}
+  #         - {dataset: CanESM2}
+  #         - {dataset: CESM1-BGC}
+  #         - {dataset: GFDL-ESM2G}
+  #         - {dataset: GFDL-ESM2M}
+  #         - {dataset: HadGEM2-CC}
+  #         # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #         # - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
+  #         - {dataset: IPSL-CM5A-LR}
+  #         - {dataset: IPSL-CM5A-MR}
+  #         - {dataset: IPSL-CM5B-LR}
   #         - {dataset: MIROC-ESM}
-  #         - {dataset: NorESM1-M}
+  #         - {dataset: MIROC-ESM-CHEM}
+  #         - {dataset: MPI-ESM-LR}
+  #         - {dataset: MPI-ESM-MR}
+  #         - {dataset: NorESM1-ME}
   #     cVeg:
   #       <<: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
-  #       alternative_dataset: NDP
   #       plot_units: PgC
   #       additional_datasets:
-  #         - {dataset: NDP,   project: OBS,  type: ground,  version: 017b,  start_year: 2000,  end_year: 2000,  tier: 2}
+  #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
   #         - {dataset: bcc-csm1-1}
+  #         - {dataset: bcc-csm1-1-m}
+  #         - {dataset: BNU-ESM}
+  #         - {dataset: CanESM2}
+  #         - {dataset: CESM1-BGC}
+  #         - {dataset: GFDL-ESM2G}
+  #         - {dataset: GFDL-ESM2M}
+  #         - {dataset: HadGEM2-CC}
+  #         # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #         # - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
+  #         - {dataset: IPSL-CM5A-LR}
+  #         - {dataset: IPSL-CM5A-MR}
+  #         - {dataset: IPSL-CM5B-LR}
   #         - {dataset: MIROC-ESM}
-  #         - {dataset: NorESM1-M}
+  #         - {dataset: MIROC-ESM-CHEM}
+  #         - {dataset: MPI-ESM-LR}
+  #         - {dataset: MPI-ESM-MR}
+  #         - {dataset: NorESM1-ME}
   #   scripts:
   #     scat_global: &scat_glob
   #       script: carbon_cycle/two_variables.ncl
@@ -316,21 +540,29 @@ diagnostics:
 
   # FIXME: irregular regridding not supported yet (#550)
   # diag_main_fgco2:
-  #   description: Error bar and seasonal cycle plots fgco2 (Figure 14 and 15).
+  # description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
   #   variables:
   #     fgco2:
-  #       <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refJMA
+  #       <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
   #       mip: Omon
   #   additional_datasets: *nbp_datasets
   #   scripts:
   #     main_global:
   #       <<: *main_glob
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: False
   #     main_nh:
   #       <<: *main_nh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: False
   #     main_sh:
   #       <<: *main_sh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: False
   #     main_trop:
   #       <<: *main_trop
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: False
 
 
 #------------------------------------------------------------------------------
