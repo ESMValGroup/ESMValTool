@@ -126,6 +126,7 @@ def quickplot(cube, filename, plot_type, **kwargs):
     plot_function(cube, **kwargs)
     # plt.gca().coastlines()
     fig.savefig(filename)
+    plt.close(fig)
 
 
 def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
