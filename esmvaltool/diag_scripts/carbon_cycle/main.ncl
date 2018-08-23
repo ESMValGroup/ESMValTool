@@ -215,12 +215,6 @@ begin
       ; Mask Antarctica
       log_info("Masking Antarctica")
       data_var(:, {:-60}, :) = data_var@_FillValue
-
-      new_path = config_user_info@work_dir + dataset_name + "_test.nc"
-      data_var@var = var0
-      data_var@diag_script = diag_script
-      data_var@ncdf = new_path
-      ncdf_outfile = ncdf_write(data_var, new_path)
     end if
 
     ; Calculate annual mean
