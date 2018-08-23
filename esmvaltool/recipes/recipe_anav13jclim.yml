@@ -21,9 +21,9 @@ datasets:
   - {dataset: CanESM2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: GFDL-ESM2M,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2004}
-  # Only r5i1pi, reading fx files fails (#577)
-  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r5i1p1, start_year: 1986, end_year: 2004}
+  - {dataset: HadGEM2-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r5i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   # - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
@@ -34,7 +34,7 @@ datasets:
 
 
 preprocessors:
-  atmos:
+  regridding:
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -56,7 +56,7 @@ diagnostics:
       - atmos
     variables:
       tas: &atmos_CMIP5_Amon_T2Ms_historical_r1i1p1_1986_2005_refCRU
-        preprocessor: atmos
+        preprocessor: regridding
         project: CMIP5
         mip: Amon
         field: T2Ms
@@ -171,35 +171,39 @@ diagnostics:
         <<: *main_glob
         region: Tropics
 
-
-#  DIAG_gppMVI:
-#    description: MVI scatter plot gpp (Figure 8)
-#    <<: *diag_mvi
-#    realms:
-#      - land
-#    variables:
-#      gpp:
-#        preprocessor: land
-#        field: T2Ms
-#        mip: Lmon
-#        reference_dataset: MTE
-#        plot_units: PgC y-1
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      #- {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,   tier: 2}
-#    scripts:
-#      mvi_global:
-#        <<: *mvi_glob
-#      mvi_nh:
-#        <<: *mvi_nh
-#      mvi_sh:
-#        <<: *mvi_sh
-#      mvi_trop:
-#        <<: *mvi_trop
+  diag_gpp_mvi:
+    description: MVI scatter plot gpp (Figure 8).
+    <<: *diag_mvi
+    realms:
+      - land
+    variables:
+      gpp:
+        preprocessor: regridding
+        project: CMIP5
+        mip: Lmon
+        field: T2Ms
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: MTE
+        plot_units: PgC y-1
+    additional_datasets:
+      - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: bcc-csm1-1}
+      - {dataset: BNU-ESM}
+      - {dataset: CESM1-BGC}
+      - {dataset: inmcm4}
+      - {dataset: NorESM1-M}
+    scripts:
+      mvi_global:
+        <<: *mvi_glob
+      mvi_nh:
+        <<: *mvi_nh
+      mvi_sh:
+        <<: *mvi_sh
+      mvi_trop:
+        <<: *mvi_trop
 
 
 #  DIAG_gppMAIN:
@@ -207,7 +211,7 @@ diagnostics:
 #    <<: *diag_main
 #    variables:
 #      gpp:
-#        preprocessor: land
+#        preprocessor: regridding
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: MTE
@@ -237,7 +241,7 @@ diagnostics:
 #      - land
 #    variables:
 #      lai:
-#        preprocessor: land
+#        preprocessor: regridding
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: LAI3g
@@ -265,7 +269,7 @@ diagnostics:
 #    <<: *diag_main
 #    variables:
 #      lai:
-#        preprocessor: land
+#        preprocessor: regridding
 #        field: T2Ms
 #        mip: Lmon
 #        reference_dataset: LAI3g
@@ -296,7 +300,7 @@ diagnostics:
   #     - land
   #   variables:
   #     cSoil:
-  #       preprocessor: land
+  #       preprocessor: regridding
   #       field: T2Ms
   #       mip: Lmon
   #       reference_dataset: HWSD
@@ -308,7 +312,7 @@ diagnostics:
   #         - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
   #         - {dataset: HWSD,  project: OBS,  type: ground,  version: 1,    start_year: 2000,  end_year: 2000,  tier: 2}
   #     cVeg:
-  #       preprocessor: land
+  #       preprocessor: regridding
   #       field: T2Ms
   #       mip: Lmon
   #       alternative_dataset: NDP

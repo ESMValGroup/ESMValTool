@@ -117,6 +117,9 @@ begin
 
     ; Read data
     data_var = read_data(idat, var0, field_type0)
+    if (typeof(data_var) .eq. "double") then
+      data_var := dble2flt(data_var)
+    end if
 
     ; Get dimensions
     if (isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
@@ -212,8 +215,6 @@ begin
     ; Commpute MVI
     all_data_mvi(idat, :, :) = (dataset / ref - ref / dataset) ^ 2
     delete([/dataset, data_temp/])
-
-    dataset = all_data_yearly(idat, :, :, :)
 
     ; Compute trend
     dataset = all_data_yearly(idat, :, :, :)

@@ -200,7 +200,7 @@ begin
 
     ; CRU is only land based - Need landmask and also cut off Antarctica
     if (isatt(diag_script_info, "ref_dataset") .and. \
-        variable_info@reference_dataset .eq."CRU") then
+        variable_info@reference_dataset .eq. "CRU") then
       aux_vars = read_fx_data(idat, "sftlf")
 
       sftlf = where(aux_vars .gt. 1.0, 1.0, aux_vars)
