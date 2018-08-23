@@ -194,6 +194,12 @@ begin
       data_var := dble2flt(data_var)
     end if
 
+    ; Check for irregular grids (TODO)
+    if (.not. isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
+      error_msg("f", diag_script, "", "Irregular grids are currently not " + \
+                "supported")
+    end if
+
     ; Set type of area operation (flux vs. non-flux variables)
     if (data_var@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
       sp_opt = "sum"

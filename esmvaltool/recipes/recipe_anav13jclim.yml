@@ -27,6 +27,7 @@ datasets:
   # - {dataset: HadGEM2-ES,     project: CMIP5, exp: historical, ensemble: r5i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-MR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  # No data on mistral
   # - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
   - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
@@ -118,7 +119,7 @@ diagnostics:
     realms:
       - land
     variables:
-      nbp:
+      nbp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refJMA
         project: CMIP5
         mip: Lmon
         field: T2Ms
@@ -130,7 +131,7 @@ diagnostics:
         alternative_dataset: GCP
         plot_units: PgC y-1
         fx_files: [sftlf]
-    additional_datasets:
+    additional_datasets: &nbp_datasets
       - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: BNU-ESM}
@@ -269,7 +270,7 @@ diagnostics:
         <<: *main_trop
         evolution_plot_ref_dataset: LAI3g
 
-  # NCL does not support multiple variables yet (#531)
+  # FIXME: NCL does not support multiple variables yet (#531)
   # diag_scatter_two_vars:
   #   description: Two-variable scatter plot cSoil-cVeg (Figure 12).
   #   themes:
@@ -313,26 +314,23 @@ diagnostics:
   #       <<: *scat_glob
   #       region: Tropics
 
-
-# THIS DIAGNOSTIC DOES NOT SUPPORT IRREGULAR GRIDS YET
-  # DIAG_mainFGCO2:
-  #   description: Error bas and seasonal cycle plots fgco2 (Figure 14 and 15)
+  # FIXME: irregular regridding not supported yet (#550)
+  # diag_main_fgco2:
+  #   description: Error bar and seasonal cycle plots fgco2 (Figure 14 and 15).
   #   variables:
-  #     - {dataset: fgco2,  mip: Omon,  field: T2Ms}
+  #     fgco2:
+  #       <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refJMA
+  #       mip: Omon
+  #   additional_datasets: *nbp_datasets
   #   scripts:
-  #     - {script: CarbonCycle_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl}
-  #     - {script: CarbonCycle_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl}
-  #     - {script: CarbonCycle_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
-  #     - {script: CarbonCycle_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
-  #    additional_datasets:
-  #      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-  #      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-# GRADING GLOBAL #################################################################################################
-
-
+  #     main_global:
+  #       <<: *main_glob
+  #     main_nh:
+  #       <<: *main_nh
+  #     main_sh:
+  #       <<: *main_sh
+  #     main_trop:
+  #       <<: *main_trop
 
 
 #------------------------------------------------------------------------------
