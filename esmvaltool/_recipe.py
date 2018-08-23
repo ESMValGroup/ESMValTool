@@ -510,9 +510,9 @@ def _update_fx_settings(settings, variable, config_user):
             drs=config_user['drs'])
 
         # allow both sftlf and sftof
-        if fx_files_dict['sftlf']:
+        if fx_files_dict.get('sftlf'):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
-        if fx_files_dict['sftof']:
+        if fx_files_dict.get('sftof'):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
 
 
