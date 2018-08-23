@@ -415,10 +415,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
             if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
-                if 'latest' in list_versions:
-                    list_versions.insert(
-                        0, list_versions.pop(list_versions.index('latest')))
-
+                # check version names
                 for version in ['latest'] + list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
