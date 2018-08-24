@@ -194,13 +194,7 @@ def regrid(src_cube, target_grid, scheme):
                 src_cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    try:
-        result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
-    except Exception as ex:
-        msg = ('There were errors while regridding the cube '
-               '{}'.format(src_cube),)
-        ex.args = msg + ex.args
-        raise ex
+    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
 
     return result
 
