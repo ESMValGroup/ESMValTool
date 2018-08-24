@@ -17,7 +17,10 @@ documentation:
     - embrace
 
 preprocessors:
-  mask_land_and_regrid:
+  noop:
+    {}
+
+  land_mask_and_regrid:
     mask_landsea:
       mask_out: sea
     regrid:
@@ -49,8 +52,8 @@ diagnostics:
     realms:
       - atmos
     variables:
-      tas: &masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
-        preprocessor: mask_land_and_regrid
+      tas: &landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: land_mask_and_regrid
         project: CMIP5
         mip: Amon
         field: T2Ms
@@ -105,17 +108,9 @@ diagnostics:
     realms:
       - atmos
     variables:
-      tas: &landmask_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+      tas:
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
         preprocessor: land_mask
-        project: CMIP5
-        mip: Amon
-        field: T2Ms
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1901
-        end_year: 2005
-        reference_dataset: CRU
-        plot_units: degC
     additional_datasets: *tas_datasets
     scripts:
       main_global: &main_glob
@@ -147,7 +142,7 @@ diagnostics:
     description: MVI scatter plot for pr (Figure 2).
     variables:
       pr:
-        <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
         plot_units: mm yr-1
     additional_datasets: *tas_datasets
     scripts:
@@ -165,7 +160,8 @@ diagnostics:
     description: Error bar, sasonal cycle and evolution plots for pr (Figure 2).
     variables:
       pr:
-        <<: *landmask_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: land_mask
         plot_units: mm yr-1
     additional_datasets: *tas_datasets
     scripts:
@@ -186,8 +182,8 @@ diagnostics:
   #     - ocean
   #   variables:
   #     tos:
-  #       <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
-  #       preprocessor: regridding
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
+  #       preprocessor: # FIXME
   #       mip: Omon
   #       reference_dataset: HadISST
   #   additional_datasets: &tos_datasets
@@ -231,15 +227,10 @@ diagnostics:
   #     - ocean
   #   variables:
   #     tos:
-  #       project: CMIP5
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
+  #       preprocessor: # FIXME
   #       mip: Omon
-  #       field: T2Ms
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 1901
-  #       end_year: 2005
   #       reference_dataset: HadISST
-  #       plot_units: degC
   #   additional_datasets: *tos_datasets
   #   scripts:
   #     main_global:
@@ -261,14 +252,10 @@ diagnostics:
     realms:
       - land
     variables:
-      nbp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
-        project: CMIP5
+      nbp:
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: noop
         mip: Lmon
-        field: T2Ms
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1901
-        end_year: 2005
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
     additional_datasets: &nbp_datasets
@@ -317,88 +304,13 @@ diagnostics:
         evolution_plot_anomaly: False
         anav_month: True
 
-  diag_gpp_mvi:
-    <<: *diag_mvi
-    description: MVI scatter plot for gpp (Figure 8).
-    realms:
-      - land
-    variables:
-      gpp: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
-        <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
-        preprocessor: regridding
-        mip: Lmon
-        start_year: 1986
-        reference_dataset: MTE
-        plot_units: PgC y-1
-    additional_datasets: &gpp_datasets
-      - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes fails (#580)
-      # - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Two overlapping files -> iris: cannot concatenate cubes (#538)
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
-    scripts:
-      mvi_global:
-        <<: *mvi_glob
-      mvi_nh:
-        <<: *mvi_nh
-      mvi_sh:
-        <<: *mvi_sh
-      mvi_trop:
-        <<: *mvi_trop
-
-  diag_gpp_main:
-    <<: *diag_main
-    description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
-    realms:
-      - land
-    variables:
-      gpp: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
-        <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
-        start_year: 1986
-        reference_dataset: MTE
-        plot_units: PgC y-1
-    additional_datasets: *gpp_datasets
-    scripts:
-      main_global:
-        <<: *main_glob
-        evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
-      main_nh:
-        <<: *main_nh
-        evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
-      main_sh:
-        <<: *main_sh
-        evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
-      main_trop:
-        <<: *main_trop
-        evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
-
   diag_lai_mvi:
     <<: *diag_mvi
     description: MVI scatter plot for lai (Figure 10).
     realms:
       - land
     variables:
-      lai: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
+      lai: &landmaskregrid_Lmon_1986_2005_refLAI3g
         preprocessor: regridding
         project: CMIP5
         mip: Lmon
@@ -446,15 +358,9 @@ diagnostics:
     realms:
       - land
     variables:
-      lai: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
-        project: CMIP5
-        mip: Lmon
-        field: T2Ms
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1986
-        end_year: 2005
-        reference_dataset: LAI3g
+      lai:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        preprocessor: land_mask
     additional_datasets: *lai_datasets
     scripts:
       main_global:
@@ -474,6 +380,78 @@ diagnostics:
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: False
 
+  diag_gpp_mvi:
+    <<: *diag_mvi
+    description: MVI scatter plot for gpp (Figure 8).
+    realms:
+      - land
+    variables:
+      gpp:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        reference_dataset: MTE
+        plot_units: PgC y-1
+    additional_datasets: &gpp_datasets
+      - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      # Reading datasets with multiple institutes fails (#580)
+      # - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Two overlapping files -> iris: cannot concatenate cubes (#538)
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
+    scripts:
+      mvi_global:
+        <<: *mvi_glob
+      mvi_nh:
+        <<: *mvi_nh
+      mvi_sh:
+        <<: *mvi_sh
+      mvi_trop:
+        <<: *mvi_trop
+
+  diag_gpp_main:
+    <<: *diag_main
+    description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
+    realms:
+      - land
+    variables:
+      gpp:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        preprocessor: land_mask
+        reference_dataset: MTE
+        plot_units: PgC y-1
+    additional_datasets: *gpp_datasets
+    scripts:
+      main_global:
+        <<: *main_glob
+        evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
+      main_nh:
+        <<: *main_nh
+        evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
+      main_sh:
+        <<: *main_sh
+        evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
+      main_trop:
+        <<: *main_trop
+        evolution_plot_ref_dataset: MTE
+        evolution_plot_anomaly: False
+
   # FIXME: NCL does not support multiple variables yet (#531)
   # diag_scatter_two_vars:
   #   description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
@@ -483,7 +461,7 @@ diagnostics:
   #     - land
   #   variables:
   #     cSoil:
-  #       <<: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+  #       <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
@@ -508,7 +486,8 @@ diagnostics:
   #         - {dataset: MPI-ESM-MR}
   #         - {dataset: NorESM1-ME}
   #     cVeg:
-  #       <<: *regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
+  #       <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+  #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
@@ -552,9 +531,10 @@ diagnostics:
   # description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
   #   variables:
   #     fgco2:
-  #       <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
   #       preprocessor: # FIXME
   #       mip: Omon
+  #       reference_dataset: # FIXME
   #   additional_datasets: *nbp_datasets
   #   scripts:
   #     main_global:
