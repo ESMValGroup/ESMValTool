@@ -39,6 +39,8 @@
 ;     diag_script_info@ref_varname: Varname in attributes of ext file
 ;
 ; Caveats:
+;     If CRU is the reference dataset it is important to apply a landmask in
+;     the preprocessor section of the recipe.
 ;     Regridding is not required since spatial averages are calculated for all
 ;     plots. Performance metrics calculated with perfmetrics_main could be
 ;     inconsistent with the plots produced by this script, since a consistent

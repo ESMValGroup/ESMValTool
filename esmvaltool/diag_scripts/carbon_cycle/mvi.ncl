@@ -17,14 +17,13 @@
 ; Optional recipe attributes:
 ;
 ; Caveats:
-;     The derived variables pr-mmday and tas-degC needs to be used in order
-;     to get the correct linear trend. For land variables nbp, gpp and lai, it
-;     is recommended to use the masked version (NBP, GPP and LAI, respectively)
-;     in order to have a consistent land mask for all datasets.
+;     If CRU is the reference dataset it is important to apply a landmask in
+;     the preprocessor section of the recipe.
 ;
 ; Modification history:
 ;   * 20180814_A-schl_ma: continued porting to v2.0
 ;   * 20180619_A-wenz_sa: adopted script to v2
+;   * 20170316_A-gier_be: Added cdo regridding, landmask for CRU obs
 ;   * 20151130_A-laue_ax: moved call to write_references to beginning of code
 ;   * 20151104_A-righ_ma: graphic part moved to external plot_scripts
 ;   * 20151102_A-righ_ma: replacing area functions with ESMValTool functions
@@ -129,6 +128,16 @@ begin
       ; TODO
       error_msg("f", diag_script, "", "Irregular grids are currently not " + \
                 "supported")
+    end if
+
+    ; CRU is only land based - Need landmask and also cut off Antarctica
+    ; (land mask is applied in preprocessor)
+    if (isatt(variable_info, "reference_dataset") .and. \
+        variable_info@reference_dataset .eq. "CRU") then
+
+      ; Mask Antarctica
+      log_info("Masking Antarctica")
+      data_var(:, {:-60}, :) = data_var@_FillValue
     end if
 
     ; Computing annual mean
@@ -361,7 +370,7 @@ begin
   tmp = regional_mvi
   tmp(ref_idx) = tmp@_FillValue
   nlevs = 11
-  tmp := nice_mnmxintvl(min(tmp), max(tmp), nlevs, True)
+  tmp := nice_mnmxintvl(min(tmp) - 0.01, max(tmp) + 0.01, nlevs, True)
   levs = decimalPlaces(fspan(tmp(0), tmp(1), 11), 2, True)
   delete(tmp)
 

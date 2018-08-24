@@ -17,6 +17,13 @@ documentation:
     - embrace
 
 preprocessors:
+  mask_land_and_regrid:
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
   regridding:
     regrid:
       target_grid: 2x2
@@ -42,8 +49,8 @@ diagnostics:
     realms:
       - atmos
     variables:
-      tas: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
-        preprocessor: regridding
+      tas: &masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        preprocessor: mask_land_and_regrid
         project: CMIP5
         mip: Amon
         field: T2Ms
@@ -63,7 +70,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # Reading datasets with multiple institutes fails (#580)
       # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
@@ -140,7 +147,7 @@ diagnostics:
     description: MVI scatter plot for pr (Figure 2).
     variables:
       pr:
-        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
         plot_units: mm yr-1
     additional_datasets: *tas_datasets
     scripts:
@@ -179,7 +186,8 @@ diagnostics:
   #     - ocean
   #   variables:
   #     tos:
-  #       <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+  #       <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+  #       preprocessor: regridding
   #       mip: Omon
   #       reference_dataset: HadISST
   #   additional_datasets: &tos_datasets
@@ -194,7 +202,7 @@ diagnostics:
   #     # Wrong standard_name -> Fix needed
   #     # - {dataset: GFDL-ESM2M}
   #     - {dataset: HadGEM2-CC}
-  #     # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #     # Reading datasets with multiple institutes fails (#580)
   #     # - {dataset: HadGEM2-ES}
   #     - {dataset: inmcm4}
   #     - {dataset: IPSL-CM5A-LR}
@@ -275,7 +283,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # Reading datasets with multiple institutes fails (#580)
       # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
@@ -316,7 +324,8 @@ diagnostics:
       - land
     variables:
       gpp: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1986_2005_refMTE
-        <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        <<: *masklandregrid_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+        preprocessor: regridding
         mip: Lmon
         start_year: 1986
         reference_dataset: MTE
@@ -331,7 +340,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # Reading datasets with multiple institutes fails (#580)
       # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
@@ -389,7 +398,7 @@ diagnostics:
     realms:
       - land
     variables:
-      lai: &regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
+      lai: &regridding_CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
         preprocessor: regridding
         project: CMIP5
         mip: Lmon
@@ -409,7 +418,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+      # Reading datasets with multiple institutes fails (#580)
       # - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
@@ -437,7 +446,7 @@ diagnostics:
     realms:
       - land
     variables:
-      lai: &CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
+      lai: &CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refLAI3g
         project: CMIP5
         mip: Lmon
         field: T2Ms
@@ -487,7 +496,7 @@ diagnostics:
   #         - {dataset: GFDL-ESM2G}
   #         - {dataset: GFDL-ESM2M}
   #         - {dataset: HadGEM2-CC}
-  #         # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #         # Reading datasets with multiple institutes fails (#580)
   #         # - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
   #         - {dataset: IPSL-CM5A-LR}
@@ -511,7 +520,7 @@ diagnostics:
   #         - {dataset: GFDL-ESM2G}
   #         - {dataset: GFDL-ESM2M}
   #         - {dataset: HadGEM2-CC}
-  #         # Reading datasets with multiple institutes (#582) and reading fx files fails (#577)
+  #         # Reading datasets with multiple institutes fails (#580)
   #         # - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
   #         - {dataset: IPSL-CM5A-LR}
@@ -543,7 +552,8 @@ diagnostics:
   # description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
   #   variables:
   #     fgco2:
-  #       <<: *regridding_CMIP5_Amon_T2Ms_historical_r1i1p1_1901_2005_refCRU
+  #       <<: *CMIP5_Lmon_T2Ms_historical_r1i1p1_1901_2005_refJMA
+  #       preprocessor: # FIXME
   #       mip: Omon
   #   additional_datasets: *nbp_datasets
   #   scripts:
