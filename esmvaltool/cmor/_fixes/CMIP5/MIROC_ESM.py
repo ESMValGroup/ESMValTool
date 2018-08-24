@@ -52,29 +52,6 @@ class co2(Fix):
         return cube
 
 
-class gpp(Fix):
-    """Fixes for gpp"""
-
-    def fix_metadata(self, cube):
-        """
-        Fix metadata
-
-        Fixes error in cube units
-
-        Parameters
-        ----------
-        cube: iris.cube.Cube
-
-        Returns
-        -------
-        iris.cube.Cube
-
-        """
-        # Fixing the metadata, automatic unit conversion should do the trick
-        cube.units = cf_units.Unit('g m-2 day-1')
-        return cube
-
-
 class allvars(Fix):
     """Common fixes to all vars"""
 
