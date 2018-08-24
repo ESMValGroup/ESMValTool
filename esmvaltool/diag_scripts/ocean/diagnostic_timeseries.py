@@ -173,7 +173,10 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
-            color = cmap(index / (len(metadata) - 1.))
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
+            else:
+                color = 'blue'
 
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
