@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'shapely',
         'six',
         'stratify',
+        'vmprof',
         'yamale',
     ],
     # Test dependencies
