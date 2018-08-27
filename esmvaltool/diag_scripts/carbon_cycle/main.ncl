@@ -669,57 +669,8 @@ begin
     plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
 
     ; After overlaying the plots add titles and legend manually
-    res = True
-    res_text = True                     ; text mods desired
-    res_text@txFontHeightF = 0.01       ; change text size
-    res_text@txJust = "CenterLeft"      ; text justification
-    res_lines = True                    ; polyline mods desired
-    res_lines@gsLineDashPattern = 0.0   ; solid line
-    res_lines@gsLineThicknessF = 5.0    ; line thicker
-    res_lines@gsLineColor = "gray60"    ; line color
     wks_out = get_wks(wks, diag_script, var0)
-
-    ; Create lines for Volcanic eruptions
-    if (isatt(diag_script_info, "evolution_plot_volcanoes") .and. \
-        diag_script_info@evolution_plot_volcanoes) then
-      ymax = max((/max(data_arr(3, :)), max(data_arr(0, :))/))
-      ymin = min((/min(data_arr(2, :)), min(data_arr(0, :))/))
-      ytop = ymax + 0.1*(ymax - ymin)
-      yy = (/(ymin - 0.05 * (ymax - ymin)), (ymax + 0.15*(ymax-ymin))/)
-
-      ; Agung
-      xx = (/1963.0, 1963.0/)
-      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
-                                                      res_lines)
-      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "Agung", \
-                                                  (xx(1) + 0.5), (ytop), \
-                                                  res_text)
-
-      ; El Chichon
-      xx = (/1982.0, 1982.0/)
-      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
-                                                      res_lines)
-      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, \
-                                                  "El Chichon", \
-                                                  (xx(1)), (ytop), res_text)
-
-      ; Pinatubo
-      xx = (/1991.0, 1991.0/)
-      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
-                                                      res_lines)
-      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "Pinatubo", \
-                                                  (xx(1)), (ytop), res_text)
-
-      ; El Nino
-      res_lines@gsLineColor = "orange"
-      xx = (/1998.0, 1998.0/)
-      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, xx, yy, \
-                                                      res_lines)
-      plot1@$unique_string("dum")$ = gsn_add_text(wks_out, plot1, "El Nino", \
-                                                  (xx(1) + 0.5), (ytop), \
-                                                  res_text)
-    end if
-
+    res_lines = True                    ; polyline mods desired
     res_lines@gsLineColor = "black"
     res_lines@gsLineDashPattern = 16
     res_lines@gsLineThicknessF = 3.0
@@ -730,6 +681,7 @@ begin
                                                       (/0.0, 0.0/), res_lines)
     end if
 
+    res = True
     res@gsnDraw = False
     res@gsnFrame = False
     res@gsnMaximize = True

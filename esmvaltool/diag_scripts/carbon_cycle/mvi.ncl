@@ -130,12 +130,10 @@ begin
                 "supported")
     end if
 
-    ; CRU is only land based - Need landmask and also cut off Antarctica
-    ; (land mask is applied in preprocessor)
-    if (isatt(variable_info, "reference_dataset") .and. \
-        variable_info@reference_dataset .eq. "CRU") then
-
-      ; Mask Antarctica
+    ; Cut off Antarctica if necessary
+    if ((isatt(variable_info, "reference_dataset") .and. \
+         variable_info@reference_dataset .eq. "CRU") .or. \
+        input_file_info@mip(0) .eq. "Lmon") then
       log_info("Masking Antarctica")
       data_var(:, {:-60}, :) = data_var@_FillValue
     end if

@@ -17,10 +17,7 @@ documentation:
     - embrace
 
 preprocessors:
-  noop:
-    {}
-
-  land_mask_and_regrid:
+  landmask_and_regrid:
     mask_landsea:
       mask_out: sea
     regrid:
@@ -32,7 +29,14 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
 
-  land_mask:
+  regrid_to_ref:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+  landmask:
     mask_landsea:
       mask_out: sea
 
@@ -45,7 +49,7 @@ preprocessors:
 
 diagnostics:
 
-  diag_tas_mvi: &diag_mvi
+  diag_mvi_tas: &diag_mvi
     description: MVI scatter plot for tas (Figure 1).
     themes:
       - phys
@@ -53,7 +57,7 @@ diagnostics:
       - atmos
     variables:
       tas: &landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: land_mask_and_regrid
+        preprocessor: landmask_and_regrid
         project: CMIP5
         mip: Amon
         field: T2Ms
@@ -73,8 +77,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes fails (#580)
-      # - {dataset: HadGEM2-ES}
+      - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
@@ -85,23 +88,23 @@ diagnostics:
       - {dataset: MPI-ESM-MR}
       - {dataset: NorESM1-ME}
     scripts:
-      mvi_global: &mvi_glob
+      mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
         legend_year_outside: true
         sort: true
         styleset: CMIP5
         region: Global
       mvi_nh: &mvi_nh
-        <<: *mvi_glob
+        <<: *mvi_global
         region: Northern Hemisphere
       mvi_sh: &mvi_sh
-        <<: *mvi_glob
+        <<: *mvi_global
         region: Southern Hemisphere
       mvi_trop: &mvi_trop
-        <<: *mvi_glob
+        <<: *mvi_global
         region: Tropics
 
-  diag_tas_main: &diag_main
+  diag_main_tas: &diag_main
     description: Error bar, sasonal cycle and evolution plots for tas (Figure 1).
     themes:
       - phys
@@ -110,10 +113,10 @@ diagnostics:
     variables:
       tas:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: land_mask
+        preprocessor: landmask
     additional_datasets: *tas_datasets
     scripts:
-      main_global: &main_glob
+      main_global: &main_global
         script: carbon_cycle/main.ncl
         legend_year_outside: False
         legend_outside: False
@@ -128,16 +131,16 @@ diagnostics:
         evolution_plot_ref_dataset: CRU
         evolution_plot_anomaly: True
       main_nh: &main_nh
-        <<: *main_glob
+        <<: *main_global
         region: Northern Hemisphere
       main_sh: &main_sh
-        <<: *main_glob
+        <<: *main_global
         region: Southern Hemisphere
       main_trop: &main_trop
-        <<: *main_glob
+        <<: *main_global
         region: Tropics
 
-  diag_pr_mvi:
+  diag_mvi_pr:
     <<: *diag_mvi
     description: MVI scatter plot for pr (Figure 2).
     variables:
@@ -147,7 +150,7 @@ diagnostics:
     additional_datasets: *tas_datasets
     scripts:
       mvi_global:
-        <<: *mvi_glob
+        <<: *mvi_global
       mvi_nh:
         <<: *mvi_nh
       mvi_sh:
@@ -155,18 +158,18 @@ diagnostics:
       mvi_trop:
         <<: *mvi_trop
 
-  diag_pr_main:
+  diag_main_pr:
     <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for pr (Figure 2).
     variables:
       pr:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: land_mask
+        preprocessor: landmask
         plot_units: mm yr-1
     additional_datasets: *tas_datasets
     scripts:
       mvi_global:
-        <<: *main_glob
+        <<: *main_global
       mvi_nh:
         <<: *main_nh
       mvi_sh:
@@ -175,7 +178,7 @@ diagnostics:
         <<: *main_trop
 
   # FIXME: irregular regridding not supported yet (#550)
-  # diag_tos_mvi:
+  # diag_mvi_tos:
   #   <<: *diag_mvi
   #   description: MVI scatter plot for tos (Figure 3).
   #   realms:
@@ -198,8 +201,7 @@ diagnostics:
   #     # Wrong standard_name -> Fix needed
   #     # - {dataset: GFDL-ESM2M}
   #     - {dataset: HadGEM2-CC}
-  #     # Reading datasets with multiple institutes fails (#580)
-  #     # - {dataset: HadGEM2-ES}
+  #     - {dataset: HadGEM2-ES}
   #     - {dataset: inmcm4}
   #     - {dataset: IPSL-CM5A-LR}
   #     - {dataset: IPSL-CM5A-MR}
@@ -212,7 +214,7 @@ diagnostics:
   #     - {dataset: NorESM1-ME}
   #   scripts:
   #     mvi_global:
-  #       <<: *mvi_glob
+  #       <<: *mvi_global
   #     mvi_nh:
   #       <<: *mvi_nh
   #     mvi_sh:
@@ -220,7 +222,7 @@ diagnostics:
   #     mvi_trop:
   #       <<: *mvi_trop
 
-  # diag_tos_main:
+  # diag_main_tos:
   #   <<: *diag_main
   #   description: Error bar, sasonal cycle and evolution plots for pr (Figure 3).
   #   realms:
@@ -234,7 +236,7 @@ diagnostics:
   #   additional_datasets: *tos_datasets
   #   scripts:
   #     main_global:
-  #       <<: *main_glob
+  #       <<: *main_global
   #       evolution_plot_ref_dataset: HadISST
   #     main_nh:
   #       <<: *main_nh
@@ -246,7 +248,7 @@ diagnostics:
   #       <<: *main_trop
   #       evolution_plot_ref_dataset: HadISST
 
-  diag_npb_main:
+  diag_main_npb:
     <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
     realms:
@@ -254,7 +256,7 @@ diagnostics:
     variables:
       nbp:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: noop
+        preprocessor: landmask
         mip: Lmon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
@@ -270,8 +272,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes fails (#580)
-      # - {dataset: HadGEM2-ES}
+      - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
@@ -284,7 +285,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       main_global:
-        <<: *main_glob
+        <<: *main_global
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: False
         anav_month: True
@@ -304,14 +305,14 @@ diagnostics:
         evolution_plot_anomaly: False
         anav_month: True
 
-  diag_lai_mvi:
+  diag_mvi_lai:
     <<: *diag_mvi
     description: MVI scatter plot for lai (Figure 10).
     realms:
       - land
     variables:
       lai: &landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: regridding
+        preprocessor: landmask_and_regrid
         project: CMIP5
         mip: Lmon
         field: T2Ms
@@ -330,8 +331,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes fails (#580)
-      # - {dataset: HadGEM2-ES}
+      - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
@@ -344,7 +344,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
-        <<: *mvi_glob
+        <<: *mvi_global
       mvi_nh:
         <<: *mvi_nh
       mvi_sh:
@@ -352,7 +352,7 @@ diagnostics:
       mvi_trop:
         <<: *mvi_trop
 
-  diag_lai_main:
+  diag_main_lai:
     <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for lai (Figure 11).
     realms:
@@ -360,11 +360,11 @@ diagnostics:
     variables:
       lai:
         <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: land_mask
+        preprocessor: landmask
     additional_datasets: *lai_datasets
     scripts:
       main_global:
-        <<: *main_glob
+        <<: *main_global
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: False
       main_nh:
@@ -380,7 +380,7 @@ diagnostics:
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: False
 
-  diag_gpp_mvi:
+  diag_mvi_gpp:
     <<: *diag_mvi
     description: MVI scatter plot for gpp (Figure 8).
     realms:
@@ -400,8 +400,7 @@ diagnostics:
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
-      # Reading datasets with multiple institutes fails (#580)
-      # - {dataset: HadGEM2-ES}
+      - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
@@ -414,7 +413,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
-        <<: *mvi_glob
+        <<: *mvi_global
       mvi_nh:
         <<: *mvi_nh
       mvi_sh:
@@ -422,7 +421,7 @@ diagnostics:
       mvi_trop:
         <<: *mvi_trop
 
-  diag_gpp_main:
+  diag_main_gpp:
     <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
     realms:
@@ -430,13 +429,13 @@ diagnostics:
     variables:
       gpp:
         <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: land_mask
+        preprocessor: landmask
         reference_dataset: MTE
         plot_units: PgC y-1
     additional_datasets: *gpp_datasets
     scripts:
       main_global:
-        <<: *main_glob
+        <<: *main_global
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: False
       main_nh:
@@ -453,7 +452,7 @@ diagnostics:
         evolution_plot_anomaly: False
 
   # FIXME: NCL does not support multiple variables yet (#531)
-  # diag_scatter_two_vars:
+  # diag_two_vars_scatter:
   #   description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
   #   themes:
   #     - phys
@@ -474,8 +473,7 @@ diagnostics:
   #         - {dataset: GFDL-ESM2G}
   #         - {dataset: GFDL-ESM2M}
   #         - {dataset: HadGEM2-CC}
-  #         # Reading datasets with multiple institutes fails (#580)
-  #         # - {dataset: HadGEM2-ES}
+  #         - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
   #         - {dataset: IPSL-CM5A-LR}
   #         - {dataset: IPSL-CM5A-MR}
@@ -499,8 +497,7 @@ diagnostics:
   #         - {dataset: GFDL-ESM2G}
   #         - {dataset: GFDL-ESM2M}
   #         - {dataset: HadGEM2-CC}
-  #         # Reading datasets with multiple institutes fails (#580)
-  #         # - {dataset: HadGEM2-ES}
+  #         - {dataset: HadGEM2-ES}
   #         - {dataset: inmcm4}
   #         - {dataset: IPSL-CM5A-LR}
   #         - {dataset: IPSL-CM5A-MR}
@@ -538,7 +535,7 @@ diagnostics:
   #   additional_datasets: *nbp_datasets
   #   scripts:
   #     main_global:
-  #       <<: *main_glob
+  #       <<: *main_global
   #       evolution_plot_ref_dataset: GCP
   #       evolution_plot_anomaly: False
   #     main_nh:
@@ -554,531 +551,212 @@ diagnostics:
   #       evolution_plot_ref_dataset: GCP
   #       evolution_plot_anomaly: False
 
+  diag_grading_tas: &diag_grading
+    description: Grading precalculations for tas.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: regrid_to_ref
+        start_year: 1986
+    additional_datasets: *tas_datasets
+    scripts:
+      cycle_global: &cycle_global
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: monthlyclim
+        region: Global
+        plot_stddev: all
+        legend_outside: False
+        styleset: CMIP5
+      cycle_nh: &cycle_nh
+        <<: *cycle_global
+        region: Northern Hemisphere
+      cycle_sh: &cycle_sh
+        <<: *cycle_global
+        region: Southern Hemisphere
+      cycle_trop: &cycle_trop
+        <<: *cycle_global
+        region: Tropics
+      grading_global: &grading_global
+        <<: *cycle_global
+        draw_plots: True
+        calc_grading: True
+        metric: [RMSD]
+        normalization: [maximum]
+      grading_nh: &grading_nh
+        <<: *grading_global
+        region: Northern Hemisphere
+      grading_sh: &grading_sh
+        <<: *grading_global
+        region: Southern Hemisphere
+      grading_trop: &grading_trop
+        <<: *grading_global
+        region: Tropics
 
-#------------------------------------------------------------------------------
-# To be ported...
-#------------------------------------------------------------------------------
+  diag_grading_pr:
+    <<: *diag_grading
+    description: Grading precalculations for pr.
+    variables:
+      pr:
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: regrid_to_ref
+        start_year: 1986
+    additional_datasets: *tas_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
-#  DIAG_gradtasglob:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: tas,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocessor: grading
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year:    1986,  end_year: 2005,  tier: 3}
+  diag_grading_nbp:
+    <<: *diag_grading
+    description: Grading precalculations for nbp.
+    realms:
+      - land
+    variables:
+      nbp:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        preprocessor: regrid_to_ref
+        reference_dataset: JMA-TRANSCOM
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+      # No data
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Two overlapping files -> iris: cannot concatenate cubes (#538)
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
-#
-#  DIAG_gradprglob:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: pr,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
+  diag_grading_lai:
+    <<: *diag_grading
+    description: Grading precalculations for lai.
+    realms:
+      - land
+    variables:
+      lai:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        preprocessor: regrid_to_ref
+    additional_datasets: *lai_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
+  diag_grading_gpp:
+    <<: *diag_grading
+    description: Grading precalculations for gpp.
+    realms:
+      - land
+    variables:
+      gpp:
+        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        preprocessor: regrid_to_ref
+        reference_dataset: MTE
+    additional_datasets: *gpp_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
-#  DIAG_gradGPPglob:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradMTEglob:
-#    description: Grading calculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradLAIglob:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: lai,  reference_dataset: LAI3g,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-#  DIAG_gradNBPglob:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: nbp,  reference_dataset: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
-#    additional_datasets:
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-##      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-#  DIAG_portraitglob:
-#    description: Portrait diagram
-#    scripts:
-#      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
-
-
-# GRADING TROPICS ######################################################################################################
-
-#  DIAG_gradtastrop:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: tas,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradprtrop:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: pr,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradGPPtrop:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradMTEtrop:
-#    description: Grading calculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradLAItrop:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: lai,  reference_dataset: LAI3g,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-#  DIAG_gradNBPtrop:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: nbp,  reference_dataset: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
-#    additional_datasets:
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-#
-#
-#  DIAG_portraittrop:
-#    description: Portrait diagram
-#    scripts:
-#      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
-
-# GRADING NH ###########################################################################################################
-
-#  DIAG_gradtasNH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: tas,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradprNH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: pr,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradGPPNH:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradMTENH:
-#    description: Grading calculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradLAINH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: lai,  reference_dataset: LAI3g,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-#  DIAG_gradNBPNH:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: nbp,  reference_dataset: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
-#    additional_datasets:
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-#  DIAG_portraitNH:
-#    description: Portrait diagram
-#    scripts:
-#      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
-
-# GRADING SH ###########################################################################################################
-
-#  DIAG_gradtasSH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: tas,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradprSH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: pr,  reference_dataset: CRU,  mip: Amon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: bcc-csm1-1-m,  project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CRU,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/CRU/}
-
-
-#  DIAG_gradGPPSH:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradMTESH:
-#    description: Grading calculations
-#    variables:
-#      - {dataset: gpp,  reference_dataset: MTE,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MTE,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/MTE/}
-
-
-#  DIAG_gradLAISH:
-#    description: Grading precalculations
-#    variables:
-#     - {dataset: lai,  reference_dataset: LAI3g,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: bcc-csm1-1,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-#  DIAG_gradNBPSH:
-#    description: Grading precalculations
-#    variables:
-#      - {dataset: nbp,  reference_dataset: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-#    preprocess:
-#      target_grid:    reference_dataset
-#      regrid_scheme:  linear
-#      mask_fillvalue: True
-#    scripts:
-#      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
-#    additional_datasets:
-#      - {dataset: BNU-ESM,       project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: CESM1-BGC,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: inmcm4,        project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: MIROC-ESM,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: NorESM1-M,     project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
-#      - {dataset: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start_year: 1986,  end_year: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-#  DIAG_portraitSH:
-#    description: Portrait diagram
-#    scripts:
-#      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
+  diag_collect:
+    <<: *diag_grading
+    description: Collect and plot previously calculated performance metrics.
+    realms:
+      - atmos
+      - land
+    scripts:
+      collect_global: &collect_global
+        script: perfmetrics/collect.ncl
+        ancestors: ['diag_grading_*/grading_global']
+        metric: RMSD
+        label_bounds: [0.0, 1.0]
+        label_scale: 0.1
+        disp_value: False
+        disp_rankings: True
+        rank_order: -1
+        colormap: matlab_jet
+        cm_reverse: True
+        cm_interval: [2, 63]
+        sort: True
+      collect_nh:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_nh']
+      collect_sh:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_sh']
+      collect_trop:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_trop']

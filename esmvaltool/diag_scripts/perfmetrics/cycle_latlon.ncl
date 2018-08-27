@@ -44,6 +44,11 @@ begin
     var = read_data(imod, var0, field_type0)
     dnames = getVarDimNames(var)
 
+    ; Convert data to floats if necessary
+    if (typeof(var) .eq. "double") then
+      var := dble2flt(var)
+    end if
+
     ; Extract region
     var_reg = area_operations(var, region(0), region(1), \
                               region(2), region(3), "extract", True)

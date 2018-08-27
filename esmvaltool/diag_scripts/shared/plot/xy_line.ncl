@@ -2341,13 +2341,6 @@ begin
   end if
 
   ; After overlaying the plots, add titles and legend manually
-  res_text = True                           ; text mods desired
-  res_text@txFontHeightF = 0.01             ; change text size
-  res_text@txJust = "CenterLeft"            ; text justification
-  res_lines = True                          ; polyline mods desired
-  res_lines@gsLineDashPattern = 0.0         ; solid line
-  res_lines@gsLineThicknessF  = 5.0         ; line thicker
-  res_lines@gsLineColor = "gray50"          ; line color
   delete(res@xyLineColors)
   res@gsnXYFillColors = "gray60"
   res@xyLineColor = -1        ; We don't want the line, so make it transparent.
@@ -2364,10 +2357,10 @@ begin
     if (str_lower(var) .eq. "nbp") then
       contour_color = 100
     end if
-    if (str_lower(var) .eq. "tas-degc") then
+    if (str_lower(var) .eq. "tas") then
       contour_color = 0
     end if
-    if (str_lower(var) .eq. "pr-mmday") then
+    if (str_lower(var) .eq. "pr") then
       contour_color = 230
     end if
     if (str_lower(var) .eq. "tos") then
@@ -2391,11 +2384,62 @@ begin
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  ; Create fille xy plot
+  ; Create filled xy plot
   plot = gsn_csm_xy(wks_out, x_axis_num, data(2:3, :), res)
   plot@outfile = wks_out@name
 
+  ; Create lines for Volcanic eruptions
+  res_lines = True                          ; polyline mods desired
+  res_lines@gsLineDashPattern = 0.0   ; solid line
+  res_lines@gsLineThicknessF = 5.0    ; line thicker
+  res_lines@gsLineColor = "gray40"    ; line color
+  res_text = True                     ; text mods desired
+  res_text@txFontHeightF = 0.01       ; change text size
+  res_text@txJust = "CenterLeft"      ; text justification
+  if (isatt(diag_script_info, "evolution_plot_volcanoes") .and. \
+      diag_script_info@evolution_plot_volcanoes) then
+    ymax = max((/max(data(3, :)), max(data(0, :))/))
+    ymin = min((/min(data(2, :)), min(data(0, :))/))
+    ytop = ymax + 0.1*(ymax - ymin)
+    yy = (/(ymin - 0.05 * (ymax - ymin)), (ymax + 0.15*(ymax-ymin))/)
+
+    ; Agung
+    xx = (/1963.0, 1963.0/)
+    plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                   res_lines)
+    plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, "Agung", \
+                                               (xx(1) + 0.5), (ytop), \
+                                               res_text)
+
+    ; El Chichon
+    xx = (/1982.0, 1982.0/)
+    plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                   res_lines)
+    plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, \
+                                               "El Chichon", \
+                                               (xx(1)), (ytop), res_text)
+
+    ; Pinatubo
+    xx = (/1991.0, 1991.0/)
+    plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                   res_lines)
+    plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, "Pinatubo", \
+                                               (xx(1)), (ytop), res_text)
+
+    ; El Nino
+    res_lines@gsLineColor = "orange"
+    xx = (/1998.0, 1998.0/)
+    plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
+                                                   res_lines)
+    plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, "El Nino", \
+                                               (xx(1) + 0.5), (ytop), \
+                                               res_text)
+  end if
+
   ; Add legend manually
+  res_lines@gsLineDashPattern = 0.0         ; solid line
+  res_lines@gsLineThicknessF  = 5.0         ; line thicker
+  res_lines@gsLineColor = "gray50"          ; line color
   xx = (/(min(x_axis_num) + 0.01 * (max(x_axis_num) - min(x_axis_num))), \
         (min(x_axis_num) + 0.05 * (max(x_axis_num) - min(x_axis_num)))/)
   yy = (/(ymax + 0.07 * (ymax - ymin)), (ymax + 0.07 * (ymax - ymin))/)
