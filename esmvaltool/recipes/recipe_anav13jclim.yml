@@ -17,6 +17,9 @@ documentation:
     - embrace
 
 preprocessors:
+  noop:
+    {}
+
   landmask_and_regrid:
     mask_landsea:
       mask_out: sea
@@ -256,7 +259,8 @@ diagnostics:
     variables:
       nbp:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: landmask
+        # Masking not possible because GCP is actually T0M field
+        preprocessor: noop
         mip: Lmon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
