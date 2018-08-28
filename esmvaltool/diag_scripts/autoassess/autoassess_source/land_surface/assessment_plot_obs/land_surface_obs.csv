@@ -1,0 +1,23 @@
+SurfRadNSW MedAbsErr ann,0.0
+SurfRadNSW MedAbsErr djf,0.0
+SurfRadNSW MedAbsErr mam,0.0
+SurfRadNSW MedAbsErr jja,0.0
+SurfRadNSW MedAbsErr son,0.0
+SurfRadNLW MedAbsErr ann,0.0
+SurfRadNLW MedAbsErr djf,0.0
+SurfRadNLW MedAbsErr mam,0.0
+SurfRadNLW MedAbsErr jja,0.0
+SurfRadNLW MedAbsErr son,0.0
+snow MedAbsErr son,0.0
+snow MedAbsErr djf,0.0
+snow MedAbsErr mam,0.0
+soilmoisture MedAbsErr djf,0.0
+soilmoisture MedAbsErr jja,0.0
+soilmoisture MedAbsErr mam,0.0
+soilmoisture MedAbsErr son,0.0
+permafrost area,17.46
+fraction area permafrost over zerodeg,0.47
+offset 1m minus surface,-0.53
+offset surface minus air,6.15
+attenuation 1m over surface,0.4
+attenuation surface over air,0.57
