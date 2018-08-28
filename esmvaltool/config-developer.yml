@@ -37,6 +37,18 @@ CMIP5:
     DKRZ: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[fx_var]'
     ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
   fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
+  fx_mip_change:
+    'areacella': 'Amon'
+    'areacello': 'Omon'
+    'basin': 'Omon'
+    'deptho': 'Omon'
+    'mrsofc': 'Lmon'
+    'orog': 'Amon'
+    'rootd': 'Lmon'
+    'sftgif': 'Lmon'
+    'sftlf': 'Amon'
+    'sftof': 'Omon'
+    'volcello': 'Omon'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   institute:
     'ACCESS1-0': 'CSIRO-BOM'
