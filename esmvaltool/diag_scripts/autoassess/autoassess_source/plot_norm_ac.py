@@ -1,6 +1,5 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 (C) Crown Copyright 2017, the Met Office
 
@@ -222,7 +221,7 @@ def read_model_metrics(csvfile, required=False):
     metrics = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rb')
+            inf = open(csvfile, 'rt')
         except IOError as e:
             if e.errno == errno.EACCES:
                 if required:
@@ -232,7 +231,7 @@ def read_model_metrics(csvfile, required=False):
         else:
             with inf:
                 reader = csv.reader(
-                    CommentedFile(inf), delimiter=',', quotechar='"')
+                    inf, delimiter=',', quotechar='"')
                 # TODO: Must be a better way of unpacking data that does not
                 #       rely on testing number of elements on line
                 for row in reader:
@@ -583,7 +582,7 @@ def plot_get_limits(tests, obs, acc, extend_y=False):
     # Calculate absmax/max/min for experiments
     minval = min([min(test.values()) for test in tests])
     maxval = max([max(test.values()) for test in tests])
-    maxabs = max([abs(x) for x in test.values() for test in tests])
+    maxabs = max([np.abs(list(test.values()))[0] for test in tests])
 
     # If want to extend beyond range of observations
     if extend_y:
