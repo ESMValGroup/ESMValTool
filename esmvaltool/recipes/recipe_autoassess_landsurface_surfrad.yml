@@ -6,7 +6,6 @@
 #### Description:
 #################
 #it runs:
-#  - snow
 #  - surfrad
 #################
 #### CAVEATS
@@ -28,8 +27,8 @@ preprocessors:
       scheme: linear
 
 diagnostics:
-  aa_landsurf:
-    description: Autoassess test diag for Land-Surface.
+  aa_landsurf_surfrad:
+    description: Autoassess test diag for Land-Surface Surfrad.
     variables:
       rsns: # Surf SW net all sky
         field: T2Ms
@@ -41,17 +40,13 @@ diagnostics:
         derive: true
         force_derivation: false
         fx_files: [sftlf]
-      prsn: # snow flux
-        mip: Amon
-        field: T2Ms
-        fx_files: [sftlf]
     additional_datasets:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:
-      autoassess_landsurf_test_1: &autoassess_landsurf_test_1_settings
+      autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
         script: autoassess/autoassess_landsurface.py
-        title: "Autoassess Land-Surface Diagnostic Metric MPI-MPI"
-        area: land_surface
+        title: "Autoassess Land-Surface Diagnostic Surfrad Metric"
+        area: land_surface_surfrad
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
@@ -63,15 +58,15 @@ diagnostics:
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      plot_landsurf_test_1: &plot_landsurf_test_1_settings
-        <<: *autoassess_landsurf_test_1_settings
+      plot_landsurf_surfrad: &plot_landsurf_surfrad_settings
+        <<: *autoassess_landsurf_surfrad_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
-        script: autoassess/plot_autoassess_landsurface.py
-        ancestors: ['*/autoassess_landsurf_test_1']
-        title: "Plot Land-Surface Metrics MPI-MPI"
-        plot_name: "Metrics"
-        diag_tag: aa_landsurf
-        diag_name: autoassess_landsurf_test_1
-        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_landsurf_surfrad']
+        title: "Plot Land-Surface Metrics Surfrad"
+        plot_name: "Surfrad_Metrics"
+        diag_tag: aa_landsurf_surfrad
+        diag_name: autoassess_landsurf_surfrad
+        plot_title: "Surfrad_MPI-ESM-LR_vs_MPI-ESM-MR"
