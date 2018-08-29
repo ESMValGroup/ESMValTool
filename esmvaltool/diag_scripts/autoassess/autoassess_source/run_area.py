@@ -279,8 +279,10 @@ def run_area():
         import conservation as area_package
     elif area == 'globaltrop':
         import globaltrop as area_package
-    elif area == 'land_surface':
-        import land_surface as area_package
+    elif area == 'land_surface_surfrad':
+        import land_surface_surfrad as area_package
+    elif area == 'land_surface_snow':
+        import land_surface_snow as area_package
     else:
         raise Exception('Unknown area: ' + str(area))
 

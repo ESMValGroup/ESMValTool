@@ -1,8 +1,9 @@
-"""autoassess land_surface diagnostic."""
+"""Standard MO metrics plotter."""
 import os
 import logging
 import inspect
 import sys
+import subprocess
 
 import iris
 import yaml
@@ -22,7 +23,7 @@ def get_cfg():
 
 
 def main():
-
+    """Call the plotting script via command line"""
     cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
 
@@ -32,10 +33,10 @@ def main():
     vsloc = exp_model + '_vs_' + control_model
     file_exp = os.path.join(
         os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
-        cfg['diag_name'], vsloc, 'land_surface', exp_model, 'metrics.csv')
+        cfg['diag_name'], vsloc, cfg['area'], exp_model, 'metrics.csv')
     file_ref = os.path.join(
         os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
-        cfg['diag_name'], vsloc, 'land_surface', control_model, 'metrics.csv')
+        cfg['diag_name'], vsloc, cfg['area'], control_model, 'metrics.csv')
 
     cwd = os.path.dirname(
         os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -52,7 +53,13 @@ def main():
     args_collection = [key + ' ' + args[key] for key in args.keys()]
     sys_call = command_call + ' ' + ' '.join(args_collection)
     logger.info(sys_call)
-    os.system(sys_call)
+    # run the thing
+    proc = subprocess.Popen(sys_call, stdout=subprocess.PIPE, shell=True)
+    proc.communicate()
+    ret_code = proc.returncode
+    if int(ret_code) != 0:
+        logger.info("Diagnostic (metrics plotter) has failed!")
+        sys.exit(1)
 
 
 if __name__ == '__main__':

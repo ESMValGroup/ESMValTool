@@ -1,4 +1,4 @@
-"""autoassess stratosphere diagnostic."""
+"""autoassess Stratosphere diagnostic."""
 import os
 import logging
 import inspect
@@ -31,7 +31,7 @@ def _check_p30(cubelist):
 
 
 def main(cfg):
-    """Execute the stratosphere area"""
+    """Execute the Stratosphere area"""
     logger.setLevel(cfg['log_level'].upper())
     if not os.path.exists(cfg['plot_dir']):
         os.makedirs(cfg['plot_dir'])
@@ -43,10 +43,10 @@ def main(cfg):
     suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['exp_model'])
     if not os.path.exists(suite_loc_m2):
         os.makedirs(suite_loc_m2)
-    suite_data_m1 = os.path.join(suite_loc_m1, 'stratosphere')
+    suite_data_m1 = os.path.join(suite_loc_m1, 'Stratosphere')
     if not os.path.exists(suite_data_m1):
         os.makedirs(suite_data_m1)
-    suite_data_m2 = os.path.join(suite_loc_m2, 'stratosphere')
+    suite_data_m2 = os.path.join(suite_loc_m2, 'Stratosphere')
     if not os.path.exists(suite_data_m2):
         os.makedirs(suite_data_m2)
     tmp_dir = os.path.join(cfg['work_dir'], 'tmp')
