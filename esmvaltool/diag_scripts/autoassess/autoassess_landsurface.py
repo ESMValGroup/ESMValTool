@@ -38,26 +38,26 @@ def _make_main_dirs(cfg):
     return suite_loc_m1, suite_loc_m2, obs_loc
 
 
-def _make_concatenated_data_dirs(suite_loc_m1, suite_loc_m2):
+def _make_concatenated_data_dirs(suite_loc_m1, suite_loc_m2, area):
     """Create dirs to hold cubeList files"""
-    suite_data_m1 = os.path.join(suite_loc_m1, 'land_surface')
+    suite_data_m1 = os.path.join(suite_loc_m1, area)
     if not os.path.exists(suite_data_m1):
         os.makedirs(suite_data_m1)
-    suite_data_m2 = os.path.join(suite_loc_m2, 'land_surface')
+    suite_data_m2 = os.path.join(suite_loc_m2, area)
     if not os.path.exists(suite_data_m2):
         os.makedirs(suite_data_m2)
 
-    # create supermeans directory: land_surface_supermeans
-    sup_data_m1 = os.path.join(suite_loc_m1, 'land_surface_supermeans')
+    # create supermeans directory: [area]_supermeans
+    sup_data_m1 = os.path.join(suite_loc_m1, area + '_supermeans')
     if not os.path.exists(sup_data_m1):
         os.makedirs(sup_data_m1)
-    sup_data_m2 = os.path.join(suite_loc_m2, 'land_surface_supermeans')
+    sup_data_m2 = os.path.join(suite_loc_m2, area + '_supermeans')
     if not os.path.exists(sup_data_m2):
         os.makedirs(sup_data_m2)
     return suite_data_m1, suite_data_m2, sup_data_m1, sup_data_m2
 
 
-def _get_filelists(cfg, obs_type):
+def _get_filelists(cfg, obs_type=None):
     """Put files in lists and return them"""
     files_list_m1 = []
     files_list_m2 = []
@@ -73,7 +73,7 @@ def _get_filelists(cfg, obs_type):
             files_list_m2.append(fullpath_file)
             if 'fx_files' in attributes:
                 files_list_m2.append(attributes['fx_files'][cfg['fx']])
-        elif base_file.split('_')[0] == obs_type:
+        elif obs_type and base_file.split('_')[0] == obs_type:
             obs_list.append(fullpath_file)
     return files_list_m1, files_list_m2, obs_list
 
@@ -132,14 +132,17 @@ def main(cfg):
 
     # set the concatenated data dirs
     suite_data_m1, suite_data_m2, sup_data_m1, sup_data_m2 = \
-        _make_concatenated_data_dirs(suite_loc_m1, suite_loc_m2)
+        _make_concatenated_data_dirs(suite_loc_m1, suite_loc_m2, cfg['area'])
 
     # create the ancil and tp dirs
     tmp_dir, ancil_dir = _make_tmp_dir(cfg)
 
     # get files lists
-    files_list_m1, files_list_m2, obs_list = _get_filelists(
-        cfg, cfg['obs_type'])
+    if 'obs_type' in cfg:
+        files_list_m1, files_list_m2, obs_list = _get_filelists(
+            cfg, cfg['obs_type'])
+    else:
+        files_list_m1, files_list_m2, obs_list = _get_filelists(cfg)
 
     # spell out the files used
     logger.info("Files for control model: %s", files_list_m1)
