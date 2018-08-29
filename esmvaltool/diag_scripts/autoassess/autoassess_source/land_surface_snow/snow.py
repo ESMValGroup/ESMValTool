@@ -5,7 +5,7 @@ import numpy as np
 import iris
 
 from esmvaltool.preprocessor._regrid import regrid
-from .supermeans import get_supermean
+from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 
 def land_swe_top(run):
