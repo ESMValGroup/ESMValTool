@@ -30,7 +30,7 @@ def land_surf_rad(run):
 
     # Land mask: Use fractional mask for now.
     # Fraction of Land m01s03i395
-    # TODO VPREDOI this is replaced with a constant sftlf mask
+    # replaced with a constant sftlf mask; original was
     # lnd = get_supermean('land_area_fraction', 'ann', supermean_data_dir)
     name_constraint = iris.Constraint(name='land_area_fraction')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
@@ -86,7 +86,6 @@ def land_surf_rad(run):
             lnd.coord('longitude').coord_system = \
                 run_fld_rad.coord('longitude').coord_system
 
-            # TODO would area weighted regridding be better?
             reg_run_fld = regrid(run_fld_rad, lnd, 'linear')
             reg_ebaf_fld = regrid(ebaf_fld, lnd, 'linear')
 

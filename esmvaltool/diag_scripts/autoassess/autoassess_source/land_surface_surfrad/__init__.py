@@ -32,17 +32,6 @@ Each "multi" function (type 2) has the following interface:
 """
 
 # local modules
-from . import snow
 from . import surfrad
-# from . import soilmoisture
-# from . import permafrost
 
-# metrics_functions = [snow.land_swe_top,
-#                      surfrad.land_surf_rad,
-#                      soilmoisture.land_sm_top,
-#                      permafrost.land_permafrost_top,
-#                     ]
-metrics_functions = [
-    snow.land_swe_top,
-    surfrad.land_surf_rad,
-]
+metrics_functions = [surfrad.land_surf_rad, ]
