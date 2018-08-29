@@ -113,6 +113,7 @@ CMIP5:
     'NorESM1-M': 'NCC'
     'NorESM1-ME': 'NCC'
   realm_frequency:
+    'Oyr': ['ocnBgchem', 'yr']
     'Amon': ['atmos', 'mon']
     'Omon': ['ocean', 'mon']
     'Lmon': ['land', 'mon']
