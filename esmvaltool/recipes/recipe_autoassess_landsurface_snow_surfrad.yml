@@ -1,0 +1,77 @@
+#### summary 
+#### recipe that runs the Autoassess Land-surface assessment area diagnostic
+#### Version: 23 August 2018 
+#### Author: V. Predoi UREAD (valeriu.predoi@ncas.ac.uk)
+#################
+#### Description:
+#################
+#it runs:
+#  - snow
+#  - surfrad
+#################
+#### CAVEATS
+# land-sea masks are not averaged over time (annual)
+# but are fixed i.e. using sftlf (lat-lon) grid
+#################
+###########################################################################################################
+---
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    regrid:  # NOT USED
+      target_grid: 0.15x0.15
+      scheme: linear
+
+diagnostics:
+  aa_landsurf:
+    description: Autoassess test diag for Land-Surface.
+    variables:
+      rsns: # Surf SW net all sky
+        field: T2Ms
+        derive: true
+        force_derivation: false
+        fx_files: [sftlf]
+      rlns: # Surf LW net all sky
+        field: T2Ms
+        derive: true
+        force_derivation: false
+        fx_files: [sftlf]
+      prsn: # snow flux
+        mip: Amon
+        field: T2Ms
+        fx_files: [sftlf]
+    additional_datasets:
+      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+    scripts:
+      autoassess_landsurf_test_1: &autoassess_landsurf_test_1_settings
+        script: autoassess/autoassess_landsurface.py
+        title: "Autoassess Land-Surface Diagnostic Metric MPI-MPI"
+        area: land_surface
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: [CERES-EBAF]
+        obs_type: obs4mips
+        fx: sftlf
+        start: 1997/12/01
+        end: 2002/12/01
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_landsurf_test_1: &plot_landsurf_test_1_settings
+        <<: *autoassess_landsurf_test_1_settings
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: [CERES-EBAF]
+        script: autoassess/plot_autoassess_landsurface.py
+        ancestors: ['*/autoassess_landsurf_test_1']
+        title: "Plot Land-Surface Metrics MPI-MPI"
+        plot_name: "Metrics"
+        diag_tag: aa_landsurf
+        diag_name: autoassess_landsurf_test_1
+        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"

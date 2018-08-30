@@ -38,8 +38,9 @@ def read_config_user_file(config_file, recipe_name):
 
     for key in defaults:
         if key not in cfg:
-            logger.warning("No %s specification in config file, "
-                           "defaulting to %s", key, defaults[key])
+            logger.warning(
+                "No %s specification in config file, "
+                "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
     cfg['output_dir'] = _normalize_path(cfg['output_dir'])
@@ -145,19 +146,25 @@ def cmip5_dataset2inst(dataset):
     return CFG['CMIP5']['institute'][dataset]
 
 
-def cmip5_mip2realm_freq(mip):
+def cmip5_mip2realm_freq(short_name, mip, fx_var):
     """Return realm and frequency given the mip in CMIP5."""
     logger.debug("Retrieving realm and frequency for CMIP5 mip %s", mip)
-    return CFG['CMIP5']['realm_frequency'][mip]
+    if short_name not in CFG['CMIP5']['realms_for_special_vars']:
+        return CFG['CMIP5']['realm_frequency'][mip]
+    else:
+        if not fx_var:
+            return CFG['CMIP5']['realms_for_special_vars'][short_name][mip]
+        else:
+            return CFG['CMIP5']['realm_frequency'][mip]
 
 
 def replace_mip_fx(fx_file):
     """Replace MIP so to retrieve correct fx files."""
     default_mip = 'Amon'
     if fx_file not in CFG['CMIP5']['fx_mip_change']:
-        logger.warning('mip for fx variable %s is not specified in '
-                       'config_developer.yml, using default (%s)',
-                       fx_file, default_mip)
+        logger.warning(
+            'mip for fx variable %s is not specified in '
+            'config_developer.yml, using default (%s)', fx_file, default_mip)
     new_mip = CFG['CMIP5']['fx_mip_change'].get(fx_file, default_mip)
     logger.debug("Switching mip for fx file finding to %s", new_mip)
     return new_mip
