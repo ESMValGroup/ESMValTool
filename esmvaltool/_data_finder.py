@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def find_files(dirname, filename):
     """Find files matching filename."""
-    logger.debug("Looking for files matching %s in %s", filename, dirname)
+    logger.info("Looking for files matching %s in %s", filename, dirname)
 
     result = []
     for path, _, files in os.walk(dirname, followlinks=True):
@@ -117,9 +117,11 @@ def replace_tags(path, variable, j=None, fx_var=None):
                 if tag == 'institute':
                     replacewith = cmip5_dataset2inst(variable['dataset'])
                 elif tag == 'freq':
-                    replacewith = cmip5_mip2realm_freq(variable['mip'])[1]
+                    replacewith = cmip5_mip2realm_freq(
+                        variable['short_name'], variable['mip'], fx_var)[1]
                 elif tag == 'realm':
-                    replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
+                    replacewith = cmip5_mip2realm_freq(
+                        variable['short_name'], variable['mip'], fx_var)[0]
         elif tag == 'latestversion':  # handled separately later
             continue
         elif tag == 'tier':
@@ -238,8 +240,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
         new_variable['mip'] = replace_mip_fx(fx_file)
 
         if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(
-                input_dir, new_variable, fx_var=fx_file)
+            dir2 = replace_tags(input_dir, new_variable, fx_var=fx_file)
         elif _drs in input_dir:
             try:
                 insts = cmip5_dataset2inst(new_variable['dataset'])
@@ -257,10 +258,7 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
                     dirs2.append(dir2)
             else:
                 dir2 = replace_tags(
-                    input_dir[_drs],
-                    new_variable,
-                    j=None,
-                    fx_var=fx_file)
+                    input_dir[_drs], new_variable, j=None, fx_var=fx_file)
                 dirs2.append(dir2)
         else:
             raise KeyError(
