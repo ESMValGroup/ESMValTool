@@ -184,15 +184,16 @@ def get_input_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['input_dir']
+    dirs2 = []
     if isinstance(input_dir, six.string_types):
-        dir2 = replace_tags(input_dir, variable)
+        dirs2.append(replace_tags(input_dir, variable))
     elif _drs in input_dir:
         try:
             insts = cmip5_dataset2inst(variable['dataset'])
         except KeyError as msg:
             logger.debug('CMIP5 dataset2inst: %s', msg)
             insts = 0
-        dirs2 = []
+
         if isinstance(insts, list):
             for inst_idx in range(len(insts)):
                 dir2 = replace_tags(input_dir[_drs], variable, j=inst_idx)
