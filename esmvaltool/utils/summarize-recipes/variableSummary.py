@@ -80,13 +80,15 @@ def get_variable_list(infile):
     return list(set(l))
 
 
-def write_csv_file(d, outfile="./out.csv"):
+def write_csv_file(c, outfile="./out.csv"):
+    if not isinstance(c, list):
+        raise ValueError('Not implemented for {0}'.format(type(c)))
     with open(outfile, "w") as f:
-        f.write("This file was created automatically by the ESMValTool")
-        f.write("at {0}".format(dt.datetime.now().isoformat()))
-        f.write("variable, mip_table, experiment")
-        for k, v in d.items():
-            pass
+        f.write("This file was created automatically by the ESMValTool\n")
+        f.write("at {0}\n".format(dt.datetime.now().isoformat()))
+        f.write("variable, mip_table, experiment\n")
+        for i in c:
+            f.write("{0},{1},{2}\n".format(i[0], i[1], ";".join(list(i[2]))))
 
 
 def _get_index_of_common_var_mip(t, l):
@@ -143,6 +145,8 @@ def main():
                 out[getfilename(infile)] = get_variable_list(infile)
 
     print(yaml.dump(out))
+    if args.csv:
+        write_csv_file(out)
 
 
 if __name__ == '__main__':
