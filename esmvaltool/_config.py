@@ -141,10 +141,10 @@ def get_project_config(project):
     return CFG[project]
 
 
-def get_institute(dataset):
-    """Return the institute given the dataset name in CMIP5."""
-    logger.debug("Retrieving institute for dataset %s", dataset)
-    return CFG['CMIP5']['institute'].get(dataset)
+def get_institutes(dataset):
+    """Return the institutes given the dataset name in CMIP5."""
+    logger.debug("Retrieving institutes for dataset %s", dataset)
+    return CFG['CMIP5']['institutes'].get(dataset, [])
 
 
 def replace_mip_fx(fx_file):
