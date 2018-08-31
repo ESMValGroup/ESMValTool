@@ -11,9 +11,10 @@ import yamale
 import yaml
 
 from . import __version__, preprocessor
-from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_input_fx_filelist, get_output_file,
-                           get_start_end_year, get_statistic_output_file)
+from ._config import get_institute
+from ._data_finder import (get_input_filelist, get_input_fx_filelist,
+                           get_output_file, get_rootpath, get_start_end_year,
+                           get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
@@ -274,7 +275,9 @@ def _add_cmor_info(variable, override=False):
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
 
     # Copy the following keys from CMOR table
-    cmor_keys = ['standard_name', 'long_name', 'units']
+    cmor_keys = [
+        'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
+    ]
     table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
         variable['mip'], variable['short_name'])
 
@@ -412,11 +415,8 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
-        local_dir = os.path.dirname(
-            get_input_filename(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs']))
+        # TODO: make this respect drs or download to preproc dir?
+        local_dir = get_rootpath(config_user['rootpath'], variable['project'])
         settings['download'] = {
             'dest_folder': local_dir,
         }
@@ -845,6 +845,9 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
+            institute = get_institute(variable['dataset'])
+            if institute:
+                variable['institute'] = institute
             check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])

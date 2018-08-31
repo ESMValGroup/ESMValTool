@@ -23,6 +23,7 @@ def read_cmor_tables(cfg_developer):
     ----------
     cfg_developer : dict of str
         Parsed config-developer file
+
     """
     for table in cfg_developer.keys():
         project = cfg_developer[table]
@@ -225,6 +226,8 @@ class VariableInfo(JsonInfo):
         """
         super(VariableInfo, self).__init__()
         self.table_type = table_type
+        self.modeling_realm = []
+        """Modeling realm"""
         self.short_name = short_name
         """Short name"""
         self.standard_name = ''
@@ -413,7 +416,7 @@ class CMIP5Info(object):
         Add a file with custom definitions to table.
 
         Parameters
-         ----------
+        ----------
         table_file: basestring
             Path to the file containing the custom table
         table_name: basestring
@@ -461,10 +464,9 @@ class CMIP5Info(object):
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
                 return var
-            if key == 'dimensions':
-                var.dimensions = value.split(' ')
-                continue
-            if hasattr(var, key):
+            if key in ('dimensions', 'modeling_realm'):
+                setattr(var, key, value.split(' '))
+            elif hasattr(var, key):
                 setattr(var, key, value)
         return var
 

@@ -16,6 +16,8 @@
 #
 # Only the default drs is mandatory, the others are optional
 ###############################################################################
+---
+
 CMIP6:
   input_dir: 'CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
   input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
@@ -112,18 +114,6 @@ CMIP5:
     'NICAM-09': 'NICAM'
     'NorESM1-M': 'NCC'
     'NorESM1-ME': 'NCC'
-  realm_frequency:
-    'Amon': ['atmos', 'mon']
-    'Omon': ['ocean', 'mon']
-    'Lmon': ['land', 'mon']
-    'LImon': ['landIce', 'mon']
-    'OImon': ['seaIce', 'mon']
-    'aero': ['aerosol', 'mon']
-    # '3hr': ???
-    'cfDay': ['atmos', 'day']
-    'cfMon': ['atmos', 'mon']
-    'day': ['atmos', 'day']
-    'fx': ['*', 'fx']
 
 OBS:
   input_dir:
