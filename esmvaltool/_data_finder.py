@@ -108,13 +108,11 @@ def replace_tags(path, variable, fx_var=None):
             replacewith = fx_var
         elif tag == 'latestversion':  # handled separately later
             continue
-        else:  # all other cases use the corresponding dataset dictionary key
-            if tag in variable:
-                replacewith = variable[tag]
-            else:
-                raise KeyError(
-                    "Dataset key {} must be specified for project {}, check "
-                    "your recipe entry".format(tag, variable['project']))
+        elif tag in variable:
+            replacewith = variable[tag]
+        else:
+            raise KeyError("Dataset key {} must be specified for {}, check "
+                           "your recipe entry".format(tag, variable))
 
         paths = _replace_tag(paths, original_tag, replacewith)
 
@@ -268,17 +266,13 @@ def get_input_fx_filelist(variable, rootpath, drs):
     for fx_var in variable['fx_files']:
         logger.debug("Looking for fx_files files of type %s for dataset %s",
                      fx_var, variable['dataset'])
-        if not dirnames:
-            # No files
+        filename_glob = _get_fx_filename_glob(variable, drs, fx_var)
+        files = find_files(dirnames, filename_glob)
+        if not files:
             fx_files[fx_var] = None
         else:
-            filename_glob = _get_fx_filename_glob(variable, drs, fx_var)
-            files = find_files(dirnames, filename_glob)
-            if not files:
-                fx_files[fx_var] = None
-            else:
-                # Keep only the first entry
-                fx_files[fx_var] = files[0]
+            # Keep only the first entry
+            fx_files[fx_var] = files[0]
 
     return fx_files
 
