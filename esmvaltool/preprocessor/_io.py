@@ -91,34 +91,35 @@ def _save_cubes(cubes, **args):
 
     if (os.path.exists(filename)
             and all(cube.has_lazy_data() for cube in cubes)):
-        logger.debug("Not saving cubes %s to %s to avoid data loss. "
-                     "The cube is probably unchanged.", cubes, filename)
+        logger.debug(
+            "Not saving cubes %s to %s to avoid data loss. "
+            "The cube is probably unchanged.", cubes, filename)
     else:
         logger.debug("Saving cubes %s to %s", cubes, filename)
         if optimize_accesss:
             cube = cubes[0]
             if optimize_accesss == 'map':
-                dims = set(cube.coord_dims('latitude') +
-                           cube.coord_dims('longitude'))
+                dims = set(
+                    cube.coord_dims('latitude') + cube.coord_dims('longitude'))
             elif optimize_accesss == 'timeseries':
                 dims = set(cube.coord_dims('time'))
             else:
                 dims = tuple()
-                for coord_dims in (cube.coord_dims(dimension) for dimension
-                                   in optimize_accesss.split(' ')):
+                for coord_dims in (
+                        cube.coord_dims(dimension)
+                        for dimension in optimize_accesss.split(' ')):
                     dims += coord_dims
                 dims = set(dims)
 
-            args['chunksizes'] = tuple(length if index in dims else 1
-                                       for index, length
-                                       in enumerate(cube.shape))
+            args['chunksizes'] = tuple(
+                length if index in dims else 1
+                for index, length in enumerate(cube.shape))
         iris.save(cubes, **args)
 
     return filename
 
 
-def save(cubes, optimize_access=None,
-         compress=False, debug=False, step=None):
+def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
     """
     Save iris cubes to file
 
@@ -174,8 +175,11 @@ def save(cubes, optimize_access=None,
     for filename in paths:
         # _save_cubes(cubes=paths[filename], target=filename,
         #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
-                    optimize_access=optimize_access)
+        _save_cubes(
+            cubes=paths[filename],
+            target=filename,
+            zlib=compress,
+            optimize_access=optimize_access)
 
     return list(paths)
 
@@ -230,7 +234,10 @@ def _write_ncl_metadata(output_dir, metadata):
                 if key not in input_file_info:
                     input_file_info[key] = []
                 input_file_info[key].append(fx_files[key])
-
+    # NCL cannot handle nested arrays so delete for now
+    # TODO: switch to NCL list type
+    input_file_info.pop('institute', None)
+    input_file_info.pop('modeling_realm', None)
     info = {
         'input_file_info': input_file_info,
         'dataset_info': {},
