@@ -12,6 +12,7 @@ import re
 import six
 
 from ._config import get_project_config, replace_mip_fx
+from .cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
@@ -229,6 +230,12 @@ def get_input_fx_dirnames(variable, rootpath, drs):
         # make a copy of variable -> new_variable for this
         new_variable = dict(variable)
         new_variable['mip'] = replace_mip_fx(fx_file)
+        table_entry = CMOR_TABLES[new_variable['cmor_table']].get_variable(
+            new_variable['mip'], new_variable['short_name'])
+        for key in ('modeling_realm', 'frequency'):
+            value = getattr(table_entry, key, None)
+            if value is not None:
+                new_variable[key] = value
         dirnames.extend(_get_dirnames('fx_dir', new_variable, rootpath, drs))
 
     return dirnames
