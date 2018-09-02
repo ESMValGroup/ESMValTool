@@ -16,14 +16,14 @@ from ._config import get_project_config, replace_mip_fx
 logger = logging.getLogger(__name__)
 
 
-def find_files(dirname, filename):
-    """Find files matching filename."""
-    logger.debug("Looking for files matching %s in %s", filename, dirname)
+def find_files(dirnames, filename):
+    """Find files matching filename in dirnames."""
+    logger.debug("Looking for files matching %s in %s", filename, dirnames)
 
     result = []
-    for path, _, files in os.walk(dirname, followlinks=True):
-        files = fnmatch.filter(files, filename)
-        if files:
+    for dirname in dirnames:
+        for path, _, files in os.walk(dirname, followlinks=True):
+            files = fnmatch.filter(files, filename)
             result.extend(os.path.join(path, f) for f in files)
 
     return result
@@ -255,42 +255,30 @@ def get_input_filelist(variable, rootpath, drs):
     dirnames = get_input_dirnames(variable, rootpath, drs)
     filename_glob = _get_filename_glob(variable, drs)
 
-    all_files = []
-    for dir_name in dirnames:
-        files = find_files(dir_name, filename_glob)
-        # Select files within the required time interval
-        files = select_files(files, variable['start_year'],
-                             variable['end_year'])
-        all_files.extend(files)
-
-    return all_files
+    files = find_files(dirnames, filename_glob)
+    # Select files within the required time interval
+    files = select_files(files, variable['start_year'], variable['end_year'])
+    return files
 
 
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     fx_files = {}
+    dirnames = get_input_fx_dirnames(variable, rootpath, drs)
     for fx_var in variable['fx_files']:
         logger.debug("Looking for fx_files files of type %s for dataset %s",
                      fx_var, variable['dataset'])
-        dirnames = get_input_fx_dirnames(variable, rootpath, drs)
         if not dirnames:
             # No files
             fx_files[fx_var] = None
         else:
-            # Set the filename glob
             filename_glob = _get_fx_filename_glob(variable, drs, fx_var)
-
-            # Find all possible files
-            all_files = [
-                find_files(dir_name, filename_glob) for dir_name in dirnames
-            ]
-            # filter out empty entries
-            all_files = [l for l in all_files if l]
-            if not all_files:
+            files = find_files(dirnames, filename_glob)
+            if not files:
                 fx_files[fx_var] = None
             else:
                 # Keep only the first entry
-                fx_files[fx_var] = [fx_ls[0] for fx_ls in all_files][0]
+                fx_files[fx_var] = files[0]
 
     return fx_files
 
