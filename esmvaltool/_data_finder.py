@@ -104,14 +104,10 @@ def replace_tags(path, variable, fx_var=None):
         original_tag = tag
         tag, _, _ = _get_caps_options(tag)
 
-        if tag == 'var':
-            replacewith = variable['short_name']
-        elif tag == 'fx_var':
+        if tag == 'fx_var':
             replacewith = fx_var
         elif tag == 'latestversion':  # handled separately later
             continue
-        elif tag == 'tier':
-            replacewith = ''.join(('Tier', str(variable['tier'])))
         else:  # all other cases use the corresponding dataset dictionary key
             if tag in variable:
                 replacewith = variable[tag]
