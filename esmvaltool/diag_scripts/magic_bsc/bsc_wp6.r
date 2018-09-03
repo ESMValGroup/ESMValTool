@@ -64,8 +64,8 @@ moninf <- params$moninf
 monsup <- params$monsup
 region <- params$region
 mask <- NULL ### How can we pass masks from ESMValTool?
-if (!is.null(params$lat_max)) {
-    region <- c(params$lon_min, params$lon_max, params$lat_min, params$lat_max)
+if (!is.null(params$end_latitude)) {
+    region <- c(params$start_longitude, params$end_longitude, params$start_latitude, params$end_latitude)
 } else {
   region <- "NULL"
 }

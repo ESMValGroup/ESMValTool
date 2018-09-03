@@ -54,11 +54,10 @@ diagnostics:
         script: magic_bsc/weather_regime.r #(in diag_scripts)
 
         #Region considered
-        lat_max: 80
-        lat_min: 30
-        lon_max: 40
-        #lon_min: 274.5
-        lon_min: -60
+        start_longitude: -60
+        end_longitude: 40
+        end_latitude: 80
+        start_latitude: 30
 
         #Start and end periods for the historical and projection periods
         start_historical: "1960-01-01"

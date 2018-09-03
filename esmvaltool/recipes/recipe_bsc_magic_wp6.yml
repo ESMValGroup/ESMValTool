@@ -37,10 +37,10 @@ diagnostics:
 
         #Region for the area weights, if no weighting is required set all
         #variables to NULL
-        lat_max: 70
-        lat_min: 27
-        lon_max: 50
-        lon_min: 5
+        end_latitude: 70
+        start_latitude: 27
+        end_longitude: 50
+        start_longitude: 5
 
 
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices

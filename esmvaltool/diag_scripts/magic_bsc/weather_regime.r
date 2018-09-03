@@ -28,10 +28,10 @@ var0 <- lapply(input_files_per_var, function(x) x$short_name)
 
 
 #Region considered
-lat.max <- params$lat_max
-lat.min <- params$lat_min
-lon.max <- params$lon_max
-lon.min <- params$lon_min
+lat.max <- params$end_latitude
+lat.min <- params$start_latitude
+lon.max <- params$end_longitude
+lon.min <- params$start_latitude
 
 
 #Start and end periods for the historical and projection periods

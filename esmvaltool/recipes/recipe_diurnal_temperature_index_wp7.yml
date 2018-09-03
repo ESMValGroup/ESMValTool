@@ -36,10 +36,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      long1: -10
-      long2: 40
-      lat1: 27
-      lat2: 70
+      start_longitude: -10
+      end_longitude: 40
+      start_latitude: 27
+      end_latitude: 70
 
 diagnostics:
   diurnal_temperature_indicator:

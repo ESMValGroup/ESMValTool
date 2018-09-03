@@ -41,10 +41,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      long1: 0
-      long2: 40
-      lat1: 30
-      lat2: 50
+      start_longitude: 0
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 50
 
 
 diagnostics:

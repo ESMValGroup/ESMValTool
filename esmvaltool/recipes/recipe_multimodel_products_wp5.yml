@@ -42,10 +42,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      long1: -20
-      long2: 60
-      lat1: 30
-      lat2: 70
+      start_longitude: -20
+      end_longitude: 60
+      start_latitude: 30
+      end_latitude: 70
 
 diagnostics:
   anomaly_agreement:
