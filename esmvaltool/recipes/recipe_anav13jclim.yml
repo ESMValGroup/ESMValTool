@@ -93,8 +93,8 @@ diagnostics:
     scripts:
       mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
-        legend_year_outside: true
-        sort: true
+        legend_year_outside: True
+        sort: True
         styleset: CMIP5
         region: Global
       mvi_nh: &mvi_nh
@@ -514,7 +514,7 @@ diagnostics:
   #   scripts:
   #     scat_global: &scat_glob
   #       script: carbon_cycle/two_variables.ncl
-  #       legend_year_outside: false
+  #       legend_year_outside: False
   #       styleset: CMIP5
   #       region: Global
   #     scat_nh:
