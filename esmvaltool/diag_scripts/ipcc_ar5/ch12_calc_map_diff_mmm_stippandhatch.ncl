@@ -257,13 +257,13 @@ begin
   to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
                             dimsizes(A0&lon)/), typeof(data1), Fill)
   model_number = new((/dim_scen * dim_per * dim_seas/), integer)
-  ; move to preprocessor
-  ; if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-  ;   ; read mask to mask data where not defined (ocean and ice)
-  ;   in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-  ;   msk_data = in->LSMASK
-  ;   msk = landsea_mask(msk_data, A0&lat, A0&lon)
-  ; end if
+  ; TO DO move masking to preprocessor?
+  if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
+    ; read mask to mask data where not defined (ocean and ice)
+    in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
+    msk_data = in->LSMASK
+    msk = landsea_mask(msk_data, A0&lat, A0&lon)
+  end if
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do rcp = 0, dim_scen - 1  ; loop over rcps
@@ -324,6 +324,7 @@ begin
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
                                         sigma_and_sign, 0.)
+        ; TO DO move masking to preprocessor?
         if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
           to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 0, False)
           to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
