@@ -2,7 +2,7 @@
 ---
 documentation:
   description: |
-    This namelist reproduces most of the figures of Anav et al. (2013)
+    This recipe reproduces most of the figures of Anav et al. (2013).
 
   authors:
     - anav_an
