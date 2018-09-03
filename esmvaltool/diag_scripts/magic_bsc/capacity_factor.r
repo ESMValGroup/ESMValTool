@@ -23,9 +23,11 @@ library(multiApply)
 library(ggplot2)
 library(yaml)
 library(s2dverification)
-library(lubridate)
-source("~/PycharmProjects/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
+#library(lubridate)
+#source("~/PycharmProjects/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
+source("/home/Earth/nperez/git/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
 library(climdex.pcic)
+
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -41,7 +43,7 @@ dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
-model_names <- lapply(input_files_per_var, function(x) x$model)
+model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unname(model_names)
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
@@ -79,17 +81,21 @@ time_dim <- which(names(dim(data)) == "time")
 
 # ratio <- ifelse(landmask > 50,1.39,1.29)
 
-print("BB")
+days <- as.Date(attr(data, "Variables")$dat1$time)
 print(dim(data))
+print(length(days))
+print(no_of_years)
 dims <- dim(data)
-dims <- append(dims, c(length(days), dims[1] / length(days)), after = 1)
+dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1)
+#print(data[1,1,1:5, 1,1])
 print("CC")
 print(dims)
-dims <- dims[-1]
+dims <- dims[-c(1, 4)]
+
 dim(data) <- dims
 data <- aperm(data, c(2,1,3,4))
 names(dim(data)) <- c("year", "day", "lat", "lon")
-
+#print(data[1,1:5,1,1])
 
 #####################################
 # Cross with PC
@@ -100,13 +106,13 @@ names(dim(data)) <- c("year", "day", "lat", "lon")
 #---------------------------
 seas_data <- Mean1Dim(data,2)
 
-for (power_curve in power_curves){
-    pc = read_xml_pc(power_curve)
-    data_cf <- wind2CF(data,pc1)
-    dim(data_cf) <- dim(data)
-    seas_data_cf <- Mean1Dim(data_cf,2)
+#for (power_curve in power_curves){
+#    pc = read_xml_pc(power_curve)
+#    data_cf <- wind2CF(data,pc1)
+#    dim(data_cf) <- dim(data)
+#    seas_data_cf <- Mean1Dim(data_cf,2)
 
-}
+#}
 
 pc1 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp")
 pc2 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp")
@@ -160,15 +166,16 @@ pct_anom_data_cf_all <- (seas_data_cf_all/InsertDim(Mean1Dim(seas_data_cf_all,2)
 # Plot seasonal CF maps
 #---------------------------
 
-PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(seas_data_cf_all, 2), lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF from ", model_name, " (", start_year, "-", end_year, ")"),
-           fileout = paste0(plot_dir, "/", "capacity_factor_", model_name,  "_", start_year, "-", end_year, ".png"))
+PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(seas_data_cf_all, 2), lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF from ", model_names, " (", start_year, "-", end_year, ")"),
+           fileout = paste0(plot_dir, "/", "capacity_factor_", model_names,  "_", start_year, "-", end_year, ".png"))
 
 #---------------------------
 # Plot seasonal CF anomalies maps
 #---------------------------
 
-PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(anom_data_cf_all, 2),lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF Anomaly from ", model_name, " (", start_year, "-", end_year, ")")
-           ,col_titles=turb_types,color_fun=q,brks=seq(-0.25,0.25,0.05),bar_scale=0.5,title_scale=0.7,axelab=F, fileout = paste0(plot_dir, "/", "capacity_factor_anomaly_", model_name,  "_", start_year, "-", end_year, ".png"))
+PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(anom_data_cf_all, 2),lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF Anomaly from ", model_names, " (", start_year, "-", end_year, ")")
+           ,col_titles=turb_types,color_fun=q,brks=seq(-0.25,0.25,0.05),bar_scale=0.5,title_scale=0.7,axelab = F,
+           fileout = paste0(plot_dir, "/", "capacity_factor_anomaly_", model_names,  "_", start_year, "-", end_year, ".png"))
 
 
 #---------------------------
@@ -187,7 +194,7 @@ cor35 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[3,],x[5,])})
 
 PlotLayout(PlotEquiMap,c(1,2),list(cor13^2,cor35^2,cor24^2,cor15^2),lon,lat,nrow=2,ncol=2,filled.continents=F,toptitle="Seasonal CF determination coef.",
            titles=c("between cf1 and cf3","between cf3 and cf5","between cf2 and cf4","between cf1 and cf5"),brks=c(0.,0.3,0.5,0.6,0.7,0.8,0.9,0.93,0.96,0.98,0.99,1),bar_scale=0.5,
-           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_correlation_maps_", model_name,  "_", start_year, "-", end_year, ".png"))
+           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_correlation_maps_", model_names,  "_", start_year, "-", end_year, ".png"))
 
 
 #---------------------------
@@ -202,5 +209,5 @@ rmse24 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[2,],x[4,])})
 
 PlotLayout(PlotEquiMap,c(1,2),list(rmse13,rmse35,rmse24,rmse15),lon,lat,nrow=2,ncol=2,filled.continents=F,toptitle="Seasonal CF RMSE",
            titles=c("between cf1 and cf3","between cf3 and cf5","between cf2 and cf4","between cf1 and cf5"),brks=seq(0,0.08,0.01),bar_scale=0.5,
-           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_rmse_maps_", model_name,  "_", start_year, "-", end_year, ".png"))
+           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_rmse_maps_", model_names,  "_", start_year, "-", end_year, ".png"))
 

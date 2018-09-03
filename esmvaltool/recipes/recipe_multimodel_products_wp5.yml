@@ -25,10 +25,13 @@
 ---
 
 datasets:
-  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1951,  end_year: 2000}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
 #  - {dataset: GFDL-ESM2G, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1951,  end_year: 2000}
-
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
 
 #latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
@@ -39,9 +42,9 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      long1: -10
-      long2: 50
-      lat1: 27
+      long1: -20
+      long2: 60
+      lat1: 30
       lat2: 70
 
 diagnostics:
@@ -58,13 +61,13 @@ diagnostics:
 
         #Specify datasets to be used for computing climatology and anomaly
         climatology_class: historical
-        anomaly_class: historical
+        anomaly_class: rcp26
 
-        climatology_start_year: 1951
-        climatology_end_year: 1975
+        climatology_start_year: 1961
+        climatology_end_year: 1990
 
-        anomaly_start_year: 1976
-        anomaly_end_year: 2000
+        anomaly_start_year: 2006
+        anomaly_end_year: 2026
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 8
@@ -74,4 +77,4 @@ diagnostics:
         running_mean: 5 #Length of running mean to use for the time series plot
 
         # Timeseries plot
-        time_series_plot: maxmin # Either mean or maxmin (plot the mean with/without shading between the max and min.
+        time_series_plot: NULL # Either mean or maxmin (plot the mean with/without shading between the max and min.

@@ -115,12 +115,13 @@ library(startR) #, lib.loc = '/home/Earth/nmanuben/tmp/startR_mod/startR.Rcheck'
 library(multiApply)
 library(devtools)
 library(climdex.pcic)
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Climdex.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
+library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Climdex.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
 library(parallel)
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/DTR.R')
-source('https://earth.bsc.es/gitlab/nperez/magic.bsc/raw/master/R/DTR_Indicator.R')
-source('https://earth.bsc.es/gitlab/nperez/magic.bsc/raw/master/R/DTR_Ref.R')
+#source('https://earth.bsc.es/gitlab/nperez/magic.bsc/raw/master/R/DTR_Indicator.R')
+#source('https://earth.bsc.es/gitlab/nperez/magic.bsc/raw/master/R/DTR_Ref.R')
 #print(str(input_files_per_var))
 #var0 <- lapply(input_files_per_var, function(x) x$short_name)
 #print(var0)
@@ -165,8 +166,8 @@ print(dim(historical_tasmax))
 print(dim(historical_tasmin))
 
 
-dtr_base <- DTR_Ref(tmax = historical_tasmax, tmin = historical_tasmin, by.seasons = TRUE, ncores = NULL)
-#print("EO")
+dtr_base <- DTRRef(tmax = historical_tasmax, tmin = historical_tasmin, by.seasons = TRUE, ncores = NULL)
+print("EO")
 
 #print(class(projection_files))
 for (i in 1 : length(projection_files)){
@@ -203,7 +204,7 @@ fullpath_filenames_projection_tasmin <- filename_tasmin[[projection_files[i]]]
                       retrieve = TRUE)
 
 
-  dtr_indicator <- DTR_Indicator(rcp_tasmax, rcp_tasmin, ref = dtr_base, by.seasons = TRUE, ncores = NULL)
+  dtr_indicator <- DTRIndicator(rcp_tasmax, rcp_tasmin, ref = dtr_base, by.seasons = TRUE, ncores = NULL)
 
   lat <- attr(rcp_tasmax, "Variables")$dat1$lat
   lon <- attr(rcp_tasmax, "Variables")$dat1$lon

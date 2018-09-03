@@ -15,7 +15,9 @@ library(s2dverification)
 library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
 library(multiApply)
 library(yaml)
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
+library(abind)
+library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)

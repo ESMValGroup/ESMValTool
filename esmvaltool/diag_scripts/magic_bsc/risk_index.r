@@ -12,15 +12,15 @@ library(startR)#, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-librar
 library(multiApply)
 library(ggplot2)
 library(yaml)
-library(climdex.pcic)
+#library(climdex.pcic)
 library(devtools)
 library(parallel)
 
 ##Until integrated into current version of s2dverification
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Climdex.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
-
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Climdex.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
+library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -125,10 +125,10 @@ if (detrend == TRUE) {
     historical_data <- Trend(historical_data,)
 }
 if (var0 == "tasmin") {
-  metric <- "tx10p"
+  metric <- "t10p"
   quantile <- 0.1
 } else if (var0 == "tasmax") {
-  metric <- "tx90p"
+  metric <- "t90p"
   quantile <- 0.9
 } else if (var0 == "sfcWind") {
   metric <- "Wx"
@@ -146,10 +146,10 @@ for (m in 1 : length(metric)) {
 
   #Compute the 90th percentile for the historical period
   if (var0 != "pr") {
-    thresholds <- Threshold(historical_data, base_range=as.numeric(base_range),
+    thresholds <- Threshold(historical_data, base.range=as.numeric(base_range),
                             qtiles = quantile, ncores = detectCores() -1)
     base_index <- Climdex(data = historical_data, metric = metric[m],
-                          quantiles = thresholds, ncores = detectCores() - 1)
+                          threshold = thresholds, ncores = detectCores() - 1)
   } else {
     base_index <- Climdex(data = historical_data, metric = metric[m], ncores = detectCores() - 1)
   }
@@ -237,7 +237,7 @@ for (i in 1 : length(projection_filenames)) {
 
     if (var0 != "pr") {
       projection_index <- Climdex(data = projection_data, metric = metric[m],
-                                  quantiles = thresholds, ncores = detectCores() - 1)
+                                  threshold = thresholds, ncores = detectCores() - 1)
       projection_mean <- 10
     } else {
       projection_index <- Climdex(data = projection_data, metric = metric[m],

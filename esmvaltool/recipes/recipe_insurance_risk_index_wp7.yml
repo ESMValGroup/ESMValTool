@@ -55,5 +55,5 @@ diagnostics:
       main:
         script: magic_bsc/risk_index.r #(in diag_scripts)
 
-        metric: tx90p
+        metric: t90p
         detrend: FALSE

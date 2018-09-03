@@ -4,10 +4,10 @@ library(startR)
 library(multiApply)
 library(devtools)
 library(climdex.pcic)
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
 library(parallel)
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R')
-
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R')
+library('magic.bsc', lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
 
 
 #Parsing input file paths and creating output dirs
@@ -94,7 +94,7 @@ historical_data  <- Start(model = reference_filenames,
 
 
 base_range <- c(as.numeric(substr(start_reference, 1, 4)), as.numeric(substr(end_reference, 1, 4)))
-threshold <- Threshold(historical_data, base_range = base_range, qtiles = qtile, ncores = NULL)
+threshold <- Threshold(historical_data, base.range = base_range, qtiles = qtile, ncores = NULL)
 
 
 
@@ -126,7 +126,7 @@ for (i in 1 : length(projection_filenames)) {
 # ------------------------------
 
 
- heatwave <- Heatwave(projection_data, threshold, op = op, spell_length = spell_length, by.seasons = TRUE, ncores = NULL)
+ heatwave <- WaveDuration(projection_data, threshold, op = op, spell.length = spell_length, by.seasons = TRUE, ncores = NULL)
 
 
   if (var0 == "tasmax") {

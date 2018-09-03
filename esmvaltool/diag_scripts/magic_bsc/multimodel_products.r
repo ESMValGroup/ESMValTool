@@ -17,16 +17,18 @@
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
 library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
-library(multiApply)
+library(magic.bsc, lib.loc = '/home/Earth/nperez/R/x86_64-unknown-linux-gnu-library/3.2/')
+#library(multiApply)
+library(abind)
 library(ggplot2)
 library(yaml)
 
 ##Until integrated into current version of s2dverification
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-MagicWP5/R/AnoAgree.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-MagicWP5/R/AnoAgree.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
 ##Until integrated into current version of s2dverification
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/SelBox.R")
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
+#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/SelBox.R")
 
 
 
@@ -45,7 +47,7 @@ input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 
-model_names <- unlist(unname(model_names))
+model_names <- unique(unlist(unname(model_names)))
 
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
@@ -113,9 +115,9 @@ reference_data <- Start(model = climatology_filenames,
 
 lat <- attr(reference_data, "Variables")$dat1$lat
 lon <- attr(reference_data, "Variables")$dat1$lon
-jpeg(paste0(plot_dir, "/plot.jpg"))
-PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot.jpg"))
+#PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
  lon <- attr(reference_data, "Variables")$dat1$lon
@@ -129,9 +131,9 @@ num_models <- dim(reference_data)[which(names(dim(reference_data))=='model')]
      attr(reference_data, "Variables")$dat1$time <- time
     print(dim(reference_data))
 # ------------------------------
-jpeg(paste0(plot_dir, "/plot1.jpg"))
-PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot1.jpg"))
+#PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 
 if (!is.null(moninf)) {
   months <- paste0(month.abb[moninf],"-", month.abb[monsup])
@@ -177,9 +179,9 @@ rcp_data <- Start(model = anomaly_filenames,
                   return_vars = list(time = 'model', lon = 'model',
                                      lat = 'model'),
                   retrieve = TRUE)
-jpeg(paste0(plot_dir, "/plot2.jpg"))
-PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot2.jpg"))
+#PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
  lon <- attr(rcp_data, "Variables")$dat1$lon
@@ -193,9 +195,9 @@ dev.off()
      attr(rcp_data, "Variables")$dat1$time <- time
     print(dim(rcp_data))
 # ------------------------------
-jpeg(paste0(plot_dir, "/plot3.jpg"))
-PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot3.jpg"))
+#PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 
 
 
@@ -247,6 +249,7 @@ metadata <- list(time = list(standard_name = 'time', long_name = 'time', units =
 attr(time, "variables") <- metadata
 #Save the single model anomalies
 print(paste("model names", model_names))
+print(dim(anomaly))
 for (mod in 1 : length(model_names)) {
   if (!is.null(moninf)) {
      data <- anomaly[mod,1,1, , ,]
@@ -280,8 +283,9 @@ for (mod in 1 : length(model_names)) {
 
 
 ### Plot timeseries
-
-model_anomalies <- WeightedMean(anomaly, lon = lon, lat = lat, mask = NULL)
+print(as.vector(lon))
+print(as.vector(lat))
+model_anomalies <- WeightedMean(anomaly, lon = as.vector(lon), lat = as.vector(lat), mask = NULL)
 
  if (!is.null(params$running_mean)) {
   model_anomalies <- Smoothing(model_anomalies, runmeanlen = params$running_mean, numdimt = 4)
@@ -295,9 +299,10 @@ names(data_frame)[2] <- "Model"
 for (i in 1 : length(levels(data_frame$Model))) {
     levels(data_frame$Model)[i] <- model_names[i]
 }
-
+print(str(data_frame))
 
 if (!is.null(time_series_plot)) {
+    print("EO")
    g <- ggplot(data_frame, aes(x = Year, y = Freq, color = Model)) + theme_bw() +
         geom_line() + ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") + theme(text=element_text(size = font_size),legend.text=element_text(size = font_size),
                                                                                     axis.title=element_text(size = font_size)) +
@@ -321,9 +326,9 @@ if (!is.null(time_series_plot)) {
 ##Plot maps
 
 if (!is.null(agreement_threshold)) {
-print(dim(multi_year_anomaly))
+#print(dim(multi_year_anomaly))
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
-  agreement <- AnoAgree(multi_year_anomaly + rnorm(length(model_names)*length(lat)*length(lon)), members_dim = model_dim)
+  agreement <- AnoAgree(multi_year_anomaly + rnorm(length(unique(model_names))*length(lat)*length(lon)), membersdim = model_dim)
 } else {
   agreement_threshold <- 1000
   agreement <- NULL

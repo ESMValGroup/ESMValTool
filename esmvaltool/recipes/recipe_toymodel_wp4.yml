@@ -28,16 +28,15 @@
 # /esarchive/exp/CMIP5/historical/bcc-csm1-1/cmip5-historical_i0p1/original_files/tas/tas_Amon_bcc-csm1-1_historical_r1i1p1_185001-201212.nc
 
 datasets:
-  #- {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+  #- {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   #- {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-
+    - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
   preproc:
     regrid:
-      #target_grid: IPSL-CM5A-LR
-      target_grid: bcc-csm1-1
+      target_grid: IPSL-CM5A-LR
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -52,9 +51,9 @@ diagnostics:
   toymodel:
     description: Generate synthetic observations.
     variables:
-      tas:
+      tasmax:
         preprocessor: preproc
-        mip: Amon
+        mip: day
         field: T2M
 
     scripts:

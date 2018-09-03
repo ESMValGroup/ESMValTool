@@ -51,8 +51,9 @@ library(ggplot2)
 library(multiApply)
 library(devtools)
 library(startR)
+library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/WeatherRegime.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-debug-plot-ts/R/PlotTimeSeries.R')
 
 

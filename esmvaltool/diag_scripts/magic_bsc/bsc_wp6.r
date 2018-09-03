@@ -18,10 +18,10 @@ library(ggplot2)
 library(yaml)
 
 ##Until integrated into current version of s2dverification
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/CombineIndices.R")
-source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/SelBox.R")
-
+#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
+#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/CombineIndices.R")
+#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/SelBox.R")
+library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
 
 
 #Parsing input file paths and creating output dirs
@@ -119,7 +119,7 @@ if (!is.null(region)) {
   dim_names <- names(dim(data))
   londim <- which(names(dim(data)) == "lon")
   latdim <- which(names(dim(data)) == "lat")
-  data <- WeightedMean(data, lon = lon, lat = lat, region = region, mask = NULL)
+  data <- WeightedMean(data, lon = as.vector(lon), lat = as.vector(lat), region = region, mask = NULL)
   names(dim(data)) <- dim_names[-c(londim,latdim)]
   time_dim <- which(names(dim(data)) == "time")
 }
@@ -153,13 +153,16 @@ if (!is.null(moninf)) {
 if (!is.null(weights)) {
   indices_dim <- which(names(dim(data)) == "model")
   indices <- list()
+    print(indices_dim)
   for (i in 1 : dim(data)[indices_dim]) {
     indices[[i]] <- Subset(data, along = indices_dim, indices = i)
   }
-  print(weights)
+    print(str(indices))
   if (!is.numeric(weights)) {
     weights <- "NULL"
+      print("AQUI")
     data <- CombineIndices(indices, weights = NULL)
+      print(dim(data))
   } else {
     data <- CombineIndices(indices, weights = NULL)
   }
