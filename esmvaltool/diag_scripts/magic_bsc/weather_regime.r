@@ -31,9 +31,9 @@ var0 <- lapply(input_files_per_var, function(x) x$short_name)
 lat.max <- params$end_latitude
 lat.min <- params$start_latitude
 lon.max <- params$end_longitude
-lon.min <- params$start_latitude
+lon.min <- params$start_longitude
 
-
+print(c(lat.max, lat.min, lon.max, lon.min))
 #Start and end periods for the historical and projection periods
 start_historical <- as.POSIXct(params$start_historical)
 end_historical <- as.POSIXct(params$end_historical)
@@ -75,6 +75,7 @@ data <- Start(model = fullpath_filenames,
               return_vars = list(time = 'model', lon = 'model', lat = 'model'),
               retrieve = TRUE)
       # ------------------------------
+
 # Provisional solution to error in dimension order:
  lon <- attr(data, "Variables")$dat1$lon
  lat <- attr(data, "Variables")$dat1$lat
@@ -85,7 +86,8 @@ data <- Start(model = fullpath_filenames,
      attr(data, "Variables")$dat1$time <- time
     print(dim(data))
 # ------------------------------
-
+print(lon)
+print(lat)
 
 
 time_dim <- which(names(dim(data)) == "time")

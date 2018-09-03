@@ -56,8 +56,8 @@ diagnostics:
         #Region considered
         start_longitude: -60
         end_longitude: 40
-        end_latitude: 80
         start_latitude: 30
+        end_latitude: 80
 
         #Start and end periods for the historical and projection periods
         start_historical: "1960-01-01"
