@@ -5,7 +5,7 @@
 # conda build esmvaltool -c conda-forge -c birdhouse
 
 # Package version number
-{% set version = "2.0a0" %}
+{% set version = "2.0a1" %}
 
 package:
   name: esmvaltool
@@ -53,6 +53,7 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
+    - ncurses=6.1=hfc679d8_1
     # TODO: add R, julia
 test:
   # TODO: add unit tests? This seems to require installing the tests

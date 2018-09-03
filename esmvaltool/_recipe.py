@@ -93,10 +93,12 @@ def check_recipe(filename):
     # computed entries have been filled in by creating a Recipe object.
     check_recipe_with_schema(filename)
     with open(filename, 'r') as file:
-        raw_recipe = ordered_safe_load(file)
+        contents = file.read()
+        raw_recipe = yaml.safe_load(contents)
+        raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
+            'preprocessors', {})
 
-    # TODO: add more checks?
-    check_preprocessors(raw_recipe.get('preprocessors', {}))
+    check_preprocessors(raw_recipe['preprocessors'])
     check_diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -145,6 +147,7 @@ def check_preprocessor_settings(settings):
             raise RecipeError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
                     step, ', '.join(preprocessor.DEFAULT_ORDER)))
+
         function = getattr(preprocessor, step)
         argspec = inspect.getargspec(function)
         args = argspec.args[1:]
@@ -153,7 +156,9 @@ def check_preprocessor_settings(settings):
         if invalid_args:
             raise RecipeError(
                 "Invalid argument(s): {} encountered for preprocessor "
-                "function {}".format(', '.join(invalid_args), step))
+                "function {}. \nValid arguments are: [{}]".format(
+                    ', '.join(invalid_args), step, ', '.join(args)))
+
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
@@ -217,12 +222,15 @@ def _get_value(key, datasets):
     """Get a value for key by looking at the other datasets."""
     values = {dataset[key] for dataset in datasets if key in dataset}
 
-    if len(values) == 1:
-        return values.pop()
-
     if len(values) > 1:
         raise RecipeError("Ambigous values {} for property {}".format(
             values, key))
+
+    value = None
+    if len(values) == 1:
+        value = values.pop()
+
+    return value
 
 
 def _update_from_others(variable, keys, datasets):
@@ -445,12 +453,12 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Configure time extraction
     settings['extract_time'] = {
-        'yr1': variable['start_year'],
-        'yr2': variable['end_year'] + 1,
-        'mo1': 1,
-        'mo2': 1,
-        'd1': 1,
-        'd2': 1,
+        'start_year': variable['start_year'],
+        'end_year': variable['end_year'] + 1,
+        'start_month': 1,
+        'end_month': 1,
+        'start_day': 1,
+        'end_day': 1,
     }
 
     if derive:
@@ -481,6 +489,31 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['save'] = {'compress': config_user['compress_netcdf']}
 
     return settings
+
+
+def _update_fx_settings(settings, variable, config_user):
+    """Find and set the FX mask settings"""
+    if 'mask_landsea' in settings.keys():
+        # Configure ingestion of land/sea masks
+        logger.debug('Getting fx mask settings now...')
+
+        # settings[mask_landsea][fx_file] is a list to store ALL
+        # available masks
+        settings['mask_landsea']['fx_files'] = []
+
+        # fx_files already in variable
+        variable = dict(variable)
+        variable['fx_files'] = ['sftlf', 'sftof']
+        fx_files_dict = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+
+        # allow both sftlf and sftof
+        if fx_files_dict['sftlf']:
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
+        if fx_files_dict['sftof']:
+            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
 
 
 def _get_input_files(variable, config_user):
@@ -566,6 +599,8 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_fx_settings(
+            settings=settings, variable=variable, config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
@@ -786,8 +821,6 @@ class Recipe(object):
 
     def _initialize_variables(self, raw_variable, raw_datasets):
         """Define variables for all datasets."""
-        # TODO: rename `variables` to `attributes` and store in dict
-        # using filenames as keys?
         variables = []
 
         datasets = self._initialize_datasets(
@@ -799,6 +832,10 @@ class Recipe(object):
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
+            if 'end_year' in variable and 'max_years' in self._cfg:
+                variable['end_year'] = min(
+                    variable['end_year'],
+                    variable['start_year'] + self._cfg['max_years'] - 1)
             variables.append(variable)
 
         required_keys = {
