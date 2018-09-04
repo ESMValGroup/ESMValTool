@@ -43,8 +43,12 @@ __pycache__/
 .pydevproject
 .settings
 
+#Create by VSCode
+.vscode
+
 #pytest
 .cache
+.pytest_cache
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -82,3 +86,13 @@ test-reports/
 doc/sphinx/source/diag_scripts/**
 doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
+
+# Data files
+*.nc
+*.nc4
+*.grb
+*.grib
+*.RData
+*.Rdata
+*.rdata
+*.pkl

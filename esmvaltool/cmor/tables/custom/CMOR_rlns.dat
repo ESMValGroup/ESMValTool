@@ -1,4 +1,4 @@
-SOURCE: none, created in CMIP5-style
+SOURCE: CMIP5
 !============
 variable_entry:    rlns
 !============
@@ -6,22 +6,17 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     surface_net_longwave_flux_in_air
+standard_name:     surface_net_downward_longwave_radiation
 units:             W m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella
-long_name:         Surface Net Longwave Radiation
-comment:           at the surface
+long_name:         Surface Net downward Longwave Radiation
+comment:           at the top of the atmosphere (to be compared with satellite measurements)
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
 dimensions:        longitude latitude time
-out_name:          rlns
 type:              real
-positive:          down
-valid_min:         0.0
-valid_max:         500.0
-ok_min_mean_abs:   0.
-ok_max_mean_abs:   500.0
+positive:          up
 !----------------------------------
 !

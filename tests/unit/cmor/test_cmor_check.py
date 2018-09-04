@@ -17,6 +17,7 @@ class VariableInfoMock:
     """Mock for the variables defintion"""
 
     def __init__(self):
+        self.table_type = 'CMIP5'
         self.short_name = 'short_name'
         self.standard_name = 'age_of_sea_ice'  # Iris don't accept fakes ...
         self.long_name = 'Long Name'
@@ -24,7 +25,7 @@ class VariableInfoMock:
         self.valid_min = '0'
         self.valid_max = '100'
         self.frequency = 'day'
-        self.positive = 'up'
+        self.positive = ''
 
         generic_level = CoordinateInfoMock('depth')
         generic_level.generic_level = True
@@ -158,19 +159,60 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.units = 'days'
         self._check_cube()
 
+    def test_check_with_psu_units(self):
+        """Test check succeds for a good cube with psu units"""
+        self.var_info.units = 'psu'
+        self.cube = self.get_cube(self.var_info)
+        self._check_cube()
+
     def test_check_with_positive(self):
+        """Check variable with positive attribute"""
         self.var_info.positive = 'up'
         self.cube = self.get_cube(self.var_info)
         self._check_cube()
 
+    def test_check_with_no_positive_CMIP5(self):
+        """Check CMIP5 variable with no positive attribute report warning"""
+        self.cube = self.get_cube(self.var_info)
+        self.var_info.positive = 'up'
+        self._check_warnings_on_metadata()
+
+    def test_check_with_no_positive_CMIP6(self):
+        """Check CMIP6 variable with no positive attribute report error"""
+        self.cube = self.get_cube(self.var_info)
+        self.var_info.positive = 'up'
+        self.var_info.table_type = 'CMIP6'
+        self._check_fails_in_metadata()
+
     def test_invalid_rank(self):
         """Test check fails in metadata step when rank is not correct"""
+        lat = iris.coords.AuxCoord.from_coord(self.cube.coord('latitude'))
         self.cube.remove_coord('latitude')
+        self.cube.add_aux_coord(lat, self.cube.coord_dims('longitude'))
         self._check_fails_in_metadata()
 
     def test_rank_with_aux_coords(self):
         """Check succeeds even if a required coordinate is an aux coord"""
         iris.util.demote_dim_coord_to_aux_coord(self.cube, 'latitude')
+        self._check_cube()
+
+    def test_rank_with_scalar_coords(self):
+        """Check succeeds even if a required coordinate is a scalar coord"""
+        self.cube = self.cube.extract(
+            iris.Constraint(time=self.cube.coord('time').points[0]))
+        self._check_cube()
+
+    def test_rank_unestructured_grid(self):
+        """Check succeeds even if two required coordinates share a dimension"""
+        self.cube = self.cube.extract(
+            iris.Constraint(latitude=self.cube.coord('latitude').points[0]))
+        self.cube.remove_coord('latitude')
+        iris.util.demote_dim_coord_to_aux_coord(self.cube, 'longitude')
+        new_lat = self.cube.coord('longitude').copy()
+        new_lat.var_name = 'lat'
+        new_lat.standard_name = 'latitude'
+        new_lat.long_name = 'Latitude'
+        self.cube.add_aux_coord(new_lat, 1)
         self._check_cube()
 
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
@@ -181,6 +223,11 @@ class TestCMORCheck(unittest.TestCase):
             frequency=frequency)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
+
+    def _check_warnings_on_metadata(self):
+        checker = CMORCheck(self.cube, self.var_info)
+        checker.check_metadata()
+        self.assertTrue(checker.has_warnings())
 
     def test_non_requested(self):
         """
@@ -320,9 +367,9 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def test_bad_standard_name_genlevel(self):
-        """Fail if a generic level has a bad standard name at metadata step"""
+        """Check if generic level has a different"""
         self.cube.coord('depth').standard_name = None
-        self._check_fails_in_metadata()
+        self._check_cube()
 
     def test_bad_frequency_day(self):
         """Fail at metadata if frequency (day) not matches data frequency"""
@@ -427,13 +474,21 @@ class TestCMORCheck(unittest.TestCase):
 
         var_data = (numpy.ones(len(coords) * [20], 'f') *
                     (valid_min + (valid_max - valid_min) / 2))
+
+        if var_info.units == 'psu':
+            units = None
+            attributes = {'invalid_units': 'psu'}
+        else:
+            units = var_info.units
+            attributes = None
+
         cube = iris.cube.Cube(
             var_data,
             standard_name=var_info.standard_name,
             long_name=var_info.long_name,
             var_name=var_info.short_name,
-            units=var_info.units,
-            attributes=None,
+            units=units,
+            attributes=attributes,
         )
         if var_info.positive:
             cube.attributes['positive'] = var_info.positive
