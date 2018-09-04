@@ -680,7 +680,8 @@ diagnostics:
         <<: *absolute_correlation
         script: mder/regression_stepwise.ncl
         p_value: 0.05
-        wreg: False
+        wregr: True
+        wexit: True
         smooth: True
         iter: 29
         cross_validation_mode: False

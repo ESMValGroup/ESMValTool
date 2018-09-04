@@ -22,22 +22,23 @@
 ;       mean, the weighted and unweighted model ensemble.
 ;
 ; Required recipe attributes:
-;     p_time : time range for projections.
-;     p_step : averaging time range for target period.
-;     scal_time : a year to scale the timeseries with.
-;     time_oper : select for operation in time_operation function.
-;     time_opt : select for option in time_operation function.
-;     calc_type : trend/pos
-;     wregr : perform stepwise regression (True/False)
+;     p_time: time range for projections.
+;     p_step: averaging time range for target period.
+;     scal_time: a year to scale the timeseries with.
+;     time_oper: select for operation in time_operation function.
+;     time_opt: select for option in time_operation function.
+;     calc_type: trend/pos
+;     wregr: exit criterion for stepwise regression (True/False)
+;     wexit: exit criterion for stepwise regression (True/False)
 ;
 ; Optional recipe attributes:
-;     units : units of target variable.
-;     loglin : perform log-linear regression (default: False).
-;     smooth : smoothes time period with 1-2-1 filter.
-;     iter : iteration for smoothing.
-;     cross_validation_mode : perform cross validation.
-;     p_value : p value for F-test in stepwise regression (default: p=0.05)
-;     plot_mder_time_series : plot whole time series of MDER results.
+;     units: units of target variable.
+;     loglin: perform log-linear regression (default: False).
+;     smooth: smoothes time period with 1-2-1 filter.
+;     iter: iteration for smoothing.
+;     cross_validation_mode: perform cross validation.
+;     p_value: p value for F-test in stepwise regression (default: p=0.05)
+;     plot_mder_time_series: plot whole time series of MDER results.
 ;
 ; Caveats:
 ;     Adds input_file_info@units.
@@ -171,37 +172,22 @@ begin
   ny_min = min(toint(input_file_info@start_year(DIM_OBS:)))
   n_max = ny_max - ny_min + 1
 
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
   ; Required attributes
-  if (isatt(diag_script_info, "p_time")) then
-    p_time = diag_script_info@p_time
-  else
-    error_msg("f", diag_script, "", "requires attribute p_time in recipe")
-  end if
-  if (isatt(diag_script_info, "p_step"))then
-    p_step = diag_script_info@p_step
-  else
-    error_msg("f", diag_script, "", "requires attribute p_step in recipe")
-  end if
-  if (isatt(diag_script_info, "scal_time")) then
-    scal_time = diag_script_info@scal_time
-  else
-    error_msg("f", diag_script, "", "requires attribute scal_time in recipe")
-  end if
-  if (isatt(diag_script_info, "time_oper"))then
-    time_oper = diag_script_info@time_oper
-  else
-    error_msg("f", diag_script, "", "requires attribute time_oper in recipe")
-  end if
-  if (isatt(diag_script_info, "time_opt"))then
-    time_opt = diag_script_info@time_opt
-  else
-    error_msg("f", diag_script, "", "requires attribute time_opt in recipe")
-  end if
-  if (isatt(diag_script_info, "calc_type"))then
-    calc_type = diag_script_info@calc_type
-  else
-    error_msg("f", diag_script, "", "requires attribute calc_type in recipe")
-  end if
+  req_atts = (/"p_time", "p_step", "scal_time", "time_oper", "time_opt", \
+              "calc_type"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+  p_time = diag_script_info@p_time
+  p_step = diag_script_info@p_step
+  scal_time = diag_script_info@scal_time
+  time_oper = diag_script_info@time_oper
+  time_opt = diag_script_info@time_opt
+  calc_type = diag_script_info@calc_type
 
   ; Optional attributes
   if (.not. isatt(diag_script_info, "units")) then
@@ -235,12 +221,6 @@ begin
   filename = input_file_info@project(DIM_OBS) + "_" + target_var + \
     "-" + calc_type + "_" + input_file_info@exp(DIM_OBS + DIM_HDAT) + \
     "_" + (p_step + 1) + "ystep"
-
-  ; Plot file type
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
-  end if
 
   ; Output arrays
   xx = new((/DIM_DAT, dimsizes(p_time)/), float)

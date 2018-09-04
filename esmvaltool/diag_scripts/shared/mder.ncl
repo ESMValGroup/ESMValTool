@@ -433,14 +433,14 @@ function regress_stepwise(xarr_f[*][*]: numeric, \
 ;     al., 2013.
 ;
 ; Caveats:
-;     Needs attributes diag_script_info@wregr.
+;     Needs attributes diag_script_info@wregr, diag_script_info@wexit and
 ;     optionally diag_scripts@p_value.
 ;
 ; Modification history:
 ;   * 20180807_A-schl_ma: ported to v2.0
 ;   * 201303??-A_schl_ma: written
 ;
-local p_value, im, wregr, dim_diag, dim_dat, f_value_b, ssr0, sst, \
+local p_value, im, wregr, wexit, dim_diag, dim_dat, f_value_b, ssr0, sst, \
       used_diags, iiter, igd, jgd, nii, cvf, xarr, yarr
 
 begin
@@ -449,13 +449,13 @@ begin
   scriptname = "diag_scripts/shared/mder.ncl"
   enter_msg(scriptname, funcname)
 
-  ; Recipe attributes
-  if (isatt(diag_script_info, "wregr")) then
-    wregr = diag_script_info@wregr
-  else
-    error_msg("f", scriptname, funcname, "Exit criteria need to be " + \
-              "defined in 'wregr' in recipe")
-  end if
+  ; Required attributes
+  req_atts = (/"wregr", "wexit"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+  wregr = diag_script_info@wregr
+  wexit = diag_script_info@wexit
+
+  ; Optional attributes
   if (isatt(diag_script_info, "p_value")) then
     p_value = diag_script_info@p_value
   else
@@ -521,7 +521,7 @@ begin
 
   ; Start stepwise regression
   iiter = 1
-  do while (wregr)
+  do while (wregr .or. wexit)
     ; .or.(f_prob .ge. f_value .and. f_prob .lt. f_value_b)
     log_debug("stepwise regression: iteration " + iiter)
 
@@ -603,6 +603,7 @@ begin
 
       ; If the diagnostic is not included then backward elimination step is
       ; not needed.
+      wexit = False
       break
     end if
     if (f_value .gt. f_prob) then
