@@ -102,12 +102,12 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  dim_MOD = dimsizes(dataset_info@dataset)
+  dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
 
-  ; Write references
+  ; Write references  ; FIX-ME to be replaced by new method
   write_references(diag_script, "A_fran_fr", \
                    (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
                    (/"D_righi15gmd", "D_gleckler08jgr"/), \
@@ -206,7 +206,7 @@ begin
   if (isatt(variable_info, "alternative_dataset")) then
     l_altern = True
     nobs = 2
-    ref_inds = get_ref_dataset_idx(dataset_info, \
+    ref_inds = get_ref_dataset_idx(input_file_info, \
                                    (/variable_info@reference_dataset, \
                                     variable_info@alternative_dataset/))
     ref_ind = ref_inds(0)
@@ -215,7 +215,7 @@ begin
     l_altern = False
     nobs = 1
     ref_inds = \
-      get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
+      get_ref_dataset_idx(input_file_info, variable_info@reference_dataset)
     ref_ind = ref_inds
   end if
 

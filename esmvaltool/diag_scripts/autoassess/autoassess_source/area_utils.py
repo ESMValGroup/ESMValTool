@@ -8,7 +8,7 @@ import numpy.ma as ma
 import iris
 import iris.analysis.cartography as iac
 
-import iris_updates as newiris
+from . import iris_updates as newiris
 
 
 def area_average(cube,

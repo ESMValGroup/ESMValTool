@@ -17,7 +17,6 @@
 ;    procedure inquire_and_save_fileinfo
 ;
 ; #############################################################################
-MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
 gOldVar = ""
 gOldDiag = ""
@@ -459,28 +458,28 @@ begin
   scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
-  hline      = "-------------------------"
-  hline_dble = "========================="
-  hline = hline + hline + hline
-  hline_dble = hline_dble + hline_dble + hline_dble
+  ; hline      = "-------------------------"
+  ; hline_dble = "========================="
+  ; hline = hline + hline + hline
+  ; hline_dble = hline_dble + hline_dble + hline_dble
 
   ; Master refs file
-  master_refs = MASTER_REFS
+  ; master_refs = MASTER_REFS
 
   ; Output refs file
-  output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
+  ; output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
-  s_open  = "echo " + str_get_dq
-  s_close = str_get_dq + " >> " + output_refs
+  ; s_open  = "echo " + str_get_dq
+  ; s_close = str_get_dq + " >> " + output_refs
 
   ; If first time (empty output_refs) write header
-  if (.not. fileexists(output_refs)) then
-    write_header(s_open, hline, s_close)
-  end if
+  ; if (.not. fileexists(output_refs)) then
+  ;   write_header(s_open, hline, s_close)
+  ; end if
 
   ; write diagnostic header
-  write_diag_header(s_open, hline_dble, s_close, master_refs, output_refs, \
-                    auth, contr, diag, obs, proj, script)
+  ; write_diag_header(s_open, hline_dble, s_close, master_refs, output_refs, \
+  ;                   auth, contr, diag, obs, proj, script)
 
   leave_msg(scriptname, funcname)
 
