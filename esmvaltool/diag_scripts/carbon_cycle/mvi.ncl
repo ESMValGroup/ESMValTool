@@ -15,6 +15,12 @@
 ;     ref_dataset: reference for the MVI calculation.
 ;
 ; Optional recipe attributes:
+;     mean_time_range: time period over which the mean is calculated (default:
+;         whole time span).
+;     trend_time_range: time period over which the trend is calculated
+;         (default: whole time span).
+;     mvi_time_range: time period over which the MVI is calculated (default:
+;         whole time span).
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
@@ -100,6 +106,42 @@ begin
   end_year = max(stringtoint(input_file_info@end_year))
   all_years = ispan(start_year, end_year, 1)
 
+  ; Specific time range for mean
+  if (isatt(diag_script_info, "mean_time_range")) then
+    custom_mean_time_range = True
+    mean_time_range = diag_script_info@mean_time_range
+    mean_time_ind = (/ind(all_years .eq. mean_time_range(0)), \
+                     ind(all_years .eq. mean_time_range(1))/)
+    log_info("Restricting mean calculation to time period " + \
+             mean_time_range(0) + "-" + mean_time_range(1))
+  else
+    custom_mean_time_range = False
+  end if
+
+  ; Specific time ranges for trend
+  if (isatt(diag_script_info, "trend_time_range")) then
+    custom_trend_time_range = True
+    trend_time_range = diag_script_info@trend_time_range
+    trend_time_ind = (/ind(all_years .eq. trend_time_range(0)), \
+                     ind(all_years .eq. trend_time_range(1))/)
+    log_info("Restricting trend calculation to time period " + \
+             trend_time_range(0) + "-" + trend_time_range(1))
+  else
+    custom_trend_time_range = False
+  end if
+
+  ; Specific time ranges for MVI
+  if (isatt(diag_script_info, "mvi_time_range")) then
+    custom_mvi_time_range = True
+    mvi_time_range = diag_script_info@mvi_time_range
+    mvi_time_ind = (/ind(all_years .eq. mvi_time_range(0)), \
+                     ind(all_years .eq. mvi_time_range(1))/)
+    log_info("Restricting mvi calculation to time period " + \
+             mvi_time_range(0) + "-" + mvi_time_range(1))
+  else
+    custom_mvi_time_range = False
+  end if
+
   ; Array sizes
   DIM_VAR = dimsizes(variables)
   DIM_DAT = dimsizes(input_file_info@dataset)
@@ -167,13 +209,13 @@ begin
     end if
 
     ; Save data at correct place
-    idx_1 = start_year - toint(input_file_info@start_year(idat))
+    idx_1 = toint(input_file_info@start_year(idat)) - start_year
     idx_2 = dimsizes(all_years) - \
       (end_year - toint(input_file_info@end_year(idat))) - 1
     all_data_yearly(idat, idx_1:idx_2, :, :) = data_annual
     copy_VarAtts(data_annual, all_data_yearly)
     copy_VarCoords(data_annual, all_data_yearly(idat, :, :, :))
-    delete([/data_var, data_annual/])
+    delete([/data_var, data_annual, idx_1, idx_2/])
   end do
 
   ; ---------------------------------------------------------------------------
@@ -207,25 +249,47 @@ begin
       error_msg("f", diag_script, "", "no adequate reference dataset provided")
   end if
   log_info("Reference dataset: " + input_file_info@dataset(ref_idx))
-  data_ref = all_data_yearly(ref_idx, :, :, :)
+
+  ; Restrict time range of reference dataset if desired
+  if (custom_mvi_time_range) then
+    data_ref = all_data_yearly(ref_idx, mvi_time_ind(0):mvi_time_ind(1), \
+                               :, :)
+  else
+    data_ref = all_data_yearly(ref_idx, :, :, :)
+  end if
   ref = dim_stddev_n(data_ref, 0)
   ref = where(ref .ne. 0, ref, all_data_yearly@_FillValue)
 
   ; Loop over datasets
   do idat = 0, DIM_DAT - 1
-    data_temp = all_data_yearly(idat, :, :, :)
+
+    ; Datasets for MVI (restrict time range if desired)
+    if (custom_mvi_time_range) then
+      data_temp = all_data_yearly(idat, mvi_time_ind(0):mvi_time_ind(1), \
+                                  :, :)
+    else
+      data_temp = all_data_yearly(idat, :, :, :)
+    end if
     dataset = dim_stddev_n(data_temp, 0)
 
     ; Prevents a division by 0
     dataset = where(dataset .ne. 0, dataset, all_data_yearly@_FillValue)
 
-    ; Commpute MVI
+    ; Compute MVI
     all_data_mvi(idat, :, :) = (dataset / ref - ref / dataset) ^ 2
     delete([/dataset, data_temp/])
 
-    ; Compute trend
-    dataset = all_data_yearly(idat, :, :, :)
-    rc = regCoef_n(1.0 * all_years, dataset, 0, 0)
+    ; Compute trend (restrict time range if desired)
+    if (custom_trend_time_range) then
+      dataset = all_data_yearly(idat, \
+                                trend_time_ind(0):trend_time_ind(1), :, :)
+      rc = regCoef_n( \
+        1.0 * ispan(trend_time_range(0), trend_time_range(1), 1), \
+        dataset, 0, 0)
+    else
+      dataset = all_data_yearly(idat, :, :, :)
+      rc = regCoef_n(1.0 * all_years, dataset, 0, 0)
+    end if
     rc!0 = "lat"
     rc!1 = "lon"
     rc&lat = dataset&lat
@@ -235,7 +299,7 @@ begin
   end do
   copy_VarAtts(all_data_yearly, all_data_trend)
 
-  ; Cap MVI
+  ; Cap MVI (TODO: why?)
   all_data_mvi = where(all_data_mvi .lt. 10, all_data_mvi, 50)
 
   ; Special case for LAI:
@@ -247,7 +311,12 @@ begin
   end if
 
   ; Compute total temporal mean
-  all_data_mean = dim_avg_n_Wrap(all_data_yearly, 1)
+  if (custom_mean_time_range) then
+    all_data_mean = dim_avg_n_Wrap(all_data_yearly(\
+      :, mean_time_ind(0):mean_time_ind(1), :, :), 1)
+  else
+    all_data_mean = dim_avg_n_Wrap(all_data_yearly, 1)
+  end if
   all_data_mean!0 = "dataset"
   all_data_mean!1 = "lat"
   all_data_mean!2 = "lon"
@@ -353,6 +422,24 @@ begin
   gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
   gsn_reverse_colormap(wks)
 
+  ; Axis labels
+  if (custom_mean_time_range) then
+    mean_label = mean_time_range(0) + "-" + mean_time_range(1) + " Mean"
+  else
+    mean_label = start_year + "-" + end_year + " Mean"
+  end if
+  if (custom_trend_time_range) then
+    trend_label = trend_time_range(0) + "-" + trend_time_range(1) + \
+      " Linear trend"
+  else
+    trend_label = start_year + "-" + end_year + " Linear trend"
+  end if
+  if (custom_mvi_time_range) then
+    mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + " MVI"
+  else
+    mvi_label = start_year + "-" + end_year + " MVI"
+  end if
+
   ; Pack data
   data_arr = new((/3, dimsizes(regional_mean)/), float)
   data_arr(0, :) = (/regional_mean/)
@@ -360,7 +447,7 @@ begin
   data_arr(2, :) = (/regional_mvi/)
   data_arr!0 = "statistic"
   data_arr!1 = "datasets"
-  data_arr&statistic = (/"mean", "linear trend", "MVI"/)
+  data_arr&statistic = (/mean_label, trend_label, mvi_label/)
   data_arr&datasets = input_file_info@dataset
   data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
 

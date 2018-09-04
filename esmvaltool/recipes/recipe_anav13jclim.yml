@@ -97,6 +97,8 @@ diagnostics:
         sort: True
         styleset: CMIP5
         region: Global
+        mean_time_range: [1986, 2005]
+        mvi_time_range: [1986, 2005]
       mvi_nh: &mvi_nh
         <<: *mvi_global
         region: Northern Hemisphere
