@@ -732,7 +732,7 @@ begin
   if (config_user_info@write_netcdf) then
     work_dir = config_user_info@work_dir
     system("mkdir -p " + work_dir)
-    opt = True
+    opt = diag_script_info
 
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1

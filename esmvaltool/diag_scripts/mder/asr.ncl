@@ -304,8 +304,7 @@ begin
   if (config_user_info@write_netcdf) then
     work_dir = config_user_info@work_dir
     system("mkdir -p " + work_dir)
-    opt = True
-    opt@wdiag = diag_script_info@wdiag
+    opt = diag_script_info
     log_info(opt@wdiag)
 
     ; Iterate over all datasets

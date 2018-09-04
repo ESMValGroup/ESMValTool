@@ -91,7 +91,7 @@ end
 
 begin
 
-  opt = True
+  opt = diag_script_info
 
   ; Iterate over all diagnostics
   do dd = 0, DIM_DIAG - 1
