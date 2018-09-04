@@ -95,7 +95,7 @@ begin
 
   ; Iterate over all diagnostics
   do dd = 0, DIM_DIAG - 1
-    opt@wdiag = diag_script_info@wdiag(dd)
+    opt@wdiag := diag_script_info@wdiag(dd)
     var0_new = opt@wdiag
 
     ; Output file

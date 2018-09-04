@@ -733,7 +733,7 @@ begin
 
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1
-      opt@wdiag = diag_script_info@wdiag(dd)
+      opt@wdiag := diag_script_info@wdiag(dd)
       log_info(opt@wdiag)
 
       ; Iterate over all datasets
