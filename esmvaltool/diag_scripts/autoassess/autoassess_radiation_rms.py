@@ -30,8 +30,8 @@ This diagnostic uses CMIP5 data; to switch CMIP6 change _CMIP_TYPE
 import os
 import logging
 import iris
-import autoassess_source.rms as rms
-import autoassess_source.valmod_radiation as vm
+import esmvaltool.diag_scripts.autoassess.rms as rms
+import esmvaltool.diag_scripts.autoassess.valmod_radiation as vm
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             get_control_exper_obs,
                                             apply_supermeans)
