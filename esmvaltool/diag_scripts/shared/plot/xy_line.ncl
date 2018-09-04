@@ -2181,9 +2181,9 @@ begin
   res@trXMaxF = dimsizes(data&dataset)
   res@tmXBValues = ispan(0, dimsizes(data&dataset) - 1, 1)
   res@trYMinF = min(data(0, :) - data(1, :) / 2.)
-  res@trYMinF = where(res@trXMinF.lt.0, 1.1 * res@trYMinF, 0.9 * res@trYMinF)
+  res@trYMinF = where(res@trYMinF.lt.0, 1.1 * res@trYMinF, 0.9 * res@trYMinF)
   res@trYMaxF = max(data(0, :) + data(1, :) / 2.)
-  res@trYMaxF = where(res@trXMaxF.gt.0, 1.1 * res@trYMaxF, 0.9 * res@trYMaxF)
+  res@trYMaxF = where(res@trYMaxF.gt.0, 1.1 * res@trYMaxF, 0.9 * res@trYMaxF)
   res@tiMainString = varname + " - " + diag_script_info@region
   res@tmXBLabels = data&dataset
   res@tmXBLabelAngleF = 45.

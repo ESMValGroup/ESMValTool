@@ -344,20 +344,18 @@ begin
 
   ; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
   if (isatt(variable_info, "plot_units")) then
-    all_data_yearly = convert_units(all_data_yearly, \
-                                    variable_info@plot_units)
-    all_data_monthly = convert_units(all_data_monthly, \
-                                     variable_info@plot_units)
+    if (variable_info@plot_units .eq. "degC") then
+      all_data_yearly(:, :, 0) = convert_units(all_data_yearly(:, :, 0), \
+                                               variable_info@plot_units)
+      all_data_monthly(:, :, 0) = convert_units(all_data_monthly(:, :, 0), \
+                                                variable_info@plot_units)
+    else
+      all_data_yearly = convert_units(all_data_yearly, \
+                                      variable_info@plot_units)
+      all_data_monthly = convert_units(all_data_monthly, \
+                                       variable_info@plot_units)
+    end if
   end if
-
-  ; FIXME: necessary?
-  ; Don't know how to do this in var_defs without losing irreg grid info
-  ; if (var0 .eq. "tos") then
-  ;   all_yearly = all_yearly - 273.15
-  ;   all_yearly@units = "degC"
-  ;   all_monthly = all_monthly - 273.15
-  ;   all_monthly@units = "degC"
-  ; end if
 
   ; ---------------------------------------------------------------------------
   ; Write NETCDF
