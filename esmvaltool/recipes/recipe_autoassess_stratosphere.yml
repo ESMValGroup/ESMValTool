@@ -53,21 +53,23 @@ diagnostics:
       - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:
       autoassess_strato_test_1: &autoassess_strato_test_1_settings
-        script: autoassess/autoassess_stratosphere.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Stratosphere Diagnostic Metric MPI-MPI"
-        area: Stratosphere
+        area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
+        obs_type: OBS
         start: 1997/12/01
         end: 2002/12/01
       autoassess_strato_test_2: &autoassess_strato_test_2_settings
-        script: autoassess/autoassess_stratosphere.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Stratosphere Diagnostic Metric MPI-INM"
-        area: Stratosphere
+        area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
+        obs_type: OBS
         start: 1997/12/01
         end: 2002/12/01
 
@@ -79,7 +81,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_stratosphere.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Metrics"
@@ -91,7 +93,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_stratosphere.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Metrics"

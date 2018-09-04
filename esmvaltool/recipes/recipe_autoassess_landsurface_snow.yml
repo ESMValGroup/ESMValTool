@@ -35,7 +35,7 @@ diagnostics:
         fx_files: [sftlf]
     scripts:
       autoassess_landsurf_snow: &autoassess_landsurf_snow_settings
-        script: autoassess/autoassess_landsurface.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Land-Surface Snow Diagnostic"
         area: land_surface_snow
         control_model: MPI-ESM-LR

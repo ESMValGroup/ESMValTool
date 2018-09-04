@@ -44,7 +44,7 @@ diagnostics:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:
       autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
-        script: autoassess/autoassess_landsurface.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Land-Surface Diagnostic Surfrad Metric"
         area: land_surface_surfrad
         control_model: MPI-ESM-LR
