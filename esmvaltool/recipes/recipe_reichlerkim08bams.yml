@@ -16,7 +16,7 @@ documentation:
     - eyri_ve
 
   references:
-    - rk2008bams
+    - rk2008bams #will need to be added
 
   projects:
     - crescendo
