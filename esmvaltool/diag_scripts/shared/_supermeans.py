@@ -31,7 +31,7 @@ class InvalidPeriod(ValueError):
     pass
 
 
-def get_supermean(name, season, data_dir):
+def get_supermean(name, season, data_dir, obs_flag=None):
     """Calculated supermeans from retrieved data, which are pickled Iris cubes.
 
     :param name: Cube name. Should be CF-standard name. If no CF-standard name
@@ -53,7 +53,10 @@ def get_supermean(name, season, data_dir):
     """
     name_constraint = iris.Constraint(name=name)
 
-    cubes_path = os.path.join(data_dir, 'cubeList.nc')
+    if not obs_flag:
+        cubes_path = os.path.join(data_dir, 'cubeList.nc')
+    else:
+        cubes_path = os.path.join(data_dir, obs_flag + '_cubeList.nc')
     cubes = iris.load(cubes_path)
 
     # use STASH if no standard name
