@@ -49,7 +49,7 @@ def land_surf_rad(run):
                 # name custom CMOR: surface_net_downward_shortwave_radiation
                 ebaf_fld = get_supermean(
                     'surface_net_downward_shortwave_radiation', season,
-                    run['clim_root'])
+                    run['clim_root'], obs_flag='CERES-EBAF')
 
                 # m01s01i201
                 run_fld_rad = get_supermean(
@@ -65,7 +65,7 @@ def land_surf_rad(run):
                 # name custom CMOR: surface_net_downward_longwave_radiation
                 ebaf_fld = get_supermean(
                     'surface_net_downward_longwave_radiation', season,
-                    run['clim_root'])
+                    run['clim_root'], obs_flag='CERES-EBAF')
 
                 # m01s02i201
                 run_fld_rad = get_supermean(

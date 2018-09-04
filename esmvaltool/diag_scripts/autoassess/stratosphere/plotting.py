@@ -1,6 +1,8 @@
-'''
+"""
+Plot tool for stratosphere
+
 Module for functions useful for image manipulation and plotting
-'''
+"""
 
 import matplotlib.colors as mcol
 import numpy as np
@@ -25,7 +27,6 @@ def segment2list(cmap, numcol, reverse=False):
     behaviour for linear colour scales, and actually get required behaviour
     for non-linear colour scales.
     """
-
     cdict = cmap._segmentdata.copy()
     # numcol colors
     colors_i = np.linspace(0, 1., numcol + 1)

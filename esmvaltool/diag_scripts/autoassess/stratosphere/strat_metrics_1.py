@@ -17,10 +17,9 @@ import iris
 import iris.analysis.cartography as iac
 import iris.coord_categorisation as icc
 import iris.plot as iplt
-from .loaddata import load_run_ss
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .plotting import segment2list
 
-MARKERS = 'ops*dh^v<>+xDH.,'
 
 # Candidates for general utility functions
 
@@ -324,7 +323,7 @@ def qbo_metrics(run, ucube, metrics):
     # write results to current working directory
     outfile = '{0}_qbo30_{1}.nc'
     with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(qbo30, outfile.format(run['runid'], run.period))
+        iris.save(qbo30, outfile.format(run['runid'], run['period']))
 
     # Calculate QBO metrics
     (period, amp_west, amp_east) = calc_qbo_index(qbo30)
@@ -422,7 +421,7 @@ def teq_metrics(run, tcube, metrics):
     # write results to current working directory
     outfile = '{0}_teq100_{1}.nc'
     with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run.period))
+        iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -449,7 +448,7 @@ def t_metrics(run, tcube, metrics):
     # write results to current working directory
     outfile = '{0}_t100_{1}.nc'
     with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run.period))
+        iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -476,7 +475,7 @@ def q_metrics(run, qcube, metrics):
     # write results to current working directory
     outfile = '{0}_q70_{1}.nc'
     with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(q_months, outfile.format(run['runid'], run.period))
+        iris.save(q_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     qmean = q_mean(q_months)
@@ -625,26 +624,20 @@ def multi_qbo_plot(runs):
     for run in runs:
         _ = mainfunc(run)
 
-    # Split up control and experiments
-    run_cntl = runs[0]
-    run_expts = runs[1:]
-
     # QBO at 30hPa timeseries plot
 
     # Set up generic input file name
     infile = '{0}_qbo30_{1}.nc'
 
     # Create control filename
-    cntlfile = infile.format(run_cntl['runid'], run_cntl.period)
+    cntlfile = infile.format(run['suite_id1'], run['period'])
 
-    # Create experiment filenames
-    exptfiles = dict()
-    for run_expt in run_expts:
-        exptfiles[run_expt.id] = infile.format(run['runid'], run_expt.period)
+    # Create experiment filename
+    exptfile = infile.format(run['suite_id2'], run['period'])
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
-        print('30hPa QBO for control absent. skipping ...')
+        print('QBO30 Control absent. skipping ...')
         return
 
     # Create plot
@@ -654,13 +647,11 @@ def multi_qbo_plot(runs):
     qbo30_cntl = iris.load_cube(cntlfile)
     ivlist = iris.__version__.split('.')
     if float('.'.join([ivlist[0], ivlist[1]])) >= 2.1:
-        iplt.plot(qbo30_cntl, label=run_cntl.id)
+        iplt.plot(qbo30_cntl, label=run['suite_id1'])
         # Plot experiments
-        for run_expt in run_expts:
-            exptfile = exptfiles[run_expt.id]
-            if os.path.exists(exptfile):
-                qbo30_expt = iris.load_cube(exptfile)
-                iplt.plot(qbo30_expt, label=run_expt.id)
+        if os.path.exists(exptfile):
+            qbo30_expt = iris.load_cube(exptfile)
+            iplt.plot(qbo30_expt, label=run['suite_id2'])
     ax1.set_title('QBO at 30hPa')
     ax1.set_xlabel('Time', fontsize='small')
     ax1.set_ylabel('U (m/s)', fontsize='small')
@@ -690,21 +681,14 @@ def multi_teq_plot(runs):
     for run in runs:
         _ = mainfunc(run)
 
-    # Split up control and experiments
-    run_cntl = runs[0]
-    run_expts = runs[1:]
-
     # Set up generic input file name
     infile = '{0}_teq100_{1}.nc'
 
     # Create control filename
-    cntlfile = infile.format(run_cntl['runid'], run_cntl.period)
+    cntlfile = infile.format(run['suite_id1'], run['period'])
 
-    # Create experiment filenames
-    exptfiles = dict()
-    for run_expt in run_expts:
-        exptfiles[run_expt.id] = infile.format(run_expt['runid'],
-                                               run_expt.period)
+    # Create experiment filename
+    exptfile = infile.format(run['suite_id2'], run['period'])
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
@@ -721,16 +705,14 @@ def multi_teq_plot(runs):
     # Plot control
     tmon = iris.load_cube(cntlfile)
     (tmean, tstrg) = mean_and_strength(tmon)
-    label = plotlabel.format(run_cntl.id, float(tmean), float(tstrg))
+    label = plotlabel.format(run['suite_id1'], float(tmean), float(tstrg))
     plt.plot(times, tmon.data, linewidth=2, label=label)
     # Plot experiments
-    for run_expt in run_expts:
-        exptfile = exptfiles[run_expt.id]
-        if os.path.exists(exptfile):
-            tmon = iris.load_cube(exptfile)
-            (tmean, tstrg) = mean_and_strength(tmon)
-            label = plotlabel.format(run_expt.id, float(tmean), float(tstrg))
-            plt.plot(times, tmon.data, linewidth=2, label=label)
+    if os.path.exists(exptfile):
+        tmon = iris.load_cube(exptfile)
+        (tmean, tstrg) = mean_and_strength(tmon)
+        label = plotlabel.format(run['suite_id2'], float(tmean), float(tstrg))
+        plt.plot(times, tmon.data, linewidth=2, label=label)
     ax1.set_title('Equatorial 100hPa temperature, Multi-annual monthly means')
     ax1.set_xlabel('Month', fontsize='small')
     ax1.set_xlim(0, 11)
@@ -744,10 +726,7 @@ def multi_teq_plot(runs):
 
 def calc_merra(run):
     # Load data
-    # VPREDOI::FIXME
-    # this is a hack
-    merrafile = os.path.join(run['clim_root'],
-                             'ERA-Interim_tropical_area_avg.nc')
+    merrafile = os.path.join(run['clim_root'], 'ERA-Interim_cubeList.nc')
     (t, q) = iris.load_cubes(merrafile,
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
@@ -771,8 +750,7 @@ def calc_merra(run):
 def calc_erai(run):
     # Load data
     eraidir = run['clim_root']
-    eraifile = os.path.join(run['clim_root'],
-                            'ERA-Interim_tropical_area_avg.nc')
+    eraifile = os.path.join(run['clim_root'], 'ERA-Interim_cubeList.nc')
     (t, q) = iris.load_cubes(eraifile,
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
@@ -813,26 +791,17 @@ def multi_t100_vs_q70_plot(runs):
     for run in runs:
         _ = mainfunc(run)
 
-    # Split up control and experiments
-    run_cntl = runs[0]
-    run_expts = runs[1:]
-
     # Set up generic input file name
     t_file = '{0}_t100_{1}.nc'
     q_file = '{0}_q70_{1}.nc'
 
     # Create control filenames
-    t_cntl = t_file.format(run_cntl['runid'], run_cntl.period)
-    q_cntl = q_file.format(run_cntl['runid'], run_cntl.period)
+    t_cntl = t_file.format(run['suite_id1'], run['period'])
+    q_cntl = q_file.format(run['suite_id1'], run['period'])
 
     # Create experiment filenames
-    t_expts = dict()
-    q_expts = dict()
-    for run_expt in run_expts:
-        t_expts[run_expt.id] = t_file.format(run_expt['runid'],
-                                             run_expt.period)
-        q_expts[run_expt.id] = q_file.format(run_expt['runid'],
-                                             run_expt.period)
+    t_expt = t_file.format(run['suite_id2'], run['period'])
+    q_expt = q_file.format(run['suite_id2'], run['period'])
 
     # If no control data then stop ...
     if not os.path.exists(t_cntl):
@@ -845,10 +814,10 @@ def multi_t100_vs_q70_plot(runs):
         return
 
     # Load MERRA data (currently set to pre-calculated values)
-    (t_merra, q_merra) = calc_merra(run_cntl)
+    (t_merra, q_merra) = calc_merra(run)
 
     # Load ERA-I data (currently set to pre-calculated values)
-    (t_erai, q_erai) = calc_erai(run_cntl)
+    (t_erai, q_erai) = calc_erai(run)
 
     # Create plot
     # Axes
@@ -900,19 +869,16 @@ def multi_t100_vs_q70_plot(runs):
     tmean = t_mean(tmon) - t_merra
     qmon = iris.load_cube(q_cntl)
     qmean = q_mean(qmon) - q_merra
-    label = '{1} ({0})'.format(run_cntl.id, run_cntl.title)
+    label = run['suite_id1']
     ax1.scatter(tmean, qmean, s=100, label=label, marker='^')
-    # Plot experiments
-    for i, run_expt in enumerate(run_expts):
-        t_expt = t_expts[run_expt.id]
-        q_expt = q_expts[run_expt.id]
-        if os.path.exists(t_expt) and os.path.exists(q_expt):
-            tmon = iris.load_cube(t_expt)
-            tmean = t_mean(tmon) - t_merra
-            qmon = iris.load_cube(q_expt)
-            qmean = q_mean(qmon) - q_merra
-            label = '{1} ({0})'.format(run_expt.id, run_expt.title)
-            ax1.scatter(tmean, qmean, s=100, label=label, marker=MARKERS[i])
+    # Plot experiment
+    if os.path.exists(t_expt) and os.path.exists(q_expt):
+        tmon = iris.load_cube(t_expt)
+        tmean = t_mean(tmon) - t_merra
+        qmon = iris.load_cube(q_expt)
+        qmean = q_mean(qmon) - q_merra
+        label = run['suite_id2']
+        ax1.scatter(tmean, qmean, s=100, label=label, marker='v')
 
     ax1.legend(loc='upper right', scatterpoints=1, fontsize='medium')
     fig.savefig('t100_vs_q70.png')
