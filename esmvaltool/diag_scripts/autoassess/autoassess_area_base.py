@@ -297,7 +297,7 @@ def run_area(cfg):
 
     # import area here to allow removal of areas
     area = run_obj['_area']
-    area_package = _import_package(cfg, area)
+    area_package = _import_package(area)
 
     for suite_id in [run_obj['suite_id1'], run_obj['suite_id2']]:
         all_metrics = {}
