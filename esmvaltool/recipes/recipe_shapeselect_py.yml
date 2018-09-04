@@ -1,0 +1,39 @@
+---
+
+models:
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+#  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2000}
+
+preprocessors:
+
+  preprocessor1: {} # {mean}
+#    regrid:
+#      target_grid: ERA-Interim
+#      scheme: linear
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+#      exclude: [ERA-Interim]
+
+diagnostics:
+
+  diagnostic1:
+    description: Extracting data for user defined shapefile.
+    variables:
+      pr:
+        preprocessor: preprocessor1
+        field: T2Ms
+    scripts:
+      script1:
+        script: shapeselect/diag_shapeselect.py
+        #shppath: '/home/a001850/WORK/git/esmvaltool_input/hydrosheds/eu_bas_15s_beta.shp'
+        #shppath: '/home/a001850/tmp/testshp3.shp'
+        #shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp'
+        #shppath: '/data/proj/Fouh/FoUh/Staff/Peter.Berg/MAGIC/testshp7.shp' #/data/proj/Fouh/FoUh/Staff/Peter.Berg/MAGIC/testshp6.shp'
+        #shpidcol: 'BASIN_ID' #SUBID' #id' #BASIN_ID' #'id' # Name of column for polygon ids
+        shppath: '/home/a001850/WORK/git/esmvaltool_input/peterstest15.shp'
+        wgtmet: 'mean_inside' #'nearest_centroid' # Weighting method
+        write_csv: True
+        evalplot: True #False #True

@@ -1,0 +1,34 @@
+---
+
+models:
+  - {model: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+#  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+# Find daily data to replace!!!
+#  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2001}
+
+preprocessors:
+
+  preprocessor1: {} # {mean}
+#    regrid:
+#      target_grid: ERA-Interim
+#      scheme: linear
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+#      exclude: [ERA-Interim]
+
+diagnostics:
+
+  diagnostic1:
+    description: Calculating drought indices.
+    variables:
+      pr:
+        preprocessor: preprocessor1
+        field: T2Ms
+    scripts:
+      script1:
+        script: droughtindex/diag_droughtindex.py
+        dryindex: 'cdd'
+        plim: 1
+        frlim: 5
