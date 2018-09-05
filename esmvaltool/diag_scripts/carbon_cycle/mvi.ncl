@@ -10,31 +10,31 @@
 ;    Calculates the model variability index (MVI), interannual variability
 ;    (IAV) and mean, and draws them in a 3D scatter plot.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     region: region to be averaged.
 ;     ref_dataset: reference for the MVI calculation.
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     mean_time_range: time period over which the mean is calculated (default:
-;         whole time span).
+;                      whole time span).
 ;     trend_time_range: time period over which the trend is calculated
-;         (default: whole time span).
+;                       (default: whole time span).
 ;     mvi_time_range: time period over which the MVI is calculated (default:
-;         whole time span).
+;                     whole time span).
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
 ;     the preprocessor section of the recipe.
 ;
 ; Modification history:
-;   * 20180814_A-schl_ma: continued porting to v2.0
-;   * 20180619_A-wenz_sa: adopted script to v2
-;   * 20170316_A-gier_be: Added cdo regridding, landmask for CRU obs
-;   * 20151130_A-laue_ax: moved call to write_references to beginning of code
-;   * 20151104_A-righ_ma: graphic part moved to external plot_scripts
-;   * 20151102_A-righ_ma: replacing area functions with ESMValTool functions
-;   * 201507??_A-wenz_sa: adapted to ESMValTool structure
-;   * 201505??_A-anav_al: written
+;     20180814_A-schl_ma: continued porting to v2.0.
+;     20180619_A-wenz_sa: adopted script to v2.
+;     20170316_A-gier_be: Added cdo regridding, landmask for CRU obs.
+;     20151130_A-laue_ax: moved call to write_references to beginning of code.
+;     20151104_A-righ_ma: graphic part moved to external plot_scripts.
+;     20151102_A-righ_ma: replacing area functions with ESMValTool functions.
+;     201507??_A-wenz_sa: adapted to ESMValTool structure.
+;     201505??_A-anav_al: written.
 ;
 ; #############################################################################
 
@@ -123,7 +123,7 @@ begin
     custom_trend_time_range = True
     trend_time_range = diag_script_info@trend_time_range
     trend_time_ind = (/ind(all_years .eq. trend_time_range(0)), \
-                     ind(all_years .eq. trend_time_range(1))/)
+                      ind(all_years .eq. trend_time_range(1))/)
     log_info("Restricting trend calculation to time period " + \
              trend_time_range(0) + "-" + trend_time_range(1))
   else
@@ -135,7 +135,7 @@ begin
     custom_mvi_time_range = True
     mvi_time_range = diag_script_info@mvi_time_range
     mvi_time_ind = (/ind(all_years .eq. mvi_time_range(0)), \
-                     ind(all_years .eq. mvi_time_range(1))/)
+                    ind(all_years .eq. mvi_time_range(1))/)
     log_info("Restricting mvi calculation to time period " + \
              mvi_time_range(0) + "-" + mvi_time_range(1))
   else

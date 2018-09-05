@@ -6,37 +6,37 @@
 ; EMBRACE project
 ; #############################################################################
 ;
-; Description
+; Description:
 ;     Calculates temporal and spatial averages and plots the variable as
 ;     error-bar and seasonal cycle plots.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     region: the region to be averaged.
 ;     legend_outside: plot legend in a separate page (not for errorbar plot).
 ;     seasonal_cycle_plot: draw seasonal cycle plot [False/True].
 ;     errorbar_plot: draw errorbar plot [False/True].
 ;     mean_IAV_plot: draw Mean (x-axis), IAV (y-axis) plot [False/True].
 ;     evolution_plot: time evolution of a variable comparing obs to
-;         multi-dataset mean; requires ref_dataset in recipe and at least one
-;         dataset and one observation.
+;                     multi-dataset mean; requires ref_dataset in recipe and
+;                     at least one model and one observation.
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     sort: sort dataset in alphabetical order.
-;     anav_month : Conversion of y-axis to PgC/month instead of /year,
-;         following Anav2013 fig 7, 9 (cycle plot).
+;     anav_month: Conversion of y-axis to PgC/month instead of /year,
+;                 following Anav2013 fig 7, 9 (cycle plot).
 ;     fignum: Reference to figure in Anav paper for evolution plot. "1 top"
-;         as default.
+;             as default.
 ;     evolution_plot_ref_dataset: reference dataset for evolution_plot.
 ;     evolution_plot_anomaly: makes evolution_plot an anomaly plot.
 ;     evolution_plot_ignore: Datasets to ignore, obs are excluded
-;         automatically.
+;                            automatically.
 ;     evolution_plot_volcanoes: Turns on/off lines of volcano eruptions.
 ;     evolution_plot_color: Hue of the contours; default: red = 0.
 ;
 ;     For external dataset input:
-;     diag_script_info@obsfile : Filename of external obs to read in
-;     diag_script_info@obsname : Name of ext dataset to read in
-;     diag_script_info@ref_varname: Varname in attributes of ext file
+;     diag_script_info@obsfile: Filename of external obs to read in.
+;     diag_script_info@obsname: Name of ext dataset to read in.
+;     diag_script_info@ref_varname: Varname in attributes of ext file.
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
@@ -51,21 +51,21 @@
 ;     Modifies input_file_info@dataset and input_file_info@project.
 ;
 ; Modification history:
-;   * 20180816_A-schl_ma: continued porting to v2.0
-;   * 20180619_A-wenz_sa: adopted script to v2
-;   * 20170330_A-gier_be: added external data-read in (e.g. GCP)
-;   * 20170316_A-gier_be: added cdo regridding, landmask for CRU obs
-;   * 20170308_A-gier_be: added "evolution_plot"
-;   * 20151130_A-laue_ax: corrected passing of file type from namelist to
+;     20180816_A-schl_ma: continued porting to v2.0.
+;     20180619_A-wenz_sa: adopted script to v2.
+;     20170330_A-gier_be: added external data-read in (e.g. GCP).
+;     20170316_A-gier_be: added cdo regridding, landmask for CRU obs.
+;     20170308_A-gier_be: added "evolution_plot".
+;     20151130_A-laue_ax: corrected passing of file type from namelist to
 ;                         plotting functions; moved call to write_references
-;                         to beginning of code
-;   * 20151105_A-righ_ma: graphic part moved to external plot_scripts
-;   * 20151030_A-righ_ma: regridding not working on ocean grids, removed since
-;                         it is not necessary for these diagnostics
-;   * 20151029_A-righ_ma: replacing area functions with ESMValTool functions
-;   * 20151021_A-righ_ma: pep8 and header standardization
-;   * 201510??_A-wenz_sa: adapted to ESMValTool structure
-;   * 201505??_A-anav_al: written
+;                         to beginning of code.
+;     20151105_A-righ_ma: graphic part moved to external plot_scripts.
+;     20151030_A-righ_ma: regridding not working on ocean grids, removed since
+;                         it is not necessary for these diagnostics.
+;     20151029_A-righ_ma: replacing area functions with ESMValTool functions.
+;     20151021_A-righ_ma: pep8 and header standardization.
+;     201510??_A-wenz_sa: adapted to ESMValTool structure.
+;     201505??_A-anav_al: written.
 ;
 ; #############################################################################
 

@@ -2222,35 +2222,33 @@ function evolution_base_plot(wks_in[1],
                              anomaly)
 ;
 ; Arguments
-;    wks_in: workstations (graphic object or default will be used).
-;    source: data to be plotted or a NetCDF filename with data.
-;    varname: variable name in the file.
-;    anomaly: anomaly plot or not - used in axis labels
+;     wks_in: workstations (graphic object or default will be used).
+;     source: data to be plotted or a NetCDF filename with data.
+;     varname: variable name in the file.
+;     anomaly: anomaly plot or not - used in axis labels.
 ;
-; Source prototype
-;    source(5, *)
-;    source!0 = reference dataset
-;    source!1 = multi model mean
-;    source!2 = multi model min
-;    source!3 = multi model max
-;    source!4 = years
-;    source!5 = multi model std
-;    source@legend_outside = draw a legend within the plot or in a separate
-;                            file
-;   source@dim_Mod = number of models
+;     Source prototype:
+;         source(5, *)
+;         source!0 = reference dataset.
+;         source!1 = multi model mean.
+;         source!2 = multi model min.
+;         source!3 = multi model max.
+;         source!4 = years.
+;         source!5 = multi model std.
+;         source@legend_outside = draw a legend within the plot or in a
+;                                 separate file.
+;         source@dim_Mod = number of models.
 ;
-; Return value
-;    A graphic variable.
+; Return value:
+;     A graphic variable.
 ;
-; Description
-;    Draw an evolution plot from yearly means, including multi-model mean
-;    and uncertainty
+; Description:
+;     Draw an evolution plot from yearly means, including multi-model mean
+;     and uncertainty.
 ;
-; Caveats
-;
-; Modification history
-;    20180822_A-schl_ma: ported to v2.0
-;    20170308_A-gier_be: written.
+; Modification history:
+;     20180822_A-schl_ma: ported to v2.0.
+;     20170308_A-gier_be: written.
 ;
 local funcname, scriptname, verbosity, wks_out, wks_in, data, source, res, \
   atts, base, varname, multi_model, refmean

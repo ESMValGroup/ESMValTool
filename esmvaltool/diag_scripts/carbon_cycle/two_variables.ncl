@@ -9,25 +9,21 @@
 ; Description:
 ;   Draw a scatter plot with two variables.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;    region: the region to be averaged.
 ;
-; Optional recipe attributes:
-;
-; Caveats:
-;
-; Modification history
-;   * 20180823_A-schl_ma: continued porting to v2.0
-;   * 20180619_A-wenz_sa: adopted script to v2
-;   * 20170511_A-gier_be: added metadata to files
-;   * 20151130_A-laue_ax: corrected passing of file type from namelist to
-;   *                     plotting functions; moved call to write_references
-;   *                     to beginning of code
-;   * 20151105_A-righ_ma: graphic part moved to external plot_scripts
-;   * 20151104_A-righ_ma: removing regridding, not necessary for this
-;   *                     diagnostic
-;   * 201507??_A-wenz_sa: adapted to ESMValTool structure
-;   * 201505??_A-anav_al: written
+; Modification history:
+;     20180823_A-schl_ma: continued porting to v2.0.
+;     20180619_A-wenz_sa: adopted script to v2.
+;     20170511_A-gier_be: added metadata to files.
+;     20151130_A-laue_ax: corrected passing of file type from namelist to
+;                         plotting functions; moved call to write_references
+;                         to beginning of code.
+;     20151105_A-righ_ma: graphic part moved to external plot_scripts.
+;     20151104_A-righ_ma: removing regridding, not necessary for this
+;                         diagnostic.
+;     201507??_A-wenz_sa: adapted to ESMValTool structure.
+;     201505??_A-anav_al: written.
 ;
 ; #############################################################################
 
