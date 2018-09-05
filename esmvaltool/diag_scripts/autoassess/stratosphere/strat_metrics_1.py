@@ -604,7 +604,7 @@ def mainfunc(run):
     return metrics
 
 
-def multi_qbo_plot(runs):
+def multi_qbo_plot(run):
     '''
     Plot 30hPa QBO (5S to 5N) timeseries comparing experiments on one plot
     '''
@@ -619,10 +619,6 @@ def multi_qbo_plot(runs):
     # This behaviour is due to the convention that only metric_functions can
     # return metric values, multi_functions are supposed to
     # only produce plots (see __init__.py).
-
-    # rerun mainfunc for each run
-    for run in runs:
-        _ = mainfunc(run)
 
     # QBO at 30hPa timeseries plot
 
@@ -660,7 +656,7 @@ def multi_qbo_plot(runs):
     plt.close()
 
 
-def multi_teq_plot(runs):
+def multi_teq_plot(run):
     '''
     Plot 100hPa equatorial temperature seasonal cycle comparing
     experiments on one plot
@@ -676,10 +672,6 @@ def multi_teq_plot(runs):
     # This behaviour is due to the convention that only metric_functions can
     # return metric values, multi_functions are supposed to
     # only produce plots (see __init__.py).
-
-    # rerun mainfunc for each run
-    for run in runs:
-        _ = mainfunc(run)
 
     # Set up generic input file name
     infile = '{0}_teq100_{1}.nc'
@@ -742,7 +734,6 @@ def calc_merra(run):
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
     tmerra = t.data  # K
-    # TODO magic numbers
     qmerra = ((1000000. * 29. / 18.) * q.data)  # ppmv
     return tmerra, qmerra
 
@@ -766,12 +757,11 @@ def calc_erai(run):
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
     terai = t.data  # K
-    # TODO magic numbers
     qerai = ((1000000. * 29. / 18.) * q.data)  # ppmv
     return terai, qerai
 
 
-def multi_t100_vs_q70_plot(runs):
+def multi_t100_vs_q70_plot(run):
     '''
     Plot mean 100hPa temperature against mean 70hPa humidity
     '''
@@ -786,10 +776,6 @@ def multi_t100_vs_q70_plot(runs):
     # This behaviour is due to the convention that only metric_functions can
     # return metric values, multi_functions are supposed to
     # only produce plots (see __init__.py).
-
-    # rerun mainfunc for each run
-    for run in runs:
-        _ = mainfunc(run)
 
     # Set up generic input file name
     t_file = '{0}_t100_{1}.nc'

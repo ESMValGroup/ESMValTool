@@ -296,8 +296,7 @@ def run_area(cfg):
     os.chdir(area_out_dir)
 
     # import area here to allow removal of areas
-    area = run_obj['_area']
-    area_package = _import_package(area)
+    area_package = _import_package(run_obj['_area'])
 
     for suite_id in [run_obj['suite_id1'], run_obj['suite_id2']]:
         all_metrics = {}
@@ -308,7 +307,7 @@ def run_area(cfg):
             run_obj['runid'] = suite_id
             metrics = metric_function(run_obj)
             duplicate_metrics = set(all_metrics.keys()) & set(metrics.keys())
-            if len(duplicate_metrics) != 0:
+            if not duplicate_metrics:
                 raise AssertionError('Duplicate Metrics ' +
                                      str(duplicate_metrics))
             all_metrics.update(metrics)
@@ -325,9 +324,8 @@ def run_area(cfg):
 
     # multimodel functions
     if hasattr(area_package, 'multi_functions'):
-        run_objects = [run_obj, run_obj]
         for multi_function in area_package.multi_functions:
-            multi_function(run_objects)
+            multi_function(run_object)
     else:
         logger.info('# Area has no multi functions.')
 

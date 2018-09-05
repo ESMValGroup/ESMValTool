@@ -159,12 +159,11 @@ def age_of_air(run):
     return metrics
 
 
-def multi_age_plot(runs):
+def multi_age_plot(run):
     """
     This function is plotting the results of the function age_of_air for each
     run against observations.
     """
-    # TODO avoid running age_of_air twice
 
     # Run age_of_air for each run.
     # Age_of_air returns metrics and writes results into an *.nc in the current
@@ -175,10 +174,6 @@ def multi_age_plot(runs):
     # This behaviour is due to the convention that only metric_functions can
     # return metric values, multi_functions are supposed to
     # only produce plots (see __init__.py).
-
-    # rerun age_of_air for each run
-    for run in runs:
-        _ = age_of_air(run)
 
     ######################################
 

@@ -9,29 +9,20 @@ Porting replicates the functionality to minimum errors.
 Original Description from Version 1 Diagnostic:
 ;;###########################################################################
 ;; AutoAssess_radiation_rms.py
-;; Author: Yoko Tsushima (Met Office, UK)
-;; CMUG project
 ;;###########################################################################
 ;; Description
 ;;    This script is the RMS error metric script of
 ;;    AutoAssess radiation
-;;
-;;
-;; Modification history
-;;    20180712- autoassess_radiation_rms: porting to v2
-;;    20170323-_AutoAssess_radiation_rms: Test finished.
-;;    20160819-_test_AutoAssess_radiation_rms: written based on calc_rms code.
-;;
 ;; ###########################################################################
 
-This diagnostic uses CMIP5 data; to switch CMIP6 change _CMIP_TYPE
+This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 """
 
 import os
 import logging
 import iris
-import esmvaltool.diag_scripts.autoassess.rms as rms
-import esmvaltool.diag_scripts.autoassess.valmod_radiation as vm
+import rms_radiation as rms
+import valmod_radiation as vm
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             get_control_exper_obs,
                                             apply_supermeans)
