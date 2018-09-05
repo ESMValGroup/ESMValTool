@@ -176,7 +176,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Check required attributes of diag_script_info
-  req_atts = (/"p_step"/),
+  req_atts = (/"p_step"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   p_step = diag_script_info@p_step
 
@@ -329,7 +329,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Check required attributes of diag_script_info
-  req_atts = (/"pos"/),
+  req_atts = (/"calc_type"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 
   ; Check for valid data

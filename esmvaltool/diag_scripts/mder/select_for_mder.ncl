@@ -12,9 +12,9 @@
 ;     file. It requires precalculation by other diagnostic scripts.
 ;
 ; Required diag_script_info attributes:
-;     region: selected region
-;     time_avg: type of time average
-;     wdiag: Diagnostic names
+;     region: selected region.
+;     time_avg: type of time average.
+;     wdiag: Diagnostic names.
 ;
 ; Modification history:
 ;     20180718-A_schl_ma: ported to v2.0.

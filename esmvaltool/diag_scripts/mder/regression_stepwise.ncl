@@ -27,7 +27,7 @@
 ;     scal_time: a year to scale the timeseries with.
 ;     time_oper: select for operation in time_operation function.
 ;     time_opt: select for option in time_operation function.
-;     calc_type: trend/pos
+;     calc_type: trend/pos.
 ;     wregr: exit criterion for stepwise regression (True/False).
 ;     wexit: exit criterion for stepwise regression (True/False).
 ;
@@ -37,7 +37,7 @@
 ;     smooth: smoothes time period with 1-2-1 filter.
 ;     iter: iteration for smoothing.
 ;     cross_validation_mode: perform cross validation.
-;     p_value: p value for F-test in stepwise regression (default: p=0.05)
+;     p_value: p value for F-test in stepwise regression (default: p=0.05).
 ;     plot_mder_time_series: plot whole time series of MDER results.
 ;
 ; Caveats:
@@ -503,7 +503,7 @@ begin
     ; FIXME: degrees of freedom are hardcoded (26)
     log_info(wdiag(idx_diag) + ": OBS: +/- 95% conv.: " + obs0(idx_diag) + \
              " +/- " + (cdft_t(0.05 / 2.0, 26) * obs0_std(idx_diag)) + \
-             " DATASETS: " + (avg(diag_a(idx_diag, :))) + " +/- " + \
+             " MODELS: " + (avg(diag_a(idx_diag, :))) + " +/- " + \
              (stddev(diag_a(idx_diag, :))))
 
     ; Only account for good diagnostics where no model is missing
@@ -553,7 +553,7 @@ begin
     end if
 
     ; Regression model: cross-validation cycle
-    if (cross_validation_mode .eq. True) then
+    if (cross_validation_mode) then
       do i = 0, DIM_DAT - 1
         log_debug("Starting cross-validation cycle for dataset " + \
                   input_file_info@dataset(i))

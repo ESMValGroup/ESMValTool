@@ -21,7 +21,7 @@
 ;     scal_time: a year to scale the timeseries with.
 ;     time_oper: select for opperation in time_opperation function.
 ;     time_opt: select for option in time_opperation function.
-;     calc_type: trend/pos
+;     calc_type: trend/pos.
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset and input_file_info@ensemble.
