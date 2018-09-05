@@ -50,12 +50,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"syears", "eyears"/)
   exit_if_missing_atts(diag_script_info, req_atts)
@@ -70,9 +70,6 @@ begin
   else
     file_type = "pdf"
   end if
-
-  ; Basename of diag_script
-;  diag_script_base = basename(diag_script)
 
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
@@ -115,9 +112,9 @@ begin
   to_plot = ncdf_read(datapath, var0)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    runs = ncdf_read(datapath, "nr")
+    datapath2 = netcdf_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+    runs = ncdf_read(datapath2, "nr")
   end if
-
   ; start and end years of timeperiods
   syears = diag_script_info@syears
   eyears = diag_script_info@eyears
@@ -222,8 +219,8 @@ begin
   lgres@lgLineColors       = colors_main  ; (/1, 3, 4, 5, 6/)
   lgres@lgItemType         = "Lines"        ; show lines only (default)
   lgres@lgLabelFontHeightF = .08            ; legend label font thickness
-  lgres@vpWidthF           = 0.13           ; width of legend (NDC)
-  lgres@vpHeightF          = 0.15           ; height of legend (NDC)
+  lgres@vpWidthF           = 0.15           ; width of legend (NDC)
+  lgres@vpHeightF          = 0.16           ; height of legend (NDC)
   lgres@lgMonoDashIndex    = True
   lgres@lgDashIndex        = 0
   lgres@lgLineThicknessF        = 4
@@ -245,39 +242,68 @@ begin
     end if
     annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   end if
+  if(isatt(diag_script_info, "model_nr")) then
+    getvalues plot                     
+      "tmYLLabelFontHeightF"   : fheight
+      "trYMinF"                : trYMinF 
+      "trYMaxF"                : trYMaxF
+    end getvalues
+    text = new(1 + (dims_data - 1) * nperiods, graphic)
+    txres               = True
+    txres@txFontHeightF = fheight
+    label = tostring(runs(0, 0))
+    xloc = (toint(syears(0)) + (toint(eyears(0)) - toint(syears(0))) / 2)
+    yloc = (trYMaxF + trYMinF) / 2
+    ydiff = (trYMaxF + trYMinF) / 7
+    if yloc .le. 0 then
+      ydiff = - ydiff
+    end if
+    text(0) = gsn_add_text(wks, plot, label, xloc, yloc, txres)
+    i = 1
+    do nscen = 1, dims_data
+      do nper = 1, nperiods - 1
+        txres@txFontColor = colors_main(nscen)
+        label = tostring(runs(nscen, nper))
+        xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
+        text(i) = gsn_add_text(wks, plot, label, toint(syears(nper)) + xloc, \
+                               yloc - nscen * ydiff, txres)
+        i = i + 1
+      end do
+    end do
+  end if
   draw(wks)
   frame(wks)
+  ; alltags = array_append_record(tags,\
+  ;   (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
+  ; string1 = "Time series of global annual mean  " + variable_info@long_name +\
+  ;           " anomalies (relative to " + dataset_info@start_year(0) + "-" + \
+  ;           dataset_info@end_year(0) + ") from CMIP5 concentration drive " + \
+  ;           "experiments. Projections are shown for each RCP for the " + \
+  ;           "multi-model mean (solid lines) and the 5 to 95% range " + \
+  ;           "(+-1.64 standar deviation) across the distribution of " + \
+  ;           "individual models (shading). "
+  ; if (nperiods .gt. 1) then
+  ;   string2 = "Discontinuities at 2100 are due to different numbers of" + \
+  ;     "models performing the extension runs beyond the 21st " + \
+  ;     "century and have no physical meaning. Only one ensemble " + \
+  ;     "member is used from each model and numbers in the " + \
+  ;     "figure indicate the number of different models " + \
+  ;     "contributing to the different time periods. No ranges " + \
+  ;     "are given for the RCP6.0 projections beyond 2100 as only" + \
+  ;     " 2 models are available."
+  ; else
+  ;   string2 = ""
+  ; end if
+  ; caption = string1 + string2
+  ; id = diag_script + "_" + variables(0)
 
-;  alltags = array_append_record(tags,\
-;    (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
-  string1 = "Time series of global annual mean  " + variable_info@long_name +\
-            " anomalies (relative to " + dataset_info@start_year(0) + "-" + \
-            dataset_info@end_year(0) + ") from CMIP5 concentration drive " + \
-            "experiments. Projections are shown for each RCP for the " + \
-            "multi-model mean (solid lines) and the 5 to 95% range " + \
-            "(+-1.64 standar deviation) across the distribution of " + \
-            "individual models (shading). "
-  if (nperiods .gt. 1) then
-    string2 = "Discontinuities at 2100 are due to different numbers of" + \
-      "models performing the extension runs beyond the 21st " + \
-      "century and have no physical meaning. Only one ensemble " + \
-      "member is used from each model and numbers in the " + \
-      "figure indicate the number of different models " + \
-      "contributing to the different time periods. No ranges " + \
-      "are given for the RCP6.0 projections beyond 2100 as only" + \
-      " 2 models are available."
-  else
-    string2 = ""
-  end if
-  caption = string1 + string2
-  id = diag_script + "_" + variables(0)
-
-  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
+  ; contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
   ; ESMValMD(wks@fullname, alltags, \
   ;          caption, id, variables(0), dataset_info@dataset, \
   ;          climofiles, diag_script, contrib_authors)
 
-;  delete([/alltags, caption, id, climofiles/])
+  ;delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
+  leave_msg(diag_script, "")
 end

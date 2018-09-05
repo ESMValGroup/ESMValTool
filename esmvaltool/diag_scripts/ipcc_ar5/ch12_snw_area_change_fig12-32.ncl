@@ -45,12 +45,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "syears", "eyears", "begin_ref_year", \
                "end_ref_year", "months"/)
@@ -65,16 +65,10 @@ begin
     file_type = "pdf"
   end if
 
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
 
-  ; Output plot directory
-  plot_dir = config_user_info@plot_dir
-  system("mkdir -p " + plot_dir)
 end
 begin
   ; #############################################
@@ -255,7 +249,6 @@ begin
     ind_start = ind(data2_glob&year .eq. diag_script_info@begin_ref_year)
     ind_end = ind(data2_glob&year .eq. diag_script_info@end_ref_year)
     ref_data2(imod) = dim_avg(data2_glob(ind_start : ind_end))
-    print(ref_data2(imod))
     dim_data2g = dimsizes(data2_glob)
     if (dim_data2g .ne. dim_file(0)) then
       tdiff = dim_file(0) - dim_data2g
@@ -309,7 +302,6 @@ begin
         tmp5&time = A1&time
         tmp6 = extract_season(tmp5, months)
         data2_glob = time_operations(tmp6, -1, -1, "average", "yearly", False)
-        printMinMax(data2_glob, True)
         delete([/tmp2, tmp3, tmp4, tmp5, tmp6, sftifl_conf/])
         dim_data2g = dimsizes(data2_glob)
         if (s .eq. 0) then
@@ -433,12 +425,26 @@ begin
                             dataset_info@end_year .eq. \
                             diag_script_info@eyears(0)))
   do scen = 0, dim_scen - 1
-    do p = 0, nperiods - 1
-      runs(scen + 1, p) = dimsizes(ind(dataset_info@exp .eq. \
-                                       diag_script_info@scenarios(scen) \
-                                       .and. dataset_info@end_year .eq. \
-                                       diag_script_info@eyears(p)))
-      if (runs(scen + 1, p) .lt. 5) .and. (p .ne. 0) then
+    do p = 1, nperiods - 1
+      nrp1 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
+                 .and. toint(dataset_info@end_year) .gt. \
+                 toint(diag_script_info@eyears(p)))
+      tmp = dimsizes(nrp1)
+      ; check if only found missing, in that case set tmp to zero
+      if tmp .eq. 1 .and. ismissing(nrp1) then
+        tmp = 0
+      end if
+
+      nrp2 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
+                 .and. dataset_info@end_year .eq. diag_script_info@eyears(p))
+      tmp2 = dimsizes(nrp2)
+      ; check if only found missing, in that case set tmp2 to zero
+      if tmp2 .eq. 1 .and. ismissing(nrp2) then
+        tmp2 = 0
+      end if
+      runs(scen + 1, p) = tmp + tmp2
+      delete([/tmp, tmp2, nrp1, nrp2/])
+      if (runs(scen + 1, p) .le. 4) .and. (p .ne. 0) then
         p2 = toint(eyears(p - 1)) - toint(syears(0))
         p3 = toint(eyears(p)) - toint(syears(0))
         mean_val(scen + 1, p2 : p3) = mean_val@_FillValue
@@ -525,7 +531,9 @@ begin
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    ncdf_file@existing = "append"
-    ncdf_outfile = ncdf_write(runs, ncdf_file)
+     ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+     ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
   end if
+
+  leave_msg(diag_script, "")
 end

@@ -6,8 +6,8 @@
 ; Caveats
 ;    Needs lots of memory, in particular if lots of models and scenarios
 ;    are included
-;    Variable number of scenarios? So far hardcoded 4 scenarios (rcp2.6,
-;    rcp4.5, rcp6.0, rcp8.5)
+;    Variable number of scenarios? So far hardcoded not more than 4 scenarios 
+;    (rcp2.6, rcp4.5, rcp6.0, rcp8.5)
 ;    every model (ensemble) in RCP needs corresponding historical run as
 ;    reference, if no corresponding model found in scenario log_info
 ;
@@ -47,12 +47,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "", \  ; obs_references
-;                   "P_crescendo")     ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "", \  ; obs_references
+                   "P_crescendo")     ; proj_references
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", \
@@ -67,16 +67,9 @@ begin
     file_type = "pdf"
   end if
 
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)  ; Needed?
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
-
-  ; Output plot directory
-  plot_dir = config_user_info@plot_dir
-  system("mkdir -p " + plot_dir)
 end
 
 begin
@@ -393,16 +386,24 @@ begin
                             dataset_info@end_year .eq. \
                             diag_script_info@eyears(0)))
   do scen = 0, dim_scen - 1
-    do p = 0, nperiods - 1
-      tmp = dimsizes(ind(dataset_info@exp .eq. \
-                         diag_script_info@scenarios(scen) \
-                         .and. toint(dataset_info@end_year) .gt. \
-                         toint(diag_script_info@eyears(p))))
-      runs(scen + 1, p) = dimsizes(ind(dataset_info@exp .eq. \
-                                   diag_script_info@scenarios(scen) \
-                                   .and. dataset_info@end_year .eq. \
-                                   diag_script_info@eyears(p))) + tmp
-      delete(tmp)
+    do p = 1, nperiods - 1
+      nrp1 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
+                 .and. toint(dataset_info@end_year) .gt. \
+                 toint(diag_script_info@eyears(p)))
+      tmp = dimsizes(nrp1)
+      ; check if only found missing, in that case set tmp to zero
+      if tmp .eq. 1 .and. ismissing(nrp1) then
+        tmp = 0
+      end if
+      nrp2 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
+                 .and. dataset_info@end_year .eq. diag_script_info@eyears(p))
+      tmp2 = dimsizes(nrp2)
+      ; check if only found missing, in that case set tmp2 to zero
+      if tmp2 .eq. 1 .and. ismissing(nrp2) then
+        tmp2 = 0
+      end if
+      runs(scen + 1, p) = tmp2 + tmp
+      delete([/tmp, tmp2, nrp1, nrp2/])
       if (runs(scen + 1, p) .le. 4) .and. (p .ne. 0) then
         p2 = toint(eyears(p - 1)) - toint(syears(0))
         p3 = toint(eyears(p)) - toint(syears(0))
@@ -434,34 +435,35 @@ begin
   end do
   copy_VarMeta(mean_val, to_plot)
   to_plot!0 = "metric"
+  str_spread = sprintf("%5.2f", spread)
   if (dim_scen .eq. 1) then
-    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" + \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
+    to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" + \
+                       str_spread + "std", "-" + str_spread + \
                        "std"/)
   else if (dim_scen .eq. 2) then
-    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" + \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
-                       "std", "mean", "+" + tostring(spread) + "std", "-" \
-                       + tostring(spread) + "std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" + \
+                       str_spread + "std", "-" + str_spread + \
+                       "std", "mean", "+" + str_spread + "std", "-" \
+                       + str_spread + "std"/)
   else if (dim_scen .eq. 3) then
-    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" +  \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
-                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" + \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
+    to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" +  \
+                       str_spread + "std", "-" + str_spread + \
+                       "std", "mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" + \
+                       str_spread + "std", "-" + str_spread + \
                        "std"/)
   else if (dim_scen .eq. 4) then
-    to_plot&metric = (/"mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" + \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
-                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std", "mean", "+" + \
-                       tostring(spread) + "std", "-" + tostring(spread) + \
-                       "std", "mean", "+" + tostring(spread) + "std", "-" + \
-                       tostring(spread) + "std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" + \
+                       str_spread + "std", "-" + str_spread + \
+                       "std", "mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std", "mean", "+" + \
+                       str_spread + "std", "-" + str_spread + \
+                       "std", "mean", "+" + str_spread + "std", "-" + \
+                       str_spread + "std"/)
   end if
   end if
   end if
@@ -489,6 +491,7 @@ begin
   if(isatt(variable_info, "units")) then
     to_plot@var_units     = variable_info@units
   end if
+
   runs!0 = "scenario"
   runs&scenario = diag_script_info@label
   runs!1 = "period"
@@ -514,8 +517,9 @@ begin
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    ncdf_file@existing = "append"
-    ncdf_outfile = ncdf_write(runs, ncdf_file)
+     ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+     ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
   end if
 
+  leave_msg(diag_script, "")
 end
