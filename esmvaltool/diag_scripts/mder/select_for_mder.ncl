@@ -28,6 +28,8 @@ load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
+
 load "./diag_scripts/shared/mder.ncl"
 
 
