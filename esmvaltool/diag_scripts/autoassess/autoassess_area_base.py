@@ -325,7 +325,7 @@ def run_area(cfg):
     # multimodel functions
     if hasattr(area_package, 'multi_functions'):
         for multi_function in area_package.multi_functions:
-            multi_function(run_object)
+            multi_function(run_obj)
     else:
         logger.info('# Area has no multi functions.')
 

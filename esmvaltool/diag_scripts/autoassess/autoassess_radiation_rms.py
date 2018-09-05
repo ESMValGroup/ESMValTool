@@ -21,8 +21,8 @@ This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 import os
 import logging
 import iris
-import rms_radiation as rms
-import valmod_radiation as vm
+from ._rms_radiation import (start, end, calc_all)
+from ._valmod_radiation import perform_equation
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             get_control_exper_obs,
                                             apply_supermeans)
@@ -38,16 +38,16 @@ def apply_rms(data_1, data_2, cfg, component_dict, var_name):
     """Compute RMS for any data1-2 combination"""
     data_names = [model['dataset'] for model in component_dict.values()]
     plot_title = var_name + ': ' + data_names[0] + ' vs ' + data_names[1]
-    rms_list = rms.start(data_names[0], data_names[1])
+    rms_list = start(data_names[0], data_names[1])
     analysis_type = cfg['analysis_type']
     landsea_mask_file = os.path.join(
         os.path.dirname(__file__), 'autoassess_source', cfg['landsea_mask'])
     landsea_mask_cube = iris.load_cube(landsea_mask_file)
-    data1_vs_data2 = vm.perform_equation(data_1, data_2, analysis_type)
+    data1_vs_data2 = perform_equation(data_1, data_2, analysis_type)
 
     # call to rms.calc_all() to compute rms; rms.end() to write results
-    rms.calc_all(rms_list, data1_vs_data2, landsea_mask_cube, plot_title)
-    rms.end(rms_list, cfg['work_dir'])
+    calc_all(rms_list, data1_vs_data2, landsea_mask_cube, plot_title)
+    end(rms_list, cfg['work_dir'])
 
 
 def do_preamble(cfg):

@@ -1,13 +1,11 @@
-'''
-Stratospheric age-of-air assessment code
-'''
+"""Stratospheric age-of-air assessment code"""
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 import os
 import matplotlib as mpl
 mpl.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 import iris
 import iris.analysis as iai
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .strat_metrics_1 import weight_lat_ave
 import warnings
 import numpy as np
@@ -64,7 +62,7 @@ Z2_KM2 = [
 
 
 def calculate_analysis_years(run):
-
+    """Calculate years"""
     # 1) Discard first 10 years of run.
     analysis_start_year = int(run['start']) + 10
     analysis_end_year = int(run['start']) + int(run['nyear'])
@@ -87,10 +85,7 @@ def calculate_analysis_years(run):
 
 
 def age_of_air(run):
-    '''
-    Routine to calculate the age of air metrics
-    '''
-
+    """Calculate the age of air metrics"""
     # Create metrics dictionary with MDI incase age of air
     # diagnostics not available
     metrics = {
@@ -161,10 +156,11 @@ def age_of_air(run):
 
 def multi_age_plot(run):
     """
+    Plot results
+
     This function is plotting the results of the function age_of_air for each
     run against observations.
     """
-
     # Run age_of_air for each run.
     # Age_of_air returns metrics and writes results into an *.nc in the current
     # working directory.
