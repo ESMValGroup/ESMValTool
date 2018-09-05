@@ -12,7 +12,7 @@ import re
 import six
 
 from ._config import (cmip5_dataset2inst, cmip5_mip2realm_freq,
-                      get_project_config)
+                      get_project_config, replace_mip_fx)
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, j=None, i=None):
+def replace_tags(path, variable, j=None, fx_var=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -107,7 +107,7 @@ def replace_tags(path, variable, j=None, i=None):
         if tag == 'var':
             replacewith = variable['short_name']
         elif tag == 'fx_var':
-            replacewith = variable['fx_files'][i]
+            replacewith = fx_var
         elif tag == 'field':
             replacewith = variable['field']
         elif tag in ('institute', 'freq', 'realm'):
@@ -184,18 +184,19 @@ def get_input_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['input_dir']
+    dirs2 = []
     if isinstance(input_dir, six.string_types):
-        dir2 = replace_tags(input_dir, variable)
+        dirs2.append(replace_tags(input_dir, variable))
     elif _drs in input_dir:
         try:
             insts = cmip5_dataset2inst(variable['dataset'])
         except KeyError as msg:
             logger.debug('CMIP5 dataset2inst: %s', msg)
             insts = 0
-        dirs2 = []
+
         if isinstance(insts, list):
-            for j in range(len(insts)):
-                dir2 = replace_tags(input_dir[_drs], variable, j)
+            for inst_idx in range(len(insts)):
+                dir2 = replace_tags(input_dir[_drs], variable, j=inst_idx)
                 dirs2.append(dir2)
         else:
             dir2 = replace_tags(input_dir[_drs], variable)
@@ -216,7 +217,6 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
 
     cfg = get_project_config(project)
 
-    dirs = []
     # Set the rootpath
     if project in rootpath:
         dir1 = rootpath[project]
@@ -229,26 +229,46 @@ def get_input_fx_dirname_template(variable, rootpath, drs):
     # Set the drs
     _drs = drs.get(project, 'default')
     input_dir = cfg['fx_dir']
-    for fx_ind in range(len(variable['fx_files'])):
+    dirs = []
+
+    # Loop through fx_files types
+    for fx_file in variable['fx_files']:
+        # Need to reassign the mip so we can find sftlf/of
+        # make a copy of variable -> new_variable for this
+        new_variable = dict(variable)
+        new_variable['mip'] = replace_mip_fx(fx_file)
+
         if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(input_dir, variable, i=fx_ind)
+            dir2 = replace_tags(
+                input_dir, new_variable, fx_var=fx_file)
         elif _drs in input_dir:
-            dir2 = replace_tags(input_dir[_drs], variable, i=fx_ind)
+            try:
+                insts = cmip5_dataset2inst(new_variable['dataset'])
+            except KeyError as msg:
+                logger.debug('CMIP5 dataset2inst: %s', msg)
+                insts = 0
+            dirs2 = []
+            if isinstance(insts, list):
+                for inst_idx in range(len(insts)):
+                    dir2 = replace_tags(
+                        input_dir[_drs],
+                        new_variable,
+                        j=inst_idx,
+                        fx_var=fx_file)
+                    dirs2.append(dir2)
+            else:
+                dir2 = replace_tags(
+                    input_dir[_drs],
+                    new_variable,
+                    j=None,
+                    fx_var=fx_file)
+                dirs2.append(dir2)
         else:
             raise KeyError(
                 'drs {} for {} project not specified in config-developer file'
                 .format(_drs, project))
 
-        # Replace seaIce realm by ocean realm
-        path_elements = dir2.split(os.path.sep)
-        if "seaIce" in path_elements:
-            old_dir = dir2
-            dir2 = dir2.replace("seaIce", "ocean")
-            logger.info("Replaced path to fx files %s by %s for seaIce"
-                        "diagnostics", old_dir, dir2)
-
-        dirname_template = os.path.join(dir1, dir2)
-        dirs.append(dirname_template)
+        dirs.extend([os.path.join(dir1, dir_2) for dir_2 in dirs2])
 
     return dirs
 
@@ -277,31 +297,6 @@ def get_input_filename(variable, rootpath, drs):
         return os.path.join(dirname, filename)
 
 
-def get_input_fx_filename(variable, rootpath, drs):
-    """Simulate a path to input file.
-
-    This function should match the function get_input_filelist below.
-    """
-    files = []
-    dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    for j, dirname_template in zip(
-            range(len(dirname_templates)), dirname_templates):
-        # Simulate a latest version if required
-        if '[latestversion]' in dirname_template:
-            part1, part2 = dirname_template.split('[latestversion]')
-            dirname = os.path.join(part1, 'latestversion', part2)
-        else:
-            dirname = dirname_template
-
-        # Set the filename
-        filename = _get_fx_filename(variable, drs, j)
-
-        # Full path to files
-        files.append(os.path.join(dirname, filename))
-
-    return files
-
-
 def _get_filename(variable, drs):
     project = variable['project']
     cfg = get_project_config(project)
@@ -319,7 +314,7 @@ def _get_filename(variable, drs):
     return filename
 
 
-def _get_fx_filename(variable, drs, j):
+def _get_fx_filename(variable, drs, fx_var):
     project = variable['project']
     cfg = get_project_config(project)
 
@@ -332,7 +327,7 @@ def _get_fx_filename(variable, drs, j):
             raise KeyError(
                 'drs {} for {} project not specified for input_file '
                 'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable, i=j)
+    filename = replace_tags(input_file, variable, fx_var=fx_var)
     return filename
 
 
@@ -352,23 +347,31 @@ def get_input_filelist(variable, rootpath, drs):
             if os.path.exists(part1):
                 list_versions = os.listdir(part1)
                 list_versions.sort(reverse=True)
+                if 'latest' in list_versions:
+                    list_versions.insert(
+                        0, list_versions.pop(list_versions.index('latest')))
                 for version in list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
                         valid_dirs.append(dirname)
                         break
+            else:
+                logger.debug('Path %s does not exist', part1)
 
     # Set the filename glob
     filename_glob = _get_filename(variable, drs)
 
-    for dir_name in valid_dirs:
-        # Find files
-        files = find_files(dir_name, filename_glob)
+    if valid_dirs:
+        for dir_name in valid_dirs:
+            # Find files
+            files = find_files(dir_name, filename_glob)
 
-        # Select files within the required time interval
-        files = select_files(files, variable['start_year'],
-                             variable['end_year'])
-        all_files.extend(files)
+            # Select files within the required time interval
+            files = select_files(files, variable['start_year'],
+                                 variable['end_year'])
+            all_files.extend(files)
+    else:
+        all_files = []
 
     return all_files
 
@@ -376,46 +379,56 @@ def get_input_filelist(variable, rootpath, drs):
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    fx_files = {}
+    dirnames = []
 
-    for j, dirname_template in zip(
-            range(len(dirname_templates)), dirname_templates):
+    for dirname_template in dirname_templates:
         # Find latest version if required
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
-            # root part1 could not exist at all
-            if not os.path.exists(part1):
-                fx_files[variable['fx_files'][j]] = None
-                return fx_files
-            list_versions = os.listdir(part1)
-            list_versions.sort(reverse=True)
-            if 'latest' in list_versions:
-                list_versions.insert(
-                    0, list_versions.pop(list_versions.index('latest')))
-            for version in list_versions:
-                if version == 'latest':
+
+            # if part1 exists, check versioning
+            if os.path.exists(part1):
+                list_versions = os.listdir(part1)
+                list_versions.sort(reverse=True)
+                # check version names
+                for version in ['latest'] + list_versions:
                     dirname = os.path.join(part1, version, part2)
                     if os.path.isdir(dirname):
+                        dirnames.append(dirname)
                         break
-                else:
-                    dirname = os.path.join(part1, version, part2)
-                    if os.path.isdir(dirname):
-                        break
+
         else:
             dirname = dirname_template
+            dirnames.append(dirname)
 
-        # Set the filename glob
-        filename_glob = _get_fx_filename(variable, drs, j)
+    filtered_fx_files = _filter_all_fx_files(dirnames, variable, drs)
 
-        # Find files
-        fx_file_list = find_files(dirname, filename_glob)
-        if fx_file_list:
-            # Grab the first file only; fx vars should have a single file
-            fx_files[variable['fx_files'][j]] = fx_file_list[0]
-        else:
+    return filtered_fx_files
+
+
+def _filter_all_fx_files(dirnames, variable, drs):
+    """Filter through and return all needed fx files"""
+    fx_files = {}
+    for fx_var in variable['fx_files']:
+        if not dirnames:
             # No files
-            fx_files[variable['fx_files'][j]] = None
+            fx_files[fx_var] = None
+        else:
+            # Set the filename glob
+            filename_glob = _get_fx_filename(variable, drs, fx_var)
+
+            # Find all possible files
+            all_files = [
+                find_files(dir_name, filename_glob) for dir_name in dirnames
+            ]
+            # filter out empty entries
+            all_files = [l for l in all_files if l]
+            if not all_files:
+                fx_files[fx_var] = None
+            else:
+                # Keep only the first entry
+                fx_files[fx_var] = [fx_ls[0] for fx_ls in all_files][0]
 
     return fx_files
 
