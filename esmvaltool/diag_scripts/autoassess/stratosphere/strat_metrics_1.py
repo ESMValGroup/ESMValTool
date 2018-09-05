@@ -605,9 +605,7 @@ def mainfunc(run):
 
 
 def multi_qbo_plot(run):
-    '''
-    Plot 30hPa QBO (5S to 5N) timeseries comparing experiments on one plot
-    '''
+    """Plot 30hPa QBO (5S to 5N) timeseries on one plot"""
     # TODO avoid running mainfunc
 
     # Run mainfunc for each run.
@@ -657,10 +655,12 @@ def multi_qbo_plot(run):
 
 
 def multi_teq_plot(run):
-    '''
+    """
+    Plot temperature
+
     Plot 100hPa equatorial temperature seasonal cycle comparing
     experiments on one plot
-    '''
+    """
     # TODO avoid running mainfunc
 
     # Run mainfunc for each run.
@@ -717,6 +717,7 @@ def multi_teq_plot(run):
 
 
 def calc_merra(run):
+    """Use MERRA as obs to compare"""
     # Load data
     merrafile = os.path.join(run['clim_root'], 'ERA-Interim_cubeList.nc')
     (t, q) = iris.load_cubes(merrafile,
@@ -739,6 +740,7 @@ def calc_merra(run):
 
 
 def calc_erai(run):
+    """Use ERA-Interim as obs to compare"""
     # Load data
     eraidir = run['clim_root']
     eraifile = os.path.join(run['clim_root'], 'ERA-Interim_cubeList.nc')
@@ -762,9 +764,7 @@ def calc_erai(run):
 
 
 def multi_t100_vs_q70_plot(run):
-    '''
-    Plot mean 100hPa temperature against mean 70hPa humidity
-    '''
+    """Plot mean 100hPa temperature against mean 70hPa humidity"""
     # TODO avoid running mainfunc
 
     # Run mainfunc for each run.
