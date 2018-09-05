@@ -9,38 +9,38 @@
 ; Description:
 ;     Creates line plot for sea ice area and extent versus time.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     multi_model_mean: additionally plot MMM and standard deviation.
 ;     month: selected month or annual mean.
 ;     region: region to be plotted ( "Arctic" or "Antarctic").
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     fill_pole_hole: fill observational hole at North pole, Default: False.
 ;     styleset: specify line and color style.
 ;     xy_line_legend: False: do not draw a legend inside the plot.
 ;     legend_outside: True: draw legend in an extra plot.
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
-;         name is needed.
+;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset.
 ;
 ; Modification history:
-;   * 20180725-A_schl_ma: ported to v2.0
-;   * 20180321-A_laue_ax: bugfix: handle case of wdiag not defined;
+;     20180725-A_schl_ma: ported to v2.0.
+;     20180321-A_laue_ax: bugfix: handle case of wdiag not defined;
 ;                         reintroduced call to write_references
-;                         (bugs introduced with MDER changes)
-;   * 20170512-A_senf_da: Added reporting
-;   * 20160906-A_senf_da: Added option to fill polar observation hole
-;   * 20151027-A_laue_ax: Moved call to 'write_references' to the beginning
-;                         of the code
-;   * 20150325-A_laue_ax: Modified reference tags used for acknowledgements
-;                         (projects, observations, etc)
-;   * 20140312-A_righ_ma: Adapted to new time_operations structure.
-;   * 20140129-A_senf_da: Modularized to fit to new structure.
-;   * 20130603-A_gott_kl: Implemented into ./diag_scripts.
-;   * 20130405-A_gott_kl: Written based on previous code by Melanie Braeu.
+;                         (bugs introduced with MDER changes).
+;     20170512-A_senf_da: Added reporting.
+;     20160906-A_senf_da: Added option to fill polar observation hole.
+;     20151027-A_laue_ax: Moved call to 'write_references' to the beginning
+;                         of the code.
+;     20150325-A_laue_ax: Modified reference tags used for acknowledgements
+;                         (projects, observations, etc.).
+;     20140312-A_righ_ma: Adapted to new time_operations structure.
+;     20140129-A_senf_da: Modularized to fit to new structure.
+;     20130603-A_gott_kl: Implemented into ./diag_scripts.
+;     20130405-A_gott_kl: Written based on previous code by Melanie Braeu.
 ;
 ; #############################################################################
 
@@ -104,10 +104,14 @@ begin
   end if
   delete([/plot_fields, ind_f/])
 
+  ; Required attributes
+  req_atts = (/"region"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+
   ; Check region selection
   if (diag_script_info@region .ne. "Arctic" .and. \
       diag_script_info@region .ne. "Antarctic") then
-    error_msg("f", diag_script, "", "no (valid) region selection")
+    error_msg("f", diag_script, "", "no (valid) region selected")
   end if
 
   ; Check fill_pole_hole option
@@ -304,8 +308,6 @@ begin
       area_temp = where(area_lat .lt. 0.0, area_temp / 1.0e12, 0.0)
     else if (diag_script_info@region .eq. "Arctic")
       area_temp = where(area_lat .gt. 0.0, area_temp / 1.0e12, 0.0)
-    else
-      error_msg("f", diag_script, "", "no (valid) region selection")
     end if
     end if
 

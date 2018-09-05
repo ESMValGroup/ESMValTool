@@ -1,5 +1,5 @@
 ; #############################################################################
-; mder.ncl
+; shared/mder.ncl
 ; #############################################################################
 ; AUXILIARY FUNCTIONS FOR MULTIPLE DIAGNOSTIC ENSEMBLE REGRESSION
 ; #############################################################################
@@ -7,12 +7,10 @@
 ; ones. Check the header of each routine for documentation.
 ;
 ; Contents:
-;
-;   * function diag_file_name: filename of calculated climatological diagnostic
-;   * function reg_multlin_stats_rap: costumized version of NCL's
-;                                     reg_multlin_stats
-;   * function regress_stepwise: does stewise regression on
-;                                diagnostics
+;     function diag_file_name: filename of calculated diagnostic.
+;     function reg_multlin_stats_rap: costumized version of NCL's
+;                                     reg_multlin_stats.
+;     function regress_stepwise: does stepwise regression on diagnostics.
 ;
 ; #############################################################################
 
@@ -25,22 +23,22 @@ function diag_file_name(dataset_idx[1]: integer, \
                         opt[1]: logical)
 ;
 ; Arguments:
-;     dataset_idx : index of the current model
-;     opt : options, needs the attributes
-;         @wdiag (diagnostic name)
-;         @period_avg (year-, month- or season name)
-;         @level (specify plev range)
-;         @region (specify lat and/or lon range)
+;     dataset_idx: index of the current model.
+;     opt: options with the optional attributes
+;          opt@wdiag (diagnostic name).
+;          opt@period_avg (year-, month- or season name).
+;          opt@level (specify plev range).
+;          opt@region (specify lat and/or lon range).
 ;
 ; Return value:
-;     file_name : returns the file name of the calculated climatological
-;                 diagnostic
+;     file_name: returns the file name of the calculated climatological
+;                diagnostic.
 ; Description:
 ;     Provides a file name for the calculation results of diagsnostics.
 ;
 ; Modification history:
-;   * 20180717_A-schl_ma: ported to v2.0
-;   * 20140723_A-wenz_sa: written
+;     20180717_A-schl_ma: ported to v2.0.
+;     20140723_A-wenz_sa: written.
 ;
 local outname
 
@@ -104,41 +102,41 @@ function reg_multlin_stats_rap(Y[*]: numeric, \
 ;
 ; Arguments:
 ;     Y: dependent variable (size NY). Missing values (_FillValue) are not
-;         allowed.
+;        allowed.
 ;     XP: one [*] or more [*][*] independent variables. Missing values
 ;         (_FillValue) are not allowed. The size of the leftmost dimension of
 ;         XP must be the same size as Y[*]. The rightmost dimension for [*][*]
 ;         contains the independent variables.
-;     opt: options [type logical]
-;         opt = False: no options
-;         opt = True
-;         opr@print_data = True: print input Y and XP in table form
-;         opr@print_anova= True: print ANOVA information
+;     opt: options [type logical].
+;          opt = False: no options.
+;          opt = True.
+;          opr@print_data = True: print input Y and XP in table form.
+;          opr@print_anova= True: print ANOVA information.
 ;
 ; Return value:
-;     See reg_mullin_stats
+;     See reg_mullin_stats.
 ;
 ; Description:
 ;     This function is based on the NCL-function "reg_multlin_stats". The
 ;     original can be found in:
-;         "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
+;         "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl".
 ;     See:
 ;         Wilks, D.S. (2006): Statistical Methods in the Atmospheric Sciences
-;                             Academic Press (2nd Edition)
+;                             Academic Press (2nd Edition).
 ;         Davis, J.C. (2002): Statistics and Data Analysis in Geology, Wiley
-;                             (3rd Edition), 462-470
+;                             (3rd Edition), 462-470.
 ;     Very readable discussion:
-;         http://reliawiki.org/index.php/Multiple_Linear_Regression_Analysis
+;         http://reliawiki.org/index.php/Multiple_Linear_Regression_Analysis.
 ;
 ; Caveats:
 ;     In this version the following attributes are not available:
-;         b@stderr = stderr
-;         b@tval   = tval
-;         b@pval   = pval
+;         b@stderr = stderr.
+;         b@tval = tval.
+;         b@pval = pval.
 ;
 ; Modification history:
-;   * 20180808_A-schl_ma: ported to v2.0
-;   * 20??????-A_schl_ma: written
+;     20180808_A-schl_ma: ported to v2.0.
+;     2013????_A-wenz_sa: written.
 ;
 local dimXP, N, NP, NY, M, T, Y, X, b, B, rankXP, Yavg, Yvar, Ystd, Xavg, \
       Xvar, Xstd, Yest, n, m, Yres, SST, SSE, SSR, MST, MSE, MSR, SE, Frat, \
@@ -414,19 +412,20 @@ function regress_stepwise(xarr_f[*][*]: numeric, \
                           yarr_f[*]: numeric)
 ;
 ; Arguments:
-;     xarr_f: array containing all diagnostics for each model
-;     yarr_f: array with variable to which should be regressed
+;     xarr_f: array containing all diagnostics for each model.
+;     yarr_f: array with variable to which should be regressed.
 ;
 ; Return value:
 ;     coef: coefficients of the regression (beta vector).
-;         coef@const: constant of regression (beta_0).
-;         coef@idx_used_diags: array with indices of diagnostics used in the
-;                              regression model.
-;         coef@n_terms: number of terms in the regression model (= number of
-;                       used diagnostics).
-;         coef@YFIT: array with y values from linear regression.
-;         coef@MCORRELATION: correlation coefficient of multicorrelation.
-;         coef@correlation: correlation coefficient of individual correlations.
+;           coef@const: constant of regression (beta_0).
+;           coef@idx_used_diags: array with indices of diagnostics used in the
+;                                regression model.
+;           coef@n_terms: number of terms in the regression model (= number of
+;                         used diagnostics).
+;           coef@YFIT: array with y values from linear regression.
+;           coef@MCORRELATION: correlation coefficient of multicorrelation.
+;           coef@correlation: correlation coefficients of individual
+;                             correlations.
 ;
 ; Description:
 ;     Performs a multi diagnostic ensemble regression following Karpechko et
@@ -437,8 +436,8 @@ function regress_stepwise(xarr_f[*][*]: numeric, \
 ;     optionally diag_scripts@p_value.
 ;
 ; Modification history:
-;   * 20180807_A-schl_ma: ported to v2.0
-;   * 201303??-A_schl_ma: written
+;     20180807_A-schl_ma: ported to v2.0.
+;     201303??_A-wenz_sa: written.
 ;
 local p_value, im, wregr, wexit, dim_diag, dim_dat, f_value_b, ssr0, sst, \
       used_diags, iiter, igd, jgd, nii, cvf, xarr, yarr
@@ -604,7 +603,7 @@ begin
       ; If the diagnostic is not included then backward elimination step is
       ; not needed.
       wexit = False
-      break
+      break   ; continue
     end if
     if (f_value .gt. f_prob) then
       log_debug("F-test shows that F-value is larger than theoretical " + \

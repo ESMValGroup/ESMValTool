@@ -21,17 +21,17 @@
 ;     + Timeseries of the variable of interest including the multi-model
 ;       mean, the weighted and unweighted model ensemble.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     p_time: time range for projections.
 ;     p_step: averaging time range for target period.
 ;     scal_time: a year to scale the timeseries with.
 ;     time_oper: select for operation in time_operation function.
 ;     time_opt: select for option in time_operation function.
 ;     calc_type: trend/pos
-;     wregr: exit criterion for stepwise regression (True/False)
-;     wexit: exit criterion for stepwise regression (True/False)
+;     wregr: exit criterion for stepwise regression (True/False).
+;     wexit: exit criterion for stepwise regression (True/False).
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     units: units of target variable.
 ;     loglin: perform log-linear regression (default: False).
 ;     smooth: smoothes time period with 1-2-1 filter.
@@ -46,9 +46,9 @@
 ;     Modifies variable_info@units.
 ;
 ; Modification history
-;   * 20180806_A-schl_ma: ported to v2.0
-;   * 201808??_A-senf_da: added option to plot log-linear regression
-;   * 201303??_A-wenz_sa: written
+;     20180806_A-schl_ma: ported to v2.0.
+;     201808??_A-senf_da: added option to plot log-linear regression.
+;     201303??_A-wenz_sa: written.
 ;
 ; #############################################################################
 

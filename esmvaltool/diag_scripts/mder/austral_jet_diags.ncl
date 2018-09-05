@@ -18,30 +18,30 @@
 ;     The output will optional be saved in NetCDF-files for further
 ;     processing of the MDER diagnostics.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     styleset: style set ("DEFAULT", "CMIP5").
 ;     e13fig10_season: seasons (n-element array of strings, "ANN", "JAN",
-;         "FEB", "MAR", "DJF", "SON", etc.).
+;                      "FEB", "MAR", "DJF", "SON", etc.).
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     rsondes: a set of additional observations can be added to the plot
-;         but will not be saved for the MDER diagnostics.
+;              but will not be saved for the MDER diagnostics.
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
-;         name is needed.
+;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset.
 ;
 ; Modification history:
-;   * 20180716_A_schl_ma: ported to v2.0
-;   * 20180329_A-wenz_sa: modified original script (eyring13jclim.ncl) to
-;                         austral-jet_diags.ncl
-;   * 20170816_A_bock_ls: added tags for reporting
-;   * 20151209_A-laue_ax: code clean-up, added call to write_references,
+;     20180716_A_schl_ma: ported to v2.0.
+;     20180329_A-wenz_sa: modified original script (eyring13jclim.ncl) to
+;                         austral-jet_diags.ncl.
+;     20170816_A_bock_ls: added tags for reporting.
+;     20151209_A-laue_ax: code clean-up, added call to write_references,
 ;                         several bugfixes for processing zonal wind (ua)
-;                         and handling missing variable attribute "units"
-;   * 201510??_A-cion_ir: written
+;                         and handling missing variable attribute "units".
+;     201510??_A-cion_ir: written.
 ;
 ; #############################################################################
 

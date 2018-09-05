@@ -9,20 +9,20 @@
 ;     Calculates the absorbed shortwave correlation gradient and saves output
 ;     for MDER analysis.
 ;
-; Required recipe attributes:
-;     season : specify season of year.
+; Required diag_script_info attributes:
+;     season: specify season of year.
 ;
-; Optional recipe attributes:
+; Optional diag_script_info attributes:
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
-;         name is needed.
+;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset.
 ;
 ; Modification history
-;   * 20180725_A-schl_ma: ported to v2.0
-;   * 201303??_A-wenz_sa: written.
+;     20180725_A-schl_ma: ported to v2.0
+;     201303??_A-wenz_sa: written.
 ;
 ; #############################################################################
 

@@ -6,22 +6,19 @@
 ; EMBRACE project PIs: Veronika Eyring (DLR, Germany)
 ;                      Klaus Wyser (SMHI, Sweden)
 ; #############################################################################
-; Description
+;
+; Description:
 ;     Collects output from other diagnostics and saves them in a temporary
 ;     file. It requires precalculation by other diagnostic scripts.
 ;
-; Required recipe attributes:
+; Required diag_script_info attributes:
 ;     region: selected region
 ;     time_avg: type of time average
 ;     wdiag: Diagnostic names
 ;
-; Optional recipe attributes:
-;
-; Caveats
-;
-; Modification history
-;   * 20180718-A_schl_ma: ported to v2.0
-;   * 20131203-A_wenz_sa: written based on perfmetrics_grading.ncl
+; Modification history:
+;     20180718-A_schl_ma: ported to v2.0.
+;     20131203-A_wenz_sa: written based on perfmetrics_grading.ncl.
 ;
 ; #############################################################################
 

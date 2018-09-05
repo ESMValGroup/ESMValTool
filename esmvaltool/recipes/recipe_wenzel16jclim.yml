@@ -620,12 +620,12 @@ diagnostics:
       - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
       - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
       - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+      # - {dataset: CCSM4,          exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
       - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
       - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}

@@ -15,22 +15,20 @@
 ;     Plots the absolute correlation coefficient between the variable of
 ;     interest and present-day diagnostic.
 ;
-; Required recipe attributes:
-;     p_time : time range for projections.
-;     p_step : averaging time range for target period.
-;     scal_time : a year to scale the timeseries with.
-;     time_oper : select for opperation in time_opperation function.
-;     time_opt : select for option in time_opperation function.
-;     calc_type : trend/pos
-;
-; Optional recipe attributes:
+; Required diag_script_info attributes:
+;     p_time: time range for projections.
+;     p_step: averaging time range for target period.
+;     scal_time: a year to scale the timeseries with.
+;     time_oper: select for opperation in time_opperation function.
+;     time_opt: select for option in time_opperation function.
+;     calc_type: trend/pos
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset and input_file_info@ensemble.
 ;
 ; Modification history:
-;   * 20180726_A-schl_ma: ported to v2.0
-;   * 201307??_A-wenz_sa: written
+;     20180726_A-schl_ma: ported to v2.0.
+;     201307??_A-wenz_sa: written.
 ;
 ; #############################################################################
 
@@ -145,49 +143,28 @@ begin
   log_info("Retrieved pressure level " + lev + " and latitude range " + \
            lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
 
-  ; Global attributes
-  if (isatt(diag_script_info, "p_time"))then
-    p_time = diag_script_info@p_time
-  else
-    error_msg("f", diag_script, "", "requires attribute p_time in recipe")
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
   end if
-  if (isatt(diag_script_info, "p_step"))then
-    p_step = diag_script_info@p_step
-  else
-    error_msg("f", diag_script, "", "requires attribute p_step in recipe")
-  end if
-  if (isatt(diag_script_info, "scal_time"))then
-    scal_time = diag_script_info@scal_time
-  else
-    error_msg("f", diag_script, "", "requires attribute scal_time in recipe")
-  end if
-  if (isatt(diag_script_info, "time_oper"))then
-    time_oper = diag_script_info@time_oper
-  else
-    error_msg("f", diag_script, "", "requires attribute time_oper in recipe")
-  end if
-  if (isatt(diag_script_info, "time_opt"))then
-    time_opt = diag_script_info@time_opt
-  else
-    error_msg("f", diag_script, "", "requires attribute time_opt in recipe")
-  end if
-  if (isatt(diag_script_info, "calc_type"))then
-    calc_type = diag_script_info@calc_type
-  else
-    error_msg("f", diag_script, "", "requires attribute calc_type in recipe")
-  end if
+
+  ; Required attributes
+  req_atts = (/"p_time", "p_step", "scal_time", "time_oper", "time_opt", \
+              "calc_type"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+  p_time = diag_script_info@p_time
+  p_step = diag_script_info@p_step
+  scal_time = diag_script_info@scal_time
+  time_oper = diag_script_info@time_oper
+  time_opt = diag_script_info@time_opt
+  calc_type = diag_script_info@calc_type
 
   ; Output dir
   diag_script_base = basename(diag_script)
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
   plot_num = integertochar(ispan(97, 122, 1))
-
-  ; Plot file type
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
-  end if
 
   ; Output arrays
   xx = new((/dimsizes(p_time), DIM_DAT/), float)

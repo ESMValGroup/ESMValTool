@@ -1,19 +1,21 @@
 ; #############################################################################
+; shared/plot/mder.ncl
+; #############################################################################
 ; GENERAL PLOTTING ROUTINES FOR MULTIPLE DIAGNOSTIC ENSEMBLE REGRESSION
 ; #############################################################################
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
-;     function error_bar_plot : plots an error bar for every single value.
-;     function time_raster_plot : plots corellation coeficients in a raster.
-;     function weight_lin_plot : plots a time series together with with
-;                                weighted model enseble and observations.
-;     function mder_scatter_plot : creates a scatterplot with regression error
-;                                  and xy-stddev of each model value.
-;     function squared_error_plot : plots the squared error for various model
-;                                   ensembles.
-;     function diag_scatter : plots scatterplot for each diagnostic of
-;                             historical simulation vs projection
+;     function error_bar_plot: plots an error bar for every single value.
+;     function time_raster_plot: plots corellation coeficients in a raster.
+;     function weight_lin_plot: plots a time series together with with
+;                               weighted model enseble and observations.
+;     function mder_scatter_plot: creates a scatterplot with regression error
+;                                 and xy-stddev of each model value.
+;     function squared_error_plot: plots the squared error for various model
+;                                  ensembles.
+;     function diag_scatter: plots scatterplot for each diagnostic of
+;                            historical simulation vs projection.
 ;
 ; #############################################################################
 
@@ -37,21 +39,21 @@ function error_bar_plot(Ydata[*] : numeric, \
                         opt[1] : string)
 ;
 ; Arguments:
-;     Ydata : array for plotting on Y-axis
-;     Ystd : array with + and - 95% confidence intervals of Ydata
-;     XBname : array with X-axis label names
-;     color : array indicating pos or neg values
-;     MainStg : hedar string for plot
-;     YStg : Y-axis string
-;     wks : workstation for were to draw the plot
-;     opt : type of operations:
-;       "draw" : draws the plot directly and returnes logical
-;       "panel" : returnes plotvalue for pannel plot
+;     Ydata: array for plotting on Y-axis.
+;     Ystd: array with + and - 95% confidence intervals of Ydata.
+;     XBname: array with X-axis label names.
+;     color: array indicating positive or negative values.
+;     MainStg: header string for plot.
+;     YStg: Y-axis string.
+;     wks: workstation for were to draw the plot.
+;     opt: type of operations:
+;          "draw": draws the plot directly and returnes logical.
+;          "panel": returnes plotvalue for pannel plot.
 ;
 ; Modification history:
-;     20180726_A-schl_ma: ported to v2.0
-;     201402??_A-wenz_sa: written
-;     201411??_A-wenz_sa: added collor code for pos and ne values
+;     20180726_A-schl_ma: ported to v2.0.
+;     201402??_A-wenz_sa: written.
+;     201411??_A-wenz_sa: added collor code for pos and ne values.
 ;
 local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels
 begin
@@ -153,18 +155,18 @@ function time_raster_plot(Ydata[*][*] : numeric, \
                           opt[1] : string)
 ;
 ; Arguments:
-;     Ydata : array for plotting
-;     XBname: array with X-axis label names
-;     YBname: array with Y-axis label names
-;     MainStg : hedar string for plot
-;     wks : workstation for were to draw the plot
-;     opt : type of operations:
-;       "draw": draws the plot directly and returnes logical
-;       "panel" : returnes plotvalue for pannel plot
+;     Ydata: array for plotting.
+;     XBname: array with X-axis label names.
+;     YBname: array with Y-axis label names.
+;     MainStg: header string for plot.
+;     wks: workstation for were to draw the plot.
+;     opt: type of operations:
+;          "draw": draws the plot directly and returnes logical.
+;          "panel": returnes plotvalue for pannel plot.
 ;
 ; Modification history
-;     20180726_A-schl_ma: ported to v2.0
-;     201504??_A-wenz_sa: written
+;     20180726_A-schl_ma: ported to v2.0.
+;     201504??_A-wenz_sa: written.
 ;
 local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels, pxi
 begin
@@ -172,6 +174,11 @@ begin
   funcname = "time_raster_plot"
   scriptname = "diag_scripts/shared/plot/mder.ncl"
   enter_msg(scriptname, funcname)
+
+  ; Check required attributes of diag_script_info
+  req_atts = (/"p_step"/),
+  exit_if_missing_atts(diag_script_info, req_atts)
+  p_step = diag_script_info@p_step
 
   ; Check for valid data
   if (all(ismissing(Ydata(:, :)))) then
@@ -239,11 +246,6 @@ begin
   plot = gsn_csm_contour(wks, Ydata, res)
 
   ; Plot crosses
-  if (isatt(diag_script_info, "p_step")) then
-    p_step = diag_script_info@pstep
-  else
-    error_msg("f", scriptname, funcname, "requires attribute p_step in recipe")
-  end if
   climo_dir = getenv("ESMValTool_climo_dir")
   diag_file = config_user_info@work_dir + variables(0) + "_" + \
     input_file_info@exp(dimsizes(input_file_info@exp) - 1) + "_" + \
@@ -303,20 +305,20 @@ function weight_lin_plot(Ydata[*][*] : numeric, \
                          opt[1] : string)
 ;
 ; Arguments:
-;     Ydata : array with Y data for each model.
-;     Ywterror : error of MDER results.
+;     Ydata: array with Y data for each model.
+;     Ywterror: error of MDER results.
 ;     Ywerror: error of time-dependent MDER results.
-;     Yobs : array with Y data for observations.
-;     MainStg : plot hedar string.
-;     YStg : Y-axis string.
-;     wks : workstation for were to draw the plot.
-;     opt : type of operations:
-;       "draw" : draws the plot directly and returnes logical.
-;       "panel" : returnes plotvalue for pannel plot.
+;     Yobs: array with Y data for observations.
+;     MainStg: plot header string.
+;     YStg: Y-axis string.
+;     wks: workstation for were to draw the plot.
+;     opt: type of operations:
+;          "draw": draws the plot directly and returnes logical.
+;          "panel": returnes plotvalue for pannel plot.
 ;
 ; Modification history
-;     20180726_A-schl_ma: ported to v2.0
-;     201410??_A-wenz_sa: written
+;     20180726_A-schl_ma: ported to v2.0.
+;     201410??_A-wenz_sa: written.
 ;
 local plot_array, plot, ploto, lbid, annoid, wtmmm, ummm, colors, dashes, \
   thicks, plot_num, res, bres, tline, zline, wmmm
@@ -325,6 +327,10 @@ begin
   funcname = "weight_lin_plot"
   scriptname = "diag_scripts/shared/plot/mder.ncl"
   enter_msg(scriptname, funcname)
+
+  ; Check required attributes of diag_script_info
+  req_atts = (/"pos"/),
+  exit_if_missing_atts(diag_script_info, req_atts)
 
   ; Check for valid data
   if (all(ismissing(Ydata(:, :)))) then
@@ -552,20 +558,20 @@ function mder_scatter_plot(Xdata[*] : numeric, \
                            opt[1] : string)
 ;
 ; Arguments:
-;     Xdata : array with X data for each model
-;     Xerr : array with error values for X
-;     Ydata : array with Y data for each model
-;     Yfit[*] : array with regression values
-;     Yfit_err : array with error regression values
-;     Xobs : OBS value
-;     Xobs_std : OBS error value
-;     MainStg : plot hedar string
-;     XStg : X-axis string
-;     YStg : Y-axis string
-;     wks : workstation for were to draw the plot
-;     opt : type of operations:
-;         "draw" : draws the plot directly and returnes logical
-;         "panel" : returnes plotvalue for pannel plot
+;     Xdata: array with X data for each model.
+;     Xerr: array with error values for X.
+;     Ydata: array with Y data for each model.
+;     Yfit[*]: array with regression values.
+;     Yfit_err: array with error regression values.
+;     Xobs: OBS value.
+;     Xobs_std: OBS error value.
+;     MainStg: plot header string.
+;     XStg: X-axis string.
+;     YStg: Y-axis string.
+;     wks: workstation for were to draw the plot.
+;     opt: type of operations:
+;          "draw": draws the plot directly and returnes logical.
+;          "panel": returnes plotvalue for pannel plot.
 ;
 local plot_array, plot, colors, dashes, thicks, res, bres
 begin
@@ -765,22 +771,22 @@ function squared_error_plot(Ydata[*][*] : numeric, \
                             opt[1] : string)
 ;
 ; Arguments:
-;   Ydata : array, where the rightmost dimension contains the box plot
-;           reference pt. data:
-;           y(n, 0) = bottom_value,
-;           y(n, 1) = bottom_value_of_box,
-;           y(n, 2) = mid-value_of_box,
-;           y(n, 3) = top_value_of_box,
-;           y(n, 4) = top_value.
-;   Ymean : array containing the multi-model-average of the squared errors.
-;   Ysqrd : array containing the models' squared errors.
-;   MainStg : plot header strings.
-;   XStg : X-axis string.
-;   YStg : Y-axis string.
-;   wks : workstation for were to draw the plot.
-;   opt : type of operations:
-;     "draw": draws the plot directly and returnes logical.
-;     "panel" : returnes plotvalue for pannel plot.
+;     Ydata: array, where the rightmost dimension contains the box plot
+;            reference pt. data:
+;            y(n, 0) = bottom_value,
+;            y(n, 1) = bottom_value_of_box,
+;            y(n, 2) = mid-value_of_box,
+;            y(n, 3) = top_value_of_box,
+;            y(n, 4) = top_value.
+;     Ymean: array containing the multi-model-average of the squared errors.
+;     Ysqrd: array containing the models' squared errors.
+;     MainStg: plot header strings.
+;     XStg: X-axis string.
+;     YStg: Y-axis string.
+;     wks: workstation for were to draw the plot.
+;     opt: type of operations:
+;          "draw": draws the plot directly and returnes logical.
+;          "panel": returnes plotvalue for pannel plot.
 ;
 local plot, res, llres, mres, sres
 begin
@@ -886,21 +892,21 @@ function diag_scatter(res_in[1] : logical, \
                       target_var : string)
 ;
 ; Description:
-;   Scatterplot for each diagnostic of historical simulation vs projection
+;     Scatterplot for each diagnostic of historical simulation vs projection.
 ;
 ; Return value:
-;   plotnames : array of strings containing plotnames
+;     plotnames: array of strings containing plotnames.
 ;
 ; Arguments:
-;   res_in: resources, must be given as attributes with "res_" prefix
-;   diag_all: [dim_diags x dim_datasets], coordinates must contain
-;   names of diagnostics and datasets, respectively
-;   future_diag: [dim_diags], target diagnostic of projections
-;   target_var: name of target variable, needs attribute 'units'
+;     res_in: resources, must be given as attributes with "res_" prefix.
+;     diag_all: [dim_diags x dim_datasets], coordinates must contain names of
+;               diagnostics and datasets, respectively.
+;     future_diag: [dim_diags], target diagnostic of projections.
+;     target_var: name of target variable, needs attribute 'units'.
 ;
 ; Modification history:
-;   * 20180806_A-schl_ma: ported to v2.0
-;   * 201806??_A-senf_da: written.
+;     20180806_A-schl_ma: ported to v2.0.
+;     201806??_A-senf_da: written.
 ;
 local dim_diag, dim_model, diags, datasets, x_var, wks, plot
 begin
