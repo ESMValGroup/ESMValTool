@@ -306,8 +306,9 @@ def run_area(cfg):
             logger.info('# Call: %s', metric_function)
             run_obj['runid'] = suite_id
             metrics = metric_function(run_obj)
-            duplicate_metrics = set(all_metrics.keys()) & set(metrics.keys())
-            if not duplicate_metrics:
+            duplicate_metrics = list(
+                set(all_metrics.keys()) & set(metrics.keys()))
+            if duplicate_metrics:
                 raise AssertionError('Duplicate Metrics ' +
                                      str(duplicate_metrics))
             all_metrics.update(metrics)

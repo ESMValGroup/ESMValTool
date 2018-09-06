@@ -21,15 +21,14 @@ This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 import os
 import logging
 import iris
-from ._rms_radiation import (start, end, calc_all)
-from ._valmod_radiation import perform_equation
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            get_control_exper_obs,
-                                            apply_supermeans)
-
+from esmvaltool.diag_scripts.autoassess._rms_radiation import (start, end,
+                                                               calc_all)
+from esmvaltool.diag_scripts.autoassess._valmod_radiation import (
+    perform_equation)
+from esmvaltool.diag_scripts.shared import (
+    group_metadata, run_diagnostic, get_control_exper_obs, apply_supermeans)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
 
 _CMIP_TYPE = 'CMIP5'
 
