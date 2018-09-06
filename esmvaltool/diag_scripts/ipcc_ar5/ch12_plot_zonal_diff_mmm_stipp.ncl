@@ -49,12 +49,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-  ; write_references(diag_script, \  ; script name
-  ;                  "A_lore_ru", \  ; authors
-  ;                  "A_sedl_ja", \  ; contributors
-  ;                  "D_collins13ipcc",    \  ; diag_references
-  ;                  "",          \  ; obs_references
-  ;                  "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "A_sedl_ja", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
   exit_if_missing_atts(diag_script_info, req_atts)
@@ -174,19 +174,15 @@ begin
   if(isatt(diag_script_info, "colormap")) then
     colormap = read_colormap_file(diag_script_info@colormap)
   else
-    colormap = read_colormap_file("./diag_scripts/shared/plot/rgb/" + \
-                                  "ipcc_temperature_with_grey.rgb")
+    colormap = "BlueYellowRed"
   end if
-;  to_plot@res_cnFillPalette = colormap
-  to_plot@res_cnFillColors = colormap
+  to_plot@res_cnFillPalette = colormap
   if (isatt(diag_script_info, "span")) then
     to_plot@res_cnSpanFillPalette     = diag_script_info@span
   else
     to_plot@res_cnSpanFillPalette     = True   ; use full colormap
   end if
   to_plot@res_lbLabelBarOn = False
-;  to_plot@res_trYReverse               = True
-;  to_plot@res_gsnYAxisIrregular2Log = True
   if (lev_name .eq. "lev") then
     to_plot@res_trYReverse            = True
     to_plot@res_gsnYAxisIrregular2Linear = True
