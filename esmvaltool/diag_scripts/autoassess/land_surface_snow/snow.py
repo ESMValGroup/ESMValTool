@@ -26,8 +26,7 @@ def land_swe_top(run):
     snow_seasons = ['son', 'djf', 'mam']
 
     # Location of climatology
-    clim_swe_root = os.path.dirname(os.path.realpath(__file__))
-    clim_swe_dir = os.path.join(clim_swe_root, 'GlobSnow')
+    clim_swe_dir = os.path.join(run['climfiles_root'], 'GlobSnow')
 
     # Calculate rms errors for seasons with snow.
     metrics = dict()

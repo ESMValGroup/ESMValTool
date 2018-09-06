@@ -248,7 +248,7 @@ def _create_run_dict(cfg):
 
     run = {}
 
-    # general parameters
+    # general parameters (necessary)
     run['suite_id1'] = cfg['control_model']
     run['suite_id2'] = cfg['exp_model']
     run['out_dir'] = cfg['plot_dir']
@@ -263,7 +263,11 @@ def _create_run_dict(cfg):
     run['start'] = cfg['start']
     run['end'] = cfg['end']
 
-    # specific parameters
+    # optional parameters
+    if 'climfiles_root' in cfg:
+        run['climfiles_root'] = cfg['climfiles_root']
+
+    # specific parameters needed by some areas
     start_year = int(run['start'][0:4])
     end_year = int(run['end'][0:4])
     run['nyear'] = end_year - start_year
