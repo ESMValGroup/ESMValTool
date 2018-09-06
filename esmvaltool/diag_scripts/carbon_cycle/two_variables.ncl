@@ -7,10 +7,10 @@
 ; #############################################################################
 ;
 ; Description:
-;   Draw a scatter plot with two variables.
+;     Draw a scatter plot with two variables.
 ;
 ; Required diag_script_info attributes:
-;    region: the region to be averaged.
+;     region: the region to be averaged.
 ;
 ; Modification history:
 ;     20180823_A-schl_ma: continued porting to v2.0.
@@ -32,6 +32,7 @@ load "./interface_scripts/interface.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/scaling.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 load "./diag_scripts/shared/plot/style.ncl"

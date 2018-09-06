@@ -34,9 +34,9 @@
 ;     evolution_plot_color: Hue of the contours; default: red = 0.
 ;
 ;     For external dataset input:
-;     diag_script_info@obsfile: Filename of external obs to read in.
-;     diag_script_info@obsname: Name of ext dataset to read in.
-;     diag_script_info@ref_varname: Varname in attributes of ext file.
+;     obsfile: Filename of external obs to read in.
+;     obsname: Name of ext dataset to read in.
+;     ref_varname: Varname in attributes of ext file.
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
@@ -73,8 +73,8 @@ load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/scaling.ncl"
-load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
