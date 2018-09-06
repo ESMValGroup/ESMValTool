@@ -301,9 +301,9 @@ begin
   ; Write NETCDF file for MDER
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_netcdf) then
-    work_dir = config_user_info@work_dir
-    system("mkdir -p " + work_dir)
+  output = mder_output_desired()
+  if (output) then
+    work_dir = output@work_dir
     opt = diag_script_info
     log_info(opt@wdiag)
 

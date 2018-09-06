@@ -95,6 +95,53 @@ end
 
 
 ; #############################################################################
+undef("mder_output_desired")
+function mder_output_desired()
+;
+; Return value:
+;     True of mder output is desired, False if not.
+;
+; Description:
+;     Checks if MDER output of diagnostic is desired.
+;
+; Modification history:
+;     20180906_A-schl_ma: written.
+;
+local out
+
+begin
+
+  funcname = "mder_output_desired"
+  scriptname = "diag_scripts/shared/mder.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Check diag_script_info@wdiag
+  if (isatt(diag_script_info, "wdiag") .and. \
+      .not. any(diag_script_info@wdiag .eq. "")) then
+    if (config_user_info@write_netcdf) then
+      log_info("Writing MDER output with the following diagnostics: " + \
+               diag_script_info@wdiag)
+      out = True
+      out@work_dir = config_user_info@work_dir
+      system("mkdir -p " + out@work_dir)
+    else
+      log_info("Skipping MDER output: 'write_netcdf' is set to False in " + \
+               "user configuration")
+      out = False
+    end if
+  else
+    log_info("Skipping MDER output: 'wdiag' is not given in recipe")
+    out = False
+  end if
+
+  ; Return boolean
+  leave_msg(scriptname, funcname)
+  return(out)
+
+end
+
+
+; #############################################################################
 undef("reg_multlin_stats_rap")
 function reg_multlin_stats_rap(Y[*]: numeric, \
                                XP:numeric, \

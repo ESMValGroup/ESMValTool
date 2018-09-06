@@ -727,10 +727,13 @@ begin
     ; delete([/alltags, caption, id, climofiles, plot_fname/])
   end if
 
-  ; Write NETCDF file
-  if (config_user_info@write_netcdf) then
-    work_dir = config_user_info@work_dir
-    system("mkdir -p " + work_dir)
+  ; ---------------------------------------------------------------------------
+  ; Write NETCDF file for MDER
+  ; ---------------------------------------------------------------------------
+
+  output = mder_output_desired()
+  if (output) then
+    work_dir = output@work_dir
     opt = diag_script_info
 
     ; Iterate over all desired diagnostics
@@ -747,28 +750,25 @@ begin
         ; Write files
         if (isStrSubset(opt@wdiag, "_t")) then
           val = val_trend(case|:, dataset|i)
-          val@var = var0
-          val@units = "(" + variable_info@units + "/dec)"
-          val@diag_script = (/diag_script/)
-          copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_names(i)
-          val@start_year = input_file_info@start_year(idat)
-          val@end_year = input_file_info@end_year(idat)
-          val@ncdf = new_path
-          ncdf_outfile = ncdf_write(val, new_path)
+          val@units = "(" + variable_info@units + ")"
         else if(isStrSubset(opt@wdiag, "_c")) then
           val = val_mean(case|:, dataset|i)
-          val@var = var0
-          val@units = "(" + variable_info@units + "/dec)"
-          val@diag_script = (/diag_script/)
-          copy_VarAtts(diag_script_info, val)
-          val@dataset = dataset_names(i)
-          val@start_year = input_file_info@start_year(idat)
-          val@end_year = input_file_info@end_year(idat)
-          val@ncdf = new_path
-          ncdf_outfile = ncdf_write(val, new_path)
+          val@units = "(" + variable_info@units + "/yr)"
+        else
+          error_msg("f", diag_script, "", "Diagnostic " + opt@wdiag + \
+                    "not supported for MDER output")
         end if
         end if
+
+        val@var = var0
+        val@diag_script = (/diag_script/)
+        copy_VarAtts(diag_script_info, val)
+        val@wdiag := opt@wdiag
+        val@dataset = dataset_names(i)
+        val@start_year = input_file_info@start_year(idat)
+        val@end_year = input_file_info@end_year(idat)
+        val@ncdf = new_path
+        ncdf_outfile = ncdf_write(val, new_path)
         delete([/val, new_path/])
       end do
     end do
