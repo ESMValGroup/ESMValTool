@@ -1,17 +1,18 @@
 """Standard MO metrics plotter."""
 import os
 import logging
-import inspect
 import sys
-import subprocess
 
 import iris
 import yaml
+from esmvaltool.diag_scripts.autoassess._plot_mo_metrics import (
+    read_model_metrics, plot_nac)
 
 logger = logging.getLogger(__name__)
 
 # Diagnostic that takes two datasets (control_model and exp_model
-# and observational data (ERA-Interim and MERRA)
+# and observational data (ERA-Interim and MERRA);
+# plotting OBS is not yet supported; it will be, hold your horses
 
 
 def get_cfg():
@@ -38,28 +39,26 @@ def main():
         os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
         cfg['diag_name'], vsloc, cfg['area'], control_model, 'metrics.csv')
 
-    cwd = os.path.dirname(
-        os.path.abspath(inspect.getfile(inspect.currentframe())))
-    plotter_script = os.path.join(cwd, 'autoassess_source/plot_norm_ac.py')
-    os.system('chmod +x ' + plotter_script)
-    command_call = plotter_script
-    args = {}
-    args['--exp'] = exp_model
-    args['--ref'] = control_model
-    args['--plot'] = os.path.join(cfg['plot_dir'], cfg['plot_name'] + '.png')
-    args['--title'] = cfg['plot_title']
-    args['--file-exp'] = file_exp
-    args['--file-ref'] = file_ref
-    args_collection = [key + ' ' + args[key] for key in args.keys()]
-    sys_call = command_call + ' ' + ' '.join(args_collection)
-    logger.info(sys_call)
-    # run the thing
-    proc = subprocess.Popen(sys_call, stdout=subprocess.PIPE, shell=True)
-    proc.communicate()
-    ret_code = proc.returncode
-    if int(ret_code) != 0:
-        logger.info("Diagnostic (metrics plotter) has failed!")
-        sys.exit(1)
+    # Read metrics files
+    # metrics = read_order_metrics(args.file_ord)
+    ref = read_model_metrics(file_ref)
+    tests = [read_model_metrics(file_exp)]
+    # var = read_model_metrics(args.file_var)
+    # (obs, acc) = read_obs_metrics(args.file_obs)
+
+    # Produce plot
+    plot_nac(
+        control_model,
+        [exp_model],
+        ref,
+        tests,
+        metrics=None,
+        var=None,
+        obs=None,
+        acc=None,
+        extend_y=False,
+        title=cfg['plot_title'],
+        ofile=os.path.join(cfg['plot_dir'], cfg['plot_name'] + '.png'))
 
 
 if __name__ == '__main__':
