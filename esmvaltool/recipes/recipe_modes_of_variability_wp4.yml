@@ -1,5 +1,5 @@
 ###############################################################################
-# namelist_modes_of_variability.yml
+# recipe_modes_of_variability.yml
 #
 # Description
 # Tool to compute the RMSE between the observed and modelled patterns of
@@ -14,6 +14,7 @@
 # Virginie Guemas
 # Alasdair Hunter
 # Nicolau Manubens
+# Núria Pérez-Zanón
 #
 # Project
 # KNMI Magic
@@ -29,14 +30,17 @@
 ---
 
 datasets:
-  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: IPSL-CM5A-LR, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: IPSL-CM5A-LR, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
   #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
     #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i0p1,  start_year: 1961,  end_year: 1990}
 
 preprocessors:
   preproc:
     regrid:
-      target_grid: bcc-csm1-1
+      target_grid: IPSL-CM5A-LR
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -45,9 +49,9 @@ diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      psl:
+      tasmax:
         preprocessor: preproc
-        mip: Amon
+        mip: day
         field: T2M
     scripts:
       main:
@@ -60,13 +64,14 @@ diagnostics:
         end_latitude: 80
 
         #Start and end periods for the historical and projection periods
-        start_historical: "1960-01-01"
-        end_historical: "1991-12-01"
-        start_projection: "1960-01-01"
-        end_projection: "1991-12-01"
+        start_historical: "1961-01-01"
+        end_historical: "1990-12-31"
+        start_projection: "2006-01-01"
+        end_projection: "2026-12-31"
 
         #Regime parameters
         ncenters: 4
-        cluster_method: "kmeans"
-        EOFS: "FALSE"
-
+        detrend_order: 2
+        cluster_method: "kmeans" # If NULL it computes hcluster else specify kmeans
+        EOFS: TRUE
+        frequency: 'JJA' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF

@@ -112,7 +112,7 @@ time_dimension <- which(names(dim(historical_data)) == "time")
 #historical_data <- Subset(historical_data, "lon", lon_order$ix)
 #lon <- lon_order$x
 
-PlotEquiMap(historical_data[1,1,1,,], lon=lon, lat=lat, filled = FALSE, fileout = paste0(plot_dir, "/Plots1.png"))
+#PlotEquiMap(historical_data[1,1,1,,], lon=lon, lat=lat, filled = FALSE, fileout = paste0(plot_dir, "/Plots1.png"))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
 # attributes(years) <- NULL
