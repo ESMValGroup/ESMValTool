@@ -130,7 +130,6 @@ begin
     if (diag_script_info@iavmode .eq. "each") then
       iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
                  dimsizes(A0&lon)/), typeof(A0), Fill)
-      copy_VarMeta(A0, iav)
     end if
   end if
   data2 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
@@ -187,16 +186,21 @@ begin
         ; # Read natural variability for stippling for each model #
         ; #########################################################
         log_info("Read natural variability for stippling for each model")
-        iav_file = addfile(input_dir + "/" + "IAV_for_stippandhatch_" +\
-                           "ipcc12/IAV_piControl_" + \
+        iav_file = addfile(input_dir + "/" + "IAV_piControl_" + \
                            dataset_info@dataset(imod) + "_" +  \
                            dataset_info@ensemble(imod) + "_" + field_type0 + \
                            "_" + var0 + "_" + diag_script_info@time_avg + \
                            ".nc", "r")
-        if (dim_seas .eq. 1) then
+        if ((dim_seas .eq. 1) .and. \
+          (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_file->iav
+        else if ((dim_seas .eq. 1) .and. \
+          (diag_script_info@time_avg .eq. "seasonalclim")) then
+          tmp_iav = iav_file->iav
+          iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
         else
           iav(imod, :, :, :) = iav_file->iav
+        end if
         end if
       end if
     end if
