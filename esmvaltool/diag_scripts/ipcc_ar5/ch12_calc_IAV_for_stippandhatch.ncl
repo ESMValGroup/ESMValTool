@@ -17,20 +17,12 @@
 ;     time_avg:  time period to calculate IAV, e.g. annualclim, seasonalclim
 ;
 ;  Optional diag_script_info attributes (diagnostic specific)
+;     iavmode: calculate multi-model mean of IAV over all models or calculate
+;              and save IAV for each individual model or ? (mmm, each)
 ;     periodlength: length of periods to calculate IAV accross, depends on
 ;                   period lengths used in
 ;                   map_diff_mmm_stippandhatch_ipcc12.ncl
 ;                   if not given whole time period calculated at once
-;     grid:         grid for regridding (coarsest, finest, ref, 1x1, 2.5x2.5)
-;     ref_model:    name of reference data set (only needed if grid = "ref")
-;
-;  Required variable_info attributes (variable specific)
-;     att1: short description
-;     att2: short description
-;
-;  Optional variable_info attributes (variable specific)
-;     att1: short description
-;     att2: short description
 ;
 ;  Caveats
 ;     List possible caveats or limitations of this diagnostic
@@ -72,21 +64,18 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \           ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \           ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 end
 
 begin
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)  ; Needed?
@@ -143,8 +132,11 @@ begin
   lon_name = dims(idx)
 
   index = ispan(0, dim_MOD - 1, 1)
-  if (isatt(diag_script_info, "seasons")) then
-    dim_seas = dimsizes(diag_script_info@seasons)
+;  if (isatt(diag_script_info, "seasons")) then
+;    dim_seas = dimsizes(diag_script_info@seasons)
+  if diag_script_info@time_avg .eq. "seasonalclim" then
+    dim_seas = 4
+    diag_script_info@seasons = (/0, 1, 2, 3/)
   else
     dim_seas = 1
     diag_script_info@seasons = (/0/)
@@ -244,36 +236,36 @@ begin
             data_tmp(per, 0, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          else if ((dim_seas .eq. 1) .and. \
-                   (diag_script_info@time_avg .eq. "seasonalclim")) then
-            tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
-                                  diag_script_info@time_avg, True)
-            data_tmp(per, 0, :, :) = tmp(diag_script_info@seasons, :, :)
-            delete(tmp)
+          ; else if ((dim_seas .eq. 1) .and. \
+          ;          (diag_script_info@time_avg .eq. "seasonalclim")) then
+          ;   tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
+          ;                         diag_script_info@time_avg, True)
+          ;   data_tmp(per, 0, :, :) = tmp(diag_script_info@seasons, :, :)
+          ;   delete(tmp)
           else
             data_tmp(per, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
           end if
-          end if
+          ;end if
         else if (rank .eq. 4) then
           if ((dim_seas .eq. 1) .and. \
               (diag_script_info@time_avg .eq. "annualclim")) then
             data_tmp(per, 0, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          else if ((dim_seas .eq. 1) .and. \
-                   (diag_script_info@time_avg .eq. "seasonalclim")) then
-            tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
-                                  diag_script_info@time_avg, True)
-            data_tmp(per, 0, :, :, :) = tmp(diag_script_info@seasons, :, :, :)
-            delete(tmp)
+          ; else if ((dim_seas .eq. 1) .and. \
+          ;          (diag_script_info@time_avg .eq. "seasonalclim")) then
+          ;   tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
+          ;                         diag_script_info@time_avg, True)
+          ;   data_tmp(per, 0, :, :, :) = tmp(diag_script_info@seasons, :, :, :)
+          ;   delete(tmp)
           else
             data_tmp(per, :, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
           end if
-          end if
+          ;end if
         end if
         end if
       end do
@@ -330,7 +322,7 @@ begin
           data1!4 = "lon"
         end if
         end if
-        if (isatt(diag_script_info, "seasons")) then
+        if (diag_script_info@time_avg .eq. "seasonalclim") then
           data1&season = (/ispan(0, dim_seas - 1, 1)/)
         else
           data1&season = (/0/)
@@ -351,9 +343,17 @@ begin
       ; # Output to netCDF                        #
       ; ###########################################
       if (rank .eq. 3) then
-        write_data = data1(imod, :, :, :)
+        if (dim_seas .eq. 1) then
+          write_data = data1(imod, 0, :, :)
+        else
+          write_data = data1(imod, :, :, :)
+        end if
       else if (rank .eq. 4) then
-        write_data = data1(imod, :, :, :, :)
+        if (dim_seas .eq. 1) then
+          write_data = data1(imod, :, 0, :, :)
+        else
+          write_data = data1(imod, :, :, :, :)
+        end if
       end if
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
