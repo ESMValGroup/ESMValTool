@@ -1,7 +1,7 @@
 """
 Diagnostic:
 
-Diagnostic to produce png images of the profile over time from a cube.
+Diagnostic to produce images of the profile over time from a cube.
 These plost show cube value (ie temperature) on the x-axis, and depth/height
 on the y axis. The colour scale is the annual mean of the cube data.
 
@@ -32,10 +32,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import iris
-import iris.quickplot as qplt
+
 import matplotlib.pyplot as plt
+import iris.quickplot as qplt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -116,16 +118,19 @@ def make_profiles_plots(
     # Add Legend outside right.
     diagtools.add_legend_outside_right(plot_details, plt.gca())
 
-    # Determine png filename:
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+    
+    # Determine image filename:
     if multi_model:
         path = diagtools.folder(
             cfg['plot_dir']) + os.path.basename(filename).replace(
-                '.nc', '_profile.png')
+                '.nc', '_profile' + image_extention)
     else:
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='profile.png',
+            suffix='profile' + image_extention,
         )
 
     # Saving files:

@@ -1,7 +1,7 @@
 """
 Diagnostic Maps:
 
-Diagnostic to produce png images of a map with coastlines from a cube.
+Diagnostic to produce images of a map with coastlines from a cube.
 These plost show latitude vs longitude and the cube value is used as the colour
 scale.
 
@@ -26,10 +26,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import iris
-import iris.quickplot as qplt
+
 import matplotlib.pyplot as plt
+import iris.quickplot as qplt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -61,11 +63,14 @@ def make_map_plots(
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+    
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
 
-        qplt.contourf(cube_layer, 25)
+        qplt.contourf(cube_layer, 25, linewidth=0, rasterized=True)
 
         try:
             plt.gca().coastlines()
@@ -80,16 +85,16 @@ def make_map_plots(
                  str(cube_layer.coords('depth')[0].units), ')'])
         plt.title(title)
 
-        # Determine png filename:
+        # Determine image filename:
         if multi_model:
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(filename).replace(
-                    '.nc', '_map_' + str(layer_index) + '.png')
+                    '.nc', '_map_' + str(layer_index) + image_extention)
         else:
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='map_' + str(layer_index) + '.png',
+                suffix='map_' + str(layer_index) + image_extention,
             )
 
         # Saving files:

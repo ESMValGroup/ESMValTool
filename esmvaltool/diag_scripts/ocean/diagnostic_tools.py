@@ -13,6 +13,8 @@ import logging
 import os
 import sys
 import yaml
+import matplotlib
+matplotlib.use('Agg')  # noqa
 
 import matplotlib.pyplot as plt
 
@@ -141,6 +143,29 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
 
+def get_image_format(cfg, default = 'png'):
+    """
+    Checks to see if global config file includes any information about image
+    format. Current tested options are svg, png.
+
+    The cfg is the opened global config.
+    The default format is used if no specific format is requested.
+    """
+    if 'image_format' not in cfg.keys():
+        return '.' + default
+
+    # Load the image extention        
+    image_extention =  cfg['image_format']
+        
+    matplotlib_image_formats = plt.gcf().canvas.get_supported_filetypes() 
+    if image_extention not in matplotlib_image_formats:
+    	  logger.warning(' '.join(['Image format ', image_extention,
+    	                          'not in matplot:', 
+    	                          ', '.join(matplotlib_image_formats)]))
+
+    image_extention = '.' +image_extention
+    image_extention = image_extention.replace('..', '.')
+    return image_extention
 
 def get_image_path(cfg,
                    metadata,
@@ -166,7 +191,8 @@ def get_image_path(cfg,
     if suffix:
         path += '_' + suffix
 
-    image_extention = '.png'
+    image_extention = get_image_format(cfg)
+
     if path.find(image_extention) == -1:
         path += image_extention
 

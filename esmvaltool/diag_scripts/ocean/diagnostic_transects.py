@@ -1,7 +1,7 @@
 """
 Diagnostic transect:
 
-Diagnostic to produce png images of a transect.
+Diagnostic to produce images of a transect.
 These plost show either latitude or longitude against depth, and the cube value
 is used as the colour scale.
 
@@ -26,8 +26,10 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import iris
+
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
@@ -81,7 +83,7 @@ def make_transects_plots(
 
     # Make a dict of cubes for each layer.
 
-    qplt.contourf(cube, 25)
+    qplt.contourf(cube, 25, linewidth=0, rasterized=True)
     plt.axes().set_yscale('log')
 
     # Add title to plot
@@ -90,16 +92,19 @@ def make_transects_plots(
          determine_transect_str(cube)])
     plt.title(title)
 
-    # Determine png filename:
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+        
+    # Determine image filename:
     if multi_model:
         path = diagtools.folder(
             cfg['plot_dir']) + os.path.basename(filename).replace(
-                '.nc', '_transect.png')
+                '.nc', '_transect' + image_extention)
     else:
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='transect.png',
+            suffix='transect' + image_extention,
         )
 
     # Saving files:
