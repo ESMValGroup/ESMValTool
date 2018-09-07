@@ -34,18 +34,11 @@
 ;    colormap: specify colormap for contour plots
 ;    units: unit string in ncl formatting for legend title
 ;
-; Required variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
 ; Caveats
 ;    Only handles one variable at a time
 ;
 ; Modification history
+;    20180618-A_lore_ru: refactored for v2
 ;    20161027-A_lore_ru: written for ESMValTool
 ;
 ; #############################################################################
@@ -90,12 +83,12 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
@@ -109,9 +102,6 @@ begin
   else
     file_type = "pdf"
   end if
-
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
 
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
@@ -251,13 +241,6 @@ rad = (4.0 * atan(1.0) / 180.0)
   end if
   to_plot_signif = new((/dim_per * dim_seas,  dimsizes(data1&lat), \
                         dimsizes(data1&lon)/), typeof(data1), Fill)
-    ; do in backend once working
-    ; if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-    ;     ; read mask to mask data where not defined (ocean and ice)
-    ;     in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-    ;     msk_data = in->LSMASK
-    ;     msk = landsea_mask(msk_data, A0&lat, A0&lon)
-    ; end if
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
@@ -341,12 +324,8 @@ rad = (4.0 * atan(1.0) / 180.0)
       end do
       log_debug("determine significance")
       to_plot_signif(i, :, :) = where(abs(to_plot(i, :, :)) .gt. perc95, 1., 0)
-      if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-        to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 0, False)
-        to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
-      end if
       i = i + 1
-      delete(var_diff_scal_all_mod)
+      delete([/var_diff_scal_all_mod, diff_sort/])
     end do  ; per
   end do  ; seas
   to_plot!0 = "panel"
