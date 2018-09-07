@@ -249,7 +249,7 @@ def read_obs_metrics(csvfile, required=False):
     acc = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rb')
+            inf = open(csvfile, 'rt')
         except IOError as shit:
             if shit.errno == errno.EACCES:
                 if required:

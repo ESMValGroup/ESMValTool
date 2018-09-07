@@ -6,7 +6,7 @@ import sys
 import iris
 import yaml
 from esmvaltool.diag_scripts.autoassess._plot_mo_metrics import (
-    read_model_metrics, plot_nac)
+    read_model_metrics, read_obs_metrics, plot_nac)
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +39,21 @@ def main():
         os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
         cfg['diag_name'], vsloc, cfg['area'], control_model, 'metrics.csv')
 
+    plot_title = ' '.join([cfg['area'], control_model, 'vs', exp_model])
     # Read metrics files
     # metrics = read_order_metrics(args.file_ord)
     ref = read_model_metrics(file_ref)
     tests = [read_model_metrics(file_exp)]
     # var = read_model_metrics(args.file_var)
-    # (obs, acc) = read_obs_metrics(args.file_obs)
+    obs, acc = None, None
+    if 'obs4metrics' in cfg:
+        # choose the obs file to get the metrics from
+        file_obs = os.path.join(
+            os.path.dirname(os.path.dirname(cfg['plot_dir'])),
+            cfg['diag_tag'],
+            cfg['diag_name'], vsloc, cfg['area'], cfg['error_metric'],
+            'metrics.csv')
+        (obs, acc) = read_obs_metrics(file_obs)
 
     # Produce plot
     plot_nac(
@@ -54,10 +63,10 @@ def main():
         tests,
         metrics=None,
         var=None,
-        obs=None,
-        acc=None,
+        obs=obs,
+        acc=acc,
         extend_y=False,
-        title=cfg['plot_title'],
+        title=plot_title,
         ofile=os.path.join(cfg['plot_dir'], cfg['plot_name'] + '.png'))
 
 

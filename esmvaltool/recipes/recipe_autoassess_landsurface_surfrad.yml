@@ -69,4 +69,3 @@ diagnostics:
         plot_name: "Surfrad_Metrics"
         diag_tag: aa_landsurf_surfrad
         diag_name: autoassess_landsurf_surfrad
-        plot_title: "Surfrad_MPI-ESM-LR_vs_MPI-ESM-MR"

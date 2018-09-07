@@ -14,8 +14,8 @@
 #################
 #### CAVEATS
 #################
-# - The original autoassess diagnostic needs MERRA obs data as well; not asked for here but it should be implemented
-# at a later stage;
+# - The original autoassess diagnostic needs MERRA obs data as well;
+#   add MERRA file request in this namelist when running.
 ###########################################################################################################
 ---
 
@@ -59,6 +59,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
+        obs4metrics: [ERA-Interim]
         obs_type: OBS
         start: 1997/12/01
         end: 2002/12/01
@@ -69,6 +70,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
+        obs4metrics: [ERA-Interim]
         obs_type: OBS
         start: 1997/12/01
         end: 2002/12/01
@@ -87,7 +89,7 @@ diagnostics:
         plot_name: "Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_1
-        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
+        error_metric: ERA-Interim  # has to be from obs4metrics list
       plot_strato_test_2: &plot_strato_test_2_settings
         <<: *autoassess_strato_test_2_settings
         control_model: MPI-ESM-LR
@@ -99,4 +101,4 @@ diagnostics:
         plot_name: "Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_2
-        plot_title: "MPI-ESM-LR_vs_inmcm4"
+        error_metric: ERA-Interim  # has to be from obs4metrics list

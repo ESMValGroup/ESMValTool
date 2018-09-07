@@ -59,4 +59,3 @@ diagnostics:
         plot_name: "Snow_Metrics"
         diag_tag: aa_landsurf_snow
         diag_name: autoassess_landsurf_snow
-        plot_title: "Landsurface_Snow_MPI-ESM-LR_vs_MPI-ESM-MR"
