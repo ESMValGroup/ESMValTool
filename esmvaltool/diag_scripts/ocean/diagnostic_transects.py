@@ -94,7 +94,7 @@ def make_transects_plots(
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
-        
+
     # Determine image filename:
     if multi_model:
         path = diagtools.folder(

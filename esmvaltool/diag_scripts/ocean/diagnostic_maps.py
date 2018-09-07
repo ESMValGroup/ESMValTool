@@ -65,7 +65,7 @@ def make_map_plots(
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
-    
+
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)

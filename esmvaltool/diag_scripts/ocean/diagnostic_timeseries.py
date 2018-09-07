@@ -115,7 +115,7 @@ def make_time_series_plots(
 
         # Determine image filename:
         if multi_model:
-            
+
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
@@ -169,7 +169,7 @@ def multi_model_time_series(
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
-    
+
     # Make a plot for each layer
     for layer in layers:
 
