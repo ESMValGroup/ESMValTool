@@ -57,72 +57,91 @@ def _make_tmp_dir(cfg):
     return tmp_dir, ancil_dir
 
 
-def _make_main_dirs(cfg, obs4metrics=False):
+def _make_main_dirs(cfg):
     """Create main dirs to hold analysis"""
-    locations = []
+    locations = {}  # locations for control, exp and any addional metrics
     suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['control_model'])
     if not os.path.exists(suite_loc_m1):
         os.makedirs(suite_loc_m1)
-    locations.append(suite_loc_m1)
+    locations['control_model'] = suite_loc_m1
     suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['exp_model'])
     if not os.path.exists(suite_loc_m2):
         os.makedirs(suite_loc_m2)
-    locations.append(suite_loc_m2)
-    if obs4metrics:
-        for obs_model in cfg['obs4metrics']:
-            suite_loc_obs = os.path.join(cfg['work_dir'], obs_model)
-            if not os.path.exists(suite_loc_obs):
-                os.makedirs(suite_loc_obs)
-        locations.append(suite_loc_obs)
+    locations['exp_model'] = suite_loc_m2
+    if 'additional_metrics' in cfg:
+        if cfg['additional_metrics']:
+            for add_model in cfg['additional_metrics']:
+                suite_loc_add = os.path.join(cfg['work_dir'], add_model)
+                if not os.path.exists(suite_loc_add):
+                    os.makedirs(suite_loc_add)
+                locations[add_model] = suite_loc_add
     obs_loc = os.path.join(cfg['work_dir'], 'OBS')
     if not os.path.exists(obs_loc):
         os.makedirs(obs_loc)
-    locations.append(obs_loc)
 
     return locations, obs_loc
 
 
 def _make_concatenated_data_dirs(suite_locs, area):
     """Create dirs to hold cubeList files"""
-    suites_locations = []
-    supermeans_locations = []
+    suites_locations = {}
+    supermeans_locations = {}
     for suite_dir in suite_locs:
-        suite_data = os.path.join(suite_dir, area)
+        suite_data = os.path.join(suite_locs[suite_dir], area)
         if not os.path.exists(suite_data):
             os.makedirs(suite_data)
-        suites_locations.append(suite_data)
+        suites_locations[suite_dir] = suite_data
 
         # create supermeans directory: [area]_supermeans
-        sup_data = os.path.join(suite_dir, area + '_supermeans')
+        sup_data = os.path.join(suite_locs[suite_dir], area + '_supermeans')
         if not os.path.exists(sup_data):
             os.makedirs(sup_data)
-        supermeans_locations.append(sup_data)
+        supermeans_locations[suite_dir] = sup_data
 
     return suites_locations, supermeans_locations
 
 
-def _get_filelists(cfg, obs4metrics=False, obs_type=None):
+def _get_filelists(cfg):
     """Put files in lists and return them"""
-    files_list_m1 = []
-    files_list_m2 = []
-    obs4metrics_list = []
-    obs_list = []
+    # set the additional_metrics parameter
+    additional_metrics = False
+    additional_metrics_dict = {}  # dict keyed on additional models
+    if 'additional_metrics' in cfg:
+        if cfg['additional_metrics']:
+            additional_metrics = True
+            for new_metric in cfg['additional_metrics']:
+                additional_metrics_dict[new_metric] = []
+    metrics_dict = {}  # dict keyed on control and experiment models
+    metrics_dict['control_model'] = []
+    metrics_dict['exp_model'] = []
+
+    # figure out obs's
+    obs_list = []  # list to hold all needed OBS files
+    obs_types = None
+    if 'obs_models' in cfg:
+        if cfg['obs_models']:
+            obs_types = cfg['obs_models']
+
     for filename, attributes in cfg['input_data'].items():
         base_file = os.path.basename(filename)
         fullpath_file = filename
         if base_file.split('_')[1] == cfg['control_model']:
-            files_list_m1.append(fullpath_file)
+            metrics_dict['control_model'].append(fullpath_file)
             if 'fx_files' in attributes:
-                files_list_m1.append(attributes['fx_files'][cfg['fx']])
+                metrics_dict['control_model'].append(
+                    attributes['fx_files'][cfg['fx']])
         if base_file.split('_')[1] == cfg['exp_model']:
-            files_list_m2.append(fullpath_file)
+            metrics_dict['exp_model'].append(fullpath_file)
             if 'fx_files' in attributes:
-                files_list_m2.append(attributes['fx_files'][cfg['fx']])
-        if obs4metrics and base_file.split('_')[1] in cfg['obs4metrics']:
-            obs4metrics_list.append(fullpath_file)
-        if obs_type and base_file.split('_')[0] == obs_type:
+                metrics_dict['exp_model'].append(
+                    attributes['fx_files'][cfg['fx']])
+        if additional_metrics and base_file.split(
+                '_')[1] in cfg['additional_metrics']:
+            additional_metrics_dict[base_file.split('_')[1]].append(
+                fullpath_file)
+        if obs_types and base_file.split('_')[1] in obs_types:
             obs_list.append(fullpath_file)
-    return files_list_m1, files_list_m2, obs4metrics_list, obs_list
+    return metrics_dict, additional_metrics_dict, obs_list
 
 
 def _process_obs(cfg, obs_list, obs_loc):
@@ -150,13 +169,14 @@ def _process_obs(cfg, obs_list, obs_loc):
 def _process_metrics_data(all_files, suites, smeans):
     """Create and save concatenated cubes for ctrl and exp"""
     cubes_lists_paths = []
-    for filelist, suite, smean in zip(all_files, suites, smeans):
+    for key in all_files.keys():
+        filelist = all_files[key]
         if filelist:
             cubelist = iris.load(filelist)
 
             # save to congragated files; save twice for supermeans as well
-            cubes_list_path = os.path.join(suite, 'cubeList.nc')
-            cubes_list_smean_path = os.path.join(smean, 'cubeList.nc')
+            cubes_list_path = os.path.join(suites[key], 'cubeList.nc')
+            cubes_list_smean_path = os.path.join(smeans[key], 'cubeList.nc')
             # force add a long_name; supermeans uses extract_strict
             # and for derived vars there is only
             # invalid_standard_name which is an attribute and shit
@@ -230,44 +250,26 @@ def _setup_input(cfg):
     logger.setLevel(cfg['log_level'].upper())
 
     # set the main data dirs;
-    # check if we need to apply metrics to obs's
-    if 'obs4metrics' not in cfg:
-        target_locs, obs_loc = _make_main_dirs(cfg)
-    else:
-        if not cfg['obs4metrics']:
-            target_locs, obs_loc = _make_main_dirs(cfg)
-        else:
-            target_locs, obs_loc = _make_main_dirs(cfg, obs4metrics=True)
+    target_locs, obs_loc = _make_main_dirs(cfg)
     suites, smeans = _make_concatenated_data_dirs(target_locs, cfg['area'])
 
     # create the ancil and tp dirs
     tmp_dir, ancil_dir = _make_tmp_dir(cfg)
 
     # get files lists
-    if 'obs_type' and 'obs4metrics' in cfg:
-        files_list_m1, files_list_m2, obs4metrics_list, obs_list = \
-            _get_filelists(cfg, obs4metrics=True, obs_type=cfg['obs_type'])
-    else:
-        if 'obs_type' in cfg:
-            files_list_m1, files_list_m2, obs4metrics_list, obs_list = \
-                _get_filelists(cfg, obs4metrics=False,
-                               obs_type=cfg['obs_type'])
-        elif 'obs4metrics' in cfg:
-            files_list_m1, files_list_m2, obs4metrics_list, obs_list = \
-                _get_filelists(cfg, obs4metrics=True)
-        else:
-            files_list_m1, files_list_m2, obs4metrics_list, obs_list = \
-                _get_filelists(cfg)
+    metrics_dict, additional_metrics_dict, obs_list = _get_filelists(cfg)
 
     # spell out the files used
-    logger.info("Files for control model for metrics: %s", files_list_m1)
-    logger.info("Files for exp model for metrics: %s", files_list_m2)
-    logger.info("Files for obs models for metrics: %s", obs4metrics_list)
+    logger.info("Files for control model for metrics: %s",
+                metrics_dict['control_model'])
+    logger.info("Files for exp model for metrics: %s",
+                metrics_dict['exp_model'])
+    logger.info("Files for additional metrics: %s", additional_metrics_dict)
     logger.info("Files for obs model NOT for metrics: %s", obs_list)
-    all_files = [files_list_m1, files_list_m2, obs4metrics_list]
+    all_metrics_files = {**metrics_dict, **additional_metrics_dict}
 
     # load and save control and exp cubelists
-    all_cubelists = _process_metrics_data(all_files, suites, smeans)
+    all_cubelists = _process_metrics_data(all_metrics_files, suites, smeans)
 
     # print the paths
     logger.info("Saved control data cubes: %s", str(all_cubelists))
@@ -301,8 +303,8 @@ def _create_run_dict(cfg):
     # optional parameters
     if 'climfiles_root' in cfg:
         run['climfiles_root'] = cfg['climfiles_root']
-    if 'obs4metrics' in cfg:
-        run['obs4metrics'] = cfg['obs4metrics']
+    if 'additional_metrics' in cfg:
+        run['additional_metrics'] = cfg['additional_metrics']
 
     # specific parameters needed by some areas
     start_year = int(run['start'][0:4])
@@ -341,9 +343,9 @@ def run_area(cfg):
 
     # assemble the work subjects
     suite_ids = [run_obj['suite_id1'], run_obj['suite_id2']]
-    if 'obs4metrics' in cfg:
-        if run_obj['obs4metrics']:
-            suite_ids.extend(run_obj['obs4metrics'])
+    if 'additional_metrics' in cfg:
+        if run_obj['additional_metrics']:
+            suite_ids.extend(run_obj['additional_metrics'])
 
     # run the metrics generation
     for suite_id in suite_ids:

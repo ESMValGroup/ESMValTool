@@ -46,19 +46,17 @@ def main():
     tests = [read_model_metrics(file_exp)]
     # var = read_model_metrics(args.file_var)
     obs, acc = None, None
-    if 'obs4metrics' in cfg:
+    if 'additional_metrics' in cfg:
         # choose the obs file to get the metrics from
         file_obs = os.path.join(
-            os.path.dirname(os.path.dirname(cfg['plot_dir'])),
-            cfg['diag_tag'],
+            os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
             cfg['diag_name'], vsloc, cfg['area'], cfg['error_metric'],
             'metrics.csv')
         (obs, acc) = read_obs_metrics(file_obs)
 
     # Produce plot
     plot_nac(
-        control_model,
-        [exp_model],
+        control_model, [exp_model],
         ref,
         tests,
         metrics=None,
