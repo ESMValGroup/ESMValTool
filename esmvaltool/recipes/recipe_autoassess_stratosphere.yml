@@ -58,9 +58,8 @@ diagnostics:
         area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [ERA-Interim]
-        obs4metrics: [ERA-Interim]
-        obs_type: OBS
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim, inmcm4]  # list to hold additional datasets for metrics
         start: 1997/12/01
         end: 2002/12/01
       autoassess_strato_test_2: &autoassess_strato_test_2_settings
@@ -70,8 +69,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        obs4metrics: [ERA-Interim]
-        obs_type: OBS
+        additional_metrics: [ERA-Interim]
         start: 1997/12/01
         end: 2002/12/01
 
@@ -86,10 +84,10 @@ diagnostics:
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_1
-        error_metric: ERA-Interim  # has to be from obs4metrics list
+        error_metric: ERA-Interim  # has to be from additional_metrics list
       plot_strato_test_2: &plot_strato_test_2_settings
         <<: *autoassess_strato_test_2_settings
         control_model: MPI-ESM-LR
@@ -98,7 +96,7 @@ diagnostics:
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_2
-        error_metric: ERA-Interim  # has to be from obs4metrics list
+        error_metric: ERA-Interim  # has to be from additional_metrics list
