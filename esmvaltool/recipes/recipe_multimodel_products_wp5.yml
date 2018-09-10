@@ -29,9 +29,9 @@ datasets:
 #  - {dataset: GFDL-ESM2G, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
-  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
-  - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+  - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
 
 #latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
@@ -42,10 +42,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      start_longitude: -20
-      end_longitude: 60
-      start_latitude: 30
-      end_latitude: 70
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 90
 
 diagnostics:
   anomaly_agreement:
@@ -67,7 +67,7 @@ diagnostics:
         climatology_end_year: 1990
 
         anomaly_start_year: 2006
-        anomaly_end_year: 2026
+        anomaly_end_year: 2099
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 8

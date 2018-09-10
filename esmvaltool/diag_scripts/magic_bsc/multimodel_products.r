@@ -232,16 +232,19 @@ for (mod in 1 : length(model_names)) {
   }
   data <- anomaly[mod,1,1, , ,]
   data <- aperm(data, c(2, 3, 1))
-
   names(dim(data)) <- c("lat", "lon", "time")
   metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE)), units = units ))
   names(metadata)[1] <- var0
   attr(data, 'variables') <- metadata
+    attributes(lat) <- NULL
+    attributes(lon) <- NULL
+    dim(lat) <- c(lat = length(lat))
+    dim(lon) <- c(lon = length(lon))
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
 
- # ArrayToNetCDF(variable_list,
- #               paste0(plot_dir,  "/", var0, "_", months, "_anomaly_",model_names[mod],"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
+  ArrayToNetCDF(variable_list,
+                paste0(plot_dir,  "/", var0, "_", months, "_anomaly_",model_names[mod],"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
 }
 
 
@@ -309,7 +312,7 @@ if (!is.null(agreement_threshold)) {
 }
 
 colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)),abs(min(data))))
-brks <- seq(-colorbar_lim, colorbar_lim, length.out = 11)
+brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
 title <- paste0(months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly, ") - (", start_climatology, "-", end_climatology, ")")
 data <- drop(Mean1Dim(multi_year_anomaly, model_dim))
 PlotEquiMap(data, lat = lat, lon = lon, brks = brks, units =units, toptitle = title, filled.continents = FALSE,
@@ -335,7 +338,7 @@ attr(time, "variables") <- metadata
 variable_list <- list(variable = data, agreement = agreement, lat = lat, lon = lon, time = time)
 names(variable_list)[1] <- var0
 
-#ArrayToNetCDF(variable_list,  paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
-            #  model_names_filename,"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
+ArrayToNetCDF(variable_list,  paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
+              model_names_filename,"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
 
 
