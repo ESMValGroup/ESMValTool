@@ -202,17 +202,17 @@ def _get_dirnames(input_type, variable, rootpath, drs):
     project = variable['project']
 
     root = get_rootpath(rootpath, project)
-    input_dir = _select_drs(input_type, drs, project)
+    path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in replace_tags(input_dir, variable):
+    for dirname_template in replace_tags(path_template, variable):
+        dirname_template = os.path.join(root, dirname_template)
         dirname = _resolve_latestversion(dirname_template)
-        dirname = os.path.join(root, dirname)
         if os.path.exists(dirname):
-            logger.debug("Found %s", dirname)
+            print("Found %s" % dirname)
             dirnames.append(dirname)
         else:
-            logger.debug("Skipping non-existent %s", dirname)
+            print("Skipping non-existent %s" % dirname)
 
     return dirnames
 
@@ -242,14 +242,14 @@ def get_input_fx_dirnames(variable, rootpath, drs):
 
 
 def _get_filename_glob(variable, drs):
-    input_file = _select_drs('input_file', drs, variable['project'])
-    filename = replace_tags(input_file, variable)[0]
+    path_template = _select_drs('input_file', drs, variable['project'])
+    filename = replace_tags(path_template, variable)[0]
     return filename
 
 
 def _get_fx_filename_glob(variable, drs, fx_var):
-    input_file = _select_drs('fx_file', drs, variable['project'])
-    filename = replace_tags(input_file, variable, fx_var=fx_var)[0]
+    path_template = _select_drs('fx_file', drs, variable['project'])
+    filename = replace_tags(path_template, variable, fx_var=fx_var)[0]
     return filename
 
 

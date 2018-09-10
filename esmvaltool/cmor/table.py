@@ -25,7 +25,7 @@ def read_cmor_tables(cfg_developer):
         Parsed config-developer file
 
     """
-    for table in cfg_developer.keys():
+    for table in cfg_developer:
         project = cfg_developer[table]
 
         table_path = project.get('cmor_tables', '')
