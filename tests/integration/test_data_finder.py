@@ -31,11 +31,11 @@ def print_path(path):
 def tree(path):
     """Print path, similar to the the `tree` command."""
     print_path(path)
-    for root, dirnames, filenames in os.walk(path):
+    for dirpath, dirnames, filenames in os.walk(path):
         for dirname in dirnames:
-            print_path(os.path.join(root, dirname))
+            print_path(os.path.join(dirpath, dirname))
         for filename in filenames:
-            print_path(os.path.join(root, filename))
+            print_path(os.path.join(dirpath, filename))
 
 
 def create_file(filename):
@@ -96,7 +96,7 @@ def test_get_input_fx_filelist(root, cfg):
 
     # Test result
     reference = {
-        fx_var: os.path.join(root, filename)
+        fx_var: os.path.join(root, filename) if filename else None
         for fx_var, filename in cfg['found_files'].items()
     }
     assert fx_files == reference

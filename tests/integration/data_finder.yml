@@ -22,6 +22,10 @@ get_input_filelist:
     found_files:
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
 
+  - drs: default
+    variable: *variable
+    found_files: []
+
   - drs: BADC
     variable:
       <<: *variable
@@ -76,6 +80,14 @@ get_input_fx_filelist:
       sftof: sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
       thkcello: thkcello_fx_HadGEM2-ES_historical_r0i0p0.nc
       volcello: volcello_fx_HadGEM2-ES_historical_r0i0p0.nc
+
+  - drs: default
+    variable:
+      <<: *variable
+      fx_files:
+        - sftof
+    found_files:
+      sftof: null
 
   - drs: BADC
     variable:

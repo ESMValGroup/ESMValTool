@@ -94,7 +94,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, fx_var=None):
+def _replace_tags(path, variable, fx_var=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -205,53 +205,22 @@ def _get_dirnames(input_type, variable, rootpath, drs, fx_var=None):
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in replace_tags(path_template, variable, fx_var):
+    for dirname_template in _replace_tags(path_template, variable, fx_var):
         dirname_template = os.path.join(root, dirname_template)
         dirname = _resolve_latestversion(dirname_template)
         if os.path.exists(dirname):
-            print("Found %s" % dirname)
+            logger.debug("Found %s", dirname)
             dirnames.append(dirname)
         else:
-            print("Skipping non-existent %s" % dirname)
+            logger.debug("Skipping non-existent %s", dirname)
 
     return dirnames
 
 
-def get_input_dirnames(variable, rootpath, drs):
-    """Return a the full paths to input directories."""
-    return _get_dirnames('input_dir', variable, rootpath, drs)
-
-
-def get_input_fx_dirnames(variable, rootpath, drs):
-    """Return a the full paths to fx file directories."""
-    dirnames = []
-    for fx_var in variable['fx_files']:
-        # Need to reassign the mip so we can find sftlf/of
-        # make a copy of variable -> new_variable for this
-        new_variable = dict(variable)
-        new_variable['mip'] = replace_mip_fx(fx_var)
-        table = CMOR_TABLES[new_variable['cmor_table']].get_table(
-            new_variable['mip'])
-        new_variable['frequency'] = table.frequency
-        realm = getattr(
-            table.get(variable['short_name']), 'modeling_realm', None)
-        new_variable['modeling_realm'] = realm if realm else table.realm
-        print(new_variable)
-        dirnames.extend(
-            _get_dirnames('fx_dir', new_variable, rootpath, drs, fx_var))
-
-    return dirnames
-
-
-def _get_filename_glob(variable, drs):
-    path_template = _select_drs('input_file', drs, variable['project'])
-    filename = replace_tags(path_template, variable)[0]
-    return filename
-
-
-def _get_fx_filename_glob(variable, drs, fx_var):
-    path_template = _select_drs('fx_file', drs, variable['project'])
-    filename = replace_tags(path_template, variable, fx_var=fx_var)[0]
+def _get_filename_glob(input_type, variable, drs, fx_var=None):
+    """Return a pattern that can be used to look for input files."""
+    path_template = _select_drs(input_type, drs, variable['project'])
+    filename = _replace_tags(path_template, variable, fx_var)[0]
     return filename
 
 
@@ -259,11 +228,10 @@ def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     logger.debug("Looking for input files for variable %s for dataset %s",
                  variable['short_name'], variable['dataset'])
-    dirnames = get_input_dirnames(variable, rootpath, drs)
-    filename_glob = _get_filename_glob(variable, drs)
+    dirnames = _get_dirnames('input_dir', variable, rootpath, drs)
+    filename_glob = _get_filename_glob('input_file', variable, drs)
 
     files = find_files(dirnames, filename_glob)
-    # Select files within the required time interval
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
 
@@ -271,17 +239,20 @@ def get_input_filelist(variable, rootpath, drs):
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     fx_files = {}
-    dirnames = get_input_fx_dirnames(variable, rootpath, drs)
     for fx_var in variable['fx_files']:
         logger.debug("Looking for fx_files files of type %s for dataset %s",
                      fx_var, variable['dataset'])
-        filename_glob = _get_fx_filename_glob(variable, drs, fx_var)
+        var = dict(variable)
+        var['mip'] = replace_mip_fx(fx_var)
+        table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
+        var['frequency'] = table.frequency
+        realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
+        var['modeling_realm'] = realm if realm else table.realm
+
+        dirnames = _get_dirnames('fx_dir', var, rootpath, drs, fx_var)
+        filename_glob = _get_filename_glob('fx_file', var, drs, fx_var)
         files = find_files(dirnames, filename_glob)
-        if not files:
-            fx_files[fx_var] = None
-        else:
-            # Keep only the first entry
-            fx_files[fx_var] = files[0]
+        fx_files[fx_var] = files[0] if files else None
 
     return fx_files
 
@@ -293,7 +264,7 @@ def get_output_file(variable, preproc_dir):
     outfile = os.path.join(
         preproc_dir,
         '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        replace_tags(cfg['output_file'], variable)[0] + '.nc')
+        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
 
     return outfile
 
