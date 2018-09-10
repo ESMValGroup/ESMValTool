@@ -6,11 +6,15 @@ import pytest
 import yaml
 
 import esmvaltool._config
-from esmvaltool._data_finder import get_input_filelist
+from esmvaltool._data_finder import get_input_filelist, get_input_fx_filelist
+from esmvaltool.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
 esmvaltool._config.CFG = esmvaltool._config.read_config_developer_file()
+# Initialzie CMOR tables
+read_cmor_tables(esmvaltool._config.CFG)
 
+# Load test configuration
 with open(os.path.join(os.path.dirname(__file__), 'data_finder.yml')) as file:
     CONFIG = yaml.safe_load(file)
 
@@ -44,6 +48,16 @@ def create_file(filename):
         pass
 
 
+def create_tree(path, filenames=None, symlinks=None):
+    """Create directory structure and files."""
+    for filename in filenames or []:
+        create_file(os.path.join(path, filename))
+
+    for symlink in symlinks or []:
+        link_name = os.path.join(path, symlink['link_name'])
+        os.symlink(symlink['target'], link_name)
+
+
 @pytest.fixture
 def root():
     dirname = tempfile.mkdtemp()
@@ -56,13 +70,8 @@ def root():
 @pytest.mark.parametrize('cfg', CONFIG['get_input_filelist'])
 def test_get_input_filelist(root, cfg):
 
-    # Create directory structure and files
-    for filename in cfg.get('available_files', []):
-        create_file(os.path.join(root, filename))
-
-    for symlink in cfg.get('available_symlinks', {}):
-        link_name = os.path.join(root, symlink['link_name'])
-        os.symlink(symlink['target'], link_name)
+    create_tree(root, cfg.get('available_files'),
+                cfg.get('available_symlinks'))
 
     # Find files
     rootpath = {cfg['variable']['project']: root}
@@ -72,3 +81,22 @@ def test_get_input_filelist(root, cfg):
     # Test result
     reference = [os.path.join(root, file) for file in cfg['found_files']]
     assert sorted(input_filelist) == sorted(reference)
+
+
+@pytest.mark.parametrize('cfg', CONFIG['get_input_fx_filelist'])
+def test_get_input_fx_filelist(root, cfg):
+
+    create_tree(root, cfg.get('available_files'),
+                cfg.get('available_symlinks'))
+
+    # Find files
+    rootpath = {cfg['variable']['project']: root}
+    drs = {cfg['variable']['project']: cfg['drs']}
+    fx_files = get_input_fx_filelist(cfg['variable'], rootpath, drs)
+
+    # Test result
+    reference = {
+        fx_var: os.path.join(root, filename)
+        for fx_var, filename in cfg['found_files'].items()
+    }
+    assert fx_files == reference

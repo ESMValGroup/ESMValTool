@@ -6,6 +6,7 @@ get_input_filelist:
       short_name: ta
       dataset: HadGEM2-ES
       project: CMIP5
+      cmor_table: CMIP5
       institute: [INPE, MOHC]
       frequency: mon
       modeling_realm: [atmos]
@@ -39,3 +40,53 @@ get_input_filelist:
     found_files:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/latest/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/latest/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+
+get_input_fx_filelist:
+  - drs: default
+    variable:
+      <<: *variable
+      fx_files:
+        - areacella
+        - areacello
+        - basin
+        - deptho
+        - orog
+        - sftlf
+        - sftof
+        - thkcello
+        - volcello
+    available_files:
+      - sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - areacella_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - areacello_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - basin_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - deptho_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - orog_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - sftlf_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - thkcello_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - volcello_fx_HadGEM2-ES_historical_r0i0p0.nc
+    found_files:
+      areacella: areacella_fx_HadGEM2-ES_historical_r0i0p0.nc
+      areacello: areacello_fx_HadGEM2-ES_historical_r0i0p0.nc
+      basin: basin_fx_HadGEM2-ES_historical_r0i0p0.nc
+      deptho: deptho_fx_HadGEM2-ES_historical_r0i0p0.nc
+      orog: orog_fx_HadGEM2-ES_historical_r0i0p0.nc
+      sftlf: sftlf_fx_HadGEM2-ES_historical_r0i0p0.nc
+      sftof: sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
+      thkcello: thkcello_fx_HadGEM2-ES_historical_r0i0p0.nc
+      volcello: volcello_fx_HadGEM2-ES_historical_r0i0p0.nc
+
+  - drs: BADC
+    variable:
+      <<: *variable
+      fx_files:
+        - sftof
+    available_files:
+      - MOHC/HadGEM2-ES/historical/fx/ocean/fx/r0i0p0/v20120215/sftof/sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
+      - MOHC/HadGEM2-ES/historical/fx/ocean/fx/r0i0p0/v20130612/sftof/sftof_fx_HadGEM2-ES_historical_r0i0p0.nc
+    available_symlinks:
+      - link_name: MOHC/HadGEM2-ES/historical/fx/ocean/fx/r0i0p0/latest
+        target: v20130612
+    found_files:
+      sftof: MOHC/HadGEM2-ES/historical/fx/ocean/fx/r0i0p0/latest/sftof/sftof_fx_HadGEM2-ES_historical_r0i0p0.nc

@@ -83,25 +83,24 @@ class CMIP6Info(object):
             raw_data = json.loads(inf.read())
             if not self._is_table(raw_data):
                 return
+            table = TableInfo()
             header = raw_data['Header']
-            name = header['table_id'][6:]
-            self.tables[name] = {}
+            table.name = header['table_id'][6:]
+            self.tables[table.name] = table
 
             generic_levels = header['generic_levels'].split()
-            if 'frequency' in header:
-                frequency = header['frequency']
-            else:
-                frequency = None
+            table.frequency = header.get('frequency', '')
+            table.realm = header.get('realm', '')
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo('CMIP6', var_name)
                 if 'frequency' in var_data:
                     var.frequency = var_data['frequency']
                 else:
-                    var.frequency = frequency
+                    var.frequency = table.frequency
                 var.read_json(var_data)
                 self._assign_dimensions(var, generic_levels)
-                self.tables[name][var_name] = var
+                table[var_name] = var
 
     def _assign_dimensions(self, var, generic_levels):
         for dimension in var.dimensions:
@@ -128,6 +127,24 @@ class CMIP6Info(object):
                     coord = CoordinateInfo(coord_name)
                     coord.read_json(table_data['axis_entry'][coord_name])
                     self.coords[coord_name] = coord
+
+    def get_table(self, table):
+        """
+        Search and return the table info
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+
+        Returns
+        -------
+        TableInfo
+            Return the TableInfo object for the requested table is
+            found, returns None if not
+
+        """
+        return self.tables.get(table)
 
     def get_variable(self, table, short_name):
         """
@@ -162,6 +179,14 @@ class CMIP6Info(object):
         if 'Header' not in table_data:
             return False
         return True
+
+
+class TableInfo(dict):
+    def __init__(self, *args, **kwargs):
+        super(TableInfo, self).__init__(*args, **kwargs)
+        self.name = ''
+        self.frequency = ''
+        self.realm = ''
 
 
 class JsonInfo(object):
@@ -384,14 +409,18 @@ class CMIP5Info(object):
 
     def _load_table(self, table_file, table_name='', frequency=''):
         with open(table_file) as self._current_table:
+            table = TableInfo()
+            table.name = table_name
+            table.frequency = frequency
             self._read_line()
             while True:
                 key, value = self._last_line_read
                 if key == 'table_id':
-                    table_name = value[len('Table '):]
-                    self.tables[table_name] = {}
+                    table.name = value[len('Table '):]
                 elif key == 'frequency':
-                    frequency = value
+                    table.frequency = value
+                elif key == 'modeling_realm':
+                    table.realm = value
                 elif key == 'generic_levels':
                     for dim in value.split(' '):
                         coord = CoordinateInfo(dim)
@@ -403,12 +432,13 @@ class CMIP5Info(object):
                     continue
                 elif key == 'variable_entry':
                     variable = self._read_variable(value)
-                    variable.frequency = frequency
+                    variable.frequency = table.frequency
                     for dim in variable.dimensions:
                         variable.coordinates[dim] = self.coords[dim]
-                    self.tables[table_name][value] = variable
+                    table[value] = variable
                     continue
                 if not self._read_line():
+                    self.tables[table.name] = table
                     return
 
     def add_custom_table_file(self, table_file, table_name):
@@ -470,6 +500,24 @@ class CMIP5Info(object):
                 setattr(var, key, value)
         return var
 
+    def get_table(self, table):
+        """
+        Search and return the table info
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+
+        Returns
+        -------
+        TableInfo
+            Return the TableInfo object for the requested table is
+            found, returns None if not
+
+        """
+        return self.tables.get(table)
+
     def get_variable(self, table, short_name):
         """
         Search and return the variable info
@@ -484,11 +532,8 @@ class CMIP5Info(object):
         Returns
         -------
         VariableInfo
-            Return the VariableInfo object for the requested variable if
+            Return the VariableInfo object for the requested variable is
             found, returns None if not
 
         """
-        try:
-            return self.tables[table][short_name]
-        except KeyError:
-            return None
+        return self.tables.get(table, {}).get(short_name)

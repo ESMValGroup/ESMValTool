@@ -197,7 +197,7 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _get_dirnames(input_type, variable, rootpath, drs):
+def _get_dirnames(input_type, variable, rootpath, drs, fx_var=None):
     """Return a the full paths to input directories of input_type."""
     project = variable['project']
 
@@ -205,7 +205,7 @@ def _get_dirnames(input_type, variable, rootpath, drs):
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in replace_tags(path_template, variable):
+    for dirname_template in replace_tags(path_template, variable, fx_var):
         dirname_template = os.path.join(root, dirname_template)
         dirname = _resolve_latestversion(dirname_template)
         if os.path.exists(dirname):
@@ -225,18 +225,20 @@ def get_input_dirnames(variable, rootpath, drs):
 def get_input_fx_dirnames(variable, rootpath, drs):
     """Return a the full paths to fx file directories."""
     dirnames = []
-    for fx_file in variable['fx_files']:
+    for fx_var in variable['fx_files']:
         # Need to reassign the mip so we can find sftlf/of
         # make a copy of variable -> new_variable for this
         new_variable = dict(variable)
-        new_variable['mip'] = replace_mip_fx(fx_file)
-        table_entry = CMOR_TABLES[new_variable['cmor_table']].get_variable(
-            new_variable['mip'], new_variable['short_name'])
-        for key in ('modeling_realm', 'frequency'):
-            value = getattr(table_entry, key, None)
-            if value is not None:
-                new_variable[key] = value
-        dirnames.extend(_get_dirnames('fx_dir', new_variable, rootpath, drs))
+        new_variable['mip'] = replace_mip_fx(fx_var)
+        table = CMOR_TABLES[new_variable['cmor_table']].get_table(
+            new_variable['mip'])
+        new_variable['frequency'] = table.frequency
+        realm = getattr(
+            table.get(variable['short_name']), 'modeling_realm', None)
+        new_variable['modeling_realm'] = realm if realm else table.realm
+        print(new_variable)
+        dirnames.extend(
+            _get_dirnames('fx_dir', new_variable, rootpath, drs, fx_var))
 
     return dirnames
 
