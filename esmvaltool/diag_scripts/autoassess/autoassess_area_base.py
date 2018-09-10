@@ -101,26 +101,33 @@ def _make_concatenated_data_dirs(suite_locs, area):
     return suites_locations, supermeans_locations
 
 
-def _get_filelists(cfg):
-    """Put files in lists and return them"""
-    # set the additional_metrics parameter
-    additional_metrics = False
-    additional_metrics_dict = {}  # dict keyed on additional models
-    if 'additional_metrics' in cfg:
-        if cfg['additional_metrics']:
-            additional_metrics = True
-            for new_metric in cfg['additional_metrics']:
-                additional_metrics_dict[new_metric] = []
-    metrics_dict = {}  # dict keyed on control and experiment models
+def _setup_data_dict(cfg):
+    """Set a dictionary to hold data"""
+    metrics_dict = {}  # dict keyed on daatasets for metrics
     metrics_dict['control_model'] = []
     metrics_dict['exp_model'] = []
 
-    # figure out obs's
-    obs_list = []  # list to hold all needed OBS files
+    # set the additional_metrics parameter
+    additional_metrics = False
+    if 'additional_metrics' in cfg:
+        if cfg['additional_metrics']:
+            additional_metrics = True
+            for add_mod in cfg['additional_metrics']:
+                metrics_dict[add_mod] = []
+
+    # set obs's
     obs_types = None
     if 'obs_models' in cfg:
         if cfg['obs_models']:
             obs_types = cfg['obs_models']
+
+    return metrics_dict, additional_metrics, obs_types
+
+
+def _get_filelists(cfg):
+    """Put files in dict(lists) and return them"""
+    metrics_dict, additional_metrics, obs_types = _setup_data_dict(cfg)
+    obs_list = []
 
     for filename, attributes in cfg['input_data'].items():
         base_file = os.path.basename(filename)
@@ -137,11 +144,15 @@ def _get_filelists(cfg):
                     attributes['fx_files'][cfg['fx']])
         if additional_metrics and base_file.split(
                 '_')[1] in cfg['additional_metrics']:
-            additional_metrics_dict[base_file.split('_')[1]].append(
+            metrics_dict[base_file.split('_')[1]].append(
                 fullpath_file)
+            if 'fx_files' in attributes:
+                metrics_dict[base_file.split('_')[1]].append(
+                    attributes['fx_files'][cfg['fx']])
         if obs_types and base_file.split('_')[1] in obs_types:
             obs_list.append(fullpath_file)
-    return metrics_dict, additional_metrics_dict, obs_list
+
+    return metrics_dict, obs_list
 
 
 def _process_obs(cfg, obs_list, obs_loc):
@@ -257,19 +268,18 @@ def _setup_input(cfg):
     tmp_dir, ancil_dir = _make_tmp_dir(cfg)
 
     # get files lists
-    metrics_dict, additional_metrics_dict, obs_list = _get_filelists(cfg)
+    metrics_dict, obs_list = _get_filelists(cfg)
 
     # spell out the files used
     logger.info("Files for control model for metrics: %s",
                 metrics_dict['control_model'])
     logger.info("Files for exp model for metrics: %s",
                 metrics_dict['exp_model'])
-    logger.info("Files for additional metrics: %s", additional_metrics_dict)
+    logger.info("Files for ALL metrics: %s", metrics_dict)
     logger.info("Files for obs model NOT for metrics: %s", obs_list)
-    all_metrics_files = {**metrics_dict, **additional_metrics_dict}
 
     # load and save control and exp cubelists
-    all_cubelists = _process_metrics_data(all_metrics_files, suites, smeans)
+    all_cubelists = _process_metrics_data(metrics_dict, suites, smeans)
 
     # print the paths
     logger.info("Saved control data cubes: %s", str(all_cubelists))
