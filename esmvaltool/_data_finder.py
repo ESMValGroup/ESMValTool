@@ -197,11 +197,12 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _get_dirnames(input_type, variable, rootpath, drs, fx_var=None):
-    """Return a the full paths to input directories of input_type."""
+def _find_input_dirs(variable, rootpath, drs, fx_var=None):
+    """Return a the full paths to input directories."""
     project = variable['project']
 
     root = get_rootpath(rootpath, project)
+    input_type = 'input_{}dir'.format('fx_' if fx_var else '')
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
@@ -217,31 +218,37 @@ def _get_dirnames(input_type, variable, rootpath, drs, fx_var=None):
     return dirnames
 
 
-def _get_filename_glob(input_type, variable, drs, fx_var=None):
+def _get_filename_glob(variable, drs, fx_var=None):
     """Return a pattern that can be used to look for input files."""
+    input_type = 'input_{}file'.format('fx_' if fx_var else '')
     path_template = _select_drs(input_type, drs, variable['project'])
-    filename = _replace_tags(path_template, variable, fx_var)[0]
-    return filename
+    filename_glob = _replace_tags(path_template, variable, fx_var)[0]
+    return filename_glob
+
+
+def _find_input_files(variable, rootpath, drs, fx_var=None):
+    logger.debug("Looking for input %sfiles for variable %s of dataset %s",
+                 fx_var + ' fx ' if fx_var else '', variable['short_name'],
+                 variable['dataset'])
+
+    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
+    filename_glob = _get_filename_glob(variable, drs, fx_var)
+    files = find_files(input_dirs, filename_glob)
+
+    return files
 
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    logger.debug("Looking for input files for variable %s for dataset %s",
-                 variable['short_name'], variable['dataset'])
-    dirnames = _get_dirnames('input_dir', variable, rootpath, drs)
-    filename_glob = _get_filename_glob('input_file', variable, drs)
-
-    files = find_files(dirnames, filename_glob)
+    files = _find_input_files(variable, rootpath, drs)
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
 
 
 def get_input_fx_filelist(variable, rootpath, drs):
-    """Return the full path to input files."""
+    """Return a dict with the full path to fx input files."""
     fx_files = {}
     for fx_var in variable['fx_files']:
-        logger.debug("Looking for fx_files files of type %s for dataset %s",
-                     fx_var, variable['dataset'])
         var = dict(variable)
         var['mip'] = replace_mip_fx(fx_var)
         table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
@@ -249,9 +256,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
         var['modeling_realm'] = realm if realm else table.realm
 
-        dirnames = _get_dirnames('fx_dir', var, rootpath, drs, fx_var)
-        filename_glob = _get_filename_glob('fx_file', var, drs, fx_var)
-        files = find_files(dirnames, filename_glob)
+        files = _find_input_files(var, rootpath, drs, fx_var)
         fx_files[fx_var] = files[0] if files else None
 
     return fx_files
