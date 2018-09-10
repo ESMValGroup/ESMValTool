@@ -30,8 +30,8 @@
 ---
 
 datasets:
-  - {dataset: IPSL-CM5A-LR, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: IPSL-CM5A-LR, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: MIROC5, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i0p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MIROC5, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i0p1,  start_year: 2006,  end_year: 2026}
   #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
   #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
@@ -40,7 +40,7 @@ datasets:
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: MIROC5
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -49,7 +49,7 @@ diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      tasmax:
+      psl:
         preprocessor: preproc
         mip: day
         field: T2M

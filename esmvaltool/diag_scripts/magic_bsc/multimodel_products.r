@@ -46,7 +46,6 @@ dir.create(work_dir, recursive = TRUE)
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
-
 model_names <- unique(unlist(unname(model_names)))
 
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
@@ -60,40 +59,13 @@ anomaly_class <- params$anomaly_class
 climatology_files <- which(unname(experiment) == as.character(climatology_class))
 anomaly_files <- which(unname(experiment) == as.character(anomaly_class))
 
-#model_names <-  lapply(input_files_per_var, function(x) x$model)
-#model_names <- unlist(unname(model_names))[anomaly_files]
-
-#start_climatology <- lapply(input_files_per_var, function(x) x$start_year)
-#start_climatology <- c(unlist(unname(start_climatology))[climatology_files])[1]
-#end_climatology <- lapply(input_files_per_var, function(x) x$end_year)
-#end_climatology <- c(unlist(unname(end_climatology))[climatology_files])[1]
-
-#start_anomaly <- lapply(input_files_per_var, function(x) x$start_year)
-#start_anomaly <- c(unlist(unname(start_anomaly))[anomaly_files])[1]
-#end_anomaly <- lapply(input_files_per_var, function(x) x$end_year)
-#end_anomaly <- c(unlist(unname(end_anomaly))[anomaly_files])[1]
 
 agreement_threshold <- params$agreement_threshold
-
-
-
 start_climatology <- params$climatology_start_year
 end_climatology <- params$climatology_end_year
 start_anomaly <- params$anomaly_start_year
 end_anomaly <- params$anomaly_end_year
-
-print(start_climatology)
-print(end_climatology)
-print(start_anomaly)
-print(end_anomaly)
-
-
-
 font_size <- 12
-
-## Do not print warnings
-#options(warn=-1)
-
 #Parameters for Season() function
 monini <- params$monini
 moninf <- params$moninf
@@ -240,7 +212,9 @@ month <- moninf
  month <- c("-01-", "-02-", "-03-", "-04-", "-05-", "-06-", "-07-", "-08-", "-09-", "-10-", "-11-", "-12-")
  time <- as.POSIXct(paste0(time, month, day), tz = "CET")
 }
-
+print("MES")
+print(month)
+print(time)
 
 
 attributes(time) <- NULL

@@ -173,7 +173,7 @@ PlotLayout(PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
                     axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
 		            brks = seq(-1 *lim, lim, by = lim / 10),
                     #bar_extra_labels = c(2, 0, 0, 0),
-	    fileout = paste0(plot_dir, '/', frequency, 'observed_regimes.png'))
+	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_observed_regimes.png'))
 
 
 # -------------------------------
@@ -292,7 +292,7 @@ PlotLayout(PlotEquiMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
            filled.continents = F,
            axelab = F, draw_separators = T, subsampleg = 1,
 	       brks = seq(-1 * lim, lim, by = lim / 10),
-	    fileout = paste0(plot_dir, '/', frequency, 'predicted_regimes.png'))
+	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'))
 
 # -------------------------------
 ## Save the WR_exp output to ncdf
