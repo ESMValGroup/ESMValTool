@@ -13,7 +13,7 @@ import os
 logger = logging.getLogger(__name__)
 
 CMOR_TABLES = {}
-"""dict of str, obj: CMOR info objects"""
+"""dict of str, obj: CMOR info objects."""
 
 
 def read_cmor_tables(cfg_developer):
@@ -182,9 +182,8 @@ class CMIP6Info(object):
 
 
 class TableInfo(dict):
-    """Container class for storing a CMOR table."""
-
     def __init__(self, *args, **kwargs):
+        """Container class for storing a CMOR table."""
         super(TableInfo, self).__init__(*args, **kwargs)
         self.name = ''
         self.frequency = ''
