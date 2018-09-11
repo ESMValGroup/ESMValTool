@@ -19,8 +19,8 @@ import re
 import datetime
 from datetime import timedelta as td
 from datetime import datetime as dd
-import cf_units
 
+import cf_units
 import iris
 import iris.coord_categorisation as coord_cat
 
@@ -46,10 +46,10 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """Season a period of 3 mths, ie at least 89 days, and up to 92 days."""
+    """Season is 3 months, i.e. at least 89 days, and up to 92 days."""
     def is_season(bound):
         """Check if season"""
-        time_span = td(hours=(bound[1] - bound[0]))
+        time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
     return all([is_season(bound) for bound in cube.coord('time').bounds])
@@ -59,7 +59,7 @@ def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
     def is_year(bound):
         """Check if year"""
-        time_span = td(hours=(bound[1] - bound[0]))
+        time_span = td(days=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
     return all([is_year(bound) for bound in cube.coord('time').bounds])
@@ -111,6 +111,47 @@ def select_by_variable_name(cubes, variable_name):
     return cubes.extract(constraint)
 
 
+# get the seasonal mean
+def seasonal_mean(mycube):
+    """
+    Function to compute seasonal means with MEAN
+
+    Chunks time in 3-month periods and computes means over them;
+    Returns a cube
+    """
+    if 'clim_season' not in mycube.coords():
+        coord_cat.add_season(mycube, 'time', name='clim_season')
+    if 'season_year' not in mycube.coords():
+        coord_cat.add_season_year(mycube, 'time', name='season_year')
+    annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
+                                                iris.analysis.MEAN)
+
+    def spans_three_months(time):
+        """Check for three months"""
+        return (time.bound[1] - time.bound[0]) == 90  # days
+
+    three_months_bound = iris.Constraint(time=spans_three_months)
+    return annual_seasonal_mean.extract(three_months_bound)
+
+
+# get annual mean
+def annual_mean(mycube):
+    """
+    Function to compute annual mean with MEAN
+
+    Chunks time in 365-day periods and computes means over them;
+    Returns a cube
+    """
+    yr_mean = mycube.aggregated_by('year', iris.analysis.MEAN)
+
+    def spans_year(time):
+        """Check for 12 months"""
+        return (time.bound[1] - time.bound[0]) == 365
+
+    t_bound = iris.Constraint(time=spans_year)
+    return yr_mean.extract(t_bound)
+
+
 def select_by_averaging_period(cubes, averaging_period):
     """
     Select subset from CubeList depending on averaging period.
@@ -129,9 +170,20 @@ def select_by_averaging_period(cubes, averaging_period):
         'seasonal': is_seasonal,
         'annual': is_yearly
     }
-    selected_cubes = [
-        cube for cube in cubes if select_period[averaging_period](cube)
-    ]
+    if averaging_period == 'seasonal':
+        selected_cubes = [
+            cube for cube in cubes
+            if select_period[averaging_period](seasonal_mean(cube))
+        ]
+    elif averaging_period == 'annual':
+        selected_cubes = [
+            cube for cube in cubes
+            if select_period[averaging_period](annual_mean(cube))
+        ]
+    else:
+        selected_cubes = [
+            cube for cube in cubes if select_period[averaging_period](cube)
+        ]
     return iris.cube.CubeList(selected_cubes)
 
 
@@ -198,8 +250,9 @@ def select_by_processing(cubes, lbproc):
 
 def select_by_initial_meaning_period(cubes, lbtim):
     """
-    Select subset from CubeList by matching the some of the information
+    Select cube
 
+    Select subset from CubeList by matching the some of the information
     encoded in the 'Time indicator' `lbtim`. Namely, the initial meaning
     period and the used calendar.
 
@@ -228,12 +281,12 @@ def select_by_initial_meaning_period(cubes, lbtim):
 
     selected_cubes = iris.cube.CubeList()
     for lbtim in lbtims:
-        IA, IB, IC = str(lbtim)[:]  # pylint: disable=unused-variable
-        # IA - time interval in hours between the individual fields from which
-        #      the mean was calculated
-        # IB - = 2 if the field is a time mean between T1 and T2, or represents
-        #          a sequence of times between T1 and T2.
-        # IC - = 1 if the Proleptic Gregorian calendar is used for T1 and T2.
+        i_a, i_b, i_c = str(lbtim)[:]
+        # i_a - time interval in hours between the individual fields from
+        #      which the mean was calculated
+        # i_b - = 2 if the field is a time mean between T1 and T2, or
+        #          represents a sequence of times between T1 and T2.
+        # i_c - = 1 if the Proleptic Gregorian calendar is used for T1 and T2
         #      = 2 if the '360-day' calendar (i.e. 12 30-day months) is used
         #          for T1 and T2.
 
@@ -241,21 +294,21 @@ def select_by_initial_meaning_period(cubes, lbtim):
             # select by original meaning interval (IA)
             select_meaning_interval = {1: ('1 hour', ), 6: ('6 hour', )}
             if select_meaning_interval[int(
-                    IA)] != cube.cell_methods[0].intervals:
+                    i_a)] != cube.cell_methods[0].intervals:
                 continue
 
             # select by IB
             # Iris cubes have no T1 and T2 attributes, or equivalent
-            # Unclear how to select Iris cubes on IB
-            pass  # pylint: disable=unnecessary-pass
+            # Unclear how to select Iris cubes on I_B
+            # pass
 
-            # select calendar (IC)
+            # select calendar (I_C)
             # see cf_units.CALENDARS for possible cube calendars
             select_calendar = {
-                1: 'gregorian',  # does iris distinguish between
+                1: 'gregorian',  # TODO does iris distinguish between
                 2: '360_day'
             }  # proleptic_greorian and gregorian?
-            if select_calendar[int(IC)] == cube.coord('time').units.calendar:
+            if select_calendar[int(i_c)] == cube.coord('time').units.calendar:
                 selected_cubes.append(cube)
     return selected_cubes
 
@@ -274,9 +327,7 @@ def select_certain_months(cubes, lbmon):
     # add 'month number' coordinate
     add_time_coord = {
         'monthly': lambda cube: coord_cat.add_month_number(
-            cube,
-            'time',
-            name='month_number'),
+            cube, 'time', name='month_number'),
         'seasonal': lambda cube: coord_cat.add_season(cube,
                                                       'time',
                                                       name='clim_season'),
@@ -325,8 +376,8 @@ def extract_time_range(cubes, start, end):
     t_2 = cf_units.date2num(dd_end, time_unit, cf_units.CALENDAR_STANDARD)
     for cube in cubes:
         time_constraint = iris.Constraint(
-            time=lambda t: (t_1 <=
-                            datetime_to_int_days(t.point, time_unit) <= t_2))
+            time=lambda t: (t_1 <= datetime_to_int_days(t.point,
+                                                        time_unit) <= t_2))
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
     return time_ranged_cubes
@@ -342,9 +393,10 @@ def load_run_ss(run_object,
                 from_dt=None,
                 to_dt=None):
     """
-    Read the CubeList
+    Use - this is still used
 
-    `cubeList.nc` in the directory with the retrieved data.
+    DEPRECATED: Do not use for new Assessment Areas. Instead, read the
+    CubeList `cubeList.nc` in the directory with the retrieved data.
 
     Select a single Cube from the data that was retrieved for a single
     Assessment Area.
