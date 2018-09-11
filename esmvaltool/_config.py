@@ -83,6 +83,7 @@ def _normalize_path(path):
     -------
     str:
         Normalized path
+
     """
     if path is None:
         return None
@@ -148,3 +149,15 @@ def cmip5_mip2realm_freq(mip):
     """Return realm and frequency given the mip in CMIP5."""
     logger.debug("Retrieving realm and frequency for CMIP5 mip %s", mip)
     return CFG['CMIP5']['realm_frequency'][mip]
+
+
+def replace_mip_fx(fx_file):
+    """Replace MIP so to retrieve correct fx files."""
+    default_mip = 'Amon'
+    if fx_file not in CFG['CMIP5']['fx_mip_change']:
+        logger.warning('mip for fx variable %s is not specified in '
+                       'config_developer.yml, using default (%s)',
+                       fx_file, default_mip)
+    new_mip = CFG['CMIP5']['fx_mip_change'].get(fx_file, default_mip)
+    logger.debug("Switching mip for fx file finding to %s", new_mip)
+    return new_mip
