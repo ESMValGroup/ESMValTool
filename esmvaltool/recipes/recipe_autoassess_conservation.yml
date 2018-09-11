@@ -90,7 +90,7 @@ diagnostics:
         area: conservation
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [ERA-Interim]
+        obs_models: []
         # note that there is annual averaging done
         # so dont choose a single year only
         start: 1996/12/01
@@ -102,7 +102,7 @@ diagnostics:
         area: conservation
         control_model: MPI-ESM-LR
         exp_model: inmcm4
-        obs_models: [ERA-Interim]
+        obs_models: []
         # note that there is annual averaging done
         # so dont choose a single year only
         start: 1996/12/01
@@ -120,7 +120,7 @@ diagnostics:
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_cons_test_1']
         title: "Plot Conservation Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Conservation_Metrics"
         diag_tag: aa_cons
         diag_name: autoassess_cons_test_1
       plot_cons_test_2: &plot_cons_test_2_settings
@@ -131,6 +131,6 @@ diagnostics:
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_cons_test_2']
         title: "Plot Conservation Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Conservation_Metrics"
         diag_tag: aa_cons
         diag_name: autoassess_cons_test_2
