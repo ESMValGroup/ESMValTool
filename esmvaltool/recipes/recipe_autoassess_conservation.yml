@@ -1,6 +1,6 @@
 #### summary 
 #### recipe that runs the Autoassess Conservation assessment area diagnostic
-#### Version: 6 June 2018 (D-Day)
+#### Version1: 6 June 2018 (D-Day); updated version: 11 September 2018
 #################
 #### Description:
 #################
@@ -85,9 +85,9 @@ diagnostics:
     ##################
     scripts:
       autoassess_cons_test_1: &autoassess_cons_test_1_settings
-        script: autoassess/autoassess_conservation.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Conservation Diagnostic Metric MPI-MPI"
-        area: Conservation
+        area: conservation
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
@@ -97,9 +97,9 @@ diagnostics:
         end: 2002/12/01
         landocean_masks: '/home/users/valeriu/base_masks_autoassess' 
       autoassess_cons_test_2: &autoassess_cons_test_2_settings
-        script: autoassess/autoassess_conservation.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Conservation Diagnostic Metric MPI-INM"
-        area: Conservation
+        area: conservation
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
@@ -117,22 +117,20 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_conservation.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_cons_test_1']
         title: "Plot Conservation Metrics MPI-MPI"
         plot_name: "Metrics"
         diag_tag: aa_cons
         diag_name: autoassess_cons_test_1
-        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
       plot_cons_test_2: &plot_cons_test_2_settings
         <<: *autoassess_cons_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_conservation.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_cons_test_2']
         title: "Plot Conservation Metrics MPI-MPI"
         plot_name: "Metrics"
         diag_tag: aa_cons
         diag_name: autoassess_cons_test_2
-        plot_title: "MPI-ESM-LR_vs_inmcm4"
