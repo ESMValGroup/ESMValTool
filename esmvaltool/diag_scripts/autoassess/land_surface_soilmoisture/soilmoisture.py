@@ -1,18 +1,15 @@
-"""Module for soil moisture metrics"""
+"""Run module for soil moisture metrics."""
 
 import os
-import sys
-
 import numpy as np
-
 import iris
-
-from .supermeans import get_supermean
+from esmvaltool.preprocessor._regrid import regrid
+from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 
 def land_sm_top(run):
     """
-    Calculate median absolute errors for soil mosture against CCI data
+    Calculate median absolute errors for soil mosture against CCI data.
 
     Arguments:
         run - dictionary containing model run metadata
@@ -22,14 +19,13 @@ def land_sm_top(run):
         metrics - dictionary of metrics names and values
 
     """
-    SUPERMEAN_DATA_DIR = os.path.join(run['data_root'],
-                                      run['runid'],
+    supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
     seasons = ['djf', 'mam', 'jja', 'son']
 
     # Location of climatology
-    clim_sm_dir = os.path.join(run['clim_root'], 'ecv_soil_moisture')
+    clim_sm_dir = os.path.join(run['climfiles_root'], 'ecv_soil_moisture')
 
     # Constants
     # density of water and ice
@@ -45,30 +41,27 @@ def land_sm_top(run):
         clim_file = os.path.join(clim_sm_dir, fname)
         ecv_clim = iris.load_cube(clim_file)
         # correct invalid units
-        if ecv_clim.units == 'unknown' and 'invalid_units' in ecv_clim.attributes:
+        if (ecv_clim.units == 'unknown' and
+                'invalid_units' in ecv_clim.attributes):
             if ecv_clim.attributes['invalid_units'] == 'm^3m^-3':
                 ecv_clim.units = 'm3 m-3'
 
-        # TODO Need to touch data to get it recognised as a Masked Array?
-        ecv_clim.data
-
         # m01s08i223
-        smcl_run = get_supermean(
-                'moisture_content_of_soil_layer',
-                season,
-                SUPERMEAN_DATA_DIR)
+        # standard_name: mrsos
+        smcl_run = get_supermean('moisture_content_of_soil_layer', season,
+                                 supermean_data_dir)
 
-        # m01s08i229
+        # m01s08i229i
+        # standard_name: ???
         sthu_run = get_supermean(
-                'mass_fraction_of_unfrozen_water_in_soil_moisture',
-                season,
-                SUPERMEAN_DATA_DIR)
+            'mass_fraction_of_unfrozen_water_in_soil_moisture', season,
+            supermean_data_dir)
 
         # m01s08i230
+        # standard_name: ??? soil_frozen_water_content - mrfso
         sthf_run = get_supermean(
-                'mass_fraction_of_frozen_water_in_soil_moisture',
-                season,
-                SUPERMEAN_DATA_DIR)
+            'mass_fraction_of_frozen_water_in_soil_moisture', season,
+            supermean_data_dir)
 
         # extract top soil layer
         cubes = [smcl_run, sthu_run, sthf_run]
@@ -97,6 +90,7 @@ def land_sm_top(run):
 
         # update the coordinate system ECV data with a WGS84 coord system
         # TODO: ask Heather why this is needed
+        # TODO: who is Heather?
         ecv_clim.coord('longitude').coord_system = \
             iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
                                       inverse_flattening=298.257223563)
@@ -105,7 +99,9 @@ def land_sm_top(run):
                                       inverse_flattening=298.257223563)
 
         # Interpolate to the grid of the climatology and form the difference
-        dff = vol_sm1_run.regrid(ecv_clim, iris.analysis.Linear()) - ecv_clim
+        vol_sm1_run = regrid(vol_sm1_run, ecv_clim, 'linear')
+        # diff the cubes
+        dff = vol_sm1_run - ecv_clim
 
         # Remove NaNs from data before aggregating statistics
         dff.data = np.ma.masked_invalid(dff.data)

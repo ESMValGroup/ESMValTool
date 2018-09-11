@@ -1,0 +1,65 @@
+#### summary 
+#### recipe that runs the Autoassess Land-surface assessment area diagnostic
+#### Version: 11 Spetember 2018 
+#### Author: V. Predoi UREAD (valeriu.predoi@ncas.ac.uk)
+#################
+#### Description:
+#################
+#it runs:
+#  - soilmoisture
+#################
+#### CAVEATS
+# climatological files need a standard path (on JASMIN)
+# clim: ecv_soil_moisture
+# MISSING variables:
+# mass_fraction_of_unfrozen_water_in_soil_moisture
+# mass_fraction_of_frozen_water_in_soil_moisture
+#################
+###########################################################################################################
+---
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    regrid:  # NOT USED
+      target_grid: 0.15x0.15
+      scheme: linear
+
+diagnostics:
+  aa_landsurf_soilmoisture:
+    description: Autoassess test diag for Land-Surface Soilmoisture.
+    variables:
+      mrsos: # moisture_content_of_soil_layer
+        mip: Lmon
+        field: T2Ms
+      # mass_fraction_of_unfrozen_water_in_soil_moisture
+      # mass_fraction_of_frozen_water_in_soil_moisture
+    scripts:
+      autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
+        area: land_surface_soilmoisture
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: []
+        start: 1997/12/01
+        end: 2002/12/01
+        climfiles_root: '/home/users/valeriu'  # needs to be a widely-available path; needs ecv_soil_moisture
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_landsurf_soilmoisture: &plot_landsurf_soilmoisture_settings
+        <<: *autoassess_landsurf_soilmoisture_settings
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_landsurf_soilmoisture']
+        title: "Plot Land-Surface Soilmoisture Metrics"
+        plot_name: "Soilmoisture_Metrics"
+        diag_tag: aa_landsurf_soilmoisture
+        diag_name: autoassess_landsurf_soilmoisture

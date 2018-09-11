@@ -9,7 +9,7 @@ expected that in the future it will include exact calculations.
 
 import matplotlib.pyplot as plt
 from . import global_water_budget as gwb
-from .loaddata import load_run_ss
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .matplotlib_table import render_mpl_table
 
 

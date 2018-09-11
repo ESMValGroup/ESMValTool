@@ -5,7 +5,7 @@ import os
 import iris
 import numpy as np
 
-from .loaddata import load_run_ss
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .area_utils import area_average
 
 
