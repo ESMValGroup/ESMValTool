@@ -1,13 +1,11 @@
-'''
-Stratospheric age-of-air assessment code
-'''
+"""Stratospheric age-of-air assessment code"""
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 import os
 import matplotlib as mpl
 mpl.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 import iris
 import iris.analysis as iai
-from .loaddata import load_run_ss
 from .strat_metrics_1 import weight_lat_ave
 import warnings
 import numpy as np
@@ -64,7 +62,7 @@ Z2_KM2 = [
 
 
 def calculate_analysis_years(run):
-
+    """Calculate years"""
     # 1) Discard first 10 years of run.
     analysis_start_year = int(run['start']) + 10
     analysis_end_year = int(run['start']) + int(run['nyear'])
@@ -87,10 +85,7 @@ def calculate_analysis_years(run):
 
 
 def age_of_air(run):
-    '''
-    Routine to calculate the age of air metrics
-    '''
-
+    """Calculate the age of air metrics"""
     # Create metrics dictionary with MDI incase age of air
     # diagnostics not available
     metrics = {
@@ -159,13 +154,13 @@ def age_of_air(run):
     return metrics
 
 
-def multi_age_plot(runs):
+def multi_age_plot(run):
     """
+    Plot results
+
     This function is plotting the results of the function age_of_air for each
     run against observations.
     """
-    # TODO avoid running age_of_air twice
-
     # Run age_of_air for each run.
     # Age_of_air returns metrics and writes results into an *.nc in the current
     # working directory.
@@ -176,15 +171,7 @@ def multi_age_plot(runs):
     # return metric values, multi_functions are supposed to
     # only produce plots (see __init__.py).
 
-    # rerun age_of_air for each run
-    for run in runs:
-        _ = age_of_air(run)
-
     ######################################
-
-    # Split up control and experiments
-    run_cntl = runs[0]
-    run_expts = runs[1:]
 
     # Set up constraints to deal with loading data
     trop_cons = iris.Constraint(
@@ -195,13 +182,11 @@ def multi_age_plot(runs):
     # Set up generic input file name
     infile = '{0}_age_of_air_{1}.nc'
 
-    cntlfile = infile.format(run_cntl['runid'], run_cntl.period)
+    # Create control filename
+    cntlfile = infile.format(run['suite_id1'], run['period'])
 
-    # Create experiment filenames
-    exptfiles = dict()
-    for run_expt in run_expts:
-        exptfiles[run_expt.id] = infile.format(run_expt['runid'],
-                                               run_expt.period)
+    # Create experiment filename
+    exptfile = infile.format(run['suite_id2'], run['period'])
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
@@ -229,14 +214,12 @@ def multi_age_plot(runs):
     # Plot control
     diag = iris.load_cube(cntlfile, trop_cons)
     levs = diag.coord('level_height').points
-    plt.plot(diag.data, levs, label=run_cntl.id)
-    # Plot experiments
-    for run_expt in run_expts:
-        exptfile = exptfiles[run_expt.id]
-        if os.path.exists(exptfile):
-            diag = iris.load_cube(exptfile, trop_cons)
-            levs = diag.coord('level_height').points
-            plt.plot(diag.data, levs, label=run_expt.id)
+    plt.plot(diag.data, levs, label=run['suite_id1'])
+    # Plot experiment
+    if os.path.exists(exptfile):
+        diag = iris.load_cube(exptfile, trop_cons)
+        levs = diag.coord('level_height').points
+        plt.plot(diag.data, levs, label=run['suite_id2'])
     ax1.set_title('Tropical mean age profile (10S-10N)')
     ax1.set_xlabel('Mean age (years)')
     ax1.set_ylabel('Height (km)')
@@ -266,14 +249,12 @@ def multi_age_plot(runs):
     # Plot control
     diag = iris.load_cube(cntlfile, midl_cons)
     levs = diag.coord('level_height').points
-    plt.plot(diag.data, levs, label=run_cntl.id)
-    # Plot experiments
-    for run_expt in run_expts:
-        exptfile = exptfiles[run_expt.id]
-        if os.path.exists(exptfile):
-            diag = iris.load_cube(exptfile, midl_cons)
-            levs = diag.coord('level_height').points
-            plt.plot(diag.data, levs, label=run_expt.id)
+    plt.plot(diag.data, levs, label=run['suite_id1'])
+    # Plot experiment
+    if os.path.exists(exptfile):
+        diag = iris.load_cube(exptfile, midl_cons)
+        levs = diag.coord('level_height').points
+        plt.plot(diag.data, levs, label=run['suite_id2'])
     ax1.set_title('Midlatitude mean age profile (35N-45N)')
     ax1.set_xlabel('Mean age (years)')
     ax1.set_ylabel('Height (km)')

@@ -1,9 +1,8 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
-
 """
-(C) Crown Copyright 2017, the Met Office
+Plot autoassess standard metrics
 
+This is a modified version of plot_norm_ac
+Author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 Create normalised assessment criteria plot (NAC plot).
 """
 
@@ -11,14 +10,12 @@ from __future__ import division, print_function
 
 import os
 import os.path
-import sys
-import matplotlib as mpl
-mpl.use('Agg')  # noqa
-import matplotlib.pyplot as plt
-import argparse
 import csv
 import errno
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')  # noqa
+import matplotlib.pyplot as plt
 
 # Define some colours
 BLACK = '#000000'
@@ -41,33 +38,11 @@ FAKELINES = [
     for marker in MARKERS
 ]
 
-# List of TODO:
-#
-#  1) What if we want acceptable range only? i.e. no trusted obs but a
-#     sensible idea of what the range should be.
-#  2) How to get plots to display nicely in matplotlib viewer and non-png
-#     images. Issue is legend external to plot falling off screen.
-
-
-class CommentedFile:
-    '''Class to help deal with comments in CSV files'''
-
-    def __init__(self, f, commentstring="#"):
-        self.f = f
-        self.commentstring = commentstring
-
-    def next(self):
-        line = self.f.next()
-        while line.startswith(self.commentstring):
-            line = self.f.next()
-        return line
-
-    def __iter__(self):
-        return self
-
 
 def merge_obs_acc(obs, acc):
-    '''
+    """
+    Merge observation errors
+
     Routine to merge observational uncertainty and acceptable range
     dictionaries into one dictionary. Returned dictionary will only
     contain metrics from the obs dictionary.
@@ -76,7 +51,7 @@ def merge_obs_acc(obs, acc):
     :param dict acc: Dictonary of acceptable ranges
     :returns: A merge of the obs and acc dictionaries
     :rtype: dict
-    '''
+    """
     metrics = {}
     for metric in obs.keys():
         values = list(obs[metric])
@@ -87,7 +62,9 @@ def merge_obs_acc(obs, acc):
 
 
 def write_order_metrics(csvfile, metrics):
-    '''
+    """
+    Write out ordered metrics
+
     Routine to write out an ordered list of metrics csv file
 
     Not really csv but easily written out by csv package. This is a line by
@@ -96,12 +73,12 @@ def write_order_metrics(csvfile, metrics):
 
     :param str csvfile: CSV file name
     :param list metrics: Ordered list of metrics
-    '''
+    """
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -111,7 +88,9 @@ def write_order_metrics(csvfile, metrics):
 
 
 def write_model_metrics(csvfile, metrics):
-    '''
+    """
+    Write out ordered model metrics
+
     Routine to write out model metrics csv file
 
     An unordered list of metrics with a single value metric that are obtained
@@ -121,12 +100,12 @@ def write_model_metrics(csvfile, metrics):
 
     :param str csvfile: CSV file name
     :param dict metrics: Dictionary containing metric values
-    '''
+    """
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -136,7 +115,9 @@ def write_model_metrics(csvfile, metrics):
 
 
 def write_obs_metrics(csvfile, obs, acc):
-    '''
+    """
+    Write obs
+
     Routine to read in observation metrics csv file
 
     An unordered list of metrics with either 2 or 4 values. The first 2 vals
@@ -151,13 +132,13 @@ def write_obs_metrics(csvfile, obs, acc):
     :param str csvfile: CSV file name
     :param dict obs: Dictonary of observational uncertainties
     :param dict acc: Dictonary of acceptable ranges
-    '''
+    """
     metrics = merge_obs_acc(obs, acc)
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -167,7 +148,9 @@ def write_obs_metrics(csvfile, obs, acc):
 
 
 def read_order_metrics(csvfile, required=False):
-    '''
+    """
+    Read oredred metrics
+
     Routine to read in ordered list of metrics csv file
 
     Not really csv but easily read in by csv package. This is a line by line
@@ -178,13 +161,13 @@ def read_order_metrics(csvfile, required=False):
     :param bool required: If True then raise error if file does not exist
     :returns: An ordered list containing metric names
     :rtype: list
-    '''
+    """
     metrics = []
     if csvfile is not None:
         try:
             inf = open(csvfile, 'rb')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
@@ -192,9 +175,7 @@ def read_order_metrics(csvfile, required=False):
         else:
             with inf:
                 reader = csv.reader(
-                    CommentedFile(inf), delimiter=',', quotechar='"')
-                # TODO: Must be a better way of unpacking data that does not
-                #       rely on testing number of elements on line
+                    inf, delimiter=',', quotechar='"')
                 for row in reader:
                     if len(row) == 1:
                         metrics.append(row[0])
@@ -206,7 +187,9 @@ def read_order_metrics(csvfile, required=False):
 
 
 def read_model_metrics(csvfile, required=False):
-    '''
+    """
+    Read model metrics
+
     Routine to read in model metrics csv file
 
     An unordered list of metrics with a single value metric that are obtained
@@ -218,23 +201,20 @@ def read_model_metrics(csvfile, required=False):
     :param bool required: If True then raise error if file does not exist
     :returns: Dictionary containing metric values
     :rtype: dict
-    '''
+    """
     metrics = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rb')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+            inf = open(csvfile, 'rt')
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(
-                    CommentedFile(inf), delimiter=',', quotechar='"')
-                # TODO: Must be a better way of unpacking data that does not
-                #       rely on testing number of elements on line
+                reader = csv.reader(inf, delimiter=',', quotechar='"')
                 for row in reader:
                     metric = row.pop(0)
                     if len(row) == 1:
@@ -247,7 +227,7 @@ def read_model_metrics(csvfile, required=False):
 
 
 def read_obs_metrics(csvfile, required=False):
-    '''
+    """
     Routine to read in observation metrics csv file
 
     An unordered list of metrics with either 2 or 4 values. The first 2 values
@@ -264,14 +244,14 @@ def read_obs_metrics(csvfile, required=False):
     :returns: A pair of metric dictionaries containing observational
               uncertainties and acceptable ranges
     :rtype: tuple
-    '''
+    """
     obs = {}
     acc = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rb')
-        except IOError as e:
-            if e.errno == errno.EACCES:
+            inf = open(csvfile, 'rt')
+        except IOError as shit:
+            if shit.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
@@ -279,9 +259,7 @@ def read_obs_metrics(csvfile, required=False):
         else:
             with inf:
                 reader = csv.reader(
-                    CommentedFile(inf), delimiter=',', quotechar='"')
-                # TODO: Must be a better way of unpacking data that does not
-                #       rely on testing number of elements on line
+                    inf, delimiter=',', quotechar='"')
                 for row in reader:
                     metric = row.pop(0)
                     # Contrary to documentation, allowing a single entry when
@@ -311,7 +289,7 @@ def read_obs_metrics(csvfile, required=False):
 
 
 def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
-    '''
+    """
     Routine to determine whether to colour metric as:
 
     GREEN = test within observational uncertainty or acceptable range
@@ -333,8 +311,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
     :param tuple acc: Acceptable range as (min, max)
     :returns: Colour to use in plot indicating performance of metric
     :rtype: str
-    '''
-
+    """
     # Default colour to NOOBS_GREY indicating no observational uncertainty
     colour = NOOBS_GREY
 
@@ -392,7 +369,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
 
 
 def metric_colours(test, ref=None, var=None, obs=None, acc=None):
-    '''
+    """
     Routine to loop over metrics and generate list of colours
 
     :param dict test: Dictionary of test metrics
@@ -402,8 +379,7 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     :param dict acc: Dictionary of acceptable ranges as (min, max)
     :returns: Dictionary of colours for test metrics
     :rtype: dict
-    '''
-
+    """
     # initialize
     if ref is None:
         ref = {}
@@ -437,7 +413,7 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
 
 
 def normalise(test, ref, strict=False):
-    '''
+    """
     Routine to normalise contents of test by contents of ref
 
     :param dict test: Dictionary of test metrics
@@ -445,8 +421,7 @@ def normalise(test, ref, strict=False):
     :param bool strict: if True then test and ref must have same metrics
     :returns: Dictionary of normalised test metrics
     :rtype: dict
-    '''
-
+    """
     if strict:
         # Test to make sure reference metrics dictionary contains the same
         # metrics as test metrics dictionary
@@ -471,7 +446,7 @@ def normalise(test, ref, strict=False):
 
 
 def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
-    '''
+    """
     Plot model uncertainty as filled bars about nac=1 line
 
     :param axes ax: ``matplotlib.axes`` to plot data in
@@ -479,8 +454,7 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
     :param dict data: Metrics dictionary
     :param str color: Colour to plot bars
     :param int zorder: Matplotlib plot layer
-    '''
-
+    """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     std = [data[metric] for metric in metrics if metric in data]
@@ -502,7 +476,7 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
 
 
 def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
-    '''
+    """
     Plot obs range as error bars
 
     :param axes ax: ``matplotlib.axes`` to plot data in
@@ -510,8 +484,7 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
     :param dict data: Metrics dictionary
     :param str color: Colour to plot error bars
     :param int zorder: Matplotlib plot layer
-    '''
-
+    """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     obsmin = [data[metric][0] for metric in metrics if metric in data]
@@ -538,7 +511,7 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
 
 
 def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
-    '''
+    """
     Plot metrics using symbols
 
     :param axes ax: ``matplotlib.axes`` to plot data in
@@ -547,8 +520,7 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
     :param dict cols: Metric colours dictionary
     :param str marker: Matplotlib symbol to use in plot
     :param int zorder: Matplotlib plot layer
-    '''
-
+    """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     pdata = [data[metric] for metric in metrics if metric in data]
@@ -571,19 +543,18 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
 
 
 def plot_get_limits(tests, obs, acc, extend_y=False):
-    '''
+    """
     Determine data axis limits
 
     :param list tests: Test experiment metrics dictionary list
     :param dict obs: Observational uncertainty metrics dictionary
     :param dict acc: Acceptable range metrics dictionary
     :param bool extend_y: Extend y-axis to include obs/acc ranges
-    '''
-
+    """
     # Calculate absmax/max/min for experiments
     minval = min([min(test.values()) for test in tests])
     maxval = max([max(test.values()) for test in tests])
-    maxabs = max([abs(x) for x in test.values() for test in tests])
+    maxabs = max([np.abs(list(test.values()))[0] for test in tests])
 
     # If want to extend beyond range of observations
     if extend_y:
@@ -626,7 +597,7 @@ def plot_nac(cref,
              extend_y=False,
              title=None,
              ofile=None):
-    '''
+    """
     Routine to produce NAC plot
 
     :param str cref: Reference experiment name
@@ -640,8 +611,7 @@ def plot_nac(cref,
     :param bool extend_y: Extend y-axis to include obs/acc ranges
     :param str title: Plot title
     :param str ofile: Plot file name
-    '''
-
+    """
     # initialize
     if metrics is None:
         metrics = []
@@ -721,91 +691,6 @@ def plot_nac(cref,
         plt.savefig(ofile, bbox_extra_artists=(legend, ), bbox_inches='tight')
     else:
         # Need the following to attempt to display legend in frame
-        # TODO: Is there a better way of doing this?
         fig.subplots_adjust(right=0.85)
         plt.show()
     plt.close()
-
-
-def parse_args(cli_args):
-    """
-    Parse arguments in a function to facilitate testing. Contains all command
-    line options.
-
-    :param list cli_args: Command line arguments from sys.argv.
-    :returns: Checked command line arguments.
-    :rtype: argparse.Namespace
-    """
-
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument(
-        '--exp',
-        required=True,
-        help='Test experiment names (commma separated)')
-    parser.add_argument(
-        '--ref', required=True, help='Reference experiment name')
-    parser.add_argument(
-        '--file-exp',
-        required=True,
-        help='Experiment metric files (commma separated)')
-    parser.add_argument(
-        '--file-ref', required=True, help='Reference metric file')
-    parser.add_argument('--file-ord', default=None, help='Metric order file')
-    parser.add_argument(
-        '--file-var', default=None, help='Model uncertainty metric file')
-    parser.add_argument(
-        '--file-obs', default=None, help='Observations metric file')
-    parser.add_argument('--plot', default=None, help='Plot file to be created')
-    parser.add_argument('--title', default=None, help='Plot title')
-    parser.add_argument(
-        '--exty',
-        default=False,
-        action='store_true',
-        help='Extend y axis to include observation uncertainties')
-
-    # Return parsed args
-    return parser.parse_args(cli_args)
-
-
-def main():
-    '''Creating plots from existing metrics files at the command line'''
-
-    # Parse script arguments
-    args = parse_args(sys.argv[1:])
-    if args.plot:
-        args.plot = os.path.abspath(args.plot)
-
-    # Check size of experiment inputs
-    expt_files = args.file_exp.split(',')
-    expt_names = args.exp.split(',')
-    assert len(expt_files) == len(expt_names), \
-        'Number of experiments and experiment files must be the same'
-
-    # Read metrics files
-    metrics = read_order_metrics(args.file_ord)
-    ref = read_model_metrics(args.file_ref)
-    tests = [read_model_metrics(expt_file) for expt_file in expt_files]
-    var = read_model_metrics(args.file_var)
-    (obs, acc) = read_obs_metrics(args.file_obs)
-
-    # Produce plot
-    plot_nac(
-        args.ref,
-        expt_names,
-        ref,
-        tests,
-        metrics=metrics,
-        var=var,
-        obs=obs,
-        acc=acc,
-        extend_y=args.exty,
-        title=args.title,
-        ofile=args.plot)
-
-
-if __name__ == '__main__':
-    main()

@@ -14,12 +14,12 @@ available here: https://code.metoffice.gov.uk/doc/um/vn10.5/umdp.html
 
 """
 
-import cf_units
 import os.path
 import re
 import datetime
 from datetime import timedelta as td
 from datetime import datetime as dd
+import cf_units
 
 import iris
 import iris.coord_categorisation as coord_cat
@@ -27,8 +27,8 @@ import iris.coord_categorisation as coord_cat
 
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
-
     def is_day(bound):
+        """Check if day"""
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=1) == time_span
 
@@ -37,8 +37,8 @@ def is_daily(cube):
 
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
-
     def is_month(bound):
+        """Check if month"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31) >= time_span >= td(days=28)
 
@@ -46,11 +46,9 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """
-    A season is a period of 3 months, i.e. at least 89 days, and up to 92 days.
-    """
-
+    """Season a period of 3 mths, ie at least 89 days, and up to 92 days."""
     def is_season(bound):
+        """Check if season"""
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
@@ -59,8 +57,8 @@ def is_seasonal(cube):
 
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
-
     def is_year(bound):
+        """Check if year"""
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
@@ -201,6 +199,7 @@ def select_by_processing(cubes, lbproc):
 def select_by_initial_meaning_period(cubes, lbtim):
     """
     Select subset from CubeList by matching the some of the information
+
     encoded in the 'Time indicator' `lbtim`. Namely, the initial meaning
     period and the used calendar.
 
@@ -253,7 +252,7 @@ def select_by_initial_meaning_period(cubes, lbtim):
             # select calendar (IC)
             # see cf_units.CALENDARS for possible cube calendars
             select_calendar = {
-                1: 'gregorian',  # TODO does iris distinguish between
+                1: 'gregorian',  # does iris distinguish between
                 2: '360_day'
             }  # proleptic_greorian and gregorian?
             if select_calendar[int(IC)] == cube.coord('time').units.calendar:
@@ -274,10 +273,10 @@ def select_certain_months(cubes, lbmon):
     """
     # add 'month number' coordinate
     add_time_coord = {
-        'monthly': lambda cube:
-        coord_cat.add_month_number(cube,
-                                   'time',
-                                   name='month_number'),
+        'monthly': lambda cube: coord_cat.add_month_number(
+            cube,
+            'time',
+            name='month_number'),
         'seasonal': lambda cube: coord_cat.add_season(cube,
                                                       'time',
                                                       name='clim_season'),
@@ -326,8 +325,8 @@ def extract_time_range(cubes, start, end):
     t_2 = cf_units.date2num(dd_end, time_unit, cf_units.CALENDAR_STANDARD)
     for cube in cubes:
         time_constraint = iris.Constraint(
-            time=lambda t:
-            (t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
+            time=lambda t: (t_1 <=
+                            datetime_to_int_days(t.point, time_unit) <= t_2))
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
     return time_ranged_cubes
@@ -343,8 +342,9 @@ def load_run_ss(run_object,
                 from_dt=None,
                 to_dt=None):
     """
-    DEPRECATED: Do not use for new Assessment Areas. Instead, read the
-    CubeList `cubeList.nc` in the directory with the retrieved data.
+    Read the CubeList
+
+    `cubeList.nc` in the directory with the retrieved data.
 
     Select a single Cube from the data that was retrieved for a single
     Assessment Area.

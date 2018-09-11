@@ -17,7 +17,7 @@ import math
 import logging
 import numpy.ma as ma
 import iris
-from .valmod_radiation import area_avg
+from esmvaltool.diag_scripts.autoassess._valmod_radiation import area_avg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
