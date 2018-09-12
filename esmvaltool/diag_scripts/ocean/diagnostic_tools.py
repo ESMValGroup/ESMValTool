@@ -189,7 +189,9 @@ def get_image_path(cfg,
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
-    path += '_'.join([str(metadata[b]) for b in metadata_id_list])
+    # Check that the keys are in the dict.
+    intersection = [va for va in metadata_id_list if va in metadata.keys()]  
+    path += '_'.join([str(metadata[b]) for b in intersection])
     if suffix:
         path += '_' + suffix
 
