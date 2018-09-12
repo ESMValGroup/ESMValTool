@@ -11,13 +11,13 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from . import global_water_budget as gwb
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
+# from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .matplotlib_table import render_mpl_table
 
 
 def resolution(cube):
     """
-    Get resolution
+    Get data resolution.
 
     Get resolution for cube and whether it is on ENDGame grid
     Assume on full p grid
@@ -30,7 +30,7 @@ def resolution(cube):
 
 def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     """
-    Calculate fluxes
+    Calculate fluxes.
 
     Function to calculate long-term water fluxes in varios sub-models
     The conservation will be measured using as units 1e9 Kg/m2s~ Sv
@@ -48,17 +48,18 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     table.append(['GLOBAL FRESHWATER FLUXES', '(1e9 Kg/s ~ Sv)'])
 
     # determine atmospheric horizontal model resolution:
-    pptest = load_run_ss(run, 'seasonal', 'precipitation_flux')
+    # pptest = load_run_ss(run, 'seasonal', 'precipitation_flux')
     # m01s05i216: total precipitation rate; arbitrary cube
-    resol, endgame = resolution(pptest)
+    # resol, endgame = resolution(pptest)
 
     # land fraction mask:
     mask_dir = os.path.join(
         os.path.dirname(os.path.dirname(__file__)), 'autoassess_source')
     # lfpath = os.path.join(mask_dir, 'qrparm.landfrac_' + resol + '.pp')
     # gmpath = os.path.join(mask_dir, 'glacialmask_' + resol + '.pp')
-    # TODO: replace with dedicated mask files when available
+
     # use generic landsea.nc file instead of dedicated masks
+    # TODO: replace with dedicated mask files when available
     mask_file = os.path.join(mask_dir, 'landsea.nc')
     import iris
     masks = iris.load_cube(mask_file)

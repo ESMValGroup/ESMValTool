@@ -1,4 +1,4 @@
-"""module with routines to calculate atmospheric mass conservation"""
+"""Calculate atmospheric mass conservation."""
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
@@ -11,7 +11,7 @@ from .area_utils import area_average
 
 def global_atmos_mass_conservation(run):
     """
-    Purpose
+    Compute conservation metrics.
 
     Compute and plot HadGEM3 dry and wet mass conservation (trend) metrics
     for AutoAssess.

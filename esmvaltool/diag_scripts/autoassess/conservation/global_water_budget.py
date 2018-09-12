@@ -1,4 +1,4 @@
-"""Module with routines to calculate global water budgets"""
+"""Module with routines to calculate global water budgets."""
 
 import os
 
@@ -11,7 +11,7 @@ from .area_utils import area_average
 
 def fluxes_submodel(run, stash_f, f_mult):
     """
-    Calculate time avg fluxes
+    Calculate time avg fluxes.
 
     function to calculate time-average global water fluxes from a UM submodel
     (atmosphere, ocean, sea ice, soil moisture, land snow, TRIP).
@@ -89,8 +89,6 @@ def fluxes_submodel(run, stash_f, f_mult):
         fval[-1] = fval.sum()
 
     except iris.exceptions.ConstraintMismatchError:
-        print("ERROR:  Missing data!!!")
-        print("An MDI will be assigned to all water fluxes of this sub-model")
         fval[:] = mdi
 
     return fval
@@ -98,7 +96,7 @@ def fluxes_submodel(run, stash_f, f_mult):
 
 def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, y_i, y_f):
     """
-    Compute ocean fluxes
+    Compute ocean fluxes.
 
     Function to calculate time-average global water fluxes that go into
     NEMO ocean model
@@ -165,8 +163,6 @@ def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, y_i, y_f):
         fval = np.array([np.mean(pme), np.mean(r_arr),
                          iceberg.data, np.mean(net_arr)])
     else:
-        print("ERROR:  Missing data!!!")
-        print("An MDI value will be assigned to all ocean water fluxes")
         fval = np.array([mdi, mdi, mdi, mdi])
 
     return fval

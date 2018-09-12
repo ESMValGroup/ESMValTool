@@ -11,6 +11,13 @@
 # needs. Different (start, end) dates can also be specified (in autoassess format: YYYY/MM/DD) per run, as long as the
 # time data is within the (start_year, end_year) specified in models: section. Preprocessing is basic; 
 # regridding only at the moment; this is done once.
+#################
+#### CAVEATS
+#################
+# - There are about 60% of original Autoassess variables that are not requested for and used in this
+#   recipe - this needs to be done!
+#################
+# RECIPE IS NOT FULLY WORKING
 ###########################################################################################################
 ---
 

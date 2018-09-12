@@ -1,7 +1,9 @@
+"""Assemble energy budget results in one table figure."""
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+# need to clean this function up, it is UGLY
 def render_mpl_table(table, header_rows=0, header_columns=0,
                      highlight_cells=None,
                      col_width=3.0, row_height=0.6, font_size=14,
@@ -10,6 +12,7 @@ def render_mpl_table(table, header_rows=0, header_columns=0,
                      bbox=[0, 0, 1, 1], **kwargs):
     """
     Create table using matplotlib.
+
     Inspired by: http://stackoverflow.com/a/39358752
 
     Example:

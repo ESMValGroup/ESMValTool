@@ -1,5 +1,5 @@
 """
-Autoassess Consentration
+Autoassess Consservation - energy budget.
 
 Module with routines to calculate energy conservation on various sub-models.
 Presently, it only includes the atmospheric energy budget
@@ -18,7 +18,7 @@ from .area_utils import area_average
 
 def atmos_energy_budget(run):
     """
-    Compute budget
+    Compute budget.
 
     Function to check atmospheric energy budgets and conservation.
     It uses section 30 diagnostics.
@@ -32,12 +32,10 @@ def atmos_energy_budget(run):
 
     # constants required for calculations
     # use AuxCoords in order to maintain units
-    # TODO magic numbers
     l_c = iris.coords.AuxCoord(
         2.501e6, long_name='lantent_heat_of_condensation', units='J kg-1')
     l_f = iris.coords.AuxCoord(
         0.334e6, long_name='lantent_heat_of_fusion', units='J kg-1')
-    # TODO seconds per season for 360d calendar
     secs_per_season = iris.coords.AuxCoord(
         90. * 86400.0, long_name='seconds_per_season', units='s')
 
@@ -218,8 +216,6 @@ def atmos_energy_budget(run):
 
     except iris.exceptions.ConstraintMismatchError as msg:
         print(msg)
-        print('ERROR: Missing data!!!')
-        print('An mdi will be assigned to the energy-conservation metric.')
         metrics['atmospheric global energy error'] = mdi
 
     return metrics
