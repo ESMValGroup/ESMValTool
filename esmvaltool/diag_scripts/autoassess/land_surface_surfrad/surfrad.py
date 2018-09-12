@@ -1,4 +1,4 @@
-"""Module to compute surface radiation metrics"""
+"""Module to compute surface radiation metrics."""
 
 import os
 
@@ -12,15 +12,14 @@ from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 def land_surf_rad(run):
     """
-    Compute median absolute errors against CERES-EBAF data
+    Compute median absolute errors against CERES-EBAF data.
 
     Arguments:
         run - dictionary containing model run metadata
               (see auto_assess/model_run.py for description)
 
     Returns:
-        metrics - dictionary of metrics names and values
-
+        metrics - dictionary of metrics names and values.
     """
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
@@ -32,42 +31,24 @@ def land_surf_rad(run):
     # Fraction of Land m01s03i395
     # replaced with a constant sftlf mask; original was
     # lnd = get_supermean('land_area_fraction', 'ann', supermean_data_dir)
-    name_constraint = iris.Constraint(name='land_area_fraction')
-    cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
-    cubes = iris.load(cubes_path)
-    lnd = cubes.extract_strict(name_constraint)
+    cubes = iris.load(os.path.join(supermean_data_dir, 'cubeList.nc'))
+    lnd = cubes.extract_strict(iris.Constraint(name='land_area_fraction'))
 
     metrics = dict()
     for season in rad_seasons:
         for fld in rad_fld:
             if fld == 'SurfRadNSW':
-                # Net (downward) SW from EBAF:
-                # rsus: 'surface_upwelling_shortwave_flux_in_air'
-                # rsds: 'surface_downwelling_shortwave_flux_in_air'
-                # rsns (derived, custom): rsds - rsus: ANNUAL
-                # name original: 'surface_net_downward_shortwave_flux'
-                # name custom CMOR: surface_net_downward_shortwave_radiation
                 ebaf_fld = get_supermean(
                     'surface_net_downward_shortwave_radiation', season,
                     run['clim_root'], obs_flag='CERES-EBAF')
-
-                # m01s01i201
                 run_fld_rad = get_supermean(
                     'surface_net_downward_shortwave_radiation', season,
                     supermean_data_dir)
 
             elif fld == 'SurfRadNLW':
-                # Net (downward) LW from EBAF:
-                # rlus: 'surface_upwelling_longwave_flux_in_air'
-                # rlds: 'surface_downwelling_longwave_flux_in_air'
-                # rlns (derived, custom): rlds - rlus: ANNUAL
-                # name original: 'surface_net_downward_longwave_flux'
-                # name custom CMOR: surface_net_downward_longwave_radiation
                 ebaf_fld = get_supermean(
                     'surface_net_downward_longwave_radiation', season,
                     run['clim_root'], obs_flag='CERES-EBAF')
-
-                # m01s02i201
                 run_fld_rad = get_supermean(
                     'surface_net_downward_longwave_radiation', season,
                     supermean_data_dir)
