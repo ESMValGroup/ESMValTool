@@ -1,7 +1,7 @@
 """
-Plot tool for stratosphere
+Plot tool for stratosphere.
 
-Module for functions useful for image manipulation and plotting
+Module for functions useful for image manipulation and plotting.
 """
 
 import matplotlib.colors as mcol

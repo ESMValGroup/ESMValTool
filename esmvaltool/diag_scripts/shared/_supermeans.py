@@ -1,6 +1,4 @@
 """
-(C) Crown Copyright 2017, the Met Office
-
 Module to create 'Supermeans'.
 
 Supermeans are averages over several years. For monthly averages each calendar
@@ -20,13 +18,13 @@ import numpy as np
 
 
 class NoBoundsError(ValueError):
-    """Return error and pass"""
+    """Return error and pass."""
 
     pass
 
 
 class InvalidPeriod(ValueError):
-    """Return error and pass"""
+    """Return error and pass."""
 
     pass
 
@@ -179,17 +177,8 @@ def periodic_mean(cube, period=None):
 
     if period == 'month':
         iris.coord_categorisation.add_month(_cube, 'time', name='month')
-        all_months = set([
-            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-            'Oct', 'Nov', 'Dec'
-        ])
-        assert set(_cube.coord('month').points) == all_months, \
-            'Not all months in Cube.'
     elif period == 'season':
         iris.coord_categorisation.add_season(_cube, 'time')
-        all_seasons = set(['djf', 'mam', 'jja', 'son'])
-        assert set(_cube.coord('season').points) == all_seasons, \
-            'Not all seasons in Cube.'
     elif period is None:
         pass
     else:
@@ -222,7 +211,7 @@ def add_start_hour(cube, coord, name='diurnal_sampling_hour'):
 
 
 def start_hour_from_bounds(coord, _, bounds):
-    """Add hour from bounds"""
+    """Add hour from bounds."""
     return np.array([_pt_date(coord, _bounds[0]).hour for _bounds in bounds])
 
 
@@ -232,7 +221,7 @@ def _add_categorised_coord(cube,
                            category_function,
                            units='1'):
     """
-    Add categorized coordinate
+    Add categorized coordinate.
 
     This function creates a category from coordinate bounds. To derive the
     category from the points use:
@@ -284,7 +273,7 @@ def _add_categorised_coord(cube,
 
 
 def time_average_by(cube, periods='time'):
-    """Average cube over time or over periods
+    """Average cube over time or over periods.
 
     i. e. time-based categorical
     coordinates, with calendar dependent weighting.
