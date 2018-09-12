@@ -111,17 +111,10 @@ def select_by_variable_name(cubes, variable_name):
 # get the seasonal mean
 def seasonal_mean(mycube):
     """
-<<<<<<< HEAD
-    Function to compute seasonal means with MEAN
-
-    Chunks time in 3-month periods and computes means over them;
-    Returns a cube
-=======
     Function to compute seasonal means with MEAN.
 
     Chunks time in 3-month periods and computes means over them;
     Returns a cube.
->>>>>>> version2_development_autoassess_landsurface
     """
     if 'clim_season' not in mycube.coords():
         coord_cat.add_season(mycube, 'time', name='clim_season')
