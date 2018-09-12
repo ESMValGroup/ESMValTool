@@ -1,1 +1,1 @@
-"""Initialize the ESMValTool autoassess package"""
+"""Initialize the ESMValTool autoassess package."""

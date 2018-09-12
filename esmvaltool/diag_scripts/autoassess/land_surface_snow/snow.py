@@ -1,4 +1,4 @@
-"""Module for snow metrics"""
+"""Module for snow metrics."""
 
 import os
 import numpy as np
@@ -10,7 +10,7 @@ from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 def land_swe_top(run):
     """
-    Compute median-absolute difference of SWE against GlobSnow
+    Compute median-absolute difference of SWE against GlobSnow.
 
     Arguments:
         run - dictionary containing model run metadata

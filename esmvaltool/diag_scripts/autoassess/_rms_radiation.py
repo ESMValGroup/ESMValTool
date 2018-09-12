@@ -1,5 +1,5 @@
 """
-Port for ESMValTool v2 from v1
+Port for ESMValTool v2 from v1.
 
 Uses: ESMValTool v2, Python 3.x
 Valeriu Predoi, UREAD, July 2018
@@ -24,20 +24,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 class RMSLISTCLASS(list):
     """
-    Construct the regions class
+    Construct the regions class.
 
-    This is the class for a list of RMSCLASS (i.e. for lots of regions)
+    This is the class for a list of RMSCLASS (i.e. for lots of regions).
     """
 
     def __init__(self, *args):
-        """Init"""
+        """Init."""
         if not args:
             super(RMSLISTCLASS, self).__init__()
         else:
             super(RMSLISTCLASS, self).__init__(args[0])
 
     def __repr__(self):
-        """Repr"""
+        """Repr."""
         rms_out = "["
         for rms_item in self:
             rms_out += "rms.RMSCLASS for " + rms_item.region + ", \n"
@@ -47,7 +47,7 @@ class RMSLISTCLASS(list):
         return rms_out
 
     def __call__(self, region=False):
-        """Call"""
+        """Call."""
         rms_found = False
         region_list = []
         for rms_item in self:
@@ -70,17 +70,17 @@ class RMSLISTCLASS(list):
 
 # This is the class for one set of rms values (i.e. for one region)
 class RMSCLASS:
-    """Class per region"""
+    """Class per region."""
 
     def __init__(self, region, exper='experiment', control='control'):
         """
-        Create instances of this class but also start making
+        Create instances of this class but also start making.
 
         html files that will contain all the rms data. (old)
 
         region = the region name
         exper = experiment jobid
-        control = control jobid
+        control = control jobid.
         """
         # Store the region name, experiment and control
         self.region = region
@@ -130,12 +130,12 @@ class RMSCLASS:
 
     # Allow iterations over this
     def __iter__(self):
-        """Iter"""
+        """Iter."""
         return self
 
     # This defines how this class is shown on the screen if you print it
     def __repr__(self):
-        """Repr"""
+        """Repr."""
         rms_out = "rms.RMSCLASS for {0}".format(self.region)
         return rms_out
 
@@ -229,7 +229,7 @@ class RMSCLASS:
         return rms_float
 
     def tofile(self, csv_dir):
-        """Output all the RMS statistics to csv files"""
+        """Output all the RMS statistics to csv files."""
         csv_file = 'summary_' + self.region + '_RMS_' + self.exper + '.csv'
         csv_path = os.path.join(csv_dir, csv_file)
         with open(csv_path, 'a') as out_file:
@@ -242,10 +242,10 @@ class RMSCLASS:
 
 def start(exper='experiment', control='control'):
     """
-    Make some instances of the rms class
+    Make some instances of the rms class.
 
     exper = experiment jobid (optional)
-    control = control jobid (optional)
+    control = control jobid (optional).
     """
     # Loop over all regions. Regions are:
     # 0 = globe
@@ -283,13 +283,13 @@ def start(exper='experiment', control='control'):
 
 def calc_all(rms_list, toplot_cube, mask_cube, page_title):
     """
-    Loop through all the regions
+    Loop through all the regions.
 
     Calculate rms values and store them in the class.
     rms_list = list of rms classes that stores all the information to do
                with the rms regions and the resulting answers.
     toplot_cube = (cube) cube that is to be plotted
-    page_title = (str) the page title for this plot
+    page_title = (str) the page title for this plot.
     """
     # Run through the loop, calculating rms values for each region
     rms_float_list = []
@@ -305,7 +305,7 @@ def calc_all(rms_list, toplot_cube, mask_cube, page_title):
 
 def end(rms_list, csv_dir):
     """
-    Finish using the rms class
+    Finish using the rms class.
 
     rms_list = list of rms classes that stores all the information to do with
                the rms regions and the resulting answers.

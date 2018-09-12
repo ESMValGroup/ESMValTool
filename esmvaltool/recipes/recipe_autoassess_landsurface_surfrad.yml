@@ -11,7 +11,10 @@
 #### CAVEATS
 # land-sea masks are not averaged over time (annual)
 # but are fixed i.e. using sftlf (lat-lon) grid
+# (the original Autoassess diagnostic used time-dependent .pp masks -
+# these can still be implemented if present in autoassess_source)
 #################
+# RECIPE IS FULLY WORKING
 ###########################################################################################################
 ---
 

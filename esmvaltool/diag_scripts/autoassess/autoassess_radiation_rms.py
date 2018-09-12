@@ -1,5 +1,5 @@
 """
-Port to Version 2 with implementation of v2-specific changes
+Port to Version 2 with implementation of v2-specific changes.
 
 Uses: ESMValTool v2, Python3.x
 Valeriu Predoi, UREAD, July 2018
@@ -15,7 +15,7 @@ Original Description from Version 1 Diagnostic:
 ;;    AutoAssess radiation
 ;; ###########################################################################
 
-This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
+This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE.
 """
 
 import os
@@ -34,7 +34,7 @@ _CMIP_TYPE = 'CMIP5'
 
 
 def apply_rms(data_1, data_2, cfg, component_dict, var_name):
-    """Compute RMS for any data1-2 combination"""
+    """Compute RMS for any data1-2 combination."""
     data_names = [model['dataset'] for model in component_dict.values()]
     plot_title = var_name + ': ' + data_names[0] + ' vs ' + data_names[1]
     rms_list = start(data_names[0], data_names[1])
@@ -50,7 +50,7 @@ def apply_rms(data_1, data_2, cfg, component_dict, var_name):
 
 
 def do_preamble(cfg):
-    """Execute some preamble functionality"""
+    """Execute some preamble functionality."""
     # get data
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(
@@ -60,7 +60,7 @@ def do_preamble(cfg):
 
 
 def main(cfg):
-    """Execute the radiation rms diag"""
+    """Execute the radiation rms diag."""
     logger.setLevel(cfg['log_level'].upper())
     input_data, grouped_input_data = do_preamble(cfg)
 
