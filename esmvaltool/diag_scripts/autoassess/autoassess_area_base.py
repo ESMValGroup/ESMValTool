@@ -328,7 +328,6 @@ def _create_run_dict(cfg):
     run['from_annual'] = datetime.datetime(year, month, day)
 
     year, month, day = [int(s) for s in run['end'].split('/')]
-    assert month == 12 and day == 1  # Climatological year
     run['to_instantaneous'] = datetime.datetime(year, 11, 30)
     run['to_daily'] = datetime.datetime(year, 11, 30)
     run['to_monthly'] = datetime.datetime(year, 11, 1)

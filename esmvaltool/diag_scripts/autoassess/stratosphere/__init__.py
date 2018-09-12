@@ -1,4 +1,4 @@
-"""Import stratosphere modules"""
+"""Import stratosphere module and its functions."""
 from . import age_of_air
 from . import strat_metrics_1
 
