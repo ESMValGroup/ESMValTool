@@ -108,8 +108,8 @@ def atmos_energy_budget(run):
         ke_f = cvt_f  # missing
         en_cor = cvt_f  # missing
         cvt_f, gr_f, ke_f = remove_forecast_period([cvt_f, gr_f, ke_f])
+
         # Set appropriate units for fields loaded above
-        # TODO use cube.convert_units to take existing units into account
         cvt_f.units = cf_units.Unit('J m-2')
         gr_f.units = cf_units.Unit('J m-2')
         ke_f.units = cf_units.Unit('J m-2')
@@ -135,13 +135,6 @@ def atmos_energy_budget(run):
         ch_cvt = icalc.cube_delta(cvtg, 'time') / secs_per_season
         ch_gr = icalc.cube_delta(grg, 'time') / secs_per_season
 
-        # TODO: Can I do the above with differentiate?
-        # Something wrong with scaling here if I do -> check units
-        #        ch_en  = icalc.differentiate(en_tot, 'time')
-        #        ch_ke  = icalc.differentiate(keg, 'time')
-        #        ch_cvt = icalc.differentiate(cvtg, 'time')
-        #        ch_gr  = icalc.differentiate(grg, 'time')
-
         # Energy fluxes
         swing = area_average(swin, weighted=True)
         swoutg = area_average(swout, weighted=True)
@@ -162,10 +155,12 @@ def atmos_energy_budget(run):
         # average data to allow arithmetics
         # with cube containing instantaneous time points
         diab_heat.coord('time').bounds = None
+
         # VPREDOI TODO use this instead when units match
         # this is due to using pr instead of actual diag variable
         # err_en = ch_en - diab_heat
         err_en = ch_en
+
         ecorrection = np.mean(en_corg.data)
         eerror = np.mean(err_en.data)
 
@@ -178,10 +173,9 @@ def atmos_energy_budget(run):
 
         x_err = np.arange(err_en.data.size)
         stitl1_temp = '{0} mean energy-conservation error: {1:7.4f} W/m2'
-        # TODO unit from cube?
         stitl1 = stitl1_temp.format(expid, eerror)
         stitl2 = 'Energy correction: {0:7.4f} W/m2'.format(
-            ecorrection)  # TODO unit from cube?
+            ecorrection)
 
         plt.subplot(2, 1, 1)
         titl1 = 'Change in total energy over 3 months'
@@ -204,7 +198,7 @@ def atmos_energy_budget(run):
         plt.title(titl1)
         plt.xlabel('No. of seasons from djf ' +
                    str(run['from_annual'].year + 1))
-        plt.ylabel('W/m2')  # TODO unit from cube?
+        plt.ylabel('W/m2')
         plt.axhline(0.0, linestyle=':', color='black')
         plt.legend(loc='lower center', fontsize='small', frameon=0)
 
@@ -216,7 +210,7 @@ def atmos_energy_budget(run):
         plt.title(titl1)
         plt.xlabel('No. of seasons from djf ' +
                    str(run['from_annual'].year + 1))
-        plt.ylabel('W/m2')  # TODO unit from cube?
+        plt.ylabel('W/m2')
         plt.axhline(0.0, linestyle=':', color='black')
 
         plt.suptitle(stitl1 + '\n' + stitl2, fontsize='large')

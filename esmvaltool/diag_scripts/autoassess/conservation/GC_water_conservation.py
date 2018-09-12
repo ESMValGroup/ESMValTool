@@ -1,5 +1,5 @@
 """
-Autoassess Conservation
+Autoassess Conservation GC Water Conservation Module.
 
 Module with routines to estimate conservation of water in all sub-models
 in a GC configuration. Presently it calculates conservation as long-term
@@ -7,6 +7,8 @@ water fluxes across various sub-models, using annual mean data. It is
 expected that in the future it will include exact calculations.
 """
 
+import os
+import numpy as np
 import matplotlib.pyplot as plt
 from . import global_water_budget as gwb
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
@@ -21,7 +23,6 @@ def resolution(cube):
     Assume on full p grid
     Different algorithm required if longitude or latitude missing
     """
-    # TODO: Extend to C grid variables?
     resol = "n" + str(cube.coord('longitude').points.size / 2)
     endgame = (cube.coord('latitude').points.size % 2 == 0)
     return resol, endgame
@@ -41,120 +42,37 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     # Preliminaries to produce table with fluxes:
     expid = run['runid']
     fluxes_table = expid + '_global_freshwater_fluxes_table'
-    # filename for storing fluxes table
-
     table = []
     val_format = '{:.3f}'
     table.append([expid, ''])
     table.append(['GLOBAL FRESHWATER FLUXES', '(1e9 Kg/s ~ Sv)'])
-
-    # Location of various masks, ocean-data location, ocean-area values, etc.
-    # ATMOSPHERE:
-    # TODO: Get fields from experiment data
 
     # determine atmospheric horizontal model resolution:
     pptest = load_run_ss(run, 'seasonal', 'precipitation_flux')
     # m01s05i216: total precipitation rate; arbitrary cube
     resol, endgame = resolution(pptest)
 
-    # TODO local paths
     # land fraction mask:
-    if endgame:
-        lfpath = run['ancil_root'] + '/masks/qrparm.landfrac_' + resol + 'e.pp'
-    else:
-        lfpath = run['ancil_root'] + '/masks/qrparm.landfrac_' + resol + '.pp'
-
-    # glacial mask:
-    # TODO :  put mask in central directory
-    if endgame:
-        gmpath = run['ancil_root'] + '/conservation/glacialmask_' \
-            + resol + '_endgame.pp'
-    else:
-        gmpath = run['ancil_root'] + '/conservation/glacialmask_' \
-            + resol + '.pp'
-
-    # NEMO:
-    # Jan 2015:  At the present version, Maverick does not handle ocean fields.
-    #            This means that presently, we cannot include water
-    #            conservation in the ocean sub-model. The part of the code that
-    #            calculates fluxes in this function is now commented out.
-
-    # TODO : Include ocean water conservation
-
-    # pp-file with constant iceberg-calving flux:
-    #  (instead of a NEMO diagnostic)
-
-    # TODO : put mask in central directory
-
-    # wfpath = run['ancil_root']+'/conservation/qrclim.icecalve_'+resol+'.pp'
-
-    # mesh file (it is dependent on GO version), for GO5:
-    # mesh = run['ancil_root']+'/conservation/NEMOGO5_ocean_mask.nc'
-    # areas = run['ancil_root']+'/conservation/NEMOGO5_ocean_area.nc'
-
-    # load land-fraction mask and calculate ocean fraction mask:
-    # VPREDOI
-    # land fraction file is needed
-    # /home/users/valeriu/base_masks_autoassess
-    # import iris
+    mask_dir = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), 'autoassess_source')
+    # lfpath = os.path.join(mask_dir, 'qrparm.landfrac_' + resol + '.pp')
+    # gmpath = os.path.join(mask_dir, 'glacialmask_' + resol + '.pp')
+    # TODO: replace with dedicated mask files when available
+    # use generic landsea.nc file instead of dedicated masks
+    mask_file = os.path.join(mask_dir, 'landsea.nc')
+    import iris
+    masks = iris.load_cube(mask_file)
     # lfm = iris.load_cube(lfpath)
-    # ofm = -1.0 * lfm + 1.0
-    lfm = pptest
-    ofm = pptest
-
-    # load glacial mask and obtain corresponding fraction masks:
-    # VPREDOI
-    # glacial mask is needed
-    # /home/users/valeriu/base_masks_autoassess
     # gm = iris.load_cube(gmpath)
-    gm = pptest
-    # lfm_is = gm * lfm
-    # ofm_is = gm * ofm
-    lfm_is = pptest * pptest
-    ofm_is = pptest * pptest
-
-    # calculate water fluxes into the different sub-models
-
-    # Template strings for writing information to file
-    # hdr_temp = "{0:>39s}\n"
-    # val_temp = "{0:>39s}  {1:7.3f} \n"
-    # eql_temp = "{0:>48s}\n"
-
-    # Calculate global WATER CONSERVATION IN VARIOUS SUB-MODELS
-
-    # Ocean:
-
-    # print 'Calculating fluxes into the ocean ... '
-    # print
-
-    # directory where ocean netcdf files are (run dependent):
-    # opath = run['ss_ocean']
-
-    # fval = gwb.fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath,
-    #                                  run['from_annual'].year,
-    #                                  run['to_annual'].year)
-
-    # name = 'global net water flux into ocean and sea ice'
-    # metrics[name] = float(fval[-1])
-
-    # with open('glob_freshwater_fluxes.tmp', "a") as table:
-    #     table.write(hdr_temp.format('Ocean + Sea ice')
-    #     table.write(hdr_temp.format('***************')
-    #     table.write(val_temp.format('Precipitation minus evaporation',
-    #                                 fval[0]))
-    #     table.write(val_temp.format('River discharge', fval[1]))
-    #     table.write(val_temp.format('Iceberg calving', fval[2]))
-    #     table.write(eql_temp.format('******'))
-    #     table.write(val_temp.format('Net Flux', fval[3]))
-    #     table.write('\n\n')
-
-    # Calculate TRIP fluxes
-
-    # flbl = ['surface runoff', 'sub-surface runoff','inland basin runoff',
-    #         'river outflow']
+    lfm = masks
+    gm = masks
+    lfm.data = np.ma.masked_array(lfm.data, mask=(lfm.data != 1.))
+    gm.data = np.ma.masked_array(gm.data, mask=(gm.data != 1.))
+    ofm = -1.0 * lfm + 1.0
+    lfm_is = gm * lfm
+    ofm_is = gm * ofm
 
     stash_f = ['m01s08i234', 'm01s08i235', 'm01s08i245', 'm01s26i004']
-    # --
 
     f_mult = [lfm, lfm, -1.0, -1.0]
     fval = gwb.fluxes_submodel(run, stash_f, f_mult)
@@ -171,11 +89,6 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     table.append(['Inland-basin runoff', val_format.format(ibrunoff)])
     table.append(['Net Flux', val_format.format(fval[4])])
     table.append(['', ''])
-
-    # Calculate Ice sheet fluxes
-
-    # flbl = ['l. scale snowfall', 'conv. snowfall', 'sublimation',
-    #         'sublim. sea-ice', 'snow melt']
     stash_f = [
         'm01s04i204', 'm01s05i206', 'm01s03i298', 'm01s03i353', 'm01s08i231'
     ]
