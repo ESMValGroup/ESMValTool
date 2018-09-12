@@ -24,7 +24,7 @@ def get_cfg():
 
 
 def main():
-    """Call the plotting script via command line"""
+    """Call the plotting script via command line."""
     cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
 

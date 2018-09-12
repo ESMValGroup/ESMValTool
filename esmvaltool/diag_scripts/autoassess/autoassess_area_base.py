@@ -1,5 +1,5 @@
 """
-Base autoassess area metrics diagnostic
+Base autoassess area metrics diagnostic.
 
 Wrapper that takes two datasets (control_model and exp_model
 and observational data (optionally); base for all area diags for
@@ -17,7 +17,7 @@ land_surface_snow -- implemented
 custom -- not yet implemented
 
 Author: Valeriu Predoi, UREAD (valeriu.predoi@ncas.ac.uk)
-First version: September 2018
+First version: September 2018.
 """
 import os
 import datetime
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def _import_package(area):
-    """Import the right area package"""
+    """Import the right area package."""
     root_import = 'esmvaltool.diag_scripts.autoassess.'
     available_areas = [
         'monsoon', 'stratosphere', 'hydrocycle', 'conservation', 'globaltrop',
@@ -47,7 +47,7 @@ def _import_package(area):
 
 
 def _make_tmp_dir(cfg):
-    """Make the tmp and ancil dirs"""
+    """Make the tmp and ancil dirs."""
     tmp_dir = os.path.join(cfg['work_dir'], 'tmp')
     ancil_dir = os.path.join(cfg['work_dir'], 'ancil')
     if not os.path.exists(tmp_dir):
@@ -58,7 +58,7 @@ def _make_tmp_dir(cfg):
 
 
 def _make_main_dirs(cfg):
-    """Create main dirs to hold analysis"""
+    """Create main dirs to hold analysis."""
     locations = {}  # locations for control, exp and any addional metrics
     suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['control_model'])
     if not os.path.exists(suite_loc_m1):
@@ -83,7 +83,7 @@ def _make_main_dirs(cfg):
 
 
 def _make_concatenated_data_dirs(suite_locs, area):
-    """Create dirs to hold cubeList files"""
+    """Create dirs to hold cubeList files."""
     suites_locations = {}
     supermeans_locations = {}
     for suite_dir in suite_locs:
@@ -102,7 +102,7 @@ def _make_concatenated_data_dirs(suite_locs, area):
 
 
 def _setup_data_dict(cfg):
-    """Set a dictionary to hold data"""
+    """Set a dictionary to hold data."""
     metrics_dict = {}  # dict keyed on daatasets for metrics
     metrics_dict['control_model'] = []
     metrics_dict['exp_model'] = []
@@ -125,7 +125,7 @@ def _setup_data_dict(cfg):
 
 
 def _get_filelists(cfg):
-    """Put files in dict(lists) and return them"""
+    """Put files in dict(lists) and return them."""
     metrics_dict, additional_metrics, obs_types = _setup_data_dict(cfg)
     obs_list = []
 
@@ -144,8 +144,7 @@ def _get_filelists(cfg):
                     attributes['fx_files'][cfg['fx']])
         if additional_metrics and base_file.split(
                 '_')[1] in cfg['additional_metrics']:
-            metrics_dict[base_file.split('_')[1]].append(
-                fullpath_file)
+            metrics_dict[base_file.split('_')[1]].append(fullpath_file)
             if 'fx_files' in attributes:
                 metrics_dict[base_file.split('_')[1]].append(
                     attributes['fx_files'][cfg['fx']])
@@ -156,7 +155,7 @@ def _get_filelists(cfg):
 
 
 def _process_obs(cfg, obs_list, obs_loc):
-    """Gather obs files and save them applying specific cases"""
+    """Gather obs files and save them applying specific cases."""
     group_files = [[
         ofile for ofile in obs_list
         if os.path.basename(ofile).split('_')[1] == obs
@@ -178,7 +177,7 @@ def _process_obs(cfg, obs_list, obs_loc):
 
 
 def _process_metrics_data(all_files, suites, smeans):
-    """Create and save concatenated cubes for ctrl and exp"""
+    """Create and save concatenated cubes for ctrl and exp."""
     cubes_lists_paths = []
     for key in all_files.keys():
         filelist = all_files[key]
@@ -207,7 +206,7 @@ def _process_metrics_data(all_files, suites, smeans):
 
 def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
     """
-    Create directory tree for area output according to the following scheme:
+    Create directory tree for area output according to the following scheme.
 
         `out_dir`/`exp_suite_id`_vs_`ref_suite_id`/`area`
 
@@ -219,7 +218,7 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
     :param str area: Name of asssessment area.
     :returns: Path to area output directory.
     :rtype: str
-    :raises: OSError
+    :raises: OSError.
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # make sure out_dir exists in output folder
@@ -236,7 +235,7 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
 
 def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
     """
-    Create directory tree for temporary data according to the following scheme:
+    Create directory tree for temporary data according to the following scheme.
 
         `tmp_dir`/`exp_suite_id`_vs_`ref_suite_id`_random/`area`_random
 
@@ -245,7 +244,7 @@ def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
     :param str suite_id2: Suite ID of test model run.
     :param str area: Name of asssessment area.
     :returns: Path to area temporary directory.
-    :rtype: str
+    :rtype: str.
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # create unique temporary folder in tmp dir
@@ -257,7 +256,7 @@ def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
 
 
 def _setup_input(cfg):
-    """Assemble all data structures"""
+    """Assemble all data structures."""
     logger.setLevel(cfg['log_level'].upper())
 
     # set the main data dirs;
@@ -292,7 +291,7 @@ def _setup_input(cfg):
 
 
 def _create_run_dict(cfg):
-    """Create the run dictionary"""
+    """Create the run dictionary."""
     tmp_dir, obs_loc, ancil_dir = _setup_input(cfg)
     run = {}
     # general parameters (necessary)
@@ -340,7 +339,7 @@ def _create_run_dict(cfg):
 
 
 def run_area(cfg):
-    """Kick start the area diagnostic"""
+    """Kick start the area diagnostic."""
     run_obj = _create_run_dict(cfg)
     area_out_dir = create_output_tree(run_obj['out_dir'], run_obj['suite_id1'],
                                       run_obj['suite_id2'], run_obj['_area'])

@@ -1,7 +1,5 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 """
-(C) Crown Copyright 2017, the Met Office
+(C) Crown Copyright 2017, the Met Office.
 
 Module to replicate data access API of the previous version of AutoAssess:
 
@@ -10,8 +8,7 @@ Module to replicate data access API of the previous version of AutoAssess:
 For information on the PP-Header attributes, see:
 
 Unified Model Documentation Paper F03: "Input and Output File Formats"
-available here: https://code.metoffice.gov.uk/doc/um/vn10.5/umdp.html
-
+available here: https://code.metoffice.gov.uk/doc/um/vn10.5/umdp.html.
 """
 
 import os.path
@@ -28,7 +25,7 @@ import iris.coord_categorisation as coord_cat
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
     def is_day(bound):
-        """Check if day"""
+        """Check if day."""
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=1) == time_span
 
@@ -38,7 +35,7 @@ def is_daily(cube):
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
     def is_month(bound):
-        """Check if month"""
+        """Check if month."""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31) >= time_span >= td(days=28)
 
@@ -48,7 +45,7 @@ def is_monthly(cube):
 def is_seasonal(cube):
     """Season is 3 months, i.e. at least 89 days, and up to 92 days."""
     def is_season(bound):
-        """Check if season"""
+        """Check if season."""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
@@ -58,7 +55,7 @@ def is_seasonal(cube):
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
     def is_year(bound):
-        """Check if year"""
+        """Check if year."""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
@@ -114,10 +111,10 @@ def select_by_variable_name(cubes, variable_name):
 # get the seasonal mean
 def seasonal_mean(mycube):
     """
-    Function to compute seasonal means with MEAN
+    Function to compute seasonal means with MEAN.
 
     Chunks time in 3-month periods and computes means over them;
-    Returns a cube
+    Returns a cube.
     """
     if 'clim_season' not in mycube.coords():
         coord_cat.add_season(mycube, 'time', name='clim_season')
@@ -127,7 +124,7 @@ def seasonal_mean(mycube):
                                                 iris.analysis.MEAN)
 
     def spans_three_months(time):
-        """Check for three months"""
+        """Check for three months."""
         return (time.bound[1] - time.bound[0]) == 90  # days
 
     three_months_bound = iris.Constraint(time=spans_three_months)
@@ -137,15 +134,15 @@ def seasonal_mean(mycube):
 # get annual mean
 def annual_mean(mycube):
     """
-    Function to compute annual mean with MEAN
+    Function to compute annual mean with MEAN.
 
     Chunks time in 365-day periods and computes means over them;
-    Returns a cube
+    Returns a cube.
     """
     yr_mean = mycube.aggregated_by('year', iris.analysis.MEAN)
 
     def spans_year(time):
-        """Check for 12 months"""
+        """Check for 12 months."""
         return (time.bound[1] - time.bound[0]) == 365
 
     t_bound = iris.Constraint(time=spans_year)
@@ -194,7 +191,7 @@ def select_by_pressure_level(cubes, lblev):
     :param CubeList cubes: Iris CubeList.
     :param list lblev: List of pressure levels in hPa.
     :returns: CubeList with Cubes only containing specified pressure levels.
-    :rtype: CubeList
+    :rtype: CubeList.
     """
     pressure_level = iris.Constraint(pressure=lblev)
     return cubes.extract(
@@ -250,7 +247,7 @@ def select_by_processing(cubes, lbproc):
 
 def select_by_initial_meaning_period(cubes, lbtim):
     """
-    Select cube
+    Select cube.
 
     Select subset from CubeList by matching the some of the information
     encoded in the 'Time indicator' `lbtim`. Namely, the initial meaning
@@ -281,14 +278,7 @@ def select_by_initial_meaning_period(cubes, lbtim):
 
     selected_cubes = iris.cube.CubeList()
     for lbtim in lbtims:
-        i_a, i_b, i_c = str(lbtim)[:]
-        # i_a - time interval in hours between the individual fields from
-        #      which the mean was calculated
-        # i_b - = 2 if the field is a time mean between T1 and T2, or
-        #          represents a sequence of times between T1 and T2.
-        # i_c - = 1 if the Proleptic Gregorian calendar is used for T1 and T2
-        #      = 2 if the '360-day' calendar (i.e. 12 30-day months) is used
-        #          for T1 and T2.
+        i_a, i_c = str(lbtim)[:][0], str(lbtim)[:][2]
 
         for cube in cubes:
             # select by original meaning interval (IA)
@@ -297,17 +287,9 @@ def select_by_initial_meaning_period(cubes, lbtim):
                     i_a)] != cube.cell_methods[0].intervals:
                 continue
 
-            # select by IB
-            # Iris cubes have no T1 and T2 attributes, or equivalent
-            # Unclear how to select Iris cubes on I_B
-            # pass
-
             # select calendar (I_C)
             # see cf_units.CALENDARS for possible cube calendars
-            select_calendar = {
-                1: 'gregorian',  # TODO does iris distinguish between
-                2: '360_day'
-            }  # proleptic_greorian and gregorian?
+            select_calendar = {1: 'gregorian', 2: '360_day'}
             if select_calendar[int(i_c)] == cube.coord('time').units.calendar:
                 selected_cubes.append(cube)
     return selected_cubes
@@ -347,7 +329,7 @@ def select_certain_months(cubes, lbmon):
 
 
 def get_time_offset(time_unit):
-    """Return a datetime object equivalent to tunit"""
+    """Return a datetime object equivalent to tunit."""
     # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
     cfunit = cf_units.Unit(time_unit, calendar=cf_units.CALENDAR_STANDARD)
     time_offset = cfunit.num2date(0)
@@ -355,7 +337,7 @@ def get_time_offset(time_unit):
 
 
 def datetime_to_int_days(date_obj, tunit):
-    """Return time point converted from cube datetime cell"""
+    """Return time point converted from cube datetime cell."""
     if float(iris.__version__.split('.')[0]) >= 2.0:
         time_offset = get_time_offset(tunit)
         real_date = dd(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0)
@@ -366,7 +348,7 @@ def datetime_to_int_days(date_obj, tunit):
 
 
 def extract_time_range(cubes, start, end):
-    """Extract time ranged data"""
+    """Extract time ranged data."""
     time_ranged_cubes = []
     iris.util.unify_time_units(cubes)
     time_unit = cubes[0].coord('time').units.name
@@ -393,7 +375,7 @@ def load_run_ss(run_object,
                 from_dt=None,
                 to_dt=None):
     """
-    Use - this is still used
+    Use - this is still used.
 
     DEPRECATED: Do not use for new Assessment Areas. Instead, read the
     CubeList `cubeList.nc` in the directory with the retrieved data.
