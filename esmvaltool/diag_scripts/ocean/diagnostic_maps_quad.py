@@ -144,11 +144,7 @@ def multi_model_maps(
     filename is the preprocessing model file.
     """
 
-    #print (cfg.keys())
-    print ('input_files:',input_files.keys())
-    for input_file in sorted(input_files.keys()):
-        print('\n',input_file, input_files[input_file])
-    
+
     filenames={} # dict; model type : model file.
     model_types = ['control_model', 'exper_model', 'observational_dataset',]
     for m in model_types:
@@ -196,10 +192,11 @@ def multi_model_maps(
         newcube224 = cubes['exper_model'][layer] - cubes['observational_dataset'][layer]
 
         zrange = get_cube_range_diff([newcube222, newcube223, newcube224])
-        linspace = np.linspace(zrange[0], zrange[1], 25, endpoint=True)
+        n_points=15
+        linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
         
         ax = plt.subplot(221)
-        qplt.contourf(newcube221, 25, linewidth=0, rasterized=True, )
+        qplt.contourf(newcube221, n_points, linewidth=0,)# rasterized=True, )
         plt.gca().coastlines()
         plt.title(exper)
 
