@@ -1,6 +1,7 @@
 #### summary 
 #### recipe that runs the Autoassess Stratorsphere assessment area diagnostic
-#### Version: 1 June 2018 
+#### Version: 1 June 2018; updated version: 11 September 2018
+#### Author: V. PREDOI (UREAD, valeriu.predoi@ncas.ac.uk) 
 #################
 #### Description:
 #################
@@ -16,6 +17,8 @@
 #################
 # - The original autoassess diagnostic needs MERRA obs data as well;
 #   add MERRA file request in this namelist when running.
+#################
+# RECIPE IS FULLY WORKING
 ###########################################################################################################
 ---
 

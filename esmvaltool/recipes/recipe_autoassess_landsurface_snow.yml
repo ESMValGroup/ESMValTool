@@ -9,8 +9,11 @@
 #  - snow
 #################
 #### CAVEATS
-# climatological files are stored in ESMValTool
+# climatological files are stored externally to avoid
+# overloading the ESMValTool source; on eg. JASMIN they need to be
+# moved at a permanent widely-available location
 #################
+# RECIPE IS FULLY WORKING
 ###########################################################################################################
 ---
 

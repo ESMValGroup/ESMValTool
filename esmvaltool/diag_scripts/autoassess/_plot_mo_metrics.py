@@ -1,5 +1,5 @@
 """
-Plot autoassess standard metrics
+Plot autoassess standard metrics.
 
 This is a modified version of plot_norm_ac
 Author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
@@ -9,12 +9,11 @@ Create normalised assessment criteria plot (NAC plot).
 from __future__ import division, print_function
 
 import os
-import os.path
 import csv
 import errno
 import numpy as np
-import matplotlib as mpl
-mpl.use('Agg')  # noqa
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 
 # Define some colours
@@ -41,7 +40,7 @@ FAKELINES = [
 
 def merge_obs_acc(obs, acc):
     """
-    Merge observation errors
+    Merge observation errors.
 
     Routine to merge observational uncertainty and acceptable range
     dictionaries into one dictionary. Returned dictionary will only
@@ -50,7 +49,7 @@ def merge_obs_acc(obs, acc):
     :param dict obs: Dictonary of observational uncertainties
     :param dict acc: Dictonary of acceptable ranges
     :returns: A merge of the obs and acc dictionaries
-    :rtype: dict
+    :rtype: dict.
     """
     metrics = {}
     for metric in obs.keys():
@@ -63,16 +62,16 @@ def merge_obs_acc(obs, acc):
 
 def write_order_metrics(csvfile, metrics):
     """
-    Write out ordered metrics
+    Write out ordered metrics.
 
-    Routine to write out an ordered list of metrics csv file
+    Routine to write out an ordered list of metrics csv file.
 
     Not really csv but easily written out by csv package. This is a line by
     line ordered list of the metrics that will be plotted on a NAC plot. It
     should be read in and out of a list object.
 
     :param str csvfile: CSV file name
-    :param list metrics: Ordered list of metrics
+    :param list metrics: Ordered list of metrics.
     """
     if metrics:
         try:
@@ -89,9 +88,9 @@ def write_order_metrics(csvfile, metrics):
 
 def write_model_metrics(csvfile, metrics):
     """
-    Write out ordered model metrics
+    Write out ordered model metrics.
 
-    Routine to write out model metrics csv file
+    Routine to write out model metrics csv file.
 
     An unordered list of metrics with a single value metric that are obtained
     from processing model output. Note that the model uncertainty also fits
@@ -99,7 +98,7 @@ def write_model_metrics(csvfile, metrics):
     with metric name as key and single float as value.
 
     :param str csvfile: CSV file name
-    :param dict metrics: Dictionary containing metric values
+    :param dict metrics: Dictionary containing metric values.
     """
     if metrics:
         try:
@@ -116,9 +115,9 @@ def write_model_metrics(csvfile, metrics):
 
 def write_obs_metrics(csvfile, obs, acc):
     """
-    Write obs
+    Write obs.
 
-    Routine to read in observation metrics csv file
+    Routine to read in observation metrics csv file.
 
     An unordered list of metrics with either 2 or 4 values. The first 2 vals
     are the observation range and must exist for any entry. The second 2 vals,
@@ -131,7 +130,7 @@ def write_obs_metrics(csvfile, obs, acc):
 
     :param str csvfile: CSV file name
     :param dict obs: Dictonary of observational uncertainties
-    :param dict acc: Dictonary of acceptable ranges
+    :param dict acc: Dictonary of acceptable ranges.
     """
     metrics = merge_obs_acc(obs, acc)
     if metrics:
@@ -149,9 +148,9 @@ def write_obs_metrics(csvfile, obs, acc):
 
 def read_order_metrics(csvfile, required=False):
     """
-    Read oredred metrics
+    Read oredred metrics.
 
-    Routine to read in ordered list of metrics csv file
+    Routine to read in ordered list of metrics csv file.
 
     Not really csv but easily read in by csv package. This is a line by line
     ordered list of the metrics that will be plotted on a NAC plot. It should
@@ -160,7 +159,7 @@ def read_order_metrics(csvfile, required=False):
     :param str csvfile: CSV file name containing an ordered list of metrics
     :param bool required: If True then raise error if file does not exist
     :returns: An ordered list containing metric names
-    :rtype: list
+    :rtype: list.
     """
     metrics = []
     if csvfile is not None:
@@ -188,9 +187,9 @@ def read_order_metrics(csvfile, required=False):
 
 def read_model_metrics(csvfile, required=False):
     """
-    Read model metrics
+    Read model metrics.
 
-    Routine to read in model metrics csv file
+    Routine to read in model metrics csv file.
 
     An unordered list of metrics with a single value metric that are obtained
     from processing model output. Note that the model uncertainty also fits
@@ -200,7 +199,7 @@ def read_model_metrics(csvfile, required=False):
     :param str csvfile: CSV file name containing model data
     :param bool required: If True then raise error if file does not exist
     :returns: Dictionary containing metric values
-    :rtype: dict
+    :rtype: dict.
     """
     metrics = {}
     if csvfile is not None:
@@ -228,7 +227,7 @@ def read_model_metrics(csvfile, required=False):
 
 def read_obs_metrics(csvfile, required=False):
     """
-    Routine to read in observation metrics csv file
+    Routine to read in observation metrics csv file.
 
     An unordered list of metrics with either 2 or 4 values. The first 2 values
     are the observation range and must exist for any entry. The second 2 value
@@ -243,7 +242,7 @@ def read_obs_metrics(csvfile, required=False):
     :param bool required: If True then raise error if file does not exist
     :returns: A pair of metric dictionaries containing observational
               uncertainties and acceptable ranges
-    :rtype: tuple
+    :rtype: tuple.
     """
     obs = {}
     acc = {}
@@ -290,7 +289,7 @@ def read_obs_metrics(csvfile, required=False):
 
 def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
     """
-    Routine to determine whether to colour metric as:
+    Routine to determine whether to colour metric.
 
     GREEN = test within observational uncertainty or acceptable range
     AMBER = within model uncertainty, or better than reference but neither ref
@@ -310,7 +309,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
     :param tuple obs: Observational uncertainty as (min, max)
     :param tuple acc: Acceptable range as (min, max)
     :returns: Colour to use in plot indicating performance of metric
-    :rtype: str
+    :rtype: str.
     """
     # Default colour to NOOBS_GREY indicating no observational uncertainty
     colour = NOOBS_GREY
@@ -370,7 +369,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
 
 def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     """
-    Routine to loop over metrics and generate list of colours
+    Routine to loop over metrics and generate list of colours.
 
     :param dict test: Dictionary of test metrics
     :param dict ref: Dictionary of reference metrics
@@ -378,7 +377,7 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     :param dict obs: Dictionary of observation uncertainties as (min, max)
     :param dict acc: Dictionary of acceptable ranges as (min, max)
     :returns: Dictionary of colours for test metrics
-    :rtype: dict
+    :rtype: dict.
     """
     # initialize
     if ref is None:
@@ -414,13 +413,13 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
 
 def normalise(test, ref, strict=False):
     """
-    Routine to normalise contents of test by contents of ref
+    Routine to normalise contents of test by contents of ref.
 
     :param dict test: Dictionary of test metrics
     :param dict ref: Dictionary of reference metrics
     :param bool strict: if True then test and ref must have same metrics
     :returns: Dictionary of normalised test metrics
-    :rtype: dict
+    :rtype: dict.
     """
     if strict:
         # Test to make sure reference metrics dictionary contains the same
@@ -447,13 +446,13 @@ def normalise(test, ref, strict=False):
 
 def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
     """
-    Plot model uncertainty as filled bars about nac=1 line
+    Plot model uncertainty as filled bars about nac=1 line.
 
     :param axes ax: ``matplotlib.axes`` to plot data in
     :param list metrics: List of metrics to plot in order
     :param dict data: Metrics dictionary
     :param str color: Colour to plot bars
-    :param int zorder: Matplotlib plot layer
+    :param int zorder: Matplotlib plot layer.
     """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
@@ -477,13 +476,13 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
 
 def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
     """
-    Plot obs range as error bars
+    Plot obs range as error bars.
 
     :param axes ax: ``matplotlib.axes`` to plot data in
     :param list metrics: List of metrics to plot in order
     :param dict data: Metrics dictionary
     :param str color: Colour to plot error bars
-    :param int zorder: Matplotlib plot layer
+    :param int zorder: Matplotlib plot layer.
     """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
@@ -512,14 +511,14 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
 
 def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
     """
-    Plot metrics using symbols
+    Plot metrics using symbols.
 
     :param axes ax: ``matplotlib.axes`` to plot data in
     :param list metrics: List of metrics to plot in order
     :param dict data: Metrics dictionary
     :param dict cols: Metric colours dictionary
     :param str marker: Matplotlib symbol to use in plot
-    :param int zorder: Matplotlib plot layer
+    :param int zorder: Matplotlib plot layer.
     """
     # Extract metric data and line up with requested metrics
     coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
@@ -544,12 +543,12 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
 
 def plot_get_limits(tests, obs, acc, extend_y=False):
     """
-    Determine data axis limits
+    Determine data axis limits.
 
     :param list tests: Test experiment metrics dictionary list
     :param dict obs: Observational uncertainty metrics dictionary
     :param dict acc: Acceptable range metrics dictionary
-    :param bool extend_y: Extend y-axis to include obs/acc ranges
+    :param bool extend_y: Extend y-axis to include obs/acc ranges.
     """
     # Calculate absmax/max/min for experiments
     minval = min([min(test.values()) for test in tests])
@@ -598,7 +597,7 @@ def plot_nac(cref,
              title=None,
              ofile=None):
     """
-    Routine to produce NAC plot
+    Routine to produce NAC plot.
 
     :param str cref: Reference experiment name
     :param list ctests: Test experiment names list
