@@ -76,8 +76,8 @@ def write_order_metrics(csvfile, metrics):
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -103,8 +103,8 @@ def write_model_metrics(csvfile, metrics):
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -136,8 +136,8 @@ def write_obs_metrics(csvfile, obs, acc):
     if metrics:
         try:
             outf = open(csvfile, 'w')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
@@ -165,8 +165,8 @@ def read_order_metrics(csvfile, required=False):
     if csvfile is not None:
         try:
             inf = open(csvfile, 'rb')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
@@ -205,8 +205,8 @@ def read_model_metrics(csvfile, required=False):
     if csvfile is not None:
         try:
             inf = open(csvfile, 'rt')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
@@ -249,8 +249,8 @@ def read_obs_metrics(csvfile, required=False):
     if csvfile is not None:
         try:
             inf = open(csvfile, 'rt')
-        except IOError as shit:
-            if shit.errno == errno.EACCES:
+        except IOError as ioerr:
+            if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
                 else:
