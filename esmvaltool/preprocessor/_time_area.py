@@ -25,7 +25,7 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
         end_year: int
             end year
         end_month: int
-            end month        
+            end month
         end_day: int
             end day
 
