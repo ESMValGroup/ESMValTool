@@ -1,6 +1,7 @@
 #### summary 
 #### recipe that runs the Autoassess Stratorsphere assessment area diagnostic
-#### Version: 1 June 2018 
+#### Version: 1 June 2018; updated version: 11 September 2018
+#### Author: V. PREDOI (UREAD, valeriu.predoi@ncas.ac.uk) 
 #################
 #### Description:
 #################
@@ -14,8 +15,10 @@
 #################
 #### CAVEATS
 #################
-# - The original autoassess diagnostic needs MERRA obs data as well; not asked for here but it should be implemented
-# at a later stage;
+# - The original autoassess diagnostic needs MERRA obs data as well;
+#   add MERRA file request in this namelist when running.
+#################
+# RECIPE IS FULLY WORKING
 ###########################################################################################################
 ---
 
@@ -53,21 +56,23 @@ diagnostics:
       - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:
       autoassess_strato_test_1: &autoassess_strato_test_1_settings
-        script: autoassess/autoassess_stratosphere.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Stratosphere Diagnostic Metric MPI-MPI"
-        area: Stratosphere
+        area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [ERA-Interim]
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim, inmcm4]  # list to hold additional datasets for metrics
         start: 1997/12/01
         end: 2002/12/01
       autoassess_strato_test_2: &autoassess_strato_test_2_settings
-        script: autoassess/autoassess_stratosphere.py
+        script: autoassess/autoassess_area_base.py
         title: "Autoassess Stratosphere Diagnostic Metric MPI-INM"
-        area: Stratosphere
+        area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: inmcm4
-        obs_models: [ERA-Interim]
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim]  # list to hold additional datasets for metrics
         start: 1997/12/01
         end: 2002/12/01
 
@@ -79,22 +84,22 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_stratosphere.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_1
-        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
+        error_metric: ERA-Interim  # has to be from additional_metrics list
       plot_strato_test_2: &plot_strato_test_2_settings
         <<: *autoassess_strato_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_stratosphere.py
+        script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"
-        plot_name: "Metrics"
+        plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_2
-        plot_title: "MPI-ESM-LR_vs_inmcm4"
+        error_metric: ERA-Interim  # has to be from additional_metrics list

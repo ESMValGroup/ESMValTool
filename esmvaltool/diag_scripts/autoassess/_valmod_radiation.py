@@ -1,6 +1,6 @@
 #! /usr/local/sci/bin/python
 """
-Port for ESMValTool v2 from v1
+Port for ESMValTool v2 from v1.
 
 Uses: ESMValTool v2, Python 3.x
 Valeriu Predoi, UREAD, July 2018
@@ -15,7 +15,7 @@ import iris.analysis.cartography
 
 
 def get_cube_ready(cube):
-    """Remve unwanted coords and check bounds"""
+    """Remve unwanted coords and check bounds."""
     to_remove_list = [
         'forecast_reference_time', 'forecast_period', 'source', 'season',
         'time'
@@ -33,7 +33,7 @@ def get_cube_ready(cube):
 
 def area_avg(cube, coord1=None, coord2=None):
     """
-    Get area average
+    Get area average.
 
     Perform an area average of a cube using weights to account for
     changes in latitude.
@@ -50,7 +50,7 @@ def area_avg(cube, coord1=None, coord2=None):
 
 def perform_equation(dataset_1, dataset_2, analysis_type):
     """
-    Perform a simple cube operation
+    Perform a simple cube operation.
 
     analysis_type = type of analysis (zonal_mean, vertical_mean,...)
     This can be easily adapted for more than one type of operation
