@@ -46,6 +46,21 @@ def _import_package(area):
         raise Exception('Unknown area: ' + area)
 
 
+def _fix_cube(cube_list):
+    """Apply some ad hoc fixes to cubes."""
+    # force add a long_name; supermeans uses extract_strict
+    # and for derived vars there is only
+    # invalid_standard_name which is an attribute
+    for cube in cube_list:
+        if 'invalid_standard_name' in cube.attributes:
+            cube.long_name = cube.attributes['invalid_standard_name']
+        coord_names = [coord.standard_name for coord in cube.coords()]
+        if 'time' in coord_names:
+            if not cube.coord('time').has_bounds():
+                cube.coord('time').guess_bounds()
+    return cube_list
+
+
 def _make_tmp_dir(cfg):
     """Make the tmp and ancil dirs."""
     tmp_dir = os.path.join(cfg['work_dir'], 'tmp')
@@ -162,16 +177,7 @@ def _process_obs(cfg, obs_list, obs_loc):
     ] for obs in cfg['obs_models']]
     for obs_file_group, obs_name in zip(group_files, cfg['obs_models']):
         cubes_list_obs = iris.load(obs_file_group)
-        # force add a long_name; supermeans uses extract_strict
-        # and for derived vars there is only
-        # invalid_standard_name which is an attribute and shit
-        for cube in cubes_list_obs:
-            if 'invalid_standard_name' in cube.attributes:
-                cube.long_name = cube.attributes['invalid_standard_name']
-            coord_names = [coord.standard_name for coord in cube.coords()]
-            if 'time' in coord_names:
-                if not cube.coord('time').has_bounds():
-                    cube.coord('time').guess_bounds()
+        cubes_list_obs = _fix_cube(cubes_list_obs)
         obs_file_name = obs_name + '_cubeList.nc'
         iris.save(cubes_list_obs, os.path.join(obs_loc, obs_file_name))
 
@@ -187,16 +193,7 @@ def _process_metrics_data(all_files, suites, smeans):
             # save to congragated files; save twice for supermeans as well
             cubes_list_path = os.path.join(suites[key], 'cubeList.nc')
             cubes_list_smean_path = os.path.join(smeans[key], 'cubeList.nc')
-            # force add a long_name; supermeans uses extract_strict
-            # and for derived vars there is only
-            # invalid_standard_name which is an attribute and shit
-            for cube in cubelist:
-                if 'invalid_standard_name' in cube.attributes:
-                    cube.long_name = cube.attributes['invalid_standard_name']
-                coord_names = [coord.standard_name for coord in cube.coords()]
-                if 'time' in coord_names:
-                    if not cube.coord('time').has_bounds():
-                        cube.coord('time').guess_bounds()
+            cubelist = _fix_cube(cubelist)
             iris.save(cubelist, cubes_list_path)
             iris.save(cubelist, cubes_list_smean_path)
             cubes_lists_paths.append(cubes_list_path)
