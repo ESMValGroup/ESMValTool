@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor.regrid.vinterp`."""
+"""Unit tests for :func:`esmvaltool.preprocessor.regrid.extract_levels`."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -10,7 +10,8 @@ import numpy as np
 from numpy import ma
 
 import tests
-from esmvaltool.preprocessor._regrid import _MDI, vertical_schemes, vinterp
+from esmvaltool.preprocessor._regrid import (_MDI, VERTICAL_SCHEMES,
+                                             extract_levels)
 from tests.unit.preprocessor._regrid import _make_cube, _make_vcoord
 
 
@@ -26,47 +27,48 @@ class Test(tests.Test):
         self.mock_create_cube = self.patch(
             'esmvaltool.preprocessor._regrid._create_cube',
             return_value=self.created_cube)
-        self.vinterp_schemes = ['linear', 'nearest',
-                                'linear_horizontal_extrapolate_vertical',
-                                'nearest_horizontal_extrapolate_vertical']
+        self.schemes = [
+            'linear', 'nearest', 'linear_horizontal_extrapolate_vertical',
+            'nearest_horizontal_extrapolate_vertical'
+        ]
 
     def test_nop(self):
         cube = mock.sentinel.cube
-        result = vinterp(cube, None, None)
+        result = extract_levels(cube, None, None)
         self.assertEqual(result, cube)
 
     def test_invalid_levels__None(self):
         emsg = 'Target levels must be specified'
         with self.assertRaisesRegex(ValueError, emsg):
-            vinterp(self.cube, None, 'linear')
+            extract_levels(self.cube, None, 'linear')
 
     def test_invalid_scheme__None(self):
         levels = mock.sentinel.levels
         emsg = 'A scheme must be specified'
         with self.assertRaisesRegex(ValueError, emsg):
-            vinterp(self.cube, levels, None)
+            extract_levels(self.cube, levels, None)
 
     def test_invalid_scheme__unknown(self):
         levels = mock.sentinel.levels
         scheme = mock.sentinel.scheme
         emsg = 'Unknown vertical interpolation scheme'
         with self.assertRaisesRegex(ValueError, emsg):
-            vinterp(self.cube, levels, scheme)
+            extract_levels(self.cube, levels, scheme)
 
     def test_vertical_schemes(self):
-        self.assertEqual(set(vertical_schemes), set(self.vinterp_schemes))
+        self.assertEqual(set(VERTICAL_SCHEMES), set(self.schemes))
 
     def test_nop__levels_match(self):
         vcoord = _make_vcoord(self.z, dtype=self.dtype)
         self.assertEqual(self.cube.coord(axis='z', dim_coords=True), vcoord)
         levels = vcoord.points
-        result = vinterp(self.cube, levels, 'linear')
+        result = extract_levels(self.cube, levels, 'linear')
         self.assertEqual(id(result), id(self.cube))
         self.assertEqual(result, self.cube)
 
     def test_extraction(self):
         levels = [0, 2]
-        result = vinterp(self.cube, levels, 'linear')
+        result = extract_levels(self.cube, levels, 'linear')
         data = np.array([0, 1, 4, 5], dtype=self.dtype).reshape(2, 2, 1)
         expected = _make_cube(
             data, aux_coord=False, dim_coord=False, dtype=self.dtype)
@@ -81,7 +83,7 @@ class Test(tests.Test):
         with mock.patch('iris.cube.Cube.extract', return_value=None):
             emsg = 'Failed to extract levels'
             with self.assertRaisesRegex(ValueError, emsg):
-                vinterp(self.cube, levels, 'linear')
+                extract_levels(self.cube, levels, 'linear')
 
     def test_interpolation(self):
         new_data = np.array(True)
@@ -89,7 +91,7 @@ class Test(tests.Test):
         scheme = 'linear'
         with mock.patch(
                 'stratify.interpolate', return_value=new_data) as mocker:
-            result = vinterp(self.cube, levels, scheme)
+            result = extract_levels(self.cube, levels, scheme)
             self.assertEqual(result, self.created_cube)
             args, kwargs = mocker.call_args
             # Check the stratify.interpolate args ...
@@ -101,11 +103,9 @@ class Test(tests.Test):
             self.assertArrayEqual(args[1], src_levels_broadcast)
             self.assertArrayEqual(args[2], self.cube.data)
             # Check the stratify.interpolate kwargs ...
-            self.assertEqual(kwargs,
-                             dict(
-                                 axis=0,
-                                 interpolation=scheme,
-                                 extrapolation='nan'))
+            self.assertEqual(
+                kwargs, dict(
+                    axis=0, interpolation=scheme, extrapolation='nan'))
         args, kwargs = self.mock_create_cube.call_args
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)
@@ -121,7 +121,7 @@ class Test(tests.Test):
         scheme = 'nearest'
         with mock.patch(
                 'stratify.interpolate', return_value=new_data) as mocker:
-            result = vinterp(self.cube, levels, scheme)
+            result = extract_levels(self.cube, levels, scheme)
             self.assertEqual(result, self.created_cube)
             args, kwargs = mocker.call_args
             # Check the stratify.interpolate args ...
@@ -133,11 +133,9 @@ class Test(tests.Test):
             self.assertArrayEqual(args[1], src_levels_broadcast)
             self.assertArrayEqual(args[2], self.cube.data)
             # Check the stratify.interpolate kwargs ...
-            self.assertEqual(kwargs,
-                             dict(
-                                 axis=0,
-                                 interpolation=scheme,
-                                 extrapolation='nan'))
+            self.assertEqual(
+                kwargs, dict(
+                    axis=0, interpolation=scheme, extrapolation='nan'))
         args, kwargs = self.mock_create_cube.call_args
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)
@@ -160,7 +158,7 @@ class Test(tests.Test):
         cube = _make_cube(masked, dtype=self.dtype)
         with mock.patch(
                 'stratify.interpolate', return_value=new_data) as mocker:
-            result = vinterp(cube, levels, scheme)
+            result = extract_levels(cube, levels, scheme)
             self.assertEqual(result, self.created_cube)
             args, kwargs = mocker.call_args
             # Check the stratify.interpolate args ...
@@ -172,13 +170,11 @@ class Test(tests.Test):
             self.assertArrayEqual(args[1], src_levels_broadcast)
             self.assertArrayEqual(args[2], cube.data)
             # Check the stratify.interpolate kwargs ...
-            self.assertEqual(kwargs,
-                             dict(
-                                 axis=0,
-                                 interpolation=scheme,
-                                 extrapolation='nan'))
+            self.assertEqual(
+                kwargs, dict(
+                    axis=0, interpolation=scheme, extrapolation='nan'))
         args, kwargs = self.mock_create_cube.call_args
-        # in-place for new vinterp with nan's
+        # in-place for new extract_levels with nan's
         new_data[np.isnan(new_data)] = _MDI
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)

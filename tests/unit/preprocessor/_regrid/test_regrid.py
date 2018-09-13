@@ -12,17 +12,17 @@ import mock
 
 import tests
 from esmvaltool.preprocessor import regrid
-from esmvaltool.preprocessor._regrid import _cache, horizontal_schemes
+from esmvaltool.preprocessor._regrid import _CACHE, HORIZONTAL_SCHEMES
 
 
 class Test(tests.Test):
     def _check(self, tgt_grid, scheme, spec=False):
-        expected_scheme = horizontal_schemes[scheme]
+        expected_scheme = HORIZONTAL_SCHEMES[scheme]
 
         if spec:
             spec = tgt_grid
-            self.assertIn(spec, _cache)
-            self.assertEqual(_cache[spec], self.tgt_grid)
+            self.assertIn(spec, _CACHE)
+            self.assertEqual(_CACHE[spec], self.tgt_grid)
             self.coord_system.asset_called_once()
             expected_calls = [
                 mock.call(axis='x', dim_coords=True),
@@ -103,8 +103,8 @@ class Test(tests.Test):
             regrid(dummy, dummy, 'wibble')
 
     def test_horizontal_schemes(self):
-        self.assertEqual(set(horizontal_schemes.keys()),
-                         set(self.regrid_schemes))
+        self.assertEqual(
+            set(HORIZONTAL_SCHEMES.keys()), set(self.regrid_schemes))
 
     def test_regrid__horizontal_schemes(self):
         for scheme in self.regrid_schemes:
@@ -119,7 +119,7 @@ class Test(tests.Test):
             result = regrid(self.src_cube, spec, scheme)
             self.assertEqual(result, self.regridded_cube)
             self._check(spec, scheme, spec=True)
-        self.assertEqual(set(_cache.keys()), set(specs))
+        self.assertEqual(set(_CACHE.keys()), set(specs))
 
 
 if __name__ == '__main__':
