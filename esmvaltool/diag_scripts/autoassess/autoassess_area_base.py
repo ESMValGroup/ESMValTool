@@ -14,6 +14,7 @@ conservation -- not yet implemented
 globaltrop -- not yet implemented
 land_surface_surfrad -- implemented
 land_surface_snow -- implemented
+land_surface_soilmoisture -- implemented
 custom -- not yet implemented
 
 Author: Valeriu Predoi, UREAD (valeriu.predoi@ncas.ac.uk)
@@ -36,7 +37,8 @@ def _import_package(area):
     root_import = 'esmvaltool.diag_scripts.autoassess.'
     available_areas = [
         'monsoon', 'stratosphere', 'hydrocycle', 'conservation', 'globaltrop',
-        'land_surface_surfrad', 'land_surface_snow'
+        'land_surface_surfrad', 'land_surface_snow',
+        'land_surface_soilmoisture'
     ]
     if area in available_areas:
         module = root_import + area
@@ -355,13 +357,20 @@ def run_area(cfg):
     # run the metrics generation
     for suite_id in suite_ids:
         logger.info('Calculating metrics for %s', suite_id)
+        # setup for file dumping
+        run_obj['runid'] = suite_id
+        run_obj['dump_output'] = os.path.join(area_out_dir, suite_id)
+        if not os.path.exists(run_obj['dump_output']):
+            os.makedirs(run_obj['dump_output'])
         all_metrics = {}
 
         # run each metric function
         for metric_function in area_package.metrics_functions:
             logger.info('# Call: %s', metric_function)
-            run_obj['runid'] = suite_id
+
+            # run the metric
             metrics = metric_function(run_obj)
+            # check duplication
             duplicate_metrics = list(
                 set(all_metrics.keys()) & set(metrics.keys()))
             if duplicate_metrics:
@@ -370,10 +379,7 @@ def run_area(cfg):
             all_metrics.update(metrics)
 
         # write metrics to file
-        csv_dir = os.path.join(area_out_dir, suite_id)
-        if not os.path.exists(csv_dir):
-            os.makedirs(csv_dir)
-        with open(os.path.join(area_out_dir, suite_id, 'metrics.csv'),
+        with open(os.path.join(run_obj['dump_output'], 'metrics.csv'),
                   'w') as file_handle:
             writer = csv.writer(file_handle)
             for metric in all_metrics.items():
