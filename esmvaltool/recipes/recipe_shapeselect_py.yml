@@ -8,7 +8,7 @@ models:
 
 preprocessors:
 
-  preprocessor1: {} # {mean}
+  preprocessor1: #{} # {mean}
 #    regrid:
 #      target_grid: ERA-Interim
 #      scheme: linear
