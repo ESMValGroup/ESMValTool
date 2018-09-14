@@ -24,9 +24,6 @@ def land_sm_top(run):
 
     seasons = ['djf', 'mam', 'jja', 'son']
 
-    # Location of climatology
-    clim_sm_dir = os.path.join(run['climfiles_root'], 'ecv_soil_moisture')
-
     # Constants
     # density of water and ice
     rhow = 1000.
@@ -38,7 +35,7 @@ def land_sm_top(run):
     metrics = dict()
     for season in seasons:
         fname = 'ecv_soil_moisture_{}.nc'.format(season)
-        clim_file = os.path.join(clim_sm_dir, fname)
+        clim_file = os.path.join(run['climfiles_root'], fname)
         ecv_clim = iris.load_cube(clim_file)
         # correct invalid units
         if (ecv_clim.units == 'unknown' and
@@ -53,15 +50,21 @@ def land_sm_top(run):
 
         # m01s08i229i
         # standard_name: ???
-        sthu_run = get_supermean(
-            'mass_fraction_of_unfrozen_water_in_soil_moisture', season,
-            supermean_data_dir)
+        # TODO: uncomment when implemented
+        # sthu_run = get_supermean(
+        #     'mass_fraction_of_unfrozen_water_in_soil_moisture', season,
+        #     supermean_data_dir)
 
         # m01s08i230
         # standard_name: ??? soil_frozen_water_content - mrfso
-        sthf_run = get_supermean(
-            'mass_fraction_of_frozen_water_in_soil_moisture', season,
-            supermean_data_dir)
+        # TODO: uncomment when implemented
+        # sthf_run = get_supermean(
+        #     'mass_fraction_of_frozen_water_in_soil_moisture', season,
+        #     supermean_data_dir)
+
+        # TODO: remove after correct implementation
+        sthu_run = smcl_run
+        sthf_run = smcl_run
 
         # extract top soil layer
         cubes = [smcl_run, sthu_run, sthf_run]
@@ -91,6 +94,13 @@ def land_sm_top(run):
         # update the coordinate system ECV data with a WGS84 coord system
         # TODO: ask Heather why this is needed
         # TODO: who is Heather?
+        # unify coord systems for regridder
+        vol_sm1_run.coord('longitude').coord_system = \
+            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
+                                      inverse_flattening=298.257223563)
+        vol_sm1_run.coord('latitude').coord_system = \
+            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
+                                      inverse_flattening=298.257223563)
         ecv_clim.coord('longitude').coord_system = \
             iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
                                       inverse_flattening=298.257223563)
@@ -106,6 +116,9 @@ def land_sm_top(run):
         # Remove NaNs from data before aggregating statistics
         dff.data = np.ma.masked_invalid(dff.data)
 
+        # save output
+        iris.save(dff, os.path.join(run['dump_output'],
+                                    'soilmoist_diff_{}.nc'.format(season)))
         name = 'soilmoisture MedAbsErr {}'.format(season)
         metrics[name] = float(np.ma.median(np.ma.abs(dff.data)))
 

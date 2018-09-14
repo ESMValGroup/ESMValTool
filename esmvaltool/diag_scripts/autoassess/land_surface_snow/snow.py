@@ -25,13 +25,11 @@ def land_swe_top(run):
 
     snow_seasons = ['son', 'djf', 'mam']
 
-    # Location of climatology
-    clim_swe_dir = os.path.join(run['climfiles_root'], 'GlobSnow')
-
     # Calculate rms errors for seasons with snow.
     metrics = dict()
     for season in snow_seasons:
-        clim_file = os.path.join(clim_swe_dir, 'SWE_clm_{}.pp'.format(season))
+        clim_file = os.path.join(run['climfiles_root'],
+                                 'SWE_clm_{}.pp'.format(season))
         swe_clim = iris.load_cube(clim_file)
         swe_clim.data = np.ma.masked_array(
             swe_clim.data, mask=(swe_clim.data == -1e20))
@@ -52,7 +50,8 @@ def land_swe_top(run):
         # active regridding here
         swe_run = regrid(swe_run, swe_clim, 'linear')
         dff = swe_run - swe_clim
-        iris.save(dff, 'snow_diff_{}.nc'.format(season))
+        iris.save(dff, os.path.join(run['dump_output'],
+                                    'snow_diff_{}.nc'.format(season)))
 
         #  Calculate median absolute error of the difference
         name = "snow MedAbsErr {}".format(season)

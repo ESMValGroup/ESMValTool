@@ -9,19 +9,23 @@
 #  - soilmoisture
 #################
 #### CAVEATS
-# climatological files need a standard path (on JASMIN)
+# climatological files are stored externally:
+# JASMIN: /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
 # clim: ecv_soil_moisture
+##################
+# ISSUES
+# ################
 # MISSING variables:
 # mass_fraction_of_unfrozen_water_in_soil_moisture
 # mass_fraction_of_frozen_water_in_soil_moisture
 #################
+# RECIPE IS NOT FULLY WORKING (missing derived variables)
 ###########################################################################################################
 ---
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: inmcm4,      project: CMIP5,  mip: Lmon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,        project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -36,27 +40,27 @@ diagnostics:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
         field: T2Ms
-      # mass_fraction_of_unfrozen_water_in_soil_moisture
-      # mass_fraction_of_frozen_water_in_soil_moisture
+      # TODO: mass_fraction_of_unfrozen_water_in_soil_moisture
+      # TODO: mass_fraction_of_frozen_water_in_soil_moisture
     scripts:
       autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
         script: autoassess/autoassess_area_base.py
         title: "Autoassess Land-Surface Soilmoisture Diagnostic"
         area: land_surface_soilmoisture
-        control_model: MPI-ESM-LR
-        exp_model: MPI-ESM-MR
+        control_model: IPSL-CM5A-LR
+        exp_model: inmcm4
         obs_models: []
         start: 1997/12/01
         end: 2002/12/01
-        climfiles_root: '/home/users/valeriu'  # needs to be a widely-available path; needs ecv_soil_moisture
+        climfiles_root: '/group_workspaces/jasmin4/esmeval/for_vp/obs_etc'
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
       plot_landsurf_soilmoisture: &plot_landsurf_soilmoisture_settings
         <<: *autoassess_landsurf_soilmoisture_settings
-        control_model: MPI-ESM-LR
-        exp_model: MPI-ESM-MR
+        control_model: IPSL-CM5A-LR
+        exp_model: inmcm4
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_landsurf_soilmoisture']
         title: "Plot Land-Surface Soilmoisture Metrics"
