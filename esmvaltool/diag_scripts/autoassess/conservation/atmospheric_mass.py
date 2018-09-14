@@ -6,7 +6,7 @@ import numpy as np
 
 import iris
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-from .area_utils import area_average
+from esmvaltool.preprocessor._area_pp import area_average_general as a_avg
 
 
 def global_atmos_mass_conservation(run):
@@ -53,8 +53,8 @@ def global_atmos_mass_conservation(run):
 
     # calculating global means
     # Get time series of global means:
-    dryg = const_grav * area_average(dry, weighted=True)
-    wetg = const_grav * area_average(wet, weighted=True)
+    dryg = const_grav * a_avg(dry, weighted=True)
+    wetg = const_grav * a_avg(wet, weighted=True)
 
     # COMPUTE metrics (first subtracting mean over the data period)
     #    Best fit linear trend and inter-annual s.d. for dry and wet mass

@@ -13,7 +13,7 @@ import iris
 import iris.analysis.calculus as icalc
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-from .area_utils import area_average
+from esmvaltool.preprocessor._area_pp import area_average_general as a_avg
 
 
 def atmos_energy_budget(run):
@@ -122,9 +122,9 @@ def atmos_energy_budget(run):
 
         # calculate global averages and budgets:
         # instantaneous fields
-        cvtg = area_average(cvt_f, weighted=True)
-        grg = area_average(gr_f, weighted=True)
-        keg = area_average(ke_f, weighted=True)
+        cvtg = a_avg(cvt_f, weighted=True)
+        grg = a_avg(gr_f, weighted=True)
+        keg = a_avg(ke_f, weighted=True)
         en_tot = keg + cvtg + grg
 
         # Rate of change of instantaneous fields
@@ -134,15 +134,15 @@ def atmos_energy_budget(run):
         ch_gr = icalc.cube_delta(grg, 'time') / secs_per_season
 
         # Energy fluxes
-        swing = area_average(swin, weighted=True)
-        swoutg = area_average(swout, weighted=True)
-        swg = area_average(sw_flux, weighted=True)
-        lwg = area_average(lw_flux, weighted=True)
-        olrg = area_average(olr, weighted=True)
-        shg = area_average(sh_flux, weighted=True)
-        snowg = area_average(snow, weighted=True)
-        precipg = area_average(precip, weighted=True)
-        en_corg = area_average(en_cor, weighted=True)
+        swing = a_avg(swin, weighted=True)
+        swoutg = a_avg(swout, weighted=True)
+        swg = a_avg(sw_flux, weighted=True)
+        lwg = a_avg(lw_flux, weighted=True)
+        olrg = a_avg(olr, weighted=True)
+        shg = a_avg(sh_flux, weighted=True)
+        snowg = a_avg(snow, weighted=True)
+        precipg = a_avg(precip, weighted=True)
+        en_corg = a_avg(en_cor, weighted=True)
 
         # energy flux into atmosphere = radTOA - SH +
         # Lc * precip + Lf * snowfall
@@ -230,5 +230,5 @@ def _remove_forecast_period(cube):
 
 
 def remove_forecast_period(cubes):
-    """Remove forecast period"""
+    """Remove forecast period."""
     return [_remove_forecast_period(cube) for cube in cubes]

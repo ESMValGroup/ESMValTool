@@ -6,7 +6,7 @@ import iris
 import numpy as np
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-from .area_utils import area_average
+from esmvaltool.preprocessor._area_pp import area_average_general as a_avg
 
 
 def fluxes_submodel(run, stash_f, f_mult):
@@ -80,7 +80,7 @@ def fluxes_submodel(run, stash_f, f_mult):
             # ppfy *= f_mult[i]
 
             # Calculate global mean, time series of global values
-            ppfyg = area_average(
+            ppfyg = a_avg(
                 ppfy, weighted=True, aggregator=iris.analysis.SUM)
             # multi-year mean of global values
             ppfy_total = ppfyg.collapsed('time', iris.analysis.MEAN)
@@ -124,7 +124,7 @@ def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, y_i, y_f):
     # Read pp-file and calculate global budget:
 
     wfix = iris.load_cube(wfpath)
-    iceberg = area_average(wfix, weighted=True, aggregator=iris.analysis.SUM)
+    iceberg = a_avg(wfix, weighted=True, aggregator=iris.analysis.SUM)
     iceberg /= 1.0e9  # TODO magic number
 
     # calculate  R, P-E and net flux:
