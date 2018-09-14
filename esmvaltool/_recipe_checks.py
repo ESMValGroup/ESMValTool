@@ -1,12 +1,10 @@
 """Module with functions to check a recipe."""
-import inspect
 import logging
 import os
 import subprocess
 
 import yamale
 
-from . import preprocessor
 from ._data_finder import get_start_end_year
 from ._task import which
 
@@ -49,18 +47,6 @@ def recipe_with_schema(filename):
     yamale.validate(schema, recipe)
 
 
-def preprocessors(profiles):
-    """Check preprocessors in recipe"""
-    valid_functions = set(preprocessor.DEFAULT_ORDER)
-    for name, profile in profiles.items():
-        invalid_functions = set(profile) - {'custom_order'} - valid_functions
-        if invalid_functions:
-            raise RecipeError(
-                "Unknown function(s) {} in preprocessor {}, choose from: "
-                "{}".format(', '.join(invalid_functions), name,
-                            ', '.join(preprocessor.DEFAULT_ORDER)))
-
-
 def diagnostics(diags):
     """Check diagnostics in recipe"""
     for name, diagnostic in diags.items():
@@ -81,46 +67,6 @@ def diagnostics(diags):
                 raise RecipeError(
                     "No script defined for script {} in diagnostic {}".format(
                         script_name, name))
-
-
-def preprocessor_settings(settings):
-    """Check preprocessor settings."""
-    # The inspect functions getargspec and getcallargs are deprecated
-    # in Python 3, but their replacements are not available in Python 2.
-    # TODO: Use the new Python 3 inspect API
-    for step in settings:
-        if step not in preprocessor.DEFAULT_ORDER:
-            raise RecipeError(
-                "Unknown preprocessor function '{}', choose from: {}".format(
-                    step, ', '.join(preprocessor.DEFAULT_ORDER)))
-
-        function = getattr(preprocessor, step)
-        argspec = inspect.getargspec(function)
-        args = argspec.args[1:]
-        # Check for invalid arguments
-        invalid_args = set(settings[step]) - set(args)
-        if invalid_args:
-            raise RecipeError(
-                "Invalid argument(s): {} encountered for preprocessor "
-                "function {}. \nValid arguments are: [{}]".format(
-                    ', '.join(invalid_args), step, ', '.join(args)))
-
-        # Check for missing arguments
-        defaults = argspec.defaults
-        end = None if defaults is None else -len(defaults)
-        missing_args = set(args[:end]) - set(settings[step])
-        if missing_args:
-            raise RecipeError(
-                "Missing required argument(s) {} for preprocessor "
-                "function {}".format(missing_args, step))
-        # Final sanity check in case the above fails to catch a mistake
-        try:
-            inspect.getcallargs(function, None, **settings[step])
-        except TypeError:
-            logger.error(
-                "Wrong preprocessor function arguments in "
-                "function '%s'", step)
-            raise
 
 
 def duplicate_datasets(datasets):
@@ -159,20 +105,3 @@ def data_availability(input_files, var):
         raise RecipeError(
             "No input data available for years {} in files {}".format(
                 ", ".join(str(year) for year in missing_years), input_files))
-
-
-def multi_model_settings(all_settings):
-    """Check that multi dataset settings are identical for all datasets."""
-    multi_model_steps = (step for step in preprocessor.MULTI_MODEL_FUNCTIONS
-                         if any(step in settings
-                                for settings in all_settings.values()))
-    for step in multi_model_steps:
-        result = None
-        for filename, settings in all_settings.items():
-            if result is None:
-                result = settings[step]
-            elif result != settings[step]:
-                raise RecipeError(
-                    "Unable to combine differing multi-dataset settings "
-                    "{} and {} for output file {}".format(
-                        result, settings[step], filename))

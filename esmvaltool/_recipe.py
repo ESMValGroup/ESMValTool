@@ -13,13 +13,12 @@ from ._config import replace_tags
 from ._data_finder import (get_input_filelist, get_input_filename,
                            get_input_fx_filelist, get_output_file,
                            get_statistic_output_file)
-from ._provenance import (add_preprocessor_provenance, get_recipe_provenance,
-                          write_provenance)
+from ._provenance import get_recipe_provenance, write_provenance
 from ._recipe_checks import RecipeError
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
 from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
-                           PreprocessingTask, split_settings)
+                           MULTI_MODEL_FUNCTIONS, PreprocessingTask, Product)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -58,7 +57,6 @@ def load_raw_recipe(filename):
         raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
             'preprocessors', {})
 
-    check.preprocessors(raw_recipe['preprocessors'])
     check.diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
@@ -274,13 +272,11 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure loading
-    settings['load_cubes'] = {
+    settings['load'] = {
         'callback': concatenate_callback,
-        'filename': variable['filename'],
-        'metadata': variable,
     }
     if not derive:
-        settings['load_cubes']['constraints'] = variable['standard_name']
+        settings['load']['constraints'] = variable['standard_name']
     # Configure merge
     settings['concatenate'] = {}
 
@@ -338,7 +334,10 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save'] = {'compress': config_user['compress_netcdf']}
+    settings['save'] = {
+        'filename': None,
+        'compress': config_user['compress_netcdf']
+    }
 
     return settings
 
@@ -389,8 +388,9 @@ def _get_input_files(variable, config_user):
     return input_files
 
 
-def _apply_preprocessor_settings(settings, profile_settings):
+def _apply_preprocessor_profile(settings, profile_settings):
     """Apply settings from preprocessor profile."""
+    profile_settings = copy.deepcopy(profile_settings)
     for step, args in profile_settings.items():
         # Remove disabled preprocessor functions
         if args is False:
@@ -404,48 +404,116 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_statistics(variables, settings, preproc_dir):
+def _get_common_metadata(products):
+    """Get metadata that is shared between products."""
+    metadata = {}
+    some_product = next(iter(products))
+    for key, value in some_product.metadata.items():
+        if all(p.metadata.get(key, object()) == value for p in products):
+            metadata[key] = value
+    return metadata
+
+
+def _get_remaining_common_settings(step, order, products):
+    """Get preprocessor settings that are shared between products."""
+    settings = {}
+    remaining_steps = order[order.index(step) + 1:]
+    some_product = next(iter(products))
+    for key, value in some_product.settings.items():
+        if key in remaining_steps:
+            if all(p.settings.get(key, object()) == value for p in products):
+                settings[key] = value
+    return settings
+
+
+def _update_multi_dataset_settings(variable, settings):
     """Configure multi dataset statistics."""
-    if settings.get('multi_model_statistics', False):
-        if settings['multi_model_statistics'] is True:
-            settings['multi_model_statistics'] = {}
-        stat_settings = settings['multi_model_statistics']
-
-        variable = variables[0]
-
-        # Define output files
-        stat_settings['filenames'] = {}
-        for statistic in stat_settings['statistics']:
-            stat_settings['filenames'][statistic] = get_statistic_output_file(
-                variable, statistic, preproc_dir)
-
-        # Define datasets to exclude
-        exclude_datasets = set(stat_settings.get('exclude', {}))
-        for key in 'reference_dataset', 'alternative_dataset':
-            if key in exclude_datasets and key in variable:
-                exclude_datasets.remove(key)
-                exclude_datasets.add(variable[key])
-        exclude_files = {
-            v['filename']
-            for v in variables if v['dataset'] in exclude_datasets
+    for step in MULTI_MODEL_FUNCTIONS:
+        if not settings.get(step):
+            continue
+        # Exclude dataset if requested
+        exclude = {
+            _special_name_to_dataset(variable, dataset)
+            for dataset in settings[step].get('exclude', [])
         }
-        logger.debug('Multidataset excludes files %s', exclude_files)
-        stat_settings['exclude'] = {'_filename': exclude_files}
+        if variable['dataset'] in exclude:
+            settings.pop(step)
 
 
-def _get_preprocessor_settings(variables, profile, config_user):
-    """Get preprocessor settings for a set of datasets."""
-    all_settings = {}
-    profile = copy.deepcopy(profile)
-    _update_multi_model_statistics(variables, profile,
-                                   config_user['preproc_dir'])
+def _update_statistic_settings(products, order, preproc_dir):
+    """Define statistic output products."""
+    step = 'multi_model_statistics'
+
+    settings = None
+    for product in products:
+        if step in product.settings:
+            settings = product.settings[step]
+            break
+    if not settings:
+        return
+
+    for statistic in settings['statistics']:
+        metadata = _get_common_metadata(products)
+        metadata['dataset'] = 'MultiModel{}'.format(statistic.title())
+        metadata['filename'] = get_statistic_output_file(metadata, preproc_dir)
+        common_settings = _get_remaining_common_settings(step, order, products)
+        ancestors = {p for p in products if step in p.settings}
+        statistic_product = Product(
+            metadata, common_settings, ancestors=ancestors)
+        for product in products:
+            if step in product.settings:
+                if 'output_products' not in product.settings[step]:
+                    product.settings[step]['output_products'] = {}
+                product.settings[step]['output_products'][
+                    statistic] = statistic_product
+
+
+def _match_products(products, variables):
+    """Match a list of input products to output product metadata."""
+    grouped_products = {}
+
+    def get_matching(metadata):
+        """Find the output filename which matches input metadata best."""
+        score = 0
+        filenames = []
+        for variable in variables:
+            filename = variable['filename']
+            tmp = sum(v == variable.get(k) for k, v in metadata.items())
+            if tmp > score:
+                score = tmp
+                filenames = [filename]
+            elif tmp == score:
+                filenames.append(filename)
+        if not filenames:
+            logger.warning(
+                "Unable to find matching output file for input file %s",
+                filename)
+        return filenames
+
+    # Group input files by output file
+    for product in products:
+        for filename in get_matching(product.metadata):
+            if filename not in grouped_products:
+                grouped_products[filename] = []
+            grouped_products[filename].append(product)
+
+    return grouped_products
+
+
+def _get_preprocessor_products(variables, profile, order, ancestor_products,
+                               config_user):
+    """Get preprocessor product definitions for a set of datasets."""
+    products = set()
+    if ancestor_products:
+        grouped_ancestors = _match_products(ancestor_products, variables)
+    else:
+        grouped_ancestors = {}
 
     for variable in variables:
-        derive = 'derive' in profile
-        settings = _get_default_settings(variable, config_user, derive=derive)
-        _apply_preprocessor_settings(settings, profile)
-        # if the target grid is a dataset name, replace it with a file name
-        # TODO: call _update_target_grid only once per variable?
+        settings = _get_default_settings(
+            variable, config_user, derive='derive' in profile)
+        _apply_preprocessor_profile(settings, profile)
+        _update_multi_dataset_settings(variable, settings)
         _update_target_levels(
             variable=variable,
             variables=variables,
@@ -458,11 +526,24 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
-        check.preprocessor_settings(settings)
-        all_settings[variable['filename']] = settings
+        ancestors = grouped_ancestors.get(variable['filename'])
+        if ancestors:
+            input_files = None
+        else:
+            input_files = _get_input_files(variable, config_user)
+        product = Product(
+            metadata=variable,
+            settings=settings,
+            ancestors=ancestors,
+            input_files=input_files)
+        products.add(product)
 
-    check.multi_model_settings(all_settings)
-    return all_settings
+    _update_statistic_settings(products, order, config_user['preproc_dir'])
+
+    for product in products:
+        product.check()
+
+    return products
 
 
 def _extract_preprocessor_order(profile):
@@ -472,6 +553,21 @@ def _extract_preprocessor_order(profile):
         return DEFAULT_ORDER
     order = tuple(p for p in profile if p not in INITIAL_STEPS + FINAL_STEPS)
     return INITIAL_STEPS + order + FINAL_STEPS
+
+
+def split_settings(settings, step, order=DEFAULT_ORDER):
+    """Split settings, using step as a separator."""
+    before = {}
+    for _step in order:
+        if _step == step:
+            break
+        if _step in settings:
+            before[_step] = settings[_step]
+    after = {
+        k: v
+        for k, v in settings.items() if not (k == step or k in before)
+    }
+    return before, after
 
 
 def _split_derive_profile(profile):
@@ -489,40 +585,31 @@ def _get_single_preprocessor_task(variables,
                                   profile,
                                   config_user,
                                   name,
-                                  ancestors=None):
+                                  ancestor_tasks=None):
     """Create preprocessor tasks for a set of datasets."""
-    # Configure preprocessor
+    if ancestor_tasks is None:
+        ancestor_tasks = []
     order = _extract_preprocessor_order(profile)
-    all_settings = _get_preprocessor_settings(
-        variables=variables, profile=profile, config_user=config_user)
-
-    # Input files, used by tasks without ancestors
-    input_files = None
-    if not ancestors:
-        input_files = [
-            filename for variable in variables
-            for filename in _get_input_files(variable, config_user)
-        ]
-
-    output_dir = os.path.dirname(variables[0]['filename'])
+    ancestor_products = [p for task in ancestor_tasks for p in task.products]
+    products = _get_preprocessor_products(
+        variables=variables,
+        profile=profile,
+        order=order,
+        ancestor_products=ancestor_products,
+        config_user=config_user)
 
     task = PreprocessingTask(
-        settings=all_settings,
-        output_dir=output_dir,
-        ancestors=ancestors,
-        input_files=input_files,
+        products=products,
+        ancestors=ancestor_tasks,
         name=name,
         order=order,
-        debug=config_user['save_intermediary_cubes'])
+        debug=config_user['save_intermediary_cubes'],
+        write_ncl_interface=config_user['write_ncl_interface'])
 
     return task
 
 
-def _get_preprocessor_task(variables,
-                           profiles,
-                           config_user,
-                           task_name,
-                           write_ncl_interface=False):
+def _get_preprocessor_task(variables, profiles, config_user, task_name):
     """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
     variable = variables[0]
@@ -574,7 +661,8 @@ def _get_preprocessor_task(variables,
                     derive_input[short_name].append(variable)
 
         for derive_variables in derive_input.values():
-            derive_name = task_name + '_prepare_derive_input_' + derive_variables[0]['short_name']
+            derive_name = (task_name + '_prepare_derive_input_' +
+                           derive_variables[0]['short_name'])
             task = _get_single_preprocessor_task(
                 derive_variables,
                 derive_profile,
@@ -587,12 +675,11 @@ def _get_preprocessor_task(variables,
         _add_cmor_info(variable)
 
     # Create (final) preprocessor task
-    profile['extract_metadata'] = {'write_ncl': write_ncl_interface}
     task = _get_single_preprocessor_task(
         variables,
         profile,
         config_user,
-        ancestors=derive_tasks,
+        ancestor_tasks=derive_tasks,
         name=task_name)
 
     return task
@@ -607,14 +694,15 @@ class Recipe(object):
                  initialize_tasks=True,
                  recipe_file=None):
         """Parse a recipe file into an object."""
-        self._cfg = config_user
+        self._cfg = copy.deepcopy(config_user)
+        self._cfg['write_ncl_interface'] = self._need_ncl(
+            raw_recipe['diagnostics'])
         self._recipe_file = os.path.basename(recipe_file)
         self.documentation = self._initalize_documentation(
             raw_recipe.get('documentation', {}))
         self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
-        self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
@@ -767,7 +855,7 @@ class Recipe(object):
                 settings[dir_name] = os.path.join(self._cfg[dir_name],
                                                   diagnostic_name, script_name)
             # Copy other settings
-            if self._support_ncl:
+            if self._cfg['write_ncl_interface']:
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
                         'write_plots', 'write_netcdf'):
@@ -807,6 +895,7 @@ class Recipe(object):
         logger.info("Creating tasks from recipe")
         tasks = {}
 
+        provenance = get_recipe_provenance(self.documentation)
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
@@ -818,8 +907,7 @@ class Recipe(object):
                     variables=diagnostic['preprocessor_output'][variable_name],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
-                    task_name=task_id,
-                    write_ncl_interface=self._support_ncl)
+                    task_name=task_id)
                 tasks[task_id] = task
 
             if not self._cfg['run_diagnostic']:
@@ -850,9 +938,5 @@ class Recipe(object):
 
     def run(self):
         """Run all tasks in the recipe."""
-        self.provenance = get_recipe_provenance(self.documentation)
-        for task in get_independent_tasks(self.tasks):
-            add_preprocessor_provenance(task, self.provenance)
         run_tasks(
             self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
-        write_provenance(self.provenance, self._cfg['output_dir'])

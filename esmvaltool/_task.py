@@ -160,11 +160,9 @@ def write_ncl_settings(settings, filename, mode='wt'):
 class BaseTask(object):
     """Base class for defining task classes"""
 
-    def __init__(self, settings, output_dir, ancestors=None, name=''):
+    def __init__(self, ancestors=None, name=''):
         """Initialize task."""
-        self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
-        self.output_dir = output_dir
         self.output_files = None
         self.name = name
 
@@ -197,11 +195,9 @@ class BaseTask(object):
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
-        txt = 'settings:\n{}\nancestors:\n{}'.format(
-            pprint.pformat(self.settings, indent=2),
+        txt = 'ancestors:\n{}'.format(
             '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None',
-        )
+            if self.ancestors else 'None', )
         return txt
 
 
@@ -214,12 +210,10 @@ class DiagnosticTask(BaseTask):
 
     def __init__(self, script, settings, output_dir, ancestors=None, name=''):
         """Initialize"""
-        super(DiagnosticTask, self).__init__(
-            settings=settings,
-            output_dir=output_dir,
-            ancestors=ancestors,
-            name=name)
+        super(DiagnosticTask, self).__init__(ancestors=ancestors, name=name)
         self.script = script
+        self.settings = settings
+        self.output_dir = output_dir
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
         self.resource_log = os.path.join(settings['run_dir'],
@@ -448,9 +442,10 @@ class DiagnosticTask(BaseTask):
 
     def __str__(self):
         """Get human readable description."""
-        txt = "{}:\nscript: {}\n{}".format(
+        txt = "{}:\nscript: {}\n{}\nsettings:\n{}\n".format(
             self.__class__.__name__,
             self.script,
+            pprint.pformat(self.settings, indent=2),
             super(DiagnosticTask, self).str(),
         )
         return txt

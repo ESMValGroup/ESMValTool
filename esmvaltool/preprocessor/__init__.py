@@ -1,8 +1,13 @@
 """Preprocessor module."""
+import copy
+import inspect
 import logging
 import os
 
-from iris.cube import Cube
+import six
+from iris.cube import Cube, CubeList
+from prov.dot import prov_to_dot
+from prov.model import ProvDocument
 
 from .._task import BaseTask
 from ._area_pp import area_average as average_region
@@ -10,15 +15,15 @@ from ._area_pp import area_slice as extract_region
 from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
+from ._io import (_get_debug_filename, cleanup, concatenate, load, save,
+                  write_metadata)
 from ._mask import (mask_above_threshold, mask_below_threshold,
                     mask_fillvalues, mask_inside_range, mask_landsea,
                     mask_outside_range)
 from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
-from ._regrid import regrid
-from ._regrid import vinterp as extract_levels
+from ._regrid import extract_levels, regrid
 from ._time_area import (extract_month, extract_season, seasonal_mean,
                          time_average)
 from ._time_area import time_slice as extract_time
@@ -33,7 +38,7 @@ __all__ = [
     # File reformatting/CMORization
     'fix_file',
     # Load cube from file
-    'load_cubes',
+    'load',
     # Derive variable
     'derive',
     # Metadata reformatting/CMORization
@@ -81,228 +86,399 @@ __all__ = [
     # Save to file
     'save',
     'cleanup',
-    'extract_metadata',
 ]
 
 DEFAULT_ORDER = tuple(__all__)
 assert set(DEFAULT_ORDER).issubset(set(globals()))
 
+# The order of intial and final steps cannot be configured
 INITIAL_STEPS = DEFAULT_ORDER[:DEFAULT_ORDER.index('fix_data') + 1]
 FINAL_STEPS = DEFAULT_ORDER[DEFAULT_ORDER.index('cmor_check_data'):]
 
 MULTI_MODEL_FUNCTIONS = {
     'multi_model_statistics',
     'mask_fillvalues',
-    'extract_metadata',
 }
 assert MULTI_MODEL_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
-# Preprocessor functions that take a list instead of a file/Cube as input.
-_LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
-    'download',
-    'load_cubes',
-    'concatenate',
-    'derive',
-    'save',
-    'cleanup',
-}
-assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
-# Preprocessor functions that return a list instead of a file/Cube.
-_LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
-    'download',
-    'load_cubes',
-    'save',
-    'cleanup',
-}
-assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
+def _get_itype(step):
+    """Get the input type of a preprocessor function."""
+    function = globals()[step]
+    itype = inspect.getargspec(function).args[0]
+    valid_itypes = ('file', 'files', 'cube', 'cubes', 'product', 'products')
+    assert itype in valid_itypes, (
+        "Invalid preprocessor function definition {}, first argument "
+        "should be one of {} but is {}".format(function.__name__, valid_itypes,
+                                               itype))
+    return itype
 
 
-def split_settings(settings, step, order=DEFAULT_ORDER):
-    """Split settings, using step as a separator."""
-    before = {}
-    for _step in order:
-        if _step == step:
-            break
-        if _step in settings:
-            before[_step] = settings[_step]
-    after = {
-        k: v
-        for k, v in settings.items() if not (k == step or k in before)
-    }
-    return before, after
+# Check that the input type of all preprocessor functions is valid
+for step in DEFAULT_ORDER:
+    _get_itype(step)
 
 
-def _get_multi_model_settings(all_settings, step):
-    """Select settings for multi model step"""
-    for settings in all_settings.values():
-        if step in settings:
-            return {step: settings[step]}
-    return None
+def check_preprocessor_settings(settings):
+    """Check preprocessor settings."""
+    # The inspect functions getargspec and getcallargs are deprecated
+    # in Python 3, but their replacements are not available in Python 2.
+    # TODO: Use the new Python 3 inspect API
+    for step in settings:
+        if step not in DEFAULT_ORDER:
+            raise ValueError(
+                "Unknown preprocessor function '{}', choose from: {}".format(
+                    step, ', '.join(DEFAULT_ORDER)))
+
+        function = function = globals()[step]
+        argspec = inspect.getargspec(function)
+        args = argspec.args[1:]
+        # Check for invalid arguments
+        invalid_args = set(settings[step]) - set(args)
+        if invalid_args:
+            raise ValueError(
+                "Invalid argument(s): {} encountered for preprocessor "
+                "function {}. \nValid arguments are: [{}]".format(
+                    ', '.join(invalid_args), step, ', '.join(args)))
+
+        # Check for missing arguments
+        defaults = argspec.defaults
+        end = None if defaults is None else -len(defaults)
+        missing_args = set(args[:end]) - set(settings[step])
+        if missing_args:
+            raise ValueError(
+                "Missing required argument(s) {} for preprocessor "
+                "function {}".format(missing_args, step))
+        # Final sanity check in case the above fails to catch a mistake
+        try:
+            inspect.getcallargs(function, None, **settings[step])
+        except TypeError:
+            logger.error(
+                "Wrong preprocessor function arguments in "
+                "function '%s'", step)
+            raise
 
 
-def _group_input(in_files, out_files):
-    """Group a list of input files by output file."""
-    grouped_files = {}
-
-    def get_matching(in_file):
-        """Find the output file which matches input file best."""
-        in_chunks = os.path.basename(in_file).split('_')
-        score = 0
-        fname = []
-        for out_file in out_files:
-            out_chunks = os.path.basename(out_file).split('_')
-            tmp = sum(c in out_chunks for c in in_chunks)
-            if tmp > score:
-                score = tmp
-                fname = [out_file]
-            elif tmp == score:
-                fname.append(out_file)
-        if not fname:
-            logger.warning(
-                "Unable to find matching output file for input file %s",
-                in_file)
-        return fname
-
-    # Group input files by output file
-    for in_file in in_files:
-        for out_file in get_matching(in_file):
-            if out_file not in grouped_files:
-                grouped_files[out_file] = []
-            grouped_files[out_file].append(in_file)
-
-    return grouped_files
-
-
-def preprocess_multi_model(input_files, all_settings, order, debug=False):
-    """Run preprocessor on multiple models for a single variable."""
-    # Group input files by output file
-    all_items = _group_input(input_files, all_settings)
-    logger.debug("Processing %s", all_items)
-
-    # List of all preprocessor steps used
-    steps = [
-        step for step in order
-        if any(step in settings for settings in all_settings.values())
-    ]
-    # Find multi model steps
-    # This assumes that the multi model settings are the same for all models
-    multi_model_steps = [
-        step for step in steps if step in MULTI_MODEL_FUNCTIONS
-    ]
-    # Append a dummy multi model step if the final step is not multi model
-    dummy_step = object()
-    if steps[-1] not in MULTI_MODEL_FUNCTIONS:
-        multi_model_steps.append(dummy_step)
-
-    # Process
+def _check_multi_model_settings(products):
+    """Check that multi dataset settings are identical for all products."""
+    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS
+                         if any(step in p.settings for p in products))
     for step in multi_model_steps:
-        multi_model_settings = _get_multi_model_settings(all_settings, step)
-        # Run single model steps
-        for name in all_settings:
-            settings, all_settings[name] = split_settings(
-                all_settings[name], step, order)
-            all_items[name] = preprocess(all_items[name], settings, order,
-                                         debug)
-        if step is not dummy_step:
-            # Run multi model step
-            multi_model_items = [
-                item for name in all_items for item in all_items[name]
-            ]
-            all_items = {}
-            result = preprocess(multi_model_items, multi_model_settings, order,
-                                debug)
-            for item in result:
-                if isinstance(item, Cube):
-                    name = item.attributes['_filename']
-                    if name not in all_items:
-                        all_items[name] = []
-                    all_items[name].append(item)
-                else:
-                    all_items[item] = [item]
-
-    return [filename for name in all_items for filename in all_items[name]]
+        reference = None
+        for product in products:
+            settings = product.settings.get(step)
+            if settings is None:
+                continue
+            elif reference is None:
+                reference = product
+            elif reference.settings[step] != settings:
+                raise ValueError(
+                    "Unable to combine differing multi-dataset settings for "
+                    "{} and {}, {} and {}".format(
+                        reference.filename, product.filename,
+                        reference.settings[step], settings))
 
 
-def preprocess(items, settings, order, debug=False):
+def _get_multi_model_settings(products, step):
+    """Select settings for multi model step"""
+    _check_multi_model_settings(products)
+    settings = {}
+    exclude = set()
+    for product in products:
+        if step in product.settings:
+            settings = product.settings[step]
+        else:
+            exclude.add(product)
+    return settings, exclude
+
+
+def _run_preproc_function(function, items, kwargs):
+    """Run preprocessor function."""
+    msg = "{}({}, {})".format(function.__name__, items, kwargs)
+    logger.debug("Running %s", msg)
+    try:
+        return function(items, **kwargs)
+    except Exception:
+        logger.error("Failed to run %s", msg)
+        raise
+
+
+def preprocess(items, step, **settings):
     """Run preprocessor"""
-    steps = (step for step in order if step in settings)
-    for step in steps:
-        logger.debug("Running preprocessor step %s", step)
-        function = globals()[step]
-        args = settings[step]
+    logger.debug("Running preprocessor step %s", step)
+    function = globals()[step]
+    itype = _get_itype(step)
 
-        if step in _LIST_INPUT_FUNCTIONS:
-            logger.debug("Running %s(%s, %s)", function.__name__, items, args)
-            result = [function(items, **args)]
+    result = []
+    if itype.endswith('s'):
+        result.append(_run_preproc_function(function, items, settings))
+    else:
+        for item in items:
+            result.append(_run_preproc_function(function, item, settings))
+
+    items = []
+    for item in result:
+        if isinstance(item, (Product, Cube, six.string_types)):
+            items.append(item)
         else:
-            result = []
-            for item in items:
-                logger.debug("Running %s(%s, %s)", function.__name__, item,
-                             args)
-                result.append(function(item, **args))
-
-        if step in _LIST_OUTPUT_FUNCTIONS:
-            items = tuple(item for subitem in result for item in subitem)
-        else:
-            items = tuple(result)
-
-        if debug:
-            logger.debug("Result %s", items)
-            cubes = [item for item in items if isinstance(item, Cube)]
-            save(cubes, debug=debug, step=step)
+            items.extend(item)
 
     return items
+
+
+def get_step_blocks(steps, order):
+    """Group steps into execution blocks."""
+    blocks = []
+    prev_step_type = None
+    for step in order[order.index('load') + 1:order.index('save')]:
+        if step in steps:
+            step_type = step in MULTI_MODEL_FUNCTIONS
+            if step_type is not prev_step_type:
+                block = []
+                blocks.append(block)
+            prev_step_type = step_type
+            block.append(step)
+    return blocks
+
+
+class Product(object):
+    def __init__(self, metadata, settings, ancestors=None, input_files=None):
+        self._filename = metadata['filename']
+        self.metadata = metadata
+        self.settings = settings
+        self.files = []
+        self.files.extend(a.filename for a in ancestors or [])
+        self.files.extend(input_files or [])
+
+        self._cubes = None
+        self._prepared = False
+
+        # Set up provenance attributes
+        self.provenance = None
+        self.entity = None
+        self._ancestors = [] if ancestors is None else ancestors
+        self._input_files = [] if input_files is None else input_files
+        self._activity = None
+
+    def __str__(self):
+        return 'Product {}'.format(self.filename)
+
+    def __hash__(self):
+        return hash(self.filename)
+
+    @property
+    def filename(self):
+        return self._filename
+
+    def check(self):
+        """Check preprocessor settings."""
+        check_preprocessor_settings(self.settings)
+
+    def apply(self, step, debug=False):
+        if step not in self.settings:
+            raise ValueError("Product {} has no settings for step {}".format(
+                self, step))
+        self.cubes = preprocess(self.cubes, step, **self.settings[step])
+        if debug:
+            logger.debug("Result %s", self.cubes)
+            filename = _get_debug_filename(self.filename, step)
+            save(self.cubes, filename)
+
+    def prepare(self):
+        if not self._prepared:
+            for step in DEFAULT_ORDER[:DEFAULT_ORDER.index('load')]:
+                if step in self.settings:
+                    self.files = preprocess(self.files, step,
+                                            **self.settings[step])
+            self._prepared = True
+
+    @property
+    def cubes(self):
+        if self.is_closed:
+            self.prepare()
+            self._cubes = preprocess(self.files, 'load',
+                                     **self.settings.get('load', {}))
+        return self._cubes
+
+    @cubes.setter
+    def cubes(self, value):
+        self._cubes = value
+
+    def save(self):
+        """Save cubes to disk."""
+        if self._cubes is not None:
+            if 'save' not in self.settings:
+                self.settings['save'] = {}
+            self.settings['save']['filename'] = self.filename
+            self.files = preprocess(self._cubes, 'save',
+                                    **self.settings['save'])
+            self.files = preprocess(self.files, 'cleanup',
+                                    **self.settings.get('cleanup', {}))
+
+    def close(self):
+        """Close the product."""
+        self.save()
+        self._cubes = None
+        self.save_provenance()
+
+    @property
+    def is_closed(self):
+        """Check if the product is closed."""
+        return self._cubes is None
+
+    def initialize_provenance(self, task):
+        """Initialize the provenance document."""
+        if self.provenance is not None:
+            raise ValueError(
+                "Provenance of {} already initialized".format(self))
+        self.provenance = ProvDocument()
+        self.initialize_prov_namespaces()
+        self.initialize_prov_entity()
+        self.initialize_prov_activity(task)
+        self.initialize_prov_input()
+
+    def initialize_prov_namespaces(self):
+        """Inialize the namespaces."""
+        for nsp in ('file', 'attribute', 'preprocessor', 'task'):
+            self.provenance.add_namespace(nsp,
+                                          'http://www.esmvaltool.org/' + nsp)
+
+    def initialize_prov_entity(self):
+        """Inialize the entity representing the product."""
+        attributes = {
+            'attribute:' + k: str(v)
+            for k, v in self.metadata.items()
+        }
+        settings = {
+            'preprocessor:' + k: str(v)
+            for k, v in self.settings.items()
+        }
+        attributes.update(settings)
+        self.entity = self.provenance.entity('file:' + self.filename,
+                                             attributes)
+
+    def initialize_prov_activity(self, task):
+        """Initialize the preprocessor task activity."""
+        self._activity = self.provenance.activity('task:' + task.name)
+
+    def initialize_prov_input(self):
+        """Register input Products/files for provenance tracking."""
+        for ancestor in self._ancestors:
+            if ancestor.provenance is None:
+                raise ValueError("Uninitalized ancestor provenance.")
+            self.provenance.update(ancestor.provenance)
+            self.wasderivedfrom(ancestor)
+        for input_file in self._input_files:
+            file = self.provenance.entity('file:' + input_file)
+            # TODO: get tracking id
+            self.wasderivedfrom(file)
+
+    def wasderivedfrom(self, other):
+        """Let the product know that it was derived from other."""
+        entity = other.entity if hasattr(other, 'entity') else other
+        if not self._activity:
+            raise ValueError("Activity not initialized.")
+        self.entity.wasDerivedFrom(entity, self._activity)
+
+    def save_provenance(self):
+        """Export provenance information."""
+        filename = os.path.splitext(self.filename)[0]
+        self.provenance.serialize(filename + '.xml', format='xml')
+        figure = prov_to_dot(self.provenance)
+        figure.write_png(filename + '.png')
+
+
+def _apply_multimodel(products, step, debug):
+    """Apply multi model step to products."""
+    settings, exclude = _get_multi_model_settings(products, step)
+
+    logger.debug("Applying %s to\n%s", step, '\n'.join(
+        str(p) for p in products - exclude))
+    result = preprocess(products - exclude, step, **settings)
+    products = set(result) | exclude
+
+    if debug:
+        for product in products:
+            logger.debug("Result %s", product.filename)
+            if not product.is_closed:
+                for cube in product.cubes:
+                    logger.debug("with cube %s", cube)
+
+    return products
 
 
 class PreprocessingTask(BaseTask):
     """Task for running the preprocessor"""
 
     def __init__(self,
-                 settings,
-                 output_dir,
+                 products,
                  ancestors=None,
-                 input_files=None,
                  name='',
                  order=DEFAULT_ORDER,
-                 debug=None):
+                 debug=None,
+                 write_ncl_interface=False):
         """Initialize"""
-        super(PreprocessingTask, self).__init__(
-            settings=settings,
-            output_dir=output_dir,
-            ancestors=ancestors,
-            name=name)
+        super(PreprocessingTask, self).__init__(ancestors=ancestors, name=name)
+        _check_multi_model_settings(products)
+        self.products = set(products)
         self.order = list(order)
         self.debug = debug
-        self._input_files = input_files
+        self.write_ncl_interface = write_ncl_interface
+        self._initialize_provenance()
 
-    def _run(self, input_files):
-        # If input_data is not available from ancestors and also not
-        # specified in self.run(input_data), use default
-        if not self.ancestors and not input_files:
-            input_files = self._input_files
-        output_files = preprocess_multi_model(
-            input_files, self.settings, self.order, debug=self.debug)
-        return output_files
+    def _initialize_provenance(self):
+        """Initialize the provenance documents of the output products."""
+        for product in self.products:
+            product.initialize_provenance(self)
+
+        # Hacky way to inialize the multi model products as well.
+        step = 'multi_model_statistics'
+        for product in self.products:
+            if step in product.settings:
+                output_products = product.settings[step].get(
+                    'output_products', {})
+                for statistic in output_products:
+                    output_products[statistic].initialize_provenance(self)
+                break
+
+    def _run(self, _):
+        steps = {
+            step
+            for product in self.products for step in product.settings
+        }
+        blocks = get_step_blocks(steps, self.order)
+        for block in blocks:
+            logger.debug("Running block %s", block)
+            if block[0] in MULTI_MODEL_FUNCTIONS:
+                for step in block:
+                    self.products = _apply_multimodel(self.products, step,
+                                                      self.debug)
+            else:
+                for product in self.products:
+                    logger.debug("Applying single-model steps to %s", product)
+                    for step in block:
+                        if step in product.settings:
+                            product.apply(step, self.debug)
+                    if block == blocks[-1]:
+                        product.close()
+
+        for product in self.products:
+            product.close()
+        metadata_files = write_metadata(self.products,
+                                        self.write_ncl_interface)
+        return metadata_files
 
     def __str__(self):
         """Get human readable description."""
-        settings = dict(self.settings)
-        self.settings = {
-            os.path.basename(k): v
-            for k, v in self.settings.items()
-        }
-
-        txt = "{}:\norder: {}\n{}".format(
+        order = [
+            step for step in self.order
+            if any(step in product.settings for product in self.products)
+        ]
+        products = '\n\n'.join(str(p) for p in self.products)
+        txt = "{}:\norder: {}\n{}\n{}".format(
             self.__class__.__name__,
-            tuple(
-                step for step in self.order
-                if any(step in settings for settings in settings.values())),
+            order,
+            products,
             super(PreprocessingTask, self).str(),
         )
-
-        self.settings = settings
-
-        if self._input_files is not None:
-            txt += '\ninput_files: {}'.format(self._input_files)
         return txt

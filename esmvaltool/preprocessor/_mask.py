@@ -7,8 +7,8 @@ and geographical area eslection
 
 from __future__ import print_function
 
-import os
 import logging
+import os
 
 import iris
 import numpy as np
@@ -28,8 +28,8 @@ def _check_dims(cube, mask_cube):
     len_y = len(cube.coord('latitude').points)
     len_mx = len(mask_cube.coord('longitude').points)
     len_my = len(mask_cube.coord('latitude').points)
-    if (x_dim == mx_dim and y_dim == my_dim and
-            len_x == len_mx and len_y == len_my):
+    if (x_dim == mx_dim and y_dim == my_dim and len_x == len_mx
+            and len_y == len_my):
         logger.debug('Data cube and fx mask have same dims')
         return True
 
@@ -95,14 +95,14 @@ def mask_landsea(cube, fx_files, mask_out):
             fx_cubes[fx_root] = iris.load_cube(fx_file)
 
         # preserve importance order: try stflf first then sftof
-        if ('sftlf' in fx_cubes.keys() and
-                _check_dims(cube, fx_cubes['sftlf'])):
+        if ('sftlf' in fx_cubes.keys()
+                and _check_dims(cube, fx_cubes['sftlf'])):
             landsea_mask = _get_fx_mask(fx_cubes['sftlf'].data, mask_out,
                                         'sftlf')
             cube.data = _apply_fx_mask(landsea_mask, cube.data)
             logger.debug("Applying land-sea mask: sftlf")
-        elif ('sftof' in fx_cubes.keys() and
-              _check_dims(cube, fx_cubes['sftof'])):
+        elif ('sftof' in fx_cubes.keys()
+              and _check_dims(cube, fx_cubes['sftof'])):
             landsea_mask = _get_fx_mask(fx_cubes['sftof'].data, mask_out,
                                         'sftof')
             cube.data = _apply_fx_mask(landsea_mask, cube.data)
@@ -290,88 +290,92 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     return counts_windowed_cube, newmask, masked_cube
 
 
-def mask_above_threshold(mycube, threshold):
+def mask_above_threshold(cube, threshold):
     """
     Mask above a specific threshold value.
 
     Takes a value `threshold' and masks off anything that is above
     it in the cube data. Values equal to the threshold are not masked.
     """
-    mycube.data = np.ma.masked_where(mycube.data > threshold, mycube.data)
-    return mycube
+    cube.data = np.ma.masked_where(cube.data > threshold, cube.data)
+    return cube
 
 
-def mask_below_threshold(mycube, threshold):
+def mask_below_threshold(cube, threshold):
     """
     Mask below a specific threshold value.
 
     Takes a value `threshold' and masks off anything that is below
     it in the cube data. Values equal to the threshold are not masked.
     """
-    mycube.data = np.ma.masked_where(mycube.data < threshold, mycube.data)
-    return mycube
+    cube.data = np.ma.masked_where(cube.data < threshold, cube.data)
+    return cube
 
 
-def mask_inside_range(mycube, minimum, maximum):
+def mask_inside_range(cube, minimum, maximum):
     """
     Mask inside a specific threshold range.
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's between the two in the cube data.
     """
-    mycube.data = np.ma.masked_inside(mycube.data, minimum, maximum)
-    return mycube
+    cube.data = np.ma.masked_inside(cube.data, minimum, maximum)
+    return cube
 
 
-def mask_outside_range(mycube, minimum, maximum):
+def mask_outside_range(cube, minimum, maximum):
     """
     Mask outside a specific threshold range.
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's outside the two in the cube data.
     """
-    mycube.data = np.ma.masked_outside(mycube.data, minimum, maximum)
-    return mycube
+    cube.data = np.ma.masked_outside(cube.data, minimum, maximum)
+    return cube
 
 
-def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
+def mask_fillvalues(products,
+                    threshold_fraction,
+                    min_value=-1.e10,
                     time_window=1):
     """Get the final fillvalues mask"""
-    # function idea copied from preprocess.py
-
-    # Ensure all cubes have masked arrays
-    for cube in cubes:
-        cube.data = np.ma.fix_invalid(cube.data, copy=False)
-
-    # Get the fillvalue masks from all datasets
-    masks = (_get_fillvalues_mask(cube, threshold_fraction, min_value,
-                                  time_window) for cube in cubes)
-
     # Combine all fillvalue masks
     combined_mask = None
-    for mask in masks:
-        if combined_mask is None:
-            combined_mask = np.zeros_like(mask)
-        # Select only valid (not all masked) pressure levels
-        n_dims = len(mask.shape)
-        if n_dims == 2:
-            valid = ~np.all(mask)
-            if valid:
-                combined_mask |= mask
-        elif n_dims == 3:
-            valid = ~np.all(mask, axis=(1, 2))
-            combined_mask[valid] |= mask[valid]
-        else:
-            raise NotImplementedError("Unable to handle {} dimensional data"
-                                      .format(n_dims))
+
+    used = set()
+    for product in products:
+        for cube in product.cubes:
+            cube.data = np.ma.fix_invalid(cube.data, copy=False)
+            mask = _get_fillvalues_mask(cube, threshold_fraction, min_value,
+                                        time_window)
+            if combined_mask is None:
+                combined_mask = np.zeros_like(mask)
+            # Select only valid (not all masked) pressure levels
+            n_dims = len(mask.shape)
+            if n_dims == 2:
+                valid = ~np.all(mask)
+                if valid:
+                    combined_mask |= mask
+                    used.add(product)
+            elif n_dims == 3:
+                valid = ~np.all(mask, axis=(1, 2))
+                combined_mask[valid] |= mask[valid]
+                if np.any(valid):
+                    used.add(product)
+            else:
+                raise NotImplementedError(
+                    "Unable to handle {} dimensional data".format(n_dims))
 
     if np.any(combined_mask):
         # Apply masks
         logger.debug("Applying fillvalues mask")
-        for cube in cubes:
-            cube.data.mask |= combined_mask
+        for product in products:
+            for cube in product.cubes:
+                cube.data.mask |= combined_mask
+            for other in used - {product}:
+                product.wasderivedfrom(other)
 
-    return cubes
+    return products
 
 
 def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):

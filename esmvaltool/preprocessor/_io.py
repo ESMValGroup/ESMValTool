@@ -23,6 +23,10 @@ VARIABLE_KEYS = {
 }
 
 
+class ConcatenationError(Exception):
+    """Exception class for concatenation errors"""
+
+
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
     if coord_name is not None:
         attrs = ncfield.cf_group[coord_name].cf_attrs()
@@ -47,7 +51,7 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, filename, metadata, constraints=None, callback=None):
+def load(files, constraints=None, callback=None):
     """Load iris cubes from files"""
     logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
@@ -55,13 +59,11 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
 
-    for cube in cubes:
-        cube.attributes['_filename'] = filename
-        cube.attributes['metadata'] = yaml.safe_dump(metadata)
-        # TODO add block below when using iris 2.0
-        # always set fillvalue to 1e+20
-        # if np.ma.is_masked(cube.data):
-        #     np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
+    # for cube in cubes:
+    # TODO add block below when using iris 2.0
+    # always set fillvalue to 1e+20
+    # if np.ma.is_masked(cube.data):
+    #     np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -77,57 +79,20 @@ def concatenate(cubes):
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
-        raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
+        raise ConcatenationError('Can not concatenate cubes {}'.format(cubes))
 
 
-def _save_cubes(cubes, **args):
-    """Save iris cube to file."""
-    filename = args['target']
-    optimize_accesss = args.pop('optimize_access')
-
-    dirname = os.path.dirname(filename)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    if (os.path.exists(filename)
-            and all(cube.has_lazy_data() for cube in cubes)):
-        logger.debug("Not saving cubes %s to %s to avoid data loss. "
-                     "The cube is probably unchanged.", cubes, filename)
-    else:
-        logger.debug("Saving cubes %s to %s", cubes, filename)
-        if optimize_accesss:
-            cube = cubes[0]
-            if optimize_accesss == 'map':
-                dims = set(cube.coord_dims('latitude') +
-                           cube.coord_dims('longitude'))
-            elif optimize_accesss == 'timeseries':
-                dims = set(cube.coord_dims('time'))
-            else:
-                dims = tuple()
-                for coord_dims in (cube.coord_dims(dimension) for dimension
-                                   in optimize_accesss.split(' ')):
-                    dims += coord_dims
-                dims = set(dims)
-
-            args['chunksizes'] = tuple(length if index in dims else 1
-                                       for index, length
-                                       in enumerate(cube.shape))
-        iris.save(cubes, **args)
-
-    return filename
-
-
-def save(cubes, optimize_access=None,
-         compress=False, debug=False, step=None):
+def save(cubes, filename, optimize_access='', compress=False, **kwargs):
     """
     Save iris cubes to file
-
-    Path is taken from the _filename attributte in the code.
 
     Parameters
     ----------
     cubes: iterable of iris.cube.Cube
         Data cubes to be saved
+
+    filename: str
+        Name of target file
 
     optimize_access: str
         Set internal NetCDF chunking to favour a reading scheme
@@ -141,43 +106,62 @@ def save(cubes, optimize_access=None,
     compress: bool, optional
         Use NetCDF internal compression.
 
-    debug: bool, optional
-        Inform the function if this save is an intermediate save
-
-    step: int, optional
-        Number of the preprocessor step.
-
-        Only used if debug is True
-
     Returns
     -------
+    str
+        filename
 
     """
-    paths = {}
-    for cube in cubes:
-        if '_filename' not in cube.attributes:
-            raise ValueError("No filename specified in cube {}".format(cube))
-        if debug:
-            dirname = os.path.splitext(cube.attributes.get('_filename'))[0]
-            if os.path.exists(dirname) and os.listdir(dirname):
-                num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
-            else:
-                num = 0
-            filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
+    # Rename some arguments
+    kwargs['target'] = filename
+    kwargs['zlib'] = compress
+
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+    if (os.path.exists(filename)
+            and all(cube.has_lazy_data() for cube in cubes)):
+        logger.debug(
+            "Not saving cubes %s to %s to avoid data loss. "
+            "The cube is probably unchanged.", cubes, filename)
+        return filename
+
+    logger.debug("Saving cubes %s to %s", cubes, filename)
+    if optimize_access:
+        cube = cubes[0]
+        if optimize_access == 'map':
+            dims = set(
+                cube.coord_dims('latitude') + cube.coord_dims('longitude'))
+        elif optimize_access == 'timeseries':
+            dims = set(cube.coord_dims('time'))
         else:
-            filename = cube.attributes.pop('_filename')
-        if filename not in paths:
-            paths[filename] = []
-        paths[filename].append(cube)
+            dims = tuple()
+            for coord_dims in (cube.coord_dims(dimension)
+                               for dimension in optimize_access.split(' ')):
+                dims += coord_dims
+            dims = set(dims)
+
+        kwargs['chunksizes'] = tuple(
+            length if index in dims else 1
+            for index, length in enumerate(cube.shape))
 
     # TODO replace block when using iris 2.0
-    for filename in paths:
-        # _save_cubes(cubes=paths[filename], target=filename,
-        #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
-                    optimize_access=optimize_access)
+    # kwargs['fill_value'] = GLOBAL_FILL_VALUE
+    iris.save(cubes, **kwargs)
 
-    return list(paths)
+    return filename
+
+
+def _get_debug_filename(filename, step):
+    """Get a filename for debugging the preprocessor."""
+    dirname = os.path.splitext(filename)[0]
+    if os.path.exists(dirname) and os.listdir(dirname):
+        num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
+    else:
+        num = 0
+    filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
+    return filename
 
 
 def cleanup(files, remove=None):
@@ -194,17 +178,14 @@ def cleanup(files, remove=None):
     return files
 
 
-def extract_metadata(files, write_ncl=False):
-    """Extract the metadata attribute from cubes and write to file."""
+def write_metadata(products, write_ncl=False):
+    """Write product metadata to file."""
     output_files = []
-    for output_dir, filenames in groupby(files, os.path.dirname):
+    for output_dir, prods in groupby(products,
+                                     lambda p: os.path.dirname(p.filename)):
         metadata = {}
-        for filename in filenames:
-            cube = iris.load_cube(filename)
-            raw_cube_metadata = cube.attributes.get('metadata')
-            if raw_cube_metadata:
-                cube_metadata = yaml.safe_load(raw_cube_metadata)
-                metadata[filename] = cube_metadata
+        for product in prods:
+            metadata[product.filename] = product.metadata
 
         output_filename = os.path.join(output_dir, 'metadata.yml')
         output_files.append(output_filename)
@@ -259,9 +240,3 @@ def _write_ncl_metadata(output_dir, metadata):
     write_ncl_settings(info, filename)
 
     return filename
-
-
-class ConcatenationError(Exception):
-    """Exception class for concatenation errors"""
-
-    pass

@@ -2,15 +2,17 @@
 
 from __future__ import absolute_import, division, print_function
 
-import unittest
 import os
 import tempfile
-import numpy as np
-import iris
-from iris.cube import Cube
-from iris.coords import DimCoord
+import unittest
 
-from esmvaltool.preprocessor import _io
+import iris
+import numpy as np
+from iris.coords import DimCoord
+from iris.cube import Cube
+
+from esmvaltool.preprocessor import load
+from esmvaltool.preprocessor._io import concatenate_callback
 
 
 class TestLoad(unittest.TestCase):
@@ -24,10 +26,10 @@ class TestLoad(unittest.TestCase):
             os.remove(temp_file)
 
     def _create_sample_cube(self):
-        coord = DimCoord([1, 2], standard_name='latitude',
-                         units='degrees_north')
-        cube = Cube([1, 2], var_name='sample',
-                    dim_coords_and_dims=((coord, 0),))
+        coord = DimCoord(
+            [1, 2], standard_name='latitude', units='degrees_north')
+        cube = Cube(
+            [1, 2], var_name='sample', dim_coords_and_dims=((coord, 0), ))
         return cube
 
     def _save_cube(self, cube):
@@ -42,12 +44,11 @@ class TestLoad(unittest.TestCase):
             cube = self._create_sample_cube()
             self._save_cube(cube)
 
-        list = _io.load_cubes(self.temp_files, 'filename', None)
+        list = load(self.temp_files, None)
         cube = list[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
-        self.assertTrue((cube.coord('latitude').points ==
-                         np.array([1, 2])).all())
-        self.assertEquals(cube.attributes['_filename'], 'filename')
+        self.assertTrue((cube.coord('latitude').points == np.array([1,
+                                                                    2])).all())
 
     def test_callback_remove_attributtes(self):
         """Test callback remove unwanted attributes"""
@@ -58,13 +59,11 @@ class TestLoad(unittest.TestCase):
                 cube.attributes[attr] = attr
             self._save_cube(cube)
 
-        cubes = _io.load_cubes(self.temp_files, 'filename', None,
-                               callback=_io.concatenate_callback)
+        cubes = load(self.temp_files, None, callback=concatenate_callback)
         cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
-        self.assertTrue((cube.coord('latitude').points ==
-                         np.array([1, 2])).all())
-        self.assertEqual(cube.attributes['_filename'], 'filename')
+        self.assertTrue((cube.coord('latitude').points == np.array([1,
+                                                                    2])).all())
         for attr in attributtes:
             self.assertTrue(attr not in cube.attributes)
 
@@ -73,11 +72,9 @@ class TestLoad(unittest.TestCase):
         cube = self._create_sample_cube()
         self._save_cube(cube)
 
-        list = _io.load_cubes(self.temp_files, 'filename', None,
-                              callback=_io.concatenate_callback)
+        list = load(self.temp_files, None, callback=concatenate_callback)
         cube = list[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
-        self.assertTrue((cube.coord('latitude').points ==
-                         np.array([1, 2])).all())
-        self.assertEquals(cube.attributes['_filename'], 'filename')
+        self.assertTrue((cube.coord('latitude').points == np.array([1,
+                                                                    2])).all())
         self.assertEquals(cube.coord('latitude').units, 'degrees_north')
