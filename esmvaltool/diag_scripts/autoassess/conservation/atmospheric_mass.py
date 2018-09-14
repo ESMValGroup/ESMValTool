@@ -67,7 +67,6 @@ def global_atmos_mass_conservation(run):
     # On the other hand, time coordinate units of cube are hours since
     # 1/1/1970, where the lower bound of coordinate is the initial
     # period of time meaning.
-    # TODO gregorian calendar
     # Convert cube time units to year of annual mean, following Hadley Centre's
     # convention of naming that year as the lower bound of meaning:
 
@@ -106,9 +105,7 @@ def global_atmos_mass_conservation(run):
     xtick_formatter = FormatStrFormatter('%4d')
     ytick_formatter = FormatStrFormatter('%4.1e')
     titl1_temp = '{0}   Global {1} mass (deviation from time mean, Pa)'
-    # TODO unit from cube
     titl2_temp = '$log_{{10}}$(e-fold time/year):{0:6.2f}s.d.:{1:9.2e} Pa'
-    # TODO unit from cube?
 
     plt.figure(figsize=(8.27, 11.69))
 

@@ -40,7 +40,6 @@ def atmos_energy_budget(run):
         90. * 86400.0, long_name='seconds_per_season', units='s')
 
     # missing-data indicator:
-    # TODO use NaN for missing data
     mdi = -10000.0
 
     # Make sure we pick up last instantaneous field
