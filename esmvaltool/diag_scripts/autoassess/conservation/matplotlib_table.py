@@ -1,40 +1,37 @@
 """Assemble energy budget results in one table figure."""
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 
 
-# need to clean this function up, it is UGLY
-def render_mpl_table(table, header_rows=0, header_columns=0,
-                     highlight_cells=None,
-                     col_width=3.0, row_height=0.6, font_size=14,
-                     header_color='#40466e', highlight_color='#c0848e',
-                     row_colors=['#f1f1f2', '#ffffff'], edge_color='#ffffff',
-                     bbox=[0, 0, 1, 1], **kwargs):
+# The way this function was initially called in global_water_conservation:
+# render_mpl_table(
+#        table,
+#        header_rows=2,
+#        header_columns=0,
+#        col_width=5,
+#        highlight_cells=[(2, 0), (6, 1), (8, 0), (12, 1), (14, 0), (18, 1),
+#                         (20, 0), (25, 1), (27, 0), (30, 1)])
+# so the core function can be simplified by deafulting a lot of args
+# and eliminating dangerous default values as lists
+
+def render_mpl_table(table, header_rows, header_columns,
+                     col_width, highlight_cells, **kwargs):
     """
     Create table using matplotlib.
 
     Inspired by: http://stackoverflow.com/a/39358752
-
-    Example:
-
-    table = [
-        ['',     '',     '',     ''],
-        ['TRIP', 'bla',  '2200', ''],
-        ['',     'blub', '2100', ''],
-        ['',     'foo',  '1500', ''],
-        ['',     'foo',  '1500', ''],
-        ['',     'foo',  '1500', ''],
-        ['',     'foo',  '1500', ''],
-        ['',     'DFs',  '8888', '']
-    ]
-
-    render_mpl_table(array, header_rows=2, header_columns=2,
-                     highlight_cells=[(6,2), (7,2)],
-                     col_width=2.4, font_size=14, row_height=0.6)
-
-    plt.savefig('test.png', format='png')
-    plt.show()
     """
+    # some default values
+    row_height = 0.6
+    font_size = 14
+    header_color = '#40466e'
+    highlight_color = '#c0848e'
+    row_colors = ['#f1f1f2', '#ffffff']
+    edge_color = '#ffffff'
+    bbox = [0, 0, 1, 1]
+
     table = np.array(table)
     # create empty plot; no axes
     size = (np.array(table.shape[::-1]) + np.array([0, 1])) \

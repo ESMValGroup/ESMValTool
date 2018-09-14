@@ -28,7 +28,7 @@ def resolution(cube):
     return resol, endgame
 
 
-def global_freshwater_fluxes_over_various_GC_cubmodels(run):
+def global_freshwater_fluxes(run):
     """
     Calculate fluxes.
 
@@ -169,13 +169,13 @@ def global_freshwater_fluxes_over_various_GC_cubmodels(run):
     table.append(['Precipitation', val_format.format(fval[1])])
     table.append(['Net Flux', val_format.format(fval[2])])
 
-    _fig = render_mpl_table(
-        table,
-        header_rows=2,
-        header_columns=0,
-        col_width=5,
-        highlight_cells=[(2, 0), (6, 1), (8, 0), (12, 1), (14, 0), (18, 1),
-                         (20, 0), (25, 1), (27, 0), (30, 1)])
+    header_rows = 2
+    header_columns = 0
+    col_width = 5
+    highlight_cells = [(2, 0), (6, 1), (8, 0), (12, 1), (14, 0), (18, 1),
+                       (20, 0), (25, 1), (27, 0), (30, 1)]
+    render_mpl_table(table, header_rows, header_columns,
+                     col_width, highlight_cells)
     plt.savefig(fluxes_table + '.png', format='png')
 
     return metrics
