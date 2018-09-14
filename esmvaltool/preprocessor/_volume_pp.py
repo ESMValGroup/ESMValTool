@@ -7,6 +7,7 @@ selecting depth or height regions; constructing volumetric averages;
 import iris
 import numpy as np
 
+from copy import deepcopy
 
 # slice cube over a restricted area (box)
 def volume_slice(cube, z_min, z_max):
@@ -49,6 +50,93 @@ def volume_slice(cube, z_min, z_max):
     region_subset = cube.extract(subz)
     return region_subset
 
+def _create_cube_time(src_cube, data, times):
+    """
+    Generate a new cube with the volume averaged data.
+
+    The resultant cube is seeded with `src_cube` metadata and coordinates,
+    excluding any source coordinates that span the associated vertical
+    dimension. The `times` of interpolation are used along with the
+    associated source cube time coordinate metadata to add a new
+    time coordinate to the resultant cube.
+
+    Based on the _create_cube method from _regrid.py.
+
+    Parameters
+    ----------
+    src_cube : cube
+        The source cube that was vertically interpolated.
+    data : array
+        The payload resulting from interpolating the source cube
+        over the specified times.
+    times : array
+        The array of times.
+
+    Returns
+    -------
+    cube
+
+    .. note::
+
+        If there is only one level of interpolation, the resultant cube
+        will be collapsed over the associated vertical dimension, and a
+        scalar vertical coordinate will be added.
+
+    """
+    print(src_cube.coords)
+    print(len(data))
+    print(times)
+    # Get the source cube vertical coordinate and associated dimension.
+    #src_times = src_cube.coord(axis='time', dim_coords=True)
+    src_times = src_cube.coord('time')
+    t_dim, = src_cube.coord_dims(src_times)
+
+    if data.shape[t_dim] != len(times):
+        emsg = ('Mismatch between data and times for data dimension {!r}, '
+                'got data shape {!r} with times shape {!r}.')
+        raise ValueError(emsg.format(t_dim, data.shape, times.shape))
+
+    # Construct the resultant cube with the interpolated data
+    # and the source cube metadata.
+    kwargs = deepcopy(src_cube.metadata)._asdict()
+    result = iris.cube.Cube(data, **kwargs)
+
+    # Add the appropriate coordinates to the cube, excluding
+    # any coordinates that span the z-dimension of interpolation.
+    for coord in src_cube.dim_coords:
+        [dim] = src_cube.coord_dims(coord)
+        if dim != t_dim:
+            result.add_dim_coord(coord.copy(), dim)
+
+    for coord in src_cube.aux_coords:
+        dims = src_cube.coord_dims(coord)
+        if t_dim not in dims:
+            result.add_aux_coord(coord.copy(), dims)
+
+    for coord in src_cube.derived_coords:
+        dims = src_cube.coord_dims(coord)
+        if t_dim not in dims:
+            result.add_aux_coord(coord.copy(), dims)
+
+    # Construct the new vertical coordinate for the interpolated
+    # z-dimension, using the associated source coordinate metadata.
+    kwargs = deepcopy(src_times._as_defn())._asdict()
+
+    try:
+        coord = iris.coords.DimCoord(times, **kwargs)
+        result.add_dim_coord(coord, t_dim)
+    except ValueError:
+        coord = iris.coords.AuxCoord(times, **kwargs)
+        result.add_aux_coord(coord, t_dim)
+
+    # Collapse the z-dimension for the scalar case.
+    if times.size == 1:
+        slicer = [slice(None)] * result.ndim
+        slicer[t_dim] = 0
+        result = result[tuple(slicer)]
+
+    return result
+
 
 def volume_average(cube, coordz, coord1, coord2):
     """
@@ -77,26 +165,101 @@ def volume_average(cube, coordz, coord1, coord2):
     iris.cube.Cube
         collapsed cube.
     """
-    # CMOR ised data should already have bounds?
-    #    cube.coord(coord1).guess_bounds()
-    #    cube.coord(coord2).guess_bounds()
+    # TODO: Add sigma depth coordinates.
+    # TODO: Currently calculate cell volume, but it may be included in runs
+
+    #####
+    # Load depth field and figure out which dim is which.
     depth = cube.coord(coordz)
+    t_dim = cube.coord_dims('time')[0]
+    z_dim = cube.coord_dims(coordz)[0]
+
+    #####
+    # Load z direction thickness
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
-    area = iris.analysis.cartography.area_weights(cube)
+    #if thickness.ndim == 1:
+        #slices = [None for i in cube.shape]
+        #coord_dim = cube.coord_dims(coordz)[0]
+        #slices[coord_dim] = slice(None)
+        #thickness = np.abs(thickness[tuple(slices)])
 
-    if depth.ndim == 1:
-        slices = [None for i in cube.shape]
-        coord_dim = cube.coord_dims(coordz)[0]
-        slices[coord_dim] = slice(None)
-        thickness = np.abs(thickness[tuple(slices)])
+    if cube.shape[t_dim] < 2:
+        #####
+        # Very small cube and should be able to do it in one.
+        # Too small to make a dummy cube.
+        area = iris.analysis.cartography.area_weights(cube)
 
-    grid_volume = area * thickness
+        #####
+        # Calculate grid volume:
+        if thickness.ndim == 1 and z_dim == 1:
+            grid_volume = area * thickness[None,:,None,None]
+        if thickness.ndim == 4:
+            grid_volume = area * thickness
 
-    result = cube.collapsed(
-        [coordz, coord1, coord2], iris.analysis.MEAN, weights=grid_volume)
+        return cube.collapsed([coordz, coord1, coord2],
+                              iris.analysis.MEAN,
+                              weights=grid_volume,)
 
-    return result
+    #####
+    # Calculate grid volume:
+    area = iris.analysis.cartography.area_weights(cube[:2, :2])
+    if thickness.ndim == 1 and z_dim == 1:
+        grid_volume = area * thickness[None,:2,None,None]
+    if thickness.ndim == 4:
+        grid_volume = area * thickness[:,:2]
+
+    ######
+    # Create a small dummy output array
+    src_cube = cube[:2, :2].collapsed([coordz, coord1, coord2],
+                                      iris.analysis.MEAN,
+                                      weights=grid_volume,)
+
+    ######
+    # Calculate global volume weighted average
+    result = []
+    ######
+    # iterate over time and depth dimensions.
+    for t in range(cube.shape[0]):
+        #####
+        # create empty output arrays
+        column = []
+        depth_volume = []
+
+        #####
+        # assume cell area is the same thoughout the water column
+        area = iris.analysis.cartography.area_weights(cube[t,0])
+
+        #####
+        # iterate over time and depth dimensions.
+        for z in range(cube.shape[1]):
+            #####
+            # Calculate grid volume for this time and layer
+
+            if thickness.ndim == 1:
+                grid_volume = area * thickness[z]
+            if thickness.ndim == 4:
+                grid_volume = area * thickness[t,z]
+            # TODO: some netcdfs may include cell volume, could be added here.
+
+            #####
+            # Calculate weighted mean for this time and layer
+            column.append(cube[t,z].collapsed([coordz, coord1, coord2],
+                                        iris.analysis.MEAN,
+                                        weights=grid_volume,).data)
+            gv = np.ma.masked_where(cube[t,z].data.mask,grid_volume).sum()
+            depth_volume.append(gv)
+        #####
+        # Calculate weighted mean over the water volumn           
+        result.append(np.average(column, weights=depth_volume))
+
+    #####
+    # Send time series and dummy cube to cube creating tool.         
+    times = np.array(cube.coord('time').points.astype(float))
+    result = np.array(result)
+    return _create_cube_time(src_cube, result, times)
+
+
 
 
 # get the depth integration
