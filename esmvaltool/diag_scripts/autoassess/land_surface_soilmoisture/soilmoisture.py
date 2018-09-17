@@ -1,10 +1,14 @@
 """Run module for soil moisture metrics."""
 
 import os
+import logging
 import numpy as np
 import iris
 from esmvaltool.preprocessor._regrid import regrid
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+
+
+logger = logging.getLogger(__name__)
 
 
 def land_sm_top(run):
@@ -69,7 +73,8 @@ def land_sm_top(run):
         # extract top soil layer
         cubes = [smcl_run, sthu_run, sthf_run]
         for i, cube in enumerate(cubes):
-            assert cube.coord('depth').attributes['positive'] == 'down'
+            if cube.coord('depth').attributes['positive'] != 'down':
+                logger.warning('Cube %s depth attribute is not down', cube)
             top_level = min(cube.coord('depth').points)
             topsoil = iris.Constraint(depth=top_level)
             cubes[i] = cube.extract(topsoil)

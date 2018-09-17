@@ -231,7 +231,7 @@ def area_average_general(cube,
         # For some reason cube.intersection() promotes dtype of coordinate
         # arrays to float64, whereas cube.extract() doesn't. Need to make
         # sure behaviour is identical.
-        for coord in intkeys.keys():
+        for coord in intkeys:
             newcube.coord(coord).points = \
                 newcube.coord(coord).points.astype(np.float32, copy=False)
     else:

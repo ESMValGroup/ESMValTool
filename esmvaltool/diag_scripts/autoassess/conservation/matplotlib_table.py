@@ -1,20 +1,9 @@
 """Assemble energy budget results in one table figure."""
-import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
+import numpy as np
 
-
-# The way this function was initially called in global_water_conservation:
-# render_mpl_table(
-#        table,
-#        header_rows=2,
-#        header_columns=0,
-#        col_width=5,
-#        highlight_cells=[(2, 0), (6, 1), (8, 0), (12, 1), (14, 0), (18, 1),
-#                         (20, 0), (25, 1), (27, 0), (30, 1)])
-# so the core function can be simplified by deafulting a lot of args
-# and eliminating dangerous default values as lists
 
 def render_mpl_table(table, header_rows, header_columns,
                      col_width, highlight_cells, **kwargs):
