@@ -4,10 +4,24 @@ Area operations on data cubes.
 Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
+import logging
 import numpy as np
 import numpy.ma as ma
 
 import iris
+
+
+logger = logging.getLogger(__name__)
+
+
+# guess bounds tool
+def _guess_bounds(cube, coords):
+    """Guess bounds of a cube, or not."""
+    # check for bounds just in case
+    for coord in coords:
+        if not cube.coord(coord).has_bounds():
+            cube.coord(coord).guess_bounds()
+    return cube
 
 
 # slice cube over a restricted area (box)
@@ -111,11 +125,8 @@ def area_average(cube, coord1, coord2):
         cube: iris.cube.Cube
             input cube.
 
-        coord1: str
-            name of first coordinate
-
-        coord2: str
-            name of second coordinate
+        coord1, coord2: str, str
+            coords to use
 
     Returns
     -------
@@ -123,13 +134,55 @@ def area_average(cube, coord1, coord2):
         collapsed cube.
     """
     # check for bounds just in case
-    for coord in (coord1, coord2):
-        if not cube.coord(coord).has_bounds():
-            cube.coord(coord).guess_bounds()
+    coords = [coord1, coord2]
+    cube = _guess_bounds(cube, coords)
     grid_areas = iris.analysis.cartography.area_weights(cube)
-    result = cube.collapsed(
-        [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
+    result = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
     return result
+
+
+def _area_average_general_cecks(coords, aggregator, weighted=False):
+    """Perform a set of pre-checks before area_average_general."""
+    if coords is None:
+        coords = ['latitude', 'longitude']
+
+    # Make sure that aggregator is an Aggregator instance
+    if not isinstance(aggregator, iris.analysis.Aggregator):
+        logger.warning('Aggregator %s not an iris aggregator, \
+                       performing MEAN instead', aggregator)
+        aggregator = iris.analysis.MEAN
+    # If doing weighted aggregation make sure that aggregator
+    # is a WeightAggregator instance
+    if weighted:
+        if not isinstance(aggregator, iris.analysis.WeightedAggregator):
+            logger.warning('Aggregator %s not a weighted iris aggregator, \
+                           performing MEAN instead', aggregator)
+            aggregator = iris.analysis.MEAN
+
+    return coords, aggregator
+
+
+def _apply_area_average_mask(cube, aggkeys, mask,
+                             logicmask=False, intkeys=None):
+    """Apply the needed type of mask while area averaging."""
+    # Extract region of mask to match data
+    if intkeys:
+        newmask = mask.intersection(ignore_bounds=True, **intkeys)
+    else:
+        newmask = mask.copy()
+    if 'weights' in aggkeys:
+        if logicmask:
+            aggkeys['weights'] = ma.array(
+                data=aggkeys['weights'], mask=newmask.data)
+        else:
+            aggkeys['weights'] *= newmask.data
+    else:
+        if logicmask:
+            cube.data = ma.array(data=cube.data, mask=newmask.data)
+        else:
+            cube.data *= newmask.data
+
+    return cube
 
 
 def area_average_general(cube,
@@ -164,16 +217,8 @@ def area_average_general(cube,
 
     aggregated cube.
     """
-    if coords is None:
-        coords = ['latitude', 'longitude']
-
-    # Make sure that aggregator is an Aggregator instance
-    assert isinstance(aggregator, iris.analysis.Aggregator)
-    # If doing weighted aggregation make sure that aggregator
-    # is a WeightAggregator instance
-    if weighted:
-        assert isinstance(aggregator, iris.analysis.WeightedAggregator)
-
+    coords, aggregator = _area_average_general_cecks(coords,
+                                                     aggregator, weighted)
     # Extract region specification if available
     intkeys = {}
     for coord in coords:
@@ -195,28 +240,11 @@ def area_average_general(cube,
     # If doing area-weighted aggregation then calculate area weights
     if weighted:
         # Coords need bounding
-        for coord in coords:
-            if not newcube.coord(coord).has_bounds():
-                newcube.coord(coord).guess_bounds()
+        newcube = _guess_bounds(newcube, coords)
         aggkeys['weights'] = iris.analysis.cartography.area_weights(newcube)
 
     # Apply mask
     if mask:
-        # Extract region of mask to match data
-        if intkeys:
-            newmask = mask.intersection(ignore_bounds=True, **intkeys)
-        else:
-            newmask = mask.copy()
-        if 'weights' in aggkeys:
-            if logicmask:
-                aggkeys['weights'] = ma.array(
-                    data=aggkeys['weights'], mask=newmask.data)
-            else:
-                aggkeys['weights'] *= newmask.data
-        else:
-            if logicmask:
-                newcube.data = ma.array(data=newcube.data, mask=newmask.data)
-            else:
-                newcube.data *= newmask.data
+        _apply_area_average_mask(cube, aggkeys, mask, logicmask, intkeys)
 
     return newcube.collapsed(coords, aggregator, **aggkeys)
