@@ -15,6 +15,7 @@ globaltrop -- not yet implemented
 land_surface_surfrad -- implemented
 land_surface_snow -- implemented
 land_surface_soilmoisture -- implemented
+land_surface_permafrost -- implemented
 custom -- not yet implemented
 
 Author: Valeriu Predoi, UREAD (valeriu.predoi@ncas.ac.uk)
@@ -38,7 +39,7 @@ def _import_package(area):
     available_areas = [
         'monsoon', 'stratosphere', 'hydrocycle', 'conservation', 'globaltrop',
         'land_surface_surfrad', 'land_surface_snow',
-        'land_surface_soilmoisture'
+        'land_surface_soilmoisture', 'land_surface_permafrost'
     ]
     if area in available_areas:
         module = root_import + area
@@ -152,19 +153,22 @@ def _get_filelists(cfg):
         if base_file.split('_')[1] == cfg['control_model']:
             metrics_dict['control_model'].append(fullpath_file)
             if 'fx_files' in attributes:
-                metrics_dict['control_model'].append(
-                    attributes['fx_files'][cfg['fx']])
+                for fx_file in cfg['fx']:
+                    metrics_dict['control_model'].append(
+                        attributes['fx_files'][fx_file])
         if base_file.split('_')[1] == cfg['exp_model']:
             metrics_dict['exp_model'].append(fullpath_file)
             if 'fx_files' in attributes:
-                metrics_dict['exp_model'].append(
-                    attributes['fx_files'][cfg['fx']])
+                for fx_file in cfg['fx']:
+                    metrics_dict['exp_model'].append(
+                        attributes['fx_files'][fx_file])
         if additional_metrics and base_file.split(
                 '_')[1] in cfg['additional_metrics']:
             metrics_dict[base_file.split('_')[1]].append(fullpath_file)
             if 'fx_files' in attributes:
-                metrics_dict[base_file.split('_')[1]].append(
-                    attributes['fx_files'][cfg['fx']])
+                for fx_file in cfg['fx']:
+                    metrics_dict[base_file.split('_')[1]].append(
+                        attributes['fx_files'][fx_file])
         if obs_types and base_file.split('_')[1] in obs_types:
             obs_list.append(fullpath_file)
 
