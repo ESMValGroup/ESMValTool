@@ -4,7 +4,7 @@ Diagnostic Maps quad:
 Diagnostic to produce an image showing four maps.
 These plost show latitude vs longitude and the cube value is used as the colour
 scale.
-        model1              model 1 minus model2 
+        model1              model 1 minus model2
         model2 minus obs    model1 minus obs
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
@@ -20,7 +20,8 @@ preprocessors:
       scheme: linear_extrap
     time_average:
 
-This tool is part of the ocean diagnostic tools package in the ESMValTool.
+This tool is part of the ocean diagnostic tools package in the ESMValTool,
+and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
@@ -44,39 +45,56 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,):
 
-    if len(lons)==0:return fig,ax
+def makemapplot(fig, ax, lons, lats, data, title, zrange=[-100, 100],
+                lon0=0., drawCbar=True, cbarlabel='', doLog=False, ):
+
+    if len(lons) == 0:
+        return fig, ax
     try:
-        if len(lons.compressed())==0:return False, False
-    except:pass
+        if len(lons.compressed()) == 0:
+            return False, False
+    except AttributeError:
+        logger.warning('makemapplot: latitude and longitude not provided.')
 
     lons = np.array(lons)
     lats = np.array(lats)
     data = np.ma.array(data)
 
-    if doLog and zrange[0]*zrange[1] <=0.:
-#        print "makemapplot: \tMasking"
+    if doLog and zrange[0] * zrange[1] <= 0.:
         data = np.ma.masked_less_equal(ma.array(data), 0.)
 
-    if data.ndim ==1:
+    if data.ndim == 1:
         if doLog:
-            im = ax.scatter(lons, lats,c=data, lw=0,marker='s', transform=cartopy.crs.PlateCarree(),norm=LogNorm(),vmin=zrange[0],vmax=zrange[1])
+            im = ax.scatter(lons, lats, c=data, lw=0, marker='s',
+                            transform=cartopy.crs.PlateCarree(),
+                            norm=LogNorm(),
+                            vmin=zrange[0],
+                            vmax=zrange[1])
         else:
-            im = ax.scatter(lons, lats,c=data, lw=0,marker='s',transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+            im = ax.scatter(lons, lats, c=data, lw=0, marker='s',
+                            transform=cartopy.crs.PlateCarree(),
+                            vmin=zrange[0],
+                            vmax=zrange[1])
     else:
-        crojp2, data, newLon,newLat = regrid(data,lats,lons)
+        crojp2, data, newLon, newLat = regrid(data, lats, lons)
 
         if doLog:
-            im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+            im = ax.pcolormesh(newLon, newLat, data,
+                               transform=cartopy.crs.PlateCarree(),
+                               norm=LogNorm(vmin=zrange[0],
+                                            vmax=zrange[1]), )
         else:
-            im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+            im = ax.pcolormesh(newLon, newLat, data,
+                               transform=cartopy.crs.PlateCarree(),
+                               vmin=zrange[0], vmax=zrange[1])
 
     ax.add_feature(cartopy.feature.LAND,  facecolor='0.85')
 
     if drawCbar:
-        c1 = fig.colorbar(im,pad=0.05,shrink=0.75)
-        if len(cbarlabel)>0: c1.set_label(cbarlabel)
+        c1 = fig.colorbar(im, pad=0.05, shrink=0.75)
+        if len(cbarlabel) > 0:
+            c1.set_label(cbarlabel)
 
     plt.title(title)
 
@@ -87,30 +105,29 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
     return fig, ax
 
 
-def match_moddel_to_key(m,cfg_dict, input_files_dict,):
-    """
-    Match up the three models and observations dataset from the configs.
-    """
-    if type(cfg_dict) != type({}):
-        print('problem!',m)
+def match_moddel_to_key(m, cfg_dict, input_files_dict, ):
+    """Match up the three models and observations dataset from the configs."""
+    if not isinstance(cfg_dict, dict):
+        print('problem!', m)
         assert 0
     print(cfg_dict.keys())
     print(input_files_dict.keys())
 
-    
     for input_file, intput_dict in input_files_dict.items():
         match = True
-        for key,value in cfg_dict.items():
-           if key not in intput_dict:
-               match = False
-               continue
-           if value != intput_dict[key]:
-               match = False
-               continue
-           print("found a match:\t",m,   key, ':', value, '==',intput_dict[key])
+        for key, value in cfg_dict.items():
+            if key not in intput_dict:
+                match = False
+                continue
+            if value != intput_dict[key]:
+                match = False
+                continue
+            print("found a match:\t", m,   key, ':', value, '==',
+                  intput_dict[key])
         if match:
-           print("found a matching file:", m,   os.path.basename(input_file), cfg_dict)
-           return input_file
+            print("found a matching file:", m,
+                  os.path.basename(input_file), cfg_dict)
+            return input_file
     return ''
 
 
@@ -121,7 +138,8 @@ def get_cube_range(cubes):
     for cube in cubes:
         mi.append(cube.data.min())
         ma.append(cube.data.max())
-    return [np.min(mi), np.max(ma),]
+    return [np.min(mi), np.max(ma), ]
+
 
 def get_cube_range_diff(cubes):
     """Determinue the largest deviation from zero in an array of cubes."""
@@ -130,7 +148,7 @@ def get_cube_range_diff(cubes):
         ma.append(np.abs(cube.data.min()))
         ma.append(np.abs(cube.data.max()))
     return [-1. * np.max(ma), np.max(ma)]
-    
+
 
 def multi_model_maps(
         cfg,
@@ -143,19 +161,20 @@ def multi_model_maps(
     input_files is the input files dictionairy
     filename is the preprocessing model file.
     """
-
-
-    filenames={} # dict; model type : model file.
-    model_types = ['control_model', 'exper_model', 'observational_dataset',]
+    filenames = {}
+    ctl_key = 'control_model'
+    exp_key = 'exper_model'
+    obs_key = 'observational_dataset'
+    model_types = [ctl_key, exp_key, obs_key]
     for m in model_types:
         print(m, cfg[m])
-        filenames[m] = match_moddel_to_key(m,cfg[m], input_files,)
+        filenames[m] = match_moddel_to_key(m, cfg[m], input_files, )
 
-    ####
+    # ####
     # Load the data for each layer as a separate cube
     layers = {}
     cubes = {}
-    for m,input_file in filenames.items():
+    for m, input_file in filenames.items():
         print(input_file)
         cube = iris.load_cube(input_file)
         cube = diagtools.bgc_units(cube, input_files[input_file]['short_name'])
@@ -163,68 +182,63 @@ def multi_model_maps(
         cubes[m] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[m]:
             layers[layer] = True
-            
-    print('layers:',layers)
-    print('cubes:',cubes.keys())
-    
-    #####
+
+    print('layers:', layers)
+    print('cubes:', cubes.keys())
+
+    # ####
     # load names:
-    exper = input_files[filenames['exper_model']]['dataset']
-    control = input_files[filenames['control_model']]['dataset']    
-    obs = input_files[filenames['observational_dataset']]['dataset']        
-    long_name = cubes['exper_model'][list(layers.keys())[0]].long_name
-    
+    exper = input_files[filenames[exp_key]]['dataset']
+    control = input_files[filenames[ctl_key]]['dataset']
+    obs = input_files[filenames[obs_key]]['dataset']
+    long_name = cubes[exp_key][list(layers.keys())[0]].long_name
+
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
-    
+
     # Make a plot for each layer
     for layer in layers:
-        #plot_details = {}
-        #cmap = plt.cm.get_cmap('viridis')
         fig = plt.figure()
-        fig.set_size_inches(9,6)
+        fig.set_size_inches(9, 6)
 
-        #zrange = get_cube_range([cubes[m][layer] for m in model_types])
-        #print (zrange)
-        newcube221 = cubes['exper_model'][layer]
-        newcube222 = cubes['exper_model'][layer] - cubes['control_model'][layer]
-        newcube223 = cubes['control_model'][layer] - cubes['observational_dataset'][layer]
-        newcube224 = cubes['exper_model'][layer] - cubes['observational_dataset'][layer]
+        cube221 = cubes[exp_key][layer]
+        cube222 = cubes[exp_key][layer] - cubes[ctl_key][layer]
+        cube223 = cubes[ctl_key][layer] - cubes[obs_key][layer]
+        cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
-        zrange = get_cube_range_diff([newcube222, newcube223, newcube224])
-        n_points=15
+        zrange = get_cube_range_diff([cube222, cube223, cube224])
+        n_points = 15
         linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
-        
+
         ax = plt.subplot(221)
-        qplt.contourf(newcube221, n_points, linewidth=0,)# rasterized=True, )
+        qplt.contourf(cube221, n_points, linewidth=0, )
         plt.gca().coastlines()
         plt.title(exper)
 
-        ax = plt.subplot(222,) 
-        qplt.contourf(newcube222, linspace, cmap = plt.cm.get_cmap('bwr'))
+        ax = plt.subplot(222, )
+        qplt.contourf(cube222, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([exper, 'minus', control]))
 
-        ax = plt.subplot(223,) 
-        qplt.contourf(newcube223, linspace, cmap = plt.cm.get_cmap('bwr'))
+        ax = plt.subplot(223, )
+        qplt.contourf(cube223, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([control, 'minus', obs]))
-                
-        ax = plt.subplot(224,)
-        qplt.contourf(newcube224, linspace, cmap = plt.cm.get_cmap('bwr'))
+
+        ax = plt.subplot(224, )
+        qplt.contourf(cube224, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([exper, 'minus', obs]))
 
         fig.suptitle(long_name, fontsize=14)
-        
+
         # Determine image filename:
-        path = diagtools.folder(cfg['plot_dir']) \
-               + '_'.join([long_name.replace(' ',''), exper, control, obs]) \
-               + image_extention
-                    
+        fn_list = [long_name, exper, control, obs, str(layer)]
+        path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
+        path = path.replace(' ', '') + image_extention
+
         # Saving files:
         if cfg['write_plots']:
-
             logger.info('Saving plots to %s', path)
             plt.savefig(path)
 
@@ -243,7 +257,7 @@ def main(cfg):
             metadata_filename,
         )
         input_files = diagtools.get_input_files(cfg, index=index)
-        #######
+        # #####
         # Multi model time series
         multi_model_maps(
             cfg,
