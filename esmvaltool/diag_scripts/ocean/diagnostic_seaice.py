@@ -43,25 +43,20 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-# #Blues_r
-# 0: (0.03137254901960784, 0.18823529411764706, 0.4196078431372549, 1.0),
-# 0.025(0.03137254901960784, 0.21259515570934256, 0.45577854671280277, 1.0),
-# 0.05 (0.03137254901960784, 0.23695501730103805, 0.4919492502883507, 1.0),
-
 ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
-                   (0.15, 0.0313, 1.),
-                   (1., 1., 1.)),
-         'green': ((0., 0.237, 0.237),
-                   (0.15, 0.237,1.),
-                   (1., 1., 1.)),
-         'blue':  ((0., 0.456, 0.456),
-                   (0.15, 0.456, 1.),
-                   (1., 1., 1.))
-        }
-ice_cmap = matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)#.reversed()
+                         (0.15, 0.0313, 1.),
+                         (1., 1., 1.)),
+                 'green': ((0., 0.237, 0.237),
+                           (0.15, 0.237, 1.),
+                           (1., 1., 1.)),
+                 'blue':  ((0., 0.456, 0.456),
+                           (0.15, 0.456, 1.),
+                           (1., 1., 1.))
+                 }
+ice_cmap = matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
 
 
-def calculate_area_time_series(cube,):
+def calculate_area_time_series(cube, ):
     """
     Calculate the area of unmasked cube cells.
     Requires a cube with two spacial dimensions. (no depth coordinate).
@@ -77,21 +72,20 @@ def calculate_area_time_series(cube,):
             collapsed cube, in units of m^2
     """
     data = []
-    times = np.array(cube.coord('time').points.astype(float))
+    times = diagtools.timecoord_to_float(cube.coord('time'))
     for t, time in enumerate(times):
         icedata = cube[t].data
-        icedata = np.ma.masked_where(icedata < 0.15,icedata)
+        icedata = np.ma.masked_where(icedata < 0.15, icedata)
 
         area = iris.analysis.cartography.area_weights(cube[t])
         totalArea = np.ma.masked_where(icedata.mask, area.data).sum()
-        print(t,totalArea)
+        print(t, totalArea)
         data.append(totalArea)
 
     ######
     # Create a small dummy output array
     data = np.array(data)
     return times, data
-
 
 
 def make_ts_plots(
@@ -109,6 +103,7 @@ def make_ts_plots(
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = agregate_by_season(cube)
 
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
@@ -124,13 +119,12 @@ def make_ts_plots(
 
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
-        #cube_layer.data = np.ma.masked_where(cube_layer.data <  threshold, cube_layer.data)
-        for m,i in metadata.items():
-                print(m,i)
+        for m, i in metadata.items():
+                print(m, i)
         times, data = calculate_area_time_series(cube_layer)
         layer = str(layer)
 
-        plt.plot(times, data,)
+        plt.plot(times, data, )
 
         # Add title to plot
         title = ' '.join([metadata['dataset'], metadata['preprocessor']])
@@ -141,15 +135,18 @@ def make_ts_plots(
         plt.title(title)
 
         # Determine image filename:
+        suffix = '_'.join(['ts', metadata['preprocessor'], str(layer_index)])\
+                 + image_extention
+        suffix = suffix.replace(' ', '')
         if multi_model:
             path = diagtools.folder(
-                cfg['plot_dir']) + os.path.basename(filename).replace(
-                    '.nc', metadata['preprocessor'] + str(layer_index) + image_extention)
+                cfg['plot_dir']) + os.path.basename(filename)
+            path = path.replace('.nc', suffix)
         else:
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='map_' + str(layer_index) + image_extention,
+                suffix=suffix,
             )
 
         # Saving files:
@@ -160,11 +157,12 @@ def make_ts_plots(
 
         plt.close()
 
+
 def make_polar_map(
         cube,
-        pole = 'North',
-        cmap = 'Blues_r',
-        zlim = [-0.001,100.001],
+        pole='North',
+        cmap='Blues_r',
+        zlim=[-0.001, 100.001],
 ):
     """
     Make a polar map plot.
@@ -180,18 +178,30 @@ def make_polar_map(
     if pole not in ['North', 'South']:
         logger.fatal('make_polar_map: hemisphere not provided.')
 
-
-    if pole == 'North':# North Hemisphere
-        ax1 = plt.subplot(111,projection=cartopy.crs.NorthPolarStereo())
+    if pole == 'North':  # North Hemisphere
+        ax1 = plt.subplot(111, projection=cartopy.crs.NorthPolarStereo())
         ax1.set_extent([-180, 180, 50, 90], cartopy.crs.PlateCarree())
 
-    if pole == 'South':# South Hemisphere
-        ax1 = plt.subplot(111,projection=cartopy.crs.SouthPolarStereo())
+    if pole == 'South':  # South Hemisphere
+        ax1 = plt.subplot(111, projection=cartopy.crs.SouthPolarStereo())
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
-    qplt.contourf(cube, 20, vmim=zlim[0], vmax=zlim[1], cmap=cmap,linewidth=0, rasterized=True,)
-    ax1.add_feature(cartopy.feature.LAND, zorder=10, facecolor = [0.8,0.8,0.8], )
-    ax1.gridlines(linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')#':',c='k',zorder=20,)
+    qplt.contourf(cube, 20,
+                  vmim=zlim[0],
+                  vmax=zlim[1],
+                  cmap=cmap,
+                  linewidth=0,
+                  rasterized=True, )
+
+    ax1.add_feature(cartopy.feature.LAND,
+                    zorder=10,
+                    facecolor=[0.8, 0.8, 0.8], )
+
+    ax1.gridlines(linewidth=0.5,
+                  color='black',
+                  zorder=20,
+                  alpha=0.5,
+                  linestyle='--')
     try:
         plt.gca().coastlines()
     except AttributeError:
@@ -202,17 +212,30 @@ def make_polar_map(
 def get_pole(cube):
     """ Return a hemisphere name as a string (Either North or South)."""
     margin = 5.
-    print(np.min(cube.coord('latitude').points),np.max(cube.coord('latitude').points))
-    if np.max(cube.coord('latitude').points) < 0. + margin: return 'South'
-    if np.min(cube.coord('latitude').points) > 0. - margin: return 'North'
+    if np.max(cube.coord('latitude').points) < 0. + margin:
+        return 'South'
+    if np.min(cube.coord('latitude').points) > 0. - margin:
+        return 'North'
     logger.fatal('get_pole: Not able to determine hemisphere.')
 
 
 def get_time_string(cube):
-    """ Return a climatological season time string in the format "year season"."""
+    """Return a climatological season string in the format: "year season"."""
     season = cube.coord('clim_season').points
     year = cube.coord('year').points
-    return str(year[0]) + ' ' + season[0].upper()
+    return str(int(year[0])) + ' ' + season[0].upper()
+
+
+def get_year(cube):
+    """ Returns the cube year as a string."""
+    year = cube.coord('year').points
+    return str(int(year))
+
+
+def get_season(cube):
+    """ Return a climatological season time string."""
+    season = cube.coord('clim_season').points
+    return season[0].upper()
 
 
 def make_map_plots(
@@ -230,6 +253,7 @@ def make_map_plots(
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = agregate_by_season(cube)
 
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
@@ -245,7 +269,7 @@ def make_map_plots(
 
     # Making plots for each layer
     plot_types = ['Fractional cover', 'Ice Extent']
-    plot_times = ['first', 'last'] #'decades']
+    plot_times = ['first', 'last']
     for plot_type, plot_time in product(plot_types, plot_times):
         for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
             layer = str(layer)
@@ -265,24 +289,25 @@ def make_map_plots(
             time_str = get_time_string(cube)
 
             # Make the polar map.
-            fig, ax1 = make_polar_map(
-                    cube,
-                    pole = pole,
-                    cmap = cmap)
+            fig, ax1 = make_polar_map(cube,
+                                      pole=pole,
+                                      cmap=cmap)
 
             # Add title to plot
             title = ' '.join([metadata['dataset'], plot_type, time_str])
             if layer:
-                title = ' '.join(
-                    [title, '(', layer,
-                     str(cube_layer.coords('depth')[0].units), ')'])
+                title = ' '.join([title, '(', layer,
+                                  str(cube_layer.coords('depth')[0].units),
+                                  ')'])
             plt.title(title)
 
             # Determine image filename:
-            suffix  = '_'.join(['ortho_map', plot_type, time_str, str(layer_index) + image_extention])
-            suffix = suffix.replace(' ', '')
+            suffix = '_'.join(['ortho_map', plot_type, time_str,
+                               str(layer_index)])
+            suffix = suffix.replace(' ', '') + image_extention
             if multi_model:
-                path = diagtools.folder(cfg['plot_dir']) + os.path.basename(filename)
+                path = diagtools.folder(cfg['plot_dir'])
+                path = path + os.path.basename(filename)
                 path = path.replace('.nc', suffix)
             else:
                 path = diagtools.get_image_path(
@@ -299,6 +324,160 @@ def make_map_plots(
             plt.close()
 
 
+def agregate_by_season(cube):
+    """ Aggregate the cube into seasonal means.
+        Note that it is not currently possible to do this in the preprocessor,
+        as the seasonal mean changes the cube units.
+    """
+    if not cube.coords('clim_season'):
+        iris.coord_categorisation.add_season(cube,
+                                             'time',
+                                             name='clim_season')
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(cube,
+                                                  'time',
+                                                  name='season_year')
+    return cube.aggregated_by(['clim_season', 'season_year'],
+                              iris.analysis.MEAN)
+
+
+def make_map_extent_plots(
+        cfg,
+        metadata,
+        filename,
+):
+    """
+    Make an extent map plot showing several times for an individual model.
+
+    The cfg is the opened global config,
+    metadata is the metadata dictionairy
+    filename is the preprocessing model file.
+    """
+    # Load cube and set up units
+    cube = iris.load_cube(filename)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = agregate_by_season(cube)
+
+    # Is this data is a multi-model dataset?
+    multi_model = metadata['dataset'].find('MultiModel') > -1
+
+    # Make a dict of cubes for each layer.
+    cubes = diagtools.make_cube_layer_dict(cube)
+
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Load threshold, pole and season
+    threshold = float(cfg['threshold'])
+    pole = get_pole(cube)
+
+    season = get_season(cube)
+    if pole not in ['North', 'South']:
+        logger.fatal('make_polar_map: hemisphere not provided.')
+
+    # Start making figure
+    for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
+
+        fig = plt.figure()
+        if pole == 'North':  # North Hemisphere
+            projection = cartopy.crs.NorthPolarStereo()
+            ax1 = plt.subplot(111, projection=projection)
+            ax1.set_extent([-180, 180, 50, 90], cartopy.crs.PlateCarree())
+
+        if pole == 'South':  # South Hemisphere
+            projection = cartopy.crs.SouthPolarStereo()
+            ax1 = plt.subplot(111, projection=projection)
+            ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
+
+        ax1.add_feature(cartopy.feature.LAND,
+                        zorder=10,
+                        facecolor=[0.8, 0.8, 0.8])
+
+        ax1.gridlines(linewidth=0.5,
+                      color='black',
+                      zorder=20,
+                      alpha=0.5,
+                      linestyle='--')
+
+        try:
+            plt.gca().coastlines()
+        except AttributeError:
+            logger.warning('make_polar_map: Not able to add coastlines')
+
+        times = np.array(cube.coord('time').points.astype(float))
+        plot_desc = {}
+        for t, time in enumerate(times):
+            cube = cube_layer[t]
+            lw = 1
+            color = plt.cm.jet(float(t)/float(len(times)))
+            label = get_year(cube)
+            plot_desc[time] = {'label': label,
+                               'c': [color, ],
+                               'lw': [lw, ],
+                               'ls': ['-', ]}
+
+            layer = str(layer)
+            qplt.contour(cube,
+                         [threshold, ],
+                         colors=plot_desc[time]['c'],
+                         linewidths=plot_desc[time]['lw'],
+                         linestyles=plot_desc[time]['ls'],
+                         rasterized=True, )
+
+        # Add legend
+        legendSize = len(plot_desc.keys())+1
+        ncols = int(legendSize/25)+1
+        box = ax1.get_position()
+        ax1.set_position([box.x0,
+                          box.y0,
+                          box.width * (1. - 0.1 * ncols),
+                          box.height])
+
+        fig.set_size_inches(7 + ncols * 1.2, 7)
+
+        # Construct dummy plots.
+        for i in sorted(plot_desc.keys()):
+            plt.plot([], [],
+                     c=plot_desc[i]['c'][0],
+                     lw=plot_desc[i]['lw'][0],
+                     ls=plot_desc[i]['ls'][0],
+                     label=plot_desc[i]['label'],)
+
+        legd = ax1.legend(loc='center left',
+                          ncol=ncols,
+                          prop={'size': 10},
+                          bbox_to_anchor=(1., 0.5))
+        legd.draw_frame(False)
+        legd.get_frame().set_alpha(0.)
+
+        # Add title to plot
+        title = ' '.join([metadata['dataset'], ])
+        if layer:
+            title = ' '.join([title, '(', layer,
+                             str(cube_layer.coords('depth')[0].units), ')'])
+        plt.title(title)
+
+        # Determine image filename:
+        suffix = '_'.join(['ortho_map', pole, season, str(layer_index)])
+        suffix = suffix.replace(' ', '') + image_extention
+        if multi_model:
+            path = diagtools.folder(cfg['plot_dir'])
+            path = path + os.path.basename(filename)
+            path = path.replace('.nc', suffix)
+        else:
+            path = diagtools.get_image_path(
+                cfg,
+                metadata,
+                suffix=suffix,
+            )
+
+        # Saving files:
+        if cfg['write_plots']:
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
+        plt.close()
+
+
 def main(cfg):
     """
     Load the config file, and send it to the plot maker.
@@ -311,7 +490,6 @@ def main(cfg):
             metadata_filename,
         )
 
-
         metadatas = diagtools.get_input_files(cfg, index=index)
         for filename in sorted(metadatas.keys()):
 
@@ -321,13 +499,16 @@ def main(cfg):
                 filename,
             )
             ######
+            # extent maps plots of individual models
+            make_map_extent_plots(cfg, metadatas[filename], filename)
+
+            ######
             # maps plots of individual models
             make_map_plots(cfg, metadatas[filename], filename)
 
             ######
             # time series plots o
-            #make_ts_plots(cfg, metadatas[filename], filename)
-
+            make_ts_plots(cfg, metadatas[filename], filename)
 
     logger.info('Success')
 
