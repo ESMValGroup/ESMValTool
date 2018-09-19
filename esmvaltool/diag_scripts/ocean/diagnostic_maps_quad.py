@@ -1,5 +1,5 @@
 """
-Diagnostic Maps quad:
+Diagnostic Maps quad.
 
 Diagnostic to produce an image showing four maps.
 These plost show latitude vs longitude and the cube value is used as the colour
@@ -25,17 +25,18 @@ and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
-        """
+"""
 import logging
 import os
 import sys
 import matplotlib
 matplotlib.use('Agg')  # noqa
+import matplotlib.pyplot as plt
+
 import iris
+import iris.quickplot as qplt
 import cartopy
 
-import matplotlib.pyplot as plt
-import iris.quickplot as qplt
 import numpy as np
 
 import diagnostic_tools as diagtools
@@ -46,88 +47,15 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def makemapplot(fig, ax, lons, lats, data, title, zrange=[-100, 100],
-                lon0=0., drawCbar=True, cbarlabel='', doLog=False, ):
-
-    if len(lons) == 0:
-        return fig, ax
-    try:
-        if len(lons.compressed()) == 0:
-            return False, False
-    except AttributeError:
-        logger.warning('makemapplot: latitude and longitude not provided.')
-
-    lons = np.array(lons)
-    lats = np.array(lats)
-    data = np.ma.array(data)
-
-    if doLog and zrange[0] * zrange[1] <= 0.:
-        data = np.ma.masked_less_equal(ma.array(data), 0.)
-
-    if data.ndim == 1:
-        if doLog:
-            im = ax.scatter(lons, lats, c=data, lw=0, marker='s',
-                            transform=cartopy.crs.PlateCarree(),
-                            norm=LogNorm(),
-                            vmin=zrange[0],
-                            vmax=zrange[1])
-        else:
-            im = ax.scatter(lons, lats, c=data, lw=0, marker='s',
-                            transform=cartopy.crs.PlateCarree(),
-                            vmin=zrange[0],
-                            vmax=zrange[1])
-    else:
-        crojp2, data, newLon, newLat = regrid(data, lats, lons)
-
-        if doLog:
-            im = ax.pcolormesh(newLon, newLat, data,
-                               transform=cartopy.crs.PlateCarree(),
-                               norm=LogNorm(vmin=zrange[0],
-                                            vmax=zrange[1]), )
-        else:
-            im = ax.pcolormesh(newLon, newLat, data,
-                               transform=cartopy.crs.PlateCarree(),
-                               vmin=zrange[0], vmax=zrange[1])
-
-    ax.add_feature(cartopy.feature.LAND,  facecolor='0.85')
-
-    if drawCbar:
-        c1 = fig.colorbar(im, pad=0.05, shrink=0.75)
-        if len(cbarlabel) > 0:
-            c1.set_label(cbarlabel)
-
-    plt.title(title)
-
-    ax.set_axis_off()
-    plt.axis('off')
-    ax.axis('off')
-
-    return fig, ax
-
-
-def match_moddel_to_key(m, cfg_dict, input_files_dict, ):
-    """Match up the three models and observations dataset from the configs."""
-    if not isinstance(cfg_dict, dict):
-        print('problem!', m)
-        assert 0
-    print(cfg_dict.keys())
-    print(input_files_dict.keys())
-
+def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+    """
+    Match up the three models and observations dataset from the configs.
+    """
     for input_file, intput_dict in input_files_dict.items():
-        match = True
-        for key, value in cfg_dict.items():
-            if key not in intput_dict:
-                match = False
-                continue
-            if value != intput_dict[key]:
-                match = False
-                continue
-            print("found a match:\t", m,   key, ':', value, '==',
-                  intput_dict[key])
-        if match:
-            print("found a matching file:", m,
-                  os.path.basename(input_file), cfg_dict)
+        intersection = dict(intput_dict.items() & cfg_dict.items())
+        if intersection == cfg_dict:
             return input_file
+    logger.warning("Unable to match model: %s", model_type)
     return ''
 
 
@@ -166,25 +94,26 @@ def multi_model_maps(
     exp_key = 'exper_model'
     obs_key = 'observational_dataset'
     model_types = [ctl_key, exp_key, obs_key]
-    for m in model_types:
-        print(m, cfg[m])
-        filenames[m] = match_moddel_to_key(m, cfg[m], input_files, )
+    for model_type in model_types:
+        logger.debug(model_type, cfg[model_type])
+        filenames[model_type] = match_moddel_to_key(model_type,
+                                                    cfg[model_type],
+                                                    input_files, )
 
     # ####
     # Load the data for each layer as a separate cube
     layers = {}
     cubes = {}
-    for m, input_file in filenames.items():
-        print(input_file)
+    for model_type, input_file in filenames.items():
         cube = iris.load_cube(input_file)
         cube = diagtools.bgc_units(cube, input_files[input_file]['short_name'])
 
-        cubes[m] = diagtools.make_cube_layer_dict(cube)
-        for layer in cubes[m]:
+        cubes[model_type] = diagtools.make_cube_layer_dict(cube)
+        for layer in cubes[model_type]:
             layers[layer] = True
 
-    print('layers:', layers)
-    print('cubes:', cubes.keys())
+    logger.debug('layers: %s', ', '.join(layers))
+    logger.debug('cubes: %s', ', '.join(cubes.keys()))
 
     # ####
     # load names:
@@ -210,22 +139,22 @@ def multi_model_maps(
         n_points = 15
         linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
 
-        ax = plt.subplot(221)
+        plt.subplot(221)
         qplt.contourf(cube221, n_points, linewidth=0, )
         plt.gca().coastlines()
         plt.title(exper)
 
-        ax = plt.subplot(222, )
+        plt.subplot(222)
         qplt.contourf(cube222, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([exper, 'minus', control]))
 
-        ax = plt.subplot(223, )
+        plt.subplot(223)
         qplt.contourf(cube223, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([control, 'minus', obs]))
 
-        ax = plt.subplot(224, )
+        plt.subplot(224)
         qplt.contourf(cube224, linspace, cmap=plt.cm.get_cmap('bwr'))
         plt.gca().coastlines()
         plt.title(' '.join([exper, 'minus', obs]))

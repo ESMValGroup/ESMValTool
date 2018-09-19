@@ -1,5 +1,5 @@
 """
-Diagnostic Maps:
+Diagnostic Maps.
 
 Diagnostic to produce images of a map with coastlines from a cube.
 These plost show latitude vs longitude and the cube value is used as the colour
@@ -26,14 +26,15 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+import numpy as np
+from itertools import product
+
 import matplotlib
 matplotlib.use('Agg')  # noqa
-import iris
-
-from itertools import product
-import numpy as np
 import matplotlib.pyplot as plt
+import iris
 import iris.quickplot as qplt
+
 import cartopy
 
 import diagnostic_tools as diagtools
@@ -43,7 +44,9 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
+# ####
+# Create colour map with ocean blue below 15% and white above 15%.
+Ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
                          (0.15, 0.0313, 1.),
                          (1., 1., 1.)),
                  'green': ((0., 0.237, 0.237),
@@ -53,12 +56,13 @@ ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
                            (0.15, 0.456, 1.),
                            (1., 1., 1.))
                  }
-ice_cmap = matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
+Ice_cmap = matplotlib.colors.LinearSegmentedColormap('Ice_cmap', Ice_cmap_dict)
 
 
 def calculate_area_time_series(cube, ):
     """
     Calculate the area of unmasked cube cells.
+
     Requires a cube with two spacial dimensions. (no depth coordinate).
 
     Parameters
@@ -73,14 +77,14 @@ def calculate_area_time_series(cube, ):
     """
     data = []
     times = diagtools.timecoord_to_float(cube.coord('time'))
-    for t, time in enumerate(times):
-        icedata = cube[t].data
+    for ti, time in enumerate(times):
+        icedata = cube[ti].data
         icedata = np.ma.masked_where(icedata < 0.15, icedata)
 
-        area = iris.analysis.cartography.area_weights(cube[t])
-        totalArea = np.ma.masked_where(icedata.mask, area.data).sum()
-        print(t, totalArea)
-        data.append(totalArea)
+        area = iris.analysis.cartography.area_weights(cube[ti])
+        total_area = np.ma.masked_where(icedata.mask, area.data).sum()
+        logger.debug('Calculating time series area: ', ti, time, total_area)
+        data.append(total_area)
 
     ######
     # Create a small dummy output array
@@ -119,8 +123,6 @@ def make_ts_plots(
 
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
-        for m, i in metadata.items():
-                print(m, i)
         times, data = calculate_area_time_series(cube_layer)
         layer = str(layer)
 
@@ -162,7 +164,7 @@ def make_polar_map(
         cube,
         pole='North',
         cmap='Blues_r',
-        zlim=[-0.001, 100.001],
+        zlim=None,
 ):
     """
     Make a polar map plot.
@@ -174,6 +176,10 @@ def make_polar_map(
     """
     fig = plt.figure()
     fig.set_size_inches(7, 7)
+
+    # ####
+    # Set  limits, based on https://nedbatchelder.com/blog/200806/pylint.html
+    zlim = zlim or [-0.001, 100.001]
 
     if pole not in ['North', 'South']:
         logger.fatal('make_polar_map: hemisphere not provided.')
@@ -210,13 +216,14 @@ def make_polar_map(
 
 
 def get_pole(cube):
-    """ Return a hemisphere name as a string (Either North or South)."""
+    """Return a hemisphere name as a string (Either North or South)."""
     margin = 5.
     if np.max(cube.coord('latitude').points) < 0. + margin:
         return 'South'
     if np.min(cube.coord('latitude').points) > 0. - margin:
         return 'North'
     logger.fatal('get_pole: Not able to determine hemisphere.')
+    return False
 
 
 def get_time_string(cube):
@@ -227,7 +234,7 @@ def get_time_string(cube):
 
 
 def get_year(cube):
-    """ Returns the cube year as a string."""
+    """Return the cube year as a string."""
     year = cube.coord('year').points
     return str(int(year))
 
@@ -264,25 +271,19 @@ def make_map_plots(
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-    # Load threshold
-    threshold = float(cfg['threshold'])
-
     # Making plots for each layer
     plot_types = ['Fractional cover', 'Ice Extent']
-    plot_times = ['first', 'last']
+    plot_times = [0, -1]
     for plot_type, plot_time in product(plot_types, plot_times):
         for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
             layer = str(layer)
 
             if plot_type == 'Fractional cover':
-                    cmap = 'Blues_r'
+                cmap = 'Blues_r'
             if plot_type == 'Ice Extent':
-                cmap = ice_cmap
+                cmap = Ice_cmap
 
-            if plot_time == 'first':
-                cube = cube_layer[0]
-            if plot_time == 'last':
-                cube = cube_layer[-1]
+            cube = cube_layer[plot_time]
 
             # use cube to determine which hemisphere, season and year.
             pole = get_pole(cube)
@@ -325,9 +326,11 @@ def make_map_plots(
 
 
 def agregate_by_season(cube):
-    """ Aggregate the cube into seasonal means.
-        Note that it is not currently possible to do this in the preprocessor,
-        as the seasonal mean changes the cube units.
+    """
+    Aggregate the cube into seasonal means.
+
+    Note that it is not currently possible to do this in the preprocessor,
+    as the seasonal mean changes the cube units.
     """
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube,
@@ -370,10 +373,7 @@ def make_map_extent_plots(
     # Load threshold, pole and season
     threshold = float(cfg['threshold'])
     pole = get_pole(cube)
-
     season = get_season(cube)
-    if pole not in ['North', 'South']:
-        logger.fatal('make_polar_map: hemisphere not provided.')
 
     # Start making figure
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
@@ -408,12 +408,12 @@ def make_map_extent_plots(
         plot_desc = {}
         for t, time in enumerate(times):
             cube = cube_layer[t]
-            lw = 1
-            color = plt.cm.jet(float(t)/float(len(times)))
+            line_width = 1
+            color = plt.cm.jet(float(t) / float(len(times)))
             label = get_year(cube)
             plot_desc[time] = {'label': label,
                                'c': [color, ],
-                               'lw': [lw, ],
+                               'lw': [line_width, ],
                                'ls': ['-', ]}
 
             layer = str(layer)
@@ -422,16 +422,15 @@ def make_map_extent_plots(
                          colors=plot_desc[time]['c'],
                          linewidths=plot_desc[time]['lw'],
                          linestyles=plot_desc[time]['ls'],
-                         rasterized=True, )
+                         rasterized=True)
 
         # Add legend
-        legendSize = len(plot_desc.keys())+1
-        ncols = int(legendSize/25)+1
-        box = ax1.get_position()
-        ax1.set_position([box.x0,
-                          box.y0,
-                          box.width * (1. - 0.1 * ncols),
-                          box.height])
+        legend_size = len(plot_desc.keys()) + 1
+        ncols = int(legend_size / 25) + 1
+        ax1.set_position([ax1.get_position().x0,
+                          ax1.get_position().y0,
+                          ax1.get_position().width * (1. - 0.1 * ncols),
+                          ax1.get_position().height])
 
         fig.set_size_inches(7 + ncols * 1.2, 7)
 
@@ -454,7 +453,7 @@ def make_map_extent_plots(
         title = ' '.join([metadata['dataset'], ])
         if layer:
             title = ' '.join([title, '(', layer,
-                             str(cube_layer.coords('depth')[0].units), ')'])
+                              str(cube_layer.coords('depth')[0].units), ')'])
         plt.title(title)
 
         # Determine image filename:

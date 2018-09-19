@@ -45,9 +45,9 @@ def time_slice(mycube, start_year, start_month, start_day,
     return cube_slice
 
 
-def extract_season(cube, season, seasonal_mean=False):
+def extract_season(cube, season):
     """
-    Slice cube to get only the data belonging to a specific season
+    Slice cube to get only the data belonging to a specific season.
 
     Parameters
     ----------
@@ -59,13 +59,10 @@ def extract_season(cube, season, seasonal_mean=False):
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
-        iris.coord_categorisation.add_season_year(
-            cube, 'time', name='season_year')
-    if not seasonal_mean:
-        return cube.extract(iris.Constraint(clim_season=season.lower()))
-
-    return cube.aggregated_by(['clim_season', 'season_year'],
-                              iris.analysis.MEAN)
+        iris.coord_categorisation.add_season_year(cube,
+                                                  'time',
+                                                  name='season_year')
+    return cube.extract(iris.Constraint(clim_season=season.lower()))
 
 
 def extract_month(mycube, month):

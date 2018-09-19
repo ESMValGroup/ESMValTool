@@ -4,10 +4,10 @@ Volume and z coordinate operations on data cubes.
 Allows for selecting data subsets using certain volume bounds;
 selecting depth or height regions; constructing volumetric averages;
 """
+from copy import deepcopy
+
 import iris
 import numpy as np
-
-from copy import deepcopy
 
 
 def volume_slice(cube, z_min, z_max):
@@ -166,7 +166,7 @@ def volume_average(cube, coordz, coord1, coord2):
         collapsed cube.
     """
     # TODO: Add sigma depth coordinates.
-    # TODO: Currently calculate cell volume, but it may be included in runs
+    # TODO: Calculate cell volume, but it may be already included in netcdf.
 
     # ####
     # Load depth field and figure out which dim is which.
@@ -200,7 +200,7 @@ def volume_average(cube, coordz, coord1, coord2):
     area = iris.analysis.cartography.area_weights(cube[:2, :2])
     if thickness.ndim == 1 and z_dim == 1:
         grid_volume = area * thickness[None, :2, None, None]
-    if thickness.ndim == 4:
+    if thickness.ndim == 4 and z_dim == 1:
         grid_volume = area * thickness[:, :2]
 
     # #####
@@ -214,7 +214,7 @@ def volume_average(cube, coordz, coord1, coord2):
     result = []
     # #####
     # iterate over time and depth dimensions.
-    for t in range(cube.shape[0]):
+    for time_itr in range(cube.shape[t_dim]):
         # ####
         # create empty output arrays
         column = []
@@ -222,33 +222,34 @@ def volume_average(cube, coordz, coord1, coord2):
 
         # ####
         # assume cell area is the same thoughout the water column
-        area = iris.analysis.cartography.area_weights(cube[t, 0])
+        area = iris.analysis.cartography.area_weights(cube[time_itr, 0])
 
         # ####
         # iterate over time and depth dimensions.
-        for z in range(cube.shape[1]):
+        for z_itr in range(cube.shape[1]):
             # ####
             # Calculate grid volume for this time and layer
 
             if thickness.ndim == 1:
-                grid_volume = area * thickness[z]
+                grid_volume = area * thickness[z_itr]
             if thickness.ndim == 4:
-                grid_volume = area * thickness[t, z]
-            # TODO: some netcdfs may include cell volume, could be added here.
+                grid_volume = area * thickness[time_itr, z_itr]
 
             # ####
             # Calculate weighted mean for this time and layer
-            column.append(cube[t, z].collapsed([coordz, coord1, coord2],
-                                               iris.analysis.MEAN,
-                                               weights=grid_volume).data)
+            total = cube[time_itr, z_itr].collapsed([coordz, coord1, coord2],
+                                                    iris.analysis.MEAN,
+                                                    weights=grid_volume).data
+            column.append(total)
+
             try:
-                gv = np.ma.masked_where(cube[t, z].data.mask,
-                                        grid_volume).sum()
+                layer_vol = np.ma.masked_where(cube[time_itr, z_itr].data.mask,
+                                               grid_volume).sum()
             except AttributeError:
                 # ####
                 # No mask in the cube data.
-                gv = grid_volume.sum()
-            depth_volume.append(gv)
+                layer_vol = grid_volume.sum()
+            depth_volume.append(layer_vol)
         # ####
         # Calculate weighted mean over the water volumn
         result.append(np.average(column, weights=depth_volume))

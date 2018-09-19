@@ -146,9 +146,9 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
 
 def get_image_format(cfg, default='png'):
     """
-    Checks to see if global config file includes any information about image
-    format. Current tested options are svg, png.
+    Load the image format from the global config file.
 
+    Current tested options are svg, png.
     The cfg is the opened global config.
     The default format is used if no specific format is requested.
     """

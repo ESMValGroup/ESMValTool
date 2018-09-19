@@ -84,6 +84,7 @@ class Test(tests.Test):
     def test_volume_average_long(self):
         """
         Test to take the volume weighted average of a (4,3,2,2) cube.
+
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """

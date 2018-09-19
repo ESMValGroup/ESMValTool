@@ -44,10 +44,9 @@ import logging
 import os
 import matplotlib
 matplotlib.use('Agg')  # noqa
-import iris
-
-
 import matplotlib.pyplot as plt
+
+import iris
 import iris.quickplot as qplt
 
 import diagnostic_tools as diagtools
