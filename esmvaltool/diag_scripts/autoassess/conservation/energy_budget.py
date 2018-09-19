@@ -5,6 +5,7 @@ Module with routines to calculate energy conservation on various sub-models.
 Presently, it only includes the atmospheric energy budget
 It will include other sub-models in the future.
 """
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,6 +15,9 @@ import iris.analysis.calculus as icalc
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from esmvaltool.preprocessor._area_pp import area_average_general as a_avg
+
+
+logger = logging.getLogger(__name__)
 
 
 def atmos_energy_budget(run):
@@ -214,7 +218,8 @@ def atmos_energy_budget(run):
         plt.savefig(expid + '_atmospheric_energy_budget.png')
 
     except iris.exceptions.ConstraintMismatchError as msg:
-        print(msg)
+        logger.warning(msg)
+        logger.warning('Setting atmospheric glob energy err to %s', str(mdi))
         metrics['atmospheric global energy error'] = mdi
 
     return metrics
@@ -224,7 +229,7 @@ def _remove_forecast_period(cube):
     try:
         cube.remove_coord('forecast_period')
     except iris.exceptions.CoordinateNotFoundError as exc:
-        print(exc)
+        logger.warning(exc)
     return cube
 
 
