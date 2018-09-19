@@ -4,10 +4,9 @@
 import collections
 import itertools
 
+import iris
 import numpy as np
 import six
-
-import iris
 
 
 def _is_single_item(testee):
@@ -17,8 +16,8 @@ def _is_single_item(testee):
     Return whether this is a single item, rather than an iterable.
     We count string types as 'single', also.
     """
-    return (isinstance(testee, six.string_types) or
-            not isinstance(testee, collections.Iterable))
+    return (isinstance(testee, six.string_types)
+            or not isinstance(testee, collections.Iterable))
 
 
 def _as_list_of_coords(cube, names_or_coords):
@@ -105,14 +104,14 @@ def get_associated_coords(cube, dimensions):
         if dim not in dim_set:
             dims.append(dim)
             dim_set.add(dim)
-    dim_coords = set(itertools.chain.from_iterable(
-        [cube.coords(contains_dimension=i, dim_coords=True)
-         for i in dims]
-    ))
-    aux_coords = set(itertools.chain.from_iterable(
-        [cube.coords(contains_dimension=i, dim_coords=False)
-         for i in dims]
-    ))
+    dim_coords = set(
+        itertools.chain.from_iterable([
+            cube.coords(contains_dimension=i, dim_coords=True) for i in dims
+        ]))
+    aux_coords = set(
+        itertools.chain.from_iterable([
+            cube.coords(contains_dimension=i, dim_coords=False) for i in dims
+        ]))
     return list(dim_coords), list(aux_coords)
 
 
@@ -165,8 +164,7 @@ def index_iterator(dims_to_slice, shape):
     for index_tuple in np.ndindex(*dims):
         src_ind = tuple(
             slice(None, None) if n in dims_to_slice else i
-            for n, i in enumerate(index_tuple)
-        )
+            for n, i in enumerate(index_tuple))
         dst_ind = tuple(i for n, i in enumerate(index_tuple)
                         if n not in dims_to_slice) + dst_slices
         yield src_ind, dst_ind

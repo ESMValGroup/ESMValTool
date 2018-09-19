@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Provides regridding for irregular grids"""
 
-import numpy as np
-
 import ESMF
 import iris
+import numpy as np
 from iris.exceptions import CoordinateNotFoundError
-from ._mapping import ref_to_dims_index, get_empty_data, map_slices
+
+from ._mapping import get_empty_data, map_slices, ref_to_dims_index
 
 ESMF_MANAGER = ESMF.Manager(debug=False)
 
@@ -17,7 +17,6 @@ ESMF_REGRID_METHODS = {
     'area_weighted': ESMF.RegridMethod.CONSERVE,
     'nearest': ESMF.RegridMethod.NEAREST_STOD,
 }
-
 
 # ESMF_REGRID_METHODS = {
 #     'bilinear': ESMF.RegridMethod.BILINEAR,
@@ -65,7 +64,8 @@ def get_grid(esmpy_lat, esmpy_lon,
         num_peri_dims = 1
     else:
         num_peri_dims = 0
-    grid = ESMF.Grid(np.array(esmpy_lat.shape), num_peri_dims=num_peri_dims,
+    grid = ESMF.Grid(np.array(esmpy_lat.shape),
+                     num_peri_dims=num_peri_dims,
                      staggerloc=[ESMF.StaggerLoc.CENTER])
     grid.get_coords(ESMF_LON)[...] = esmpy_lon
     grid.get_coords(ESMF_LAT)[...] = esmpy_lat
@@ -83,7 +83,8 @@ def get_grid(esmpy_lat, esmpy_lon,
 
 def get_empty_field(cube, grid, remove_mask=False):
     """Build empty ESMF field from cube with given grid"""
-    field = ESMF.Field(grid, name=cube.long_name,
+    field = ESMF.Field(grid,
+                       name=cube.long_name,
                        staggerloc=ESMF.StaggerLoc.CENTER)
     center_mask = grid.get_item(ESMF.GridItem.MASK, ESMF.StaggerLoc.CENTER)
     if np.ma.isMaskedArray(cube.data):
@@ -184,6 +185,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
         res.data[...] = regr_field.data[...].T
         res.mask[...] = dst_mask
         return res
+
     return regridder
 
 
@@ -239,6 +241,7 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
             res.data[i, ...] = regr_field.data[...].T
             res.mask[i, ...] = dst_mask
         return res
+
     return regridder
 
 
