@@ -25,8 +25,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def main(cfg):
     """Select grid points within shapefiles."""
     for filename, attributes in cfg['input_data'].items():
-        logger.info("Processing variable %s from model %s",
-                    attributes['standard_name'], attributes['model'])
+        logger.info("Processing variable %s from dataset %s",
+                    attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
         ncts, nclon, nclat = shapeselect2(cfg, cube, filename)
