@@ -149,14 +149,22 @@ def get_image_format(cfg, default='png'):
     Load the image format from the global config file.
 
     Current tested options are svg, png.
+
     The cfg is the opened global config.
     The default format is used if no specific format is requested.
+    The default is set in the user config.yml
+    Individual diagnostics can set their own format which will
+    supercede the main config.yml.
     """
-    if 'image_format' not in cfg.keys():
-        return '.' + default
+    image_extention = default
+    
+    # Load format from config.yml and set it as default
+    if 'output_file_type' in cfg.keys():
+        image_extention = cfg['output_file_type']
 
-    # Load the image extention
-    image_extention = cfg['image_format']
+   # Load format from config.yml and set it as default
+    if 'image_format' in cfg.keys():
+        image_extention = cfg['image_format']
 
     matplotlib_image_formats = plt.gcf().canvas.get_supported_filetypes()
     if image_extention not in matplotlib_image_formats:
