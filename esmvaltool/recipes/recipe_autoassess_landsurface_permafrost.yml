@@ -11,7 +11,7 @@
 #### CAVEATS
 # land_surface_area and ice masks are fixed (not time-dependent)
 #################
-# RECIPE IS FULLY WORKING
+# RECIPE IS FULLY WORKING BUT MASKS NEED TO BE CHECKED !!!
 ###########################################################################################################
 ---
 
