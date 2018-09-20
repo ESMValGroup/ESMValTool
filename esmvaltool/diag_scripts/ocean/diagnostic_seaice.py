@@ -55,12 +55,12 @@ def create_ice_cmap():
                                (1., 1., 1.)),
                      'blue':  ((0., 0.456, 0.456),
                                (0.15, 0.456, 1.),
-                               (1., 1., 1.))
-                     }
+                               (1., 1., 1.))}
+
     return matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
 
 
-def calculate_area_time_series(cube, ):
+def calculate_area_time_series(cube, plot_type, threshold):
     """
     Calculate the area of unmasked cube cells.
 
@@ -80,10 +80,16 @@ def calculate_area_time_series(cube, ):
     times = diagtools.timecoord_to_float(cube.coord('time'))
     for time_itr, time in enumerate(times):
         icedata = cube[time_itr].data
-        icedata = np.ma.masked_where(icedata < 0.15, icedata)
 
         area = iris.analysis.cartography.area_weights(cube[time_itr])
-        total_area = np.ma.masked_where(icedata.mask, area.data).sum()
+        if plot_type.lower() == 'ice extent':
+            # Ice extend is the area with more than 15% ice cover.
+            icedata = np.ma.masked_where(icedata < threshold, icedata)
+            total_area = np.ma.masked_where(icedata.mask, area.data).sum()
+        if plot_type.lower() == 'ice area':
+            # Ice area is cover * cell area
+            total_area = np.sum(icedata * area)
+
         logger.debug('Calculating time series area: %s, %s, %s,',
                      time_itr, time, total_area)
         data.append(total_area)
@@ -100,7 +106,7 @@ def make_ts_plots(
         filename,
 ):
     """
-    Make a simple time series plot for an individual model.
+    Make a ice extent time series plot for an individual model.
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy
@@ -120,46 +126,56 @@ def make_ts_plots(
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-    # # Load threshold
-    # threshold = float(cfg['threshold'])
+    # # Load threshold, pole, season.
+    threshold = float(cfg['threshold'])
+    pole = get_pole(cube)
+    season = get_season(cube)
 
     # Making plots for each layer
-    for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
-        times, data = calculate_area_time_series(cube_layer)
-        layer = str(layer)
+    for plot_type in ['Ice Extent', 'Ice Area']:
+        for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
+            layer = str(layer)
 
-        plt.plot(times, data, )
+            times, data = calculate_area_time_series(cube_layer,
+                                                     plot_type,
+                                                     threshold)
 
-        # Add title to plot
-        title = ' '.join([metadata['dataset'], metadata['preprocessor']])
-        if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
-        plt.title(title)
+            plt.plot(times, data)
 
-        # Determine image filename:
-        suffix = '_'.join(['ts', metadata['preprocessor'], str(layer_index)])\
-                 + image_extention
-        suffix = suffix.replace(' ', '')
-        if multi_model:
-            path = diagtools.folder(
-                cfg['plot_dir']) + os.path.basename(filename)
-            path = path.replace('.nc', suffix)
-        else:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata,
-                suffix=suffix,
-            )
+            # Add title to plot
+            title = ' '.join([metadata['dataset'], pole, 'hemisphere',
+                              season, plot_type])
+            if layer:
+                title = ' '.join(
+                    [title, '(', layer,
+                     str(cube_layer.coords('depth')[0].units), ')'])
+            plt.title(title)
 
-        # Saving files:
-        if cfg['write_plots']:
+            # y axis label:
+            plt.ylabel(' '.join([plot_type, 'm^2']))
 
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+            # Determine image filename:
+            suffix = '_'.join(['ts', metadata['preprocessor'], season, pole,
+                               plot_type, str(layer_index)])\
+                     + image_extention
+            suffix = suffix.replace(' ', '')
+            if multi_model:
+                path = diagtools.folder(
+                    cfg['plot_dir']) + os.path.basename(filename)
+                path = path.replace('.nc', suffix)
+            else:
+                path = diagtools.get_image_path(
+                    cfg,
+                    metadata,
+                    suffix=suffix,
+                )
 
-        plt.close()
+            # Saving files:
+            if cfg['write_plots']:
+                logger.info('Saving plots to %s', path)
+                plt.savefig(path)
+
+            plt.close()
 
 
 def make_polar_map(
@@ -242,7 +258,7 @@ def get_year(cube):
 
 
 def get_season(cube):
-    """ Return a climatological season time string."""
+    """Return a climatological season time string."""
     season = cube.coord('clim_season').points
     return season[0].upper()
 

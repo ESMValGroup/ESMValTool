@@ -74,11 +74,11 @@ def get_cube_range(cubes):
 
 def get_cube_range_diff(cubes):
     """Determinue the largest deviation from zero in an array of cubes."""
-    ma = []
+    ranges = []
     for cube in cubes:
-        ma.append(np.abs(cube.data.min()))
-        ma.append(np.abs(cube.data.max()))
-    return [-1. * np.max(ma), np.max(ma)]
+        ranges.append(np.abs(cube.data.min()))
+        ranges.append(np.abs(cube.data.max()))
+    return [-1. * np.max(ranges), np.max(ranges)]
 
 
 def add_map_subplot(subplot, cube, n_points=15, title='', cmap=''):
