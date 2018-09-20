@@ -35,7 +35,6 @@ import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
-import cartopy
 
 import numpy as np
 
@@ -50,6 +49,10 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     """
     Match up the three models and observations dataset from the configs.
+
+    This function checks that the control_model, exper_model and
+    observational_dataset dictionairies from the recipe are matched with the
+    input file dictionairy in the cfg metadata.
     """
     for input_file, intput_dict in input_files_dict.items():
         intersection = dict(intput_dict.items() & cfg_dict.items())
@@ -61,12 +64,12 @@ def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
 
 def get_cube_range(cubes):
     """Determinue the minimum and maximum values of an array of cubes."""
-    mi = []
-    ma = []
+    mins = []
+    maxs = []
     for cube in cubes:
-        mi.append(cube.data.min())
-        ma.append(cube.data.max())
-    return [np.min(mi), np.max(ma), ]
+        mins.append(cube.data.min())
+        maxs.append(cube.data.max())
+    return [np.min(mins), np.max(maxs), ]
 
 
 def get_cube_range_diff(cubes):
@@ -76,6 +79,14 @@ def get_cube_range_diff(cubes):
         ma.append(np.abs(cube.data.min()))
         ma.append(np.abs(cube.data.max()))
     return [-1. * np.max(ma), np.max(ma)]
+
+
+def add_map_subplot(subplot, cube, n_points=15, title='', cmap=''):
+    """Create a map subplot."""
+    plt.subplot(subplot)
+    qplt.contourf(cube, n_points, linewidth=0, cmap=plt.cm.get_cmap(cmap))
+    plt.gca().coastlines()
+    plt.title(title)
 
 
 def multi_model_maps(
@@ -98,7 +109,7 @@ def multi_model_maps(
         logger.debug(model_type, cfg[model_type])
         filenames[model_type] = match_moddel_to_key(model_type,
                                                     cfg[model_type],
-                                                    input_files, )
+                                                    input_files)
 
     # ####
     # Load the data for each layer as a separate cube
@@ -130,35 +141,28 @@ def multi_model_maps(
         fig = plt.figure()
         fig.set_size_inches(9, 6)
 
+        # Create the cubes
         cube221 = cubes[exp_key][layer]
         cube222 = cubes[exp_key][layer] - cubes[ctl_key][layer]
         cube223 = cubes[ctl_key][layer] - cubes[obs_key][layer]
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
+        # create the z axis for plots 2, 3, 4.
         zrange = get_cube_range_diff([cube222, cube223, cube224])
         n_points = 15
         linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
 
-        plt.subplot(221)
-        qplt.contourf(cube221, n_points, linewidth=0, )
-        plt.gca().coastlines()
-        plt.title(exper)
+        # Add the sub plots to the figure.
+        add_map_subplot(221, cube221, n_points=n_points, cmap='viridis',
+                        title=exper)
+        add_map_subplot(222, cube222, n_points=linspace, cmap='bwr',
+                        title=' '.join([exper, 'minus', control]))
+        add_map_subplot(223, cube223, n_points=linspace, cmap='bwr',
+                        title=' '.join([control, 'minus', obs]))
+        add_map_subplot(224, cube224, n_points=linspace, cmap='bwr',
+                        title=' '.join([exper, 'minus', obs]))
 
-        plt.subplot(222)
-        qplt.contourf(cube222, linspace, cmap=plt.cm.get_cmap('bwr'))
-        plt.gca().coastlines()
-        plt.title(' '.join([exper, 'minus', control]))
-
-        plt.subplot(223)
-        qplt.contourf(cube223, linspace, cmap=plt.cm.get_cmap('bwr'))
-        plt.gca().coastlines()
-        plt.title(' '.join([control, 'minus', obs]))
-
-        plt.subplot(224)
-        qplt.contourf(cube224, linspace, cmap=plt.cm.get_cmap('bwr'))
-        plt.gca().coastlines()
-        plt.title(' '.join([exper, 'minus', obs]))
-
+        # Add overall title
         fig.suptitle(long_name, fontsize=14)
 
         # Determine image filename:

@@ -44,19 +44,20 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-# ####
-# Create colour map with ocean blue below 15% and white above 15%.
-Ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
-                         (0.15, 0.0313, 1.),
-                         (1., 1., 1.)),
-                 'green': ((0., 0.237, 0.237),
-                           (0.15, 0.237, 1.),
-                           (1., 1., 1.)),
-                 'blue':  ((0., 0.456, 0.456),
-                           (0.15, 0.456, 1.),
-                           (1., 1., 1.))
-                 }
-Ice_cmap = matplotlib.colors.LinearSegmentedColormap('Ice_cmap', Ice_cmap_dict)
+
+def create_ice_cmap():
+    """Create colour map with ocean blue below 15% and white above 15%."""
+    ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
+                             (0.15, 0.0313, 1.),
+                             (1., 1., 1.)),
+                     'green': ((0., 0.237, 0.237),
+                               (0.15, 0.237, 1.),
+                               (1., 1., 1.)),
+                     'blue':  ((0., 0.456, 0.456),
+                               (0.15, 0.456, 1.),
+                               (1., 1., 1.))
+                     }
+    return matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
 
 
 def calculate_area_time_series(cube, ):
@@ -77,13 +78,14 @@ def calculate_area_time_series(cube, ):
     """
     data = []
     times = diagtools.timecoord_to_float(cube.coord('time'))
-    for ti, time in enumerate(times):
-        icedata = cube[ti].data
+    for time_itr, time in enumerate(times):
+        icedata = cube[time_itr].data
         icedata = np.ma.masked_where(icedata < 0.15, icedata)
 
-        area = iris.analysis.cartography.area_weights(cube[ti])
+        area = iris.analysis.cartography.area_weights(cube[time_itr])
         total_area = np.ma.masked_where(icedata.mask, area.data).sum()
-        logger.debug('Calculating time series area: ', ti, time, total_area)
+        logger.debug('Calculating time series area: %s, %s, %s,',
+                     time_itr, time, total_area)
         data.append(total_area)
 
     ######
@@ -281,7 +283,7 @@ def make_map_plots(
             if plot_type == 'Fractional cover':
                 cmap = 'Blues_r'
             if plot_type == 'Ice Extent':
-                cmap = Ice_cmap
+                cmap = create_ice_cmap()
 
             cube = cube_layer[plot_time]
 
@@ -406,10 +408,10 @@ def make_map_extent_plots(
 
         times = np.array(cube.coord('time').points.astype(float))
         plot_desc = {}
-        for t, time in enumerate(times):
-            cube = cube_layer[t]
+        for time_itr, time in enumerate(times):
+            cube = cube_layer[time_itr]
             line_width = 1
-            color = plt.cm.jet(float(t) / float(len(times)))
+            color = plt.cm.jet(float(time_itr) / float(len(times)))
             label = get_year(cube)
             plot_desc[time] = {'label': label,
                                'c': [color, ],
