@@ -25,7 +25,7 @@ preprocessors:
 
   timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
     custom_order: true
-    extract_time: &time_anchor # declare time here. 
+    extract_time: &time_anchor # declare time here.
         start_year: 1989
         start_month: 12
         start_day: 1
@@ -86,12 +86,11 @@ diagnostics:
         preprocessor: timeseries_NHW_ice_extent
         field: TO2M
         mip: OImon
-    scripts:  
+    scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        image_format: svg
         threshold: 0.15
-        
+
   diag_ice_NHS:
     description:  North Hemisphere Summer Sea Ice diagnostics
     variables:
@@ -99,10 +98,9 @@ diagnostics:
         preprocessor: timeseries_NHS_ice_extent
         field: TO2M
         mip: OImon
-    scripts:  
+    scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        image_format: svg
         threshold: 0.15
 
   diag_ice_SHW:
@@ -112,12 +110,11 @@ diagnostics:
         preprocessor: timeseries_SHW_ice_extent
         field: TO2M
         mip: OImon
-    scripts:  
+    scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        image_format: svg
         threshold: 0.15
-      
+
   diag_ice_SHS:
     description:  South Hemisphere Summer Sea Ice diagnostics
     variables:
@@ -125,10 +122,7 @@ diagnostics:
         preprocessor: timeseries_SHS_ice_extent
         field: TO2M
         mip: OImon
-    scripts:  
+    scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        image_format: svg
         threshold: 0.15
-
-

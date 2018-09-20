@@ -5,9 +5,9 @@ documentation:
   description: |
     Recipe to demonstrate several simple plots based on the monthly ocean
     temperature. Please use this file as a template for adding additional
-    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103. 
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
     Written by Lee de Mora, Plymouth Marine Laboratory
-    
+
   authors:
     - ledm
 
@@ -16,7 +16,7 @@ documentation:
 
   projects:
     - ukesm
-    
+
 
 datasets:
   # working datasets
@@ -51,7 +51,7 @@ preprocessors:
   # Time series preprocessors
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
-    custom_order: true 
+    custom_order: true
     average_region:
       coord1: longitude
       coord2: latitude
@@ -60,7 +60,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_2: # For specific levels of 3D fields
-    custom_order: true   
+    custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
@@ -72,7 +72,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_3: # For regional fields
-    custom_order: true   
+    custom_order: true
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -86,7 +86,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_4: # For regional fields at depth
-    custom_order: true 
+    custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
@@ -103,7 +103,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_5: # For Global Volume Averaged
-    custom_order: true 
+    custom_order: true
     average_volume:
       coord1: longitude
       coord2: latitude
@@ -113,7 +113,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_6: # For regional volume averaged
-    custom_order: true 
+    custom_order: true
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -128,7 +128,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_timeseries_7: # For regional volume averaged (at the surface)
-    custom_order: true 
+    custom_order: true
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -153,7 +153,7 @@ preprocessors:
     time_average:
 
   prep_map_2: # For Global 2D fields with regridding
-    custom_order: true 
+    custom_order: true
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -164,7 +164,7 @@ preprocessors:
 
 
   prep_map_3: # For specific levels of 3D fields with regrid
-    custom_order: true 
+    custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
@@ -177,7 +177,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_map_4: # For a specific region with regrid
-    custom_order: true 
+    custom_order: true
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -192,7 +192,7 @@ preprocessors:
       statistics: [mean ]
 
   prep_map_5: # For a specific region at depth levels,
-    custom_order: true 
+    custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
@@ -272,10 +272,9 @@ diagnostics:
         preprocessor: prep_depth_integration_1
         field: TO3M
     scripts:
-      Global_Ocean_DepthIntegration_map: 
+      Global_Ocean_DepthIntegration_map:
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------
@@ -288,8 +287,7 @@ diagnostics:
     scripts:
       Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_2:
     description: Global Ocean Depth Layers mean timeseries
     variables:
@@ -299,8 +297,7 @@ diagnostics:
     scripts:
       Global_Ocean_DepthLayers_mean_timeseries: &Global_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_3:
     description: Regional scale surface diagnostics
     variables:
@@ -310,8 +307,7 @@ diagnostics:
     scripts:
       Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_4:
     description: Regional scale diagnostics
     variables:
@@ -321,8 +317,7 @@ diagnostics:
     scripts:
       Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_5:
     description: Global Volume average diagnostics
     variables:
@@ -332,8 +327,7 @@ diagnostics:
     scripts:
       Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_6:
     description: Regional Volume average diagnostics
     variables:
@@ -343,8 +337,7 @@ diagnostics:
     scripts:
       Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   diag_timeseries_7:
     description: Regional Volume to 100m depth average diagnostics
     variables:
@@ -354,8 +347,7 @@ diagnostics:
     scripts:
       Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
-        image_format: svg 
-        
+
   # --------------------------------------------------
   # Map diagnostics
   # --------------------------------------------------
@@ -368,8 +360,7 @@ diagnostics:
     scripts:
       Global_Ocean_Surface_mean_map: &Global_Ocean_Surface_mean_map
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   diag_map_2:
     description: Global Ocean Surface regridded map
     variables:
@@ -379,8 +370,7 @@ diagnostics:
     scripts:
       Global_Ocean_Surface_regrid_map: &Global_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   diag_map_3:
     description: Global Ocean Depth Layers regridded map
     variables:
@@ -390,8 +380,7 @@ diagnostics:
     scripts:
       Global_Ocean_DepthLayers_regrid_map: &Global_Ocean_DepthLayers_regrid_map
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   diag_map_4:
     description: Regional scale surface regridded map
     variables:
@@ -401,8 +390,7 @@ diagnostics:
     scripts:
       Regional_Ocean_Surface_regrid_map: &Regional_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   diag_map_5:
     description: Regional scale depth layers regridded map
     variables:
@@ -412,8 +400,7 @@ diagnostics:
     scripts:
       Regional_Ocean_DepthLayers_mean_map: &Regional_Ocean_DepthLayers_mean_map
         script: ocean/diagnostic_maps.py
-        image_format: svg 
-        
+
   # --------------------------------------------------
   # Transects diagnostics
   # --------------------------------------------------
@@ -426,7 +413,6 @@ diagnostics:
     scripts:
       Regional_Ocean_DepthLayers_regrid_transect: &Regional_Ocean_DepthLayers_regrid_transect
         script: ocean/diagnostic_transects.py
-        image_format: svg 
 
   diag_transect_2:
     description: Extracting along a line with regridding and multimodle mean
@@ -437,7 +423,6 @@ diagnostics:
     scripts:
       Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect
         script: ocean/diagnostic_transects.py
-        image_format: svg 
 
   diag_transect_3:
     description: Extracting along a line with regridding and multimodel mean
@@ -448,8 +433,7 @@ diagnostics:
     scripts:
       Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect
         script: ocean/diagnostic_transects.py
-        image_format: svg 
-        
+
 
   # --------------------------------------------------
   # Depth-profile diagnostics
@@ -463,8 +447,7 @@ diagnostics:
     scripts:
       Global_Ocean_mean_profile: &Global_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py
-        image_format: svg 
-        
+
   diag_profile_2:
     description: Regional Ocean mean profile
     variables:
@@ -474,5 +457,4 @@ diagnostics:
     scripts:
       Regional_Ocean_mean_profile: &Regional_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py
-        image_format: svg 
                 
