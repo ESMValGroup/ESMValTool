@@ -157,12 +157,12 @@ def get_image_format(cfg, default='png'):
     supercede the main config.yml.
     """
     image_extention = default
-    
+
     # Load format from config.yml and set it as default
     if 'output_file_type' in cfg.keys():
         image_extention = cfg['output_file_type']
 
-   # Load format from config.yml and set it as default
+    # Load format from config.yml and set it as default
     if 'image_format' in cfg.keys():
         image_extention = cfg['image_format']
 
