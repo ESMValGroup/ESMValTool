@@ -89,7 +89,7 @@ diagnostics:
     scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        threshold: 0.15
+        threshold: 15.
 
   diag_ice_NHS:
     description:  North Hemisphere Summer Sea Ice diagnostics
@@ -101,7 +101,7 @@ diagnostics:
     scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        threshold: 0.15
+        threshold: 15.
 
   diag_ice_SHW:
     description:  South Hemisphere Winter Sea Ice diagnostics
@@ -113,7 +113,7 @@ diagnostics:
     scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        threshold: 0.15
+        threshold: 15.
 
   diag_ice_SHS:
     description:  South Hemisphere Summer Sea Ice diagnostics
@@ -125,4 +125,4 @@ diagnostics:
     scripts:
       Global_seaice_timeseries:
         script: ocean/diagnostic_seaice.py
-        threshold: 0.15
+        threshold: 15.

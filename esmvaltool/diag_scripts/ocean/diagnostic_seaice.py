@@ -45,16 +45,17 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def create_ice_cmap():
+def create_ice_cmap(threshold):
     """Create colour map with ocean blue below 15% and white above 15%."""
+    threshold = threshold / 100.
     ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
-                             (0.15, 0.0313, 1.),
+                             (threshold, 0.0313, 1.),
                              (1., 1., 1.)),
                      'green': ((0., 0.237, 0.237),
-                               (0.15, 0.237, 1.),
+                               (threshold, 0.237, 1.),
                                (1., 1., 1.)),
                      'blue':  ((0., 0.456, 0.456),
-                               (0.15, 0.456, 1.),
+                               (threshold, 0.456, 1.),
                                (1., 1., 1.))}
 
     return matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
@@ -182,7 +183,6 @@ def make_polar_map(
         cube,
         pole='North',
         cmap='Blues_r',
-        zlim=None,
 ):
     """
     Make a polar map plot.
@@ -190,14 +190,12 @@ def make_polar_map(
     The cube is the opened cube (two dimensional),
     pole is the polar region (North/South)
     cmap is the colourmap,
-    zlim is the z limits (usually 0, 100)
     """
     fig = plt.figure()
     fig.set_size_inches(7, 7)
 
     # ####
     # Set  limits, based on https://nedbatchelder.com/blog/200806/pylint.html
-    zlim = zlim or [-0.001, 100.001]
 
     if pole not in ['North', 'South']:
         logger.fatal('make_polar_map: hemisphere not provided.')
@@ -210,12 +208,13 @@ def make_polar_map(
         ax1 = plt.subplot(111, projection=cartopy.crs.SouthPolarStereo())
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
-    qplt.contourf(cube, 20,
-                  vmim=zlim[0],
-                  vmax=zlim[1],
-                  cmap=cmap,
-                  linewidth=0,
-                  rasterized=True, )
+    linrange = np.linspace(0., 100., 21.)
+    plot = qplt.contourf(cube,
+                         linrange,
+                         cmap=cmap,
+                         linewidth=0,
+                         rasterized=True, )
+    plt.tight_layout()
 
     ax1.add_feature(cartopy.feature.LAND,
                     zorder=10,
@@ -286,8 +285,9 @@ def make_map_plots(
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
-    # Load image format extention
+    # Load image format extention and threshold.
     image_extention = diagtools.get_image_format(cfg)
+    threshold = float(cfg['threshold'])
 
     # Making plots for each layer
     plot_types = ['Fractional cover', 'Ice Extent']
@@ -299,7 +299,7 @@ def make_map_plots(
             if plot_type == 'Fractional cover':
                 cmap = 'Blues_r'
             if plot_type == 'Ice Extent':
-                cmap = create_ice_cmap()
+                cmap = create_ice_cmap(threshold)
 
             cube = cube_layer[plot_time]
 
