@@ -95,8 +95,8 @@ def mask_landsea(cube, fx_files, mask_out):
     Natural Earth masks have different resolutions: 10m for land, and 50m
     for seas; these are more than enough for ESMValTool puprpose.
 
-    Args:
-    -----
+    Parameters
+    ----------
 
     * cube (iris.Cube.cube instance):
         data cube to be masked.
@@ -107,8 +107,8 @@ def mask_landsea(cube, fx_files, mask_out):
     * mask_out (string):
         either "land" to mask out land mass or "sea" to mask out seas.
 
-    Returns:
-    --------
+    Returns
+    -------
     masked iris cube
 
     """
@@ -168,8 +168,8 @@ def mask_landseaice(cube, fx_files, mask_out):
     Function that masks out either landsea (land and seas) or ice (Antarctica
     and Greenland and some wee glaciers). It uses dedicated fx files (sftgif).
 
-    Args:
-    -----
+    Parameters
+    ----------
 
     * cube (iris.Cube.cube instance):
         data cube to be masked.
@@ -180,8 +180,8 @@ def mask_landseaice(cube, fx_files, mask_out):
     * mask_out (string):
         either "landsea" to mask out landsea or "ice" to mask out ice.
 
-    Returns:
-    --------
+    Returns
+    -------
     masked iris cube
 
     """
