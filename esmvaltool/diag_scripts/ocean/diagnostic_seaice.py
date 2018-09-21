@@ -209,11 +209,11 @@ def make_polar_map(
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
     linrange = np.linspace(0., 100., 21.)
-    plot = qplt.contourf(cube,
-                         linrange,
-                         cmap=cmap,
-                         linewidth=0,
-                         rasterized=True, )
+    qplt.contourf(cube,
+                  linrange,
+                  cmap=cmap,
+                  linewidth=0,
+                  rasterized=True)
     plt.tight_layout()
 
     ax1.add_feature(cartopy.feature.LAND,
@@ -397,6 +397,8 @@ def make_map_extent_plots(
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
 
         fig = plt.figure()
+        fig.set_size_inches(7, 7)
+
         if pole == 'North':  # North Hemisphere
             projection = cartopy.crs.NorthPolarStereo()
             ax1 = plt.subplot(111, projection=projection)
