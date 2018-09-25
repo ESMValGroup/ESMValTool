@@ -15,7 +15,7 @@ It operates on different (time) spans:
 import logging
 from datetime import datetime, timedelta
 from functools import reduce
-from packaging import version
+from distutils.version import LooseVersion
 
 import cf_units
 import iris
@@ -169,7 +169,7 @@ def _put_in_cube(template_cube, cube_data, stat_name, file_name, time_bounds,
 
 def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
-    if version.parse(iris.__version__) < version.parse("2.0.0"):
+    if LooseVersion(iris.__version__) < LooseVersion("2.0.0"):
         time_cells = [
             cube.coord('time').units.num2date(cell.point)
             for cell in cube.coord('time').cells()

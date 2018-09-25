@@ -7,7 +7,7 @@ constructing seasonal and area averages.
 import iris
 import iris.coord_categorisation
 import numpy as np
-from packaging import version
+from distutils.version import LooseVersion
 
 
 # slice cube over a restricted time period
@@ -37,7 +37,7 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
-    if version.parse(iris.__version__) < version.parse("2.0.0"):
+    if LooseVersion(iris.__version__) < LooseVersion("2.0.0"):
         my_constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
     else:
         my_constraint = iris.Constraint(

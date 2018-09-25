@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 from itertools import groupby
-from packaging import version
+from distutils.version import LooseVersion
 
 import iris
 import iris.exceptions
@@ -60,7 +60,7 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
-        if version.parse(iris.__version__) >= version.parse("2.0.0"):
+        if LooseVersion(iris.__version__) >= LooseVersion("2.0.0"):
             # always set fillvalue to 1e+20
             if np.ma.is_masked(cube.data):
                 np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
@@ -174,7 +174,7 @@ def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
         paths[filename].append(cube)
 
     for filename in paths:
-        if version.parse(iris.__version__) < version.parse("2.0.0"):
+        if LooseVersion(iris.__version__) < LooseVersion("2.0.0"):
             _save_cubes(
                 cubes=paths[filename],
                 target=filename,
