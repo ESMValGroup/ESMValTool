@@ -294,7 +294,7 @@ def mask_above_threshold(mycube, threshold):
     """
     Mask above a specific threshold value.
 
-    Takes a value `threshold' and masks off anything that is above
+    Takes a value 'threshold' and masks off anything that is above
     it in the cube data. Values equal to the threshold are not masked.
     """
     mycube.data = np.ma.masked_where(mycube.data > threshold, mycube.data)
@@ -305,7 +305,7 @@ def mask_below_threshold(mycube, threshold):
     """
     Mask below a specific threshold value.
 
-    Takes a value `threshold' and masks off anything that is below
+    Takes a value 'threshold' and masks off anything that is below
     it in the cube data. Values equal to the threshold are not masked.
     """
     mycube.data = np.ma.masked_where(mycube.data < threshold, mycube.data)
