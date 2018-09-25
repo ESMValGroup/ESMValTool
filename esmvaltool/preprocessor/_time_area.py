@@ -47,7 +47,7 @@ def time_slice(mycube, start_year, start_month, start_day,
 
 def extract_season(cube, season):
     """
-    Slice cube to get only the data belonging to a specific season
+    Slice cube to get only the data belonging to a specific season.
 
     Parameters
     ----------
@@ -58,8 +58,11 @@ def extract_season(cube, season):
     """
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
-    season_cube = cube.extract(iris.Constraint(clim_season=season.lower()))
-    return season_cube
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(cube,
+                                                  'time',
+                                                  name='season_year')
+    return cube.extract(iris.Constraint(clim_season=season.lower()))
 
 
 def extract_month(mycube, month):
@@ -127,12 +130,15 @@ def seasonal_mean(cube):
     iris.cube.Cube
         Seasonal mean cube
     """
-    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
-    iris.coord_categorisation.add_season_year(
-        cube, 'time', name='season_year')
+    if not cube.coords('clim_season'):
+        iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(
+            cube, 'time', name='season_year')
     annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
                                               iris.analysis.MEAN)
 
+    # TODO: This preprocessor is not calendar independent.
     def spans_three_months(time):
         """Check for three months"""
         return (time.bound[1] - time.bound[0]) == 2160
