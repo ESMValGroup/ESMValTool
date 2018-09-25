@@ -61,7 +61,7 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
         if version.parse(iris.__version__) >= version.parse("2.0.0"):
-        # always set fillvalue to 1e+20
+            # always set fillvalue to 1e+20
             if np.ma.is_masked(cube.data):
                 np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
@@ -93,34 +93,35 @@ def _save_cubes(cubes, **args):
 
     if (os.path.exists(filename)
             and all(cube.has_lazy_data() for cube in cubes)):
-        logger.debug("Not saving cubes %s to %s to avoid data loss. "
-                     "The cube is probably unchanged.", cubes, filename)
+        logger.debug(
+            "Not saving cubes %s to %s to avoid data loss. "
+            "The cube is probably unchanged.", cubes, filename)
     else:
         logger.debug("Saving cubes %s to %s", cubes, filename)
         if optimize_accesss:
             cube = cubes[0]
             if optimize_accesss == 'map':
-                dims = set(cube.coord_dims('latitude') +
-                           cube.coord_dims('longitude'))
+                dims = set(
+                    cube.coord_dims('latitude') + cube.coord_dims('longitude'))
             elif optimize_accesss == 'timeseries':
                 dims = set(cube.coord_dims('time'))
             else:
                 dims = tuple()
-                for coord_dims in (cube.coord_dims(dimension) for dimension
-                                   in optimize_accesss.split(' ')):
+                for coord_dims in (
+                        cube.coord_dims(dimension)
+                        for dimension in optimize_accesss.split(' ')):
                     dims += coord_dims
                 dims = set(dims)
 
-            args['chunksizes'] = tuple(length if index in dims else 1
-                                       for index, length
-                                       in enumerate(cube.shape))
+            args['chunksizes'] = tuple(
+                length if index in dims else 1
+                for index, length in enumerate(cube.shape))
         iris.save(cubes, **args)
 
     return filename
 
 
-def save(cubes, optimize_access=None,
-         compress=False, debug=False, step=None):
+def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
     """
     Save iris cubes to file
 
@@ -174,12 +175,17 @@ def save(cubes, optimize_access=None,
 
     for filename in paths:
         if version.parse(iris.__version__) < version.parse("2.0.0"):
-            _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
-                        optimize_access=optimize_access)
+            _save_cubes(
+                cubes=paths[filename],
+                target=filename,
+                zlib=compress,
+                optimize_access=optimize_access)
         else:
-            _save_cubes(cubes=paths[filename], target=filename,
-                        optimize_access=optimize_access,
-                        fill_value=GLOBAL_FILL_VALUE)
+            _save_cubes(
+                cubes=paths[filename],
+                target=filename,
+                optimize_access=optimize_access,
+                fill_value=GLOBAL_FILL_VALUE)
 
     return list(paths)
 

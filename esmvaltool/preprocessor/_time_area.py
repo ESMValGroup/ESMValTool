@@ -11,8 +11,8 @@ from packaging import version
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, start_year, start_month, start_day,
-               end_year, end_month, end_day):
+def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
+               end_day):
     """
     Slice cube on time
 
@@ -31,18 +31,17 @@ def time_slice(mycube, start_year, start_month, start_day,
             start_day = 30
         if end_day > 30:
             end_day = 30
-    start_date = datetime.datetime(int(start_year),
-                                   int(start_month), int(start_day))
+    start_date = datetime.datetime(
+        int(start_year), int(start_month), int(start_day))
     end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
     if version.parse(iris.__version__) < version.parse("2.0.0"):
-        my_constraint = iris.Constraint(time=lambda t: (
-            t_1 < t.point < t_2))
+        my_constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
     else:
-        my_constraint = iris.Constraint(time=lambda t: (
-            t_1 < time_units.date2num(t.point) < t_2))
+        my_constraint = iris.Constraint(
+            time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
@@ -61,9 +60,8 @@ def extract_season(cube, season):
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
-        iris.coord_categorisation.add_season_year(cube,
-                                                  'time',
-                                                  name='season_year')
+        iris.coord_categorisation.add_season_year(
+            cube, 'time', name='season_year')
     return cube.extract(iris.Constraint(clim_season=season.lower()))
 
 
@@ -111,8 +109,7 @@ def time_average(cube):
     ones = np.ones_like(cube.data)
     time_weights = time_thickness * ones
 
-    return cube.collapsed('time', iris.analysis.MEAN,
-                          weights=time_weights)
+    return cube.collapsed('time', iris.analysis.MEAN, weights=time_weights)
 
 
 # get the seasonal mean
