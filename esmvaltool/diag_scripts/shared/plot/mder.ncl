@@ -8,8 +8,8 @@
 ; Contents:
 ;     function error_bar_plot: plots an error bar for every single value.
 ;     function time_raster_plot: plots corellation coeficients in a raster.
-;     function weight_lin_plot: plots a time series together with with
-;                               weighted model enseble and observations.
+;     function weight_lin_plot: plots a time series together with weighted
+;                               model ensemble and observations.
 ;     function mder_scatter_plot: creates a scatterplot with regression error
 ;                                 and xy-stddev of each model value.
 ;     function squared_error_plot: plots the squared error for various model
@@ -331,6 +331,7 @@ begin
   ; Check required attributes of diag_script_info
   req_atts = (/"calc_type"/)
   exit_if_missing_atts(diag_script_info, req_atts)
+  calc_type = diag_script_info@calc_type
 
   ; Check for valid data
   if (all(ismissing(Ydata(:, :)))) then
@@ -350,7 +351,7 @@ begin
   i_OBS = ind(input_file_info@project .eq. "OBS")
   DIM_OBS = dimsizes(i_OBS)
 
-  if (diag_script_info@calc_type .eq. "pos") then
+  if (any(calc_type .eq. (/"pos", "int"/))) then
     lg_labels = new((/3 + DIM_OBS/), string)
     lg_colors = new((/3 + DIM_OBS/), string)
     item_type = new((/3 + DIM_OBS/), string)
@@ -362,7 +363,7 @@ begin
     lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Lines"
     item_type(DIM_OBS + 2) = "Markers"
-  else if (diag_script_info@calc_type .eq. "trend") then
+  else if (calc_type .eq. "trend") then
     lg_labels = new((/2 + DIM_OBS/), string)
     lg_colors = new((/2 + DIM_OBS/), string)
     item_type = new((/2 + DIM_OBS/), string)
@@ -372,8 +373,8 @@ begin
     lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
     item_type(DIM_OBS + 1) = "Markers"
   else
-    error_msg("f", diag_script, "", "calc_type " + \
-              diag_script_info@calc_type + " not supported")
+    error_msg("f", diag_script, "", "calc_type " + calc_type + \
+              " not supported")
   end if
   end if
 
@@ -409,12 +410,12 @@ begin
   res@vpWidthF = 0.6
 
   res@trXMinF = min(Ydata&time)
-  res@trXMaxF = 2060                  ; max(Ydata&time) - 1
-  res@trYMinF = min(Ydata) - 0.02 * (abs(avg(Ydata)))
-  res@trYMaxF = max(Ydata) + 0.02 * (abs(avg(Ydata)))
+  res@trXMaxF = max(Ydata&time) - 1
+  res@trYMinF = min(Ydata(4:, :)) - 0.02 * abs(avg(Ydata(4:, :)))
+  res@trYMaxF = max(Ydata(4:, :)) + 0.02 * abs(avg(Ydata(4:, :)))
 
   ; Plot error bar of time-dependent MDER results
-  if (plot_mder_time_series .and. (diag_script_info@calc_type .eq. "pos")) then
+  if (plot_mder_time_series .and. (calc_type .eq. "pos")) then
     res@xyLineColor = "skyblue1"
     res@gsnXYAboveFillColors = "skyblue1"
   else
@@ -424,7 +425,7 @@ begin
   plot_array = gsn_csm_xy(wks, Ydata&time, Ywerror(:, :), res)
 
   ; Plot time-dependent MDER results
-  if (plot_mder_time_series .and. (diag_script_info@calc_type .eq. "pos")) then
+  if (plot_mder_time_series .and. (calc_type .eq. "pos")) then
     mder = True
     mder@gsLineDashPattern = 4
     mder@xyMonoLineColor = False

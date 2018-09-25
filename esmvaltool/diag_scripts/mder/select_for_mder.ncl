@@ -80,11 +80,8 @@ begin
     error_msg("f", diag_script, "", "cannot use field " + field_type0)
   end if
 
-  ; Get reference dataset
-  ref_dataset = diag_script_info@ref_dataset(0)
-  if (dimsizes(diag_script_info@ref_dataset) .gt. 1) then
-      alt_ref_dataset = diag_script_info@ref_dataset(1)
-  end if
+  ; Get reference dataset(s)
+  ref_dataset = diag_script_info@ref_dataset
 
 end
 
@@ -156,24 +153,21 @@ begin
       end if
     end do
 
-    ; Define result variable
-    ; FIXME: do not need for DIM_VAR dimension here, as
-    ;        we always use 1 variable
-    ; DIM_REF = dimsizes(diag_script_info@ref_dataset)
-    ; val = new((/DIM_VAR, DIM_DAT , DIM_REF, 2/), float)
+    ; Define result variable (always one diagnostic)
     val = new((/1, DIM_DAT, 2/), float)
     val!0 = "diagnostics"
     val!1 = "datasets"
     val!2 = "stat"
     val&diagnostics = var0_new
     val&datasets = dataset_names
-    if (isdefined("alt_ref_idx")) then
-      val@reference = (/ref_dataset, alt_ref_dataset/)
+    val&stat = (/"mean", "stddev"/)
+    val@ncdf_file = ncdf_file
+
+    if (dimsizes(ref_dataset) .gt. 1) then
+      val@reference = (/ref_dataset(dd)/)
     else
       val@reference = (/ref_dataset/)
     end if
-    val&stat = (/"mean", "stddev"/)
-    val@ncdf_file = ncdf_file
 
     ; Loop over all datasets
     do idat = 0, DIM_DAT - 1

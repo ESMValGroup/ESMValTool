@@ -19,9 +19,13 @@
 ;     p_time: time range for projections.
 ;     p_step: averaging time range for target period.
 ;     scal_time: a year to scale the timeseries with.
-;     time_oper: select for opperation in time_opperation function.
-;     time_opt: select for option in time_opperation function.
-;     calc_type: trend/pos.
+;     time_oper: operation in time_operation function.
+;     time_opt: option in time_operation function.
+;     calc_type: trend/pos/int.
+;     region: the region to be averaged (only necessary for multi-dimensional
+;             variables).
+;     area_oper: operation in area_operation function (only necessary for
+;                multi-dimensional variables).
 ;
 ; Caveats:
 ;     Modifies input_file_info@dataset and input_file_info@ensemble.
@@ -62,14 +66,8 @@ begin
     target_var@units = diag_script_info@units
   end if
 
-  ; Check field type: need 1-d field
-  ; supported_vars = (/"sic"/)  ; List of non-1-d variables that are supported
-  supported_vars = (/""/)
-  if (.not. isStrSubset(field_type0, "0")) then
-    if (.not. any(var0 .eq. supported_vars)) then
-    error_msg("f", diag_script, "", "Variable " + var0 + " not supported yet.")
-    end if
-  end if
+  ; Check if variable is multi-dimensional
+  is_multi_dim = .not. isStrSubset(field_type0, "0")
 
   ; Extract observations from model-list (case insensitive)
   IDX_OBS = str_match_ind_ic(input_file_info@project, "OBS")
@@ -114,35 +112,6 @@ begin
   ; Read recipe and config data
   ; ---------------------------------------------------------------------------
 
-  ; Read latitude range and level from input files
-  f = addfile(input_file_info@filename(0), "r")
-  if (isfilevar(f, "plev") .and. isfilevar(f, "lat")) then
-    plev = read_data(0, "plev", field_type0)
-    lat = read_data(0, "lat", field_type0)
-    if (dimsizes(plev) .eq. 1) then
-      lev = plev(0)
-    else
-      error_msg("f", diag_script, "", "ambiguous pressure levels given, " + \
-                "only one supported")
-    end if
-    if (dimsizes(lat) .gt. 1) then
-      lat_range = (/min(lat), max(lat)/)
-    else
-      lat_range = read_data(0, "lat_bnds", field_type0)
-    end if
-  else
-    if (isatt(f, "plev") .and. \
-        isatt(f, "lat_range_0") .and. \
-        isatt(f, "lat_range_1")) then
-      lev = f@plev
-      lat_range = (/f@lat_range_0, f@lat_range_1/)
-    else
-      error_msg("f", diag_script, "", "cannot read plev and latrange")
-    end if
-  end if
-  log_info("Retrieved pressure level " + lev + " and latitude range " + \
-           lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
-
   ; Plot file type
   file_type = config_user_info@output_file_type
   if (ismissing(file_type)) then
@@ -159,6 +128,26 @@ begin
   time_oper = diag_script_info@time_oper
   time_opt = diag_script_info@time_opt
   calc_type = diag_script_info@calc_type
+
+  ; For multi-dimensional variables, 'region' and 'area_oper' are required
+  if (is_multi_dim) then
+    exit_if_missing_atts(diag_script_info, (/"region", "area_oper"/))
+    area_oper = diag_script_info@area_oper
+    if (isstring(diag_script_info@region)) then
+      region = select_region(diag_script_info@region)
+    else if (dimsizes(diag_script_info@region .eq. 2)) then
+      region = (/diag_script_info@region(0), \
+                diag_script_info@region(1), \
+                0.0, \
+                360.0/)
+      region@name = flt2string(region(0)) + "_-_" + flt2string(region(1))
+      region@DM_tag = "DM_reg"
+    else
+      error_msg("f", diag_script, "", diag_script_info@region + \
+                " is an invalid region type")
+    end if
+    end if
+  end if
 
   ; Output dir
   diag_script_base = basename(diag_script)
@@ -254,47 +243,69 @@ begin
       delete([/tmp, tmp_hist, idx_hist, idx_fut/])
     end if
 
+    ; Spatial average if necessary
+    if (is_multi_dim) then
+      tmpy := area_operations(tmpy, region(0), region(1), region(2), \
+                              region(3), area_oper, True)
+    end if
+
     ; Calculate future diagnostic for diagnostic scatter plot
-    future_tmps = time_operations(tmpy, p_time(0), \
+    future_temp = time_operations(tmpy, p_time(0), \
                                   (/p_time(dimsizes(p_time) - 1) + p_step/), \
                                   time_oper, time_opt, True)
-    future_diag(i) = tofloat(avg(time_operations( \
-        future_tmps, p_time(0), (/p_time(dimsizes(p_time)-1) + p_step/), \
+    if (time_oper .eq. "extract") then
+      future_diag(i) = tofloat(avg(time_operations( \
+        future_tmp, p_time(0), (/p_time(dimsizes(p_time) - 1) + p_step/), \
         "average", "yearly", True)))
-    delete(future_tmps)
+    else
+      future_diag(i) = tofloat(avg(future_temp))
+    end if
 
     ; Loop over different target periods
     do pt = 0, dimsizes(p_time) - 1
       ; Average over var time series
-      tmps = time_operations(tmpy, p_time(pt), p_time(pt) + p_step, \
-                             time_oper, time_opt, True)
-      tmpj = time_operations(tmps, p_time(pt), p_time(pt) + p_step, \
-                             "average", "yearly", True)
+      temp_mean = time_operations(tmpy, p_time(pt), p_time(pt) + p_step, \
+                                  time_oper, time_opt, True)
+      if (time_oper .eq. "extract") then
+        temp_mean := time_operations(temp_mean, p_time(pt), \
+                                     p_time(pt) + p_step, "average", \
+                                     "yearly", True)
+      end if
 
-      ; Calculate the scaling factor between scal_time(0) and scal_time(1)
+      ; Adapt scal_time(1) (necessary of larger than end_year)
       if (scal_time(1) .gt. \
           toint(input_file_info@end_year(idat - DIM_HDAT))) then
         scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
       end if
 
       ; Calculate average over starting period for trend calculation
-      tmpxx = time_operations(tmpy, scal_time(0), scal_time(1), "extract", \
-                              time_opt, True)
-      tmpyy = time_operations(tmpxx, scal_time(0), scal_time(1), "average", \
-                              "yearly", True)
-      tmppd = tofloat(avg(tmpyy))
+      trend_base = time_operations(tmpy, scal_time(0), scal_time(1), \
+                                   time_oper, time_opt, True)
+      if (time_oper .eq. "extract") then
+        trend_base := time_operations(trend_base, scal_time(0), scal_time(1), \
+                                      "average", "yearly", True)
+      end if
+      trend_base = tofloat(avg(trend_base))
 
       ; Perform calculation type
       if (calc_type .eq. "trend") then
-        xx(pt, i) = tofloat(avg(tmpj)) - tmppd
+        xx(pt, i) = tofloat(avg(temp_mean)) - trend_base
       else if (calc_type .eq. "pos") then
-        xx(pt, i) = tofloat(avg(tmpj))
+        xx(pt, i) = tofloat(avg(temp_mean))
+      else if (calc_type .eq. "int") then
+        integrated_vals = temp_mean
+        do tt = 0, dimsizes(temp_mean) - 2
+          integrated_vals(tt + 1) = integrated_vals(tt) + temp_mean(tt + 1)
+        end do
+        xx(pt, i) = tofloat(avg(integrated_vals))
+        delete([/integrated_vals, tt/])
       else
         error_msg("f", diag_script, "", "calc_type " + calc_type + \
                   " not supported")
       end if
       end if
-      delete([/tmppd, tmps, tmpj, tmpyy, tmpxx/])
+      end if
+      delete([/trend_base, temp_mean/])
     end do
     delete(tmpy)
   end do
@@ -341,6 +352,16 @@ begin
     ; Loop over datasets and save diagnostic data
     do i = 0, DIM_DAT - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
+
+        ; Check if data_temp dataset labels are different
+        if (isStrSubset(input_file_info@dataset(i), "_") .and. .not. \
+            isStrSubset(data_temp&datasets(idat), "_")) then
+          dataset_name = str_split(input_file_info@dataset(i), "_")
+          input_file_info@dataset(i) = dataset_name(0)
+          delete(dataset_name)
+        end if
+
+        ; Add data if datasets match
         if (input_file_info@dataset(i) .eq. data_temp&datasets(idat)) then
           diag_all(idx_diag, i) = data_temp(0, idat, 0)
           if (isdim(data_temp, "diagnostics")) then
