@@ -3,10 +3,12 @@ import logging
 import os
 import shutil
 from itertools import groupby
+from packaging import version
 
 import iris
 import iris.exceptions
 import yaml
+import numpy as np
 
 from .._task import write_ncl_settings
 
@@ -58,10 +60,10 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
-        # TODO add block below when using iris 2.0
+        if version.parse(iris.__version__) >= version.parse("2.0.0"):
         # always set fillvalue to 1e+20
-        # if np.ma.is_masked(cube.data):
-        #     np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
+            if np.ma.is_masked(cube.data):
+                np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -170,12 +172,14 @@ def save(cubes, optimize_access=None,
             paths[filename] = []
         paths[filename].append(cube)
 
-    # TODO replace block when using iris 2.0
     for filename in paths:
-        # _save_cubes(cubes=paths[filename], target=filename,
-        #             fill_value=GLOBAL_FILL_VALUE)
-        _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
-                    optimize_access=optimize_access)
+        if version.parse(iris.__version__) < version.parse("2.0.0"):
+            _save_cubes(cubes=paths[filename], target=filename, zlib=compress,
+                        optimize_access=optimize_access)
+        else:
+            _save_cubes(cubes=paths[filename], target=filename,
+                        optimize_access=optimize_access,
+                        fill_value=GLOBAL_FILL_VALUE)
 
     return list(paths)
 
