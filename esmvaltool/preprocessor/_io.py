@@ -123,7 +123,7 @@ def _save_cubes(cubes, **args):
 
 def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
     """
-    Save iris cubes to file
+    Save iris cubes to file.
 
     Path is taken from the _filename attributte in the code.
 

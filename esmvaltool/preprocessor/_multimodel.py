@@ -104,7 +104,7 @@ def _compute_statistic(datas, name):
 
 def _put_in_cube(template_cube, cube_data, stat_name, file_name, time_bounds,
                  t_axis):
-    """Quick cube building and saving"""
+    """Quick cube building and saving."""
     # grab coordinates from any cube
     times = template_cube.coord('time')
     # or get the FULL time axis

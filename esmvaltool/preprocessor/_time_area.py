@@ -4,17 +4,18 @@ Time operations on cubes
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+from distutils.version import LooseVersion
+
 import iris
 import iris.coord_categorisation
 import numpy as np
-from distutils.version import LooseVersion
 
 
 # slice cube over a restricted time period
 def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
                end_day):
     """
-    Slice cube on time
+    Slice cube on time.
 
     Function that returns a subset of the original cube (slice)
     given two dates of interest start date and end date
