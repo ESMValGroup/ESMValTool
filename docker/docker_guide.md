@@ -9,12 +9,7 @@ All available docker images are listed on
 Before running container you need to pull the image to your machine.
 
 ```sh
-# pull Ubuntu based image with version 1.1.0
-docker pull esmvalgroup/esmvaltool:1.1.0-xenial
-# pull CentOS based image with version 1.1.0
-docker pull esmvalgroup/esmvaltool:1.1.0-centos7
-# pull debian based image with version 1.1.0
-docker pull esmvalgroup/esmvaltool:1.1.0-debian-8.5
+docker pull esmvalgroup/esmvaltool:2.0
 ```
 
 ## Running ESMValTool in the container
@@ -26,12 +21,9 @@ in advance. Below are few user scenerios.
 
 1. Input and output directories are located in the same directory.
 ```sh
-docker run -v <local_data>:/data/ esmvalgroup/esmvaltool:<tag> nml/<namelist_name>.xml
+docker run -v <local_data>:/data/ esmvalgroup/esmvaltool:2.0 nml/<namelist_name>.xml
 ```
 Replace:
-* `<tag>` with `1.1.0-centos7`, `1.1.0-xenial` or `1.1.0-debian-8.5`
-    depending on which image
-you want to use
 * `<namelist_name>` with name of the namelist you want to execute
 * `<local_data>` with  a location on your local machine
 (docker host). It has to be absolute path.

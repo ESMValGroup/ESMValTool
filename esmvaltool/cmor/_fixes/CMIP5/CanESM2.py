@@ -21,4 +21,7 @@ class fgco2(Fix):
         iris.cube.Cube
 
         """
-        return cube * 12.0 / 44.0
+        metadata = cube.metadata
+        cube *= 12.0 / 44.0
+        cube.metadata = metadata
+        return cube

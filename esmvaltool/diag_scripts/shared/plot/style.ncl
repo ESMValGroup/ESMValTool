@@ -28,19 +28,19 @@ undef("unique_labels_min")
 function unique_labels_min(prio: string)
 ;
 ; Arguments
-;    prio: string vector with attribute names (dataset_info@*), ordered by
+;    prio: string vector with attribute names (input_file_info@*), ordered by
 ;          priority for annotation (starting with highest).
 ;
 ; Return value
-;    A vector (string) with one element for each dataset_info@dataset -> each
+;    A vector (string) with one element for each input_file_info@dataset, each
 ;    label contains the least possible attribute strings.
 ;
 ; Description
-;    Builds the vector by looping over dataset_info@dataset.
+;    Builds the vector by looping over input_file_info@dataset.
 ;    Adds "_attribute" to non-unique labels, until prio is exhausted.
 ;
 ; Caveats
-;     Uses dataset_info@*, which is available here anyway.
+;     Uses input_file_info@*, which is available here anyway.
 ;
 ; References
 ;
@@ -54,7 +54,7 @@ begin
   scriptname = "diag_scripts/shared/plot/style.ncl"
   enter_msg(scriptname, funcname)
 
-  result = dataset_info@$prio(0)$  ; Start with highest priority
+  result = input_file_info@$prio(0)$  ; Start with highest priority
   unique = result(UNIQ(result))
   iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
   do while (dimsizes(unique) .ne. dimsizes(result))
@@ -68,7 +68,7 @@ begin
         index = ind(result .eq. unique(i))
         if (dimsizes(index) .gt. 1) then  ; More than one occurence
           result(index) = \
-            result(index) + "_" + dataset_info@$prio(iprio)$(index)
+            result(index) + "_" + input_file_info@$prio(iprio)$(index)
         end if
         delete(index)
       end do  ; Different labels
@@ -88,19 +88,19 @@ undef("unique_labels_all")
 function unique_labels_all(prio:string)
 ;
 ; Arguments
-;    prio: string vector with attribute names (dataset_info@*), ordered by
+;    prio: string vector with attribute names (input_file_info@*), ordered by
 ;          priority for annotation (starting with highest)
 ;
 ; Description
-;    Builds the vector by looping over dataset_info@dataset.
+;    Builds the vector by looping over input_file_info@dataset.
 ;    Adds "_attribute" until prio is exhausted or until labels are unique.
 ;
 ; Return value
-;    A vector (string) with one element for each dataset_info@dataset -> all
+;    A vector (string) with one element for each input_file_info@dataset -> all
 ;    labels contain the same (least possible) number of attribute strings.
 ;
 ; Caveats
-;    Uses dataset_info@*, which is available here anyway.
+;    Uses input_file_info@*, which is available here anyway.
 ;
 ; References
 ;
@@ -114,7 +114,7 @@ begin
   scriptname = "diag_scripts/shared/plot/style.ncl"
   enter_msg(scriptname, funcname)
 
-  result = dataset_info@$prio(0)$  ; Start with highest priority
+  result = input_file_info@$prio(0)$  ; Start with highest priority
   unique = result(UNIQ(result))
   iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
   do while (dimsizes(unique) .ne. dimsizes(result))
@@ -127,7 +127,7 @@ begin
       do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
         index = ind(result .eq. unique(i))
         if (dimsizes(index) .gt. 1) then  ; More than one occurence
-          result = result + "_" + dataset_info@$prio(iprio)$
+          result = result + "_" + input_file_info@$prio(iprio)$
         end if
         delete(index)
       end do  ; Different labels
@@ -160,7 +160,7 @@ function project_style(info, flag)
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of dataset_info@dataset, with the stlye
+;    An array of the same size of input_file_info@dataset, with the stlye
 ;    information for the given flag. The type depends on the flag.
 ;
 ; Description
@@ -193,7 +193,7 @@ begin
   ; Check for the available dictonary keys to be used for the annotations
   ; (see get_dict_key in projects.py)
   dkeys = (/"dataset", "ensemble", "case_name", "exp", "mip", "realm"/)
-  tmp = isatt(dataset_info, dkeys)
+  tmp = isatt(input_file_info, dkeys)
   l_dkeys = dkeys(ind(tmp))
   delete(tmp)
 
@@ -242,16 +242,16 @@ begin
   if (ismissing(col)) then
     error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
   end if
-  nmodels = dimsizes(dataset_info@dataset)
+  nmodels = dimsizes(input_file_info@dataset)
   column = new(nmodels, string)
   wildcard_cnt = 0
   do ii = 0, nmodels - 1
-    row = ind(dataset_info@dataset(ii).eq.modelsinfile)
+    row = ind(input_file_info@dataset(ii).eq.modelsinfile)
 
     ; Multiple entries, raise error
     if (dimsizes(row).gt.1) then
       error_msg("f", scriptname, funcname, "Multiple entries for dataset" + \
-                dataset_info@dataset(ii) + " in style file " + stylefile)
+                input_file_info@dataset(ii) + " in style file " + stylefile)
     end if
 
     ; Missing dataset
@@ -260,8 +260,8 @@ begin
       ; Search for "default"
       row  = ind("default".eq.modelsinfile)
       if (.not.ismissing(row)) then
-        log_debug("Dataset " + dataset_info@dataset(ii) + " not found in " + \
-                  stylefile + ", using default")
+        log_debug("Dataset " + input_file_info@dataset(ii) + \
+                  " not found in " + stylefile + ", using default")
         column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
         continue
       end if
@@ -270,7 +270,7 @@ begin
       rows = ind("*".eq.modelsinfile)
       if (all(ismissing(rows))) then
         error_msg("f", scriptname, funcname, "Dataset " + \
-                  dataset_info@dataset(ii) + " not found in stylefile" + \
+                  input_file_info@dataset(ii) + " not found in stylefile" + \
                   stylefile)
       end if
       if (wildcard_cnt.ge.dimsizes(rows)) then
@@ -278,7 +278,7 @@ begin
                   " contains too few wildcard (*) " + "entries (" + \
                   wildcard_cnt + "), please add more")
       end if
-      log_debug("Dataset " + dataset_info@dataset(ii) + " not found in " + \
+      log_debug("Dataset " + input_file_info@dataset(ii) + " not found in " + \
                 stylefile + ", using wildcard")
       row = rows(wildcard_cnt)
       wildcard_cnt = wildcard_cnt + 1
@@ -318,7 +318,8 @@ begin
       else
         error_msg("f", scriptname, funcname, \
                   "Invalid definition of color for dataset " + \
-                  dataset_info@dataset(ii) + ", check style file " + stylefile)
+                  input_file_info@dataset(ii) + ", check style file " + \
+                  stylefile)
       end if
       end if
       end if
@@ -349,8 +350,8 @@ function project_style_GO(flag:string)  ; FiX-ME move to style-file
 ;
 ; Arguments:
 ;    flag = string determining the type of array requested
-; Return value: array of dimsizes(dataset_info@dataset)
-;  Definition of plot attribs; Returns arrays of dimsizes(dataset_info@dataset)
+; Return value:
+;    array of dimsizes(input_file_info@dataset)
 ;  flag = "colors": returns an array of colors (either RGB or named colors)
 ;  flag = "dashes": returns an array of dash styles (integer numbers)
 ;  flag = "thicks": returns an array of line thicknesses (numeric)
@@ -383,15 +384,15 @@ begin
 
   ; assign plot attributes (see function select_style in style_auxiliary.ncl)
   if (flag .eq. "colors") then
-    result = select_style(modelstyles, 1, dataset_info@dataset)
+    result = select_style(modelstyles, 1, input_file_info@dataset)
   else if (flag .eq. "dashes") then
-    result = select_style(modelstyles, 2, dataset_info@dataset)
+    result = select_style(modelstyles, 2, input_file_info@dataset)
   else if (flag .eq. "thicks") then
-    result = toint(select_style(modelstyles, 3, dataset_info@dataset))
+    result = toint(select_style(modelstyles, 3, input_file_info@dataset))
   else if (flag .eq. "annots") then
     result = unique_labels_min((/"dataset", "ensemble", "exp"/))
   else if (flag .eq. "avgstd") then
-    result = toint(select_style(modelstyles, 4, dataset_info@dataset))
+    result = toint(select_style(modelstyles, 4, input_file_info@dataset))
   else
     print("fatal: (project_style_CMIP5) flag " + flag + " not allowed.")
     status_exit(1)

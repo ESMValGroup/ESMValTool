@@ -16,13 +16,6 @@
 #
 # Only the default drs is mandatory, the others are optional
 ###############################################################################
-PRIMAVERA:
-  input_dir: '[expid]/cmorfiles/CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
-  input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
-  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
-  cmor_type: 'CMIP6'
-  cmor_tables: '~/PycharmProjects/earthdiagnostics/earthdiagnostics/cmor_tables/primavera'
-
 CMIP6:
   input_dir: 'CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
   input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
@@ -36,8 +29,26 @@ CMIP5:
     DKRZ: '[institute]/[dataset]/[exp]/[freq]/[realm]/[mip]/[ensemble]/[latestversion]/[var]'
     ETHZ: '[exp]/[mip]/[var]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[freq]'
-    BSC: '[project]/[exp]/[dataset]'
+    BSC: '[project]/[exp]/[dataset.lower]'
   input_file: '[var]_[mip]_[dataset]_[exp]_[ensemble]_*'
+  fx_dir:
+    default: '/'
+    BADC: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[fx_var]'
+    DKRZ: '[institute]/[dataset]/[exp]/fx/[realm]/fx/r0i0p0/[latestversion]/[fx_var]'
+    ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
+  fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
+  fx_mip_change:
+    'areacella': 'Amon'
+    'areacello': 'Omon'
+    'basin': 'Omon'
+    'deptho': 'Omon'
+    'mrsofc': 'Lmon'
+    'orog': 'Amon'
+    'rootd': 'Lmon'
+    'sftgif': 'Lmon'
+    'sftlf': 'Amon'
+    'sftof': 'Omon'
+    'volcello': 'Omon'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
   institute:
     'ACCESS1-0': 'CSIRO-BOM'
@@ -51,7 +62,7 @@ CMIP5:
     'CCSM4': 'NCAR'
     'CESM1-BGC': 'NSF-DOE-NCAR'
     'CESM1-CAM5': 'NSF-DOE-NCAR'
-    'CESM1-CAM5-1-FV2': 'NSF-DOE-NCA'
+    'CESM1-CAM5-1-FV2': 'NSF-DOE-NCAR'
     'CESM1-FASTCHEM': 'NSF-DOE-NCAR'
     'CESM1-WACCM': 'NSF-DOE-NCAR'
     'CFSv2-2011': ['COLA-CFS', 'NOAA-NCEP']
@@ -117,10 +128,14 @@ CMIP5:
 OBS:
   input_dir:
     default: '[tier]/[dataset]'
-    BSC: '[type]/[institute]/[dataset]/[freq_folder]/[var][freq_base]'
+    BSC: '[type]/[institute.lower]/[dataset.lower]/[freq_folder]/[var][freq_base]'
   input_file:
     default: '[project]_[dataset]_[type]_[version]_[field]_[var]_*'
     BSC: '[var]_*.nc'
+  fx_dir:
+    default: '[tier]/[dataset]'
+  fx_file:
+    default: '[project]_[dataset]_[type]_fx_[fx_var].nc'
   output_file: '[project]_[dataset]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
@@ -128,6 +143,10 @@ obs4mips:
   input_dir:
     default: '[tier]/[dataset]'
   input_file: '[var]_[dataset]_[level]_[version]_*'
+  fx_dir:
+    default: '[tier]/[dataset]'
+  fx_file:
+    default: '[project]_[dataset]_fx_[fx_var].nc'
   output_file: '[project]_[dataset]_[level]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 

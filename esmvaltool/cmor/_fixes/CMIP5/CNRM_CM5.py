@@ -20,7 +20,10 @@ class msftmyz(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1e6
+        metadata = cube.metadata
+        cube *= 1e6
+        cube.metadata = metadata
+        return cube
 
 
 class msftmyzba(msftmyz):

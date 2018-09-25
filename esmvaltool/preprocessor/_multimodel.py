@@ -21,7 +21,7 @@ import iris
 import numpy as np
 import yaml
 
-from ._io import save_cubes
+from ._io import save
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,10 @@ def _compute_statistic(datas, name):
         # get all NOT fully masked data - u_data
         # datas is per time point
         # so we can safely NOT compute stats for single points
-        u_datas = [data for data in datas if not np.all(data.mask)]
+        if datas.ndim == 1:
+            u_datas = [data for data in datas]
+        else:
+            u_datas = [data for data in datas if not np.all(data.mask)]
         if len(u_datas) > 1:
             statistic = statistic_function(datas, axis=0)
         else:
@@ -119,6 +122,13 @@ def _put_in_cube(template_cube, cube_data, stat_name,
     elif len(template_cube.shape) == 4:
         plev = template_cube.coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
+    elif len(template_cube.shape) == 1:
+        cspec = [(times, 0), ]
+    elif len(template_cube.shape) == 2:
+        # If you're going to hardwire air_pressure into this,
+        # might as well have depth here too.
+        plev = template_cube.coord('depth')
+        cspec = [(times, 0), (plev, 1), ]
 
     # correct dspec if necessary
     fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
@@ -345,7 +355,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
                                                    time_bounds)
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            save([cube_of_stats])
             files.append(filename)
 
     elif span == 'full':
@@ -362,7 +372,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
                                                 time_bounds)
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            save([cube_of_stats])
             files.append(filename)
 
     cubes.extend(files)
