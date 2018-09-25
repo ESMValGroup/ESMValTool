@@ -17,7 +17,6 @@
 ;    procedure inquire_and_save_fileinfo
 ;
 ; #############################################################################
-MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
 gOldVar = ""
 gOldDiag = ""
@@ -284,7 +283,7 @@ end
 undef("write_filelist")
 procedure write_filelist(script:string,
                          variable:string,
-                         model:string,
+                         dataset:string,
                          filelist:string,
                          sourcefilelist:string,
                          fixfile:string,
@@ -297,7 +296,7 @@ procedure write_filelist(script:string,
 ;    script: name of the diagnostic script for which the input files are
 ;            written to the log file
 ;    variable: name of variable
-;    model: name of model
+;    dataset: name of dataset
 ;    filelist: list of filenames processed to produce the file to be written
 ;    sourcefilelist: list of filenames processed to produce the input files
 ;                    of the file to be written (e.g., input files used to
@@ -372,7 +371,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
   gOldVar = variable
-  system(s_open + "    Model: " + model + s_close)
+  system(s_open + "    Dataset: " + dataset + s_close)
   system(s_open + "    Input path: " + path + s_close)
   system(s_open + "    Input file(s):" + s_close)
 
@@ -459,28 +458,28 @@ begin
   scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
-  hline      = "-------------------------"
-  hline_dble = "========================="
-  hline = hline + hline + hline
-  hline_dble = hline_dble + hline_dble + hline_dble
+  ; hline      = "-------------------------"
+  ; hline_dble = "========================="
+  ; hline = hline + hline + hline
+  ; hline_dble = hline_dble + hline_dble + hline_dble
 
   ; Master refs file
-  master_refs = MASTER_REFS
+  ; master_refs = MASTER_REFS
 
   ; Output refs file
-  output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
+  ; output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
-  s_open  = "echo " + str_get_dq
-  s_close = str_get_dq + " >> " + output_refs
+  ; s_open  = "echo " + str_get_dq
+  ; s_close = str_get_dq + " >> " + output_refs
 
   ; If first time (empty output_refs) write header
-  if (.not. fileexists(output_refs)) then
-    write_header(s_open, hline, s_close)
-  end if
+  ; if (.not. fileexists(output_refs)) then
+  ;   write_header(s_open, hline, s_close)
+  ; end if
 
   ; write diagnostic header
-  write_diag_header(s_open, hline_dble, s_close, master_refs, output_refs, \
-                    auth, contr, diag, obs, proj, script)
+  ; write_diag_header(s_open, hline_dble, s_close, master_refs, output_refs, \
+  ;                   auth, contr, diag, obs, proj, script)
 
   leave_msg(scriptname, funcname)
 
@@ -489,12 +488,12 @@ end
 ; #############################################################################
 undef("inquire_and_save_fileinfo")
 procedure inquire_and_save_fileinfo(filename:string,
-                                    model:string,
+                                    dataset:string,
                                     variable:string)
 ;
 ; Arguments
 ;    filename: file name of input file (netCDF)
-;    model: name of model
+;    dataset: name of dataset
 ;    variable: name of variable
 ;
 ; Description
@@ -636,7 +635,7 @@ begin
   end if
 
   ; Write information on processed files to log-file
-  write_filelist(diag_script, variable, model, filelist(0:n - 1), \
+  write_filelist(diag_script, variable, dataset, filelist(0:n - 1), \
                  sourcefilelist(0:ns), fixfile, sourcefixfile,  \
                  sourcereflist(0:nr), sourcetidlist(0:ns), version)
 

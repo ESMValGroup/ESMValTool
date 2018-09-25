@@ -18,7 +18,6 @@ from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
-    'doc',  # install doc/MASTER_authors-refs-acknow.txt
 ]
 
 REQUIREMENTS = {
@@ -34,7 +33,7 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        'iris==1.13',
+        # 'scitools-iris',  # Only iris 2 is on PyPI
         'matplotlib',
         'netCDF4',
         'numba',

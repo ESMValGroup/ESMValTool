@@ -105,7 +105,7 @@ begin
     ncols = 4
     res@vpWidthF = 1.0
     if (dim_LAB .gt. nrowmax * ncols) then
-      error_msg("f", "xy_line.ncl", funcname, "too many models")
+      error_msg("f", "xy_line.ncl", funcname, "too many datasets")
     end if
   end if
   nrows = toint(dim_LAB/tofloat(ncols))

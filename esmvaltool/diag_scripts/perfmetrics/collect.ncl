@@ -18,7 +18,7 @@
 ;    label_hi: add upper triange for values outside range
 ;    cm_interval: min and max color of the color table
 ;    cm_reverse: reverse color table
-;    sort: sort models in alphabetic order (excluding MMM)
+;    sort: sort datasets in alphabetic order (excluding MMM)
 ;    title: plot title
 ;    scale_font: scaling factor applied to the default font size
 ;    disp_values: switch on/off the grading values on the plot
@@ -57,7 +57,7 @@ begin
     file_type = "ps"
   end if
 
-  ; Write references
+  ; Write references  ; FIX-ME to be replaced by new method
   write_references(diag_script, "A_fran_fr", \
                    (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
                    (/"D_righi15gmd", "D_gleckler08jgr"/), \
@@ -91,7 +91,7 @@ begin
 
     end if
 
-    ; Create array for collecting all models
+    ; Create array for collecting all datasets
     if (.not.isdefined("data_all")) then
       dim_temp = dimsizes(data_temp)
       dim_data = (/dimsizes(input_files), dim_temp(1), 2/)
@@ -101,7 +101,7 @@ begin
       data_all&models = data_temp&models
     end if
 
-    ; Make sure model coordinate is consistent
+    ; Make sure dataset coordinate is consistent
     consistent = False
     if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) then
       if (all(data_temp&models.eq.data_all&models)) then
@@ -116,7 +116,7 @@ begin
     else
       do imod2 = 0, dimsizes(data_temp&models) - 1
         if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
-          ; Append record for model(imod)
+          ; Append record for dataset(imod)
           data_new = extend_var_at(data_all, 1, dimsizes(data_all&models))
           data_new(ii, dimsizes(data_all&models), :) = \
             (/data_temp(0, imod2, :)/)
@@ -125,9 +125,9 @@ begin
           data_all := data_new
           delete(data_new)
         else
-          ; Loop over models of data
+          ; Loop over datasets of data
           do imod = 0, dimsizes(data_all&models) - 1
-            ; if no data model is similar to curreny entry, write data entry
+            ; if no data dataset is similar to curreny entry, write data entry
             if (data_all&models(imod).eq. data_temp&models(imod2)) then
                 data_all(ii, imod, :) = (/data_temp(0, imod2, :)/)
                 copy_VarCoords(data_temp(0:0, imod2, :), \
@@ -154,7 +154,7 @@ begin
     delete(data_all@reference)
   end if
 
-  ; Sort models in alphabetical order, excluding multi-model mean/median
+  ; Sort datasets in alphabetical order, excluding multi-model mean/median
   ; which are placed at the beginning
   if (isatt(diag_script_info, "sort")) then
     if (diag_script_info@sort) then
