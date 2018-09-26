@@ -537,7 +537,7 @@ begin
       ; estimates of all input variables are added before calculating
       ; the square root
 
-      rmsobs(is) = rmsobs(is) + dim_avg_wgt_Wrap(var1d^2, wgt1d, 1)
+      rmsobs(is) = rmsobs(is) + dim_avg_wgt_Wrap(var1d ^ 2, wgt1d, 1)
     end do  ; iv-loop
 
     ; finish calculation of RMS
@@ -545,7 +545,7 @@ begin
 
     ; normalize RMS by dividing by standard deviation of obs (ref)
     avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
-    rmsobs(is) =  rmsobs(is) / sqrt(dim_avg_wgt_Wrap((ref1d - avg_ref)^2, \
+    rmsobs(is) =  rmsobs(is) / sqrt(dim_avg_wgt_Wrap((ref1d - avg_ref) ^ 2, \
                                                      wgt1d, 1))
 
   end do  ; loop over seasons
