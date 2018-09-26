@@ -1,16 +1,18 @@
-###############################################################################
-# namelist_example_r.xml
-#
-# Description
-# Namelist for example diagnostic written in R
-#
-# Authors
-# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-# 
-# This namelist is part of the ESMValTool
-#
-###############################################################################
+# recipe_example_r.yml
 ---
+
+documentation:
+  description: |
+    Recipe for example diagnostic written in R
+
+  authors:
+    - arno_en
+
+  references:
+    - donofrio14jh
+
+  projects:
+    - c3s-magic
 
 datasets:
   - {dataset: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
