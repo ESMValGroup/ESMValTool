@@ -56,6 +56,10 @@ authors:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
     email: oliverdandrews 'at' googlemail.com
+  arno_en:
+    name: Arnone, Enrico
+    institute: ISAC-CNR, Torino, Italy
+    email: e.arnone 'at' isac.cnr.it 
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -102,6 +106,10 @@ authors:
   hann_ul:
     name: Hansson, Ulf
     institute: SMHI, Sweden
+  hard_jo:
+    name: von Hardenberg, Jost
+    institute: ISAC-CNR, Torino, Italy
+    email: j.vonhardenberg 'at' isac.cnr.it
   hemp_ni:
     name: Hempelmann, Nils
     institute: IPSL, France
@@ -427,6 +435,7 @@ references:
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."

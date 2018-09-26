@@ -16,12 +16,16 @@
 # Caveats
 #
 # Modification history
-#    20180518-A_arnone_e: Written for v2.0  
+#    20180926-A_arno_en: Refined for usage as recipe   
+#    20180518-A_arno_en: Written for v2.0  
 #
 # ############################################################################
 
 library(tools)
 library(yaml)
+
+ref="/work/datasets/obs/unsorted/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
+orog_tmp="/work/datasets/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"  # modify with observed data
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -69,13 +73,9 @@ for (model_idx in c(1:(length(models_name)))) {
   print(model_ens)
 
   inregname <- paste0(exp,"_",model_exp,"_",model_ens,"_",toString(year1),"-",toString(year2),"_",var0)
-  inregfile <- infile
   outfile <- paste0(work_dir,"/",inregname,"_",perc_lev,"qb.nc")
   print(paste0(diag_base,": pre-processing file: ", infile))
-
-  ref="/work/datasets/climate/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
   model=infile
-  orog_tmp="/work/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"       # modificare DEM con uno osservato
 
   perc=perc_lev #"75"
   print(paste0(diag_base,": ",perc," percent quantile"))
@@ -117,7 +117,7 @@ for (model_idx in c(1:(length(models_name)))) {
    system(cdo_command)
 
   # Check with Mehran et al. 2014 
-  cdo_command=paste("cdo remapnn,tmp_grid -gtc,5 ",orog_tmp, "tmp_mask_orog.nc")   # modificare DEM con uno osservato  &  la soglia dei 5m
+  cdo_command=paste("cdo remapnn,tmp_grid -gtc,5 ",orog_tmp, "tmp_mask_orog.nc")   # modify DEM with observation  &  5m threshold
    print(cdo_command)
    system(cdo_command)
   cdo_command=paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
@@ -128,7 +128,7 @@ for (model_idx in c(1:(length(models_name)))) {
   mv_command=paste("mv tmp_qb.nc ",outfile)
    print(mv_command)
    system(mv_command)
-  rm_command=paste("rm tmp*")
+  rm_command=paste("rm tmp_*")
    print(mv_command)
    system(mv_command)
 }

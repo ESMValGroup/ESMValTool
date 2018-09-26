@@ -1,32 +1,30 @@
-###############################################################################
-# namelist_quantilebias.yml
-#
-# Description
-# Namelist for calculation of precipitation quantile bias
-#
-# Authors
-# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-# S. Terzago (ISAC-CNR, Italy - s.terzago@isac.cnr.it)
-# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
-# 
-# References:
-# Mehran 2014, http://onlinelibrary.wiley.com/doi/10.1002/2013JD021152/full 
-# 
-# This namelist is part of the ESMValTool
-#
-###############################################################################
+# recipe_quantilebias.yml
 ---
 
+documentation:
+  description: |
+    Tool for calculation of precipitation quantile bias
+
+  authors:
+    - arno_en
+    - hard_jo
+
+  references:
+    - mehran14jgr
+
+  projects:
+    - c3s-magic
+
 datasets:
-  - {dataset: EC-Earth, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+  - {dataset: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   preproc:
-    extract_region: false
+    extract_levels: false
 
 diagnostics:
   quantilebias:
-    description: tool for calculation of precipitation quantile bias
+    description: tool for calculation of precipitation quantile bias 
     variables:
       pr:
         preprocessor: preproc
