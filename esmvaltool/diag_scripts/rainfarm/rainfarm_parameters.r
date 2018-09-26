@@ -13,7 +13,7 @@ force_processing = T # TRUE to rewrite existing output file
 #                               [-o OUTFILE] [-v VARNAME] [-g] [-c]
 # set FALSE to void argument
 weights_climo =     # climatology file to be used to calculate weights (calling rfweights) 
-          "/work/datasets/climate/WORLDCLIM/prec/prec_06_16_central_europe.nc" 
+          "/work/datasets/obs/unsorted/WORLDCLIM/prec/prec_06_16_central_europe.nc" 
 varname = F         # input variable name - this is assigned by ESMValTool pre-processing 
 conserv_glob = F    # conserve precipitation over full domain
 conserv_smooth = T  # conserve precipitation using convolution

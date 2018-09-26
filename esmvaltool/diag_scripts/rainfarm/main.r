@@ -31,6 +31,7 @@ source('esmvaltool/diag_scripts/rainfarm/rainfarm_parameters.r')
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
+#settings <- yaml::read_yaml(settings_file)
 metadata <- yaml::read_yaml(settings$input_files)
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)}
 
@@ -57,8 +58,8 @@ dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'model'))
-reference_model=unname(sapply(list0, '[[', 'reference_model'))[1]
+models_name=unname(sapply(list0, '[[', 'dataset'))
+reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
 models_start_year=unname(sapply(list0, '[[', 'start_year'))
 models_end_year=unname(sapply(list0, '[[', 'end_year'))
 models_experiment=unname(sapply(list0, '[[', 'exp'))
