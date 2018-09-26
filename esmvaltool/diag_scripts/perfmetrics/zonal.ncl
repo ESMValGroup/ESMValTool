@@ -7,7 +7,7 @@
 procedure perfmetrics_ptype_script()
 begin
 
-  ; Start loop over models, make sure reference model is calculated first
+  ; Start loop over datasets, make sure reference dataset is calculated first
   modidx = ispan(0, dim_MOD - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
@@ -15,12 +15,12 @@ begin
 
     imod = modidx(ii)
 
-    log_debug("Processing " + modelnames(imod))
+    log_debug("Processing " + datasetnames(imod))
 
     ; Set path for saving processed data
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + model_info@filename(imod)))
+    fname = basename(systemfunc("basename " + input_file_info@filename(imod)))
     fname = fname + "_" + basename(diag_script) + "_zonal"
     fname = fname + "_" + diag_script_info@time_avg
     procpath = fullpath + fname + "_Global.nc"
@@ -54,13 +54,13 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info@reference_model
+    var_all@ref_model = variable_info@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
     end if
 
-    ; Store reference model
+    ; Store reference dataset
     if (imod.eq.ref_ind) then
       var_ref = var_all
     end if
@@ -76,10 +76,10 @@ begin
     end if
 
     ; Absolute plot
-    outfile = config_user_info@plot_dir + modelnames(imod) + "_" + var0 + \
+    outfile = config_user_info@plot_dir + datasetnames(imod) + "_" + var0 + \
       "_zonal_" + diag_script_info@time_avg + "_Glob"
     plot_var = var_all(:, :, 0)
-    plot_var@res_tiMainString = modelnames(imod)
+    plot_var@res_tiMainString = datasetnames(imod)
     plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
     plot_var@res_cnLevels = diag_script_info@abs_levs
     plot_var@res_trYMinF = diag_script_info@zonal_ymin
@@ -100,10 +100,11 @@ begin
       continue
     end if
     plot_var = var_all(:, :, 0) - var_ref(:, :, 0)
-    outfile = config_user_info@plot_dir + modelnames(imod) + "-" + \
-      modelnames(ref_ind) + "_" + var0 + "_zonal_" + \
+    outfile = config_user_info@plot_dir + datasetnames(imod) + "-" + \
+      datasetnames(ref_ind) + "_" + var0 + "_zonal_" + \
       diag_script_info@time_avg + "_Glob"
-    plot_var@res_tiMainString = modelnames(imod) + " - " + modelnames(ref_ind)
+    plot_var@res_tiMainString = \
+      datasetnames(imod) + " - " + datasetnames(ref_ind)
     if (isatt(diag_script_info, "t_test")) then
       plot_var@res_gsnLeftString = plot_var@res_gsnLeftString + " - " + \
         sprinti("%2i", toint(100 * diag_script_info@conf_level)) + "% c.l."

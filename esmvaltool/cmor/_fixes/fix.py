@@ -1,11 +1,11 @@
-"""Contains the base class for model fixes"""
+"""Contains the base class for dataset fixes"""
 import importlib
 import os
 
 
 class Fix(object):
     """
-    Base class for model fixes.
+    Base class for dataset fixes.
     """
 
     def fix_file(self, filepath, output_dir):
@@ -80,25 +80,25 @@ class Fix(object):
         return not (self == other)
 
     @staticmethod
-    def get_fixes(project, model, variable):
+    def get_fixes(project, dataset, variable):
         """
         Get the fixes that must be applied for a given dataset.
 
         It will look for them at the module
-        esmvaltool.cmor._fixes.PROJECT in the file MODEL, and get
+        esmvaltool.cmor._fixes.PROJECT in the file DATASET, and get
         the classes named allvars (which should be use for fixes that are
-        present in all the variables of a model, i.e. bad name for the time
+        present in all the variables of a dataset, i.e. bad name for the time
         coordinate) and VARIABLE (which should be use for fixes for the
         specific variable).
 
-        Project, model and variable names will have '-' replaced by '_' before
-        checking because it is not possible to use the character '-' in python
-        names.
+        Project, dataset and variable names will have '-' replaced by '_'
+        before checking because it is not possible to use the character '-' in
+        python names.
 
         Parameters
         ----------
         project: str
-        model: str
+        dataset: str
         variable: str
 
         Returns
@@ -107,14 +107,13 @@ class Fix(object):
             Fixes to apply for the given data
         """
         project = project.replace('-', '_')
-        model = model.replace('-', '_')
+        dataset = dataset.replace('-', '_')
         variable = variable.replace('-', '_')
 
         fixes = []
         try:
             fixes_module = importlib.import_module(
-                'esmvaltool.cmor._fixes.{0}.{1}'.format(
-                    project, model))
+                'esmvaltool.cmor._fixes.{0}.{1}'.format(project, dataset))
             for fix_name in ('allvars', variable):
                 try:
                     fixes.append(getattr(fixes_module, fix_name)())

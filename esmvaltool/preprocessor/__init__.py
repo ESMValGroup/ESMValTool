@@ -5,19 +5,26 @@ import os
 from iris.cube import Cube
 
 from .._task import AbstractTask
+from ._area_pp import area_average as average_region
+from ._area_pp import area_slice as extract_region
+from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, extract_metadata, load_cubes, save_cubes, concatenate
-from ._mask import mask_fillvalues, mask_landocean
+from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
+from ._mask import (mask_fillvalues, mask_landsea, mask_above_threshold,
+                    mask_below_threshold, mask_inside_range,
+                    mask_outside_range)
 from ._multimodel import multi_model_statistics
-from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
-    cmor_check_metadata
-from ._regrid import vinterp as extract_levels
+from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
+                        fix_file, fix_metadata)
 from ._regrid import regrid
-from ._time_area import area_average as average_region
-from ._time_area import area_slice as extract_region
+from ._regrid import vinterp as extract_levels
+from ._volume_pp import depth_integration, extract_trajectory, extract_transect
+from ._volume_pp import volume_average as average_volume
+from ._volume_pp import volume_slice as extract_volume
 from ._time_area import time_slice as extract_time
-from ._time_area import seasonal_mean
+from ._time_area import (extract_month, extract_season, seasonal_mean,
+                         time_average)
 
 logger = logging.getLogger(__name__)
 
@@ -36,35 +43,52 @@ __all__ = [
     'cmor_check_metadata',
     # Time extraction
     'extract_time',
+    'extract_season',
+    'extract_month',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction
     'extract_levels',
+    # Mask landsea (fx or Natural Earth)
+    'mask_landsea',
     # Regridding
     'regrid',
-    # Masking
-    'mask_landocean',
+    # Masking missing values
     'mask_fillvalues',
+    'mask_above_threshold',
+    'mask_below_threshold',
+    'mask_inside_range',
+    'mask_outside_range',
     # Region selection
     'extract_region',
-    # Grid-point operations
-    'average_region',
+    'extract_volume',
+    'extract_trajectory',
+    'extract_transect',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
-    'seasonal_mean',
     'multi_model_statistics',
+    # Grid-point operations
+    'depth_integration',
+    'average_region',
+    'average_volume',
+    'zonal_means',
+    'seasonal_mean',
+    'time_average',
     'cmor_check_data',
     # Save to file
-    'save_cubes',
+    'save',
     'cleanup',
     'extract_metadata',
 ]
 
 DEFAULT_ORDER = tuple(__all__)
 assert set(DEFAULT_ORDER).issubset(set(globals()))
+
+INITIAL_STEPS = DEFAULT_ORDER[:DEFAULT_ORDER.index('fix_data') + 1]
+FINAL_STEPS = DEFAULT_ORDER[DEFAULT_ORDER.index('cmor_check_data'):]
 
 MULTI_MODEL_FUNCTIONS = {
     'multi_model_statistics',
@@ -79,7 +103,7 @@ _LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'load_cubes',
     'concatenate',
     'derive',
-    'save_cubes',
+    'save',
     'cleanup',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
@@ -88,16 +112,16 @@ assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 _LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
     'load_cubes',
-    'save_cubes',
+    'save',
     'cleanup',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
 
-def split_settings(settings, step):
+def split_settings(settings, step, order=DEFAULT_ORDER):
     """Split settings, using step as a separator."""
     before = {}
-    for _step in DEFAULT_ORDER:
+    for _step in order:
         if _step == step:
             break
         if _step in settings:
@@ -114,6 +138,7 @@ def _get_multi_model_settings(all_settings, step):
     for settings in all_settings.values():
         if step in settings:
             return {step: settings[step]}
+    return None
 
 
 def _group_input(in_files, out_files):
@@ -176,7 +201,7 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
         # Run single model steps
         for name in all_settings:
             settings, all_settings[name] = split_settings(
-                all_settings[name], step)
+                all_settings[name], step, order)
             all_items[name] = preprocess(all_items[name], settings, order,
                                          debug)
         if step is not dummy_step:
@@ -225,7 +250,7 @@ def preprocess(items, settings, order, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            save_cubes(cubes, debug=debug, step=step)
+            save(cubes, debug=debug, step=step)
 
     return items
 
@@ -266,7 +291,9 @@ class PreprocessingTask(AbstractTask):
 
         txt = "{}:\norder: {}\n{}".format(
             self.__class__.__name__,
-            self.order,
+            tuple(
+                step for step in self.order
+                if any(step in settings for settings in settings.values())),
             super(PreprocessingTask, self).str(),
         )
 

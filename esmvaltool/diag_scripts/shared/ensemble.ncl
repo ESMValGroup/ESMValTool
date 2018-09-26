@@ -20,17 +20,17 @@ load "./diag_scripts/shared/statistics.ncl"
 
 ; #############################################################################
 undef("get_start_year")
-function get_start_year(model_index[1]:numeric)
+function get_start_year(dataset_index[1]:numeric)
 ;
 ; Arguments:
-;    model_index: index of array "models"; this function is supposed to be
-;                 called inside a model loop
+;    dataset_index: index of array "datasets"; this function is supposed to be
+;                 called inside a dataset loop
 ;
 ; Return value
 ;    An integer containing the first year
 ;
 ; Description
-;    Chooses first year of model input with respect to
+;    Chooses first year of dataset input with respect to
 ;    diag_script_info@range_option
 ;
 ; Caveats
@@ -40,7 +40,7 @@ function get_start_year(model_index[1]:numeric)
 ; Modification history
 ;    20140128-A_senf_da: written.
 ;
-local funcname, scriptname, model_index
+local funcname, scriptname, dataset_index
 begin
 
   funcname = "get_start_year"
@@ -52,9 +52,9 @@ begin
               "contain the range_option attribute")
   end if
   if (diag_script_info@range_option.eq.0) then
-    start_year = toint(model_info@start_year(model_index))
+    start_year = toint(input_file_info@start_year(dataset_index))
   else if (diag_script_info@range_option.eq.1) then
-    start_year = max(toint(model_info@start_year))
+    start_year = max(toint(input_file_info@start_year))
   else
     error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
               "properly set, must be either 0 or 1")
@@ -68,17 +68,17 @@ end
 
 ; #############################################################################
 undef("get_end_year")
-function get_end_year(model_index:numeric)
+function get_end_year(dataset_index:numeric)
 ;
 ; Arguments
-;    model_index: index of array "models"; this function is supposed to be
-;                 called inside a model loop
+;    dataset_index: index of array "datasets"; this function is supposed to be
+;                 called inside a dataset loop
 ;
 ; Return value
 ;    An integer containing the last year
 ;
 ; Description
-;    Chooses last year of model input with respect to
+;    Chooses last year of dataset input with respect to
 ;    diag_script_info@range_option
 ;
 ; Caveats
@@ -88,7 +88,7 @@ function get_end_year(model_index:numeric)
 ; Modification history
 ;    20140128-A_senf_da: written.
 ;
-local funcname, scriptname, model_index
+local funcname, scriptname, dataset_index
 begin
 
   funcname = "get_end_year"
@@ -100,9 +100,9 @@ begin
               "contain the range_option attribute")
   end if
   if (diag_script_info@range_option.eq.0) then
-    end_year = toint(model_info@end_year(model_index))
+    end_year = toint(input_file_info@end_year(dataset_index))
   else if (diag_script_info@range_option.eq.1) then
-    end_year = min(toint(model_info@end_year))
+    end_year = min(toint(input_file_info@end_year))
   else
     error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
               "properly set, must be either 0 or 1")
@@ -125,7 +125,7 @@ function multi_model_stats(idx[*]:integer,
                            opt[1])
 ;
 ; Arguments
-;    idx: a 1-D array of model indexes to be considered.
+;    idx: a 1-D array of dataset indexes to be considered.
 ;    var: variable name.
 ;    field: field type.
 ;    grd: type of grid to be selected:
@@ -134,20 +134,20 @@ function multi_model_stats(idx[*]:integer,
 ;    statistics: a 1-D array of strings for selecting the statistical
 ;                fields to return. Currently implemented:
 ;                "model_mean" -> multi model mean
-;                "stddev" -> standard deviation over "models" dimension
+;                "stddev" -> standard deviation over "datasets" dimension
 ;                "model_grd" -> models regridded to a common grid
 ;    opt: not used yet, set to 0
 ;
 ; Return value
 ;    A field with target grid spatial dimensions (lat, lon) or
-;    (plev, lat, lon), time coordinate, models coordinate.
-;    The "models" coordinate contains the strings from model_info@model and
-;    statistics.
-;    Covers the overlapping time period of all models only.
+;    (plev, lat, lon), time coordinate, datasets coordinate.
+;    The "datasets" coordinate contains the strings from
+;    input_file_info@dataset and statistics.
+;    Covers the overlapping time period of all datasets only.
 ;
 ; Description
-;    Determines statistical fields of all input models, after regridding them
-;    to a common grid. Statistics is over the "models" coordinate only.
+;    Determines statistical fields of all input datasets, after regridding them
+;    to a common grid. Statistics is over the "datasets" coordinate only.
 ;    See function find_destination_grid (regridding.ncl) for details of
 ;    target grid selection.
 ;
@@ -165,7 +165,7 @@ function multi_model_stats(idx[*]:integer,
 ;
 local funcname, scriptname, dest_grd, monotonicity, field_type, rank_grd, \
   start_year, end_year, idx_mod, var_tmp, var_olap, var_grd, data_mmm, \
-  plev_grd, ireturn, tmp, model, Fill, stats, nstats, tmp, iMod, \
+  plev_grd, ireturn, tmp, dataset, Fill, stats, nstats, tmp, iMod, \
   interpol_flag, nvalid, var_plev, result
 begin
 
@@ -192,20 +192,20 @@ begin
   end if
 
   ; Determine overlapping time period
-  start_year = max(toint(model_info@start_year))
-  end_year = min(toint(model_info@end_year))
+  start_year = max(toint(input_file_info@start_year))
+  end_year = min(toint(input_file_info@end_year))
   log_info("overlapping time period: " + tostring(start_year) + \
            " - " + tostring(end_year))
 
-  ; Create data structure for mmm models
+  ; Create data structure for mmm datasets
   do i = 0, dimsizes(idx) - 1
     idx_mod = idx(i)
     data_mmm = read_data(idx_mod, var, field)
   end do
 
-  ; Loop over mmm models
+  ; Loop over mmm datasets
   do i = 0, dimsizes(idx) - 1
-    model = model_info@model(idx(i))
+    dataset = input_file_info@dataset(idx(i))
 
     ; extract full data
     var_tmp = extract_data(i, data_mmm, -1, 0, 0)
@@ -237,7 +237,7 @@ begin
         var_grd!3 = "lon"
       end if
       end if
-      var_grd!0 = "models"
+      var_grd!0 = "datasets"
       var_grd!1 = "time"
       var_grd&time = var_olap&time
       var_grd&lat = dest_grd&lat
@@ -246,10 +246,11 @@ begin
       ; implemented statistics, hardcoded positions
       stats = (/"model_mean", "stddev"/)
       nstats = dimsizes(stats)
-      var_grd&models = array_append_record(stats, model_info@model(idx), 0)
+      var_grd&datasets = \
+        array_append_record(stats, input_file_info@dataset(idx), 0)
 
       ; select return fields
-      tmp = new(dimsizes(var_grd&models), integer)
+      tmp = new(dimsizes(var_grd&datasets), integer)
       if (any("model_mean" .eq. statistics)) then
         tmp(0) = 1
       end if
@@ -259,7 +260,7 @@ begin
       if (any("model_grd" .eq.  statistics)) then
         tmp(nstats:) = 1
       end if
-      ireturn = ind(tmp.eq.1)  ; selected indices of models coordinate
+      ireturn = ind(tmp.eq.1)  ; selected indices of datasets coordinate
       delete(tmp)
     end if  ; target field initialization *********************************
     iMod = nstats + i
@@ -272,12 +273,12 @@ begin
     if (dimsizes(var_olap&time).ne.dimsizes(var_grd&time)) then
       error_msg("f", "ensemble.ncl", funcname, \
                 "inconsistent number of time steps for " + \
-                var_grd&models(iMod))
+                var_grd&datasets(iMod))
     end if
     if (any(var_olap&time.ne.var_grd&time)) then
       error_msg("f", "ensemble.ncl", funcname, \
                 "inconsistent time coordinate for " + \
-                var_grd&models(iMod))
+                var_grd&datasets(iMod))
     end if
 
         ; pressure interpolation *********************************************
@@ -288,7 +289,7 @@ begin
       ; check consistency of pressure levels
       if (isMonotonic(var_olap&plev).eq.0) then  ; crash
         error_msg("f", "ensemble.ncl", funcname, \
-                  "plev is not monotonic for " + var_grd&models(iMod))
+                  "plev is not monotonic for " + var_grd&datasets(iMod))
       end if
       if (isMonotonic(var_olap&plev).ne.monotonicity) then
         var_olap = var_olap(:, ::-1, :, :)  ; reverse
@@ -339,7 +340,7 @@ begin
     end if  ; lat-lon interpolation ***************************************
     ; clean up
     delete([/var_olap/])
-  end do  ; i (loop over mmm models)
+  end do  ; i (loop over mmm datasets)
   ; statistics
 
   if (rank_grd.eq.3) then

@@ -24,7 +24,10 @@ class tro3(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1000
+        metadata = cube.metadata
+        cube *= 1000
+        cube.metadata = metadata
+        return cube
 
 
 class co2(Fix):
@@ -79,8 +82,7 @@ class allvars(Fix):
         """
         Fix metadata
 
-        Fixes errors in time units and correct air_pressure coordinate,
-        sometimes called AR5PL35
+        Fixes error in air_pressure coordinate, sometimes called AR5PL35
 
         Parameters
         ----------
@@ -91,22 +93,6 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        try:
-            time = cube.coord('time')
-            if time.units.calendar:
-                calendar = time.units.calendar
-            else:
-                calendar = 'standard'
-
-            if time.units.origin == 'days since 0000-01-01 00:00:00':
-                time.units = cf_units.Unit(
-                    'days since 1849-01-01 00:00:00', calendar=calendar)
-            elif time.units.origin == 'days since 1-1-1':
-                time.units = cf_units.Unit(
-                    'days since 1850-01-01 00:00:00', calendar=calendar)
-        except CoordinateNotFoundError:
-            pass
-
         try:
             old = cube.coord('AR5PL35')
             dims = cube.coord_dims(old)

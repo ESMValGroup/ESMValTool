@@ -6,7 +6,7 @@
 ; #############################################################################
 ;
 ; Description
-;    This script is a driver for averaging the input from the first model
+;    This script is a driver for averaging the input from the first dataset
 ;    over time and creating a global contour plot.
 ;    Output to NetCDF files is optional (controlled via diag_script_info)
 ;    Time averaging and plotting is done in separate routines.
@@ -54,7 +54,7 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  ; Fetch general parameters, set in namelist_MyDiag.yml, passed via
+  ; Fetch general parameters, set in recipe_example_ncl.yml, passed via
   ; environment variables by python code
   enter_msg(diag_script, "")
 
@@ -64,9 +64,9 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
   ; above 'ncl.interface' file
-  dim_MOD = dimsizes(model_info@model)
+  dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -84,11 +84,14 @@ end
 begin
 
   ; Get data and average time
-  imod = 0  ; get data from first model
-  log_debug("processing " + model_info@model(imod))
+  imod = 0  ; get data from first dataset
+  log_debug("processing " + input_file_info@dataset(imod))
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(imod, var0, field_type0)
+
+  ; Get fx variable (land/sea mask, not used, just an example)
+  AM = read_fx_data(imod, "sftlf")
 
   ; Check dimensions
   dims = getvardims(A0)
