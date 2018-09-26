@@ -47,8 +47,8 @@ dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'model'))
-reference_model=unname(sapply(list0, '[[', 'reference_model'))[1]
+models_name=unname(sapply(list0, '[[', 'dataset'))
+reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
 models_start_year=unname(sapply(list0, '[[', 'start_year'))
 models_end_year=unname(sapply(list0, '[[', 'end_year'))
 models_experiment=unname(sapply(list0, '[[', 'exp'))

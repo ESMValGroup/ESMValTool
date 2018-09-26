@@ -17,8 +17,8 @@
 ###############################################################################
 ---
 
-models:
-  - {model: MPI-ESM-P,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+datasets:
+  - {dataset: EC-Earth, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   preproc:
@@ -26,12 +26,12 @@ preprocessors:
 
 diagnostics:
   quantilebias:
-    description: namelist for calculation of precipitation quantile bias
+    description: tool for calculation of precipitation quantile bias
     variables:
       pr:
         preprocessor: preproc
-        reference_model: "MPI-ESM-P"
-        mip: Amon
+        reference_dataset: "EC-Earth"
+        mip: day
         field: T2Ds
     scripts:
       main:
