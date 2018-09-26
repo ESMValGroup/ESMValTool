@@ -31,26 +31,8 @@ def main(cfg):
         cube = iris.load_cube(filename)
         ncts, nclon, nclat = shapeselect2(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
-        if cfg['write_xlsxcsv']:
-            ncfile = Dataset(filename, 'r')
-            otime = ncfile.variables['time']
-            dtime = num2date(otime[:], otime.units, otime.calendar)
-            wtime = []
-            for tim in range(len(dtime)):
-                wtime.append(str(dtime[tim]))
-            pathx = os.path.join(cfg['work_dir'], name + '.xlsx')
-            pathc = os.path.join(cfg['work_dir'], name + '.csv')
-            workbook = xlsxwriter.Workbook(pathx)
-            #worksheetMeta = workbook.add_worksheet()
-            worksheet = workbook.add_worksheet()
-            worksheet.write(0, 0, 'Date/lonlat')
-            worksheet.write_row(0, 1, wtime)
-            for row in range(ncts.shape[1]):
-                # Better change to ID here
-                #worksheet.write(row+1, 0, str(row))
-                worksheet.write(row+1, 0, str(round(nclon[row], 3)) +
-                                '_' + str(round(nclat[row], 3)))
-                worksheet.write_row(row+1, 1, np.squeeze(ncts[:, row]))
+        if cfg['write_xlsx']:
+            writexls(cfg, filename, ncts, nclon, nclat)
             #### Convert to cls before closing
             #csvfile = open(pathc, 'w')
             #wr = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
@@ -58,38 +40,57 @@ def main(cfg):
             #    wr.writerow(worksheet.row_values(rownum))
             #csvfile.close()
             #workbook.close()
-
-        # fixme: write nrows of header in first row
-        # fixme: dump cfg
-        # fixme: dump cube.metadata
-        # fixme: write info about representative coordinates
-        # fixme: write time coordinate
-        # fixme: write lon and lat info in first two rows
-                #timenp = np.zeros((ncts.shape[0]+2))
-                #timenp[
-            
         #
         #        file.write("id time \n")
         #        file.close()
         #        tvar = deepcopy(var)
         #        tvar = np.transpose(tvar)
         #        np.savetxt(path, tvar, delimiter=',')
-
-        #if cfg['write_netcdf']:
-        #    path = os.path.join(
-        #        cfg['work_dir'],
-        #        name + '.nc',
-        #    )
+        if cfg['write_netcdf']:
+            path = os.path.join(
+                cfg['work_dir'],
+                name + '.nc',
+            )
         # fixme: add similar stuff as in csv to netcdf
-        #    write_netcdf(path, polyid, var, cube, cfg)
+        print('write_netcdf is not implemented yet')
+        #write_netcdf(path, polyid, var, cube, cfg)
+
+
+def writexls(cfg, filename, ncts, nclon, nclat):
+    """Write the content of a netcdffile as .xls"""
+    name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
+    ncfile = Dataset(filename, 'r')
+    otime = ncfile.variables['time']
+    dtime = num2date(otime[:], otime.units, otime.calendar)
+    wtime = []
+    for tim in range(len(dtime)):
+        wtime.append(str(dtime[tim]))
+    pathx = os.path.join(cfg['work_dir'], name + '.xlsx')
+    pathc = os.path.join(cfg['work_dir'], name + '.csv')
+    workbook = xlsxwriter.Workbook(pathx)
+    #worksheetMeta = workbook.add_worksheet()
+    worksheet = workbook.add_worksheet()
+    worksheet.write(0, 0, 'Date/lonlat')
+    worksheet.write_row(0, 1, wtime)
+    for row in range(ncts.shape[1]):
+        # Better change to ID here
+        #worksheet.write(row+1, 0, str(row))
+        worksheet.write(row+1, 0, str(round(nclon[row], 3)) +
+                        '_' + str(round(nclat[row], 3)))
+        worksheet.write_row(row+1, 1, np.squeeze(ncts[:, row]))
+        # fixme: write nrows of header in first row
+        # fixme: dump cfg to own sheet
+        # fixme: dump cube.metadata to own sheet
+        # fixme: write info about representative coordinates
+        # fixme: write time coordinate
+        # fixme: write lon and lat info in first two rows
+        # fixme: format column width
+        # fixme: format xls to show x-digits (keeping full resolution!)
 
 def dates(otime):
     """ Converts iris time to human readable format """
     calendar = otime.units.calendar
     origin = otime.units.origin
-    #otime.cell(0).point
-    
-
 
 def shapeselect2(cfg, cube, filename):
     """ New solution with fiona! """
@@ -158,27 +159,18 @@ def shapeselect2(cfg, cube, filename):
             if len(gpx) == 1:
                 ncts[:,ishp] = np.reshape(cube.data[:, gpy, gpx],
                                           (cube.data.shape[0],))
-                #for tt in range(cube.data.shape[0]):
-                #    ncts[:,ishp] = tmpdat[tt] #cube.data[:, gpy, gpx][]
             else:
-                print('lengths: ',len(gpx),len(gpy))
-                #print(cube.data[:, gpy, gpx])
-                #tmpdat = np.mean(cube.data[:, gpy, gpx],axis=1)
-                #for tt in range(cube.data.shape[0]):
                 ncts[:,ishp] = np.mean(cube.data[:, gpy, gpx],axis=1)
-                    #tmpdat[tt] #np.mean(cube.data[:, gpy, gpx],axis=(1,2))
             print(ncts[:,ishp])
             print('***********************************')
             gx, gy = representative([], [], points, multi, cube, cfg)
             nclon[ishp] = cube.coord('longitude').points[gx]
             nclat[ishp] = cube.coord('latitude').points[gy]
-
     if cfg['evalplot']:
         name = os.path.splitext(os.path.basename(filename))[0]
         path = os.path.join(cfg['work_dir'],name + '.png')
         p.savefig(path)
         p.show()
-    #print(ncts)
     return ncts, nclon, nclat
 
 def mean_inside(gpx, gpy, points, multi, cube, cfg):
