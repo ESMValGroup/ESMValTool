@@ -1,23 +1,4 @@
-###############################################################################
-# namelist_rainfarm.xml
-#
-# Description
-# Namelist for the RainFARM package by J. von Hardenberg (ISAC-CNR)
-#
-# Authors
-# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
-# 
-# References:
-# https://github.com/jhardenberg/RainFARM.jl
-# D'Onofrio et al. 2014, J of Hydrometeorology 15, 830-843
-# Rebora et. al 2006, JHM 7, 724
-# 
-# This namelist is part of the ESMValTool
-#
-###############################################################################
----
-
+# recipe_rainfarm.yml
 ---
 
 documentation:
