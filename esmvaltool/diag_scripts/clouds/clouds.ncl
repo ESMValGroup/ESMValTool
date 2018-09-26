@@ -1,57 +1,64 @@
-;; CLOUDS
-;;#############################################################################
-;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
-;;#############################################################################
-;; Description
-;;   Calculates annual/seasonal means of 2-d (cloud) parameters for comparison
-;;   with a reference data set. Optionally, differences to the reference data
-;;   set are also plotted.
-;;
-;; Required diag_script_info attributes (diagnostic specific)
-;;   none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   embracesetup:       True = 2 plots per line, False = 4 plots per line (default)
-;;   explicit_cn_levels: explicit contour levels (array)
-;;   extralegend:        plot legend(s) to extra file(s)
-;;   filename_add:       optionally add this string to plot filesnames
-;;   panel_labels:       label individual panels (true, false)
-;;   PanelTop:           manual override for "@gnsPanelTop" used by panel plot(s)
-;;   projection:         map projection for plotting (default = "CylindricalEquidistant")
-;;   showdiff            calculate and plot differences (default = False)
-;;   rel_diff:           if showdiff = True, then plot relative differences (%) (default = False)
-;;   ref_diff_min:       lower cutoff value in case of calculating relative differences
-;;                       (in units of input variable)
-;;   region:             show only selected geographic region given as latmin, latmax, lonmin, lonmax
-;;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON), 
-;;                                        "annual" = annual mean
-;;   treat_var_as_error: treat variable as error when averaging (true, false)
-;;                       true:  avg = sqrt(mean(var*var))
-;;                       false: avg = mean(var)
-;;
-;; Required variable attributes (variable specific)
-;;   none
-;;
-;; Optional variable_info attributes (variable specific)
-;;   long_name:         variable description
-;;   reference_dataset: reference dataset; REQUIRED when calculating differences (showdiff = True)
-;;   units:             variable units (for labeling plot only)
-;;
-;; Caveats
-;;   TO DO (ESMValTool v2.0.0)
-;;     1) get tags from namelist and write meta data to plots
-;;
-;; Modification history
-;;   20180923-A_laue_ax: added writing of results to netcdf
-;;   20180518-A_laue_ax: code rewritten for ESMValTool v2.0
-;;   20170621-A_laue_ax: reworked code to add tags for reporting
-;;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                       of the code
-;;   20150415-A-laue_ax: written.
-;;
-;;#############################################################################
+; CLOUDS
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; PROJECT-NAME EMBRACE
+; ############################################################################
+; Description
+;   Calculates annual/seasonal means of 2-d (cloud) parameters for comparison
+;   with a reference data set. Optionally, differences to the reference data
+;   set are also plotted.
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   embracesetup:       True = 2 plots per line, False = 4 plots per line
+;                       (default)
+;   explicit_cn_levels: explicit contour levels (array)
+;   extralegend:        plot legend(s) to extra file(s)
+;   filename_add:       optionally add this string to plot filesnames
+;   panel_labels:       label individual panels (true, false)
+;   PanelTop:           manual override for "@gnsPanelTop" used by panel
+;                       plot(s)
+;   projection:         map projection for plotting (default =
+;                       "CylindricalEquidistant")
+;   showdiff            calculate and plot differences (default = False)
+;   rel_diff:           if showdiff = True, then plot relative differences (%)
+;                       (default = False)
+;   ref_diff_min:       lower cutoff value in case of calculating relative
+;                       differences
+;                       (in units of input variable)
+;   region:             show only selected geographic region given as latmin,
+;                       latmax, lonmin, lonmax
+;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
+;                                        "annual" = annual mean
+;   treat_var_as_error: treat variable as error when averaging (true, false)
+;                       true:  avg = sqrt(mean(var*var))
+;                       false: avg = mean(var)
+;
+; Required variable attributes (variable specific)
+;   none
+;
+; Optional variable_info attributes (variable specific)
+;   long_name:         variable description
+;   reference_dataset: reference dataset; REQUIRED when calculating
+;                      differences (showdiff = True)
+;   units:             variable units (for labeling plot only)
+;
+; Caveats
+;   TO DO (ESMValTool v2.0.0)
+;     1) get tags from namelist and write meta data to plots
+;
+; Modification history
+;   20180923-A_laue_ax: added writing of results to netcdf
+;   20180518-A_laue_ax: code rewritten for ESMValTool v2.0
+;   20170621-A_laue_ax: reworked code to add tags for reporting
+;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
+;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;                       of the code
+;   20150415-A-laue_ax: written.
+;
+; ############################################################################
 
 load "interface_scripts/interface.ncl"
 
@@ -59,7 +66,7 @@ load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
-;;load "./diag_scripts/shared/meta_data.ncl"
+; load "./diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -77,14 +84,14 @@ begin
   ; # references                    #
   ; ###########################################
 
-  write_references(diag_script,      \ ; script name
-                   "A_laue_ax",      \ ; authors
-                   "",               \ ; contributors
-                   "D_lauer13jclim", \ ; diag_references
-                   "",               \ ; obs_references
-                   (/"P_embrace"/))    ; proj_references
+  write_references(diag_script,      \  ; script name
+                   "A_laue_ax",      \  ; authors
+                   "",               \  ; contributors
+                   "D_lauer13jclim", \  ; diag_references
+                   "",               \  ; obs_references
+                   (/"P_embrace"/))     ; proj_references
 
-  ;; Set default values for non-required diag_script_info attributes
+  ; Set default values for non-required diag_script_info attributes
 
   set_default_att(diag_script_info, "embrace_setup", False)
   set_default_att(diag_script_info, "extralegend", False)
@@ -101,7 +108,8 @@ begin
   flag_rel_diff_min = diag_script_info@rel_diff_min
 
   if (.not.flag_diff .and. flag_rel_diff) then
-    log_info("flag_rel_diff = True has no effect until flag_diff is also set to True")
+    log_info("flag_rel_diff = True has no effect until flag_diff is also " \
+             + "set to True")
   end if
 
   if (diag_script_info@filename_add .ne. "") then
@@ -161,32 +169,36 @@ begin
   ; if attribute is present, use it so correlations can be calculated
   if (isatt(variable_info, "reference_dataset")) then
     ; set reference model
-    ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
+    ref_ind = ind(input_file_info@dataset .eq. \
+                  variable_info@reference_dataset)
   end if
 
   climofiles = new(dim_MOD, string)
   climofiles = input_file_info@filename
 
-;;  if (isatt(diag_script_info, "region")) then
-;;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_reg"/), 0)
-;;  else
-;;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_global"/), 0)
-;;  end if
+;  if (isatt(diag_script_info, "region")) then
+;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_reg"/), 0)
+;  else
+;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", \
+;                                  "DM_global"/), 0)
+;  end if
 
   outfile = new(numseas, string)
 
   if (flag_diff) then
     outfile_d = new(numseas, string)
-;;    difftags = array_append_record(alltags, (/"ST_diff"/), 0)
+;    difftags = array_append_record(alltags, (/"ST_diff"/), 0)
 
     ; check for reference model definition
     if (.not.(isatt(variable_info, "reference_dataset"))) then
-      error_msg("f", diag_script, "", "no reference model defined in namelist")
+      error_msg("f", diag_script, "", \
+                "no reference model defined in namelist")
     end if
 
     ; set reference model
 
-    ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
+    ref_ind = ind(input_file_info@dataset .eq. \
+                  variable_info@reference_dataset)
     ref_model = variable_info@reference_dataset
     if (ismissing(ref_ind)) then
       error_msg("f", diag_script, "", "reference model (" \
@@ -204,12 +216,13 @@ begin
   maps = new((/dim_MOD, 4/), graphic)
   maps_d = new((/dim_MOD, 4/), graphic)
 
-  ind_all_sorted = ispan(0, dim_MOD - 1, 1) ; create array
+  ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
-    ind_wo_ref = ind(input_file_info@dataset .ne. variable_info@reference_dataset)
+    ind_wo_ref = ind(input_file_info@dataset .ne. \
+                     variable_info@reference_dataset)
     ind_all_sorted(0) = ref_ind
-    ind_all_sorted(1:dim_MOD - 1 ) = ind_wo_ref
+    ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
 
   corr = new((/numseas/), float)
@@ -271,7 +284,8 @@ begin
 
     if (isatt(diag_script_info, "region")) then
       region = diag_script_info@region
-      data1 := area_operations(data1, region(0), region(1), region(2), region(3), "extract", False)
+      data1 := area_operations(data1, region(0), region(1), region(2), \
+                               region(3), "extract", False)
       if (region(2).eq.0. .and. region(3).eq.360.) then
       else
         data1@res_gsnAddCyclic = False
@@ -420,7 +434,8 @@ begin
       ref_data = data1
     end if
 
-    ; check if data are on same grid (for calculating difference, RMSD, correlation)
+    ; check if data are on same grid (for calculating difference, RMSD,
+    ; correlation)
 
     same_grid = False
 
@@ -434,9 +449,11 @@ begin
 
     if (flag_diff .and. .not.same_grid) then
       flag_diff = False
-      error_msg("f", diag_script, "", "Data are not on same grid, cannot calculate differences. " \
-                + "Set showdiff to False in namelist or regrid data to common grid (check/adjust "\
-                + "preprocessor settings in namelist).")
+      error_msg("f", diag_script, "", \
+                "Data are not on same grid, cannot calculate differences. " \
+                + "Set showdiff to False in namelist or regrid data to " \
+                + "common grid (check/adjust " \
+                + "preprocessor settings in recipe).")
     end if
 
     corr = corr@_FillValue
@@ -446,9 +463,11 @@ begin
       if (numseas.gt.1) then
         do is = 0, numseas - 1
           if (same_grid) then
-            corr(is) = calculate_metric(ref_data(is, :, :), data1(is, :, :), "correlation")
+            corr(is) = calculate_metric(ref_data(is, :, :), data1(is, :, :), \
+                                        "correlation")
           end if
-          gavg(is) = area_operations(data1(is, :, :), -90., 90., 0., 360., "average", True)
+          gavg(is) = area_operations(data1(is, :, :), -90., 90., 0., 360., \
+                                     "average", True)
         end do
       else
         if (same_grid) then
@@ -458,8 +477,10 @@ begin
       end if
     end if
 
-    data1@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
-    data1@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
+    data1@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+    data1@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
 
     ; ###########################################
     ; # create the plot                         #
@@ -471,22 +492,31 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
-      ; note: an array of workspaces (i.e. wks(numseas)) does not work as attributes
-      ;       cannot be assigned to each array element individually
-      wks0 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_" + season(0) + filename_add)
+      ; note: an array of workspaces (i.e. wks(numseas)) does not work as
+      ;       attributes cannot be assigned to each array element
+      ;       individually
+      wks0 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                     "_" + season(0) + filename_add)
       ; difference plots will be saved to a different file
       if (flag_diff) then
-        wks0d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_diff_" + season(0) + filename_add)
+        wks0d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                        "_diff_" + season(0) + filename_add)
       end if
       if (numseas.gt.1) then
-        wks1 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_" + season(1) + filename_add)
-        wks2 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_" + season(2) + filename_add)
-        wks3 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_" + season(3) + filename_add)
+        wks1 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                       "_" + season(1) + filename_add)
+        wks2 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                       "_" + season(2) + filename_add)
+        wks3 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                       "_" + season(3) + filename_add)
         ; difference plots will be saved to a different files
         if (flag_diff) then
-          wks1d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_diff_" + season(1) + filename_add)
-          wks2d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_diff_" + season(2) + filename_add)
-          wks3d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_diff_" + season(3) + filename_add)
+          wks1d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                          "_diff_" + season(1) + filename_add)
+          wks2d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                          "_diff_" + season(2) + filename_add)
+          wks3d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+                          "_diff_" + season(3) + filename_add)
         end if
       end if
     end if
@@ -500,7 +530,7 @@ begin
         end if
         data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
 
-        if (imod.eq.ref_ind) then  ; remove correlation string for reference model
+        if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
           data1@res_gsnRightString = ""
         end if
 
@@ -525,7 +555,7 @@ begin
       end if
       data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
 
-      if (imod.eq.ref_ind) then  ; remove correlation string for reference model
+      if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
         data1@res_gsnRightString = ""
       end if
 
@@ -535,8 +565,8 @@ begin
     ; optional netcdf output
 
     if (write_nc) then
-      nc_filename = work_dir + \
-                    "clouds_" + var0 + "_" + input_file_info@dataset(imod) + ".nc"
+      nc_filename = work_dir + "clouds_" + var0 + "_" \
+                    + input_file_info@dataset(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
     end if
 
@@ -564,9 +594,11 @@ begin
         do is = 0, numseas - 1
           if (.not. flag_rel_diff) then
             if (same_grid) then
-              rmsd(is) = calculate_metric(ref_data(is, :, :), data1(is, :, :), "RMSD")
+              rmsd(is) = calculate_metric(ref_data(is, :, :), \
+                                          data1(is, :, :), "RMSD")
             end if
-            bias(is) = area_operations(diff(is, :, :), -90., 90., 0., 360., "average", True)
+            bias(is) = area_operations(diff(is, :, :), -90., 90., 0., 360., \
+                                       "average", True)
           end if
         end do
       else
@@ -574,18 +606,21 @@ begin
           if (same_grid) then
             rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
           end if
-          bias(0) = area_operations(diff, -90., 90., 0., 360., "average", True)
+          bias(0) = area_operations(diff, -90., 90., 0., 360., "average", \
+                                    True)
         end if
       end if
 
-      ; -------------------------------------------------------------------------------
+      ; ----------------------------------------------------------------------
 
       ; ###########################################
       ; # plot ressources                         #
       ; ###########################################
 
-      diff@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
-      diff@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
+      diff@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+                                               / tofloat((dim_MOD + 1) / 2)/))
+      diff@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+                                               / tofloat((dim_MOD + 1) / 2)/))
 
       diff@res_tiMainOn       = False
 
@@ -620,13 +655,15 @@ begin
 
         if (var0.eq."pr") then
           diff@res_cnLevels = ispan(-30, 30, 5) * 0.1
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb")
+          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                   + "ipcc-precip-delta.rgb")
           diff@res_cnFillColors = pal
           diff@res_lbOrientation = "horizontal"
         end if
 
         if ((var0.eq."tas") .or. (var0.eq."ts")) then
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas-delta.rgb")
+          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                   + "ipcc-tas-delta.rgb")
           diff@res_cnFillPalette = pal
           if (var0.eq."ts") then
             diff@res_cnLevels = ispan(-5, 5, 1) * 0.5
@@ -677,7 +714,8 @@ begin
           if (isvar("pal")) then
             delete(pal)
           end if
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/percent100.rgb")
+          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                   + "percent100.rgb")
           diff@res_cnFillColors = pal
         end if
 
@@ -709,7 +747,7 @@ begin
           diff@res_cnFillColors = cnFillColors
         end if
 
-      end if ; if .not.isvar("cnLevels")
+      end if  ; if .not.isvar("cnLevels")
 
       if (imod.eq.ref_ind) then
         diff@res_lbLabelBarOn = True
@@ -770,7 +808,7 @@ begin
       diff@res_gsnDraw        = False  ; do not draw yet
       diff@res_gsnFrame       = False  ; don't advance frame
 
-      ; -------------------------------------------------------------------------------
+      ; ----------------------------------------------------------------------
 
       if (numseas.gt.1) then
         do is = 0, numseas - 1
@@ -815,8 +853,8 @@ begin
       ; optional netcdf output
 
       if (write_nc) then
-        nc_filename = work_dir + \
-                      "clouds_" + var0 + "_bias_" + input_file_info@dataset(imod) + ".nc"
+        nc_filename = work_dir + "clouds_" + var0 + "_bias_" \
+                      + input_file_info@dataset(imod) + ".nc"
         nc_outfile = ncdf_write(diff, nc_filename)
       end if
 
@@ -855,7 +893,8 @@ begin
         plotind(j) = plottmp(i)
         j = j + 1
       else if (plottmp(i) .lt. dimsizes(input_file_info@project)) then
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), "obs")) then
+        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+                        "obs")) then
           plotind(j) = plottmp(i)
           j = j + 1
         end if
@@ -864,51 +903,60 @@ begin
     end do
 
     do i = 0, dimsizes(plottmp) - 1
-      if ((isStrSubset(str_lower(input_file_info@project(plottmp(i))), "obs")).or.(i.eq.ref_ind)) then
+      if ((isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+                       "obs")).or.(i.eq.ref_ind)) then
       else
         plotind(j) = plottmp(i)
         j = j + 1
       end if
     end do
 
-    pres                       = True    ; needed to override
-                                         ; panelling defaults
-    pres@gsnPanelLabelBar      = True    ; add common colorbar
+    pres                      = True    ; needed to override
+                                        ; panelling defaults
+    pres@gsnPanelLabelBar     = True    ; add common colorbar
     if (panel_labels) then
-      pres@gsnPanelFigureStrings = input_file_info@dataset(plotind) ; print model name on
-                                                                    ; each panel
+      ; print dataset name on each panel
+      pres@gsnPanelFigureStrings = input_file_info@dataset(plotind)
     end if
-    pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
+    pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
+                                                / tofloat((dim_MOD + 1) / 2)/))
+    pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                                / tofloat((dim_MOD + 1) / 2)/))
     pres@lbAutoManage                     = False
     pres@lbTopMarginF                     = 0.1
     pres@lbTitleOn                        = True
-    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 / tofloat((dim_MOD + 1) / 2)/))
+    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                                / tofloat((dim_MOD + 1) / 2)/))
     pres@lbTitlePosition                  = "Bottom"
-    pres@lbTitleString                    = data1@long_name + " (" + data1@units + ")"
-    pres@lbPerimOn                        = False    ; draw line around label
-                                                     ; bar area
+    pres@lbTitleString                    = data1@long_name + " (" \
+      + data1@units + ")"
+    pres@lbPerimOn                        = False   ; draw line around label
+                                                    ; bar area
     pres@gsnPanelCenter                   = False
     if (dim_MOD.le.8) then
       pres@pmLabelBarOrthogonalPosF       = -0.03
     else
-      pres@pmLabelBarOrthogonalPosF       = -0.01  ; shift label bar a bit to
-                                                   ; the bottom
+      pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
+                                                    ; the bottom
     end if
 
     if (embracesetup) then
       if (numseas.gt.1) then
         pres@txString = season(0)
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(1)
-        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, 4, pres)
+        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(2)
-        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, 4, pres)
+        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(3)
-        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, 4, pres)
+        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
+                               4, pres)
         log_info(" Wrote " + outfile)
       else
         pres@gsnPanelRowSpec = True             ; tell panel what order to plt
@@ -928,8 +976,10 @@ begin
         plotsperline = new((dim_MOD + 1) / 2, integer)
         plotsperline = 2
 
-        if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), "obs")).and. \
-          .not.(isStrSubset(str_lower(input_file_info@project(plotind(1))), "obs"))) then
+        if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), \
+                         "obs")).and. \
+           .not.(isStrSubset(str_lower(input_file_info@project(plotind(1))), \
+                             "obs"))) then
           plotsperline(0) = 1
         end if
 
@@ -951,20 +1001,25 @@ begin
     else  ; if embracesetup
       if (numseas.gt.1) then
         pres@txString = season(0)
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(1)
-        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, 4, pres)
+        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(2)
-        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, 4, pres)
+        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
+                               4, pres)
 
         pres@txString = season(3)
-        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, 4, pres)
+        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
+                               4, pres)
       else
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                               4, pres)
       end if
-    end if ; if embracesetup
+    end if  ; if embracesetup
 
     do is = 0, numseas - 1
       log_info("Wrote " + outfile(is))
@@ -977,11 +1032,12 @@ begin
 
       contrib_authors = "A_laue_ax"
 
-;;      ESMValMD(outfile(is), alltags, caption, id, variables(0), input_file_info@dataset, \
-;;               climofiles, diag_script, contrib_authors)
+;      ESMValMD(outfile(is), alltags, caption, id, variables(0), \
+;               input_file_info@dataset, climofiles, diag_script, \
+;               contrib_authors)
     end do
 
-    ; ===================================================================================
+    ; ========================================================================
 
     if (flag_diff) then
       pres@lbTitleString = "~F33~D~F21~" + diff@long_name + " (" + \
@@ -1012,22 +1068,24 @@ begin
       if (isvar("plotind")) then
         delete(plotind)
       end if
- 
+
       plottmp = ind(ispan(0, dim_MOD - 1, 1).ne.ref_ind)
       plotind = plottmp
 
-      ; if there is a second observational dataset, move the corresponding plot to the first line
-      ; of the panel plot
+      ; if there is a second observational dataset, move the corresponding
+      ; plot to the first line of the panel plot
 
       j = 0
       do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), "obs")) then
+        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+                        "obs")) then
           plotind(j) = plottmp(i)
           j = j + 1
         end if
       end do
       do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), "obs")) then
+        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+                        "obs")) then
         else
           plotind(j) = plottmp(i)
           j = j + 1
@@ -1048,18 +1106,22 @@ begin
       if (embracesetup) then
         if (numseas.gt.1) then
           pres@txString = season(0)
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString = season(1)
-          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString = season(2)
-          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString = season(3)
-          outfile_d(3) = panelling(wks3, maps_d(plotind, 3), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(3) = panelling(wks3, maps_d(plotind, 3), \
+                                   (dim_MOD + 3) / 4, 4, pres)
         else
-          pres@gsnPanelRowSpec = True             ; tell panel what order to plt
+          pres@gsnPanelRowSpec = True           ; tell panel what order to plt
           pres@gsnPanelYWhiteSpacePercent = 5
           pres@gsnPanelXWhiteSpacePercent = 5
           pres@gsnPanelTop = tofloat(diag_script_info@PanelTop)
@@ -1072,8 +1134,11 @@ begin
           plotsperline = 2
 
           if (dimsizes(plotind).gt.1) then
-            if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), "obs")).and. \
-              .not.(isStrSubset(str_lower(input_file_info@project(plotind(1))), "obs"))) then
+            if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), \
+                             "obs")).and. \
+               .not. \
+                (isStrSubset(str_lower(input_file_info@project(plotind(1))), \
+                             "obs"))) then
               plotsperline(0) = 1
             end if
           end if
@@ -1096,18 +1161,23 @@ begin
       else  ; embracesetup = False
         if (numseas.gt.1) then
           pres@txString  = season(0)
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString  = season(1)
-          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString  = season(2)
-          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
+                                   (dim_MOD + 3) / 4, 4, pres)
 
           pres@txString  = season(3)
-          outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), \
+                                   (dim_MOD + 3) / 4, 4, pres)
         else
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), (dim_MOD + 3) / 4, 4, pres)
+          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                   (dim_MOD + 3) / 4, 4, pres)
         end if
       end if  ; end if embracesetup
 
@@ -1117,13 +1187,15 @@ begin
         ; add meta data to plot (for reporting)
 
         caption = "Differences for variable " + variables(0) \
-                  + " (" + season(is) + "), reference = " + input_file_info@dataset(ref_ind) + "."
+                  + " (" + season(is) + "), reference = " \
+                  + input_file_info@dataset(ref_ind) + "."
         id = diag_script + "_" + variables(0) + "_diff_" + season(is)
 
         contrib_authors = "A_laue_ax"
 
-;;        ESMValMD(outfile_d(is), difftags, caption, id, variables(0), input_file_info@dataset, \
-;;                 climofiles, diag_script, contrib_authors)
+;        ESMValMD(outfile_d(is), difftags, caption, id, variables(0), \
+;                 input_file_info@dataset, climofiles, diag_script, \
+;                 contrib_authors)
       end do
 
     end if  ; if flag_diff
@@ -1132,7 +1204,8 @@ begin
 
     if (extralegend) then
       nboxes = dimsizes(data1@res_cnLevels) + 1
-      wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_legend")
+      wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 \
+                       + "_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
       pres@vpWidthF = 0.7
@@ -1169,7 +1242,7 @@ begin
       end if
       end if
 
-      gsn_labelbar_ndc (wksleg, nboxes, labels, 0.1, 0.9, pres)
+      gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
 
       delete(wksleg)
       delete(labels)
@@ -1177,7 +1250,8 @@ begin
 
       if (flag_diff) then
         nboxes = dimsizes(diff@res_cnLevels) + 1
-        wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + "_diff_legend")
+        wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 \
+                         + "_diff_legend")
 
         labels = tostring(diff@res_cnLevels)
 
@@ -1213,12 +1287,12 @@ begin
         end if
         end if
 
-        gsn_labelbar_ndc (wksleg, nboxes, labels, 0.1, 0.9, pres)
-      end if ; if (flag_diff)
-    end if ; if (extralegend)
-  end if ; if write_plots
+        gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
+      end if  ; if (flag_diff)
+    end if  ; if (extralegend)
+  end if  ; if write_plots
 
-  ; ===================================================================================
+  ; ==========================================================================
 
   leave_msg(diag_script, "")
 

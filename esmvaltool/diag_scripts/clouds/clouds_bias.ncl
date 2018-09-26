@@ -1,43 +1,43 @@
-;; CLOUDS_BIAS
-;;#############################################################################
-;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
-;;#############################################################################
-;; Description
-;;   Calculates the multi-model mean bias, absolute difference and relative
-;;   difference of annual mean 2-d cloud variables compared with a
-;;   reference dataset (observations).
-;;
-;; Required diag_script_info attributes (diagnostic specific)
-;;   none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   plot_abs_diff: additionally also plot absolute differences (True, False)
-;;   plot_rel_diff: additionally also plot relative differences (True, False)
-;;   projection:    map projection, e.g., Mollweide, Mercator
-;;   timemean:      time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
-;;                  "annualclim" (annual mean)
-;;
-;; Required variable_info attributes (variable specific)
-;;   reference_dataset: name of reference datatset
-;;
-;; Optional variable_info attributes (variable specific)
-;;   long_name: description of variable
-;;
-;; Caveats
-;;   TO DO (ESMValTool v2.0.0)
-;;   1) get tags from namelist and write meta data to plots
-;;
-;; Modification history
-;;   20180923-A_laue_ax: added writing of results to netcdf
-;;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
-;;   20170620-A_laue_ax: added tags for reporting
-;;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                       of the code
-;;   20150428-A-laue_ax: written.
-;;
-;;#############################################################################
+; CLOUDS_BIAS
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; PROJECT-NAME EMBRACE
+; ############################################################################
+; Description
+;   Calculates the multi-model mean bias, absolute difference and relative
+;   difference of annual mean 2-d cloud variables compared with a
+;   reference dataset (observations).
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   plot_abs_diff: additionally also plot absolute differences (True, False)
+;   plot_rel_diff: additionally also plot relative differences (True, False)
+;   projection:    map projection, e.g., Mollweide, Mercator
+;   timemean:      time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
+;                  "annualclim" (annual mean)
+;
+; Required variable_info attributes (variable specific)
+;   reference_dataset: name of reference datatset
+;
+; Optional variable_info attributes (variable specific)
+;   long_name: description of variable
+;
+; Caveats
+;   TO DO (ESMValTool v2.0.0)
+;   1) get tags from namelist and write meta data to plots
+;
+; Modification history
+;   20180923-A_laue_ax: added writing of results to netcdf
+;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
+;   20170620-A_laue_ax: added tags for reporting
+;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
+;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;                       of the code
+;   20150428-A-laue_ax: written.
+;
+; ############################################################################
 
 load "interface_scripts/interface.ncl"
 
@@ -46,7 +46,7 @@ load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
-;;load "./diag_scripts/shared/meta_data.ncl"
+; load "./diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -59,11 +59,11 @@ begin
   ; ========================= write references =============================
   ; ========================================================================
 
-  write_references(diag_script,  \  ; script name
-                   "A_laue_ax",  \  ; authors
-                   "",  \  ; contributors
-                   "",  \  ; diag_references
-                   "",  \  ; obs_references
+  write_references(diag_script,  \   ; script name
+                   "A_laue_ax",  \   ; authors
+                   "",  \            ; contributors
+                   "",  \            ; diag_references
+                   "",  \            ; obs_references
                    (/"P_embrace"/))  ; proj_references
 
   dim_MOD = dimsizes(input_file_info@dataset)
@@ -74,7 +74,7 @@ begin
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
 
-  ;; Set default values for non-required diag_script_info attributes
+  ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "plot_abs_diff", False)
   set_default_att(diag_script_info, "plot_rel_diff", False)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
@@ -174,13 +174,15 @@ begin
   if (var0.eq."pr") then
     mmdata = convert_units(mmdata, "mm/day")
     diff = convert_units(diff, "mm/day")
-    diff@res_cnLevels = ispan(-30, 30, 5) * 0.1  ; for plotting IPCC AR5 fig 9.4
+    ; for plotting IPCC AR5 fig 9.4
+    diff@res_cnLevels = ispan(-30, 30, 5) * 0.1
   end if
 
   if (var0.eq."tas") then
     mmdata = convert_units(mmdata, "degC")
     diff@units = "degC"
-    diff@res_cnLevels = ispan(-5, 5, 1) ; for plotting IPCC AR5 fig 9.2
+    ; for plotting IPCC AR5 fig 9.2
+    diff@res_cnLevels = ispan(-5, 5, 1)
   end if
 
   ; ========================================================================
@@ -191,7 +193,8 @@ begin
   climofiles(0) = input_file_info@filename(mm_ind)
   climofiles(1) = input_file_info@filename(ref_ind)
 
-;;  alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", "DM_global"/), 0)
+;  alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", \
+;                                        "DM_global"/), 0)
 
   diff@res_gsnMaximize  = True  ; use full page for the plot
   diff@res_cnFillOn  = True  ; color plot desired
@@ -258,25 +261,31 @@ begin
   if (var0.eq."tas") then
     mmdata@res_cnLevels = ispan(-30, 30, 3)
 
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
+    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-tas.rgb")
     mmdata@res_cnFillColors = pal
-    pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas-delta.rgb")
+    pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                              + "ipcc-tas-delta.rgb")
     diff@res_cnFillColors = pal2
     if (plot_abs_diff) then
-      pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas-absdelta.rgb")
+      pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                + "ipcc-tas-absdelta.rgb")
     end if
     else if (var0.eq."pr") then
       mmdata@res_cnLevels = ispan(10, 100, 15) * 0.1
 
       pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
       mmdata@res_cnFillColors = pal
-      pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb")
+      pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                + "ipcc-precip-delta.rgb")
       diff@res_cnFillColors = pal2
       if (plot_abs_diff) then
-        pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip-absdelta.rgb")
+        pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                  + "ipcc-precip-absdelta.rgb")
       end if
       if (plot_rel_diff) then
-        pal4 = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip-reldelta.rgb")
+        pal4 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                                  + "ipcc-precip-reldelta.rgb")
       end if
     else
       mmdata@res_cnLevels = fspan(min(mmdata), max(mmdata), 20)
@@ -363,7 +372,8 @@ begin
         delete(wks)
       end if
 
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_bias_" + var0 + "_" + season(is))
+      wks = get_wks("dummy_for_wks", diag_script, "clouds_bias_" + var0 \
+                    + "_" + season(is))
 
       if (numseas.gt.1) then
         pres@txString = season(is)
@@ -390,7 +400,8 @@ begin
 
       ; add meta data to plot (for reporting)
 
-      caption = "Multi model values, from top left to bottom right: mean, bias"
+      caption = "Multi model values, from top left to bottom right: " \
+                + "mean, bias"
       if (plot_abs_diff) then
         caption = caption + ", absolute error"
       end if
@@ -398,16 +409,17 @@ begin
         caption = caption + ", relative error"
       end if
       caption = caption + " for variable " + variables(0) \
-                + " (" + season(is) + "), reference = " + \
-                input_file_info@dataset(ref_ind) + "."
+        + " (" + season(is) + "), reference = " + \
+        input_file_info@dataset(ref_ind) + "."
       id = diag_script + "_" + variables(0) + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, \
-;;               climofiles, diag_script, contrib_authors)
+;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
+;               input_file_info@dataset, climofiles, diag_script, \
+;               contrib_authors)
 
-    end do ; is-loop (seasons)
+    end do  ; is-loop (seasons)
   end if  ; if write_plots
 
   ; ###########################################

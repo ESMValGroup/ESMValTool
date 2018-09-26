@@ -1,84 +1,89 @@
-;;#############################################################################
-;; CLOUDS_TAYLOR
-;;#############################################################################
-;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
-;;#############################################################################
-;; Description
-;;   Calculates the performance of models in reproducing 2-d fields of annual
-;;   mean or seasonal (DFJ, MAM, JJA, SON) mean cloud properties
-;;   (Taylor diagramms). The code is based on
-;;     1) perfmetrics_main.ncl
-;;     2) perfmetrics_taylor.ncl
-;;     3) perfmetrics_taylor_collect.ncl
-;;   originally written by Franziska Frank (DLR, Germany).
-;;   Note: This code requires that all data are provided on the same grid.
-;;
-;; Required diag_script_info attributes (diagnostic specific)
-;;   none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   embracelegend:   - False (default) = include legend in plot, max. 2 columns
-;;                      with model names in legend
-;;                    - True = write extra file with legend, max. 7 model names
-;;                      per column in legend, alternative observational
-;;                      dataset(s) will be plotted as a red star and labeled
-;;                      "altern. ref. dataset" in legend (only if dataset is
-;;                      of class "OBS")
-;;   estimate_obs_uncertainty: - True = estimate observational uncertainties from
-;;                      mean values (assuming fractions of obs. RMSE from documentation
-;;                      of the obs data); only available for "CERES-EBAF", "MODIS",
-;;                      "MODIS-L3"
-;;                    - False = do not estimate obs. uncertainties from mean values
-;;   filename_add:    legacy feature: arbitrary string to be added to all filenames of
-;;                    plots and netcdf output produced (default = "")
-;;   mask_ts_sea_ice: - True = mask T < 272 K as sea ice (only for variable "ts")
-;;                    - False = no additional grid cells masked for variable "ts"
-;;   styleset:        "CMIP5", "DEFAULT"
-;;                    (if not set, CLOUDS_TAYLOR will create a color table and
-;;                    symbols for plotting)
-;;   timemean:        time averaging
-;;                    - annualclim (default) = 1 plot annual mean
-;;                    - seasonalclim = 4 plots (DJF, MAM, JJA, SON)
-;;   valid_fraction:  used for creating sea ice mask (mask_ts_sea_ice = true): fraction
-;;                    of valid time steps required to mask grid cell as valid data
-;;
-;; Required variable_info attributes (variable specific)
-;;   reference_dataset: name of reference data set
-;;
-;; Optional variable attributes (variable specific)
-;;   none
-;;
-;; Caveats
-;;   TO DO (ESMValTool v2.0.0)
-;;     1) get tags from namelist and write meta data to plots
-;;     2) test implemention of handling error estimates
-;;   KNOWN LIMITATIONS (all versions)
-;;     1) only 2-dim variables are currently supported
-;;     2) observational uncertainties are regridded like standard variables
-;;     3) for derived variables (e.g. SW_CRE), also the original variables have
-;;        to be specified in the nameslist for the reference model (for the reference
-;;        model only) in order to estimate the observational uncertainty
-;;        (if estimate_obs_uncertainty = True)
-;;     4) the variable to plot must be the *first* variable in the namelist,
-;;        the observational uncertainty (or the variables from which a derived
-;;        variable has been calculated from) the *second* (third, ...)
-;;
-;; Modification history
-;;   20180923-A_laue_ax: added writing of results to netcdf
-;;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
-;;   20170620-A_laue_ax: added tags for reporting
-;;   20161104-A_laue_ax: changed calculation of correlation and standard deviation
-;;                       ratio from unweighted to grid area weighted
-;;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;   20160818-A_laue_ax: added support for variable attribute "ref_model"
-;;   20160404-A_laue_ax: added optional drawing of observational
-;;                uncertainties
-;;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                       of the code
-;;   20150415-A-laue_ax: written.
-;;
-;;############################################################################
+; ############################################################################
+; CLOUDS_TAYLOR
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; PROJECT-NAME EMBRACE
+; ############################################################################
+; Description
+;   Calculates the performance of models in reproducing 2-d fields of annual
+;   mean or seasonal (DFJ, MAM, JJA, SON) mean cloud properties
+;   (Taylor diagramms). The code is based on
+;     1) perfmetrics_main.ncl
+;     2) perfmetrics_taylor.ncl
+;     3) perfmetrics_taylor_collect.ncl
+;   originally written by Franziska Frank (DLR, Germany).
+;   Note: This code requires that all data are provided on the same grid.
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   embracelegend:   - False (default) = include legend in plot, max.
+;                      2 columns with dataset names in legend
+;                    - True = write extra file with legend, max. 7 dataset
+;                      names per column in legend, alternative observational
+;                      dataset(s) will be plotted as a red star and labeled
+;                      "altern. ref. dataset" in legend (only if dataset is
+;                      of class "OBS")
+;   estimate_obs_uncertainty: - True = estimate observational uncertainties
+;                      from mean values (assuming fractions of obs. RMSE from
+;                      documentation of the obs data); only available for
+;                      "CERES-EBAF", "MODIS", "MODIS-L3"
+;                    - False = do not estimate obs. uncertainties from mean
+;                      values
+;   filename_add:    legacy feature: arbitrary string to be added to all
+;                    filenames of plots and netcdf output produced
+;                    (default = "")
+;   mask_ts_sea_ice: - True = mask T < 272 K as sea ice (only for
+;                      variable "ts")
+;                    - False = no additional grid cells masked for
+;                      variable "ts"
+;   styleset:        "CMIP5", "DEFAULT"
+;                    (if not set, CLOUDS_TAYLOR will create a color table and
+;                    symbols for plotting)
+;   timemean:        time averaging
+;                    - annualclim (default) = 1 plot annual mean
+;                    - seasonalclim = 4 plots (DJF, MAM, JJA, SON)
+;   valid_fraction:  used for creating sea ice mask (mask_ts_sea_ice = true):
+;                    fraction of valid time steps required to mask grid cell
+;                    as valid data
+;
+; Required variable_info attributes (variable specific)
+;   reference_dataset: name of reference data set
+;
+; Optional variable attributes (variable specific)
+;   none
+;
+; Caveats
+;   TO DO (ESMValTool v2.0.0)
+;     1) get tags from namelist and write meta data to plots
+;     2) test implemention of handling error estimates
+;   KNOWN LIMITATIONS (all versions)
+;     1) only 2-dim variables are currently supported
+;     2) observational uncertainties are regridded like standard variables
+;     3) for derived variables (e.g. SW_CRE), also the original variables have
+;        to be specified in the nameslist for the reference model (for the
+;         reference dataset only) in order to estimate the observational
+;         uncertainty (if estimate_obs_uncertainty = True)
+;     4) the variable to plot must be the *first* variable in the namelist,
+;        the observational uncertainty (or the variables from which a derived
+;        variable has been calculated from) the *second* (third, ...)
+;
+; Modification history
+;   20180923-A_laue_ax: added writing of results to netcdf
+;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
+;   20170620-A_laue_ax: added tags for reporting
+;   20161104-A_laue_ax: changed calculation of correlation and standard
+;                       deviation ratio from unweighted to grid area weighted
+;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
+;   20160818-A_laue_ax: added support for variable attribute "ref_model"
+;   20160404-A_laue_ax: added optional drawing of observational
+;                uncertainties
+;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;                       of the code
+;   20150415-A-laue_ax: written.
+;
+; ###########################################################################
 
 
 load "interface_scripts/interface.ncl"
@@ -88,7 +93,7 @@ load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
 
-;;load "./diag_scripts/lib/ncl/meta_data.ncl"
+; load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -196,18 +201,18 @@ begin
   ; ========================================================================
 
   if ((var0 .eq. "ts") .and. (mask_ts_sea_ice))
-    ;; Create a missing value mask (from reference data)
-    ;; The dim_avg_wgt function with option limit is used on the time
-    ;; coordinate: in this way each grid box containing more than
-    ;; valid_fraction of missing values along the time series is
-    ;; set to missing.
+    ; Create a missing value mask (from reference data)
+    ; The dim_avg_wgt function with option limit is used on the time
+    ; coordinate: in this way each grid box containing more than
+    ; valid_fraction of missing values along the time series is
+    ; set to missing.
 
     data_temp = read_data(ref_ind, var0, field_type0)
 
     ww = data_temp&time
     ww = 1.
     limit  = toint(diag_script_info@valid_fraction * \
-             dimsizes(data_temp&time))
+                   dimsizes(data_temp&time))
 
     if (limit.lt.1) then
       limit = 1
@@ -216,7 +221,7 @@ begin
     ; temperatures below 272 K are sea ice ---> mask
     data_temp = where(data_temp.lt.272.0, data_temp@_FillValue, data_temp)
 
-    ;; dim_avg_wgt_n_Wrap produces an invalid result for rank = 1
+    ; dim_avg_wgt_n_Wrap produces an invalid result for rank = 1
     if (dimsizes(dimsizes(data_temp)).eq.1) then
       tmp = dim_avg_wgt_Wrap(data_temp, ww, limit)
     else
@@ -278,7 +283,7 @@ begin
           data1 = data1 + global_mask
         else
           do is = 0, numseas - 1
-             data1(is, :, :) = data1(is, :, :) + global_mask
+            data1(is, :, :) = data1(is, :, :) + global_mask
           end do
         end if
       end if
@@ -326,7 +331,7 @@ begin
 
   ; number of used reference data sets
 
-  dim_REF = 1 ; dimsizes(diag_script_info@reference_dataset)
+  dim_REF = 1  ; dimsizes(diag_script_info@reference_dataset)
 
   ; define result variable
 
@@ -334,7 +339,8 @@ begin
   val!0 = "models"
   val!1 = "statistic"
   val!2 = "time"
-  val&models = input_file_info@dataset(ind((input_file_info@dataset.ne.ref_model)))
+  val&models = input_file_info@dataset(ind((input_file_info@dataset .ne. \
+                                            ref_model)))
   val&statistic = (/"stddev_ratio", "correlation"/)
   val&time = ispan(0, numseas - 1, 1)
 
@@ -390,7 +396,7 @@ begin
   val@diag_script = (/diag_script/)
   val@var = "var"
 
-  ; ---------------------- calculate/estimate RMS of observations -------------------
+  ; ------------------- calculate/estimate RMS of observations ---------------
 
   rmsobs = new((/numseas/), float)
 
@@ -423,7 +429,8 @@ begin
       ref = data(ref_ind, is, :, :)
     end if
 
-    ; This code is equivalent to the function "calculate_metric" (statistics.ncl)
+    ; This code is equivalent to the function "calculate_metric"
+    ; (statistics.ncl)
     weights = map_area(ref&lat, ref&lon)
     ; optional: no weights --> reset weights
 ;    wgt1d = 1.0
@@ -442,15 +449,16 @@ begin
         var = err(iv, is, :, :)
       end if
 
-      ; If the variable name contains "err", the variable is assumed to contain
-      ; an estimate of the observational uncertainty (e.g. UWisc, GPCP-SG, and
-      ; SSMI-MERIS provide error estimates, MODIS-L3-C6 provides error estimates
-      ; for lwp and iwp but not for clt). In this case, there is nothing to do
-      ; here.
-      ; If the variable name does not contain "err", the variable is assumed to
-      ; be a field (e.g. rsut, rsutcs) used to calculate a derived variable
-      ; (e.g. CRE_SW). In this case, the observational uncertainty can be estimated
-      ; if the fractional average error is known (e.g. CERES-EBAF, MODIS).
+      ; If the variable name contains "err", the variable is assumed to
+      ; contain an estimate of the observational uncertainty (e.g. UWisc,
+      ; GPCP-SG, and SSMI-MERIS provide error estimates, MODIS-L3-C6 provides
+      ; error estimates for lwp and iwp but not for clt). In this case, there
+      ; is nothing to do here.
+      ; If the variable name does not contain "err", the variable is assumed
+      ; to be a field (e.g. rsut, rsutcs) used to calculate a derived variable
+      ; (e.g. CRE_SW). In this case, the observational uncertainty can be
+      ; estimated if the fractional average error is known (e.g. CERES-EBAF,
+      ; MODIS).
 
       if (isStrSubset(variables(iv + 1), "err")) then
         ; variable contains error estimate provided by data set
@@ -482,11 +490,13 @@ begin
             ; From the Technical Note on CERES EBAF Ed2.7:
             ; "For CERES, calibration uncertainty is 0.5% (1 sigma)
             ; which for a typical global mean clear-sky LW flux corresponds
-            ; to ~1 W/m2. [...] The total error in TOA outgoing clear-sky LW radiation
-            ; in a region is estimated as sqrt(1^2 + 1.74^2 + 0.7^2 + 1^2 + 2.75^2)
-            ; or approximately 3.6 W/m2."
+            ; to ~1 W/m2. [...] The total error in TOA outgoing clear-sky LW
+            ; radiation in a region is estimated as
+            ; sqrt(1^2 + 1.74^2 + 0.7^2 + 1^2 + 2.75^2) or approximately
+            ; 3.6 W/m2."
             ;
-            ; --> here, we estimate the total error as 0.5% * 3.6 W/m2 / 1.0 W/m2 = 1.8%
+            ; --> here, we estimate the total error as
+            ;     0.5% * 3.6 W/m2 / 1.0 W/m2 = 1.8%
             factor = 0.018
           end if
         end if
@@ -505,7 +515,8 @@ begin
             ; Feb 2006 (cloudy): 0.88
             ;
             ; ---> using fractional agreement as error estimate (1 sigma)
-            ; ---> average error estimate = sqrt((0.84^2 + 0.88^2 + 0.85^2 + 0.88^2) / 4) = 0.86
+            ; ---> average error estimate =
+            ;      sqrt((0.84^2 + 0.88^2 + 0.85^2 + 0.88^2) / 4) = 0.86
             ; ---> factor = 1 - 0.86 = 0.14
             factor = 0.14
           end if
@@ -525,7 +536,7 @@ begin
       ; in case of derived variables (e.g., SW_CRE), the squared error
       ; estimates of all input variables are added before calculating
       ; the square root
- 
+
       rmsobs(is) = rmsobs(is) + dim_avg_wgt_Wrap(var1d^2, wgt1d, 1)
     end do  ; iv-loop
 
@@ -534,7 +545,8 @@ begin
 
     ; normalize RMS by dividing by standard deviation of obs (ref)
     avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
-    rmsobs(is) =  rmsobs(is) / sqrt(dim_avg_wgt_Wrap((ref1d - avg_ref)^2, wgt1d, 1))
+    rmsobs(is) =  rmsobs(is) / sqrt(dim_avg_wgt_Wrap((ref1d - avg_ref)^2, \
+                                                     wgt1d, 1))
 
   end do  ; loop over seasons
 
@@ -564,7 +576,8 @@ begin
   climofiles = new(dim_MOD, string)
   climofiles = input_file_info@filename
 
-;;  alltags = array_append_record(tags, (/"PT_taylor", "DM_global", "ST_clim"/), 0)
+;  alltags = array_append_record(tags, (/"PT_taylor", "DM_global",
+;                                "ST_clim"/), 0)
 
   nummods = dim_MOD - dim_REF
 
@@ -603,7 +616,8 @@ begin
       delete(plot)
     end if
 
-    wks = get_wks("dummy_for_wks", diag_script, "clouds_taylor_" + var0 + "_" + season(is) + filename_add)
+    wks = get_wks("dummy_for_wks", diag_script, "clouds_taylor_" + var0 \
+                  + "_" + season(is) + filename_add)
 
     ; create new marker: filled star
 
@@ -616,7 +630,8 @@ begin
                              1.0, size, angle)
 
     if (embracelegend) then
-      legendwks = get_wks("legend_wks", diag_script, "clouds_taylor_" + "legend" + filename_add)
+      legendwks = get_wks("legend_wks", diag_script, "clouds_taylor_" \
+                          + "legend" + filename_add)
       new_index = NhlNewMarker(legendwks, mstring, fontnum, 0.0, 0.0, \
                                1.0, size, angle)
     else
@@ -643,7 +658,8 @@ begin
         end if
         ; override alternative obs (if "EMBRACE" legend)
         if (embracelegend) then
-          if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) then
+          if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+            then
             if (mm_ind .ge. 0) then
               colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
             else
@@ -669,7 +685,8 @@ begin
         else
           if (embracelegend) then
             colors(i)  = colortab(idx)
-            if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) then
+            if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+              then
               if (mm_ind .ge. 0) then
                 colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
               else
@@ -678,7 +695,7 @@ begin
               markers(i) = new_index
               val&models(i) = "altern. ref. dataset"
             else
-              markers(i) = markertab(mod(i,2))
+              markers(i) = markertab(mod(i, 2))
             end if
             i = i + 1
             if (i.ge.dim_MOD) then
@@ -717,7 +734,7 @@ begin
     ropts@stnRad        = (/ 0.5, 1.5, 2.0, 2.5 /)
     ropts@OneX          = "1.00"
     ropts@ccRays        = (/ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, \
-                             0.9, 0.95, 0.99 /)
+                           0.9, 0.95, 0.99 /)
     ropts@ccRays_color  = "Black"
     ropts@centerDiffRMS = True
     ropts@centerDiffRMS_color = "LightGray"  ; "PaleGreen1"
@@ -752,20 +769,23 @@ begin
       ; observational uncertainties as normalized RMS error
       ropts@rmsobs = rmsobs(is)
 
-      plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), ropts)
+      plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
+                            ropts)
 
       log_info("Wrote " + wks@fullname)
 
       ; add meta data to plot (for reporting)
 
-      caption = "Taylor diagram for variable " + variables(0) + " (" + season(is) \
-                + "), reference = " + input_file_info@dataset(ref_ind) + "."
+      caption = "Taylor diagram for variable " + variables(0) \
+                + " (" + season(is) + "), reference = " \
+                + input_file_info@dataset(ref_ind) + "."
       id = diag_script + "_" + variables(0) + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), input_file_info@dataset, \
-;;               climofiles, diag_script, contrib_authors)
+;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
+;               input_file_info@dataset, climofiles, diag_script, \
+;               contrib_authors)
 
       if (embracelegend.and.(is.eq.(numseas-1))) then
         frame(legendwks)

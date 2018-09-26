@@ -1,43 +1,44 @@
-;; CLOUDS_INTERANNUAL
-;;#############################################################################
-;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
-;;#############################################################################
-;; Description
-;;   Calculates the interannual variability estimated as the temporal standard
-;;   deviation calculated from monthly mean anomalies after subtracting the
-;;   climatological mean seasonal cycle.
-;;
-;; Required diag_script_info attributes (diagnostic specific)
-;;   none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
-;;   explicit_cn_levels: use these contour levels for plotting
-;;   extrafiles:      write plots for individual models to separate files (True, False)
-;;   projection:      map projection, e.g., Mollweide, Mercator
-;;
-;; Required variable_info attributes (variable specific)
-;;   none
-;;
-;; Optional variable_info attributes (variable specific)
-;;   long_name: description of variable
-;;   reference_dataset: name of reference datatset
-;;
-;; Caveats
-;;   TO DO (ESMValTool v2.0.0)
-;;     1) get tags from namelist and write meta data to plots
-;;
-;; Modification history
-;;   20180923-A_laue_ax: added writing of results to netcdf
-;;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
-;;   20170620-A_laue_ax: added tags for reporting
-;;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                       of the code
-;;   20150415-A-laue_ax: written.
-;;
-;;#############################################################################
+; CLOUDS_INTERANNUAL
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; PROJECT-NAME EMBRACE
+; ############################################################################
+; Description
+;   Calculates the interannual variability estimated as the temporal standard
+;   deviation calculated from monthly mean anomalies after subtracting the
+;   climatological mean seasonal cycle.
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;   explicit_cn_levels: use these contour levels for plotting
+;   extrafiles:      write plots for individual models to separate files
+;                    (True, False)
+;   projection:      map projection, e.g., Mollweide, Mercator
+;
+; Required variable_info attributes (variable specific)
+;   none
+;
+; Optional variable_info attributes (variable specific)
+;   long_name: description of variable
+;   reference_dataset: name of reference datatset
+;
+; Caveats
+;   TO DO (ESMValTool v2.0.0)
+;     1) get tags from namelist and write meta data to plots
+;
+; Modification history
+;   20180923-A_laue_ax: added writing of results to netcdf
+;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
+;   20170620-A_laue_ax: added tags for reporting
+;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
+;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;                       of the code
+;   20150415-A-laue_ax: written.
+;
+; ############################################################################
 
 ; #####################################
 ; # load external NCL code, if needed #
@@ -53,7 +54,7 @@ load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
-;;load "./diag_scripts/lib/ncl/meta_data.ncl"
+; load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
   enter_msg(diag_script, "")
@@ -118,18 +119,20 @@ begin
 
   ; if attribute is present, use it so plots can be sorted
   if (isatt(variable_info, "reference_dataset")) then
-    ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
+    ref_ind = ind(input_file_info@dataset .eq. \
+                  variable_info@reference_dataset)
   end if
 
 end
 
 begin
-  ind_all_sorted = ispan(0, dim_MOD - 1, 1) ; create array
+  ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
-    ind_wo_ref = ind(input_file_info@dataset .ne. variable_info@reference_dataset)
+    ind_wo_ref = ind(input_file_info@dataset .ne. \
+                     variable_info@reference_dataset)
     ind_all_sorted(0) = ref_ind
-    ind_all_sorted(1:dim_MOD - 1 ) = ind_wo_ref
+    ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
 
   ; ###########################################
@@ -189,8 +192,8 @@ begin
       delete(mean)
     end if
     mean = time_operations(A0, -1, -1, "average", "annualclim", True)
-    mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)  ; replace "epsilon" values
-                                                              ; with missing value
+    ; replace "epsilon" values with missing value
+    mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)
     data1 = 100.0 * data1 / abs(mean)
 
     ; ###########################################
@@ -318,7 +321,8 @@ begin
 
     if (ii.eq.0) then
       if (.not.extrafiles) then
-        wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" + var0)
+        wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+                      + var0)
       end if
 ;      drawNDCGrid(wks)  ; debugging option
     end if
@@ -327,7 +331,8 @@ begin
       if (isvar("wks")) then
         delete(wks)
       end if
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" + var0 + "_" + annots(imod))
+      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+                    + var0 + "_" + annots(imod))
     end if
 
     maps(ii) = contour_map(wks, data1, var0)
@@ -337,12 +342,12 @@ begin
     ; ###########################################
 
     if (write_nc) then
-      nc_filename = work_dir + \
-                    "clouds_interannual_" + var0 + "_" + input_file_info@dataset(imod) + ".nc"
+      nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
+                    + input_file_info@dataset(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
     end if
 
-    if (write_plots .and. extrafiles) then ; add labels
+    if (write_plots .and. extrafiles) then  ; add labels
       txres = True
       txres@txFontHeightF = 0.03
       txres@txJust = "BottomRight"
@@ -354,17 +359,18 @@ begin
 
       ; *** add meta data for reporting to plots ***
 
-;;      alltags = array_append_record(tags, diag_tags, 0)
-       caption = "Interannual variability of variable " + variables(0) + \
-                 " from dataset " + input_file_info@dataset(imod) + "."
-       id = diag_script + "_" + input_file_info@dataset(imod)
-       climofile = input_file_info@filename(imod)
-       contrib_authors = "A_laue_ax"
+;      alltags = array_append_record(tags, diag_tags, 0)
+      caption = "Interannual variability of variable " + variables(0) + \
+        " from dataset " + input_file_info@dataset(imod) + "."
+      id = diag_script + "_" + input_file_info@dataset(imod)
+      climofile = input_file_info@filename(imod)
+      contrib_authors = "A_laue_ax"
 
-;;       ESMValMD(maps@outfile, alltags, caption, id, variables(0), input_file_info@dataset(imod), \
-;;                climofile, diag_script, contrib_authors)
+;      ESMValMD(maps@outfile, alltags, caption, id, variables(0), \
+;               input_file_info@dataset(imod), climofile, diag_script, \
+;               contrib_authors)
 
-;;       delete([/alltags, caption, id, climofile/])
+;      delete([/alltags, caption, id, climofile/])
 
     end if
   end do  ; ii-loop (datasets)
@@ -373,8 +379,8 @@ begin
     pres                            = True    ; needed to override
                                               ; panelling defaults
     pres@gsnPanelLabelBar           = True    ; add common colorbar
-    pres@gsnPanelFigureStrings      = annots(ind_all_sorted)   ; print model name on
-                                                               ; each panel
+    ; print dataset name on each panel
+    pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
     pres@gsnPanelFigureStringsFontHeightF = 0.007
     pres@lbLabelFontHeightF         = 0.01
     pres@lbAutoManage               = False
@@ -383,14 +389,14 @@ begin
     pres@lbTitleFontHeightF         = 0.009
     pres@lbTitlePosition            = "Bottom"
     pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
-    pres@lbPerimOn                  = False    ; draw line around label
-                                               ; bar area
+    pres@lbPerimOn                  = False     ; draw line around label
+                                                ; bar area
 ;    pres@gsnPanelTop                = 0.96
 ;    pres@gsnPanelBottom             = 0.012    ; add space for common
 ;                                               ; colorbar (default = 0.0)
     pres@gsnPanelCenter             = False
-    pres@pmLabelBarOrthogonalPosF   = -0.01    ; shift label bar a bit to
-                                               ; the bottom
+    pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
+                                                ; the bottom
 ;    pres@gsnPanelDebug              = True
 
     if (extrafiles) then
@@ -398,7 +404,8 @@ begin
         delete(wks)
       end if
       ; plot legend
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" + var0 + "_legend")
+      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+                    + var0 + "_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
       pres@vpWidthF = 0.7
@@ -408,12 +415,12 @@ begin
       pres@lbTitleFontHeightF = 0.015
       labels = tostring(data1@res_cnLevels)
       pres@lbFillColors = fill_colors
-      gsn_labelbar_ndc (wks, nboxes, labels, 0.1, 0.9, pres)
+      gsn_labelbar_ndc(wks, nboxes, labels, 0.1, 0.9, pres)
     else
       outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
       log_info(" Wrote " + outfile)
 
-;;      alltags = array_append_record(tags, diag_tags, 0)
+;      alltags = array_append_record(tags, diag_tags, 0)
         caption = "Interannual variability of variable " + variables(0) + "."
         id = diag_script + "_" + variables(0) + "_all_models"
 
@@ -421,10 +428,11 @@ begin
         climofiles = input_file_info@filename
         contrib_authors = "A_laue_ax"
 
-;;        ESMValMD(outfile, alltags, caption, id, variables(0), input_file_info@dataset, \
-;;                 climofiles, diag_script, contrib_authors)
-
-;;        delete([/alltags, caption, id, climofiles/])
+;        ESMValMD(outfile, alltags, caption, id, variables(0), \
+;                 input_file_info@dataset, climofiles, diag_script, \
+;                 contrib_authors)
+;
+;        delete([/alltags, caption, id, climofiles/])
 
     end if
   end if  ; if write_plots

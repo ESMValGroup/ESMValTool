@@ -1,57 +1,60 @@
-;; CLOUDS_IPCC
-;;#############################################################################
-;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
-;;#############################################################################
-;; Description
-;;   Calculates the multi-model mean bias of annual mean 2-d cloud variables
-;;   compared with a reference data set (observations). In addition,
-;;   zonal averages of the individual models, the multi-model mean and the
-;;   reference data set (observations) are calculated.
-;;   If more than one variable is specified in the namelist, variables 2 to n
-;;   are assumed to be observational error estimates. These error estimates are
-;;   added to the zonal mean plot as light red shading.
-;;
-;; Required diag_script_info attributes (diagnostic specific)
-;;   none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   explicit_cn_levels: contour levels
-;;   mask_ts_sea_ice:    - True = mask T < 272 K as sea ice (only for variable "ts")
-;;                       - False = no additional grid cells masked for variable "ts"
-;;   projection:         map projection, e.g., Mollweide, Mercator
-;;   styleset:           style set for zonal mean plot ("CMIP5", "DEFAULT")
-;;   timemean:           time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
-;;                       "annualclim" (annual mean)
-;;   valid_fraction:     used for creating sea ice mask (mask_ts_sea_ice = true): fraction
-;;                       of valid time steps required to mask grid cell as valid data
-;;
-;; Required variable_info attributes (variable specific)
-;;   reference_dataset:  name of reference data set
-;;
-;; Optional variable_info attributes (variable specific)
-;;   long_name:          description of variable
-;;   units:              variable units
-;;
-;; Caveats
-;;   TO DO (ESMValTool v2.0.0)
-;;     1) get tags from namelist and write meta data to plots
-;;   KNOWN ISSUES
-;;     1) specifying more than one data set for the observational uncertainties
-;;       my lead to unexpected or undefined results
-;;
-;; Modification history
-;;   20180923-A_laue_ax: added writing of results to netcdf
-;;   20180529-A_laue_ax: code rewritten for ESMValTool v2.0
-;;   20170620-A_laue_ax: added tags for reporting
-;;   20160920-A_laue_ax: added optional shading of observational uncertainties
-;;                       to the zonal mean plot
-;;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                       of the code
-;;   20150428A-laue_ax: written.
-;;
-;;#############################################################################
+; CLOUDS_IPCC
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; PROJECT-NAME EMBRACE
+; ############################################################################
+; Description
+;   Calculates the multi-model mean bias of annual mean 2-d cloud variables
+;   compared with a reference data set (observations). In addition,
+;   zonal averages of the individual models, the multi-model mean and the
+;   reference data set (observations) are calculated.
+;   If more than one variable is specified in the namelist, variables 2 to n
+;   are assumed to be observational error estimates. These error estimates are
+;   added to the zonal mean plot as light red shading.
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   explicit_cn_levels: contour levels
+;   mask_ts_sea_ice:    - True = mask T < 272 K as sea ice (only for
+;                         variable "ts")
+;                       - False = no additional grid cells masked for
+;                         variable "ts"
+;   projection:         map projection, e.g., Mollweide, Mercator
+;   styleset:           style set for zonal mean plot ("CMIP5", "DEFAULT")
+;   timemean:           time averaging, i.e. "seasonalclim" (DJF, MAM, JJA,
+;                       SON), "annualclim" (annual mean)
+;   valid_fraction:     used for creating sea ice mask
+;                       (mask_ts_sea_ice = true): fraction of valid time steps
+;                       required to mask grid cell as valid data
+;
+; Required variable_info attributes (variable specific)
+;   reference_dataset:  name of reference data set
+;
+; Optional variable_info attributes (variable specific)
+;   long_name:          description of variable
+;   units:              variable units
+;
+; Caveats
+;   TO DO (ESMValTool v2.0.0)
+;     1) get tags from namelist and write meta data to plots
+;   KNOWN ISSUES
+;     1) specifying more than one data set for the observational uncertainties
+;       my lead to unexpected or undefined results
+;
+; Modification history
+;   20180923-A_laue_ax: added writing of results to netcdf
+;   20180529-A_laue_ax: code rewritten for ESMValTool v2.0
+;   20170620-A_laue_ax: added tags for reporting
+;   20160920-A_laue_ax: added optional shading of observational uncertainties
+;                       to the zonal mean plot
+;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
+;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;                       of the code
+;   20150428A-laue_ax: written.
+;
+; ############################################################################
 
 load "interface_scripts/interface.ncl"
 
@@ -59,7 +62,7 @@ load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
-;;load "./diag_scripts/lib/ncl/meta_data.ncl"
+; load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -84,7 +87,7 @@ begin
   var0 = variables(0)
   field_type0 = field_types(0)
 
-  ;; Set default values for non-required diag_script_info attributes
+  ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "timemean", "annualclim")
@@ -145,7 +148,8 @@ begin
   end if
 
   if (dimsizes(variable_info@reference_dataset).gt.1) then
-    ref_ind2 = ind(input_file_info@dataset .eq. variable_info@reference_dataset(1))
+    ref_ind2 = ind(input_file_info@dataset .eq. \
+                   variable_info@reference_dataset(1))
     ref_model2 = variable_info@reference_dataset(1)
   else
     ref_ind2 = -1
@@ -162,18 +166,18 @@ begin
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
 
   if ((var0 .eq. "ts") .and. (mask_ts_sea_ice))
-    ;; Create a missing value mask (from reference data)
-    ;; The dim_avg_wgt function with option limit is used on the time
-    ;; coordinate: in this way each grid box containing more than
-    ;; valid_fraction of missing values along the time series is
-    ;; set to missing.
+    ; Create a missing value mask (from reference data)
+    ; The dim_avg_wgt function with option limit is used on the time
+    ; coordinate: in this way each grid box containing more than
+    ; valid_fraction of missing values along the time series is
+    ; set to missing.
 
     data_temp = read_data(ref_ind, var0, field_type0)
 
     ww = data_temp&time
     ww = 1.
     limit  = toint(diag_script_info@valid_fraction * \
-             dimsizes(data_temp&time))
+                   dimsizes(data_temp&time))
 
     if (limit.lt.1) then
       limit = 1
@@ -182,7 +186,7 @@ begin
     ; temperatures below 272 K are sea ice ---> mask
     data_temp = where(data_temp.lt.272.0, data_temp@_FillValue, data_temp)
 
-    ;; dim_avg_wgt_n_Wrap produces an invalid result for rank = 1
+    ; dim_avg_wgt_n_Wrap produces an invalid result for rank = 1
     if (dimsizes(dimsizes(data_temp)).eq.1) then
       tmp = dim_avg_wgt_Wrap(data_temp, ww, limit)
     else
@@ -202,7 +206,8 @@ begin
   do ivar = 1, dim_VAR - 1
     do imod = 0, dim_MOD - 1
 
-      log_info("processing error estimate from " + input_file_info@dataset(imod))
+      log_info("processing error estimate from " \
+               + input_file_info@dataset(imod))
 
       A0 = read_data(imod, variable(ivar), field_type(ivar))
 
@@ -219,7 +224,8 @@ begin
       ; zonal mean
 
       err = dim_avg_n_Wrap(data1, dimsizes(dimsizes(data1)) - 1)
-      err = sqrt(err)  ; err is still the squared error (squared for averaging)!
+      ; err is still the squared error (squared for averaging)!
+      err = sqrt(err)
       delete(data1)
 
       if (.not.isdefined("err_zm")) then
@@ -250,8 +256,8 @@ begin
 
       delete(err)
 
-    end do ; imod-loop
-  end do ; ivar loop
+    end do  ; imod-loop
+  end do  ; ivar loop
 
   ; ========================================================================
   ; =========================== calculations ===============================
@@ -331,7 +337,7 @@ begin
 
     delete(data)
 
-   end do  ; imod
+  end do  ; imod
 
   ; differences between multi-model mean and reference data set
 
@@ -429,7 +435,8 @@ begin
     cnLevels = fspan(min(diff), max(diff), 20)
   end if
 
-;;  alltags = array_append_record(tags, (/"PT_geo", "PT_zonal", "ST_clim", "DM_global"/), 0)
+;  alltags = array_append_record(tags, (/"PT_geo", "PT_zonal", "ST_clim", \
+;                                        "DM_global"/), 0)
 
   diff@diag_script = diag_script
   diff@res = True
@@ -510,7 +517,8 @@ begin
 
   if ((var0.eq."pr").or.(var0.eq."pr-mmday")) then
     diff@res_mpLandFillColor      = "Black"
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb")
+    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-precip-delta.rgb")
     diff@res_cnFillColors         = pal
   end if
 
@@ -525,7 +533,8 @@ begin
       delete(wks)
     end if
 
-    wks = get_wks("dummy_for_wks", diag_script, "clouds_ipcc_" + var0 + "_" + season(is))
+    wks = get_wks("dummy_for_wks", diag_script, "clouds_ipcc_" + var0 \
+                  + "_" + season(is))
 ;    drawNDCGrid(wks) ; debugging option
 
     ; --------------------------------------------------------------------
@@ -563,7 +572,7 @@ begin
     ; the attribute "long_name" will be used as title string for the y-axis
 
     zonalmean@long_name = zonalmean@long_name + " (" + \
-                          zonalmean@units + ")"
+      zonalmean@units + ")"
 
     linethickness       = new(dim_MOD, float)
     linecolor           = new(dim_MOD, string)
@@ -574,7 +583,7 @@ begin
     ; settings for all models that have been used to calculate the
     ; multi-model mean (= first entries in "zonalmean")
 
-    linethickness(0:n)   = 1.0    
+    linethickness(0:n)   = 1.0
     linecolor(0:n)       = "(/0.5, 0.5, 0.5/)"
     linedash             = 0
 
@@ -598,7 +607,7 @@ begin
         end if
       end do
     else
-      linethickness(n+1:dim_MOD-1) = 4.0      ; reference data set(s) (observations)
+      linethickness(n+1:dim_MOD-1) = 4.0      ; reference dataset(s)
       linethickness(mm_ind)        = 4.0      ; multi-model mean
       linecolor(n+1:dim_MOD-1)     = "Black"  ; reference data set
       linecolor(mm_ind)            = "Red"    ; multi-model mean
@@ -668,17 +677,19 @@ begin
 
       ; add meta data to plot (for reporting)
 
-      caption = "Multi model mean bias (left) and zonal averages (right) for variable " + variables(0) \
-                + " (" + season(is) + "), reference = " + input_file_info@dataset(ref_ind) + "."
+      caption = "Multi model mean bias (left) and zonal averages (right) " \
+                + "for variable " + variables(0) + " (" + season(is) \
+                + "), reference = " + input_file_info@dataset(ref_ind) + "."
       id = diag_script + "_" + variables(0) + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;;               input_file_info@dataset, climofiles, diag_script, contrib_authors)
+;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
+;               input_file_info@dataset, climofiles, diag_script, \
+;               contrib_authors)
 
     end if  ; if write_plots
-  end do ; is-loop (seasons)
+  end do  ; is-loop (seasons)
 
   ; ###########################################
   ; # Optional output to netCDF               #
