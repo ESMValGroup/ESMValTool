@@ -18,6 +18,23 @@
 ###############################################################################
 ---
 
+---
+
+documentation:
+  description: |
+    Recipe for performing stochastic downscaling of precipitation fields
+    calling the RainFARM package by J. von Hardenberg (ISAC-CNR)
+  authors:
+    - arno_en
+    - hard_jo
+
+  references:
+    - donofrio14jh
+    - rebora06jhm
+
+  projects:
+    - c3s-magic
+
 datasets:
   - {dataset: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
 
