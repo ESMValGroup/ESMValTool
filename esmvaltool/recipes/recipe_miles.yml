@@ -27,13 +27,23 @@
 ---
 
 datasets:
-   - {dataset: EC-Earth,  project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1980,  end_year: 1989}
+   - {dataset: EC-Earth,    project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1980,  end_year: 1989}
+   - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
+     #- {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989, path: "/work/users/jost/esmvaltool2/input/OBS" }
 
 preprocessors:
     preproc1:
       extract_levels:
         levels: 50000
+        scheme: nearest
+      regrid:
+        target_grid: 2.5x2.5
         scheme: linear
+      extract_region:
+        start_longitude: 0.
+        end_longitude: 360.
+        start_latitude: 1.25
+        end_latitude: 90.
 
 diagnostics:
 
@@ -44,7 +54,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         field: T2Ds
-        reference_dataset: "EC-Earth"
+        reference_dataset: "ERA-Interim"
     scripts:
       miles_block: 
         script: miles/miles_block.r
