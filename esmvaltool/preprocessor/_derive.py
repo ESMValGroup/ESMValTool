@@ -35,6 +35,12 @@ def get_required(short_name, field=None):
             ('clwvi', 'T2' + frequency + 's'),
             ('clivi', 'T2' + frequency + 's'),
         ],
+        'netcre': [
+            ('rlut', 'T2' + frequency + 's'),
+            ('rlutcs', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+            ('rsutcs', 'T2' + frequency + 's'),
+        ],
         'swcre': [
             ('rsut', 'T2' + frequency + 's'),
             ('rsutcs', 'T2' + frequency + 's'),
@@ -83,6 +89,7 @@ def derive(cubes, variable):
     functions = {
         'lwcre': calc_lwcre,
         'lwp': calc_lwp,
+        'netcre': calc_netcre,
         'swcre': calc_swcre,
         'toz': calc_toz,
         'rtnt': calc_rtnt,
@@ -187,6 +194,32 @@ def calc_lwp(cubes):
         lwp_cube = clwvi_cube - clivi_cube
 
     return lwp_cube
+
+
+def calc_netcre(cubes):
+    """Compute net cloud radiative effect from longwave and shortwave cloud
+       radiative effects.
+
+    Arguments
+    ----
+        cubes: cubelist containing rlut (toa_outgoing_longwave_flux), rlutcs
+               (toa_outgoing_longwave_flux_assuming_clear_sky), rsut
+               (toa_outgoing_shortwave_flux) and rsutcs
+               (toa_outgoing_shortwave_flux_assuming_clear_sky).
+
+    Returns
+    -------
+        Cube containing net cloud radiative effect.
+
+    """
+
+    lwcre = calc_lwcre(cubes)
+    swcre = calc_swcre(cubes)
+
+    netcre = lwcre + swcre
+    netcre.units = lwcre.units
+
+    return netcre
 
 
 def calc_swcre(cubes):

@@ -116,3 +116,18 @@ diagnostics:
       clim:
         <<: *clim_settings
 
+  clouds_ipcc_netcre:
+    description: differences of multi-model mean and reference dataset
+    variables:
+      netcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        field: T2Ms
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+
