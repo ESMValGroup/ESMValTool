@@ -176,22 +176,21 @@ begin
                   input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
       DIM_OBS + DIM_HDAT
 
-    ; Calculate derived var (i.e. make it 1-d)
-    ; TODO: Sea-ice extent
-    ; if (var0 .eq. "sic") then  ; Calculate sea ice extent
-    ;   if (isatt(diag_script_info, "region")) then
-    ;     region = diag_script_info@region
-    ;   else
-    ;     error_msg("w", diag_script, "", "No region for sea ice extent " + \
-    ;               "selected in cfg file, selecting Arctic.")
-    ;     region = "Arctic"
-    ;   end if
-    ; tmp := sea_ice_area(tmp, i, data, region, "all", "extent", True)
-    ; end if
+    ; Process multi-dimensional variables
+    if (is_multi_dim) then
+      tmp := area_operations(tmp, region(0), region(1), region(2), \
+                             region(3), area_oper, True)
+    end if
 
     if (dimsizes(idx_hist) .ge. 1) then
       ; Call historical simulations for time series
       tmp_hist = read_data(idx_hist(0), var0, field_type0)
+
+      ; Process multi-dimensional variables
+      if (is_multi_dim) then
+        tmp_hist := area_operations(tmp_hist, region(0), region(1), \
+                                    region(2), region(3), area_oper, True)
+      end if
 
       ; Average over ensemble members if more than one exists (see recipe)
       if (avgens) then
@@ -212,14 +211,17 @@ begin
               tmp_fut = read_data(idx_fut(iens), var0, field_type0)
               tmp_hist = read_data(idx_hist(iens), var0, field_type0)
 
-              ; TODO: calculate sea ice extent
-              ; if (var0 .eq. "sic") then
-              ;   tmp_fut := sea_ice_area(tmp_fut, idx_fut(iens), data, \
-              ;                           region, "all", "extent", True)
-              ;   tmp_hist := sea_ice_area(tmp_hist, idx_hist(iens), data, \
-              ;                            region, "all", "extent", True)
-              ; end if
+              ; Process multi-dimensional variables
+              if (is_multi_dim) then
+                tmp_fut := area_operations(tmp_fut, region(0), region(1), \
+                                           region(2), region(3), area_oper, \
+                                           True)
+                tmp_hist := area_operations(tmp_hist, region(0), region(1), \
+                                            region(2), region(3), area_oper, \
+                                            True)
+              end if
 
+              ; Save data in arrays
               tmp_avg_fut(iens, :) = (/tmp_fut/)
               tmp_avg_hist(iens, :) = (/tmp_hist/)
               delete([/tmp_fut, tmp_hist/])
@@ -241,12 +243,9 @@ begin
       ; Append future array to historical array
       tmpy = array_append_record(tmp_hist, tmp, 0)
       delete([/tmp, tmp_hist, idx_hist, idx_fut/])
-    end if
-
-    ; Spatial average if necessary
-    if (is_multi_dim) then
-      tmpy := area_operations(tmpy, region(0), region(1), region(2), \
-                              region(3), area_oper, True)
+    else
+      error_msg("f", diag_script, "", "No historical data for model " + \
+                input_file_info@dataset(idat) + " given")
     end if
 
     ; Calculate future diagnostic for diagnostic scatter plot
@@ -261,6 +260,21 @@ begin
       future_diag(i) = tofloat(avg(future_temp))
     end if
 
+    ; Adapt scal_time(1) (necessary of larger than end_year)
+    if (scal_time(1) .gt. \
+        toint(input_file_info@end_year(idat - DIM_HDAT))) then
+      scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
+    end if
+
+    ; Calculate average over starting period for trend calculation
+    trend_base = time_operations(tmpy, scal_time(0), scal_time(1), \
+                                 time_oper, time_opt, True)
+    if (time_oper .eq. "extract") then
+      trend_base := time_operations(trend_base, scal_time(0), scal_time(1), \
+                                    "average", "yearly", True)
+    end if
+    trend_base = tofloat(avg(trend_base))
+
     ; Loop over different target periods
     do pt = 0, dimsizes(p_time) - 1
       ; Average over var time series
@@ -271,21 +285,6 @@ begin
                                      p_time(pt) + p_step, "average", \
                                      "yearly", True)
       end if
-
-      ; Adapt scal_time(1) (necessary of larger than end_year)
-      if (scal_time(1) .gt. \
-          toint(input_file_info@end_year(idat - DIM_HDAT))) then
-        scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
-      end if
-
-      ; Calculate average over starting period for trend calculation
-      trend_base = time_operations(tmpy, scal_time(0), scal_time(1), \
-                                   time_oper, time_opt, True)
-      if (time_oper .eq. "extract") then
-        trend_base := time_operations(trend_base, scal_time(0), scal_time(1), \
-                                      "average", "yearly", True)
-      end if
-      trend_base = tofloat(avg(trend_base))
 
       ; Perform calculation type
       if (calc_type .eq. "trend") then
@@ -305,15 +304,13 @@ begin
       end if
       end if
       end if
-      delete([/trend_base, temp_mean/])
+      delete(temp_mean)
     end do
-    delete(tmpy)
+    delete([/tmpy, trend_base/])
   end do
 
   ; Save unique dataset names (modifies input_file_info@dataset!)
-  tmpm = input_file_info@dataset
-  input_file_info@dataset := tmpm(idx_datasets)
-  delete(tmpm)
+  input_file_info@dataset := input_file_info@dataset(idx_datasets)
 
   ; ---------------------------------------------------------------------------
   ; Call diagnostics
