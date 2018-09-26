@@ -12,6 +12,7 @@ year1=$2
 year2=$3
 infile=$4
 z500filename=$5
+varname=$6
 
 DATADIR=$(dirname $z500filename)
 TEMPDIR=$DATADIR/tempdir_${exp}_$RANDOM
@@ -24,7 +25,7 @@ if [ ! -f $z500filename ] ; then
 	#create a single huge file: not efficient but universal
 #	$cdonc cat $INDIR/*.nc $TEMPDIR/fullfile.nc
 	#$cdonc sellonlatbox,0,360,0,90 -remapcon2,r144x73 -setlevel,50000 -setname,zg -selyear,$year1/$year2 $TEMPDIR/fullfile.nc $TEMPDIR/smallfile.nc
-	$cdonc sellonlatbox,0,360,0,90 -remapcon2,r144x73 -setlevel,50000 -setname,zg $infile $TEMPDIR/smallfile.nc
+	$cdonc sellonlatbox,0,360,0,90 -remapcon2,r144x73 -setlevel,50000 -setname,zg -selname,$varname $infile $TEMPDIR/smallfile.nc
 
 	#in order to avoid issues, all data are forced to be geopotential height in case geopotential is identified (i.e. values too large for a Z500
 	sanityvalue=$($cdonc outputint -fldmean -seltimestep,1 $TEMPDIR/smallfile.nc)

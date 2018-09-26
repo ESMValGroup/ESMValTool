@@ -298,9 +298,12 @@ return(field) }
 print(paste("opening file:",namefile))
 a=nc_open(namefile)
 
-#load axis
-naxis=names(a$dim)[1:min(c(4,length(a$dim)))]
-for (axis in naxis) {print(axis); assign(axis,ncvar_get(a,axis))}
+#load axis: updated version, looking for dimension directly stored inside the variable
+naxis=unlist(lapply(a$var[[namevar]]$dim,function (x) x["name"] ))
+for (axis in naxis) {
+	assign(axis,ncvar_get(a,axis))
+	print(paste(axis,":",length(get(axis)),"records"))
+}
 
 print("selecting years and months")
 #extracting time (BETA)
@@ -349,40 +352,45 @@ print(paste(length(time),"days selected from",time[1],"to",time[length(time)]))
 #check for dimensions (presence or not of time dimension)
 dimensions=length(dim(field))
 
+
 #if dimensions are multiple, get longitude, latitude
-#if needed, rotate and flip the array
-if (dimensions>1)
-{
-	#assign ics and ipsilon 
-	if (is.null(namelon)) {
-		xlist=c("lon","Lon","longitude","Longitude")
-		if (any(xlist %in% naxis))  {
-			  ics=get(names(a$dim[which(naxis %in% xlist)]))} else {stop("No lon found")}
-		} else {
-		ics=ncvar_get(a,namelon)
-		}
-	if (is.null(namelat)) {
-		ylist=c("lat","Lat","latitude","Latitude")
-		if (any(ylist %in% naxis))  {
-			ipsilon=get(names(a$dim[which(naxis %in% ylist)]))} else {stop("No lat found")}
-		} else {
-		ipsilon=ncvar_get(a,namelat)
-		}
-		
-	print("flipping and rotating")
-        #longitute rotation around Greenwich
-        if (rot)     {ics=rotation(ics); field=rotation(field) }
-        if (ipsilon[2]<ipsilon[1] & length(ipsilon)>1 )
-                if (length(ics)>1)
-                {ipsilon=sort(ipsilon); field=flipper(field) }
+	#if needed, rotate and flip the array
+	xlist=c("lon","Lon","longitude","Longitude")
+	ylist=c("lat","Lat","latitude","Latitude")
+	if (dimensions>1)
+	{
+	        #assign ics and ipsilon
+	        if (is.null(namelon)) {
+	                if (any(xlist %in% naxis))  {
+	                        ics=get(naxis[naxis %in% xlist],a$dim)$vals } else {printv("WARNING: No lon found"); ics=NA}
+	  	} else {
+	             	ics=ncvar_get(a,namelon)
+	        }
+	        if (is.null(namelat)) {
+	                if (any(ylist %in% naxis))  {
+	                        ipsilon=get(naxis[naxis %in% ylist],a$dim)$vals} else {printv("WARNING: No lat found"); ipsilon=NA}
+	       	} else {
+	              	ipsilon=ncvar_get(a,namelat)
+	        }
 
-        #exporting variables to the main program
-        assign("ics",ics, envir = .GlobalEnv)
-        assign("ipsilon",ipsilon, envir = .GlobalEnv)
-	assign(names(a$dim[which(naxis %in% xlist)]),ics)
-	assign(names(a$dim[which(naxis %in% ylist)]),ipsilon)
+	        #longitute rotation around Greenwich
+	        if (rot)     {
+			print("rotating...")
+			ics=rotation(ics); field=rotation(field)
+		}
+	        if (ipsilon[2]<ipsilon[1] & length(ipsilon)>1 ) {
+	                if (length(ics)>1) {
+				print("flipping...")
+				ipsilon=sort(ipsilon)
+				field=flipper(field)
+			}
+		}
 
-}
+		# if ics and ipsilon exists, assign the rearranged values
+	        if (!is.na(ics[1])) {assign(naxis[naxis %in% c(xlist,namelon)],ics)}
+	        if (!is.na(ipsilon[1])) {assign(naxis[naxis %in% c(ylist,namelat)],ipsilon)}
+	}
+
 
 
 if (dimensions>3)

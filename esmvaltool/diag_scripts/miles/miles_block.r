@@ -30,8 +30,7 @@ spath='./esmvaltool/diag_scripts/miles/'
 source(paste0(spath,'basis_functions.R'))
 source(paste0(spath,'block_figures.R'))
 source(paste0(spath,'block_fast.R'))
-source(paste0(spath,'block_figures.R')
-source(paste0(spath,'block_parameters.R'))
+source(paste0(spath,'miles_parameters.R'))
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -42,7 +41,7 @@ for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)
 field_type0 <- "T2Ds"
 
 # get first variable and list associated to pr variable
-var0 <- "zg-500"
+var0 <- "zg"
 list0 <- metadata
 
 # get name of climofile for first variable and list associated to first climofile
@@ -61,8 +60,8 @@ dir.create(regridding_dir, recursive = T, showWarnings = F)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'model'))
-reference_model=unname(sapply(list0, '[[', 'reference_model'))[1]
+models_name=unname(sapply(list0, '[[', 'dataset'))
+reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
 models_start_year=unname(sapply(list0, '[[', 'start_year'))
 models_end_year=unname(sapply(list0, '[[', 'end_year'))
 models_experiment=unname(sapply(list0, '[[', 'exp'))
@@ -76,12 +75,13 @@ for (model_idx in c(1:(length(models_name)))) {
     exp <- models_name[model_idx]
     year1=models_start_year[model_idx]
     year2=models_end_year[model_idx]
-    infile <- interface_get_fullpath(var0, field_type0, model_idx)
+    #infile <- interface_get_fullpath(var0, field_type0, model_idx)
+    infile <- climofiles[model_idx]
     zdirfile=paste0(regridding_dir,"/",exp,"/",exp,"_",toString(year1),"-",toString(year2),"_Z500_regrid.nc")
 
-    system2(paste0(spath,'z500_prepare.sh'),c(exp,toString(year1),toString(year2), infile, zdirfile))
+    system2(paste0(spath,'z500_prepare.sh'),c(exp,toString(year1),toString(year2), infile, zdirfile, var0))
     for (seas in seasons) {
-       miles.block.fast( year1=year1, year2=year2, exp=exp, season=seas,z500filename=zdirfile,FILESDIR=work_dir)
+      miles.block.fast( year1=year1, year2=year2, exp=exp, season=seas,z500filename=zdirfile,FILESDIR=work_dir)
     }
 }
 
