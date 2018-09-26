@@ -357,15 +357,14 @@ def _update_target_grid(variable, variables, settings, config_user):
 
 
 def _get_dataset_info(dataset, variables):
-    variable_data = None
     for var in variables:
         if var['dataset'] == dataset:
             return var
-    if variable_data is None:
-        raise RecipeError(
-            "Unable to find matching file for dataset"
-            "{}".format(dataset)
-        )
+    raise RecipeError(
+        "Unable to find matching file for dataset"
+        "{}".format(dataset)
+    )
+
 
 
 def _dataset_to_file(variable, config_user):
