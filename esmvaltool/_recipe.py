@@ -330,17 +330,9 @@ def _update_target_levels(variable, variables, settings, config_user):
         if variable['dataset'] == dataset:
             del settings['extract_levels']
         else:
-            variable_data = None
-            for var in variables:
-                if var['dataset'] == dataset:
-                    variable_data = var
-            if variable_data is None:
-                raise RecipeError(
-                    "Unable to find matching file for dataset"
-                    "{}".format(dataset)
-                )
+            variable_data = _get_dataset_info(dataset, variables)
             filename = \
-                _dataset_to_file(dataset, variable_data, config_user)
+                _dataset_to_file(variable_data, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename,
@@ -361,11 +353,23 @@ def _update_target_grid(variable, variables, settings, config_user):
         del settings['regrid']
     elif any(grid == v['dataset'] for v in variables):
         settings['regrid']['target_grid'] = _dataset_to_file(
-            grid, variables, config_user)
+            _get_dataset_info(grid, variables), config_user)
 
 
-def _dataset_to_file(dataset, variable, config_user):
-    """Find the first file belonging to dataset."""
+def _get_dataset_info(dataset, variables):
+    variable_data = None
+    for var in variables:
+        if var['dataset'] == dataset:
+            return var
+    if variable_data is None:
+        raise RecipeError(
+            "Unable to find matching file for dataset"
+            "{}".format(dataset)
+        )
+
+
+def _dataset_to_file(variable, config_user):
+    """Find the first file belonging to dataset from variable info."""
     files = get_input_filelist(
         variable=variable,
         rootpath=config_user['rootpath'],
