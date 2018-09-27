@@ -563,9 +563,8 @@ begin
       end if
     else
       missing_datasets := ind(ismissing(diag_a(idx_diag, :)))
-      ; FIXME: use "f"
       error_msg("w", diag_script, "", \
-                "MDER was not succesfull. In diagnostic " + wdiag(idx_diag) + \
+                "in diagnostic " + wdiag(idx_diag) + \
                 ", some datasets are missing: " + \
                 diag_a&datasets(missing_datasets))
     end if
@@ -768,7 +767,7 @@ begin
 
     delete([/y, corr, mcorr, x, x_diag, good_diag, xobs, cf, tmp_cf, \
             weights, uM, uM_std/])
-  end do    ; Loop over different target periods
+  end do        ; Loop over different target periods
 
   ; Iterate over target periods and save MDER results
   do pt = 0, dimsizes(p_time) - 1
@@ -828,7 +827,7 @@ begin
     xgood = ind(.not. ismissing(idx_used_diags(ppt, :)))
     hlp_tmp = new((/dimsizes(mder_coefs(ppt, xgood)), dimsizes(nfit)/), float)
     hlp = new((/1, dimsizes(mder_coefs(ppt, xgood)) + 1/), float)
-    y_mder_results(ppt, :) = mder_coefs(ppt, 0)          ; const
+    y_mder_results(ppt, :) = mder_coefs(ppt, 0)           ; const
     y_mder_results_std(ppt, :) = 0.0
     yfit_reg(ppt, :) = mder_coefs(ppt, 0)                 ; const
     hlp = 1.0
@@ -847,7 +846,6 @@ begin
 
         y_mder_results(ppt, 2:) = coeff_y_est(:, ppt)
         ; = y_mder_results(2:) + coef(ii) * diag_all(terms(ii), :)
-
         y_mder_results_std(ppt, 2:) = y_mder_results_std(ppt, 2:) + \
           (mder_coefs(ppt, ii) * \
            (diag_all_std(idx_used_diags(ppt, ii), :))) ^ 2
@@ -863,13 +861,13 @@ begin
         delete([/diag_var, minx, maxx/])
       end if
     end do
-
     y_mder_results_std = sqrt(y_mder_results_std)
+
     x_diag = transpose(diag_all(idx_used_diags(ppt, xgood), :))
     good_diag = ind(.not. ismissing(x_diag(:, 0)))
     x = x_diag(good_diag, :)
 
-    ; Create Design matrix D and Identity matrix Id for pt = 1
+    ; Create Design matrix D and Identity matrix Id
     D := new((/dimsizes(x(:, 0)), dimsizes(idx_used_diags(ppt, xgood)) + 1/), \
              typeof(diag_all))
     D = 1.0
@@ -1070,12 +1068,13 @@ begin
 
   ; Line plot showing the time series including MDER weights
   plot_name_1 = filename + "_FIG1"
-  wks = get_wks(0, diag_script, plot_name_1)
+  path_1 = plot_dir + plot_name_1 + "." + file_type
+  wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
   MainStg = ""
   YStg = target_var + " [" + variable_info@units + "]"
   plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
                          YStg, wks, "draw")
-  log_info("Wrote " + plot_dir + plot_name_1 + "." + file_type)
+  log_info("Wrote " + path_1)
 
   ; TODO: Add meta data
   ; climofiles = new(DIM_DAT, string)
@@ -1091,16 +1090,15 @@ begin
   ; caption = "Time series of " + target_var + " for " + \
   ;   input_file_info@ensemble(0) + \
   ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
-
-  ; plot_fname = wks@fullname
-  ; ESMValMD(plot_fname, alltags, caption, zz, variables(0), \
-  ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-  ; delete([/alltags, caption, wks, plot_fname/])
+  ; ESMValMD(path_1, alltags, caption, zz, var0, alldatasetnames, climofiles, \
+  ;          diag_script, contrib_authors)
+  ; delete([/alltags, caption, wks, path_1/])
 
   ; MDER scatter plots for all time periods
   do ppt = 0, dimsizes(p_time) - 1
     plot_name_2 = filename + "_FIG2" + plot_num(ppt)
-    wks = get_wks(0, diag_script, plot_name_2)
+    path_2 = plot_dir + plot_name_2 + "." + file_type
+    wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
     MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
       (p_time(ppt) + p_step)
     XStg = terms_str(ppt + 1) + " [" + variable_info@units + "]"
@@ -1111,7 +1109,7 @@ begin
                               yfit_reg(ppt, :), \
                               yfit_std(ppt, :, :), \
                               MainStg, XStg, YStg, wks, "draw")
-    log_info("Wrote " + plot_dir + plot_name_2 + "." + file_type)
+    log_info("Wrote " + path_2)
 
     ; TODO: Add meta data
     ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
@@ -1122,14 +1120,14 @@ begin
     ;           target_var + " and the quantity resulting from MDER " + \
     ;           "analysis on the x-axes, similar to Wenzel et al., " + \
     ;           "JClim, 2016, fig. 3"
-    ; plot_fname = wks@fullname
-    ; ESMValMD(plot_fname, alltags, caption, zz, var0, \
+    ; ESMValMD(path_2, alltags, caption, zz, var0, \
     ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-    ; delete([/alltags, caption, wks, plot_fname/])
+    ; delete([/alltags, caption, wks, path_2/])
   end do
 
-  ; Boxplot of RMSE of different weigting methods inkl pseudoreality check
+  ; Boxplot of RMSE of different weigting methods incl pseudoreality check
   plot_name_3 = filename + "_FIG3"
+  path_3 = plot_dir + plot_name_3 + "." + file_type
   YStg = "RMSE projection error [" + variable_info@units + "]"
   XBname = new((dimsizes(times_str) - 1) * 2, string)
   if (dimsizes(XBname) .eq. 2) then
@@ -1143,11 +1141,11 @@ begin
   end if
   end if
 
-  wks = get_wks(0, diag_script, plot_name_3)
+  wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
   MainStg = ""
   plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
                              wks, "draw")
-  log_info("Wrote " + plot_dir + plot_name_3 + "." + file_type)
+  log_info("Wrote " + path_3)
 
   ; TODO: Add meta data
   ; alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", \
@@ -1157,10 +1155,9 @@ begin
   ;   "climatological mean " + target_var + "and its equivalent in " + \
   ;   "pseudoreality under " + input_file_info@ensemble(0) + " scenario, " + \
   ;   "similar to Wenzel et al., JClim, 2016, fig. 4"
-  ; plot_fname = wks@fullname
-  ; ESMValMD(plot_fname, alltags, caption, zz, var0, \
-  ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-  ; delete([/alltags, caption, zz, climofiles, alldatasetnames, plot_fname/])
+  ; ESMValMD(path_3, alltags, caption, zz, var0, alldatasetnames, climofiles, \
+  ;          diag_script, contrib_authors)
+  ; delete([/alltags, caption, zz, climofiles, alldatasetnames, path_3/])
 
   leave_msg(diag_script, "")
 
