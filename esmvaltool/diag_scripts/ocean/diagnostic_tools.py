@@ -105,7 +105,12 @@ def timecoord_to_float(times):
     return floattimes
 
 
-def add_legend_outside_right(plot_details, ax1, column_width=0.1):
+def add_legend_outside_right(
+        plot_details,
+        ax1,
+        column_width=0.1,
+        loc='right'
+):
     """
     Add a legend outside the plot, to the right.
 
@@ -120,26 +125,64 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     #####
     # Create dummy axes:
     legend_size = len(plot_details.keys()) + 1
-    ncols = int(legend_size / 25) + 1
     box = ax1.get_position()
-    ax1.set_position(
-        [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
+    if loc.lower() == 'right':
+        nrows = 25
+        ncols = int(legend_size / nrows) + 1
+        ax1.set_position([box.x0,
+                          box.y0,
+                          box.width * (1. - column_width * ncols),
+                          box.height])
+
+    if loc.lower() == 'below':
+        ncols = 4
+        nrows = int(legend_size / ncols) + 1
+        ax1.set_position([box.x0,
+                          box.y0 + (nrows * column_width),
+                          box.width,
+                          box.height - (nrows * column_width)])
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
+        try:
+            colour = plot_details[index]['c']
+        except AttributeError:
+            colour = plot_details[index]['colour']
+
+        try:
+            linewidth = plot_details[index]['lw']
+        except AttributeError:
+            linewidth = 1.
+
+        try:
+            linestyle = plot_details[index]['ls']
+        except AttributeError:
+            linestyle = '-'
+
+        try:
+            label = plot_details[index]['label']
+        except AttributeError:
+            label = str(index)
 
         plt.plot(
             [], [],
-            c=plot_details[index]['c'],
-            lw=plot_details[index]['lw'],
-            ls=plot_details[index]['ls'],
-            label=plot_details[index]['label'])
+            c=colour,
+            lw=linewidth,
+            ls=linestyle,
+            label=label)
 
-    legd = ax1.legend(
-        loc='center left',
-        ncol=ncols,
-        prop={'size': 10},
-        bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'right':
+        legd = ax1.legend(
+            loc='center left',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'below':
+        legd = ax1.legend(
+            loc='upper center',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(0.5, -2. * column_width))
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
 
