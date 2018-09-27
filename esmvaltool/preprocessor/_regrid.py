@@ -21,6 +21,7 @@ import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
 
+from . import _regrid_esmpy
 from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
@@ -194,7 +195,19 @@ def regrid(src_cube, target_grid, scheme):
                 src_cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
+    attempt_irregular_regridding = False
+    try:
+        lat_dim = src_cube.coord('latitude').ndim
+        lon_dim = src_cube.coord('longitude').ndim
+        if (lat_dim == lon_dim == 2
+                and scheme in _regrid_esmpy.ESMF_REGRID_METHODS.keys()):
+            attempt_irregular_regridding = True
+    except iris.exceptions.CoordinateNotFoundError:
+        pass
+    if attempt_irregular_regridding:
+        result = _regrid_esmpy.regrid(src_cube, target_grid, scheme)
+    else:
+        result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
 
     return result
 

@@ -10,6 +10,7 @@ dependencies:
   - basemap
   - iris=1.13
   - python-stratify
+  - esmpy
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1
