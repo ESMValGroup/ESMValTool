@@ -8,6 +8,7 @@
 ;
 ; Contents:
 ;     function diag_file_name: filename of calculated diagnostic.
+;     function integrate_time_units: temporally integrates units.
 ;     function reg_multlin_stats_rap: costumized version of NCL's
 ;                                     reg_multlin_stats.
 ;     function regress_stepwise: does stepwise regression on diagnostics.
@@ -90,6 +91,131 @@ begin
   ; Return file name
   leave_msg(scriptname, funcname)
   return(outname)
+
+end
+
+
+; #############################################################################
+undef("integrate_time_units")
+function integrate_time_units(opt[1] : integer)
+;
+; Arguments:
+;     opt: integer determining how to handle multiple time units.
+;          opt < 0: remove last units.
+;          opt = 0: throw error if there are multiple time units.
+;          opt = n > 1: remove n-th time units.
+;
+; Return value:
+;     New units.
+;
+; Description:
+;     Temporally integrates units, i.e. removes reciprocal time units.
+;
+; Caveat:
+;     Units with higher exponents than -1 cannot be processed, e.g. "m s-2" or
+;     "m/s2".
+;
+; Modification history:
+;     20180927_A-schl_ma: written.
+;
+local allowed_time_units, allowed_prefixes, allowed_suffixes, iu, ip, \
+      matches, dim_time, all_matches, all_lengths
+
+begin
+
+  funcname = "integrate_time_units"
+  scriptname = "diag_scripts/shared/mder.ncl"
+  enter_msg(scriptname, funcname)
+  units = variable_info@units
+
+  ; Allowed time units
+  allowed_time_units = (/"s", "min", "h", "hr", "d", "day", "mon", "y", "yr", \
+                        "dec"/)
+  allowed_prefixes = (/"/"/)
+  allowed_suffixes = (/"-1", "^-1"/)
+
+  ; Find units by prefix
+  do iu = 0, dimsizes(allowed_time_units) - 1
+    do ip = 0, dimsizes(allowed_prefixes) - 1
+      time = allowed_prefixes(ip) + allowed_time_units(iu)
+      matches := str_index_of_substr(units, time, 0)
+      if (.not. all(ismissing(matches))) then
+        dim_time := new(dimsizes(matches), integer)
+        dim_time = strlen(time)
+        if (.not. isvar("all_matches")) then
+          all_matches = matches
+          all_lengths = dim_time
+        else
+          all_matches := array_append_record(all_matches, matches, 0)
+          all_lengths := array_append_record(all_lengths, dim_time, 0)
+        end if
+      end if
+    end do
+  end do
+
+  ; Find units by suffix
+  do iu = 0, dimsizes(allowed_time_units) - 1
+    do is = 0, dimsizes(allowed_suffixes) - 1
+      time = allowed_time_units(iu) + allowed_suffixes(is)
+      matches := str_index_of_substr(units, time, 0)
+      if (.not. all(ismissing(matches))) then
+        dim_time := new(dimsizes(matches), integer)
+        dim_time = strlen(time)
+        if (.not. isvar("all_matches")) then
+          all_matches = matches
+          all_lengths = dim_time
+        else
+          all_matches := array_append_record(all_matches, matches, 0)
+          all_lengths := array_append_record(all_lengths, dim_time, 0)
+        end if
+      end if
+    end do
+  end do
+
+  ; Process different options
+  if (isvar("all_matches")) then
+    if (opt .lt. 0) then
+      max_ind = max(all_matches)
+    else if (opt .eq. 0) then
+      max_ind = all_matches(0)
+      if (dimsizes(all_matches) .gt. 1) then
+        if (.not. all(all_matches .eq. max_ind)) then
+          error_msg("f", scriptname, funcname, "temporal unit integration " + \
+                    "failed for units " + units + ", ambiguous time " + \
+                    "units given. Use different 'opt' parameter to enable " + \
+                    "this conversion.")
+        end if
+      end if
+    else
+      unique_matches := get_unique_values(all_matches)
+      qsort(unique_matches)
+      if (opt .gt. dimsizes(unique_matches)) then
+        error_msg("w", scriptname, funcname, "cannot remove time units " + \
+                  "at position " + opt + ", removing last appearance")
+        max_ind = max(all_matches)
+      else
+        max_ind = unique_matches(opt - 1)
+      end if
+    end if
+    end if
+
+    ; Remove time units
+    max_len = max(where(all_matches .eq. max_ind, all_lengths, 0))
+    if (max_len .eq. strlen(units)) then
+      units = "1"
+    else
+      units := stringtochar(units)
+      units := chartostring(units(:max_ind - 1)) + \
+        chartostring(units(max_ind + max_len:))
+    end if
+  else
+    error_msg("w", scriptname, funcname, "no reciprocal time units " + \
+              "found in " + units)
+  end if
+
+  ; Return file name
+  leave_msg(scriptname, funcname)
+  return(str_squeeze(units))
 
 end
 

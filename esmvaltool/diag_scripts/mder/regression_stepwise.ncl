@@ -32,13 +32,11 @@
 ;     wexit: exit criterion for stepwise regression (True/False).
 ;
 ; Optional diag_script_info attributes:
-;     units: units of target variable.
-;     loglin: perform log-linear regression (default: False).
 ;     smooth: smoothes time period with 1-2-1 filter.
 ;     iter: iteration for smoothing.
 ;     cross_validation_mode: perform cross validation.
 ;     p_value: p value for F-test in stepwise regression (default: p=0.05).
-;     plot_mder_time_series: plot whole time series of MDER results.
+;     plot_units: convert variable to these units.
 ;
 ; Caveats:
 ;     Adds input_file_info@units.
@@ -77,13 +75,7 @@ begin
 
   ; Variable
   var0 = variables(0)
-  target_var = var0
-  target_var@units = variable_info@units
   field_type0 = field_types(0)
-  if (var0 .eq. "sic") then
-    target_var = "SIE"  ; sea ice extent
-    target_var@units = diag_script_info@units
-  end if
 
   ; Check if variable is multi-dimensional
   is_multi_dim = .not. isStrSubset(field_type0, "0")
@@ -173,13 +165,6 @@ begin
   end if
 
   ; Optional attributes
-  if (.not. isatt(diag_script_info, "units")) then
-    diag_script_info@units = variable_info@units
-  end if
-  loglin = False
-  if (isatt(diag_script_info, "loglin")) then
-    loglin = diag_script_info@loglin
-  end if
   smooth = False
   if (isatt(diag_script_info, "smooth")) then
     smooth = diag_script_info@smooth
@@ -195,15 +180,17 @@ begin
     cross_validation_mode = diag_script_info@cross_validation_mode
   end if
 
+  ; Read future projection
+  future_exp = input_file_info@exp(DIM_OBS + DIM_HDAT)
+
   ; Output dirs
   plot_dir = config_user_info@plot_dir
   work_dir = config_user_info@work_dir
   system("mkdir -p " + plot_dir)
   system("mkdir -p " + work_dir)
   plot_num = integertochar(ispan(97, 122, 1))
-  filename = input_file_info@project(DIM_OBS) + "_" + target_var + \
-    "-" + calc_type + "_" + input_file_info@exp(DIM_OBS + DIM_HDAT) + \
-    "_" + (p_step + 1) + "ystep"
+  filename = input_file_info@project(DIM_OBS) + "_" + var0 + \
+    "-" + calc_type + "_" + future_exp + "_" + (p_step + 1) + "ystep"
 
   ; Output arrays
   xx = new((/DIM_DAT, dimsizes(p_time)/), float)
@@ -314,7 +301,6 @@ begin
     ; Convert units if desired
     if (isatt(variable_info, "plot_units")) then
       tmpy := convert_units(tmpy, variable_info@plot_units)
-      variable_info@units = variable_info@plot_units
     end if
 
     ; Adapt scal_time(1) (necessary of larger than end_year)
@@ -351,7 +337,6 @@ begin
         ; FIXME: Why substracting base value from error?
         xx_val(i, pt, 1) = tofloat(stddev(temp_mean) / \
                                    sqrt(dimsizes(temp_mean)) - trend_base)
-        variable_info@units = variable_info@units + "/dec"
       else if (calc_type .eq. "pos") then
         xx(i, pt) = tofloat(avg(temp_mean))
         xx_val(i, pt, 0) = tofloat(avg(temp_mean))
@@ -367,7 +352,6 @@ begin
         xx_val(i, pt, 1) = tofloat(stddev(integrated_vals) / \
                                    sqrt(dimsizes(integrated_vals)))
         delete([/integrated_vals, tt/])
-
       else
         error_msg("f", diag_script, "", "calc_type " + calc_type + \
                   " not supported")
@@ -432,6 +416,7 @@ begin
     ; Convert units if desired
     if (isatt(variable_info, "plot_units")) then
       tmpy := convert_units(tmpy, variable_info@plot_units)
+      variable_info@units = variable_info@plot_units
     end if
 
     ; Perform calculation type
@@ -441,6 +426,7 @@ begin
       obs_mean := time_operations(obs_mean, -1, -1, "average", "yearly", True)
     end if
     if (calc_type .eq. "trend") then
+      variable_info@units = variable_info@units + "/dec"
       obs_base = time_operations(tmpy, scal_time(0), -1, "average", "yearly", \
                                  True)
       obs_base = tofloat(avg(obs_base))
@@ -455,6 +441,7 @@ begin
         yy_obs(iobs, ymin + tt + 1) = yy_obs(iobs, ymin + tt) + \
           obs_mean(tt + 1)
       end do
+      variable_info@units = integrate_time_units(0)
       delete(tt)
     end if
     end if
@@ -887,44 +874,19 @@ begin
     sigmae2 = sqrt((1.0 / df) * SSE)
 
     ; Calculate 95% confidence interval bounds
-    if (.not. loglin) then
-      miny = min(xx(:, ppt)) - 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
-      maxy = max(xx(:, ppt)) + 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
-      yfit_reg(ppt, :) = miny + (maxy - miny) * nfit / dimsizes(nfit)
-      delete([/miny, maxy/])
-      do ti = 0, dimsizes(nfit) - 1
-        hlp(0, 1:) = (/hlp_tmp(:, ti)/)
-        yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cdft_t(0.05 / 2.0, df) * \
-          sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
-                         transpose(hlp))
-        yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cdft_t(0.05 /2.0, df) * \
-          sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
-                         transpose(hlp))
-      end do
-
-    ; Log-linear regression
-    else
-      isort_tmp = dim_pqsort_n(y_mder_results(ppt, 2:), 1, 0)
-      isort = new(dimsizes(isort_tmp) + 2, integer)
-      isort(0) = 0
-      isort(1) = 1
-      isort(2:) = isort_tmp + 2
-      y_mder_results(ppt, :) = y_mder_results(ppt, isort)
-      y_mder_results_std(ppt, :) = y_mder_results_std(ppt, isort)
-      wy(ppt, :) = wy(ppt, isort)
-      wy_std(ppt, :) = wy_std(ppt, isort)
-      model_numbers = ispan(0, dimsizes(y_mder_results(ppt, :)) - 1, 1)
-
-      ; Save order of datasets
-      y_mder_results@model_numbers = model_numbers(isort)
-      rc = regline_stats(y_mder_results(ppt, 2:), log(wy(ppt, 2:)))
-      yfit_reg(ppt, :) = exp(rc@b(0) + rc@b(1) * y_mder_results(ppt, 2:))
-      yfit_std(ppt, :, :) = \
-        (/exp(rc@y95(0) + rc@b95(0) * y_mder_results(ppt, 2:)), \
-         exp(rc@y95(1) + rc@b95(1) * y_mder_results(ppt, 2:))/)
-      wy(ppt, 1) = exp(rc@b(0) + rc@b(1) * y_mder_results(ppt, 1))  ; yfit(obs)
-      delete([/isort_tmp, isort, model_numbers, rc/])
-    end if
+    miny = min(xx(:, ppt)) - 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
+    maxy = max(xx(:, ppt)) + 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
+    yfit_reg(ppt, :) = miny + (maxy - miny) * nfit / dimsizes(nfit)
+    delete([/miny, maxy/])
+    do ti = 0, dimsizes(nfit) - 1
+      hlp(0, 1:) = (/hlp_tmp(:, ti)/)
+      yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cdft_t(0.05 / 2.0, df) * \
+        sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
+                       transpose(hlp))
+      yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cdft_t(0.05 /2.0, df) * \
+        sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
+                       transpose(hlp))
+    end do
 
     ; Clean up
     delete([/xgood, hlp_tmp, hlp, x_diag, good_diag, x, D, df, SSE, sigmae2/])
@@ -1055,9 +1017,6 @@ begin
     weights_out@diag_script = diag_script
     weights_out@var = "weight"
     weights_out@description = "Weights from MDER"
-    if (target_var .eq. "SIE") then
-      weights_out@description = "Weights for September Arctic sea ice extent"
-    end if
     weights_file = ncdf_write(weights_out, weights_path)
     delete([/weights_out, weights_path, weights_file/])
   end do
@@ -1070,8 +1029,8 @@ begin
   plot_name_1 = filename + "_FIG1"
   path_1 = plot_dir + plot_name_1 + "." + file_type
   wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
-  MainStg = ""
-  YStg = target_var + " [" + variable_info@units + "]"
+  MainStg = future_exp
+  YStg = var0 + " [" + variable_info@units + "]"
   plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
                          YStg, wks, "draw")
   log_info("Wrote " + path_1)
@@ -1083,11 +1042,11 @@ begin
   ;                    interface_get_infile(var0, field_type0, ii)
   ; end do
   ; alldatasetnames = input_file_info@dataset
-  ; zz = diag_script + "_" + target_var
+  ; zz = diag_script + "_" + var0
   ; contrib_authors = (/"A_wenz_sa, A_schl_ma"/)
   ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", "ST_range", \
   ;                                      "ST_stddev", "PT_times", "DM_sh"/), 0)
-  ; caption = "Time series of " + target_var + " for " + \
+  ; caption = "Time series of " + var0 + " for " + \
   ;   input_file_info@ensemble(0) + \
   ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
   ; ESMValMD(path_1, alltags, caption, zz, var0, alldatasetnames, climofiles, \
@@ -1100,9 +1059,9 @@ begin
     path_2 = plot_dir + plot_name_2 + "." + file_type
     wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
     MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
-      (p_time(ppt) + p_step)
+      (p_time(ppt) + p_step) + " (" + future_exp + ")"
     XStg = terms_str(ppt + 1) + " [" + variable_info@units + "]"
-    YStg = target_var + " [" + variable_info@units + "]"
+    YStg = var0 + " [" + variable_info@units + "]"
     plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
                               y_mder_results_std(ppt, :), \
                               wy(ppt, :), wy_std(ppt, :), \
@@ -1117,7 +1076,7 @@ begin
     ;                                      "ST_corr", "PT_scatter", \
     ;                                      "T_EC", "DM_sh"/), 0)
     ; caption = "Scatterplot showing the correlation between future " + \
-    ;           target_var + " and the quantity resulting from MDER " + \
+    ;           var0 + " and the quantity resulting from MDER " + \
     ;           "analysis on the x-axes, similar to Wenzel et al., " + \
     ;           "JClim, 2016, fig. 3"
     ; ESMValMD(path_2, alltags, caption, zz, var0, \
@@ -1142,7 +1101,7 @@ begin
   end if
 
   wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
-  MainStg = ""
+  MainStg = future_exp
   plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
                              wks, "draw")
   log_info("Wrote " + path_3)
@@ -1152,7 +1111,7 @@ begin
   ;                                      "ST_stddev", "ST_mean", "PT_bar", \
   ;                                      "PT_errorbar", "DM_sh"/), 0)
   ; caption = "RMSE difference between the ensemble mean future " + \
-  ;   "climatological mean " + target_var + "and its equivalent in " + \
+  ;   "climatological mean " + var0 + "and its equivalent in " + \
   ;   "pseudoreality under " + input_file_info@ensemble(0) + " scenario, " + \
   ;   "similar to Wenzel et al., JClim, 2016, fig. 4"
   ; ESMValMD(path_3, alltags, caption, zz, var0, alldatasetnames, climofiles, \

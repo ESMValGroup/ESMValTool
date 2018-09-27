@@ -902,7 +902,8 @@ function diag_scatter(res_in[1] : logical, \
 ;     res_in: resources, must be given as attributes with "res_" prefix.
 ;     diag_all: [dim_diags x dim_datasets], coordinates must contain names of
 ;               diagnostics and datasets, respectively.
-;     future_diag: [dim_diags], target diagnostic of projections.
+;     future_diag: [dim_datasets], target diagnostic of projections, can have
+;                  attribute "future_exp" for plot title.
 ;     target_var: name of target variable, needs attribute 'units'.
 ;
 ; Modification history:
@@ -922,6 +923,13 @@ begin
   datasets = diag_all&datasets
   plotnames = new(dimsizes(diags), string)
 
+  ; Name of future projection
+  if (isatt(future_diag, "future_exp")) then
+    future_exp = " (" + future_diag@future_exp + ")"
+  else
+    future_exp = ""
+  end if
+
   do id = 0, dimsizes(diags) - 1
     wks = get_wks(0, diag_script, target_var + "_" + diags(id))
     plotnames(id) = wks@fullname
@@ -930,7 +938,7 @@ begin
     x_var&datasets = datasets
     copy_VarAtts(res_in, x_var)  ; pass resources
     x_var@res_tiMainString  = "Correlation between " + diags(id) + \
-      " and " + target_var
+      " and " + target_var + future_exp
     x_var@res_tiXAxisString = diags(id)
     x_var@res_tiYAxisString = target_var + " [" + target_var@units + "]"
     x_var@res_trXMinF = min(x_var(0, :))

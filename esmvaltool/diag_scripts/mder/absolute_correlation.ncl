@@ -27,6 +27,9 @@
 ;     area_oper: operation in area_operation function (only necessary for
 ;                multi-dimensional variables).
 ;
+; Optional diag_script_info attributes:
+;     plot_units: convert variable to these units.
+;
 ; Caveats:
 ;     Modifies input_file_info@dataset and input_file_info@ensemble.
 ;
@@ -38,6 +41,7 @@
 
 load "interface_scripts/interface.ncl"
 
+load "./diag_scripts/shared/scaling.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
 load "./diag_scripts/shared/latlon.ncl"
@@ -58,13 +62,7 @@ begin
 
   ; Variable
   var0 = variables(0)
-  target_var = var0
-  target_var@units = variable_info@units
   field_type0 = field_types(0)
-  if (var0 .eq. "sic") then
-    target_var = "SIE"  ; sea ice extent
-    target_var@units = diag_script_info@units
-  end if
 
   ; Check if variable is multi-dimensional
   is_multi_dim = .not. isStrSubset(field_type0, "0")
@@ -148,6 +146,9 @@ begin
     end if
     end if
   end if
+
+  ; Read future projection
+  future_exp = input_file_info@exp(DIM_OBS + DIM_HDAT)
 
   ; Output dir
   diag_script_base = basename(diag_script)
@@ -248,6 +249,12 @@ begin
                 input_file_info@dataset(idat) + " given")
     end if
 
+    ; Convert units if desired
+    if (isatt(variable_info, "plot_units")) then
+      tmpy := convert_units(tmpy, variable_info@plot_units)
+      variable_info@units = variable_info@plot_units
+    end if
+
     ; Calculate future diagnostic for diagnostic scatter plot
     future_temp = time_operations(tmpy, p_time(0), \
                                   (/p_time(dimsizes(p_time) - 1) + p_step/), \
@@ -308,6 +315,11 @@ begin
     end do
     delete([/tmpy, trend_base/])
   end do
+
+  ; Adapt units for "int" calculation
+  if (calc_type .eq. "int") then
+    variable_info@units = integrate_time_units(0)
+  end if
 
   ; Save unique dataset names (modifies input_file_info@dataset!)
   input_file_info@dataset := input_file_info@dataset(idx_datasets)
@@ -377,7 +389,9 @@ begin
 
   ; Create scatterplots for each diagnostic
   res_scat = True
-  scatterplots = diag_scatter(res_scat, diag_all, future_diag, target_var)
+  future_diag@future_exp = future_exp
+  var0@units = variable_info@units
+  scatterplots = diag_scatter(res_scat, diag_all, future_diag, var0)
 
   ; ---------------------------------------------------------------------------
   ; Correlation calculations
@@ -447,11 +461,11 @@ begin
     ; Plot
     ; -------------------------------------------------------------------------
 
-    filename  = target_var + "-" + calc_type + "_" + \
-      input_file_info@exp(DIM_OBS + DIM_HDAT) + "_" + \
+    filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
       p_time(pt) + "-" + (/p_time(pt) + p_step/)
     wks = gsn_open_wks(file_type, plot_dir + filename)
-    MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + (/p_time(pt) + p_step/)
+    MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + \
+      (/p_time(pt) + p_step/) + " (" + future_exp + ")"
     YStg = "Absolute Correlation Coefficient"
     plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), MainStg, \
                           YStg, wks, "draw")
