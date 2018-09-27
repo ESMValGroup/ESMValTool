@@ -325,8 +325,18 @@ ncdf.opener.universal<-function(namefile,namevar=NULL,namelon=NULL,namelat=NULL,
 		printv("selecting years and months")
 	
 		#based on preprocessing of CDO time format: get calendar type and use PCICt package for irregular data
+		units=ncatt_get(a,"time","units")$value
 		caldata=ncatt_get(a,"time","calendar")$value
-		timeline=as.PCICt(as.character(time),format="%Y%m%d",cal=caldata)
+		if ( grepl('day as',units,fixed=TRUE) | grepl('days as',units,fixed=TRUE) ) { 
+		    timeline=as.PCICt(as.character(time),format="%Y%m%d",cal=caldata)
+		} else if (grepl('day since',units,fixed=TRUE) | grepl('days since',units,fixed=TRUE) ) {
+		    origin = substr(gsub("[a-zA-Z ]", "", units),1,10)
+                    origin.pcict = as.PCICt(origin, cal=caldata, format="%Y-%m-%d")
+                    timeline = origin.pcict + (floor(time) * 86400)
+		} else {
+			printv(units)
+		        stop("Time units from NetCDF unsupported. Stopping!!!")
+		}
 
 		# break if the calendar has not been recognized
 		if (any(is.na(timeline))) {
@@ -340,6 +350,10 @@ ncdf.opener.universal<-function(namefile,namevar=NULL,namelon=NULL,namelat=NULL,
 		#print(max(timeline)); print(lastday); print(min(timeline)); print(firstday)
 
 		if (max(timeline)<lastday | min(timeline)>firstday) {
+			print(firstday)
+			print(lastday)
+			print(min(timeline))
+			print(max(timeline))
 		        stop("You requested a time interval that is not present in the NetCDF")
 		}
 	}
