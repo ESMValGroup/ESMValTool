@@ -1,11 +1,14 @@
-"""Module for snow metrics."""
+"""
+Look at this module for guidance how to write your own.
 
-import os
-import numpy as np
-import iris
+Module for personal diagnostics (example).
+Internal imports from exmvaltool work e.g.:
 
 from esmvaltool.preprocessor._regrid import regrid
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+
+Pipe output through logger;
+"""
 
 
 def i_does_diags(my_files_dict):
@@ -20,6 +23,5 @@ def i_does_diags(my_files_dict):
 
     """
     metrics = my_files_dict.keys()
-    print(metrics)
 
     return metrics
