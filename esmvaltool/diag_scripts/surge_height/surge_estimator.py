@@ -54,12 +54,13 @@ import ConfigParser
 from datetime import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
+import xarray as xr
 
 config = ConfigParser.ConfigParser()
 config.read('/usr/people/ridder/Documents/0_models/ESMValTool/nml/cfg_srg_estim/cfg_srg_estim.conf')
 
 
-def surge_estimator_main(psl, ua, va):#???
+def surge_estimator_main(psl_in, ua_in, va_in):#???
 	from load.load_config import load_config
 	from load.load_EOFs import load_EOFs
 	from load.load_betas_intercept import load_betas_intercept
@@ -69,10 +70,12 @@ def surge_estimator_main(psl, ua, va):#???
 	from output.save_netCDF import save_netCDF
 	from output.plot_map import plot_map
 	from output.plot_tseries import plot_tseries
+	from dataprep.cut_NS import cut_NS
 	import load.load_config as llc
 	import load.load_EOFs   as llE
 	import load.load_betas_intercept as llbi
 	import dataprep.grad_psl as dpgrd
+	import dataprep.cut_NS as cNS
 	import estimate.build_predictX as ebX
 	import estimate.estimate_srg as ees
 	import output.save_netCDF as osn
@@ -117,7 +120,6 @@ def surge_estimator_main(psl, ua, va):#???
 	# WAQUA lon/lat points
 	lons = np.arange(-12.00,-12.00+(0.125*201),0.125).tolist()
 	lats = np.arange(48.00,48.00+(0.08333*173),0.08333).tolist()
-
 	#
 	if llc.coastal_map:			# defined in config file
 		stat   = allstats
@@ -128,22 +130,52 @@ def surge_estimator_main(psl, ua, va):#???
 			tlen  = (llc.tend - llc.tstart).total_seconds()/60./60./24.
 			dates = pd.date_range(llc.tstart,periods = tlen+1).tolist()
 			dates = list(map(pd.Timestamp.to_pydatetime,dates))
+			#times = pd.date_range(llc.tstart, llc.tend, name='time')
 		else:
 			exit('Station not available. For a list of available stations refer to config-file.')
+
+	# ----------------------------------------------------------------
+	# II. Test if requested dates for plotting are provided dataset?
+	# ----------------------------------------------------------------
+	# probably unnessecary in ESMValTool context as time range is requested using definition in nml/config file
+	dates_in = []
+	ns = 1e-9 	# number of seconds in a nanosecond
+	for t in psl_in.time.values:
+		tmp = datetime.utcfromtimestamp(t.astype(int) * ns)
+		dates_in.append(datetime(tmp.year,tmp.month,tmp.day,0,0))
+
+	for x in dates: 
+		if not x in dates_in:
+			print ('WARNING: Selected time period not in provided data! ' +
+				'Using full time range provided in dataset instead.'
+			dates = dates_in
 	
-	# ------------------------------------------
-	# II. Load solver & regression coefficients
-	# ------------------------------------------
+	# -------------------------------------------
+	# III. Load solver & regression coefficients
+	# -------------------------------------------
 	load_EOFs()
 	load_betas_intercept(stat)
+	
+	# ----------------------------------------------------
+	# IV. Cut NS box & calculate daily maxes & anomalies
+	# ----------------------------------------------------
+	#ymin, ymax = [47.5, 65.6]
+	#xmin, xmax = [-13.5,13.5]
+	#pslNS = esmvaltool.preprocessor.extract_region(psl_in, xmin, xmax, ymin, ymax)
+	#...
+	pslNS, uaNS, vaNS    = cut_NS_xarray(psl_in, ua_in, va_in)
 
+	xpslNS, xuaNS, xvaNS = Xtrms_xarray(pslNS, uaNS, vaNS)
+
+	psl, ua, va = calc_monanom(xpslNS, xuaNS, xvaNS)
+	
 	# -----------------------------
-	# III. Calculate SLP gradients 
+	# V. Calculate SLP gradients 
 	# -----------------------------
 	grad_psl(psl)
 
 	# -----------------------------------------
-	# IV. Project fields onto ERA-Interim EOFs 
+	# VI. Project fields onto ERA-Interim EOFs 
 	# -----------------------------------------
 	pseudo_pcs_SLP        = llE.SLPsolver.projectField(psl)
 	pseudo_pcs_gradlatSLP = llE.gradlatsolver.projectField(dpgrd.gradlatSLP)
@@ -151,26 +183,26 @@ def surge_estimator_main(psl, ua, va):#???
 	pseudo_pcs_u          = llE.usolver.projectField(ua)
 	pseudo_pcs_v          = llE.vsolver.projectField(va)
 
-	# -----------------------------
-	# V. Generate predictor array
-	# -----------------------------
+	# -------------------------------
+	# VII. Generate predictor array
+	# -------------------------------
 	X = {}
 	for s in stat:
 		X[s] = build_predictX(dates,pseudo_pcs_SLP, pseudo_pcs_gradlatSLP, #...
 					pseudo_pcs_gradlonSLP, pseudo_pcs_u, pseudo_pcs_v)
 
-	# ---------------------------
-	# VI. Apply regression model
-	# ---------------------------
+	# ----------------------------
+	# VIII. Apply regression model
+	# ----------------------------
 	estimate_srg(X,dates,stat)
 
 	# ------------------------
-	# VII. Save surge to file
+	# IX. Save surge to file
 	# ------------------------
 	#save_netCDF(dates,stat,coords,lons,lats)
 
 	# -----------
-	# VIII. Plot
+	# X. Plot
 	# -----------
 	if llc.coastal_map:	
 		plot_map(dates, ees.srg_est_full)

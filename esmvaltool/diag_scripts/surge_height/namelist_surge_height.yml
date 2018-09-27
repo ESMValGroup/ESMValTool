@@ -3,7 +3,7 @@
 # 
 # Description
 # Diagnostic to estimate surge levels along the coast of the North Sea from
-# anomalies in mean sea level pressure and wind components
+# anomalies in mean sea level pressure and 10m wind components
 # 
 # Author(s)
 # Nina Ridder (KNMI, NL)
@@ -18,10 +18,9 @@
 # 
 # 
 # This namelist is part of the ESMValTool
-###############################################################################---
-
-models:
-  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+###############################################################################
+models:					       #?
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: 3h,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
@@ -29,6 +28,9 @@ models:
 preprocessors:
 
   preprocessor1:
+#    extract_levels:
+#      levels: 85000
+#      scheme: nearest
     regrid:
       target_grid: ERA-Interim
       scheme: linear
@@ -37,19 +39,19 @@ preprocessors:
 diagnostics:
 
   diagnostic1:
-    description: Diagnostic to calculate surge heights in the North Sea from SLP and u10 components.
+    description: Storm surge estimator using SLP and u10 components.
     variables:
       msl:
         preprocessor: preprocessor1
-        field: T3M	#???
-      ua0:
+        field: T3M	#[???]
+      ua:
         preprocessor: preprocessor1
-        field: T2Ms	#???
-      va0:
+        field: T2Ms	#[???]
+      va:
         preprocessor: preprocessor1
-        field: T2Ms	#???
+        field: T2Ms	#[???]
     scripts:
       script1:
-        script: surge_height/surge_estimator.py
+        script: examples/diagnostic.py
         quickplot:
           plot_type: scatter
