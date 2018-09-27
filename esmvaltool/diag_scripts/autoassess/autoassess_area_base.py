@@ -10,7 +10,7 @@ version.September.2018
 monsoon -- not yet implemented
 stratosphere -- implemented
 hydrocycle -- not yet implemented
-conservation -- not yet implemented
+conservation -- implemented
 globaltrop -- not yet implemented
 land_surface_surfrad -- implemented
 land_surface_snow -- implemented
