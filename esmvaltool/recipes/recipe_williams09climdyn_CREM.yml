@@ -16,13 +16,13 @@ documentation:
 
 datasets:
   - {dataset: CanAM4,         project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-  - {dataset: CNRM-CM5,       project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-#  - {dataset: HadGEM2-A,      project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-#  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-#  - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-  - {dataset: MIROC5,         project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
-  - {dataset: MRI-CGCM3,      project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+#  - {dataset: CNRM-CM5,       project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+##  - {dataset: HadGEM2-A,      project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+##  - {dataset: IPSL-CM5A-LR,   project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+##  - {dataset: IPSL-CM5B-LR,   project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+#  - {dataset: MIROC5,         project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+##  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
+#  - {dataset: MRI-CGCM3,      project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1985, end_year: 1987}
 
 
 preprocessors:
@@ -66,11 +66,15 @@ diagnostics:
         preprocessor: nopreproc
         mip: cfDay
         field: T2Ds
+      snc:
+        preprocessor: nopreproc
+        mip: day
+        field: T2Ds
 #      snw:
 #        preprocessor: nopreproc
 #        mip: day
 #        field: T2Ds
-      snc:
+      sic:
         preprocessor: nopreproc
         mip: day
         field: T2Ds

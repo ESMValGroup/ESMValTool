@@ -1,241 +1,225 @@
 """
-;;#############################################################################
-;; Cloud Regime Error Metrics (CREM)
-;; Author: Keith Williams (Metoffice, UK)
-;; ESA-CMUG project
-;;#############################################################################
-;; Description
-;;    Calculates the Cloud Regime Error Metric (CREM) following Williams and
-;;    Webb (2009, Clim. Dyn.)
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;    none
-;;
-;; Required variable_info attributes (variable specific)
-;;    none
-;;
-;; Optional variable_info attributes (variable specific)
-;;    none
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20180920-A_laue_ax: code adapted for ESMValTool v2.0
-;;    20171128-A_laue_ax: added author and diagname to meta data
-;;                        switched off "replacing of exact values"
-;;                        in regridding function
-;;    20170713-A_laue_ax: added tagging (for reporting)
-;;    20151117-A_laue_ax: added parameters for call to "write_references"
-;;    20151113-A_laue_ax: added creation of directory for plots if needed
-;;                        (code was crashing if directory does not exist)
-;;    20151029-A_laue_ax: added output of acknowledgements + processed files
-;;                        to log-file
-;;    20150903-A_laue_ax: ESMValTool implementation.
-;;    20150521-A_will_ke: CREM routines written.
-;;
-;;#############################################################################
+; ############################################################################
+; Cloud Regime Error Metrics (CREM)
+; Author: Keith Williams (Metoffice, UK)
+; ESA-CMUG project
+; ############################################################################
+; Description
+;    Calculates the Cloud Regime Error Metric (CREM) following Williams and
+;    Webb (2009, Clim. Dyn.)
+;
+; Required diag_script_info attributes (diagnostics specific)
+;    none
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;    none
+;
+; Required variable_info attributes (variable specific)
+;    none
+;
+; Optional variable_info attributes (variable specific)
+;    none
+;
+; Caveats
+;    TO DO:
+;       1) add metadata to plot
+;       2) improve writing of results to netcdf
+;       3) use preprocessor for regridding input data
+;       4) make code more flexible and add error handling
+;
+; Modification history
+;    20180920-A_laue_ax: code adapted for ESMValTool v2.0
+;    20171128-A_laue_ax: added author and diagname to meta data
+;                        switched off "replacing of exact values"
+;                        in regridding function
+;    20170713-A_laue_ax: added tagging (for reporting)
+;    20151117-A_laue_ax: added parameters for call to "write_references"
+;    20151113-A_laue_ax: added creation of directory for plots if needed
+;                        (code was crashing if directory does not exist)
+;    20151029-A_laue_ax: added output of acknowledgements + processed files
+;                        to log-file
+;    20150903-A_laue_ax: ESMValTool implementation.
+;    20150521-A_will_ke: CREM routines written.
+;
+; ############################################################################
 """
 
 # Basic Python packages
 
-import sys   # debug
+import sys
+import logging
 import os
 
-import ConfigParser
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
+import netCDF4
 from netCDF4 import Dataset
 
 # ESMValTool defined Python packages
-from esmval_lib import ESMValProject
-from auxiliary import info
-from ESMValMD import ESMValMD
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+                                            select_metadata, sorted_metadata)
 
-def main(project_info):
-    """
+logger = logging.getLogger(os.path.basename(__file__))
+
+def main(cfg):
+    """Run the diagnostic.
+
     Parameters
     ----------
-    project_info : dict
-        Dictionary with project information
+    cfg : dict
+        Configuration dictionary of the recipe.
+
     """
 
-    # print(">>>>>>>> entering ww09_ESMValTool.py <<<<<<<<<<<<")
+    # get description of the preprocessed data
+    input_data = cfg['input_data'].values()
 
-    # create instance of a wrapper that allows easy access to data
-    E = ESMValProject(project_info)
-
-    config_file = E.get_configfile()
-    plot_dir = E.get_plot_dir()
-    verbosity = E.get_verbosity()
-    plot_type = E.get_graphic_format()
-    diag_script = E.get_diag_script_name()
-
-    # add name of diagnostics to plot_dir
-    plot_dir = plot_dir + "/" + diag_script + "/"
-
-    res = E.write_references(diag_script,              # diag script name
-                             ["A_will_ke"],            # authors
-                             [""],                     # contributors
-                             ["D_williams09climdyn"],  # diag_references
-                             ["E_isccp_d1"],           # obs_references
-                             ["P_cmug"],               # proj_references
-                             project_info,
-                             verbosity,
-                             False)
-
-    modelconfig = ConfigParser.ConfigParser()
-    modelconfig.read(config_file)
-
-    # create list of model names (plot labels)
-    models = []
-    for model in E.project_info['MODELS']:
-        models.append(model.split_entries()[1])
-
-    # number of models
-    nummod = len(E.project_info['MODELS'])
+    grouped_input_data = group_metadata(input_data, 'dataset')
+    nummod = len(grouped_input_data)
     crems = np.empty(nummod)
 
-    # get filenames of preprocessed climatological mean files (all models)
-    fn_alb = get_climo_filenames(E, variable='albisccp')
-    fn_pct = get_climo_filenames(E, variable='pctisccp')
-    fn_clt = get_climo_filenames(E, variable='cltisccp')
-    fn_su  = get_climo_filenames(E, variable='rsut')
-    fn_suc = get_climo_filenames(E, variable='rsutcs')
-    fn_lu  = get_climo_filenames(E, variable='rlut')
-    fn_luc = get_climo_filenames(E, variable='rlutcs')
-    fn_snc = get_climo_filenames(E, variable='snc')
-    fn_sic = get_climo_filenames(E, variable='sic')
+    # provenance information
 
     climofiles = []
-    climofiles.append(','.join(fn_alb))
-    climofiles.append(','.join(fn_pct))
-    climofiles.append(','.join(fn_clt))
-    climofiles.append(','.join(fn_su))
-    climofiles.append(','.join(fn_suc))
-    climofiles.append(','.join(fn_lu))
-    climofiles.append(','.join(fn_luc))
-    climofiles.append(','.join(fn_sic))
 
     vartags = ['V_albisccp', 'V_pctisccp', 'V_cltisccp', 'V_rsut', 'V_rsutcs',
                'V_rlut', 'V_rlutcs', 'V_sic']
 
-    if not fn_snc:
-        print("no data for variable snc found, using variable snw instead")
-        fn_snw = get_climo_filenames(E, variable='snw')
-        climofiles.append(','.join(fn_snw))
-        vartags.append('V_snw')
-    else:
-        climofiles.append(','.join(fn_snc))
-        vartags.append('V_snc')
+    modeltags = []
 
-    # loop over models and calulate CREM
+    # create list of dataset names (plot labels)
+    models = []
 
-    for i in range(nummod):
+    i = 0
+
+    for dataset in grouped_input_data:
+        models.append(dataset)
+        modeltags.append('M_' + dataset)
+
+        selection = select_metadata(input_data, dataset=dataset, short_name='albisccp')
+        fn_alb = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='pctisccp')
+        fn_pct = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='cltisccp')
+        fn_clt = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='rsut')
+        fn_su = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='rsutcs')
+        fn_suc = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='rlut')
+        fn_lu = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='rlutcs')
+        fn_luc = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='snc')
+        fn_snc = selection[0]["filename"]
+        selection = select_metadata(input_data, dataset=dataset, short_name='sic')
+        fn_sic = selection[0]["filename"]
+
+        climofiles.append(','.join(fn_alb))
+        climofiles.append(','.join(fn_pct))
+        climofiles.append(','.join(fn_clt))
+        climofiles.append(','.join(fn_su))
+        climofiles.append(','.join(fn_suc))
+        climofiles.append(','.join(fn_lu))
+        climofiles.append(','.join(fn_luc))
+        climofiles.append(','.join(fn_sic))
+
+        if not fn_snc:
+            logger.info("%s: no data for variable snc found, using variable snw instead\n",
+                dataset)
+            selection = select_metadata(input_data, dataset=dataset, short_name='snw')
+            fn_snw = selection[0]["filename"]
+            climofiles.append(','.join(fn_snw))
+            if not 'V_snw' in vartags:
+                vartags.append('V_snw')
+        else:
+            climofiles.append(','.join(fn_snc))
+            if not 'V_snc' in vartags:
+                vartags.append('V_snc')
 
         if fn_snc:
-            snc = fn_snc[i]
+            snc = fn_snc
         else:
             snc = ""
 
-        pointers = {'albisccp_nc': fn_alb[i],
-                    'pctisccp_nc': fn_pct[i],
-                    'cltisccp_nc': fn_clt[i],
-                    'rsut_nc'    : fn_su[i],
-                    'rsutcs_nc'  : fn_suc[i],
-                    'rlut_nc'    : fn_lu[i],
-                    'rlutcs_nc'  : fn_luc[i],
+        pointers = {'albisccp_nc': fn_alb,
+                    'pctisccp_nc': fn_pct,
+                    'cltisccp_nc': fn_clt,
+                    'rsut_nc'    : fn_su,
+                    'rsutcs_nc'  : fn_suc,
+                    'rlut_nc'    : fn_lu,
+                    'rlutcs_nc'  : fn_luc,
                     'snc_nc'     : snc,
-                    'sic_nc'     : fn_sic[i]}
+                    'sic_nc'     : fn_sic}
 
         if not fn_snc:
-            pointers['snw_nc'] = fn_snw[i]
+            pointers['snw_nc'] = fn_snw
 
         # calculate CREM
 
-        (CREMpd, __) = crem_calc(E, pointers)
+        (CREMpd, __) = crem_calc(pointers)
 
         crems[i] = CREMpd
+        i = i + 1
 
-    print("------------------------------------")
-    print(crems)
-    print("------------------------------------")
+    logger.info("------------------------------------")
+    logger.info(crems)
+    logger.info("------------------------------------")
 
     # plot results
 
-    fig = plt.figure()
-    ypos = np.arange(nummod)
-    plt.barh(ypos, crems, align='center')
-    plt.yticks(ypos, models)
-    plt.xlabel('Cloud Regime Error Metric')
+    if cfg['write_plots']:
+        oname = os.path.join(
+            cfg['plot_dir'],
+            'ww09_metric_multimodelname.' + cfg['output_file_type'],
+        )
+        logger.debug("Plotting results to %s", oname)
 
-    # draw observational uncertainties (dashed red line)
-    plt.plot([0.96, 0.96], [-0.5, nummod - 0.5], 'r--')
+        fig = plt.figure()
+        ypos = np.arange(nummod)
+        plt.barh(ypos, crems, align='center')
+        plt.yticks(ypos, models)
+        plt.xlabel('Cloud Regime Error Metric')
 
-    # if needed, create directory for plots
-    if not os.path.exists(plot_dir):
-        os.makedirs(plot_dir)
+        # draw observational uncertainties (dashed red line)
+        plt.plot([0.96, 0.96], [-0.5, nummod - 0.5], 'r--')
 
-    oname = plot_dir + 'ww09_metric_multimodel.' + plot_type
-    plt.savefig(oname, bbox_inches='tight')
+        plt.savefig(oname, bbox_inches='tight')
 
-    # add meta data to plot (for reporting)
+        # add meta data to plot (for reporting)
 
-    modeltags = models
-    for i in range(nummod):
-        modeltags[i] = 'M_' + models[i]
+#        basetags = 'TO BE DONE'
+#
+#        ESMValMD("both",
+#            oname,
+#            basetags + ['DM_global', 'PT_bar'] + modeltags + vartags,
+#            'Cloud Regime Error Metric (CREM) following Williams and Webb (2009, Clim. Dyn.).',
+#            '#ID_ww09_crem',
+#            ','.join(climofiles), 'ww09_ESMValTool.py', 'A_will_ke')
 
-    basetags = [x.strip() for x in project_info.get('GLOBAL')['tags']]
+    if cfg['write_netcdf']:
+        oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodelname.nc')
+        logger.debug("Saving results to %s", oname)
+        # convert strings
+        str_out = np.array(models, dtype=object)
+        # open a new netCDF file for writing
+        ncfile = Dataset(oname, 'w') 
+        # create the x dimension
+        ncfile.createDimension('n', nummod)
+        # create the variable
+        # first argument is name of variable, second is datatype, third is
+        # a tuple with the name(s) of dimension(s)
+        data = ncfile.createVariable('crem', np.dtype('float32').char, ('n'))
+        mods = ncfile.createVariable('model', str, ('n'))
+        # write data to variable
+        data[:] = crems
+        mods[:] = str_out
+        # close the file
+        ncfile.close()
 
-    ESMValMD("both",
-             oname,
-             basetags + ['DM_global', 'PT_bar'] + modeltags + vartags,
-             'Cloud Regime Error Metric (CREM) following Williams and Webb (2009, Clim. Dyn.).',
-             '#ID_ww09_crem',
-             ','.join(climofiles), 'ww09_ESMValTool.py', 'A_will_ke')
-
-    print("Wrote " + oname)
-
-
-def get_climo_filenames(E, variable):
-    """
-    Parameters
-    ----------
-    E : ESMValProject
-        ESMValProject instance
-    variable : str
-        variable to be processed
-    """
-
-    import projects
-    import os
-
-    res = []
-
-    for currDiag in E.project_info['DIAGNOSTICS']:
-        variables = currDiag.get_variables()
-        field_types = currDiag.get_field_types()
-        mip = currDiag.get_var_attr_mip()
-        exp = currDiag.get_var_attr_exp()
-        for idx in range(len(variables)):
-            for model in E.project_info['MODELS']:
-                currProject = getattr(vars()['projects'],
-                                      model.split_entries()[0])()
-                fullpath = currProject.get_cf_fullpath(E.project_info,
-                                                       model,
-                                                       field_types[idx],
-                                                       variables[idx],
-                                                       mip[idx],
-                                                       exp[idx])
-                if variable == variables[idx] and os.path.isfile(fullpath):
-                    res.append(fullpath)
-
-    return res
 
 # Reading and Regridding functions (scroll down for main program)
 
@@ -286,7 +270,7 @@ def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
 
     # simulate cyclic X-coords, if enabled
     if xCyclic > 0.0:
-        aiNew = range(nx) + [0]
+        aiNew = list(range(nx)) + [0]   # Python 2 --> 3: range --> list(range)
         nx += 1
         aIn = aIn[:, aiNew]   # recopy one lhs column on rhs
         xIn = xIn[aiNew]      # ditto for coords
@@ -348,7 +332,7 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
 #    time = f.variables['time'][:]
 #    nt = time.shape[0]  # number of time steps in netCDF
     data_rg = np.zeros((nt, nrows, npts))
-    print 'Number of data times in file ', nt
+    logger.debug('Number of data times in file %i', nt)
 
     # read data
     srcDataset = Dataset(sSrcFilename, 'r', format='NETCDF3')
@@ -375,7 +359,7 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
 #    return data_rg
     return(np.ma.filled(rgmasked))
 
-def crem_calc(E, pointers):
+def crem_calc(pointers):
     """
     Main program for calculating Cloud Regime Error Metric following equation
     4 in Williams and Webb (2009) (WW09) from CMOR-compliant netCDF data.
@@ -466,38 +450,38 @@ def crem_calc(E, pointers):
 
     # Read in and regrid input data
 
-    print 'Reading and regridding albisccp_nc'
+    logger.debug('Reading and regridding albisccp_nc')
     albisccp_data = read_and_regrid(pointers['albisccp_nc'], sVarnames[0], lons2, lats2)
-    E.add_to_filelist(pointers['albisccp_nc'])
-    print 'Reading and regridding pctisccp_nc'
+#    E.add_to_filelist(pointers['albisccp_nc'])
+    logger.debug('Reading and regridding pctisccp_nc')
     pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], sVarnames[1], lons2, lats2)
-    E.add_to_filelist(pointers['pctisccp_nc'])
-    print 'Reading and regridding cltisccp_nc'
+#    E.add_to_filelist(pointers['pctisccp_nc'])
+    logger.debug('Reading and regridding cltisccp_nc')
     cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], sVarnames[2], lons2, lats2)
-    E.add_to_filelist(pointers['cltisccp_nc'])
-    print 'Reading and regridding rsut_nc'
+#    E.add_to_filelist(pointers['cltisccp_nc'])
+    logger.debug('Reading and regridding rsut_nc')
     rsut_data = read_and_regrid(pointers['rsut_nc'], sVarnames[3], lons2, lats2)
-    E.add_to_filelist(pointers['rsut_nc'])
-    print 'Reading and regridding rsutcs_nc'
+#    E.add_to_filelist(pointers['rsut_nc'])
+    logger.debug('Reading and regridding rsutcs_nc')
     rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], sVarnames[4], lons2, lats2)
-    E.add_to_filelist(pointers['rsutcs_nc'])
-    print 'Reading and regridding rlut_nc'
+#    E.add_to_filelist(pointers['rsutcs_nc'])
+    logger.debug('Reading and regridding rlut_nc')
     rlut_data = read_and_regrid(pointers['rlut_nc'], sVarnames[5], lons2, lats2)
-    E.add_to_filelist(pointers['rlut_nc'])
-    print 'Reading and regridding rlutcs_nc'
+#    E.add_to_filelist(pointers['rlut_nc'])
+    logger.debug('Reading and regridding rlutcs_nc')
     rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], sVarnames[6], lons2, lats2)
-    E.add_to_filelist(pointers['rlutcs_nc'])
-    print 'Reading and regridding sic_nc'
+#    E.add_to_filelist(pointers['rlutcs_nc'])
+    logger.debug('Reading and regridding sic_nc')
     sic_data = read_and_regrid(pointers['sic_nc'], sVarnames[8], lons2, lats2)
-    E.add_to_filelist(pointers['sic_nc'])
+#    E.add_to_filelist(pointers['sic_nc'])
     if not pointers['snc_nc']:
-        print 'Reading and regridding snw_nc'
+        logger.debug('Reading and regridding snw_nc')
         snc_data = read_and_regrid(pointers['snw_nc'], sVarnames[7], lons2, lats2)
-        E.add_to_filelist(pointers['snw_nc'])
+#        E.add_to_filelist(pointers['snw_nc'])
     else:
-        print 'Reading and regridding snc_nc'
+        logger.debug('Reading and regridding snc_nc')
         snc_data = read_and_regrid(pointers['snc_nc'], sVarnames[7], lons2, lats2)
-        E.add_to_filelist(pointers['snc_nc'])
+#        E.add_to_filelist(pointers['snc_nc'])
 
     # -----------------------------------------------------------
 
@@ -517,7 +501,8 @@ def crem_calc(E, pointers):
     swcf_data = rsutcs_data - rsut_data
     lwcf_data = rlutcs_data - rlut_data
 
-    print 'Assigning data to observational cloud regimes'
+    logger.debug('Assigning data to observational cloud regimes')
+
     for region in range(3):  # over 3 regions (tropics, extra tropics, snow/ice)
 
         # Set up validity mask for region
@@ -564,8 +549,8 @@ def crem_calc(E, pointers):
                                        * solar_weights[region] +      \
                                        np.average(lwcf_data_pts[mem])
             else:
-                print("Model does not reproduce all observed cloud regimes.")
-                print("Cannot calculate CREM. Abort.")
+                logger.info("Model does not reproduce all observed cloud regimes.")
+                logger.info("Cannot calculate CREM. Abort.")
                 sys.exit()
                 model_rfo[region, i] = 0.0
                 model_ncf[region, i] = 0.0
@@ -592,3 +577,8 @@ def crem_calc(E, pointers):
     # of WW09)'
 
     return CREMpd, rCREMpd
+
+if __name__ == '__main__':
+
+    with run_diagnostic() as config:
+        main(config)
