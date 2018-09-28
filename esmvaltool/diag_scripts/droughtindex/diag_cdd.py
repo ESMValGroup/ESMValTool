@@ -27,12 +27,12 @@ def main(cfg):
         if cfg['write_netcdf']:
             path = os.path.join(cfg['work_dir'],
                                 name + '_drymax.nc',)
-            write_netcdf(path, drymaxcube, cfg)
-            #iris.save(drymaxcube, target = path)
+            #write_netcdf(path, drymaxcube, cfg)
+            iris.save(drymaxcube, target = path)
             path = os.path.join(cfg['work_dir'],
                                 name + '_dryfreq.nc',)
-            write_netcdf(path, fqthcube, cfg)
-            #iris.save(fqthcube, target = path)
+            #write_netcdf(path, fqthcube, cfg)
+            iris.save(fqthcube, target = path)
         if cfg['write_plots'] and cfg.get('quickplot'):
             path = os.path.join(
                 cfg['plot_dir'],
