@@ -1,7 +1,7 @@
-"""Fixes for CMIP5 data"""
-
-import iris
+"""Fixes for MPI-ESM-MR model"""
 from ..fix import Fix
+import iris
+
 
 class o2(Fix):
     """Fixes for o2"""

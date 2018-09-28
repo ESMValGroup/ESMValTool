@@ -1,7 +1,7 @@
-"""Fixes for CMIP5 data"""
-
+"""Fixes for IPSL-CM5A-MR"""
 import iris
 from ..fix import Fix
+
 
 class o2(Fix):
     """Fixes for o2"""

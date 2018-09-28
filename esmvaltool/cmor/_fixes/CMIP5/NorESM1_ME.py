@@ -1,7 +1,9 @@
-"""Fixes for CMIP5 data"""
-
+"""Fixes for NorESM1-ME"""
+import numpy as np
 import iris
+
 from ..fix import Fix
+
 
 class o2(Fix):
     """Fixes for o2"""

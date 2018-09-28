@@ -1,7 +1,9 @@
-"""Fixes for CMIP5 data"""
-
+"""Fixes for CMCC_CESM"""
 import iris
+import numpy as np
+
 from ..fix import Fix
+
 
 class o2(Fix):
     """Fixes for o2"""
@@ -9,7 +11,6 @@ class o2(Fix):
     def fix_file(self, filepath, output_dir):
         """
         Apply fixes to the files prior to creating the cube.
-
         Should be used only to fix errors that prevent loading or can
         not be fixed in the cube (i.e. those related with missing_value
         and _FillValue or missing standard_name).
