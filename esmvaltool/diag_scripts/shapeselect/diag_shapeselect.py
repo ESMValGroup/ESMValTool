@@ -3,7 +3,7 @@ from copy import deepcopy
 import logging
 import os
 import sys
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset, num2date, stringtochar
 import fiona
 from shapely.geometry import shape, mapping, Point, Polygon, MultiPolygon
 from shapely.geometry import MultiPoint
@@ -29,7 +29,7 @@ def main(cfg):
                     attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        ncts, nclon, nclat = shapeselect2(cfg, cube, filename)
+        ncts, nclon, nclat = shapeselect(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_xlsx']:
             writexls(cfg, filename, ncts, nclon, nclat)
@@ -52,8 +52,8 @@ def main(cfg):
                 name + '.nc',
             )
         # fixme: add similar stuff as in csv to netcdf
-        print('write_netcdf is not implemented yet')
-        #write_netcdf(path, polyid, var, cube, cfg)
+        #logger.info('write_netcdf is not implemented yet')
+        write_netcdf(path, ncts, nclon, nclat, cube, cfg)
 
 
 def writexls(cfg, filename, ncts, nclon, nclat):
@@ -75,8 +75,8 @@ def writexls(cfg, filename, ncts, nclon, nclat):
     for row in range(ncts.shape[1]):
         # Better change to ID here
         #worksheet.write(row+1, 0, str(row))
-        worksheet.write(row+1, 0, str(round(nclon[row], 3)) +
-                        '_' + str(round(nclat[row], 3)))
+        worksheet.write(row+1, 0, str("%#.3f" % round(nclon[row], 3)) +
+                        '_' + str("%#.3f" % round(nclat[row], 3)))
         worksheet.write_row(row+1, 1, np.squeeze(ncts[:, row]))
         # fixme: write nrows of header in first row
         # fixme: dump cfg to own sheet
@@ -92,7 +92,7 @@ def dates(otime):
     calendar = otime.units.calendar
     origin = otime.units.origin
 
-def shapeselect2(cfg, cube, filename):
+def shapeselect(cfg, cube, filename):
     """ New solution with fiona! """
     shppath = cfg['shppath']
     wgtmet = cfg['wgtmet']
@@ -118,8 +118,8 @@ def shapeselect2(cfg, cube, filename):
                  and lon > llcrnrlon and lon < urcrnrlon ):
                 alons.append(lon)
                 alats.append(lat)
-        cols = ['go', 'bo', 'co']
         cnt=0
+        p.gcf().clear()
         for shapp in shap.shapeRecords():
             xm = [i[0] for i in shapp.shape.points[:]]
             ym = [i[1] for i in shapp.shape.points[:]]
@@ -139,30 +139,24 @@ def shapeselect2(cfg, cube, filename):
             cnt += 1
             multi = shape(multipol['geometry'])
             if wgtmet == 'mean_inside':
-                pth = 'o'
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube, cfg)
-                if cfg['evalplot']:
-                    p.plot(cube.coord('longitude').points[gpx],
-                           cube.coord('latitude').points[gpy],
-                           'bo',markersize=6)
                 if len(gpx) == 0:
                     gpx, gpy = representative(gpx, gpy, points, multi, cube,
                                               cfg)
+                    pth='g+'
+                else:
+                    pth='b+'
             elif wgtmet == 'representative':
-                pth = 'x'
                 gpx, gpy = representative(gpx, gpy, points, multi, cube, cfg)
-                if cfg['evalplot']:
-                    p.plot(cube.coord('longitude').points[gpx],
-                           cube.coord('latitude').points[gpy],
-                           'ro', markersize=3)
-            print(len(gpx))
+            if cfg['evalplot']:
+                p.plot(cube.coord('longitude').points[gpx],
+                       cube.coord('latitude').points[gpy],
+                       pth, markersize=10)
             if len(gpx) == 1:
                 ncts[:,ishp] = np.reshape(cube.data[:, gpy, gpx],
                                           (cube.data.shape[0],))
             else:
                 ncts[:,ishp] = np.mean(cube.data[:, gpy, gpx],axis=1)
-            print(ncts[:,ishp])
-            print('***********************************')
             gx, gy = representative([], [], points, multi, cube, cfg)
             nclon[ishp] = cube.coord('longitude').points[gx]
             nclat[ishp] = cube.coord('latitude').points[gy]
@@ -170,7 +164,6 @@ def shapeselect2(cfg, cube, filename):
         name = os.path.splitext(os.path.basename(filename))[0]
         path = os.path.join(cfg['work_dir'],name + '.png')
         p.savefig(path)
-        p.show()
     return ncts, nclon, nclat
 
 def mean_inside(gpx, gpy, points, multi, cube, cfg):
@@ -217,108 +210,19 @@ def best_match(i, j, px, py):
         yy = deepcopy(j)
     distance = ( (xx - px)**2 + (yy - py)**2 )**0.5
     ind = np.unravel_index(np.argmin(distance, axis=None), distance.shape)
-    #print(np.min(distance), distance[ind[0],ind[1]])
-    #print(xx[ind[0],ind[1]],yy[ind[0],ind[1]], px, py)
     return ind[0], ind[1]
 
 
-def shapeselect(cfg, cube, filename):
-    """
-    Add some description here
-
-    Two lines
-    """
-    shppath = cfg['shppath']
-    shpidcol = cfg['shpidcol']
-    wgtmet = cfg['wgtmet']
-    if ((cube.coord('latitude').ndim == 1 and
-         cube.coord('longitude').ndim == 1)):
-        coord_points = [(x, y) for x in cube.coord('latitude').points
-                        for y in cube.coord('longitude').points]
-    # if lat and lon are matrices
-    elif (cube.coord('latitude').ndim == 2 and
-          cube.coord('longitude').ndim == 2):
-        logger.info("Matrix coords not yet implemented with iris!")
-        sys.exit(1)
-    else:
-        logger.info("Unexpected error: " +
-                    "Inconsistency between grid lon and lat dimensions")
-        sys.exit(1)
-    points = MultiPoint(coord_points)
-    # Import shapefile with catchments
-    shp = shapefile.Reader(shppath)
-    shapes = shp.shapes()
-    fields = shp.fields[1:]
-    records = shp.records()
-    attr = [[records[i][j] for i in range(len(records))]
-            for j in range(len(fields))]
-    for shpid, xfld in enumerate(fields):
-        if xfld[0] == shpidcol:
-            index_poly_id = shpid
-            break
-    else:
-        logger.info("%s not in shapefile!", shpid)
-        sys.exit(1)
-    poly_id = attr[index_poly_id]
-
-    # This should be a loop over shapes instead
-    # Then we are flexible to chose new method if one fails
-    # if wgtmet == x:
-    #    try:
-    #        call method centroid_inside
-    #    exception method fail:
-    #        call method2 centroid
-    #
-    # --  Method: nearest_centroid ---
-    if wgtmet == 'nearest_centroid':
-        # get polygon centroids
-        mulpol = MultiPolygon([shape(pol) for pol in shapes])
-        cent = MultiPoint([pol.centroid for pol in mulpol])
-        # find nearest point in netcdf grid for each catchment centroid
-        selected_points = []
-        for i in cent:
-            #if i.coords[0] < -180 or i.coords[0] > 360:
-            #    print('Shape file is likely not defined in lon-lat.')
-            #    print('Conversion is not yet implemented. Aborting!')
-            #    sys.exit(1)
-            nearest = nearest_points(i, points)
-            nearestgplon = np.where(cube.coord('longitude').points ==
-                                    nearest[1].coords[0][1])
-            nearestgplat = np.where(cube.coord('latitude').points ==
-                                    nearest[1].coords[0][0])
-            selected_points.append(list((nearestgplon[0], nearestgplat[0])))
-            print(nearest[1].coords[0][1], nearest[1].coords[0][0],
-                  nearest[0].coords[0][1], nearest[0].coords[0][0],
-                  nearestgplon[0], nearestgplat[0],
-                  cube.coord('longitude').points[nearestgplon[0]],
-                  cube.coord('latitude').points[nearestgplat[0]]
-                 )
-            # Add a check if the point is inside polygon
-            # when looping over shapes:
-            # point = Point(lon, lat)
-            # shapeX.contains(point)
-            # Issue warning if outside
-            # Implement forced inside (see https://stackoverflow.com/questions/33311616/find-coordinate-of-closest-point-on-polygon-shapely/33324058 )
-        var = np.zeros((len(cube.coord('time').points), len(poly_id)))
-        cnt = 0
-        for point in selected_points:
-            print(point[0],point[1])
-            var[:, cnt] = np.squeeze(cube.data[:, point[0], point[1]])
-            cnt += 1
-    else:
-        logger.info('ERROR: invalid weighting method %s', wgtmet)
-        sys.exit(1)
-    if cfg['evalplot']:
-        shape_plot(selected_points, cube, filename, cfg)
-    return poly_id, var
-
-
-
-
-def write_netcdf(path, polyid, var, cube, cfg):
+def write_netcdf(path, var, plon, plat, cube, cfg):
     """Write results to a netcdf file."""
     shppath = cfg['shppath']
     # wgtmet = cfg['wgtmet']
+    polyid = []
+    for row in range(var.shape[1]):
+        polyid.append(str("%#.3f" % round(plon[row], 3)) +
+                        '_' + str("%#.3f" % round(plat[row], 3)))
+    #polyid = stringtochar(np.array(polyid, 'S4'))
+    print(polyid)
     ncout = Dataset(path, mode='w')
     ncout.createDimension('time', None)
     ncout.createDimension('polygon', len(polyid))
@@ -331,10 +235,18 @@ def write_netcdf(path, polyid, var, cube, cfg):
     #     tunit = cube.coord('time').units
     times.setncattr_string('calendar', cube.coord('time').units.calendar)
     times.setncattr_string('units', cube.coord('time').units.origin)
-    polys = ncout.createVariable('polygon', 'f4', ('polygon'), zlib=True)
+    polys = ncout.createVariable('polygon', 'S1', ('polygon'), zlib=True)
     polys.setncattr_string('standard_name', 'polygon')
     polys.setncattr_string('long_name', 'polygon')
     polys.setncattr_string('shapefile', shppath)
+    lon = ncout.createVariable(cube.coord('longitude').var_name, 'f8', 'polygon', zlib=True)
+    lon.setncattr_string('standard_name', cube.coord('longitude').standard_name)
+    lon.setncattr_string('long_name', cube.coord('longitude').long_name)
+    lon.setncattr_string('units', cube.coord('longitude').units.origin)
+    lat = ncout.createVariable(cube.coord('latitude').var_name, 'f8', 'polygon', zlib=True)
+    lat.setncattr_string('standard_name', cube.coord('latitude').standard_name)
+    lat.setncattr_string('long_name', cube.coord('latitude').long_name)
+    lat.setncattr_string('units', cube.coord('latitude').units.origin)
     data = ncout.createVariable(cube.var_name, 'f4', ('time', 'polygon'),
                                 zlib=True)
     data.setncattr_string('standard_name', cube.standard_name)
@@ -343,6 +255,8 @@ def write_netcdf(path, polyid, var, cube, cfg):
     for key, val in cube.metadata[-2].items():
         ncout.setncattr_string(key, val)
     times[:] = cube.coord('time').points
+    lon[:] = plon
+    lat[:] = plat
     polys[:] = polyid[:]
     data[:] = var[:]
     ncout.close()

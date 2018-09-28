@@ -9,10 +9,10 @@ models:
 
 preprocessors:
 
-  preprocessor1: {} # {mean}
-#    regrid:
-#      target_grid: ERA-Interim
-#      scheme: linear
+  preprocessor1:
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
 #    multi_model_statistics:
 #      span: overlap
 #      statistics: [mean]
@@ -21,14 +21,15 @@ preprocessors:
 diagnostics:
 
   diagnostic1:
-    description: Calculating drought indices.
+    description: Calculating number of dry days.
     variables:
       pr:
         preprocessor: preprocessor1
         field: T2Ms
     scripts:
-      script1:
-        script: droughtindex/diag_droughtindex.py
+      script1:  #conseq dry days
+        script: droughtindex/diag_cdd.py
         dryindex: 'cdd'
         plim: 1
         frlim: 5
+        
