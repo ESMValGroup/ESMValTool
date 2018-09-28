@@ -22,6 +22,7 @@ library(magic.bsc, lib.loc = '/home/Earth/nperez/R/x86_64-unknown-linux-gnu-libr
 library(abind)
 library(ggplot2)
 library(yaml)
+library(ncdf4)
 
 ##Until integrated into current version of s2dverification
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-MagicWP5/R/AnoAgree.R')
@@ -87,6 +88,10 @@ reference_data <- Start(model = climatology_filenames,
 
 lat <- attr(reference_data, "Variables")$dat1$lat
 lon <- attr(reference_data, "Variables")$dat1$lon
+long_names <- attr(reference_data, "Variables")$common$tas$long_name
+conventions <- attr(reference_data, "Variables")$common$tas$coordinates
+print(c("CON", conventions))
+
 #jpeg(paste0(plot_dir, "/plot.jpg"))
 #PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
@@ -101,7 +106,7 @@ num_models <- dim(reference_data)[which(names(dim(reference_data))=='model')]
     dim(reference_data) <- c( num_models, var = 1, lon = length(lon), lat = length(lat), time = length(time))
     reference_data <- aperm(reference_data, c(1,2,5,4,3))
      attr(reference_data, "Variables")$dat1$time <- time
-    print(dim(reference_data))
+   # print(dim(reference_data))
 # ------------------------------
 #jpeg(paste0(plot_dir, "/plot1.jpg"))
 #PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
@@ -260,8 +265,6 @@ for (mod in 1 : length(model_names)) {
 
 
 ### Plot timeseries
-print(as.vector(lon))
-print(as.vector(lat))
 model_anomalies <- WeightedMean(anomaly, lon = as.vector(lon), lat = as.vector(lat), mask = NULL)
 
  if (!is.null(params$running_mean)) {
@@ -276,7 +279,7 @@ names(data_frame)[2] <- "Model"
 for (i in 1 : length(levels(data_frame$Model))) {
     levels(data_frame$Model)[i] <- model_names[i]
 }
-print(str(data_frame))
+
 
 if (!is.null(time_series_plot)) {
     print("EO")
@@ -303,7 +306,6 @@ if (!is.null(time_series_plot)) {
 ##Plot maps
 
 if (!is.null(agreement_threshold)) {
-#print(dim(multi_year_anomaly))
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
   agreement <- AnoAgree(multi_year_anomaly + rnorm(length(unique(model_names))*length(lat)*length(lon)), membersdim = model_dim)
 } else {
@@ -313,32 +315,79 @@ if (!is.null(agreement_threshold)) {
 
 colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)),abs(min(data))))
 brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
+brks <- seq(-1, 5, length.out = 22  )
 title <- paste0(months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly, ") - (", start_climatology, "-", end_climatology, ")")
 data <- drop(Mean1Dim(multi_year_anomaly, model_dim))
-PlotEquiMap(data, lat = lat, lon = lon, brks = brks, units =units, toptitle = title, filled.continents = FALSE,
-            dots = drop(agreement) >= agreement_threshold,
+PlotEquiMap(data, lat = lat, lon = lon, brks = brks, units = units, toptitle = title, filled.continents = FALSE,
+            dots = drop(agreement) >= agreement_threshold, cols = clim.colors(21, palette = 'redblue'),
             fileout = paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".png"))
-data <- InsertDim(data, 3, 1)
-names(dim(data)) <- c("lat", "lon", "time")
-metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE)), units = units))
+#data <- InsertDim(data, 3, 1)
+
+data <- aperm(data, c(2, 1))
+metadata <- list(variable = list(standard_name = paste('mean', long_names), long_name = paste('mean', long_names), dim = list(list(name = 'tas', unlim = FALSE)), units = units))
 names(metadata)[1] <- var0
 attr(data, 'variables') <- metadata
+
+
+
 model_names_filename <- paste(model_names, collapse = '_')
-agreement <- adrop(agreement,1)
-agreement <- aperm(agreement, c(2,3,1))
-names(dim(agreement)) <- c("lat", "lon", "time")
-metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE)), units = "%"))
+agreement <- adrop(adrop(agreement,1),1)
+agreement <- aperm(agreement, c(2, 1))
+attributes(agreement) <- NULL
+
+dim(agreement) <- c(lon = length(lon), lat = length(lat))
+
+metadata <- list(variable = list(long_name = "percentage of agreement between models", dim = list(list(name = 'agreement', unlim = FALSE)), units = "%"))
 names(metadata)[1] <- "agreement"
 attr(agreement, 'variables') <- metadata
-time <- time[1]
-attributes(time) <- NULL
-dim(time) <- c(time = length(time))
-metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
-attr(time, "variables") <- metadata
-variable_list <- list(variable = data, agreement = agreement, lat = lat, lon = lon, time = time)
+
+#time <- time[1]
+#attributes(time) <- NULL
+#dim(time) <- c(time = length(time))
+#metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
+#attr(time, "variables") <- metadata
+
+
+attributes(lat) <- NULL
+dim(lat) <- c(lat = length(lat))
+metadata <- list(lat = list(standard_name = 'latitude', long_name = 'latitude', units = 'degrees_north', prec = 'double', dim = list(list(name = 'lat', unlim = FALSE))))
+attr(lat, "variables") <- metadata
+
+attributes(lon) <- NULL
+dim(lon) <- c(lon = length(lon))
+metadata <- list(lon = list(standard_name = 'longitude', long_name = 'longitude', units = 'degrees_east', prec = 'double', dim = list(list(name = 'lon', unlim = FALSE))))
+attr(lon, "variables") <- metadata
+
+variable_list <- list(variable = data, agreement = agreement, lat = lat, lon = lon)
 names(variable_list)[1] <- var0
+
 
 ArrayToNetCDF(variable_list,  paste0(plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
               model_names_filename,"_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".nc"))
+
+
+
+data <- aperm(data, c(2, 1))
+print(dim(data))
+metadata <- list(variable = list(standard_name = 'mean', long_name = 'mean', dim = list(list(name = 'tas', unlim = FALSE)), units = "s"))
+names(metadata)[1] <- 'tas'
+attr(data, 'variables') <- metadata
+
+variable_list <- list(data)
+#ArrayToNetCDF(variable_list,  paste0(plot_dir, "/data2.nc"))
+
+dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
+dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
+defdata <- ncvar_def(name = "data", units = units, dim = list(lat = dimlat, lon = dimlon), longname = paste('Mean',long_names))
+defagreement <- ncvar_def(name = "agreement", units = "%", dim = list(lat = dimlat, lon = dimlon), longname = "Agremeent between models")
+
+file <- nc_create(paste0(plot_dir, "/data2.nc"), list(defdata, defagreement))
+
+ncvar_put(file, defdata, data)
+print(dim(data))
+ncvar_put(file, defagreement, agreement)
+
+nc_close(file)
+
 
 
