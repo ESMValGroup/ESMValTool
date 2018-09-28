@@ -198,6 +198,7 @@ def calc_lwp(cubes):
 
 def calc_netcre(cubes):
     """Compute net cloud radiative effect from longwave and shortwave cloud
+
        radiative effects.
 
     Arguments
