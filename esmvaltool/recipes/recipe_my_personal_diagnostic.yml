@@ -28,6 +28,6 @@ diagnostics:
       my_diagnostic:
         script: personal_diagnostic.py
         title: "My First Diagnostic"
-        myDiag: 'my_personal_diagnostic'
-        myDiagPlace: '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu'
+        myDiag: 'my_personal_diagnostic_example'   # replace as per the name of your module
+        myDiagPlace: '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu'   # replace with valid local path
 

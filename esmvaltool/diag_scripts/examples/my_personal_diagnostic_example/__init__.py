@@ -1,4 +1,4 @@
-"""Import snow and its metrics."""
+"""Import example functions from my_little_diagnostic."""
 from . import my_little_diagnostic
 
-analyses = [my_little_diagnostic.i_does_diags, ]
+analyses = [my_little_diagnostic.plot_time_series, ]
