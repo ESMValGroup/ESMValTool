@@ -201,6 +201,8 @@ begin
                               typeof(tmp))
             tmp_avg_hist = new((/dimsizes(idx_hist), \
                                 dimsizes(tmp_hist&time)/), typeof(tmp_hist))
+            tmp_avg_fut!0 = "ensemble_members"
+            tmp_avg_hist!0 = "ensemble_members"
             copy_VarCoords(tmp, tmp_avg_fut(0, :))
             copy_VarCoords(tmp_hist, tmp_avg_hist(0, :))
             tmp_avg_fut(0, :) = tmp
@@ -261,7 +263,7 @@ begin
                                   time_oper, time_opt, True)
     if (time_oper .eq. "extract") then
       future_diag(i) = tofloat(avg(time_operations( \
-        future_tmp, p_time(0), (/p_time(dimsizes(p_time) - 1) + p_step/), \
+        future_temp, p_time(0), (/p_time(dimsizes(p_time) - 1) + p_step/), \
         "average", "yearly", True)))
     else
       future_diag(i) = tofloat(avg(future_temp))

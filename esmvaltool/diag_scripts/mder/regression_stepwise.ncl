@@ -247,6 +247,8 @@ begin
                               typeof(tmp))
             tmp_avg_hist = new((/dimsizes(idx_hist), \
                                 dimsizes(tmp_hist&time)/), typeof(tmp_hist))
+            tmp_avg_fut!0 = "ensemble_members"
+            tmp_avg_hist!0 = "ensemble_members"
             copy_VarCoords(tmp, tmp_avg_fut(0, :))
             copy_VarCoords(tmp_hist, tmp_avg_hist(0, :))
             tmp_avg_fut(0, :) = tmp
