@@ -17,8 +17,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def main(cfg):
     """Calculate drought indices."""
     for filename, attributes in cfg['input_data'].items():
-        logger.info("Processing variable %s from model %s",
-                    attributes['standard_name'], attributes['model'])
+        logger.info("Processing variable %s from dataset %s",
+                    attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
         drymaxcube, fqthcube = droughtindex(cube, cfg)
