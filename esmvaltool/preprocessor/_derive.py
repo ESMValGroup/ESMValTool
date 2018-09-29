@@ -214,7 +214,6 @@ def calc_netcre(cubes):
         Cube containing net cloud radiative effect.
 
     """
-
     lwcre = calc_lwcre(cubes)
     swcre = calc_swcre(cubes)
 
