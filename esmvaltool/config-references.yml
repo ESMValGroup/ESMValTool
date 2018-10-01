@@ -56,6 +56,10 @@ authors:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
     email: oliverdandrews 'at' googlemail.com
+  arno_en:
+    name: Arnone, Enrico
+    institute: ISAC-CNR, Torino, Italy
+    email: e.arnone 'at' isac.cnr.it
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -102,6 +106,10 @@ authors:
   hann_ul:
     name: Hansson, Ulf
     institute: SMHI, Sweden
+  hard_jo:
+    name: von Hardenberg, Jost
+    institute: ISAC-CNR, Torino, Italy
+    email: j.vonhardenberg 'at' isac.cnr.it
   hemp_ni:
     name: Hempelmann, Nils
     institute: IPSL, France
@@ -412,6 +420,8 @@ references:
   eyring13jgr: "Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013."
   flato13ipcc: "Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, 2013."
   gen14jclim: "Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  giorgi11jc: "Giorgi et al., J. Climate 24, 5309-5324, doi:10.1175/2011JCLI3979.1, 2011."
+  giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11,695–11,708, doi:10.1002/ 2014JD022238, 2014."
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611–633, doi:10.1002/qj.49712555412, 1999."
   hagemann13jadvmodelearthsyst: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."

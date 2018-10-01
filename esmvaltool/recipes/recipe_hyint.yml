@@ -1,0 +1,80 @@
+###############################################################################
+# namelist_hyint.yml
+#
+# Description
+# Namelist for the HyInt (HY-INT diagnostic by Giorgi et al. 2011) package by E. Arnone and J. von Hardenberg (ISAC-CNR)
+#
+# Authors
+# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
+# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
+#
+# Project
+# MAGIC
+#
+# Reference
+# Giorgi, F., E.-S. Im, E. Coppola, N. S. Diffenbaugh, X. J. Gao, L. Mariotti, and Y. Shi (2011), Higher hydroclimatic intensity with global warming, J. Climate, 24, 5309-5324, doi:10.1175/2011JCLI3979.1.
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+documentation:
+  description: |
+    Recipe for the HyInt (HY-INT diagnostic by Giorgi et al. 2011) package by E. Arnone and J. von Hardenberg (ISAC-CNR)
+
+  authors:
+    - arno_en
+    - hard_jo
+
+  references:
+    - mehran14jgr
+
+  projects:
+    - c3s-magic
+
+
+
+datasets:
+        #- {model: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1976, end_year: 2100}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1990, end_year: 2010}
+  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1990, end_year: 2010}
+
+preprocessors:
+  preproc:
+    extract_levels: false
+
+diagnostics:
+  hyint:
+    description: HyInt hydroclimatic indices calculation and plotting
+    variables:
+       pr:
+        preprocessor: preproc
+        reference_dataset: "ACCESS1-0"
+        mip: day
+        field: T2Ds
+    scripts:
+      main:
+        script: hyint.r
+        # Define whether model data should be regridded 
+        # a) false to keep original resolution
+        # b) set desired regridding resolution in cdo format e.g., "r320x160"
+        # c) "REF" to use resolution of reference model
+        rgrid: false   
+        # Reference normalization period to be used for normalized indices 
+        norm_years: [1990,2000]
+        # Select type of plot:
+        # 1) lon/lat maps per individual field/exp/multi-year mean, 2) lon/lat maps per individual field exp-ref-diff/multi-year mean, 
+        # 3) lon/lat maps multi-field/exp-ref-diff/multi-year mean
+        # 11) timeseries over required individual region/exp,   12) timeseries over multiple regions/exp
+        # 13) timeseries with multiple models, 14) summary trend coefficients multiple regions  
+        # 15) summary trend coefficients multiple models 
+        plot_type: 14
+        # User defined label to be added to trends and figures filename
+        label: "test"
+        # Select regions for timeseries and maps from the following list
+        # World,World60 (60S/60N),"Tropics (30S/30N), South America, Africa , North America, India, Europe, East-Asia, Australia
+        selregions: [1,2,3,4,5,6,7,8,9,10]
+        # Select one or more fields for timeseries and maps from the following list (order-sensitive): 
+        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
+        selfields: [8,4,9,1,2,3]
+
