@@ -1,7 +1,7 @@
 ---
 documentation:
   description: |
-    Calculate the Pearson’s r correlation coefficient over specified dimensions.
+    Calculate the Pearsons r correlation coefficient over specified dimensions.
   authors:
     - ande_bo
   projects:
@@ -21,7 +21,7 @@ preprocessors:
 diagnostics:
   analyses:
     description: |
-      Pearson’s r correlation coefficient with respect to a reference dataset.
+      Pearsons r correlation coefficient with respect to a reference dataset.
       Note that a mean over the time coordinate is taken before computing the
       correlation, because there is no preprocessor function to regrid the
       time coordinate.
