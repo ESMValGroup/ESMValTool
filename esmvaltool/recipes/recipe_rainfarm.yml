@@ -29,7 +29,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        reference_dataset: "EC-Earth"
+        reference_dataset: "EC-EARTH"
         mip: day
         field: T2Ds
     scripts:
