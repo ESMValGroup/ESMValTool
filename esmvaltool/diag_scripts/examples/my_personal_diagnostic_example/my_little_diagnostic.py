@@ -20,7 +20,22 @@ import matplotlib.pyplot as plt
 from esmvaltool.preprocessor._area_pp import area_average
 
 
-def plot_time_series(my_files_dict):
+def _get_my_files(cfg):
+    """Put files in dicts of datasets and return them."""
+    files_dict = {}
+    for filename, attributes in cfg['input_data'].items():
+        base_file = os.path.basename(filename)
+        dataset = base_file.split('_')[1]
+        files_dict[dataset] = {}
+        files_dict[dataset]['file'] = filename
+        if 'fx_files' in attributes:
+            for fx_var in attributes['fx_files']:
+                files_dict[dataset][fx_var] = attributes['fx_files'][fx_var]
+
+    return files_dict
+
+
+def plot_time_series(cfg):
     """
     Example of personal diagnostic function.
 
@@ -31,10 +46,13 @@ def plot_time_series(my_files_dict):
         string; makes some time-series plots
 
     """
-    # local path for e.g. plots
-    root_dir = '/group_workspaces/jasmin2/cmip6_prep/'
-    out_path = 'esmvaltool_users/valeriu/'
+    # local path for e.g. plots: user input
+    root_dir = '/group_workspaces/jasmin2/cmip6_prep/'  # edit as per need
+    out_path = 'esmvaltool_users/valeriu/'   # edit as per need
     local_path = os.path.join(root_dir, out_path)
+
+    # get the files (simple case, one-variable only)
+    my_files_dict = _get_my_files(cfg)
 
     # iterate through preprocessed model data
     for key, value in my_files_dict.items():
