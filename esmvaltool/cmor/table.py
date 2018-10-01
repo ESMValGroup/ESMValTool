@@ -182,8 +182,10 @@ class CMIP6Info(object):
 
 
 class TableInfo(dict):
+    """Container class for storing a CMOR table."""
+
     def __init__(self, *args, **kwargs):
-        """Container class for storing a CMOR table."""
+        """Create a new TableInfo object for storing VariableInfo objects."""
         super(TableInfo, self).__init__(*args, **kwargs)
         self.name = ''
         self.frequency = ''
@@ -240,6 +242,8 @@ class JsonInfo(object):
 
 
 class VariableInfo(JsonInfo):
+    """Class to read and store variable information."""
+
     def __init__(self, table_type, short_name):
         """
         Class to read and store variable information.
@@ -304,6 +308,8 @@ class VariableInfo(JsonInfo):
 
 
 class CoordinateInfo(JsonInfo):
+    """Class to read and store coordinate information."""
+
     def __init__(self, name):
         """
         Class to read and store coordinate information.
@@ -394,6 +400,7 @@ class CMIP5Info(object):
 
         self.tables = {}
         self.coords = {}
+        self._current_table = None
         self._last_line_read = None
 
         for table_file in glob.glob(os.path.join(self._cmor_folder, '*')):
@@ -409,15 +416,17 @@ class CMIP5Info(object):
         return cmor_tables_path
 
     def _load_table(self, table_file, table_name=''):
-        with open(table_file) as self._current_table:
-            if table_name and table_name in self.tables:
-                # special case used for updating a table
-                # with custom variable files
-                table = self.tables[table_name]
-            else:
-                # default case: table name is first line of table file
-                table = None
+        if table_name and table_name in self.tables:
+            # special case used for updating a table with custom variable file
+            table = self.tables[table_name]
+        else:
+            # default case: table name is first line of table file
+            table = None
 
+        self._read_table_file(table_file, table)
+
+    def _read_table_file(self, table_file, table=None):
+        with open(table_file) as self._current_table:
             self._read_line()
             while True:
                 key, value = self._last_line_read
@@ -439,11 +448,7 @@ class CMIP5Info(object):
                     self.coords[value] = self._read_coordinate(value)
                     continue
                 elif key == 'variable_entry':
-                    variable = self._read_variable(value)
-                    variable.frequency = table.frequency
-                    for dim in variable.dimensions:
-                        variable.coordinates[dim] = self.coords[dim]
-                    table[value] = variable
+                    table[value] = self._read_variable(value, table.frequency)
                     continue
                 if not self._read_line():
                     return
@@ -492,8 +497,11 @@ class CMIP5Info(object):
             if hasattr(coord, key):
                 setattr(coord, key, value)
 
-    def _read_variable(self, value):
-        var = VariableInfo('CMIP5', value)
+    def _read_variable(self, short_name, frequency):
+        var = VariableInfo('CMIP5', short_name)
+        var.frequency = frequency
+        for dim in var.dimensions:
+            var.coordinates[dim] = self.coords[dim]
         while self._read_line():
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
