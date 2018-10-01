@@ -33,5 +33,7 @@ diagnostics:
         #shpidcol: 'BASIN_ID' #SUBID' #id' #BASIN_ID' #'id' # Name of column for polygon ids
         shppath: '/home/a001850/WORK/git/esmvaltool_input/peterstest15.shp'
         wgtmet: 'mean_inside' #'nearest_centroid' # Weighting method
-        write_xlsxcsv: True
+        #wgtmet: 'representative'
+        write_xlsx: True
+        write_netcdf: True
         evalplot: True #False #True

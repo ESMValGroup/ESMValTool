@@ -1,10 +1,10 @@
 ---
 
-models:
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-# Find daily data to replace!!!
-#  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2001}
+datasets:
+#  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
 
@@ -20,16 +20,14 @@ preprocessors:
 diagnostics:
 
   diagnostic1:
-    description: Calculating SPI and SPEI indices.
+    #description: Calculating SPI and SPEI indices
     variables:
       pr:
         preprocessor: preprocessor1
         field: T2Ms
       ta:
         preprocessor: preprocessor1
-        field: T3M #?!
+        field: T3M
     scripts:
-      script1:  #spi and spei
+      script1:
         script: droughtindex/diag_spei.r
-	
-        
