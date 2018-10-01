@@ -493,6 +493,7 @@ def _get_default_settings(variable, config_user, derive=False):
 
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX mask settings"""
+    # update for landsea
     if 'mask_landsea' in settings.keys():
         # Configure ingestion of land/sea masks
         logger.debug('Getting fx mask settings now...')
@@ -514,6 +515,27 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
         if fx_files_dict['sftof']:
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
+    # update for landseaice
+    if 'mask_landseaice' in settings.keys():
+        # Configure ingestion of land/sea masks
+        logger.debug('Getting fx mask settings now...')
+
+        # settings[mask_landseaice][fx_file] is a list to store ALL
+        # available masks
+        settings['mask_landseaice']['fx_files'] = []
+
+        # fx_files already in variable
+        variable = dict(variable)
+        variable['fx_files'] = ['sftgif']
+        fx_files_dict = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+
+        # allow sftgif (only, for now)
+        if fx_files_dict['sftgif']:
+            settings['mask_landseaice']['fx_files'].append(
+                fx_files_dict['sftgif'])
 
 
 def _get_input_files(variable, config_user):
@@ -913,7 +935,7 @@ class Recipe(object):
             if self._support_ncl:
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
-                        'write_plots', 'write_netcdf'):
+                        'write_plots', 'write_netcdf', 'profile_diagnostic'):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {

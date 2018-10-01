@@ -33,6 +33,7 @@ def read_config_user_file(config_file, recipe_name):
         'remove_preproc_dir': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
+        'profile_diagnostic': False,
         'config_developer_file': None,
         'drs': {},
     }
