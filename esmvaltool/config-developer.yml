@@ -145,6 +145,10 @@ obs4mips:
   input_dir:
     default: '[tier]/[dataset]'
   input_file: '[var]_[dataset]_[level]_[version]_*'
+  fx_dir:
+    default: '[tier]/[dataset]'
+  fx_file:
+    default: '[project]_[dataset]_fx_[fx_var].nc'
   output_file: '[project]_[dataset]_[level]_[version]_[field]_[var]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 

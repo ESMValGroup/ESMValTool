@@ -70,8 +70,8 @@ diagnostics:
         anomaly_end_year: 2099
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
-        monsup: 8
-        monini: 1 #added by nuria cause an error in Season
+        monsup: 6
+
         agreement_threshold: 80
         #Time series plot options
         running_mean: 5 #Length of running mean to use for the time series plot
