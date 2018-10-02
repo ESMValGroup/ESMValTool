@@ -11,7 +11,8 @@ from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
-from ._mask import (mask_fillvalues, mask_landsea, mask_above_threshold,
+from ._mask import (mask_fillvalues, mask_landsea, mask_landseaice,
+                    mask_above_threshold,
                     mask_below_threshold, mask_inside_range,
                     mask_outside_range)
 from ._multimodel import multi_model_statistics
@@ -51,6 +52,8 @@ __all__ = [
     'extract_levels',
     # Mask landsea (fx or Natural Earth)
     'mask_landsea',
+    # Mask landseaice, sftgif only
+    'mask_landseaice',
     # Regridding
     'regrid',
     # Masking missing values
