@@ -19,9 +19,6 @@ from functools import reduce
 import cf_units
 import iris
 import numpy as np
-import yaml
-
-from ._io import save
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +98,7 @@ def _compute_statistic(datas, name):
     return statistic
 
 
-def _put_in_cube(template_cube, cube_data, stat_name, file_name, time_bounds,
-                 t_axis):
+def _put_in_cube(template_cube, cube_data, stat_name, time_bounds, t_axis):
     """Quick cube building and saving"""
     # grab coordinates from any cube
     times = template_cube.coord('time')
@@ -240,7 +236,7 @@ def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     return ndatarr
 
 
-def _assemble_overlap_data(cubes, ovlp, stat_type, filename, time_bounds):
+def _assemble_overlap_data(cubes, ovlp, stat_type, time_bounds):
     """Get statistical data in iris cubes for OVERLAP"""
     start, stop = ovlp
     sl_1, sl_2 = _slice_cube(cubes[0], start, stop)
@@ -257,13 +253,12 @@ def _assemble_overlap_data(cubes, ovlp, stat_type, filename, time_bounds):
         cubes[0][sl_1:sl_2 + 1],
         stats_dats,
         stat_type,
-        filename,
         time_bounds,
         t_axis=None)
     return stats_cube
 
 
-def _assemble_full_data(cubes, stat_type, filename, time_bounds):
+def _assemble_full_data(cubes, stat_type, time_bounds):
     """Get statistical data in iris cubes for FULL"""
     # all times, new MONTHLY data time axis
     time_axis = [float(fl) for fl in _monthly_t(cubes)]
@@ -298,8 +293,8 @@ def _assemble_full_data(cubes, stat_type, filename, time_bounds):
         for j in range(len(cubes)):
             time_data.append(new_datas_array[j])
         stats_dats[i] = _compute_statistic(time_data, stat_type)
-    stats_cube = _put_in_cube(cubes[0], stats_dats, stat_type, filename,
-                              time_bounds, time_axis)
+    stats_cube = _put_in_cube(cubes[0], stats_dats, stat_type, time_bounds,
+                              time_axis)
     return stats_cube
 
 
@@ -346,15 +341,13 @@ def multi_model_statistics(products, span, output_products, statistics):
         statistic_product = output_products[stat_name]
         filename, start, stop = _update_filename(statistic_product.filename,
                                                  interval, time_unit)
-        statistic_product._filename = filename
         # Compute statistic
         time_bounds = [start, stop]
         if span == 'overlap':
             statistic_cube = _assemble_overlap_data(cubes, interval, stat_name,
-                                                    filename, time_bounds)
+                                                    time_bounds)
         elif span == 'full':
-            statistic_cube = _assemble_full_data(cubes, stat_name, filename,
-                                                 time_bounds)
+            statistic_cube = _assemble_full_data(cubes, stat_name, time_bounds)
         statistic_cube.data = np.ma.array(
             statistic_cube.data, dtype=np.dtype('float32'))
 
