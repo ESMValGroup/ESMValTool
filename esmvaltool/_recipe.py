@@ -11,9 +11,10 @@ import yamale
 import yaml
 
 from . import __version__, preprocessor
-from ._data_finder import (get_input_filelist, get_input_filename,
-                           get_input_fx_filelist, get_output_file,
-                           get_start_end_year, get_statistic_output_file)
+from ._config import get_institutes
+from ._data_finder import (get_input_filelist, get_input_fx_filelist,
+                           get_output_file, get_rootpath, get_start_end_year,
+                           get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
@@ -274,7 +275,9 @@ def _add_cmor_info(variable, override=False):
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
 
     # Copy the following keys from CMOR table
-    cmor_keys = ['standard_name', 'long_name', 'units']
+    cmor_keys = [
+        'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
+    ]
     table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
         variable['mip'], variable['short_name'])
 
@@ -412,11 +415,8 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
-        local_dir = os.path.dirname(
-            get_input_filename(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs']))
+        # TODO: make this respect drs or download to preproc dir?
+        local_dir = get_rootpath(config_user['rootpath'], variable['project'])
         settings['download'] = {
             'dest_folder': local_dir,
         }
@@ -493,6 +493,7 @@ def _get_default_settings(variable, config_user, derive=False):
 
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX mask settings"""
+    # update for landsea
     if 'mask_landsea' in settings.keys():
         # Configure ingestion of land/sea masks
         logger.debug('Getting fx mask settings now...')
@@ -514,6 +515,27 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
         if fx_files_dict['sftof']:
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
+    # update for landseaice
+    if 'mask_landseaice' in settings.keys():
+        # Configure ingestion of land/sea masks
+        logger.debug('Getting fx mask settings now...')
+
+        # settings[mask_landseaice][fx_file] is a list to store ALL
+        # available masks
+        settings['mask_landseaice']['fx_files'] = []
+
+        # fx_files already in variable
+        variable = dict(variable)
+        variable['fx_files'] = ['sftgif']
+        fx_files_dict = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+
+        # allow sftgif (only, for now)
+        if fx_files_dict['sftgif']:
+            settings['mask_landseaice']['fx_files'].append(
+                fx_files_dict['sftgif'])
 
 
 def _get_input_files(variable, config_user):
@@ -913,7 +935,7 @@ class Recipe(object):
             if self._support_ncl:
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
-                        'write_plots', 'write_netcdf'):
+                        'write_plots', 'write_netcdf', 'profile_diagnostic'):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
