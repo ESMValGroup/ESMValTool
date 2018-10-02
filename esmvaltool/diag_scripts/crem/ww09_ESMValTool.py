@@ -23,9 +23,8 @@
 ; Caveats
 ;    TO DO:
 ;       1) add metadata to plot
-;       2) improve writing of results to netcdf
+;       2) add metadata to netcdf output
 ;       3) use preprocessor for regridding input data
-;       4) make code more flexible and add error handling
 ;
 ; Modification history
 ;    20180920-A_laue_ax: code adapted for ESMValTool v2.0
@@ -81,82 +80,69 @@ def main(cfg):
     nummod = len(grouped_input_data)
     crems = np.empty(nummod)
 
+    # list of variables needed for CREM calculations
+    vars = ('albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
+            'rlutcs', 'sic')
+    vars_plus = ('snc', 'snw')
+
     # provenance information
-
     climofiles = []
-
-    vartags = ['V_albisccp', 'V_pctisccp', 'V_cltisccp', 'V_rsut', 'V_rsutcs',
-               'V_rlut', 'V_rlutcs', 'V_sic']
-
+    vartags = []
     modeltags = []
+
+    for var in vars:
+       vartags.append("V_" + var)
 
     # create list of dataset names (plot labels)
     models = []
 
     i = 0
+    missing_vars = []
 
     for dataset in grouped_input_data:
         models.append(dataset)
         modeltags.append('M_' + dataset)
 
-        selection = select_metadata(input_data, dataset=dataset, short_name='albisccp')
-        fn_alb = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='pctisccp')
-        fn_pct = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='cltisccp')
-        fn_clt = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='rsut')
-        fn_su = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='rsutcs')
-        fn_suc = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='rlut')
-        fn_lu = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='rlutcs')
-        fn_luc = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='snc')
-        fn_snc = selection[0]["filename"]
-        selection = select_metadata(input_data, dataset=dataset, short_name='sic')
-        fn_sic = selection[0]["filename"]
+        pointers = {}
 
-        climofiles.append(','.join(fn_alb))
-        climofiles.append(','.join(fn_pct))
-        climofiles.append(','.join(fn_clt))
-        climofiles.append(','.join(fn_su))
-        climofiles.append(','.join(fn_suc))
-        climofiles.append(','.join(fn_lu))
-        climofiles.append(','.join(fn_luc))
-        climofiles.append(','.join(fn_sic))
+        for var in vars:
+          selection = select_metadata(input_data, dataset=dataset, short_name=var)
+          if not selection:
+            missing_vars.append(var)
+          else:
+            key = var + '_nc'
+            pointers[key] = selection[0]['filename']
 
-        if not fn_snc:
-            logger.info("%s: no data for variable snc found, using variable snw instead\n",
-                dataset)
-            selection = select_metadata(input_data, dataset=dataset, short_name='snw')
-            fn_snw = selection[0]["filename"]
-            climofiles.append(','.join(fn_snw))
-            if not 'V_snw' in vartags:
-                vartags.append('V_snw')
-        else:
-            climofiles.append(','.join(fn_snc))
-            if not 'V_snc' in vartags:
-                vartags.append('V_snc')
+        # snow variable: use 'snc' if available or alternatively use 'snw'
 
-        if fn_snc:
-            snc = fn_snc
-        else:
-            snc = ""
+        missing_snow = True
 
-        pointers = {'albisccp_nc': fn_alb,
-                    'pctisccp_nc': fn_pct,
-                    'cltisccp_nc': fn_clt,
-                    'rsut_nc'    : fn_su,
-                    'rsutcs_nc'  : fn_suc,
-                    'rlut_nc'    : fn_lu,
-                    'rlutcs_nc'  : fn_luc,
-                    'snc_nc'     : snc,
-                    'sic_nc'     : fn_sic}
+        for var in vars_plus:
+          selection = select_metadata(input_data, dataset=dataset, short_name=var)
+          key = var + '_nc'
+          if not selection:
+            logger.info("%s: no data for variable snc found, trying variable " \
+                        "snw instead", dataset)
+            pointers[key] = ""
+          else:
+            pointers[key] = selection[0]["filename"]
+            vartags.append('V_' + var)
+            missing_snow = False
+            break
 
-        if not fn_snc:
-            pointers['snw_nc'] = fn_snw
+        if missing_snow:
+           missing_vars.append(vars_plus[0] + " or " + vars_plus[1])
+
+        for fn in pointers:
+          climofiles.append(','.join(fn))
+
+        # check if all variables are available
+
+        if missing_vars:
+          printlist = ', '.join(missing_vars)
+          logger.error("error: the following variables are not available: %s",
+                       printlist)
+          raise Exception('Variables missing (see log file for details).')
 
         # calculate CREM
 
