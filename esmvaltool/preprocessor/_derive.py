@@ -244,6 +244,7 @@ def calc_toz(cubes):
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
+    toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
 
     return toz
 
