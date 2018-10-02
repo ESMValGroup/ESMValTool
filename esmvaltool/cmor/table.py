@@ -503,7 +503,7 @@ class CMIP5Info(object):
         while self._read_line():
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
-                return var
+                break
             if key in ('dimensions', 'modeling_realm'):
                 setattr(var, key, value.split(' '))
             elif hasattr(var, key):
