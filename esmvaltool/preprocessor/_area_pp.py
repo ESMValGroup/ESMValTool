@@ -153,9 +153,7 @@ def _area_average_general_cecks(coords, aggregator, weighted=False):
     # is a WeightAggregator instance
     if weighted:
         if not isinstance(aggregator, iris.analysis.WeightedAggregator):
-            logger.warning('Aggregator %s not a weighted iris aggregator, \
-                           performing MEAN instead', aggregator)
-            aggregator = iris.analysis.MEAN
+            raise ValueError('Aggregator %s not a weighted iris aggregator')
 
     return coords, aggregator
 
