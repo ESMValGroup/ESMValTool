@@ -246,10 +246,12 @@ def get_step_blocks(steps, order):
 class Product(object):
     def __init__(self, metadata, settings, ancestors=None, input_files=None):
         self._filename = metadata['filename']
-        self.metadata = metadata
-        self.settings = settings
-        self.files = []
-        self.files.extend(a.filename for a in ancestors or [])
+        self.metadata = copy.deepcopy(metadata)
+        self.settings = copy.deepcopy(settings)
+        if 'save' not in self.settings:
+            self.settings['save'] = {}
+        self.settings['save']['filename'] = self.filename
+        self.files = [a.filename for a in ancestors or ()]
         self.files.extend(input_files or [])
 
         self._cubes = None
@@ -309,9 +311,6 @@ class Product(object):
     def save(self):
         """Save cubes to disk."""
         if self._cubes is not None:
-            if 'save' not in self.settings:
-                self.settings['save'] = {}
-            self.settings['save']['filename'] = self.filename
             self.files = preprocess(self._cubes, 'save',
                                     **self.settings['save'])
             self.files = preprocess(self.files, 'cleanup',
@@ -388,6 +387,10 @@ class Product(object):
         self.provenance.serialize(filename + '.xml', format='xml')
         figure = prov_to_dot(self.provenance)
         figure.write_png(filename + '.png')
+
+
+# TODO: use a custom ProductSet that raises an exception if you try to
+# add the same Product twice
 
 
 def _apply_multimodel(products, step, debug):

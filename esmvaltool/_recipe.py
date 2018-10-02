@@ -333,10 +333,7 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure saving cubes to file
-    settings['save'] = {
-        'filename': None,
-        'compress': config_user['compress_netcdf']
-    }
+    settings['save'] = {'compress': config_user['compress_netcdf']}
 
     return settings
 
@@ -446,7 +443,7 @@ def _update_multi_dataset_settings(variable, settings):
         # Exclude dataset if requested
         exclude = {
             _special_name_to_dataset(variable, dataset)
-            for dataset in settings[step].get('exclude', [])
+            for dataset in settings[step].pop('exclude', [])
         }
         if variable['dataset'] in exclude:
             settings.pop(step)
