@@ -5,8 +5,6 @@ Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
 import logging
-import numpy as np
-import numpy.ma as ma
 
 import iris
 
@@ -148,46 +146,20 @@ def _area_average_general_cecks(coords, aggregator, weighted=False):
 
     # Make sure that aggregator is an Aggregator instance
     if not isinstance(aggregator, iris.analysis.Aggregator):
-        raise ValueError('Aggregator %s not an iris aggregator')
+        raise ValueError('Aggregator not an iris aggregator!')
     # If doing weighted aggregation make sure that aggregator
     # is a WeightAggregator instance
     if weighted:
         if not isinstance(aggregator, iris.analysis.WeightedAggregator):
-            raise ValueError('Aggregator %s not a weighted iris aggregator')
+            raise ValueError('Aggregator not a weighted iris aggregator!')
 
     return coords, aggregator
 
 
-def _apply_area_average_mask(cube, aggkeys, mask,
-                             logicmask=False, intkeys=None):
-    """Apply the needed type of mask while area averaging."""
-    # Extract region of mask to match data
-    if intkeys:
-        newmask = mask.intersection(ignore_bounds=True, **intkeys)
-    else:
-        newmask = mask.copy()
-    if 'weights' in aggkeys:
-        if logicmask:
-            aggkeys['weights'] = ma.array(
-                data=aggkeys['weights'], mask=newmask.data)
-        else:
-            aggkeys['weights'] *= newmask.data
-    else:
-        if logicmask:
-            cube.data = ma.array(data=cube.data, mask=newmask.data)
-        else:
-            cube.data *= newmask.data
-
-    return cube
-
-
 def area_average_general(cube,
                          weighted=True,
-                         mask=None,
-                         logicmask=False,
                          coords=None,
-                         aggregator=iris.analysis.MEAN,
-                         **aggkeys):
+                         aggregator=iris.analysis.MEAN):
     """
     Routine to calculate weighted horizontal area aggregations.
 
@@ -201,13 +173,9 @@ def area_average_general(cube,
     Keywords:
 
     weighted = perform area weighted aggregation (default: True)
-    mask = cube containing mask data (default: None)
-    logicmask = Does mask contain logical data (default: False)
     aggregator = aggregator for collapsed method (default: iris.analysis.MEAN)
     coords = list of coordinates to collapse cube over
              (default: ["latitude", "longitude"])
-    "coord" = (coord_min, coord_max) - range of coordinate to collapse over
-    **kwargs = any keywords required for the aggregator
 
     Return:
 
@@ -215,32 +183,11 @@ def area_average_general(cube,
     """
     coords, aggregator = _area_average_general_cecks(coords,
                                                      aggregator, weighted)
-    # Extract region specification if available
-    intkeys = {}
-    for coord in coords:
-        if coord in aggkeys:
-            intkeys[coord] = aggkeys.pop(coord)
-
-    # Extract region if required
-    if intkeys:
-        newcube = cube.intersection(ignore_bounds=True, **intkeys)
-        # For some reason cube.intersection() promotes dtype of coordinate
-        # arrays to float64, whereas cube.extract() doesn't. Need to make
-        # sure behaviour is identical.
-        for coord in intkeys:
-            newcube.coord(coord).points = \
-                newcube.coord(coord).points.astype(np.float32, copy=False)
-    else:
-        newcube = cube.copy()
 
     # If doing area-weighted aggregation then calculate area weights
     if weighted:
         # Coords need bounding
-        newcube = _guess_bounds(newcube, coords)
-        aggkeys['weights'] = iris.analysis.cartography.area_weights(newcube)
+        cube = _guess_bounds(cube, coords)
+        weights = iris.analysis.cartography.area_weights(cube)
 
-    # Apply mask
-    if mask:
-        _apply_area_average_mask(cube, aggkeys, mask, logicmask, intkeys)
-
-    return newcube.collapsed(coords, aggregator, **aggkeys)
+    return cube.collapsed(coords, aggregator, weights=weights)
