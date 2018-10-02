@@ -95,20 +95,20 @@ begin
     delete(wks)
     delete(plot)
 
-    ;collect meta-data and call ESMValMD function
+    ; collect meta-data and call ESMValMD function
     nc_file = "nonexistent"
     plot_file = outfile+"."+file_type
     caption = "Zonal plot of variable: " + var0
-    statistics := (/"mean","rmsd"/)
+    statistics := (/"mean", "rmsd"/)
     domain = "global"
     plottype = "zonal"
     diag_des = "Calculates and (optionally) plots annual/seasonal cycles, " \
-              +"zonal means, lat-lon fields and time-lat-lon fields from " \
-              +"input T3M or T2Ms data. The calculated fields can be also " \
-              +"plotted as difference w.r.t. a given reference dataset. It " \
-              +"also calculates grading and taylor metrics."
-    authors = (/"righ_ma","fran_fr","eyri_ve","gott_kl", "senf_da"/)
-    references = (/"righi15gmd","gleckler08jgr"/)
+               + "zonal means, lat-lon fields and time-lat-lon fields from " \
+               + "input T3M or T2Ms data. The calculated fields can be also " \
+               + "plotted as difference w.r.t. a given reference dataset. " \
+               + "It also calculates grading and taylor metrics."
+    authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
+    references = (/"righi15gmd", "gleckler08jgr"/)
     infiles := (/"infile1", "infile2"/)
     ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
              diag_des, authors, references, infiles)
@@ -178,11 +178,11 @@ begin
     delete(plot2)
     delete(plot_var)
 
-    ;collect meta-data and call ESMValMD function
+    ; collect meta-data and call ESMValMD function
     nc_file = "nonexistent"
     plot_file = outfile+"."+file_type
     caption = "Difference in zonal plot of variable: " + var0
-    statistics := (/"mean","rmsd", "diff"/)
+    statistics := (/"mean", "rmsd", "diff"/)
     infiles := (/"infile1", "infile2"/)
     ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
              diag_des, authors, references, infiles)
