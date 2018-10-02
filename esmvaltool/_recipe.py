@@ -451,6 +451,8 @@ def _update_multi_dataset_settings(variable, settings):
 
 def _update_statistic_settings(products, order, preproc_dir):
     """Define statistic output products."""
+    # TODO: move this to multi model statistics function?
+    # But how to check, with a dry-run option?
     step = 'multi_model_statistics'
 
     settings = None
