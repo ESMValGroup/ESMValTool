@@ -104,7 +104,7 @@ begin
   log_info(diag_script + " (var: " + variables(0) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  dim_MOD = dimsizes(dataset_info@dataset)
+  dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -200,7 +200,7 @@ begin
   if (isatt(variable_info, "alternative_dataset")) then
     l_altern = True
     nobs = 2
-    ref_inds = get_ref_dataset_idx(dataset_info, \
+    ref_inds = get_ref_dataset_idx(input_file_info, \
                                    (/variable_info@reference_dataset, \
                                     variable_info@alternative_dataset/))
     ref_ind = ref_inds(0)
@@ -209,7 +209,7 @@ begin
     l_altern = False
     nobs = 1
     ref_inds = \
-      get_ref_dataset_idx(dataset_info, variable_info@reference_dataset)
+      get_ref_dataset_idx(input_file_info, variable_info@reference_dataset)
     ref_ind = ref_inds
   end if
 
@@ -340,8 +340,8 @@ begin
       metric@diag_script = (/diag_script/)
       metric@var = "grade"
       metric@region = location
-      metric@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
-      do imod = 0, dimsizes(dataset_info@dataset) - 1
+      metric@num_climofiles = dimsizes(input_file_info@dataset)  ; FIX-ME ?
+      do imod = 0, dimsizes(input_file_info@dataset) - 1
         num_climo = "climofile_" + imod
         metric@$num_climo$ = input_file_info@filename(imod)
       end do

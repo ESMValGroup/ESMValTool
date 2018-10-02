@@ -1428,7 +1428,7 @@ function get_ref_dataset_idx(datasets[1]:logical,\
 ;    dataset_ref_name: reference dataset name, possibly two, separated by comma
 ;
 ; Description
-;    Fetches the reference dataset index in dataset_info@dataset
+;    Fetches the reference dataset index in input_file_info@dataset
 ;
 ; Caveats
 ;
@@ -1449,7 +1449,7 @@ begin
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
     idx_ref(ii) = \
-      ind(dataset_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
+      ind(input_file_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")

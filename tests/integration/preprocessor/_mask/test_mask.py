@@ -16,18 +16,19 @@ import iris
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor import Product, mask_fillvalues, mask_landsea
+from esmvaltool.preprocessor import (Product, mask_fillvalues, mask_landsea,
+                                     mask_landseaice)
 
 
 class Test(tests.Test):
     """Test class"""
 
-    def test_mask_landsea(self):
-        """Test mask_landocean func"""
+    def setUp(self):
+        """Assemble a stock cube"""
         fx_data = np.empty((3, 3))
         fx_data[:] = 60.
-        new_cube_data = np.empty((3, 3))
-        new_cube_data[:] = 200.
+        self.new_cube_data = np.empty((3, 3))
+        self.new_cube_data[:] = 200.
         crd_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
         lons = iris.coords.DimCoord(
             [0, 1.5, 3],
@@ -41,13 +42,18 @@ class Test(tests.Test):
             bounds=[[0, 1], [1, 2], [2, 3]],
             units='degrees_north',
             coord_system=crd_sys)
-        coords_spec = [(lats, 0), (lons, 1)]
-        fx_mask = iris.cube.Cube(fx_data, dim_coords_and_dims=coords_spec)
-        iris.save(fx_mask, 'sftlf_test.nc')
+        self.coords_spec = [(lats, 0), (lons, 1)]
+        self.fx_mask = iris.cube.Cube(
+            fx_data, dim_coords_and_dims=self.coords_spec)
+
+    def test_mask_landsea(self):
+        """Test mask_landsea func"""
+        iris.save(self.fx_mask, 'sftlf_test.nc')
         new_cube_land = iris.cube.Cube(
-            new_cube_data, dim_coords_and_dims=coords_spec)
+            self.new_cube_data, dim_coords_and_dims=self.coords_spec)
         new_cube_sea = iris.cube.Cube(
-            new_cube_data, dim_coords_and_dims=coords_spec)
+            self.new_cube_data, dim_coords_and_dims=self.coords_spec)
+
         # mask with fx files
         result_land = mask_landsea(new_cube_land, ['sftlf_test.nc'], 'land')
         result_sea = mask_landsea(new_cube_sea, ['sftlf_test.nc'], 'sea')
@@ -66,14 +72,29 @@ class Test(tests.Test):
 
         # mask with shp files
         new_cube_land = iris.cube.Cube(
-            new_cube_data, dim_coords_and_dims=coords_spec)
+            self.new_cube_data, dim_coords_and_dims=self.coords_spec)
         new_cube_sea = iris.cube.Cube(
-            new_cube_data, dim_coords_and_dims=coords_spec)
+            self.new_cube_data, dim_coords_and_dims=self.coords_spec)
+
         # bear in mind all points are in the ocean
         result_land = mask_landsea(new_cube_land, None, 'land')
         np.ma.set_fill_value(result_land.data, 1e+20)
         expected.mask = np.zeros((3, 3), bool)
         self.assertArrayEqual(result_land.data, expected)
+
+    def test_mask_landseaice(self):
+        """Test mask_landseaice func"""
+        iris.save(self.fx_mask, 'sftgif_test.nc')
+        new_cube_ice = iris.cube.Cube(
+            self.new_cube_data, dim_coords_and_dims=self.coords_spec)
+        result_ice = mask_landseaice(new_cube_ice, ['sftgif_test.nc'], 'ice')
+        expected = np.ma.empty((3, 3))
+        expected.data[:] = 200.
+        expected.mask = np.ones((3, 3), bool)
+        np.ma.set_fill_value(result_ice.data, 1e+20)
+        np.ma.set_fill_value(expected, 1e+20)
+        self.assertArrayEqual(result_ice.data.mask, expected.mask)
+        os.remove('sftgif_test.nc')
 
     def test_mask_fillvalues(self):
         """Test the fillvalues mask: func mask_fillvalues"""

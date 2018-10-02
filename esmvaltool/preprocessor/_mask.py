@@ -57,6 +57,13 @@ def _get_fx_mask(fx_data, fx_option, mask_type):
         elif fx_option == 'sea':
             # Mask sea out
             inmask[fx_data >= 50.] = True
+    elif mask_type == 'sftgif':
+        if fx_option == 'ice':
+            # Mask ice out
+            inmask[fx_data > 50.] = True
+        elif fx_option == 'landsea':
+            # Mask landsea out
+            inmask[fx_data <= 50.] = True
 
     return inmask
 
@@ -78,8 +85,33 @@ def _apply_fx_mask(fx_mask, var_data):
 
 
 def mask_landsea(cube, fx_files, mask_out):
-    """Apply a land/sea mask"""
-    # mask_out: is either 'land' or 'sea'
+    """
+    Mask out either land or sea
+
+    Function that masks out either land mass or seas (oceans, seas and lakes)
+
+    It uses dedicated fx files (sftlf or sftof) or, in their absence, it
+    applies a Natural Earth mask (land or ocean contours). Not that the
+    Natural Earth masks have different resolutions: 10m for land, and 50m
+    for seas; these are more than enough for ESMValTool puprpose.
+
+    Parameters
+    ----------
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "land" to mask out land mass or "sea" to mask out seas.
+
+    Returns
+    -------
+    masked iris cube
+
+    """
     # Dict to store the Natural Earth masks
     cwd = os.path.dirname(__file__)
     # ne_10m_land is fast; ne_10m_ocean is very slow
@@ -125,6 +157,46 @@ def mask_landsea(cube, fx_files, mask_out):
         else:
             logger.error("Use of shapefiles with irregular grids not "
                          "yet implemented, land-sea mask not applied")
+
+    return cube
+
+
+def mask_landseaice(cube, fx_files, mask_out):
+    """
+    Mask out either landsea (combined) or ice
+
+    Function that masks out either landsea (land and seas) or ice (Antarctica
+    and Greenland and some wee glaciers). It uses dedicated fx files (sftgif).
+
+    Parameters
+    ----------
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "landsea" to mask out landsea or "ice" to mask out ice.
+
+    Returns
+    -------
+    masked iris cube
+
+    """
+    # sftgif is the only one so far
+    if fx_files:
+        for fx_file in fx_files:
+            fx_cube = iris.load_cube(fx_file)
+
+            if _check_dims(cube, fx_cube):
+                landice_mask = _get_fx_mask(fx_cube.data, mask_out,
+                                            'sftgif')
+                cube.data = _apply_fx_mask(landice_mask, cube.data)
+                logger.debug("Applying landsea-ice mask: sftgif")
+    else:
+        logger.warning("Landsea-ice mask could not be found ")
 
     return cube
 
@@ -294,7 +366,7 @@ def mask_above_threshold(cube, threshold):
     """
     Mask above a specific threshold value.
 
-    Takes a value `threshold' and masks off anything that is above
+    Takes a value 'threshold' and masks off anything that is above
     it in the cube data. Values equal to the threshold are not masked.
     """
     cube.data = np.ma.masked_where(cube.data > threshold, cube.data)
@@ -305,7 +377,7 @@ def mask_below_threshold(cube, threshold):
     """
     Mask below a specific threshold value.
 
-    Takes a value `threshold' and masks off anything that is below
+    Takes a value 'threshold' and masks off anything that is below
     it in the cube data. Values equal to the threshold are not masked.
     """
     cube.data = np.ma.masked_where(cube.data < threshold, cube.data)

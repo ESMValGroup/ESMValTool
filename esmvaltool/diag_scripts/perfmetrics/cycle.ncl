@@ -42,7 +42,7 @@ begin
     ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + dataset_info@filename(imod)))
+    fname = basename(systemfunc("basename " + input_file_info@filename(imod)))
     fname = fname + "_" + basename(diag_script) + "_cycle"
     fname = fname + "_" + diag_script_info@time_avg
     if (isatt(diag_script_info, "level")) then

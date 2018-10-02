@@ -66,7 +66,11 @@ def extract_season(cube, season):
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
     """
-    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    if not cube.coords('clim_season'):
+        iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(
+            cube, 'time', name='season_year')
     return cube.extract(iris.Constraint(clim_season=season.lower()))
 
 
@@ -132,11 +136,15 @@ def seasonal_mean(cube):
     iris.cube.Cube
         Seasonal mean cube
     """
-    iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
-    iris.coord_categorisation.add_season_year(cube, 'time', name='season_year')
+    if not cube.coords('clim_season'):
+        iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(
+            cube, 'time', name='season_year')
     cube = cube.aggregated_by(['clim_season', 'season_year'],
                               iris.analysis.MEAN)
 
+    # TODO: This preprocessor is not calendar independent.
     def spans_three_months(time):
         """Check for three months"""
         return (time.bound[1] - time.bound[0]) == 2160

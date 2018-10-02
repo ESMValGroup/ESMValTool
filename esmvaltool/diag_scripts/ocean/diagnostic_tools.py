@@ -13,6 +13,8 @@ import logging
 import os
 import sys
 import yaml
+import matplotlib
+matplotlib.use('Agg')  # noqa
 
 import matplotlib.pyplot as plt
 
@@ -142,6 +144,39 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     legd.get_frame().set_alpha(0.)
 
 
+def get_image_format(cfg, default='png'):
+    """
+    Load the image format from the global config file.
+
+    Current tested options are svg, png.
+
+    The cfg is the opened global config.
+    The default format is used if no specific format is requested.
+    The default is set in the user config.yml
+    Individual diagnostics can set their own format which will
+    supercede the main config.yml.
+    """
+    image_extention = default
+
+    # Load format from config.yml and set it as default
+    if 'output_file_type' in cfg.keys():
+        image_extention = cfg['output_file_type']
+
+    # Load format from config.yml and set it as default
+    if 'image_format' in cfg.keys():
+        image_extention = cfg['image_format']
+
+    matplotlib_image_formats = plt.gcf().canvas.get_supported_filetypes()
+    if image_extention not in matplotlib_image_formats:
+        logger.warning(' '.join(['Image format ', image_extention,
+                                 'not in matplot:',
+                                 ', '.join(matplotlib_image_formats)]))
+
+    image_extention = '.' + image_extention
+    image_extention = image_extention.replace('..', '.')
+    return image_extention
+
+
 def get_image_path(cfg,
                    metadata,
                    prefix='diag',
@@ -162,11 +197,14 @@ def get_image_path(cfg,
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
-    path += '_'.join([str(metadata[b]) for b in metadata_id_list])
+    # Check that the keys are in the dict.
+    intersection = [va for va in metadata_id_list if va in metadata.keys()]
+    path += '_'.join([str(metadata[b]) for b in intersection])
     if suffix:
         path += '_' + suffix
 
-    image_extention = '.png'
+    image_extention = get_image_format(cfg)
+
     if path.find(image_extention) == -1:
         path += image_extention
 

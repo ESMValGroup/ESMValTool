@@ -219,8 +219,7 @@ class DiagnosticTask(BaseTask):
         self.resource_log = os.path.join(settings['run_dir'],
                                          'resource_usage.txt')
 
-    @staticmethod
-    def _initialize_cmd(script):
+    def _initialize_cmd(self, script):
         """Create a an executable command from script."""
         diagnostics_root = os.path.join(
             os.path.dirname(__file__), 'diag_scripts')
@@ -234,11 +233,22 @@ class DiagnosticTask(BaseTask):
         cmd = []
         if not os.access(script_file, os.X_OK):  # if not executable
             extension = os.path.splitext(script)[1].lower()[1:]
-            executables = {
-                'py': [which('python')],
-                'ncl': [which('ncl'), '-n', '-p'],
-                'r': [which('Rscript'), '--slave', '--quiet'],
-            }
+            if not self.settings['profile_diagnostic']:
+                executables = {
+                    'py': [which('python')],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+            else:
+                profile_file = os.path.join(self.settings['run_dir'],
+                                            'profile.bin')
+                executables = {
+                    'py': [which('python'), '-m', 'vmprof', '--lines',
+                           '-o', profile_file],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+
             if extension not in executables:
                 raise DiagnosticError(
                     "Cannot execute script {} ({}): non-executable file "
