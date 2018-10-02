@@ -11,20 +11,20 @@ import re
 
 import six
 
-from ._config import (cmip5_dataset2inst, cmip5_mip2realm_freq,
-                      get_project_config, replace_mip_fx)
+from ._config import get_project_config, replace_mip_fx
+from .cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
 
-def find_files(dirname, filename):
-    """Find files matching filename."""
-    logger.debug("Looking for files matching %s in %s", filename, dirname)
+def find_files(dirnames, filename):
+    """Find files matching filename in dirnames."""
+    logger.debug("Looking for files matching %s in %s", filename, dirnames)
 
     result = []
-    for path, _, files in os.walk(dirname, followlinks=True):
-        files = fnmatch.filter(files, filename)
-        if files:
+    for dirname in dirnames:
+        for path, _, files in os.walk(dirname, followlinks=True):
+            files = fnmatch.filter(files, filename)
             result.extend(os.path.join(path, f) for f in files)
 
     return result
@@ -94,56 +94,43 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def replace_tags(path, variable, j=None, fx_var=None):
+def _replace_tags(path, variable, fx_var=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
     tlist = re.findall(r'\[([^]]*)\]', path)
 
+    paths = [path]
     for tag in tlist:
         original_tag = tag
-        tag, lower, upper = _get_caps_options(tag)
+        tag, _, _ = _get_caps_options(tag)
 
-        if tag == 'var':
-            replacewith = variable['short_name']
-        elif tag == 'fx_var':
+        if tag == 'fx_var':
             replacewith = fx_var
-        elif tag == 'field':
-            replacewith = variable['field']
-        elif tag in ('institute', 'freq', 'realm'):
-            if tag in variable:
-                replacewith = str(variable[tag])
-            else:
-                if tag == 'institute':
-                    replacewith = cmip5_dataset2inst(variable['dataset'])
-                elif tag == 'freq':
-                    replacewith = cmip5_mip2realm_freq(variable['mip'])[1]
-                elif tag == 'realm':
-                    replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
             continue
-        elif tag == 'tier':
-            replacewith = ''.join(('Tier', str(variable['tier'])))
-        elif tag == 'dataset':
-            replacewith = variable['dataset']
-        else:  # all other cases use the corresponding dataset dictionary key
-            if tag in variable:
-                replacewith = str(variable[tag])
-            else:
-                raise KeyError(
-                    "Dataset key {} must be specified for project {}, check "
-                    "your recipe entry".format(tag, variable['project']))
-
-        if not isinstance(replacewith, list):
-            path = path.replace('[' + original_tag + ']',
-                                _apply_caps(replacewith, lower, upper))
+        elif tag in variable:
+            replacewith = variable[tag]
         else:
-            path = [
-                path.replace('[' + original_tag + ']',
-                             _apply_caps(dkrz_place, lower, upper))
-                for dkrz_place in replacewith
-            ][j]
-    return path
+            raise KeyError("Dataset key {} must be specified for {}, check "
+                           "your recipe entry".format(tag, variable))
+
+        paths = _replace_tag(paths, original_tag, replacewith)
+
+    return paths
+
+
+def _replace_tag(paths, tag, replacewith):
+    """Replace tag by replacewith in paths."""
+    _, lower, upper = _get_caps_options(tag)
+    result = []
+    if isinstance(replacewith, (list, tuple)):
+        for item in replacewith:
+            result.extend(_replace_tag(paths, tag, item))
+    else:
+        text = _apply_caps(str(replacewith), lower, upper)
+        result.extend(p.replace('[' + tag + ']', text) for p in paths)
+    return result
 
 
 def _get_caps_options(tag):
@@ -161,274 +148,116 @@ def _get_caps_options(tag):
 def _apply_caps(original, lower, upper):
     if lower:
         return original.lower()
-    elif upper:
+    if upper:
         return original.upper()
     return original
 
 
-def get_input_dirname_template(variable, rootpath, drs):
-    """Return a template of the full path to input directory."""
-    project = variable['project']
+def _resolve_latestversion(dirname_template):
+    """Resolve the 'latestversion' tag."""
+    if '[latestversion]' not in dirname_template:
+        return dirname_template
 
-    cfg = get_project_config(project)
-
-    # Set the rootpath
-    if project in rootpath:
-        dir1 = rootpath[project]
-    elif 'default' in rootpath:
-        dir1 = rootpath['default']
-    else:
-        raise KeyError(
-            'default rootpath must be specified in config-user file')
-
-    # Set the drs
-    _drs = drs.get(project, 'default')
-    input_dir = cfg['input_dir']
-    dirs2 = []
-    if isinstance(input_dir, six.string_types):
-        dirs2.append(replace_tags(input_dir, variable))
-    elif _drs in input_dir:
-        try:
-            insts = cmip5_dataset2inst(variable['dataset'])
-        except KeyError as msg:
-            logger.debug('CMIP5 dataset2inst: %s', msg)
-            insts = 0
-
-        if isinstance(insts, list):
-            for inst_idx in range(len(insts)):
-                dir2 = replace_tags(input_dir[_drs], variable, j=inst_idx)
-                dirs2.append(dir2)
-        else:
-            dir2 = replace_tags(input_dir[_drs], variable)
-            dirs2.append(dir2)
-    else:
-        raise KeyError(
-            'drs {} for {} project not specified in config-developer file'
-            .format(_drs, project))
-
-    dirname_template = [os.path.join(dir1, dir_2) for dir_2 in dirs2]
+    # Find latest version
+    part1, part2 = dirname_template.split('[latestversion]')
+    part2 = part2.lstrip(os.sep)
+    if os.path.exists(part1):
+        versions = os.listdir(part1)
+        versions.sort(reverse=True)
+        for version in ['latest'] + versions:
+            dirname = os.path.join(part1, version, part2)
+            if os.path.isdir(dirname):
+                return dirname
 
     return dirname_template
 
 
-def get_input_fx_dirname_template(variable, rootpath, drs):
-    """Return a template of the full path to input directory."""
-    project = variable['project']
-
+def _select_drs(input_type, drs, project):
+    """Select the directory structure of input path."""
     cfg = get_project_config(project)
+    input_path = cfg[input_type]
+    if isinstance(input_path, six.string_types):
+        return input_path
 
-    # Set the rootpath
+    structure = drs.get(project, 'default')
+    if structure in input_path:
+        return input_path[structure]
+
+    raise KeyError(
+        'drs {} for {} project not specified in config-developer file'.format(
+            structure, project))
+
+
+def get_rootpath(rootpath, project):
+    """Select the rootpath."""
     if project in rootpath:
-        dir1 = rootpath[project]
-    elif 'default' in rootpath:
-        dir1 = rootpath['default']
-    else:
-        raise KeyError(
-            'default rootpath must be specified in config-user file')
-
-    # Set the drs
-    _drs = drs.get(project, 'default')
-    input_dir = cfg['fx_dir']
-    dirs = []
-
-    # Loop through fx_files types
-    for fx_file in variable['fx_files']:
-        # Need to reassign the mip so we can find sftlf/of
-        # make a copy of variable -> new_variable for this
-        new_variable = dict(variable)
-        new_variable['mip'] = replace_mip_fx(fx_file)
-
-        if isinstance(input_dir, six.string_types):
-            dir2 = replace_tags(
-                input_dir, new_variable, fx_var=fx_file)
-        elif _drs in input_dir:
-            try:
-                insts = cmip5_dataset2inst(new_variable['dataset'])
-            except KeyError as msg:
-                logger.debug('CMIP5 dataset2inst: %s', msg)
-                insts = 0
-            dirs2 = []
-            if isinstance(insts, list):
-                for inst_idx in range(len(insts)):
-                    dir2 = replace_tags(
-                        input_dir[_drs],
-                        new_variable,
-                        j=inst_idx,
-                        fx_var=fx_file)
-                    dirs2.append(dir2)
-            else:
-                dir2 = replace_tags(
-                    input_dir[_drs],
-                    new_variable,
-                    j=None,
-                    fx_var=fx_file)
-                dirs2.append(dir2)
-        else:
-            raise KeyError(
-                'drs {} for {} project not specified in config-developer file'
-                .format(_drs, project))
-
-        dirs.extend([os.path.join(dir1, dir_2) for dir_2 in dirs2])
-
-    return dirs
+        return rootpath[project]
+    if 'default' in rootpath:
+        return rootpath['default']
+    raise KeyError('default rootpath must be specified in config-user file')
 
 
-def get_input_filename(variable, rootpath, drs):
-    """Simulate a path to input file.
-
-    This function should match the function get_input_filelist below.
-    """
-    dirname_templates = get_input_dirname_template(variable, rootpath, drs)
-    for dirname_template in dirname_templates:
-        # Simulate a latest version if required
-        if '[latestversion]' in dirname_template:
-            part1, part2 = dirname_template.split('[latestversion]')
-            dirname = os.path.join(part1, 'latestversion', part2)
-        else:
-            dirname = dirname_template
-
-        # Set the filename
-        filename = _get_filename(variable, drs)
-        if filename.endswith('*'):
-            filename = filename.rstrip(
-                '*') + "{start_year}01-{end_year}12.nc".format(**variable)
-
-        # Full path to files
-        return os.path.join(dirname, filename)
-
-
-def _get_filename(variable, drs):
+def _find_input_dirs(variable, rootpath, drs, fx_var=None):
+    """Return a the full paths to input directories."""
     project = variable['project']
-    cfg = get_project_config(project)
 
-    input_file = cfg['input_file']
-    _drs = drs.get(project, 'default')
-    if not isinstance(input_file, six.string_types):
-        if _drs in input_file:
-            input_file = input_file[_drs]
+    root = get_rootpath(rootpath, project)
+    input_type = 'input_{}dir'.format('fx_' if fx_var else '')
+    path_template = _select_drs(input_type, drs, project)
+
+    dirnames = []
+    for dirname_template in _replace_tags(path_template, variable, fx_var):
+        dirname_template = os.path.join(root, dirname_template)
+        dirname = _resolve_latestversion(dirname_template)
+        if os.path.exists(dirname):
+            logger.debug("Found %s", dirname)
+            dirnames.append(dirname)
         else:
-            raise KeyError(
-                'drs {} for {} project not specified for input_file '
-                'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable)
-    return filename
+            logger.debug("Skipping non-existent %s", dirname)
+
+    return dirnames
 
 
-def _get_fx_filename(variable, drs, fx_var):
-    project = variable['project']
-    cfg = get_project_config(project)
+def _get_filename_glob(variable, drs, fx_var=None):
+    """Return a pattern that can be used to look for input files."""
+    input_type = 'input_{}file'.format('fx_' if fx_var else '')
+    path_template = _select_drs(input_type, drs, variable['project'])
+    filename_glob = _replace_tags(path_template, variable, fx_var)[0]
+    return filename_glob
 
-    input_file = cfg['fx_file']
-    _drs = drs.get(project, 'default')
-    if not isinstance(input_file, six.string_types):
-        if _drs in input_file:
-            input_file = input_file[_drs]
-        else:
-            raise KeyError(
-                'drs {} for {} project not specified for input_file '
-                'in config-developer file'.format(_drs, project))
-    filename = replace_tags(input_file, variable, fx_var=fx_var)
-    return filename
+
+def _find_input_files(variable, rootpath, drs, fx_var=None):
+    logger.debug("Looking for input %sfiles for variable %s of dataset %s",
+                 fx_var + ' fx ' if fx_var else '', variable['short_name'],
+                 variable['dataset'])
+
+    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
+    filename_glob = _get_filename_glob(variable, drs, fx_var)
+    files = find_files(input_dirs, filename_glob)
+
+    return files
 
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    all_files = []
-    dirname_templates = get_input_dirname_template(variable, rootpath, drs)
-    valid_dirs = []
-
-    for dirname_template in dirname_templates:
-        # Find latest version if required
-        if '[latestversion]' not in dirname_template:
-            valid_dirs.append(dirname_template)
-        else:
-            part1, part2 = dirname_template.split('[latestversion]')
-            part2 = part2.lstrip(os.sep)
-            if os.path.exists(part1):
-                list_versions = os.listdir(part1)
-                list_versions.sort(reverse=True)
-                if 'latest' in list_versions:
-                    list_versions.insert(
-                        0, list_versions.pop(list_versions.index('latest')))
-                for version in list_versions:
-                    dirname = os.path.join(part1, version, part2)
-                    if os.path.isdir(dirname):
-                        valid_dirs.append(dirname)
-                        break
-            else:
-                logger.debug('Path %s does not exist', part1)
-
-    # Set the filename glob
-    filename_glob = _get_filename(variable, drs)
-
-    if valid_dirs:
-        for dir_name in valid_dirs:
-            # Find files
-            files = find_files(dir_name, filename_glob)
-
-            # Select files within the required time interval
-            files = select_files(files, variable['start_year'],
-                                 variable['end_year'])
-            all_files.extend(files)
-    else:
-        all_files = []
-
-    return all_files
+    files = _find_input_files(variable, rootpath, drs)
+    files = select_files(files, variable['start_year'], variable['end_year'])
+    return files
 
 
 def get_input_fx_filelist(variable, rootpath, drs):
-    """Return the full path to input files."""
-    dirname_templates = get_input_fx_dirname_template(variable, rootpath, drs)
-    dirnames = []
-
-    for dirname_template in dirname_templates:
-        # Find latest version if required
-        if '[latestversion]' in dirname_template:
-            part1, part2 = dirname_template.split('[latestversion]')
-            part2 = part2.lstrip(os.sep)
-
-            # if part1 exists, check versioning
-            if os.path.exists(part1):
-                list_versions = os.listdir(part1)
-                list_versions.sort(reverse=True)
-                # check version names
-                for version in ['latest'] + list_versions:
-                    dirname = os.path.join(part1, version, part2)
-                    if os.path.isdir(dirname):
-                        dirnames.append(dirname)
-                        break
-
-        else:
-            dirname = dirname_template
-            dirnames.append(dirname)
-
-    filtered_fx_files = _filter_all_fx_files(dirnames, variable, drs)
-
-    return filtered_fx_files
-
-
-def _filter_all_fx_files(dirnames, variable, drs):
-    """Filter through and return all needed fx files"""
+    """Return a dict with the full path to fx input files."""
     fx_files = {}
     for fx_var in variable['fx_files']:
-        if not dirnames:
-            # No files
-            fx_files[fx_var] = None
-        else:
-            # Set the filename glob
-            filename_glob = _get_fx_filename(variable, drs, fx_var)
+        var = dict(variable)
+        var['mip'] = replace_mip_fx(fx_var)
+        table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
+        var['frequency'] = table.frequency
+        realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
+        var['modeling_realm'] = realm if realm else table.realm
 
-            # Find all possible files
-            all_files = [
-                find_files(dir_name, filename_glob) for dir_name in dirnames
-            ]
-            # filter out empty entries
-            all_files = [l for l in all_files if l]
-            if not all_files:
-                fx_files[fx_var] = None
-            else:
-                # Keep only the first entry
-                fx_files[fx_var] = [fx_ls[0] for fx_ls in all_files][0]
+        files = _find_input_files(var, rootpath, drs, fx_var)
+        fx_files[fx_var] = files[0] if files else None
 
     return fx_files
 
@@ -440,7 +269,7 @@ def get_output_file(variable, preproc_dir):
     outfile = os.path.join(
         preproc_dir,
         '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        replace_tags(cfg['output_file'], variable) + '.nc')
+        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
 
     return outfile
 
