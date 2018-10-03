@@ -1,7 +1,14 @@
 #### summary
 # This is an example recipe for a personal diagnostic
 # Author: Valeriu Predoi (valeriu.predoi@ncas.ac.uk)
-# Date: 27 September 2018
+# Date: 3 October 2018
+# Summary:
+# You can run any Python diagnostic of your choice
+# without installing ESMValTool as developer or git pushing.
+# Simply include the full path to your script of choice in script:
+# see example: script: /path/to/your/my_little_diagnostic.py
+# An example personal diagnostic can be found in:
+# esmvaltool/diag_scripts/examples/my_little_diagnostic.py
 ###########################################################################################################
 ---
 
@@ -26,8 +33,5 @@ diagnostics:
         fx_files: [sftlf, sftof, areacello]
     scripts:
       my_diagnostic:
-        script: personal_diagnostic.py
-        title: "My First Diagnostic"
-        myDiag: 'my_personal_diagnostic_example'   # replace as per the name of your module
-        myDiagPlace: '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu'   # replace with valid local path
+        script: /path/to/your/my_little_diagnostic.py
 

@@ -12,11 +12,14 @@ Pipe output through logger;
 import os
 
 import matplotlib
+# use this everytime you import matplotlib
+# modules; some machines dont have graphical interface (X)
 matplotlib.use('Agg')  # noqa
 
 import iris
 import matplotlib.pyplot as plt
 
+from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.preprocessor._area_pp import area_average
 
 
@@ -70,3 +73,9 @@ def plot_time_series(cfg):
         plt.close()
 
     return 'I made some plots!'
+
+
+if __name__ == '__main__':
+
+    with run_diagnostic() as config:
+        plot_time_series(config)

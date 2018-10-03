@@ -1,36 +1,34 @@
-This is a small personal diagnostic
+Instructiona for personal diagnostic
 ====================================
 
-Anyone can run this module, no matter where the location of it; this module and
-and of its alterations may be used as training wheels for the future ESMValTool
+Anyone can run a personal diagnostic, no matter where the location of it;
+there is no need to install esmvaltool in developer mode nor is it to
+git push or for that matter, do any git operations; the example recipe
+
+```
+esmvaltool/recipes/recipe_my_personal_diagnostic.yml
+```
+
+shows the use of running a personal diagnostic; the example
+
+```
+esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+```
+
+and any of its alterations may be used as training wheels for the future ESMValTool
 diagnostic developer. The purpose of this example is to familiarize the user with
 the framework of ESMValTool without the constraints of installing and running the
 tool as developer. 
 
 Functionality
 =============
-```
-my_personal_diagnostic_example
-```
-is a Python module and any other personal diagnostic that the user will compile has
-to be a Python module as well; this way ESMValTool's task interpreter can import the
-functions listed in the initialization script, e.g. here:
-```
-in __init__.py:
 
-from . import my_little_diagnostic
-
-analyses = [my_little_diagnostic.plot_time_series, ]
-```
-- this tells ESMValTool that a list of functions called `analyses` imported from
-`my_little_diagnostic` will e executed;
-- the relative import is executed at ESMValTool diagnostic level and therefore the
-module `my_personal_diagnostic_example` may be placed anywhere the user needs it to be,
-and it doesn't have to live inside ESMValTool's main diagnostic library.
-
-`my_little_diagnsotic` (or whatever the user will call their diagnostic) makes full use
+`my_little_diagnostic` (or whatever the user will call their diagnostic) makes full use
 of ESMValTool's preprocessor output (both phyisical files and run variables); this output
 comes in form of a nested dictionary, or config dictionary, see an example below;
+it also makes full use of the ability to call any of the preprocessor's functions,
+note that relative imports of modules from the esmvaltool package are allowed and
+work without altering the $PYTHONPATH.
 
 The user may parse this dictionary so that they execute a number of operations on the
 preprocessed data; for example the `my_little_diagnostic.plot_time_series` grabs the
@@ -42,16 +40,17 @@ please consult ESMValTool User Manual.
 
 Writing a basic recipe
 ======================
-The user will need to write a basic recipe to e able to run their own personal diagnostic.
+The user will need to write a basic recipe to be able to run their own personal diagnostic.
 An example of such a recipe is found in `esmvaltool/recipes/recipe_my_personal_diagnostic.yml`.
 For general guidelines with regards to ESMValTool recipes please consult the User Guide;
 the specific parameters needed by a recipe that runs a personal diagnostic are:
 
 ```
-        myDiag: 'my_personal_diagnostic_example'   # replace as per the name of your module
-        myDiagPlace: '/group_workspaces/jasmin2/cmip6_prep/esmvaltool_users/valeriu'   # replace with valid local path
+    scripts:
+      my_diagnostic:
+        script: /path/to/your/my_little_diagnostic.py        
 ```
-i.e. the name of the Python module that the user has just built and its location on a disk.
+i.e. the full path to the personal diagnostic that the user needs to run.
 
 Example of config dictionary
 ============================
