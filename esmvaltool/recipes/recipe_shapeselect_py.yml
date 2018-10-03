@@ -1,10 +1,11 @@
 ---
 
 datasets:
-  # - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2000}
+   - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1998,  end_year: 1999}
+ #  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+  #- {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+  #- {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+  #- {dataset: ERA-Interim, project: OBS, mip: Amon,    tier: 3,    type: reanaly,    version: 1,   start_year: 2000,  end_year: 2000}
 
 preprocessors:
 
@@ -26,14 +27,8 @@ diagnostics:
     scripts:
       script1:
         script: shapeselect/diag_shapeselect.py
-        #shppath: '/home/a001850/WORK/git/esmvaltool_input/hydrosheds/eu_bas_15s_beta.shp'
-        #shppath: '/home/a001850/tmp/testshp3.shp'
-        #shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp'
-        #shppath: '/data/proj/Fouh/FoUh/Staff/Peter.Berg/MAGIC/testshp7.shp' #/data/proj/Fouh/FoUh/Staff/Peter.Berg/MAGIC/testshp6.shp'
-        #shpidcol: 'BASIN_ID' #SUBID' #id' #BASIN_ID' #'id' # Name of column for polygon ids
-        shppath: '/home/a001850/WORK/git/esmvaltool_input/peterstest15.shp'
-        wgtmet: 'mean_inside' #'nearest_centroid' # Weighting method
-        #wgtmet: 'representative'
+        shppath: '/home/a001850/WORK/git/esmvaltool_input/MotalaStrom.shp'
+        wgtmet: 'mean_inside'
         write_xlsx: True
         write_netcdf: True
         evalplot: True #False #True
