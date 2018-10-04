@@ -867,7 +867,7 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
-            institute = get_institutes(variable['dataset'])
+            institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
             check_variable(variable, required_keys)
