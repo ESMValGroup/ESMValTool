@@ -46,14 +46,14 @@
 import sys
 import logging
 import os
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
 from netCDF4 import Dataset
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # noqa
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -157,7 +157,7 @@ def main(cfg):
     if cfg['write_plots']:
         oname = os.path.join(
             cfg['plot_dir'],
-            'ww09_metric_multimodelname.' + cfg['output_file_type'],
+            'ww09_metric_multimodel.' + cfg['output_file_type'],
         )
         logger.debug("Plotting results to %s", oname)
 
@@ -185,7 +185,7 @@ def main(cfg):
 #            ','.join(climofiles), 'ww09_ESMValTool.py', 'A_will_ke')
 
     if cfg['write_netcdf']:
-        oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodelname.nc')
+        oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodel.nc')
         logger.debug("Saving results to %s", oname)
         # convert strings
         str_out = np.array(models, dtype=object)
