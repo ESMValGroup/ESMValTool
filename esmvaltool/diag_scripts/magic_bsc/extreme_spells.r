@@ -58,14 +58,11 @@ end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
 # Which metric to be computed
 op <- as.character(params$operator)
-print(paste("OP:", op))
 qtile = params$quantile
-print(paste("QT:", qtile))
 spell_length <- params$min_duration
+season <- params$season
 
 reference_filenames <-  fullpath_filenames[reference_files]
-print(reference_filenames)
-print(var0)
 historical_data  <- Start(model = reference_filenames,
                          var = var0,
                          var_var = 'var_names',
@@ -124,29 +121,26 @@ for (i in 1 : length(projection_filenames)) {
     dim(projection_data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
     projection_data <- aperm(projection_data, c(1,2,5,4,3))
      attr(projection_data, "Variables")$dat1$time <- time
-    print(dim(projection_data))
 # ------------------------------
 
 
  heatwave <- WaveDuration(projection_data, threshold, op = op, spell.length = spell_length, by.seasons = TRUE, ncores = NULL)
 
 
-  if (var0 == "tasmax") {
-    ## Select summer season
-
+  if (season == "summer") {
     heatwave_season <- heatwave$result[seq(2, dim(heatwave$result)[1] - 2, by = 4), 1, 1, , ]
-    years <-  as.numeric(substr(start_projection, 1, 4)) : as.numeric(substr(end_projection, 1, 4))
-  } else {
+    years <-  heatwave$years[seq(2, length(heatwave$years) - 2, by = 4)]
+  } else if (season == "winter"){
     ##Select winter season
     heatwave_season <- heatwave$result[seq(1, dim(heatwave$result)[1] - 2, by = 4), 1, 1, , ]
-    years <-  as.numeric(substr(start_projection, 1, 4)) : as.numeric(substr(end_projection, 1, 4))
+    years <-  heatwave$years[seq(1, length(heatwave$years) - 1, by = 4)]
+  } else if (season == 'spring') {
+    heatwave_season <- heatwave$result[seq(3, dim(heatwave$result)[1] - 2, by = 4), 1, 1, , ]
+    years <-  heatwave$years[seq(3, length(heatwave$years) - 2, by = 4)]
+  } else {
+    heatwave_season <- heatwave$result[seq(4, dim(heatwave$result)[1] - 2, by = 4), 1, 1, , ]
+    years <-  heatwave$years[seq(4, length(heatwave$years) - 2, by = 4)]
   }
-
-
-    #print(lon)
-  #  print(lon)
-  #lon[lon > 180] <- lon[lon > 180] - 360
-  #lon_order <- sort(lon, index.return = TRUE)
 
   data <- heatwave_season
   names(dim(data)) <- c("time", "lon", "lat")
@@ -155,19 +149,19 @@ for (i in 1 : length(projection_filenames)) {
   attributes(lat) <- NULL
   dim(lon) <-  c(lon = length(lon))
   dim(lat) <- c(lat = length(lat))
-  time <- years
+  time <- as.numeric(substr(years, 1, 4))
   attributes(time) <- NULL
   dim(time) <- c(time = length(time))
- print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
+  print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
 
 
 dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
 dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
 dimtime <- ncdim_def(name = "time",  units = 'years since 0-0-0 00:00:00', vals = time, longname = "time")
 defdata <- ncvar_def(name = "duration", units = "days", dim = list(season = dimtime, lat = dimlat, lon = dimlon),
-                    longname = paste("Number of days during the peiode", start_projection, "-", end_projection, "in which", var0, "is", op, "than the", qtile, "quantile obtained from", start_reference, "-", end_reference))
+                    longname = paste("Number of days during the peiode", start_projection, "-", end_projection,"for", season, "in which", var0, "is", op, "than the", qtile, "quantile obtained from", start_reference, "-", end_reference))
 
-file <- nc_create(paste0(plot_dir, "/" ,var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"),
+file <- nc_create(paste0(plot_dir, "/" ,var0, "_extreme_spell_duration", season , "_", model_names, "_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"),
                 list(defdata))
 ncvar_put(file, defdata, data)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
@@ -176,15 +170,15 @@ nc_close(file)
 
   brks <- seq(0, 40, 4)
 
-  title <- paste0("Days JJA ", var0, " ", substr(start_projection, 1, 4), "-",
+  title <- paste0("Days ", season, " ", var0, " ", substr(start_projection, 1, 4), "-",
                   substr(end_projection, 1, 4), " ",op, " the ", qtile*100,
                   "th quantile for ",substr(start_reference, 1, 4), "-", substr(end_reference, 1, 4),
                   " (",rcp_scenario[i], ")")
-    print(dim(data))
+
   PlotEquiMap(Mean1Dim(data, 1), lat = lat, lon = lon, fill = FALSE,
               brks = brks, color_fun = clim.palette("yellowred"),
               units = paste0("Days" ), toptitle = title,
-              fileout = paste0(plot_dir,"/", var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i],
+              fileout = paste0(plot_dir,"/", var0, "_extreme_spell_duration", season, "_", model_names, "_", rcp_scenario[i],
                                "_", start_projection, "_", end_projection, ".png"),
               title_scale = 0.5)
 
