@@ -50,11 +50,11 @@ def read_config_user_file(config_file, recipe_name):
         cfg['config_developer_file'])
 
     for key in cfg['rootpath']:
-        root_path = cfg['rootpath'][key]
-        if isinstance(root_path, six.string_types):
-            cfg['rootpath'][key] = [_normalize_path(root_path)]
+        root = cfg['rootpath'][key]
+        if isinstance(root, six.string_types):
+            cfg['rootpath'][key] = [_normalize_path(root)]
         else:
-            cfg['rootpath'][key] = [_normalize_path(path) for path in root_path]
+            cfg['rootpath'][key] = [_normalize_path(path) for path in root]
 
     # insert a directory date_time_recipe_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -149,7 +149,7 @@ def get_project_config(project):
 def get_institutes(variable):
     """Return the institutes given the dataset name in CMIP5."""
     dataset = variable['dataset']
-    project = variable['project'] 
+    project = variable['project']
     logger.debug("Retrieving institutes for dataset %s", dataset)
     if 'institutes' in CFG[project]:
         return CFG[project]['institutes'].get(dataset, [])
