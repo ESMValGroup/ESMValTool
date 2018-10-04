@@ -218,7 +218,7 @@ def calc_toz(cubes):
     """Compute total column ozone from ozone mol fraction on pressure levels.
 
     The surface pressure is used as a lower integration bound. A fixed upper
-    integration bound of 100 Pa is used.
+    integration bound of 0 Pa is used.
 
     Arguments
     ----
@@ -234,7 +234,7 @@ def calc_toz(cubes):
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
-    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
+    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=0)
     toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
     toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
@@ -588,7 +588,7 @@ def calc_clhtkisccp(cubes):
     return clhtkisccp_cube
 
 
-def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
+def _pressure_level_widths(tro3_cube, ps_cube, top_limit=0):
     """Create a cube with pressure level widths.
 
     This is done by taking a 2D surface pressure field as lower bound.
