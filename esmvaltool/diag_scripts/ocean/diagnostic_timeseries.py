@@ -1,7 +1,7 @@
 """
 Diagnostic profile:
 
-Diagnostic to produce png images of the time development of a metric from
+Diagnostic to produce images of the time development of a metric from
 cubes. These plost show time on the x-axis and cube value (ie temperature) on
 the y-axis.
 
@@ -42,10 +42,12 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
+import matplotlib
+matplotlib.use('Agg')  # noqa
+import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -89,6 +91,9 @@ def make_time_series_plots(
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
@@ -107,16 +112,14 @@ def make_time_series_plots(
         plt.title(title)
         plt.legend(loc='best')
 
-        # Determine png filename:
+        # Determine image filename:
         if multi_model:
-            # path = diagtools.folder(
-            #     cfg['plot_dir']) + os.path.basename(filename).replace(
-            #         '.nc', '_timeseries_' + str(l) + '.png')
+
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -127,7 +130,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index) + '.png',
+                suffix='timeseries_' + str(layer_index) + image_extention,
             )
 
         # Saving files:
@@ -163,6 +166,9 @@ def multi_model_time_series(
         for layer in cubes:
             layers[layer] = True
 
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
     # Make a plot for each layer
     for layer in layers:
 
@@ -173,7 +179,10 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
-            color = cmap(index / (len(metadata) - 1.))
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
+            else:
+                color = 'blue'
 
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
@@ -220,7 +229,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'

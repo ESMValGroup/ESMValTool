@@ -12,6 +12,25 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def plot_results(cube, filename, cfg):
+    """Plot results."""
+    if cfg['write_netcdf']:
+        path = os.path.join(
+            cfg['work_dir'],
+            filename + '.nc',
+        )
+        logger.debug("Saving analysis results to %s", path)
+        iris.save(cube, target=path)
+
+    if cfg['write_plots'] and cfg.get('quickplot'):
+        path = os.path.join(
+            cfg['plot_dir'],
+            filename + '.' + cfg['output_file_type'],
+        )
+        logger.debug("Plotting analysis results to %s", path)
+        quickplot(cube, filename=path, **cfg['quickplot'])
+
+
 def main(cfg):
     """Compute the time average for each input dataset."""
     # Get a description of the preprocessed data that we will use as input.
@@ -28,8 +47,9 @@ def main(cfg):
 
     grouped_input_data = group_metadata(
         input_data, 'standard_name', sort='dataset')
-    logger.info("Example of how to group and sort input data by standard_name:"
-                "\n%s", pformat(grouped_input_data))
+    logger.info(
+        "Example of how to group and sort input data by standard_name:"
+        "\n%s", pformat(grouped_input_data))
 
     # Example of how to loop over variables/datasets in alphabetical order
     for standard_name in grouped_input_data:
@@ -45,21 +65,7 @@ def main(cfg):
             cube = cube.collapsed('time', iris.analysis.MEAN)
 
             name = os.path.splitext(os.path.basename(filename))[0] + '_mean'
-            if cfg['write_netcdf']:
-                path = os.path.join(
-                    cfg['work_dir'],
-                    name + '.nc',
-                )
-                logger.debug("Saving analysis results to %s", path)
-                iris.save(cube, target=path)
-
-            if cfg['write_plots'] and cfg.get('quickplot'):
-                path = os.path.join(
-                    cfg['plot_dir'],
-                    name + '.' + cfg['output_file_type'],
-                )
-                logger.debug("Plotting analysis results to %s", path)
-                quickplot(cube, filename=path, **cfg['quickplot'])
+            plot_results(cube, name, cfg)
 
 
 if __name__ == '__main__':
