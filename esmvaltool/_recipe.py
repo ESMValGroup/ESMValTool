@@ -369,7 +369,6 @@ def _get_dataset_info(dataset, variables):
     )
 
 
-
 def _dataset_to_file(variable, config_user):
     """Find the first file belonging to dataset from variable info."""
     files = get_input_filelist(
