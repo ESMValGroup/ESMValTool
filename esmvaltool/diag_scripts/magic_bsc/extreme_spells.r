@@ -2,7 +2,7 @@ library(yaml)
 library(s2dverification)
 library(startR)
 library(multiApply)
-library(devtools)
+library(ncdf4)
 library(climdex.pcic)
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
 library(parallel)
@@ -90,7 +90,9 @@ historical_data  <- Start(model = reference_filenames,
 # ------------------------------
 
 
-
+long_names <- attr(historical_data, "Variables")$common$tas$long_name
+projection <- attr(historical_data, "Variables")$common$tas$coordinates
+units <- (attr(historical_data,"Variables")$common)[[2]]$units
 
 
 base_range <- c(as.numeric(substr(start_reference, 1, 4)), as.numeric(substr(end_reference, 1, 4)))
@@ -147,53 +149,46 @@ for (i in 1 : length(projection_filenames)) {
   #lon_order <- sort(lon, index.return = TRUE)
 
   data <- heatwave_season
-  #  print(dim(data))
-  data <- aperm(data, c(3,2,1))
-  names(dim(data)) <- c("lon", "lat", "time")
+  names(dim(data)) <- c("time", "lon", "lat")
 
-  #data <- Subset(data, "lon", lon_order$ix)
-    #print(length(lon))
-
-
-  #lon <- lon_order$x
   attributes(lon) <- NULL
   attributes(lat) <- NULL
   dim(lon) <-  c(lon = length(lon))
   dim(lat) <- c(lat = length(lat))
-  metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE, prec='double'))))
-  attr(data, 'variables') <- metadata
   time <- years
   attributes(time) <- NULL
   dim(time) <- c(time = length(time))
-  metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'years since 0-0-0 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
-  attr(time, "variables") <- metadata
-  ArrayToNetCDF(list(metric= data, lat = lat, lon = lon, time = time),
-                paste0(plot_dir, "/" ,var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"))
+ print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
+
+
+dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
+dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
+dimtime <- ncdim_def(name = "time",  units = 'years since 0-0-0 00:00:00', vals = time, longname = "time")
+defdata <- ncvar_def(name = "duration", units = "days", dim = list(season = dimtime, lat = dimlat, lon = dimlon),
+                    longname = paste("Number of days during the peiode", start_projection, "-", end_projection, "in which", var0, "is", op, "than the", qtile, "quantile obtained from", start_reference, "-", end_reference))
+
+file <- nc_create(paste0(plot_dir, "/" ,var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"),
+                list(defdata))
+ncvar_put(file, defdata, data)
+#ncatt_put(file, 0, "Conventions", "CF-1.5")
+nc_close(file)
+
+
   brks <- seq(0, 40, 4)
+
   title <- paste0("Days JJA ", var0, " ", substr(start_projection, 1, 4), "-",
-                  substr(end_projection, 1, 4), " ",op, " the ", substr(as.character(qtile), 3, 4),
+                  substr(end_projection, 1, 4), " ",op, " the ", qtile*100,
                   "th quantile for ",substr(start_reference, 1, 4), "-", substr(end_reference, 1, 4),
                   " (",rcp_scenario[i], ")")
-#print(lon)
-    #print(lat)
-   dat <- Mean1Dim(data,3)
-
-  #  PlotEquiMap(dat, lat = 12:1, lon = 23:1, fill = FALSE, fileout = paste0(plot_dir,"/New_", var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i],
-    #                            "_", start_projection, "_", end_projection, ".pdf"))
-
-  PlotEquiMap(Mean1Dim(data, 3), lat = lat, lon = lon, fill = FALSE,
+    print(dim(data))
+  PlotEquiMap(Mean1Dim(data, 1), lat = lat, lon = lon, fill = FALSE,
               brks = brks, color_fun = clim.palette("yellowred"),
               units = paste0("Days" ), toptitle = title,
               fileout = paste0(plot_dir,"/", var0, "_extreme_spell_duration", "_",model_names,"_", rcp_scenario[i],
-                               "_", start_projection, "_", end_projection, ".pdf"),
+                               "_", start_projection, "_", end_projection, ".png"),
               title_scale = 0.5)
 
 }
-
-
-## Plots
-#source("https://earth.bsc.es/gitlab/rserrano/colorbar/raw/master/int_breaks.R")
-#new_breaks <- int_breaks(data[1, , ], method = "equal", zero_centered = FALSE, n=10)
 
 
 
