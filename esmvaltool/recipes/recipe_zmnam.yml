@@ -1,0 +1,29 @@
+---
+# FIXME datasets, in generl conform with other recipes...
+models:
+  - {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
+    #- {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
+
+preprocessors:
+  preproc:
+    extract_levels: false
+    #regrid:  
+    #    target_grid: 2.5x2.5
+    #    scheme: linear
+
+diagnostics:
+  zmnam:
+    description: Zonal mean Northern Annular Mode
+    variables: 
+        zg:
+          preprocessor: preproc
+          field: T3D
+    scripts: 
+        main: 
+          script: zmnam/zmnam.py                              
+          title: "Zonal mean NAM diagnostics"
+
+          ## Information required: 
+          ##path_diag_aux: '/work/users/irene/EnsClusTOOL/ESMValTool/esmvaltool/diag_scripts/aux/EnsClus/'
+          path_diag_aux: '/work/users/serva/ESMValTool/esmvaltool/diag_scripts/zmnam/'
+          diag_script_info: True

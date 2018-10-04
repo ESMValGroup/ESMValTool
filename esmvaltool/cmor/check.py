@@ -101,7 +101,7 @@ class CMORCheck(object):
         self._check_dim_names()
         self._check_coords()
         self._check_time_coord()
-        self._check_rank()
+        #self._check_rank()
 
         self.report_warnings(logger)
         self.report_errors()
