@@ -43,25 +43,20 @@
 ; ############################################################################
 """
 
-# Basic Python packages
-
 import sys
 import logging
 import os
-
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
-import netCDF4
 from netCDF4 import Dataset
-
-# ESMValTool defined Python packages
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
+import matplotlib
+matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 def main(cfg):
     """Run the diagnostic.
@@ -91,7 +86,7 @@ def main(cfg):
     modeltags = []
 
     for var in vars:
-       vartags.append("V_" + var)
+        vartags.append("V_" + var)
 
     # create list of dataset names (plot labels)
     models = []
@@ -106,43 +101,45 @@ def main(cfg):
         pointers = {}
 
         for var in vars:
-          selection = select_metadata(input_data, dataset=dataset, short_name=var)
-          if not selection:
-            missing_vars.append(var)
-          else:
-            key = var + '_nc'
-            pointers[key] = selection[0]['filename']
+            selection = select_metadata(input_data, dataset=dataset,
+                                        short_name=var)
+            if not selection:
+                missing_vars.append(var)
+            else:
+                key = var + '_nc'
+                pointers[key] = selection[0]['filename']
 
         # snow variable: use 'snc' if available or alternatively use 'snw'
 
         missing_snow = True
 
         for var in vars_plus:
-          selection = select_metadata(input_data, dataset=dataset, short_name=var)
-          key = var + '_nc'
-          if not selection:
-            logger.info("%s: no data for variable snc found, trying variable " \
-                        "snw instead", dataset)
-            pointers[key] = ""
-          else:
-            pointers[key] = selection[0]["filename"]
-            vartags.append('V_' + var)
-            missing_snow = False
-            break
+            selection = select_metadata(input_data, dataset=dataset,
+                                        short_name=var)
+            key = var + '_nc'
+            if not selection:
+                logger.info("%s: no data for variable snc found, trying "
+                            "variable snw instead", dataset)
+                pointers[key] = ""
+            else:
+                pointers[key] = selection[0]["filename"]
+                vartags.append('V_' + var)
+                missing_snow = False
+                break
 
         if missing_snow:
-           missing_vars.append(vars_plus[0] + " or " + vars_plus[1])
+            missing_vars.append(vars_plus[0] + " or " + vars_plus[1])
 
         for fn in pointers:
-          climofiles.append(','.join(fn))
+            climofiles.append(','.join(fn))
 
         # check if all variables are available
 
         if missing_vars:
-          printlist = ', '.join(missing_vars)
-          logger.error("error: the following variables are not available: %s",
-                       printlist)
-          raise Exception('Variables missing (see log file for details).')
+            printlist = ', '.join(missing_vars)
+            logger.error("error: the following variables are not "
+                         "available: %s", printlist)
+            raise Exception('Variables missing (see log file for details).')
 
         # calculate CREM
 
@@ -182,7 +179,8 @@ def main(cfg):
 #        ESMValMD("both",
 #            oname,
 #            basetags + ['DM_global', 'PT_bar'] + modeltags + vartags,
-#            'Cloud Regime Error Metric (CREM) following Williams and Webb (2009, Clim. Dyn.).',
+#            'Cloud Regime Error Metric (CREM) following Williams and Webb '
+#            '(2009, Clim. Dyn.).',
 #            '#ID_ww09_crem',
 #            ','.join(climofiles), 'ww09_ESMValTool.py', 'A_will_ke')
 
@@ -192,7 +190,7 @@ def main(cfg):
         # convert strings
         str_out = np.array(models, dtype=object)
         # open a new netCDF file for writing
-        ncfile = Dataset(oname, 'w') 
+        ncfile = Dataset(oname, 'w')
         # create the x dimension
         ncfile.createDimension('n', nummod)
         # create the variable
@@ -312,38 +310,30 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     npts = len(lons2)
     nrows = len(lats2)
 
-#    nt = len(Dataset(sSrcFilename, 'r', format='NETCDF3').variables['time'][:])
     nt = len(Dataset(sSrcFilename, 'r').variables['time'][:])
-#    f = nc.netcdf_file(sSrcFilename, 'r')
-#    time = f.variables['time'][:]
-#    nt = time.shape[0]  # number of time steps in netCDF
     data_rg = np.zeros((nt, nrows, npts))
     logger.debug('Number of data times in file %i', nt)
 
     # read data
     srcDataset = Dataset(sSrcFilename, 'r', format='NETCDF3')
     srcData = srcDataset.variables[sVarname]
-#    srcData = f.variables[sVarname][:, :, :]
 
     # grid of input data
     lats = srcDataset.variables['lat'][:]
     lons = srcDataset.variables['lon'][:]
-#    lats = f.variables['lat'][:]
-#    lons = f.variables['lon'][:]
 
     # create mask (missing values)
-#    data = np.ma.masked_equal(srcData, f.variables[sVarname]._FillValue)
     data = np.ma.masked_equal(srcData, srcData._FillValue)
 
     for iT in range(nt):    # range over fields in the file
-        data_rg[iT, :, :] = regrid(data[iT, :, :], lons, lats, lons2, lats2, False,
-                                   xCyclic=360.0)
+        data_rg[iT, :, :] = regrid(data[iT, :, :], lons, lats, lons2, lats2,
+                                   False, xCyclic=360.0)
 
     rgmasked = np.ma.masked_invalid(data_rg)
     np.ma.set_fill_value(rgmasked, 0.0)
 
-#    return data_rg
     return(np.ma.filled(rgmasked))
+
 
 def crem_calc(pointers):
     """
@@ -396,20 +386,22 @@ def crem_calc(pointers):
                         [0.423, 0.191, 0.139, 0.111, 0.094, 0.042, 999.9]])
 
     # Observed regime net cloud forcing (Figure 2f of WW09)
-    obs_ncf = np.array([[-10.14, -25.45, -5.80, -27.40, -16.83, -48.45, -55.84],
-                        [-13.67, -58.28, -36.26, -25.34, -64.27, -56.91, -11.63],
+    obs_ncf = np.array([[-10.14, -25.45, -5.80, -27.40, -16.83, -48.45,
+                         -55.84],
+                        [-13.67, -58.28, -36.26, -25.34, -64.27, -56.91,
+                         -11.63],
                         [-3.35, -16.66, -13.76, -8.63, -12.17, 1.45, 999.9]])
 
-    area_weights = np.array([0.342, 0.502, 0.156])   # aw in eq 3 of WW09
-    solar_weights = np.array([1.000, 0.998, 0.846])  # weighting for swcf to
-                                                     # account for lack of ISCCP
-                                                     # diagnostics during polar
-                                                     # night (p153 of WW09)
+    # aw in eq 3 of WW09
+    area_weights = np.array([0.342, 0.502, 0.156])
+    # weighting for swcf to account for lack of ISCCP diagnostics
+    # during polar night (p153 of WW09)
+    solar_weights = np.array([1.000, 0.998, 0.846])
 
-    nregimes = np.array([7, 7, 6])  # number of regimes in each region
-                                    # (Table 3 of WW09)
+    # number of regimes in each region (Table 3 of WW09)
+    nregimes = np.array([7, 7, 6])
 
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
 
     # Section to re-grid onto 2.5 degr lat long grid.
     # Note this has been tested with regular lat-long grids - other grid
@@ -437,36 +429,46 @@ def crem_calc(pointers):
     # Read in and regrid input data
 
     logger.debug('Reading and regridding albisccp_nc')
-    albisccp_data = read_and_regrid(pointers['albisccp_nc'], sVarnames[0], lons2, lats2)
+    albisccp_data = read_and_regrid(pointers['albisccp_nc'], sVarnames[0],
+                                    lons2, lats2)
 #    E.add_to_filelist(pointers['albisccp_nc'])
     logger.debug('Reading and regridding pctisccp_nc')
-    pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], sVarnames[1], lons2, lats2)
+    pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], sVarnames[1],
+                                    lons2, lats2)
 #    E.add_to_filelist(pointers['pctisccp_nc'])
     logger.debug('Reading and regridding cltisccp_nc')
-    cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], sVarnames[2], lons2, lats2)
+    cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], sVarnames[2],
+                                    lons2, lats2)
 #    E.add_to_filelist(pointers['cltisccp_nc'])
     logger.debug('Reading and regridding rsut_nc')
-    rsut_data = read_and_regrid(pointers['rsut_nc'], sVarnames[3], lons2, lats2)
+    rsut_data = read_and_regrid(pointers['rsut_nc'], sVarnames[3],
+                                lons2, lats2)
 #    E.add_to_filelist(pointers['rsut_nc'])
     logger.debug('Reading and regridding rsutcs_nc')
-    rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], sVarnames[4], lons2, lats2)
+    rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], sVarnames[4],
+                                  lons2, lats2)
 #    E.add_to_filelist(pointers['rsutcs_nc'])
     logger.debug('Reading and regridding rlut_nc')
-    rlut_data = read_and_regrid(pointers['rlut_nc'], sVarnames[5], lons2, lats2)
+    rlut_data = read_and_regrid(pointers['rlut_nc'], sVarnames[5],
+                                lons2, lats2)
 #    E.add_to_filelist(pointers['rlut_nc'])
     logger.debug('Reading and regridding rlutcs_nc')
-    rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], sVarnames[6], lons2, lats2)
+    rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], sVarnames[6],
+                                  lons2, lats2)
 #    E.add_to_filelist(pointers['rlutcs_nc'])
     logger.debug('Reading and regridding sic_nc')
-    sic_data = read_and_regrid(pointers['sic_nc'], sVarnames[8], lons2, lats2)
+    sic_data = read_and_regrid(pointers['sic_nc'], sVarnames[8],
+                               lons2, lats2)
 #    E.add_to_filelist(pointers['sic_nc'])
     if not pointers['snc_nc']:
         logger.debug('Reading and regridding snw_nc')
-        snc_data = read_and_regrid(pointers['snw_nc'], sVarnames[7], lons2, lats2)
+        snc_data = read_and_regrid(pointers['snw_nc'], sVarnames[7],
+                                   lons2, lats2)
 #        E.add_to_filelist(pointers['snw_nc'])
     else:
         logger.debug('Reading and regridding snc_nc')
-        snc_data = read_and_regrid(pointers['snc_nc'], sVarnames[7], lons2, lats2)
+        snc_data = read_and_regrid(pointers['snc_nc'], sVarnames[7],
+                                   lons2, lats2)
 #        E.add_to_filelist(pointers['snc_nc'])
 
     # -----------------------------------------------------------
@@ -489,7 +491,8 @@ def crem_calc(pointers):
 
     logger.debug('Assigning data to observational cloud regimes')
 
-    for region in range(3):  # over 3 regions (tropics, extra tropics, snow/ice)
+    # loop over 3 regions (tropics, extra tropics, snow/ice)
+    for region in range(3):
 
         # Set up validity mask for region
 
@@ -532,10 +535,11 @@ def crem_calc(pointers):
 
                 model_rfo[region, i] = float(count) / float(npoints)
                 model_ncf[region, i] = np.average(swcf_data_pts[mem]) \
-                                       * solar_weights[region] +      \
-                                       np.average(lwcf_data_pts[mem])
+                    * solar_weights[region] +                         \
+                    np.average(lwcf_data_pts[mem])
             else:
-                logger.info("Model does not reproduce all observed cloud regimes.")
+                logger.info("Model does not reproduce all observed cloud "
+                            "regimes.")
                 logger.info("Cannot calculate CREM. Abort.")
                 sys.exit()
                 model_rfo[region, i] = 0.0
@@ -544,14 +548,16 @@ def crem_calc(pointers):
     # Calculation of eq 3 in WW09
     for region in range(3):
         rCREMpd[region, 0:nregimes[region]] = area_weights[region] * \
-            (((model_ncf[region, 0:nregimes[region]] - obs_ncf[region, 0:nregimes[region]])
-            * obs_rfo[region, 0:nregimes[region]]) ** 2 +
-            ((model_rfo[region, 0:nregimes[region]] - obs_rfo[region, 0:nregimes[region]])
-            * obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
+            (((model_ncf[region, 0:nregimes[region]] -
+               obs_ncf[region, 0:nregimes[region]]) *
+             obs_rfo[region, 0:nregimes[region]]) ** 2 +
+             ((model_rfo[region, 0:nregimes[region]] -
+              obs_rfo[region, 0:nregimes[region]]) *
+             obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
 
     # Calculation of eq 4 in WW09
-    CREMpd = ((np.sum(rCREMpd[0, :] ** 2) + np.sum(rCREMpd[1, :] ** 2)
-               + np.sum(rCREMpd[2, 0:5] ** 2)) / 20.0) ** 0.5
+    CREMpd = ((np.sum(rCREMpd[0, :] ** 2) + np.sum(rCREMpd[1, :] ** 2) +
+               np.sum(rCREMpd[2, 0:5] ** 2)) / 20.0) ** 0.5
 
     # A perfect CREMpd with respect to ISCCP would be 0.0
     # An estimate of observational uncertainty (obtained by calculating CREMpd
