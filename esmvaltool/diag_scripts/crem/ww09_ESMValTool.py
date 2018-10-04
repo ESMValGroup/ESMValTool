@@ -570,6 +570,7 @@ def crem_calc(pointers):
 
     return CREMpd, rCREMpd
 
+
 if __name__ == '__main__':
 
     with run_diagnostic() as config:
