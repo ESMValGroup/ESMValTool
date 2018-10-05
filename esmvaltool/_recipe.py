@@ -17,6 +17,7 @@ from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
+from .cmor.fix import Fix
 from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
@@ -426,6 +427,9 @@ def _get_default_settings(variable, config_user, derive=False):
         'callback': concatenate_callback,
         'filename': variable['filename'],
         'metadata': variable,
+        'fixes': Fix.get_fixes(
+            variable['project'], variable['dataset'], variable['short_name']
+        ),
     }
     if not derive:
         settings['load_cubes']['constraints'] = variable['standard_name']

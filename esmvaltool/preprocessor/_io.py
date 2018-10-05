@@ -47,14 +47,23 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, filename, metadata, constraints=None, callback=None):
+def load_cubes(files, filename, metadata, constraints=None,
+               callback=None, fixes=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
-    cubes = iris.load_raw(files, constraints=constraints, callback=callback)
-    iris.util.unify_time_units(cubes)
+    cubes = iris.cube.CubeList()
+    for datafile in files:
+        raw_cubes = iris.load_raw(datafile, callback=callback)
+        if fixes:
+            for fix in fixes:
+                raw_cubes = fix.fix_raw_cubes(raw_cubes)
+        for raw_cube in raw_cubes:
+            cubes.append(raw_cube)
+
+    cubes = cubes.extract(constraints=constraints)
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
-
+    iris.util.unify_time_units(cubes)
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
