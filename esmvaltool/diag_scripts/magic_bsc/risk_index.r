@@ -84,39 +84,37 @@ historical_data <- Start(model = reference_filenames,
     lon_reorder = CircularSort(0, 360),
                          return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                          retrieve = TRUE)
+lat <- attr(historical_data, "Variables")$dat1$lat
+lon  <- attr(historical_data, "Variables")$dat1$lon
+long_names <- attr(historical_data, "Variables")$common$tas$long_name
+projection <- attr(historical_data, "Variables")$common$tas$coordinates
+
+print(dim(historical_data))
+jpeg(paste0(plot_dir, "/plot1.jpg"))
+PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
- lon <- attr(historical_data, "Variables")$dat1$lon
- lat <- attr(historical_data, "Variables")$dat1$lat
  time <- attr(historical_data, "Variables")$dat1$time
-    historical_data <- as.vector(historical_data)
-    dim(historical_data) <- c(model = 1, var = 1, lat = length(lat), lon = length(lon), time = length(time))
+ calendar <- attributes(time)$variables$time$calendar
+ if ((end_reference-start_reference + 1) * 12 == length(time)) {
+     time <-  seq(as.Date(paste(start_reference, '01', '01', sep = "-"), format = "%Y-%m-%d"), as.Date(paste(end_reference, '12', '01', sep = "-"), format = "%Y-%m-%d"), "month")
+ }
+ historical_data <- as.vector(historical_data)
+    dim(historical_data) <- c(model = 1, var = 1, lon = length(lon),  lat = length(lat), time = length(time))
 historical_data <- aperm(historical_data, c(1,2,5,3,4))
     attr(historical_data, "Variables")$dat1$time <- time
 # ------------------------------
+jpeg(paste0(plot_dir, "/plot2.jpg"))
+PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
 
-#print("real")
-#print(historical_data[1,1,1:13,1:2,1:2])
-#x <- as.vector(historical_data[1,1,,,])
-#print("vec")
-#print(x[1:9])
-#dim(x) <- c(lat = 12, lon = 12, time = 7300)
-#print("tras")
-#print(x[1:4, 1:5 ,1])
-#PlotEquiMap(x[,,2], lon=lon, lat=lat, filled =FALSE, fileout = paste0(plot_dir, "/Plots.png"))
 
 time_dimension <- which(names(dim(historical_data)) == "time")
 
-#lon[lon > 180] <- lon[lon > 180] - 360
-#lon_order <- sort(lon, index.return = TRUE)
-#historical_data <- Subset(historical_data, "lon", lon_order$ix)
-#lon <- lon_order$x
-
-#PlotEquiMap(historical_data[1,1,1,,], lon=lon, lat=lat, filled = FALSE, fileout = paste0(plot_dir, "/Plots1.png"))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
-# attributes(years) <- NULL
-# dim(years) <- c(length(years))
+
 dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
 model_dim <- which(names(dim(historical_data)) == "model")
@@ -150,6 +148,7 @@ for (m in 1 : length(metric)) {
                           threshold = thresholds, ncores = detectCores() - 1)
   } else {
     base_index <- Climdex(data = historical_data, metric = metric[m], ncores = detectCores() - 1)
+      print(dim(base_index))
   }
 
   base_sd[[m]] <- Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "sd")$output1
@@ -190,8 +189,8 @@ for (m in 1 : length(metric)) {
 
 print("AS")
 
-    ArrayToNetCDF(variable_list,
-                  paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", "historical", "_", start_reference, "_", end_reference, ".nc"))
+ #   ArrayToNetCDF(variable_list,
+ #                   paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", "historical", "_", start_reference, "_", end_reference, ".nc"))
   }
 }
 
@@ -211,16 +210,25 @@ for (i in 1 : length(projection_filenames)) {
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
     # ------------------------------
+jpeg(paste0(plot_dir, "/plot3.jpg"))
+PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
+    # ------------------------------
 # Provisional solution to error in dimension order:
  lon <- attr(projection_data, "Variables")$dat1$lon
  lat <- attr(projection_data, "Variables")$dat1$lat
  time <- attr(projection_data, "Variables")$dat1$time
+ if ((end_projection-start_projection + 1) * 12 == length(time)) {
+     time <-  seq(as.Date(paste(start_projection, '01', '01', sep = "-"), format = "%Y-%m-%d"), as.Date(paste(end_projection, '12', '01', sep = "-"), format = "%Y-%m-%d"), "month")
+ }
     projection_data <- as.vector(projection_data)
-    dim(projection_data) <- c(model = 1, var = 1, lat = length(lat), lon = length(lon), time = length(time))
+    dim(projection_data) <- c(model = 1, var = 1,  lon = length(lon), lat = length(lat), time = length(time))
     projection_data <- aperm(projection_data, c(1,2,5,3,4))
      attr(projection_data, "Variables")$dat1$time <- time
-    print(dim(projection_data))
 # ------------------------------
+jpeg(paste0(plot_dir, "/plot4.jpg"))
+PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+dev.off()
 
 
     #projection_data <- Subset(projection_data, "lon", lon_order$ix)
