@@ -9,7 +9,7 @@ class zg(Fix):
     """Class to fix clisccp"""
 
     def fix_raw_cubes(self, cubes):
-        zg_cube = cubes.extract(Constraint(var_name='zg'))[0]
+        zg_constraint = Constraint(cube_func=(lambda c: c.var_name == 'zg'))
+        zg_cube = cubes.extract(zg_constraint)[0]
         zg_cube.standard_name = 'geopotential_height'
         return cubes
-
