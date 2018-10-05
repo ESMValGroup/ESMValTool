@@ -121,9 +121,7 @@ dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
 model_dim <- which(names(dim(historical_data)) == "model")
 ###Compute the quantiles and standard deviation for the historical period.
-if (detrend == TRUE) {
-    historical_data <- Trend(historical_data,)
-}
+
 if (var0 == "tasmin") {
   metric <- "t10p"
   quantile <- 0.1

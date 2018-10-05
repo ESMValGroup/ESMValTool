@@ -36,10 +36,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      start_longitude: 0
+      start_longitude: -40
       end_longitude: 40
       start_latitude: 30
-      end_latitude: 50
+      end_latitude: 70
 
 
 diagnostics:
@@ -56,4 +56,4 @@ diagnostics:
         script: magic_bsc/risk_index.r #(in diag_scripts)
 
         metric: t90p
-        detrend: FALSE
+
