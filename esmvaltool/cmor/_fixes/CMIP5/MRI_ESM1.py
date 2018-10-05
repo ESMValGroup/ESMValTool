@@ -1,6 +1,7 @@
 """Fixes for MRI-ESM1 model"""
 from ..fix import Fix
 import iris
+import numpy as np
 
 
 class o2(Fix):
@@ -37,3 +38,21 @@ class o2(Fix):
 
         iris.save(cube, new_path)
         return new_path
+
+    def fix_data(self, cube):
+        """
+        Fix data
+
+        Fixes mask
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.data = np.ma.masked_where(cube.data == 0., cube.data)
+        return cube
