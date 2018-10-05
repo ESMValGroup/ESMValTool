@@ -42,6 +42,8 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
+import cftime
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
@@ -67,6 +69,49 @@ def timeplot(cube, **kwargs):
     else:
         times = diagtools.timecoord_to_float(cube.coord('time'))
         plt.plot(times, cube.data, **kwargs)
+
+
+def moving_average(cube, window ):
+    """
+    Make a moving average plot
+
+    the window is a string which isa number and a measuremet of time.
+    """
+    window = window.split()
+    window_len = int(window[0]) /2.
+    window_units = str(window[1])
+
+    if window_units not in ['days', 'day', 'dy',
+                            'months', 'month', 'mn',
+                            'years', 'yrs', 'year', 'yr']:
+        raise ValueError("Window_units not recognised %s",
+                         str(window_units))
+
+    data = cube.data
+    time_coord = cube.coord('time')
+    times = time_coord.units.num2date(time_coord.points)
+
+    datetime = diagtools.guess_calendar_datetime(cube)
+
+    output = []
+    for i,t in enumerate(times):
+        if window_units in ['years', 'yrs', 'year', 'yr']:
+            tmin = datetime(t.year - window_len, t.month, t.day, t.hour, t.minute)
+            tmax = datetime(t.year + window_len, t.month, t.day, t.hour, t.minute)
+
+        if window_units in ['months', 'month', 'mn',]:
+            tmin = datetime(t.year, t.month - window_len, t.day, t.hour, t.minute)
+            tmax = datetime(t.year, t.month + window_len, t.day, t.hour, t.minute)
+
+        if window_units in ['days', 'day', 'dy']:
+            tmin = datetime(t.year, t.month, t.day - window_len, t.hour, t.minute)
+            tmax = datetime(t.year, t.month, t.day + window_len, t.hour, t.minute)
+
+        arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
+
+        output.append(arr.mean())
+    cube.data = np.array(output)
+    return cube
 
 
 def make_time_series_plots(
@@ -97,6 +142,9 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
+        if 'moving_average' in cfg.keys():
+                cube_layer = moving_average(cube_layer,
+                                            cfg['moving_average'])
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -184,9 +232,15 @@ def multi_model_time_series(
             else:
                 color = 'blue'
 
+            # Take a moving average, if needed.
+            if 'moving_average' in cfg.keys():
+                cube = moving_average(model_cubes[filename][layer],
+                                            cfg['moving_average'])
+            else: cube = model_cubes[filename][layer]
+
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
                     ls=':',
@@ -200,7 +254,7 @@ def multi_model_time_series(
                 }
             else:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'])
                     ls='-',
