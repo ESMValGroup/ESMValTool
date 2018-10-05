@@ -70,8 +70,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-       - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-          start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+         start_year: 1986, end_year: 2005}
       - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
@@ -181,8 +181,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-       - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-          start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+         start_year: 1986, end_year: 2005}
       - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
@@ -292,8 +292,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      # - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-      #    start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+         start_year: 1986, end_year: 2005}
       - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
@@ -395,8 +395,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      # - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-      #    start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+         start_year: 1986, end_year: 2005}
       - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
@@ -495,10 +495,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      # iris reports problems caused by inconsistent latitude coordinates
-      # preventing calculation of netcre
-      # - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-      #    start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+         start_year: 1986, end_year: 2005}
       - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
