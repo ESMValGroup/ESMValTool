@@ -7,19 +7,14 @@
 
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
-library(startR)#, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
-#library(startR, lib.loc = '/home/Earth/nmanuben/tmp/startR_mod/startR.Rcheck')
+library(startR)
 library(multiApply)
 library(ggplot2)
 library(yaml)
-#library(climdex.pcic)
-library(devtools)
+library(ncdf4)
 library(parallel)
 
 ##Until integrated into current version of s2dverification
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Climdex.R')
-#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
 library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
 
 #Parsing input file paths and creating output dirs
@@ -61,8 +56,6 @@ start_projection <- c(unlist(unname(start_projection))[projection_files])[1]
 end_projection <- lapply(input_files_per_var, function(x) x$end_year)
 end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
-print(start_reference)
-print(end_reference)
 
 ## Do not print warnings
 #options(warn=-1)
@@ -70,7 +63,6 @@ print(end_reference)
 
 # Which metric to be computed
 metric <- params$metric
-detrend <- params$detrend
 
 reference_filenames <-  fullpath_filenames[reference_files]
 
@@ -89,10 +81,10 @@ lon  <- attr(historical_data, "Variables")$dat1$lon
 long_names <- attr(historical_data, "Variables")$common$tas$long_name
 projection <- attr(historical_data, "Variables")$common$tas$coordinates
 
-print(dim(historical_data))
-jpeg(paste0(plot_dir, "/plot1.jpg"))
-PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+
+#jpeg(paste0(plot_dir, "/plot1.jpg"))
+#PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
  time <- attr(historical_data, "Variables")$dat1$time
@@ -105,9 +97,9 @@ dev.off()
 historical_data <- aperm(historical_data, c(1,2,5,3,4))
     attr(historical_data, "Variables")$dat1$time <- time
 # ------------------------------
-jpeg(paste0(plot_dir, "/plot2.jpg"))
-PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot2.jpg"))
+#PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 
 
 time_dimension <- which(names(dim(historical_data)) == "time")
@@ -162,36 +154,6 @@ for (m in 1 : length(metric)) {
     base_mean_historical <- InsertDim(base_mean[[m]], 1, dim(base_index$result)[1])
   }
   historical_index_standardized <- (base_index$result - base_mean_historical) / base_sd_historical[[m]]
- #   print(str(historical_index_standardized))
- #   print(dim(historical_index_standardized))
- #   print(attributes(historical_index_standardized))
-  for (mod in 1 : dim(historical_data)[model_dim]) {
-    historical_index_standardized <- aperm(historical_index_standardized[,mod,1, ,], c(3,2,1))
-    names(dim(historical_index_standardized)) <- c("lon", "lat", "time")
-    metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE, prec='double'))))
-    names(metadata)[1] <- var0
-    attr(historical_index_standardized, 'variables') <- metadata
-    day <- "01"
-    month <- "-01-"
-    time <- as.numeric(base_index$years)
-    time <- as.POSIXct(paste0(time, month, day), tz = "CET")
-    time <- julian(time, origin = as.POSIXct("1970-01-01"))
-
-    attributes(time) <- NULL
-    dim(time) <- c(time = length(time))
-    metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
-    attr(time, "variables") <- metadata
-         print(str(historical_index_standardized))
-    print(dim(historical_index_standardized))
-    print(attributes(historical_index_standardized))
-    variable_list <- list(index = historical_index_standardized, lat = lat, lon = lon, time = time)
-    names(variable_list)[1] <- var0
-
-print("AS")
-
- #   ArrayToNetCDF(variable_list,
- #                   paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", "historical", "_", start_reference, "_", end_reference, ".nc"))
-  }
 }
 
 
@@ -209,10 +171,11 @@ for (i in 1 : length(projection_filenames)) {
                         lon_reorder = CircularSort(0, 360),
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
+     units <- (attr(projection_data,"Variables")$common)[[2]]$units
     # ------------------------------
-jpeg(paste0(plot_dir, "/plot3.jpg"))
-PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot3.jpg"))
+#PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
     # ------------------------------
 # Provisional solution to error in dimension order:
  lon <- attr(projection_data, "Variables")$dat1$lon
@@ -226,13 +189,10 @@ dev.off()
     projection_data <- aperm(projection_data, c(1,2,5,3,4))
      attr(projection_data, "Variables")$dat1$time <- time
 # ------------------------------
-jpeg(paste0(plot_dir, "/plot4.jpg"))
-PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot4.jpg"))
+#PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+#dev.off()
 
-
-    #projection_data <- Subset(projection_data, "lon", lon_order$ix)
-    #lon <- lon_order$x
     if (var0 == "pr") {
       projection_data <- projection_data * 60 * 60 * 24
     } else if (var0 == "sfcWind") {
@@ -249,53 +209,36 @@ dev.off()
       projection_index <- Climdex(data = projection_data, metric = metric[m],
                                   ncores = detectCores() - 1)
       projection_mean <- InsertDim(base_mean[[m]], 1, dim(projection_index$result)[1])
-
     }
 
     base_sd_proj <- InsertDim(base_sd[[m]], 1, dim(projection_index$result)[1])
     projection_index_standardized <- (projection_index$result - projection_mean) / base_sd_proj
-#print("PROJ")
-#print(str(projection_index_standardized))
- #   print(dim(projection_index_standardized))#
-      # print(attributes(projection_index_standardized))
+
     for (mod in 1 : dim(projection_data)[model_dim]) {
-        projection_index_standardized <- aperm(projection_index_standardized[,mod,1, ,], c(3,2,1))
-      names(dim(projection_index_standardized)) <- c("lon", "lat", "time")
-
-      metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE, prec = 'double'))))
-      names(metadata)[1] <- var0
-        attr(projection_index_standardized, 'variables') <- metadata
-
-      day <- "01"
-      month <- "-01-"
-        time <- as.numeric(projection_index$years)
-      time <- as.POSIXct(paste0(time, month, day), tz = "CET")
-      time <- as.numeric(julian(time, origin = as.POSIXct("1970-01-01")))
-
-      attributes(time) <- NULL
-        #attributes(lat) <- NULL
-        #attributes(lon) <- NULL
-
-      dim(time) <- c(time = length(time))
-      metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
-      attr(time, "variables") <- metadata
-        names(variable_list)[1] <- var0
 
 
-      variable_list <- list(index = projection_index_standardized, lat = lat, lon = lon, time = time)
+        data <- drop(Mean1Dim(projection_index_standardized, 1))
+print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
 
-print("dr")
+dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
+dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
+defdata <- ncvar_def(name = "data", units = units, dim = list(lat = dimlat, lon = dimlon), longname = paste('Mean',metric[m], long_names))
 
-   #   ArrayToNetCDF(variable_list,
-    #                paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".nc"))
+file <- nc_create(paste0(plot_dir, "/", var0, "_risk_insurance_index_",
+              model_names, "_", start_projection, "_", end_projection, "_", start_reference, "_", end_reference, ".nc"), list(defdata))
+ncvar_put(file, defdata, data)
+
+#ncatt_put(file, 0, "Conventions", "CF-1.5")
+nc_close(file)
+
 
       title <- paste0("Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
                       substr(end_projection, 1, 4), " ",
-                      " (",rcp_scenario[i], ")")
+                      " (",rcp_scenario[i]," ", model_names ,")")
       breaks <- -8 : 8
-      PlotEquiMap(Mean1Dim(projection_index_standardized, 3), lon = lon, lat = lat, filled.continents = FALSE,
+      PlotEquiMap(data, lon = lon, lat = lat, filled.continents = FALSE,
                   toptitle = title, brks = breaks,
-                  fileout = paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".pdf"))
+                  fileout = paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".png"))
       }
   }
 
