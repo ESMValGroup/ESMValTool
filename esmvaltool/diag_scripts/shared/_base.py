@@ -99,7 +99,7 @@ class ProvenanceLogger(object):
 
     def __init__(self, cfg):
         """Create a provenance logger."""
-        self._log_file = os.path.join(cfg['work_dir'],
+        self._log_file = os.path.join(cfg['run_dir'],
                                       'diagnostic_provenance.yml')
 
         if not os.path.exists(self._log_file):
