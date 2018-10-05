@@ -90,6 +90,7 @@ def make_map_plots(
         layer = str(layer)
 
         # cube_layer = regrid_irregulars(cube_layer)
+        #iris.plot.contourf(cube_layer, 25, linewidth=0, rasterized=True)
         qplt.contourf(cube_layer, 25, linewidth=0, rasterized=True)
 
         try:
@@ -374,12 +375,13 @@ def main(cfg):
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 
-        #######
-        # Multi model contour plots
-        multi_model_contours(
-            cfg,
-            metadatas,
-        )
+        if 'threshold' in cfg.keys() or 'thresholds' in cfg.keys():
+            #######
+            # Multi model contour plots
+            multi_model_contours(
+                cfg,
+                metadatas,
+            )
 
         for filename in sorted(metadatas.keys()):
 
