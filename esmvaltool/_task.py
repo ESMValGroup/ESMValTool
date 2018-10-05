@@ -1,4 +1,4 @@
-"""ESMValtool task definition"""
+"""ESMValtool task definition."""
 import contextlib
 import datetime
 import errno
@@ -12,6 +12,8 @@ from multiprocessing import Pool, cpu_count
 
 import psutil
 import yaml
+
+from esmvaltool._provenance import ProvenanceProduct
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +119,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
     logger.debug("Writing NCL configuration file %s", filename)
 
     def _format(value):
-        """Format string or list as NCL"""
+        """Format string or list as NCL."""
         if value is None or isinstance(value, str):
             txt = '"{}"'.format(value)
         elif isinstance(value, (list, tuple)):
@@ -131,7 +133,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
         return txt
 
     def _format_dict(name, dictionary):
-        """Format dict as NCL"""
+        """Format dict as NCL."""
         lines = ['{} = True'.format(name)]
         for key, value in sorted(dictionary.items()):
             lines.append('{}@{} = {}'.format(name, key, _format(value)))
@@ -158,7 +160,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
 
 
 class BaseTask(object):
-    """Base class for defining task classes"""
+    """Base class for defining task classes."""
 
     def __init__(self, ancestors=None, name=''):
         """Initialize task."""
@@ -202,17 +204,30 @@ class BaseTask(object):
 
 
 class DiagnosticError(Exception):
-    """Error in diagnostic"""
+    """Error in diagnostic."""
+
+
+class DiagnosticProduct(ProvenanceProduct):
+    """Diagnostic product."""
+
+    def _initialize_entity(self):
+        """Inialize the entity representing the product."""
+        settings = {
+            'diagnostic:' + k: str(v)
+            for k, v in self.settings.items()
+        }
+        self.entity = self.provenance.entity('file:' + self.filename, settings)
 
 
 class DiagnosticTask(BaseTask):
-    """Task for running a diagnostic"""
+    """Task for running a diagnostic."""
 
     def __init__(self, script, settings, output_dir, ancestors=None, name=''):
-        """Initialize"""
+        """Create a diagnostic task."""
         super(DiagnosticTask, self).__init__(ancestors=ancestors, name=name)
         self.script = script
         self.settings = settings
+        self.products = None
         self.output_dir = output_dir
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
@@ -243,8 +258,10 @@ class DiagnosticTask(BaseTask):
                 profile_file = os.path.join(self.settings['run_dir'],
                                             'profile.bin')
                 executables = {
-                    'py': [which('python'), '-m', 'vmprof', '--lines',
-                           '-o', profile_file],
+                    'py': [
+                        which('python'), '-m', 'vmprof', '--lines', '-o',
+                        profile_file
+                    ],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript'), '--slave', '--quiet'],
                 }
@@ -261,7 +278,7 @@ class DiagnosticTask(BaseTask):
         return cmd
 
     def write_settings(self):
-        """Write settings to file"""
+        """Write settings to file."""
         run_dir = self.settings['run_dir']
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
@@ -279,7 +296,7 @@ class DiagnosticTask(BaseTask):
         return filename
 
     def _write_ncl_settings(self):
-        """Write settings to NCL file"""
+        """Write settings to NCL file."""
         filename = os.path.join(self.settings['run_dir'], 'settings.ncl')
 
         config_user_keys = {
@@ -444,11 +461,36 @@ class DiagnosticTask(BaseTask):
                 time.sleep(0.001)
 
         if returncode == 0:
+            self._collect_products()
             return [self.output_dir]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
             "in {}".format(self.script, returncode, self.log))
+
+    def _collect_products(self):
+        """Process provenance information provided by the diagnostic script."""
+        provenance_file = os.path.join(self.settings['run_dir'],
+                                       'diagnostic_provenance.yml')
+        if not os.path.exists(provenance_file):
+            raise ValueError(
+                "No provenance information was written to {}".format(
+                    provenance_file))
+        with open(provenance_file, 'r') as file:
+            table = yaml.safe_load(file)
+
+        ancestor_products = {p for a in self.ancestors for p in a.products}
+        self.products = set()
+        for filename, settings in table.items():
+            ancestor_files = settings.pop('ancestors', [])
+            ancestors = {
+                p
+                for p in ancestor_products if p.filename in ancestor_files
+            }
+            product = DiagnosticProduct(filename, settings, ancestors)
+            product.initialize_provenance(self)
+            product.save_provenance()
+            self.products.add(product)
 
     def __str__(self):
         """Get human readable description."""
@@ -485,7 +527,7 @@ def run_tasks(tasks, max_parallel_tasks=None):
 
 
 def _run_tasks_sequential(tasks):
-    """Run tasks sequentially"""
+    """Run tasks sequentially."""
     n_tasks = len(get_flattened_tasks(tasks))
     logger.info("Running %s tasks sequentially", n_tasks)
 
@@ -494,7 +536,7 @@ def _run_tasks_sequential(tasks):
 
 
 def _run_tasks_parallel(tasks, max_parallel_tasks=None):
-    """Run tasks in parallel"""
+    """Run tasks in parallel."""
     scheduled = get_flattened_tasks(tasks)
     running = []
     results = []

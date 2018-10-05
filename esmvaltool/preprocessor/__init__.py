@@ -2,13 +2,11 @@
 import copy
 import inspect
 import logging
-import os
 
 import six
-from iris.cube import Cube, CubeList
-from prov.dot import prov_to_dot
-from prov.model import ProvDocument
+from iris.cube import Cube
 
+from .._provenance import ProvenanceProduct
 from .._task import BaseTask
 from ._area_pp import area_average as average_region
 from ._area_pp import area_slice as extract_region
@@ -117,8 +115,8 @@ def _get_itype(step):
 
 
 # Check that the input type of all preprocessor functions is valid
-for step in DEFAULT_ORDER:
-    _get_itype(step)
+for _step in DEFAULT_ORDER:
+    _get_itype(_step)
 
 
 def check_preprocessor_settings(settings):
@@ -220,7 +218,7 @@ def preprocess(items, step, **settings):
 
     items = []
     for item in result:
-        if isinstance(item, (Product, Cube, six.string_types)):
+        if isinstance(item, (PreprocessorProduct, Cube, six.string_types)):
             items.append(item)
         else:
             items.extend(item)
@@ -243,36 +241,26 @@ def get_step_blocks(steps, order):
     return blocks
 
 
-class Product(object):
+class PreprocessorProduct(ProvenanceProduct):
     def __init__(self, metadata, settings, ancestors=None, input_files=None):
-        self._filename = metadata['filename']
+        super(PreprocessorProduct, self).__init__(metadata['filename'],
+                                                  settings, ancestors)
+        self._input_files = [] if input_files is None else input_files
+
         self.metadata = copy.deepcopy(metadata)
-        self.settings = copy.deepcopy(settings)
+
         if 'save' not in self.settings:
             self.settings['save'] = {}
         self.settings['save']['filename'] = self.filename
+
         self.files = [a.filename for a in ancestors or ()]
         self.files.extend(input_files or [])
 
         self._cubes = None
         self._prepared = False
 
-        # Set up provenance attributes
-        self.provenance = None
-        self.entity = None
-        self._ancestors = [] if ancestors is None else ancestors
-        self._input_files = [] if input_files is None else input_files
-        self._activity = None
-
     def __str__(self):
-        return 'Product {}'.format(self.filename)
-
-    def __hash__(self):
-        return hash(self.filename)
-
-    @property
-    def filename(self):
-        return self._filename
+        return 'PreprocessorProduct {}'.format(self.filename)
 
     def check(self):
         """Check preprocessor settings."""
@@ -280,8 +268,9 @@ class Product(object):
 
     def apply(self, step, debug=False):
         if step not in self.settings:
-            raise ValueError("Product {} has no settings for step {}".format(
-                self, step))
+            raise ValueError(
+                "PreprocessorProduct {} has no settings for step {}".format(
+                    self, step))
         self.cubes = preprocess(self.cubes, step, **self.settings[step])
         if debug:
             logger.debug("Result %s", self.cubes)
@@ -329,22 +318,10 @@ class Product(object):
 
     def initialize_provenance(self, task):
         """Initialize the provenance document."""
-        if self.provenance is not None:
-            raise ValueError(
-                "Provenance of {} already initialized".format(self))
-        self.provenance = ProvDocument()
-        self.initialize_prov_namespaces()
-        self.initialize_prov_entity()
-        self.initialize_prov_activity(task)
-        self.initialize_prov_input()
+        super(PreprocessorProduct, self).initialize_provenance(task)
+        self._initialize_input()
 
-    def initialize_prov_namespaces(self):
-        """Inialize the namespaces."""
-        for nsp in ('file', 'attribute', 'preprocessor', 'task'):
-            self.provenance.add_namespace(nsp,
-                                          'http://www.esmvaltool.org/' + nsp)
-
-    def initialize_prov_entity(self):
+    def _initialize_entity(self):
         """Inialize the entity representing the product."""
         attributes = {
             'attribute:' + k: str(v)
@@ -358,35 +335,12 @@ class Product(object):
         self.entity = self.provenance.entity('file:' + self.filename,
                                              attributes)
 
-    def initialize_prov_activity(self, task):
-        """Initialize the preprocessor task activity."""
-        self._activity = self.provenance.activity('task:' + task.name)
-
-    def initialize_prov_input(self):
-        """Register input Products/files for provenance tracking."""
-        for ancestor in self._ancestors:
-            if ancestor.provenance is None:
-                raise ValueError("Uninitalized ancestor provenance.")
-            self.provenance.update(ancestor.provenance)
-            self.wasderivedfrom(ancestor)
+    def _initialize_input(self):
+        """Register input files for provenance tracking."""
         for input_file in self._input_files:
             file = self.provenance.entity('file:' + input_file)
             # TODO: get tracking id
             self.wasderivedfrom(file)
-
-    def wasderivedfrom(self, other):
-        """Let the product know that it was derived from other."""
-        entity = other.entity if hasattr(other, 'entity') else other
-        if not self._activity:
-            raise ValueError("Activity not initialized.")
-        self.entity.wasDerivedFrom(entity, self._activity)
-
-    def save_provenance(self):
-        """Export provenance information."""
-        filename = os.path.splitext(self.filename)[0]
-        self.provenance.serialize(filename + '.xml', format='xml')
-        figure = prov_to_dot(self.provenance)
-        figure.write_png(filename + '.png')
 
 
 # TODO: use a custom ProductSet that raises an exception if you try to

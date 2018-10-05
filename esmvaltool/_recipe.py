@@ -1,4 +1,4 @@
-"""Recipe parser"""
+"""Recipe parser."""
 import copy
 import fnmatch
 import logging
@@ -11,14 +11,15 @@ from . import __version__
 from . import _recipe_checks as check
 from ._config import get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
-                           get_output_file, get_rootpath, get_start_end_year,
+                           get_output_file, get_rootpath,
                            get_statistic_output_file)
-from ._provenance import get_recipe_provenance, write_provenance
+from ._provenance import get_recipe_provenance
 from ._recipe_checks import RecipeError
-from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
+from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
 from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
-                           MULTI_MODEL_FUNCTIONS, PreprocessingTask, Product)
+                           MULTI_MODEL_FUNCTIONS, PreprocessingTask,
+                           PreprocessorProduct)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -30,13 +31,13 @@ TASKSEP = os.sep
 
 
 def ordered_safe_load(stream):
-    """Load a YAML file using OrderedDict instead of dict"""
+    """Load a YAML file using OrderedDict instead of dict."""
 
     class OrderedSafeLoader(yaml.SafeLoader):
-        """Loader class that uses OrderedDict to load a map"""
+        """Loader class that uses OrderedDict to load a map."""
 
     def construct_mapping(loader, node):
-        """Load a map as an OrderedDict"""
+        """Load a map as an OrderedDict."""
         loader.flatten_mapping(node)
         return OrderedDict(loader.construct_pairs(node))
 
@@ -339,7 +340,7 @@ def _get_default_settings(variable, config_user, derive=False):
 
 
 def _update_fx_settings(settings, variable, config_user):
-    """Find and set the FX mask settings"""
+    """Find and set the fx mask settings."""
     if 'mask_landsea' in settings:
         logger.debug('Getting fx mask settings now...')
 
@@ -377,7 +378,7 @@ def _update_fx_settings(settings, variable, config_user):
 
 
 def _get_input_files(variable, config_user):
-    """Get the input files for a single dataset"""
+    """Get the input files for a single dataset."""
     # Find input files locally.
     input_files = get_input_filelist(
         variable=variable,
@@ -469,7 +470,7 @@ def _update_statistic_settings(products, order, preproc_dir):
         metadata['filename'] = get_statistic_output_file(metadata, preproc_dir)
         common_settings = _get_remaining_common_settings(step, order, products)
         ancestors = {p for p in products if step in p.settings}
-        statistic_product = Product(
+        statistic_product = PreprocessorProduct(
             metadata, common_settings, ancestors=ancestors)
         for product in products:
             if step in product.settings:
@@ -542,7 +543,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             input_files = None
         else:
             input_files = _get_input_files(variable, config_user)
-        product = Product(
+        product = PreprocessorProduct(
             metadata=variable,
             settings=settings,
             ancestors=ancestors,
@@ -582,7 +583,7 @@ def split_settings(settings, step, order=DEFAULT_ORDER):
 
 
 def _split_derive_profile(profile):
-    """Split the derive preprocessor profile"""
+    """Split the derive preprocessor profile."""
     order = _extract_preprocessor_order(profile)
     before, after = split_settings(profile, 'derive', order)
     after['derive'] = {}
@@ -697,7 +698,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
 
 
 class Recipe(object):
-    """Recipe object"""
+    """Recipe object."""
 
     def __init__(self,
                  raw_recipe,
@@ -746,7 +747,7 @@ class Recipe(object):
         return doc
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
-        """Define diagnostics in recipe"""
+        """Define diagnostics in recipe."""
         logger.debug("Retrieving diagnostics from recipe")
 
         diagnostics = {}
@@ -772,7 +773,7 @@ class Recipe(object):
 
     @staticmethod
     def _initialize_datasets(raw_datasets):
-        """Define datasets used by variable"""
+        """Define datasets used by variable."""
         datasets = copy.deepcopy(raw_datasets)
 
         for dataset in datasets:
@@ -830,7 +831,7 @@ class Recipe(object):
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
                                         raw_datasets):
-        """Define variables in diagnostic"""
+        """Define variables in diagnostic."""
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -849,7 +850,7 @@ class Recipe(object):
 
     def _initialize_scripts(self, diagnostic_name, raw_scripts,
                             variable_names):
-        """Define script in diagnostic"""
+        """Define script in diagnostic."""
         if not raw_scripts:
             return {}
 
@@ -889,7 +890,7 @@ class Recipe(object):
         return scripts
 
     def _resolve_diagnostic_ancestors(self, tasks):
-        """Resolve diagnostic ancestors"""
+        """Resolve diagnostic ancestors."""
         for diagnostic_name, diagnostic in self.diagnostics.items():
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
@@ -909,11 +910,10 @@ class Recipe(object):
                     tasks[task_id].ancestors = ancestors
 
     def initialize_tasks(self):
-        """Define tasks in recipe"""
+        """Define tasks in recipe."""
         logger.info("Creating tasks from recipe")
         tasks = {}
 
-        provenance = get_recipe_provenance(self.documentation)
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
@@ -958,3 +958,7 @@ class Recipe(object):
         """Run all tasks in the recipe."""
         run_tasks(
             self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
+        self._collect_provenance()
+
+    def _collect_provenance(self):
+        provenance = get_recipe_provenance(self.documentation)
