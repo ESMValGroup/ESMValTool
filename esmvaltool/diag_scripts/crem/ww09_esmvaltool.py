@@ -140,9 +140,9 @@ def main(cfg):
 
         # calculate CREM
 
-        (CREMpd, __) = crem_calc(pointers)
+        (crem_pd, __) = crem_calc(pointers)
 
-        crems[i] = CREMpd
+        crems[i] = crem_pd
         i = i + 1
 
     logger.info("------------------------------------")
@@ -546,12 +546,12 @@ def crem_calc(pointers):
     # Calculation of eq 3 in WW09
     for region in range(3):
         r_crem_pd[region, 0:nregimes[region]] = area_weights[region] * \
-              (((model_ncf[region, 0:nregimes[region]] -
-                 obs_ncf[region, 0:nregimes[region]]) *
-                obs_rfo[region, 0:nregimes[region]]) ** 2 +
-               ((model_rfo[region, 0:nregimes[region]] -
-                 obs_rfo[region, 0:nregimes[region]]) *
-                obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
+            (((model_ncf[region, 0:nregimes[region]] -
+               obs_ncf[region, 0:nregimes[region]]) *
+              obs_rfo[region, 0:nregimes[region]]) ** 2 +
+             ((model_rfo[region, 0:nregimes[region]] -
+               obs_rfo[region, 0:nregimes[region]]) *
+              obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
 
     # Calculation of eq 4 in WW09
     crem_pd = ((np.sum(r_crem_pd[0, :] ** 2) + np.sum(r_crem_pd[1, :] ** 2) +
