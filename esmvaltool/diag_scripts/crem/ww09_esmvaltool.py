@@ -279,13 +279,13 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
         i_xout_exact = np.arange(nx)[bx_exact]
         i_xin_exact = [int(round(ix)) for ix in xinds[i_xout_exact]]
 
-        bYexact = abs(yinds - np.round(yinds, 0)) < 1e-6
-        iYoutExact = np.arange(ny)[bYexact]
-        iYinExact = [int(round(iy)) for iy in yinds[iYoutExact]]
+        by_exact = abs(yinds - np.round(yinds, 0)) < 1e-6
+        i_yout_exact = np.arange(ny)[by_exact]
+        i_yin_exact = [int(round(iy)) for iy in yinds[i_yout_exact]]
 
         for (i, ix_out) in enumerate(i_xout_exact):
-            for (j, iy_out) in enumerate(iYoutExact):
-                result[iy_out, ix_out] = a_in[iYinExact[j], i_xin_exact[i]]
+            for (j, iy_out) in enumerate(i_yout_exact):
+                result[iy_out, ix_out] = a_in[i_yin_exact[j], i_xin_exact[i]]
 
     return result
 
