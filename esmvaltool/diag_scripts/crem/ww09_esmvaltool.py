@@ -275,17 +275,17 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
 
     # post-process replacing originals for any "exact" coordinate matches
     if fixmdis:
-        bXexact = abs(xinds - np.round(xinds, 0)) < 1e-6
-        iXoutExact = np.arange(nx)[bXexact]
-        iXinExact = [int(round(ix)) for ix in xinds[iXoutExact]]
+        bx_exact = abs(xinds - np.round(xinds, 0)) < 1e-6
+        i_xout_exact = np.arange(nx)[bx_exact]
+        i_xin_exact = [int(round(ix)) for ix in xinds[i_xout_exact]]
 
         bYexact = abs(yinds - np.round(yinds, 0)) < 1e-6
         iYoutExact = np.arange(ny)[bYexact]
         iYinExact = [int(round(iy)) for iy in yinds[iYoutExact]]
 
-        for (i, ix_out) in enumerate(iXoutExact):
+        for (i, ix_out) in enumerate(i_xout_exact):
             for (j, iy_out) in enumerate(iYoutExact):
-                result[iy_out, ix_out] = a_in[iYinExact[j], iXinExact[i]]
+                result[iy_out, ix_out] = a_in[iYinExact[j], i_xin_exact[i]]
 
     return result
 
@@ -313,15 +313,15 @@ def read_and_regrid(srcfilename, varname, lons2, lats2):
     logger.debug('Number of data times in file %i', nt)
 
     # read data
-    srcDataset = Dataset(srcfilename, 'r', format='NETCDF3')
-    srcData = srcDataset.variables[varname]
+    src_dataset = Dataset(srcfilename, 'r', format='NETCDF3')
+    src_data = src_dataset.variables[varname]
 
     # grid of input data
-    lats = srcDataset.variables['lat'][:]
-    lons = srcDataset.variables['lon'][:]
+    lats = src_dataset.variables['lat'][:]
+    lons = src_dataset.variables['lon'][:]
 
     # create mask (missing values)
-    data = np.ma.masked_equal(srcData, getattr(srcData, "_FillValue"))
+    data = np.ma.masked_equal(src_data, getattr(src_data, "_FillValue"))
 
     for i_t in range(nt):    # range over fields in the file
         data_rg[i_t, :, :] = regrid(data[i_t, :, :], lons, lats, lons2, lats2,
