@@ -140,7 +140,7 @@ def main(cfg):
 
         # calculate CREM
 
-        (crem_pd, __) = crem_calc(pointers)
+        (crem_pd, r_crem_pd) = crem_calc(pointers)
 
         crems[i] = crem_pd
         i = i + 1
@@ -205,71 +205,71 @@ def main(cfg):
 # Reading and Regridding functions (scroll down for main program)
 
 
-def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
+def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
     """
     Function for regridding.
 
     Regridding data onto 2.5 degree lat-long grid as the ISCCP
     obs data used for comparison was stored on.
 
-    aIn : xx
+    a_in : xx
         xxx
-    xIn : xxx
+    x_in : xxx
         xxx
-    yIn : xxx
+    y_in : xxx
         xxx
-    xOut : xxx
+    x_out : xxx
         xxx
-    yOut : xxx
+    y_out : xxx
         xxx
     fixmdis : Bool
         xxx
-    xCyclic : float
+    x_cyclic : float
         xxxxx
     """
     # first represent missing data as np.NAN
     # - this replicates the default "hard MDI" behaviour of IDL regrid
     # code used by WW09 (in conjunction with the post-regrid "put back
     # exact coord matches" - see last part)
-    aIn = aIn.copy()  # avoid overwriting
-    if isinstance(aIn, np.ma.masked_array):
-        aIn[np.ma.getmaskarray(aIn)] = np.NAN
+    a_in = a_in.copy()  # avoid overwriting
+    if isinstance(a_in, np.ma.masked_array):
+        a_in[np.ma.getmaskarray(a_in)] = np.NAN
 
     # replicate a column to the right if we have "x-cyclic" data
 
     # copy inputs to avoid changing them
-    xIn = xIn.copy()
-    yIn = yIn.copy()
+    x_in = x_in.copy()
+    y_in = y_in.copy()
 
     # sort the input Xs and Ys to guarantee ascending order
-    nx = len(xIn)
-    ny = len(yIn)
-    iSortX = np.argsort(xIn)
-    xIn = np.array(xIn)[iSortX]
-    aIn = aIn[:, iSortX]
-    iSortY = np.argsort(yIn)
-    yIn = np.array(yIn)[iSortY]
-    aIn = aIn[iSortY, :]
+    nx = len(x_in)
+    ny = len(y_in)
+    i_sort_x = np.argsort(x_in)
+    x_in = np.array(x_in)[i_sort_x]
+    a_in = a_in[:, i_sort_x]
+    i_sort_y = np.argsort(y_in)
+    y_in = np.array(y_in)[i_sort_y]
+    a_in = a_in[i_sort_y, :]
 
     # simulate cyclic X-coords, if enabled
-    if xCyclic > 0.0:
-        aiNew = list(range(nx)) + [0]   # Python 2 --> 3: range --> list(range)
+    if x_cyclic > 0.0:
+        a_inew = list(range(nx)) + [0]   # Python 2-->3: range-->list(range)
         nx += 1
-        aIn = aIn[:, aiNew]   # recopy one lhs column on rhs
-        xIn = xIn[aiNew]      # ditto for coords
-        xIn[-1] += xCyclic    # bump last element by range
+        a_in = a_in[:, a_inew]   # recopy one lhs column on rhs
+        x_in = x_in[a_inew]      # ditto for coords
+        x_in[-1] += x_cyclic    # bump last element by range
 
     # convert input+output coordinate specs to "fractional coordinate values"
-    xinds = np.interp(xOut, xIn, range(nx))
-    yinds = np.interp(yOut, yIn, range(ny))
+    xinds = np.interp(x_out, x_in, range(nx))
+    yinds = np.interp(y_out, y_in, range(ny))
 
     # make a full coordinate mesh
     ainds = np.meshgrid(xinds, yinds)
     ainds = np.array(ainds)
     ainds = ainds[[1, 0]]
 
-    # qdo main interpolation
-    result = interp2d(aIn, ainds, order=1, mode='nearest', cval=np.NAN,
+    # do main interpolation
+    result = interp2d(a_in, ainds, order=1, mode='nearest', cval=np.NAN,
                       prefilter=False)
     # 1st-order spline is just bilinear interpolation
 
@@ -283,22 +283,22 @@ def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
         iYoutExact = np.arange(ny)[bYexact]
         iYinExact = [int(round(iy)) for iy in yinds[iYoutExact]]
 
-        for (i, ixOut) in enumerate(iXoutExact):
-            for (j, iyOut) in enumerate(iYoutExact):
-                result[iyOut, ixOut] = aIn[iYinExact[j], iXinExact[i]]
+        for (i, ix_out) in enumerate(iXoutExact):
+            for (j, iy_out) in enumerate(iYoutExact):
+                result[iy_out, ix_out] = a_in[iYinExact[j], iXinExact[i]]
 
     return result
 
 
-def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
+def read_and_regrid(srcfilename, varname, lons2, lats2):
     """
     Function for reading and regridding cmor compliant input data.
 
     Parameters
     ----------
-    sSrcFilename : str
+    srcfilename : str
         filename
-    sVarname : str
+    varname : str
         xxxxx
     lons2 : xxxx
         xxxxx
@@ -308,13 +308,13 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     npts = len(lons2)
     nrows = len(lats2)
 
-    nt = len(Dataset(sSrcFilename, 'r').variables['time'][:])
+    nt = len(Dataset(srcfilename, 'r').variables['time'][:])
     data_rg = np.zeros((nt, nrows, npts))
     logger.debug('Number of data times in file %i', nt)
 
     # read data
-    srcDataset = Dataset(sSrcFilename, 'r', format='NETCDF3')
-    srcData = srcDataset.variables[sVarname]
+    srcDataset = Dataset(srcfilename, 'r', format='NETCDF3')
+    srcData = srcDataset.variables[varname]
 
     # grid of input data
     lats = srcDataset.variables['lat'][:]
@@ -323,9 +323,9 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     # create mask (missing values)
     data = np.ma.masked_equal(srcData, getattr(srcData, "_FillValue"))
 
-    for iT in range(nt):    # range over fields in the file
-        data_rg[iT, :, :] = regrid(data[iT, :, :], lons, lats, lons2, lats2,
-                                   False, xCyclic=360.0)
+    for i_t in range(nt):    # range over fields in the file
+        data_rg[i_t, :, :] = regrid(data[i_t, :, :], lons, lats, lons2, lats2,
+                                    False, x_cyclic=360.0)
 
     rgmasked = np.ma.masked_invalid(data_rg)
     np.ma.set_fill_value(rgmasked, 0.0)
@@ -405,13 +405,13 @@ def crem_calc(pointers):
     # Note this has been tested with regular lat-long grids - other grid
     # types may need changes to the regrid subroutine.
 
-    sUsrnames = ['albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
-                 'rlutcs', 'snc', 'sic']
+    usrnames = ['albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
+                'rlutcs', 'snc', 'sic']
 
-    sVarnames = sUsrnames[:]    # names used for nc vars.
+    varnames = usrnames[:]    # names used for nc vars.
 
     if not pointers['snc_nc']:
-        sVarnames[7] = 'snw'
+        varnames[7] = 'snw'
 
     # target grid spec
     npts = 144
@@ -427,45 +427,45 @@ def crem_calc(pointers):
     # Read in and regrid input data
 
     logger.debug('Reading and regridding albisccp_nc')
-    albisccp_data = read_and_regrid(pointers['albisccp_nc'], sVarnames[0],
+    albisccp_data = read_and_regrid(pointers['albisccp_nc'], varnames[0],
                                     lons2, lats2)
 #    E.add_to_filelist(pointers['albisccp_nc'])
     logger.debug('Reading and regridding pctisccp_nc')
-    pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], sVarnames[1],
+    pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], varnames[1],
                                     lons2, lats2)
 #    E.add_to_filelist(pointers['pctisccp_nc'])
     logger.debug('Reading and regridding cltisccp_nc')
-    cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], sVarnames[2],
+    cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], varnames[2],
                                     lons2, lats2)
 #    E.add_to_filelist(pointers['cltisccp_nc'])
     logger.debug('Reading and regridding rsut_nc')
-    rsut_data = read_and_regrid(pointers['rsut_nc'], sVarnames[3],
+    rsut_data = read_and_regrid(pointers['rsut_nc'], varnames[3],
                                 lons2, lats2)
 #    E.add_to_filelist(pointers['rsut_nc'])
     logger.debug('Reading and regridding rsutcs_nc')
-    rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], sVarnames[4],
+    rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], varnames[4],
                                   lons2, lats2)
 #    E.add_to_filelist(pointers['rsutcs_nc'])
     logger.debug('Reading and regridding rlut_nc')
-    rlut_data = read_and_regrid(pointers['rlut_nc'], sVarnames[5],
+    rlut_data = read_and_regrid(pointers['rlut_nc'], varnames[5],
                                 lons2, lats2)
 #    E.add_to_filelist(pointers['rlut_nc'])
     logger.debug('Reading and regridding rlutcs_nc')
-    rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], sVarnames[6],
+    rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], varnames[6],
                                   lons2, lats2)
 #    E.add_to_filelist(pointers['rlutcs_nc'])
     logger.debug('Reading and regridding sic_nc')
-    sic_data = read_and_regrid(pointers['sic_nc'], sVarnames[8],
+    sic_data = read_and_regrid(pointers['sic_nc'], varnames[8],
                                lons2, lats2)
 #    E.add_to_filelist(pointers['sic_nc'])
     if not pointers['snc_nc']:
         logger.debug('Reading and regridding snw_nc')
-        snc_data = read_and_regrid(pointers['snw_nc'], sVarnames[7],
+        snc_data = read_and_regrid(pointers['snw_nc'], varnames[7],
                                    lons2, lats2)
 #        E.add_to_filelist(pointers['snw_nc'])
     else:
         logger.debug('Reading and regridding snc_nc')
-        snc_data = read_and_regrid(pointers['snc_nc'], sVarnames[7],
+        snc_data = read_and_regrid(pointers['snc_nc'], varnames[7],
                                    lons2, lats2)
 #        E.add_to_filelist(pointers['snc_nc'])
 
