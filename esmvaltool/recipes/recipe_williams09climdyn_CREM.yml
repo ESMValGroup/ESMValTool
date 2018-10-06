@@ -88,4 +88,4 @@ diagnostics:
         field: T2Ds
     scripts:
       clim:
-        script: crem/ww09_ESMValTool.py
+        script: crem/ww09_esmvaltool.py

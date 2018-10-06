@@ -1,48 +1,46 @@
 """
-; ############################################################################
-; Cloud Regime Error Metrics (CREM)
-; Author: Keith Williams (Metoffice, UK)
-; ESA-CMUG project
-; ############################################################################
-; Description
-;    Calculates the Cloud Regime Error Metric (CREM) following Williams and
-;    Webb (2009, Clim. Dyn.)
-;
-; Required diag_script_info attributes (diagnostics specific)
-;    none
-;
-; Optional diag_script_info attributes (diagnostic specific)
-;    none
-;
-; Required variable_info attributes (variable specific)
-;    none
-;
-; Optional variable_info attributes (variable specific)
-;    none
-;
-; Caveats
-;    TO DO:
-;       1) add metadata to plot
-;       2) add metadata to netcdf output
-;       3) use preprocessor for regridding input data
-;
-; Modification history
-;    20180920-A_laue_ax: code adapted for ESMValTool v2.0
-;    20171128-A_laue_ax: added author and diagname to meta data
-;                        switched off "replacing of exact values"
-;                        in regridding function
-;    20170713-A_laue_ax: added tagging (for reporting)
-;    20151117-A_laue_ax: added parameters for call to "write_references"
-;    20151113-A_laue_ax: added creation of directory for plots if needed
-;                        (code was crashing if directory does not exist)
-;    20151029-A_laue_ax: added output of acknowledgements + processed files
-;                        to log-file
-;    20150903-A_laue_ax: ESMValTool implementation.
-;    20150521-A_will_ke: CREM routines written.
-;
-; ############################################################################
-"""
+Cloud Regime Error Metrics (CREM).
 
+  Author: Keith Williams (Metoffice, UK)
+
+  Project: ESA-CMUG
+
+  Description
+    Calculates the Cloud Regime Error Metric (CREM) following Williams and
+    Webb (2009, Clim. Dyn.)
+
+  Required diag_script_info attributes (diagnostics specific)
+    none
+
+  Optional diag_script_info attributes (diagnostic specific)
+    none
+
+  Required variable_info attributes (variable specific)
+    none
+
+  Optional variable_info attributes (variable specific)
+    none
+
+  Caveats
+    TO DO:
+      1) add metadata to plot
+      2) add metadata to netcdf output
+      3) use preprocessor for regridding input data
+
+  Modification history
+    20180920-A_laue_ax: code adapted for ESMValTool v2.0
+    20171128-A_laue_ax: added author and diagname to meta data
+                        switched off "replacing of exact values"
+                        in regridding function
+    20170713-A_laue_ax: added tagging (for reporting)
+    20151117-A_laue_ax: added parameters for call to "write_references"
+    20151113-A_laue_ax: added creation of directory for plots if needed
+                        (code was crashing if directory does not exist)
+    20151029-A_laue_ax: added output of acknowledgements + processed files
+                        to log-file
+    20150903-A_laue_ax: ESMValTool implementation.
+    20150521-A_will_ke: CREM routines written.
+"""
 import sys
 import logging
 import os
@@ -50,7 +48,7 @@ import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
 from netCDF4 import Dataset
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
+                                            select_metadata)
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
@@ -67,7 +65,6 @@ def main(cfg):
         Configuration dictionary of the recipe.
 
     """
-
     # get description of the preprocessed data
     input_data = cfg['input_data'].values()
 
@@ -76,16 +73,16 @@ def main(cfg):
     crems = np.empty(nummod)
 
     # list of variables needed for CREM calculations
-    vars = ('albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
-            'rlutcs', 'sic')
-    vars_plus = ('snc', 'snw')
+    ww_vars = ('albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
+               'rlutcs', 'sic')
+    ww_vars_plus = ('snc', 'snw')
 
     # provenance information
     climofiles = []
     vartags = []
     modeltags = []
 
-    for var in vars:
+    for var in ww_vars:
         vartags.append("V_" + var)
 
     # create list of dataset names (plot labels)
@@ -100,7 +97,7 @@ def main(cfg):
 
         pointers = {}
 
-        for var in vars:
+        for var in ww_vars:
             selection = select_metadata(input_data, dataset=dataset,
                                         short_name=var)
             if not selection:
@@ -113,7 +110,7 @@ def main(cfg):
 
         missing_snow = True
 
-        for var in vars_plus:
+        for var in ww_vars_plus:
             selection = select_metadata(input_data, dataset=dataset,
                                         short_name=var)
             key = var + '_nc'
@@ -128,7 +125,7 @@ def main(cfg):
                 break
 
         if missing_snow:
-            missing_vars.append(vars_plus[0] + " or " + vars_plus[1])
+            missing_vars.append(ww_vars_plus[0] + " or " + ww_vars_plus[1])
 
         for fn in pointers:
             climofiles.append(','.join(fn))
@@ -161,7 +158,7 @@ def main(cfg):
         )
         logger.debug("Plotting results to %s", oname)
 
-        fig = plt.figure()
+        plt.figure()
         ypos = np.arange(nummod)
         plt.barh(ypos, crems, align='center')
         plt.yticks(ypos, models)
@@ -210,7 +207,9 @@ def main(cfg):
 
 def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
     """
-    Function for regridding onto 2.5 degree lat-long grid as the ISCCP
+    Function for regridding.
+
+    Regridding data onto 2.5 degree lat-long grid as the ISCCP
     obs data used for comparison was stored on.
 
     aIn : xx
@@ -306,7 +305,6 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     lats2 : xxxxx
         xxxxxx
     """
-
     npts = len(lons2)
     nrows = len(lats2)
 
@@ -323,7 +321,7 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     lons = srcDataset.variables['lon'][:]
 
     # create mask (missing values)
-    data = np.ma.masked_equal(srcData, srcData._FillValue)
+    data = np.ma.masked_equal(srcData, getattr(srcData, "_FillValue"))
 
     for iT in range(nt):    # range over fields in the file
         data_rg[iT, :, :] = regrid(data[iT, :, :], lons, lats, lons2, lats2,
@@ -332,13 +330,14 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
     rgmasked = np.ma.masked_invalid(data_rg)
     np.ma.set_fill_value(rgmasked, 0.0)
 
-    return(np.ma.filled(rgmasked))
+    return np.ma.filled(rgmasked)
 
 
 def crem_calc(pointers):
     """
-    Main program for calculating Cloud Regime Error Metric following equation
-    4 in Williams and Webb (2009) (WW09) from CMOR-compliant netCDF data.
+    Main program for calculating Cloud Regime Error Metric.
+
+    Following equation 4 in Williams and Webb (2009) (WW09).
 
     Parameters
     ----------
@@ -356,12 +355,11 @@ def crem_calc(pointers):
 
     Returns
     -------
-    CREMpd : xxxx
+    crem_pd : xxxx
         present-day cloud regime error metric of WW09.
-    rCREMpd : xxxx
+    r_crem_pd : xxxx
         component from each regime.
     """
-
     # Lookup arrays
     # Observational regime centroids for assignment of the model data.
     # These are taken from Table 3 of Williams and Webb (2009)
@@ -476,10 +474,10 @@ def crem_calc(pointers):
     # Set up storage arrays
     model_rfo = np.zeros((3, 7))
     model_ncf = np.zeros((3, 7))
-    rCREMpd = np.zeros((3, 7))
+    r_crem_pd = np.zeros((3, 7))
     model_rfo[:] = 999.9
     model_ncf[:] = 999.9
-    rCREMpd[:] = 999.9
+    r_crem_pd[:] = 999.9
 
     # Normalize data used for assignment to regimes to be in the range 0-1
     pctisccp_data = pctisccp_data / 100000.0
@@ -547,28 +545,28 @@ def crem_calc(pointers):
 
     # Calculation of eq 3 in WW09
     for region in range(3):
-        rCREMpd[region, 0:nregimes[region]] = area_weights[region] * \
-            (((model_ncf[region, 0:nregimes[region]] -
-               obs_ncf[region, 0:nregimes[region]]) *
-             obs_rfo[region, 0:nregimes[region]]) ** 2 +
-             ((model_rfo[region, 0:nregimes[region]] -
-              obs_rfo[region, 0:nregimes[region]]) *
-             obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
+        r_crem_pd[region, 0:nregimes[region]] = area_weights[region] * \
+              (((model_ncf[region, 0:nregimes[region]] -
+                 obs_ncf[region, 0:nregimes[region]]) *
+                obs_rfo[region, 0:nregimes[region]]) ** 2 +
+               ((model_rfo[region, 0:nregimes[region]] -
+                 obs_rfo[region, 0:nregimes[region]]) *
+                obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
 
     # Calculation of eq 4 in WW09
-    CREMpd = ((np.sum(rCREMpd[0, :] ** 2) + np.sum(rCREMpd[1, :] ** 2) +
-               np.sum(rCREMpd[2, 0:5] ** 2)) / 20.0) ** 0.5
+    crem_pd = ((np.sum(r_crem_pd[0, :] ** 2) + np.sum(r_crem_pd[1, :] ** 2) +
+                np.sum(r_crem_pd[2, 0:5] ** 2)) / 20.0) ** 0.5
 
-    # A perfect CREMpd with respect to ISCCP would be 0.0
-    # An estimate of observational uncertainty (obtained by calculating CREMpd
-    # wrt MODIS/ERBE) is 0.96 (i.e. models with CREMpd less than 0.96 may be
-    # regarded as within observational uncertainty overall, although not
-    # necessarily for every regime)'.
-    # Interrogation of the rCREMpd array from this program will indicate which
-    # regimes contribute most to the total CREMpd (elements ordered as Table 3
-    # of WW09)'
+    # A perfect crem_pd with respect to ISCCP would be 0.0
+    # An estimate of observational uncertainty (obtained by calculating
+    # crem_pd wrt MODIS/ERBE) is 0.96 (i.e. models with crem_pd less than
+    # 0.96 may be regarded as within observational uncertainty overall,
+    # although not necessarily for every regime)'.
+    # Interrogation of the r_crem_pd array from this program will indicate
+    # which regimes contribute most to the total crem_pd (elements ordered
+    # as Table 3 of WW09)'
 
-    return CREMpd, rCREMpd
+    return crem_pd, r_crem_pd
 
 
 if __name__ == '__main__':
