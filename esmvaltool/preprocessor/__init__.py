@@ -6,7 +6,7 @@ import logging
 import six
 from iris.cube import Cube
 
-from .._provenance import ProvenanceProduct
+from .._provenance import TrackedFile
 from .._task import BaseTask
 from ._area_pp import area_average as average_region
 from ._area_pp import area_slice as extract_region
@@ -218,7 +218,7 @@ def preprocess(items, step, **settings):
 
     items = []
     for item in result:
-        if isinstance(item, (PreprocessorProduct, Cube, six.string_types)):
+        if isinstance(item, (PreprocessorFile, Cube, six.string_types)):
             items.append(item)
         else:
             items.extend(item)
@@ -241,10 +241,10 @@ def get_step_blocks(steps, order):
     return blocks
 
 
-class PreprocessorProduct(ProvenanceProduct):
+class PreprocessorFile(TrackedFile):
     def __init__(self, metadata, settings, ancestors=None, input_files=None):
-        super(PreprocessorProduct, self).__init__(metadata['filename'],
-                                                  settings, ancestors)
+        super(PreprocessorFile, self).__init__(metadata['filename'], settings,
+                                               ancestors)
         self._input_files = [] if input_files is None else input_files
 
         self.metadata = copy.deepcopy(metadata)
@@ -260,7 +260,7 @@ class PreprocessorProduct(ProvenanceProduct):
         self._prepared = False
 
     def __str__(self):
-        return 'PreprocessorProduct {}'.format(self.filename)
+        return 'PreprocessorFile {}'.format(self.filename)
 
     def check(self):
         """Check preprocessor settings."""
@@ -269,7 +269,7 @@ class PreprocessorProduct(ProvenanceProduct):
     def apply(self, step, debug=False):
         if step not in self.settings:
             raise ValueError(
-                "PreprocessorProduct {} has no settings for step {}".format(
+                "PreprocessorFile {} has no settings for step {}".format(
                     self, step))
         self.cubes = preprocess(self.cubes, step, **self.settings[step])
         if debug:
@@ -306,23 +306,23 @@ class PreprocessorProduct(ProvenanceProduct):
                                     **self.settings.get('cleanup', {}))
 
     def close(self):
-        """Close the product."""
+        """Close the file."""
         self.save()
         self._cubes = None
         self.save_provenance()
 
     @property
     def is_closed(self):
-        """Check if the product is closed."""
+        """Check if the file is closed."""
         return self._cubes is None
 
     def initialize_provenance(self, task):
         """Initialize the provenance document."""
-        super(PreprocessorProduct, self).initialize_provenance(task)
+        super(PreprocessorFile, self).initialize_provenance(task)
         self._initialize_input()
 
     def _initialize_entity(self):
-        """Inialize the entity representing the product."""
+        """Initialize the entity representing the file."""
         attributes = {
             'attribute:' + k: str(v)
             for k, v in self.metadata.items()

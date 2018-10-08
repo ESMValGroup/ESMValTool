@@ -16,7 +16,7 @@ import iris
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor import (PreprocessorProduct, mask_fillvalues,
+from esmvaltool.preprocessor import (PreprocessorFile, mask_fillvalues,
                                      mask_landsea, mask_landseaice)
 
 
@@ -126,10 +126,10 @@ class Test(tests.Test):
         cube_2 = iris.cube.Cube(data_2, dim_coords_and_dims=coords_spec)
         filename_1 = tempfile.NamedTemporaryFile().name + '.nc'
         filename_2 = tempfile.NamedTemporaryFile().name + '.nc'
-        product_1 = PreprocessorProduct(
+        product_1 = PreprocessorFile(
             metadata={'filename': filename_1}, settings={})
         product_1.cubes = [cube_1]
-        product_2 = PreprocessorProduct(
+        product_2 = PreprocessorFile(
             metadata={'filename': filename_2}, settings={})
         product_2.cubes = [cube_2]
         results = mask_fillvalues(

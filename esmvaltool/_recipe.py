@@ -19,7 +19,7 @@ from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
 from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
                            MULTI_MODEL_FUNCTIONS, PreprocessingTask,
-                           PreprocessorProduct)
+                           PreprocessorFile)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -470,7 +470,7 @@ def _update_statistic_settings(products, order, preproc_dir):
         metadata['filename'] = get_statistic_output_file(metadata, preproc_dir)
         common_settings = _get_remaining_common_settings(step, order, products)
         ancestors = {p for p in products if step in p.settings}
-        statistic_product = PreprocessorProduct(
+        statistic_product = PreprocessorFile(
             metadata, common_settings, ancestors=ancestors)
         for product in products:
             if step in product.settings:
@@ -543,7 +543,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             input_files = None
         else:
             input_files = _get_input_files(variable, config_user)
-        product = PreprocessorProduct(
+        product = PreprocessorFile(
             metadata=variable,
             settings=settings,
             ancestors=ancestors,

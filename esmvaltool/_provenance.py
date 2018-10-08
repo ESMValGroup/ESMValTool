@@ -32,7 +32,7 @@ def get_recipe_provenance(documentation):
     return doc
 
 
-class ProvenanceProduct(object):
+class TrackedFile(object):
     def __init__(self, filename, settings, ancestors=None):
 
         self._filename = filename
@@ -81,10 +81,10 @@ class ProvenanceProduct(object):
 
     @abstractmethod
     def _initialize_entity(self):
-        """Inialize the entity representing the product."""
+        """Initialize the entity representing the file."""
 
     def wasderivedfrom(self, other):
-        """Let the product know that it was derived from other."""
+        """Let the file know that it was derived from other."""
         entity = other.entity if hasattr(other, 'entity') else other
         if not self._activity:
             raise ValueError("Activity not initialized.")

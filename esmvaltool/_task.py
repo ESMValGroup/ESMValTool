@@ -13,7 +13,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
-from esmvaltool._provenance import ProvenanceProduct
+from esmvaltool._provenance import TrackedFile
 
 logger = logging.getLogger(__name__)
 
@@ -207,11 +207,11 @@ class DiagnosticError(Exception):
     """Error in diagnostic."""
 
 
-class DiagnosticProduct(ProvenanceProduct):
+class DiagnosticFile(TrackedFile):
     """Diagnostic product."""
 
     def _initialize_entity(self):
-        """Inialize the entity representing the product."""
+        """Initialize the entity representing the file."""
         settings = {
             'diagnostic:' + k: str(v)
             for k, v in self.settings.items()
@@ -487,7 +487,7 @@ class DiagnosticTask(BaseTask):
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
-            product = DiagnosticProduct(filename, settings, ancestors)
+            product = DiagnosticFile(filename, settings, ancestors)
             product.initialize_provenance(self)
             product.save_provenance()
             self.products.add(product)
