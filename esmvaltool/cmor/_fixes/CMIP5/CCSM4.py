@@ -30,7 +30,19 @@ class rlut(Fix):
 
 
 class rlutcs(rlut):
-    """Fixes for rlut"""
+    """Fixes for rlutcs"""
+
+    pass
+
+
+class rsut(rlut):
+    """Fixes for rsut"""
+
+    pass
+
+
+class rsutcs(rlut):
+    """Fixes for rsutcs"""
 
     pass
 
