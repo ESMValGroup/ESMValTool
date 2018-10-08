@@ -46,6 +46,13 @@ REQUIREMENTS = {
         'stratify',
         'vmprof',
         'yamale',
+        # options added by RCHG, it is possible that some of these dependencies are 
+        # included as derived of the previous ones
+        'xarray',
+        'seaborn',
+        'pandas',
+        'regionmask',
+        'scipy',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
