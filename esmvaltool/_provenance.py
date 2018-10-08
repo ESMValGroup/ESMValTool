@@ -11,20 +11,20 @@ logger = logging.getLogger(__name__)
 def get_recipe_provenance(documentation):
     """Create a provenance document describing a recipe run."""
     doc = ProvDocument()
-    for nsp in ('recipe', 'author', 'attributes'):
+    for nsp in ('recipe', 'author', 'attribute'):
         doc.add_namespace(nsp, 'http://www.esmvaltool.org/' + nsp)
 
     recipe = doc.entity(
         'recipe:recipe', {
-            'recipe:description': documentation['description'],
-            'recipe:projects': ', '.join(documentation['projects']),
-            'recipe:references': ', '.join(documentation['references']),
+            'attribute:description': documentation['description'],
+            'attribute:projects': ', '.join(documentation['projects']),
+            'attribute:references': ', '.join(documentation['references']),
         })
 
     for author in documentation['authors']:
         author = doc.agent(
             'author:' + author['name'],
-            {'attributes:' + k: author[k]
+            {'attribute:' + k: author[k]
              for k in author if k != 'name'})
         doc.wasAttributedTo(recipe, author)
 
@@ -32,10 +32,6 @@ def get_recipe_provenance(documentation):
 
 
 class TrackedFile(object):
-
-    inherit = ('authors', 'projects', 'references')
-    """Attributes that are inherited from ancestors."""
-
     def __init__(self, filename, attributes, ancestors=None):
 
         self._filename = filename
@@ -83,10 +79,6 @@ class TrackedFile(object):
         self.entity = self.provenance.entity('file:' + self.filename,
                                              attributes)
 
-    def _merge_attributes(self, other):
-        # TODO: implement attribute inheritance
-        pass
-
     def _initialize_ancestors(self, task):
         """Register input Products/files for provenance tracking."""
         for ancestor in self._ancestors:
@@ -104,7 +96,7 @@ class TrackedFile(object):
 
     def save_provenance(self):
         """Export provenance information."""
-        filename = os.path.splitext(self.filename)[0]
+        filename = os.path.splitext(self.filename)[0] + '_provenance'
         self.provenance.serialize(filename + '.xml', format='xml')
         figure = prov_to_dot(self.provenance)
         figure.write_png(filename + '.png')

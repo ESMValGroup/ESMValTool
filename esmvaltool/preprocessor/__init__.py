@@ -315,17 +315,12 @@ class PreprocessorFile(TrackedFile):
 
     def _initialize_entity(self):
         """Initialize the entity representing the file."""
-        attributes = {
-            'attribute:' + k: str(v)
-            for k, v in self.attributes.items()
-        }
+        super(PreprocessorFile, self)._initialize_entity()
         settings = {
             'preprocessor:' + k: str(v)
             for k, v in self.settings.items()
         }
-        attributes.update(settings)
-        self.entity = self.provenance.entity('file:' + self.filename,
-                                             attributes)
+        self.entity = self.provenance.entity('file:' + self.filename, settings)
 
 
 # TODO: use a custom ProductSet that raises an exception if you try to
