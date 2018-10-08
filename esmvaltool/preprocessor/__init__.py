@@ -313,10 +313,6 @@ class PreprocessorFile(TrackedFile):
         """Check if the file is closed."""
         return self._cubes is None
 
-    def initialize_provenance(self, task):
-        """Initialize the provenance document."""
-        super(PreprocessorFile, self).initialize_provenance(task)
-
     def _initialize_entity(self):
         """Initialize the entity representing the file."""
         attributes = {
