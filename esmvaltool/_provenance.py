@@ -1,7 +1,6 @@
 import copy
 import logging
 import os
-from abc import abstractmethod
 
 from prov.dot import prov_to_dot
 from prov.model import ProvDocument
@@ -33,10 +32,14 @@ def get_recipe_provenance(documentation):
 
 
 class TrackedFile(object):
-    def __init__(self, filename, settings, ancestors=None):
+
+    inherit = ('authors', 'projects', 'references')
+    """Attributes that are inherited from ancestors."""
+
+    def __init__(self, filename, attributes, ancestors=None):
 
         self._filename = filename
-        self.settings = copy.deepcopy(settings)
+        self.attributes = copy.deepcopy(attributes)
 
         self.provenance = None
         self.entity = None
@@ -63,13 +66,26 @@ class TrackedFile(object):
 
     def _initialize_namespaces(self):
         """Inialize the namespaces."""
-        for nsp in ('file', 'attribute', 'preprocessor', 'diagnostic', 'task'):
+        for nsp in ('file', 'attribute', 'preprocessor', 'task'):
             self.provenance.add_namespace(nsp,
                                           'http://www.esmvaltool.org/' + nsp)
 
     def _initialize_activity(self, task):
         """Initialize the preprocessor task activity."""
         self._activity = self.provenance.activity('task:' + task.name)
+
+    def _initialize_entity(self):
+        """Initialize the entity representing the file."""
+        attributes = {
+            'attribute:' + k: str(v)
+            for k, v in self.attributes.items()
+        }
+        self.entity = self.provenance.entity('file:' + self.filename,
+                                             attributes)
+
+    def _merge_attributes(self, other):
+        # TODO: implement attribute inheritance
+        pass
 
     def _initialize_ancestors(self):
         """Register input Products/files for provenance tracking."""
@@ -78,10 +94,6 @@ class TrackedFile(object):
                 raise ValueError("Uninitalized ancestor provenance.")
             self.provenance.update(ancestor.provenance)
             self.wasderivedfrom(ancestor)
-
-    @abstractmethod
-    def _initialize_entity(self):
-        """Initialize the entity representing the file."""
 
     def wasderivedfrom(self, other):
         """Let the file know that it was derived from other."""

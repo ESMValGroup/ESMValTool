@@ -242,12 +242,12 @@ def get_step_blocks(steps, order):
 
 
 class PreprocessorFile(TrackedFile):
-    def __init__(self, metadata, settings, ancestors=None, input_files=None):
-        super(PreprocessorFile, self).__init__(metadata['filename'], settings,
-                                               ancestors)
+    def __init__(self, attributes, settings, ancestors=None, input_files=None):
+        super(PreprocessorFile, self).__init__(attributes['filename'],
+                                               attributes, ancestors)
         self._input_files = [] if input_files is None else input_files
 
-        self.metadata = copy.deepcopy(metadata)
+        self.settings = copy.deepcopy(settings)
 
         if 'save' not in self.settings:
             self.settings['save'] = {}
@@ -325,7 +325,7 @@ class PreprocessorFile(TrackedFile):
         """Initialize the entity representing the file."""
         attributes = {
             'attribute:' + k: str(v)
-            for k, v in self.metadata.items()
+            for k, v in self.attributes.items()
         }
         settings = {
             'preprocessor:' + k: str(v)
@@ -339,7 +339,7 @@ class PreprocessorFile(TrackedFile):
         """Register input files for provenance tracking."""
         for input_file in self._input_files:
             file = self.provenance.entity('file:' + input_file)
-            # TODO: get tracking id
+            # TODO: get tracking id and remove as a special case
             self.wasderivedfrom(file)
 
 

@@ -414,14 +414,14 @@ def _apply_preprocessor_profile(settings, profile_settings):
             settings[step].update(args)
 
 
-def _get_common_metadata(products):
-    """Get metadata that is shared between products."""
-    metadata = {}
+def _get_common_attributes(products):
+    """Get attributes that is shared between products."""
+    attributes = {}
     some_product = next(iter(products))
-    for key, value in some_product.metadata.items():
-        if all(p.metadata.get(key, object()) == value for p in products):
-            metadata[key] = value
-    return metadata
+    for key, value in some_product.attributes.items():
+        if all(p.attributes.get(key, object()) == value for p in products):
+            attributes[key] = value
+    return attributes
 
 
 def _get_remaining_common_settings(step, order, products):
@@ -465,13 +465,14 @@ def _update_statistic_settings(products, order, preproc_dir):
         return
 
     for statistic in settings['statistics']:
-        metadata = _get_common_metadata(products)
-        metadata['dataset'] = 'MultiModel{}'.format(statistic.title())
-        metadata['filename'] = get_statistic_output_file(metadata, preproc_dir)
+        attributes = _get_common_attributes(products)
+        attributes['dataset'] = 'MultiModel{}'.format(statistic.title())
+        attributes['filename'] = get_statistic_output_file(
+            attributes, preproc_dir)
         common_settings = _get_remaining_common_settings(step, order, products)
         ancestors = {p for p in products if step in p.settings}
         statistic_product = PreprocessorFile(
-            metadata, common_settings, ancestors=ancestors)
+            attributes, common_settings, ancestors=ancestors)
         for product in products:
             if step in product.settings:
                 if 'output_products' not in product.settings[step]:
@@ -481,16 +482,16 @@ def _update_statistic_settings(products, order, preproc_dir):
 
 
 def _match_products(products, variables):
-    """Match a list of input products to output product metadata."""
+    """Match a list of input products to output product attributes."""
     grouped_products = {}
 
-    def get_matching(metadata):
-        """Find the output filename which matches input metadata best."""
+    def get_matching(attributes):
+        """Find the output filename which matches input attributes best."""
         score = 0
         filenames = []
         for variable in variables:
             filename = variable['filename']
-            tmp = sum(v == variable.get(k) for k, v in metadata.items())
+            tmp = sum(v == variable.get(k) for k, v in attributes.items())
             if tmp > score:
                 score = tmp
                 filenames = [filename]
@@ -504,7 +505,7 @@ def _match_products(products, variables):
 
     # Group input files by output file
     for product in products:
-        for filename in get_matching(product.metadata):
+        for filename in get_matching(product.attributes):
             if filename not in grouped_products:
                 grouped_products[filename] = []
             grouped_products[filename].append(product)
@@ -544,7 +545,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
         else:
             input_files = _get_input_files(variable, config_user)
         product = PreprocessorFile(
-            metadata=variable,
+            attributes=variable,
             settings=settings,
             ancestors=ancestors,
             input_files=input_files)
@@ -556,41 +557,6 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
         product.check()
 
     return products
-
-
-def _extract_preprocessor_order(profile):
-    """Extract the order of the preprocessing steps from the profile."""
-    custom_order = profile.pop('custom_order', False)
-    if not custom_order:
-        return DEFAULT_ORDER
-    order = tuple(p for p in profile if p not in INITIAL_STEPS + FINAL_STEPS)
-    return INITIAL_STEPS + order + FINAL_STEPS
-
-
-def split_settings(settings, step, order=DEFAULT_ORDER):
-    """Split settings, using step as a separator."""
-    before = {}
-    for _step in order:
-        if _step == step:
-            break
-        if _step in settings:
-            before[_step] = settings[_step]
-    after = {
-        k: v
-        for k, v in settings.items() if not (k == step or k in before)
-    }
-    return before, after
-
-
-def _split_derive_profile(profile):
-    """Split the derive preprocessor profile."""
-    order = _extract_preprocessor_order(profile)
-    before, after = split_settings(profile, 'derive', order)
-    after['derive'] = {}
-    if order != DEFAULT_ORDER:
-        before['custom_order'] = True
-        after['custom_order'] = True
-    return before, after
 
 
 def _get_single_preprocessor_task(variables,
@@ -619,6 +585,41 @@ def _get_single_preprocessor_task(variables,
         write_ncl_interface=config_user['write_ncl_interface'])
 
     return task
+
+
+def _extract_preprocessor_order(profile):
+    """Extract the order of the preprocessing steps from the profile."""
+    custom_order = profile.pop('custom_order', False)
+    if not custom_order:
+        return DEFAULT_ORDER
+    order = tuple(p for p in profile if p not in INITIAL_STEPS + FINAL_STEPS)
+    return INITIAL_STEPS + order + FINAL_STEPS
+
+
+def _split_settings(settings, step, order=DEFAULT_ORDER):
+    """Split settings, using step as a separator."""
+    before = {}
+    for _step in order:
+        if _step == step:
+            break
+        if _step in settings:
+            before[_step] = settings[_step]
+    after = {
+        k: v
+        for k, v in settings.items() if not (k == step or k in before)
+    }
+    return before, after
+
+
+def _split_derive_profile(profile):
+    """Split the derive preprocessor profile."""
+    order = _extract_preprocessor_order(profile)
+    before, after = _split_settings(profile, 'derive', order)
+    after['derive'] = {}
+    if order != DEFAULT_ORDER:
+        before['custom_order'] = True
+        after['custom_order'] = True
+    return before, after
 
 
 def _get_preprocessor_task(variables, profiles, config_user, task_name):

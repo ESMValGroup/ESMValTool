@@ -127,10 +127,10 @@ class Test(tests.Test):
         filename_1 = tempfile.NamedTemporaryFile().name + '.nc'
         filename_2 = tempfile.NamedTemporaryFile().name + '.nc'
         product_1 = PreprocessorFile(
-            metadata={'filename': filename_1}, settings={})
+            attributes={'filename': filename_1}, settings={})
         product_1.cubes = [cube_1]
         product_2 = PreprocessorFile(
-            metadata={'filename': filename_2}, settings={})
+            attributes={'filename': filename_2}, settings={})
         product_2.cubes = [cube_2]
         results = mask_fillvalues(
             {product_1, product_2}, 0.95, min_value=-1.e10, time_window=1)

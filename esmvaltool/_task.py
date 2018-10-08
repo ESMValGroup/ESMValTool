@@ -1,5 +1,6 @@
 """ESMValtool task definition."""
 import contextlib
+import copy
 import datetime
 import errno
 import logging
@@ -205,18 +206,6 @@ class BaseTask(object):
 
 class DiagnosticError(Exception):
     """Error in diagnostic."""
-
-
-class DiagnosticFile(TrackedFile):
-    """Diagnostic product."""
-
-    def _initialize_entity(self):
-        """Initialize the entity representing the file."""
-        settings = {
-            'diagnostic:' + k: str(v)
-            for k, v in self.settings.items()
-        }
-        self.entity = self.provenance.entity('file:' + self.filename, settings)
 
 
 class DiagnosticTask(BaseTask):
@@ -461,14 +450,14 @@ class DiagnosticTask(BaseTask):
                 time.sleep(0.001)
 
         if returncode == 0:
-            self._collect_products()
+            self._collect_provenance()
             return [self.output_dir]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
             "in {}".format(self.script, returncode, self.log))
 
-    def _collect_products(self):
+    def _collect_provenance(self):
         """Process provenance information provided by the diagnostic script."""
         provenance_file = os.path.join(self.settings['run_dir'],
                                        'diagnostic_provenance.yml')
@@ -481,13 +470,13 @@ class DiagnosticTask(BaseTask):
 
         ancestor_products = {p for a in self.ancestors for p in a.products}
         self.products = set()
-        for filename, settings in table.items():
-            ancestor_files = settings.pop('ancestors', [])
+        for filename, attributes in table.items():
+            ancestor_files = attributes.pop('ancestors', [])
             ancestors = {
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
-            product = DiagnosticFile(filename, settings, ancestors)
+            product = TrackedFile(filename, attributes, ancestors)
             product.initialize_provenance(self)
             product.save_provenance()
             self.products.add(product)

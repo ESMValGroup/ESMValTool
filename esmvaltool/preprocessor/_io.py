@@ -185,7 +185,7 @@ def write_metadata(products, write_ncl=False):
                                      lambda p: os.path.dirname(p.filename)):
         metadata = {}
         for product in prods:
-            metadata[product.filename] = product.metadata
+            metadata[product.filename] = product.attributes
 
         output_filename = os.path.join(output_dir, 'metadata.yml')
         output_files.append(output_filename)
