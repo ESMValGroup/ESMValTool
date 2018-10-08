@@ -64,8 +64,8 @@ end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 # Which metric to be computed
 metric <- params$metric
 
-reference_filenames <-  fullpath_filenames[reference_files]
 
+reference_filenames <-  fullpath_filenames[reference_files]
 historical_data <- Start(model = reference_filenames,
                          var = var0,
                          var_var = 'var_names',
@@ -73,7 +73,7 @@ historical_data <- Start(model = reference_filenames,
                          lat = 'all',
                          lon = 'all',
                          lon_var = 'lon',
-    lon_reorder = CircularSort(0, 360),
+                         lon_reorder = CircularSort(0, 360),
                          return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                          retrieve = TRUE)
 lat <- attr(historical_data, "Variables")$dat1$lat
@@ -113,34 +113,30 @@ model_dim <- which(names(dim(historical_data)) == "model")
 ###Compute the quantiles and standard deviation for the historical period.
 
 if (var0 == "tasmin") {
-  metric <- "t10p"
+  #metric <- "t10p"
   quantile <- 0.1
 } else if (var0 == "tasmax") {
-  metric <- "t90p"
+  #metric <- "t90p"
   quantile <- 0.9
 } else if (var0 == "sfcWind") {
-  metric <- "Wx"
+  #metric <- "Wx"
   historical_data <- 0.5 * 1.23 * (historical_data ** 3)  # Convert to wind power
   quantile <- 0.9
 } else if (var0 == "pr") {
-  metric <- c("cdd", "rx5day")
+  #metric <- c("cdd", "rx5day")
   historical_data <- historical_data * 60 * 60 * 24
 
 }
 
 base_sd <- base_sd_historical <- base_mean <- list()
 for (m in 1 : length(metric)) {
-  base_range <- as.numeric(c(substr(start_reference, 1, 4), substr(end_reference, 1, 4)))
-
-  #Compute the 90th percentile for the historical period
   if (var0 != "pr") {
-    thresholds <- Threshold(historical_data, base.range=as.numeric(base_range),
+    thresholds <- Threshold(historical_data,
                             qtiles = quantile, ncores = detectCores() -1)
     base_index <- Climdex(data = historical_data, metric = metric[m],
                           threshold = thresholds, ncores = detectCores() - 1)
   } else {
     base_index <- Climdex(data = historical_data, metric = metric[m], ncores = detectCores() - 1)
-      print(dim(base_index))
   }
 
   base_sd[[m]] <- Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "sd")$output1
@@ -153,7 +149,6 @@ for (m in 1 : length(metric)) {
     base_mean[[m]] <-  Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "mean")$output1
     base_mean_historical <- InsertDim(base_mean[[m]], 1, dim(base_index$result)[1])
   }
-  historical_index_standardized <- (base_index$result - base_mean_historical) / base_sd_historical[[m]]
 }
 
 
@@ -216,7 +211,6 @@ for (i in 1 : length(projection_filenames)) {
 
     for (mod in 1 : dim(projection_data)[model_dim]) {
 
-
         data <- drop(Mean1Dim(projection_index_standardized, 1))
 print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
 
@@ -224,18 +218,18 @@ dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon),
 dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
 defdata <- ncvar_def(name = "data", units = units, dim = list(lat = dimlat, lon = dimlon), longname = paste('Mean',metric[m], long_names))
 
-file <- nc_create(paste0(plot_dir, "/", var0, "_risk_insurance_index_",
+file <- nc_create(paste0(plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
               model_names, "_", start_projection, "_", end_projection, "_", start_reference, "_", end_reference, ".nc"), list(defdata))
 ncvar_put(file, defdata, data)
 
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
 
-
       title <- paste0("Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
                       substr(end_projection, 1, 4), " ",
                       " (",rcp_scenario[i]," ", model_names ,")")
-      breaks <- -8 : 8
+
+      breaks <- seq(-1 * ceiling(max(abs(data))), ceiling(max(abs(data))), 2 * ceiling(max(abs(data))) / 16)
       PlotEquiMap(data, lon = lon, lat = lat, filled.continents = FALSE,
                   toptitle = title, brks = breaks,
                   fileout = paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".png"))
@@ -243,14 +237,3 @@ nc_close(file)
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
