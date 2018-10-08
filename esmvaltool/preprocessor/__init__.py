@@ -242,19 +242,16 @@ def get_step_blocks(steps, order):
 
 
 class PreprocessorFile(TrackedFile):
-    def __init__(self, attributes, settings, ancestors=None, input_files=None):
+    def __init__(self, attributes, settings, ancestors=None):
         super(PreprocessorFile, self).__init__(attributes['filename'],
                                                attributes, ancestors)
-        self._input_files = [] if input_files is None else input_files
 
         self.settings = copy.deepcopy(settings)
-
         if 'save' not in self.settings:
             self.settings['save'] = {}
         self.settings['save']['filename'] = self.filename
 
         self.files = [a.filename for a in ancestors or ()]
-        self.files.extend(input_files or [])
 
         self._cubes = None
         self._prepared = False
@@ -319,7 +316,6 @@ class PreprocessorFile(TrackedFile):
     def initialize_provenance(self, task):
         """Initialize the provenance document."""
         super(PreprocessorFile, self).initialize_provenance(task)
-        self._initialize_input()
 
     def _initialize_entity(self):
         """Initialize the entity representing the file."""
@@ -334,13 +330,6 @@ class PreprocessorFile(TrackedFile):
         attributes.update(settings)
         self.entity = self.provenance.entity('file:' + self.filename,
                                              attributes)
-
-    def _initialize_input(self):
-        """Register input files for provenance tracking."""
-        for input_file in self._input_files:
-            file = self.provenance.entity('file:' + input_file)
-            # TODO: get tracking id and remove as a special case
-            self.wasderivedfrom(file)
 
 
 # TODO: use a custom ProductSet that raises an exception if you try to

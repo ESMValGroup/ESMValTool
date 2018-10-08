@@ -62,7 +62,7 @@ class TrackedFile(object):
         self._initialize_namespaces()
         self._initialize_activity(task)
         self._initialize_entity()
-        self._initialize_ancestors()
+        self._initialize_ancestors(task)
 
     def _initialize_namespaces(self):
         """Inialize the namespaces."""
@@ -87,11 +87,11 @@ class TrackedFile(object):
         # TODO: implement attribute inheritance
         pass
 
-    def _initialize_ancestors(self):
+    def _initialize_ancestors(self, task):
         """Register input Products/files for provenance tracking."""
         for ancestor in self._ancestors:
             if ancestor.provenance is None:
-                raise ValueError("Uninitalized ancestor provenance.")
+                ancestor.initialize_provenance(task)
             self.provenance.update(ancestor.provenance)
             self.wasderivedfrom(ancestor)
 

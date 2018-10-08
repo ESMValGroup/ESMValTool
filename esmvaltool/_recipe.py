@@ -6,6 +6,7 @@ import os
 from collections import OrderedDict
 
 import yaml
+from netCDF4 import Dataset
 
 from . import __version__
 from . import _recipe_checks as check
@@ -13,7 +14,7 @@ from ._config import get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_output_file, get_rootpath,
                            get_statistic_output_file)
-from ._provenance import get_recipe_provenance
+from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks
 from .cmor.table import CMOR_TABLES
@@ -377,6 +378,19 @@ def _update_fx_settings(settings, variable, config_user):
                 fx_files_dict['sftgif'])
 
 
+def _read_attributes(filename):
+    """Read the attributes from a netcdf file."""
+    attributes = {}
+    if not (os.path.exists(filename)
+            or os.path.splitext(filename)[1].lower() == '.nc'):
+        return attributes
+
+    with Dataset(filename, 'r') as dataset:
+        for attr in dataset.ncattrs():
+            attributes[attr] = getattr(dataset, attr)
+    return attributes
+
+
 def _get_input_files(variable, config_user):
     """Get the input files for a single dataset."""
     # Find input files locally.
@@ -394,6 +408,11 @@ def _get_input_files(variable, config_user):
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
     check.data_availability(input_files, variable)
+
+    # Set up provenance tracking
+    for i, filename in enumerate(input_files):
+        attributes = _read_attributes(filename)
+        input_files[i] = TrackedFile(filename, attributes)
 
     return input_files
 
@@ -540,15 +559,10 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             settings=settings,
             config_user=config_user)
         ancestors = grouped_ancestors.get(variable['filename'])
-        if ancestors:
-            input_files = None
-        else:
-            input_files = _get_input_files(variable, config_user)
+        if not ancestors:
+            ancestors = _get_input_files(variable, config_user)
         product = PreprocessorFile(
-            attributes=variable,
-            settings=settings,
-            ancestors=ancestors,
-            input_files=input_files)
+            attributes=variable, settings=settings, ancestors=ancestors)
         products.add(product)
 
     _update_statistic_settings(products, order, config_user['preproc_dir'])
