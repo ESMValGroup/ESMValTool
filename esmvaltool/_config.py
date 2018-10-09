@@ -151,9 +151,7 @@ def get_institutes(variable):
     dataset = variable['dataset']
     project = variable['project']
     logger.debug("Retrieving institutes for dataset %s", dataset)
-    if 'institutes' in CFG[project]:
-        return CFG[project]['institutes'].get(dataset, [])
-    return None
+    return CFG.get(project, {}).get(dataset, [])
 
 
 def replace_mip_fx(fx_file):
