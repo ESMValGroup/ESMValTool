@@ -130,6 +130,10 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
+  lemb_va:
+    name: Lembo, Valerio
+    institute: CEN, University of Hamburg
+    email: valerio.lembo 'at' uni-hamburg.de
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -423,10 +427,12 @@ references:
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
   lauer17rse: "Lauer et al., Remote Sens. Environ., in press, 2017."
+  lembo16climdyn: "Lembo et al., Clim. Dyn., 48, 1793-1812, doi:https://10.1007/s00382-016-3173-9"
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:https://doi.org/10.1175/JCLI-D-13-00337.1, 2014."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
+  lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."
@@ -501,6 +507,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
+  trr181: DFG Project TRR-181
 
 realms:
   aerosol: aerosol
