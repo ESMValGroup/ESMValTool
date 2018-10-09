@@ -1,6 +1,5 @@
 """ESMValtool task definition."""
 import contextlib
-import copy
 import datetime
 import errno
 import logging
@@ -14,7 +13,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
-from esmvaltool._provenance import TrackedFile
+from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
 
@@ -168,6 +167,14 @@ class BaseTask(object):
         self.ancestors = [] if ancestors is None else ancestors
         self.output_files = None
         self.name = name
+        self.activity = None
+
+    def initialize_provenance(self, recipe_entity):
+        """Initialize task provenance activity."""
+        if self.activity is not None:
+            raise ValueError(
+                "Provenance of {} already initialized".format(self))
+        self.activity = get_task_provenance(self, recipe_entity)
 
     def flatten(self):
         """Return a flattened set of all ancestor tasks and task itself."""
@@ -477,7 +484,7 @@ class DiagnosticTask(BaseTask):
                 for p in ancestor_products if p.filename in ancestor_files
             }
             product = TrackedFile(filename, attributes, ancestors)
-            product.initialize_provenance(self)
+            product.initialize_provenance(self.activity)
             product.save_provenance()
             self.products.add(product)
 

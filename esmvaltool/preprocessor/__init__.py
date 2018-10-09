@@ -242,6 +242,8 @@ def get_step_blocks(steps, order):
 
 
 class PreprocessorFile(TrackedFile):
+    """Preprocessor output file."""
+
     def __init__(self, attributes, settings, ancestors=None):
         super(PreprocessorFile, self).__init__(attributes['filename'],
                                                attributes, ancestors)
@@ -264,6 +266,7 @@ class PreprocessorFile(TrackedFile):
         check_preprocessor_settings(self.settings)
 
     def apply(self, step, debug=False):
+        """Apply preprocessor step to product."""
         if step not in self.settings:
             raise ValueError(
                 "PreprocessorFile {} has no settings for step {}".format(
@@ -275,6 +278,7 @@ class PreprocessorFile(TrackedFile):
             save(self.cubes, filename)
 
     def prepare(self):
+        """Apply preliminary file operations on product."""
         if not self._prepared:
             for step in DEFAULT_ORDER[:DEFAULT_ORDER.index('load')]:
                 if step in self.settings:
@@ -284,6 +288,7 @@ class PreprocessorFile(TrackedFile):
 
     @property
     def cubes(self):
+        """Cubes."""
         if self.is_closed:
             self.prepare()
             self._cubes = preprocess(self.files, 'load',
@@ -363,21 +368,22 @@ class PreprocessingTask(BaseTask):
         self.order = list(order)
         self.debug = debug
         self.write_ncl_interface = write_ncl_interface
-        self._initialize_provenance()
 
-    def _initialize_provenance(self):
+    def initialize_provenance(self, recipe_entity):
         """Initialize the provenance documents of the output products."""
+        super(PreprocessingTask, self).initialize_provenance(recipe_entity)
+
         for product in self.products:
-            product.initialize_provenance(self)
+            product.initialize_provenance(self.activity)
 
         # Hacky way to inialize the multi model products as well.
         step = 'multi_model_statistics'
         for product in self.products:
             if step in product.settings:
                 output_products = product.settings[step].get(
-                    'output_products', {})
-                for statistic in output_products:
-                    output_products[statistic].initialize_provenance(self)
+                    'output_products', {}).values()
+                for output_product in output_products:
+                    output_product.initialize_provenance(self.activity)
                 break
 
     def _run(self, _):

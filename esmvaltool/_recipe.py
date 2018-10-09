@@ -724,16 +724,15 @@ class Recipe(object):
         self._cfg = copy.deepcopy(config_user)
         self._cfg['write_ncl_interface'] = self._need_ncl(
             raw_recipe['diagnostics'])
-        self._recipe_file = os.path.basename(recipe_file)
-        self.documentation = self._initalize_documentation(
-            raw_recipe.get('documentation', {}))
+        self._filename = os.path.basename(recipe_file)
         self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
+        self.entity = self._initalize_provenance(
+            raw_recipe.get('documentation', {}))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
-        self.provenance = None
 
     @staticmethod
     def _need_ncl(raw_diagnostics):
@@ -749,17 +748,9 @@ class Recipe(object):
                     return True
         return False
 
-    @staticmethod
-    def _initalize_documentation(raw_documentation):
-        """Parse the documentation section."""
-        doc = copy.deepcopy(raw_documentation)
-        if 'description' not in doc:
-            doc['description'] = ''
-
-        for section in ('authors', 'references', 'projects'):
-            doc[section] = replace_tags(section, doc.get(section, []))
-
-        return doc
+    def _initalize_provenance(self, raw_documentation):
+        """Initialize the recipe provenance."""
+        return get_recipe_provenance(raw_documentation, self._filename)
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
         """Define diagnostics in recipe."""
@@ -881,7 +872,7 @@ class Recipe(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = dict(copy.deepcopy(raw_settings))
-            settings['recipe'] = self._recipe_file
+            settings['recipe'] = self._filename
             settings['version'] = __version__
             settings['script'] = script_name
             # Add output dirs to settings
@@ -934,14 +925,15 @@ class Recipe(object):
 
             # Create preprocessor tasks
             for variable_name in diagnostic['preprocessor_output']:
-                task_id = diagnostic_name + TASKSEP + variable_name
-                logger.info("Creating preprocessor task %s", task_id)
+                task_name = diagnostic_name + TASKSEP + variable_name
+                logger.info("Creating preprocessor task %s", task_name)
                 task = _get_preprocessor_task(
                     variables=diagnostic['preprocessor_output'][variable_name],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
-                    task_name=task_id)
-                tasks[task_id] = task
+                    task_name=task_name)
+                task.initialize_provenance(self.entity)
+                tasks[task_name] = task
 
             if not self._cfg['run_diagnostic']:
                 continue
@@ -955,6 +947,7 @@ class Recipe(object):
                     output_dir=script_cfg['output_dir'],
                     settings=script_cfg['settings'],
                     name=task_id)
+                task.initialize_provenance(self.entity)
                 tasks[task_id] = task
 
         # Resolve diagnostic ancestors
@@ -973,7 +966,3 @@ class Recipe(object):
         """Run all tasks in the recipe."""
         run_tasks(
             self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
-        self._collect_provenance()
-
-    def _collect_provenance(self):
-        provenance = get_recipe_provenance(self.documentation)
