@@ -76,8 +76,8 @@ def extract_month(mycube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
-    season_cube = mycube.extract(iris.Constraint(month_number=month))
-    return season_cube
+    month_cube = mycube.extract(iris.Constraint(month_number=month))
+    return month_cube
 
 
 # get the time average
@@ -114,6 +114,13 @@ def time_average(cube):
 
 
 # get the seasonal mean
+def seasonal_data(cube):
+    '''
+    In this case the idea would be return a dataset where the time-coord is season.
+    '''
+    
+    return season_cube
+
 def seasonal_mean(cube):
     """
     Function to compute seasonal means with MEAN
