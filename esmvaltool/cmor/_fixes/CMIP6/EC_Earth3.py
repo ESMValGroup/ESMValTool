@@ -1,8 +1,8 @@
 """Fixes for EC-Earth3-HR PRIMAVERA project data"""
-from netCDF4 import Dataset
 import iris.coords
 import iris.util
 from ..fix import Fix
+from netCDF4 import Dataset
 
 
 class allvars(Fix):

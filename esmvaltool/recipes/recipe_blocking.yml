@@ -1,0 +1,88 @@
+documentation:
+
+  description: |
+    Compute blocking index (1D and 2D)
+
+  authors:
+    - atha_pa
+    - schi_re
+
+  references:
+    - contact_authors
+
+  projects:
+    - primavera
+
+datasets:
+
+  - {project: OBS,  dataset: 'NCEP-NCAR', type: 'recon',
+     start_year: 1950,  end_year: 2010}
+
+  - {dataset: CMCC-CM2-HR4, activity: HighResMIP, institute: CMCC, grid: gn,
+     project: CMIP6, exp: control-1950,  ensemble: r1i1p1f1, version: v20180509,
+     start_year: 1950,  end_year: 2050}
+  - {dataset: CMCC-CM2-VHR4, activity: HighResMIP, institute: CMCC, grid: gn,
+     project: CMIP6, exp: control-1950,  ensemble: r1i1p1f1, version: v20180705,
+     start_year: 1950,  end_year: 1985}
+  - {dataset: CNRM-CM6-1, activity: HighResMIP, institute: CNRM-CERFACS, grid: gr,
+     project: CMIP6, exp: control-1950,  ensemble: r2i1p1f2, version: v20180904,
+     start_year: 1950,  end_year: 2049}
+  - {dataset: MPI-ESM1-2-XR, activity: HighResMIP, institute: MPI-M, grid: gn,
+     project: CMIP6, exp: control-1950,  ensemble: r1i1p1f1, version: v20180606,
+     start_year: 1950,  end_year: 2050}
+  - {dataset: MPI-ESM1-2-HR, institute: MPI-M, grid: gn,
+     project: CMIP6, activity: HighResMIP, exp: control-1950,  ensemble: r1i1p1f1, version: v20180524,
+     start_year: 1950,  end_year: 2050}
+  - {dataset: ECMWF-IFS-HR, institute: ECMWF, grid: gr,
+     project: CMIP6, activity: HighResMIP, exp: control-1950,  ensemble: r1i1p1f1, version: v20170915,
+     start_year: 1950,  end_year: 2049}
+  - {dataset: ECMWF-IFS-LR, institute: ECMWF, grid: gr,
+     project: CMIP6, activity: HighResMIP, exp: control-1950,  ensemble: r1i1p1f1, version: v20180221,
+     start_year: 1950,  end_year: 2049}
+
+preprocessors:
+  extract:
+    extract_levels:
+      levels: [50000,]
+      scheme: nearest
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 20
+      end_latitude: 90
+    save:
+      optimize_access: longitude time
+
+diagnostics:
+  blocking:
+    description: Blocking
+    variables:
+      zg:
+        reference_dataset: NCEP-NCAR
+        mip: day
+        field: T2M
+        preprocessor: extract
+    scripts:
+#      blocking1D:
+#        script: blocking/blocking.py
+#        title: "Blocking diagnostic 1D"
+#        compute_2d: False
+#        compute_1d: True
+#        central_latitude: 60.0
+#        span: 20.0
+#        offset: 5.0
+#        north_threshold: -10.0
+#        south_threshold: 0.0
+#        smoothing_window: 5
+#        max_color_scale: 10
+
+      blocking2D:
+        script: blocking/blocking.py
+        title: "Blocking diagnostic 2D"
+        compute_2d: True
+        compute_1d: False
+        span: 15.0
+        north_threshold: -10.0
+        south_threshold: 0.0
+        persistence: 5
+        max_color_scale: 10

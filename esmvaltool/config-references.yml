@@ -56,6 +56,10 @@ authors:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
     email: oliverdandrews 'at' googlemail.com
+  atha_pa:
+    name: Panos Athanasiadis
+    insitute: CMCC, IT
+    email: panos.athanasiadis 'at' cmcc.it
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -196,6 +200,10 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
     email: romain.roehrig 'at' meteo.fr
+  schi_re:
+    name: Schiemann, Reinhard
+    institute: Univ. of Reading, UK
+    email: r.k.schiemann 'at' reading.ac.uk
   schl_ma:
     name: Schlund, Manuel
     institute: DLR, Germany
@@ -500,6 +508,7 @@ projects:
   dlrveu2: DLR project VEU2
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
+  primavera: EU H2020 project PRIMAVERA
   qa4ecv: QA4ECV
 
 realms:
