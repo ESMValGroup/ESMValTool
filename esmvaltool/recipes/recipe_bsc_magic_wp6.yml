@@ -22,6 +22,11 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
+    extract_region:
+        end_latitude: 70
+        start_latitude: 27
+        end_longitude: 50
+        start_longitude: 5
 
 diagnostics:
   anomaly_agreement:
@@ -34,15 +39,6 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/bsc_wp6.r #(in diag_scripts)
-
-        #Region for the area weights, if no weighting is required set all
-        #variables to NULL
-        end_latitude: 70
-        start_latitude: 27
-        end_longitude: 50
-        start_longitude: 5
-
-
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
         weights: "equal"
 

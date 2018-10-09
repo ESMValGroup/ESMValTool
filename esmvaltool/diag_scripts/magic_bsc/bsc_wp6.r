@@ -4,12 +4,6 @@
 ####cdo
 
 # conda install -c conda-forge r-ncdf4
-#install.packages('yaml')
-#install.packages('devtools')
-#library(devtools)
-#Sys.setenv(TAR = '/bin/tar')
-#install_git('https://earth.bsc.es/gitlab/es/startR', branch = 'develop-hotfixes-0.0.2')
-#install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
 library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
@@ -18,15 +12,13 @@ library(ggplot2)
 library(yaml)
 
 ##Until integrated into current version of s2dverification
-#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/CombineIndices.R")
-#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/SelBox.R")
 library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
 
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
+
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
@@ -37,17 +29,15 @@ dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
-model_names <- lapply(input_files_per_var, function(x) x$model)
+model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unname(model_names)
+
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 experiment <- lapply(input_files_per_var, function(x) x$exp)
 experiment <- unlist(unname(experiment))
 rcp_scenario <- experiment
-
-model_names <-  lapply(input_files_per_var, function(x) x$model)
-model_names <- unlist(unname(model_names))
 
 start_year <- lapply(input_files_per_var, function(x) x$start_year)
 start_year <- c(unlist(unname(start_year)))[1]
@@ -63,16 +53,17 @@ monini <- 1
 moninf <- params$moninf
 monsup <- params$monsup
 region <- params$region
+print("MESES")
+print(moninf)
+print(monsup)
 mask <- NULL ### How can we pass masks from ESMValTool?
-if (!is.null(params$end_latitude)) {
-    region <- c(params$start_longitude, params$end_longitude, params$start_latitude, params$end_latitude)
-} else {
-  region <- "NULL"
-}
 running_mean <- params$running_mean
 multi_year_average <- params$multi_year_average
 weights <- params$weights
 ### Load data
+print(running_mean)
+print(multi_year_average)
+print(weights)
 
 
 data <- Start(model = fullpath_filenames,
@@ -87,16 +78,36 @@ data <- Start(model = fullpath_filenames,
 
 lat <- attr(data, "Variables")$dat1$lat
 lon <- attr(data, "Variables")$dat1$lon
+region <- c(min(lon), max(lon), min(lat), max(lat))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
 dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
 time_dim <- which(names(dim(data)) == "time")
 timestamp <- ""
+   # ------------------------------
+jpeg(paste0(plot_dir, "/plot1.jpg"))
+PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
+dev.off()
+# ------------------------------
+# Provisional solution to error in dimension order:
+ time <- attr(data, "Variables")$dat1$time
+print(head(time))
+ #if ((end_projection-start_projection + 1) * 12 == length(time)) {
+ #    time <-  seq(as.Date(paste(start_projection, '01', '01', sep = "-"), format = "%Y-%m-%d"),
+ #               as.Date(paste(end_projection, '12', '01', sep = "-"), format = "%Y-%m-%d"), "day")
+ #}
+    data <- as.vector(data)
+    dim(data) <- c(model = 1, var = 1,  lon = length(lon), lat = length(lat), time = length(time))
+    data <- aperm(data, c(1,2,5,3,4))
+     attr(data, "Variables")$dat1$time <- time
+# ------------------------------
+jpeg(paste0(plot_dir, "/plot2.jpg"))
+PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
+dev.off()
 
 if (is.null(moninf)) {
   time <- attributes(data)$Variables$dat1$time
-
 } else {
     day <- "01"
     month <- moninf
@@ -129,8 +140,10 @@ if (!is.null(running_mean)) {
   timestamp <- paste0(running_mean, "-month-running-mean-")
 }
 
+print(paste("moninf", moninf))
 if (!is.null(moninf)) {
   months <- paste0(month.abb[moninf],"-", month.abb[monsup])
+    print(months)
   dims <- dim(data)
   dims <- append(dims, c(12, dims[time_dim] / 12), after = time_dim)
   dims <- dims[-time_dim]
