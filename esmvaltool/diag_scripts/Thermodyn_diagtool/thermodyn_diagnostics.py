@@ -189,43 +189,51 @@
 ;;#############################################################################
 """
 
-from esmval_lib import ESMValProject
-from ESMValMD import ESMValMD
 import ConfigParser
 import os
 from subprocess import *
-import shutil
-import shlex
+from shutil import move
 import commands
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 import imp
 
+#New packages for version 2.0 of ESMValTool
+import logging
+import esmvaltool.diag_scripts.shared as e 
+import esmvaltool.diag_scripts.shared.names as n
+import cf_units
+import iris
+
 from cdo import *
-from auxiliary import info
+from netCDF4 import Dataset
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
 
-sys.path.append('./diag_scripts/aux/Thermodynamics/')
+#sys.path.append('./diag_scripts/aux/Thermodynamics/')
+#Locally used classes
 import srvfile_read as srv
 import fluxogram as fluxogram
+import mkthe as auxmod
+import lorenz_cycle as lecscript
+import fourier_coefficients as fourc
+import plot_script as plotsmod
+
 #import diag_scripts.aux.Thermodynamics.srvfile_read as srv
 #import diag_scripts.aux.Thermodynamics.fluxogram as fluxogram
 #import diag_scripts.aux.Thermodynamics.lorenz_cycle as lec
 
-from netCDF4 import Dataset
-
-import projects
-
+#import projects
 #Some classes I need to debug the code"
 #import time
 #import sys
 #Will be removed"
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-from matplotlib import rcParams
+logger = logging.getLogger(os.path.basename(__file__))
 
 sigmainv = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 lc       =  2501000 		# latent heat of condensation
@@ -233,28 +241,32 @@ lcsub    =  2835000 		# latent heat of sublimation
 ls       =   334000		# latent heat of solidification
 grav     =        9.81		# gravity acceleration
 
+print('Hello world')
 
-def main(project_info):
+def main(cfg):
 
-    log = open('lembo17_log.txt', 'w')
+    #log = open('lembo17_log.txt', 'w')
 
-    E = ESMValProject(project_info)
+    #E = ESMValProject(project_info)
 
-    verbosity      = E.get_verbosity()
-    diag_script    = E.get_diag_script_name()
-    workdir        = E.get_work_dir()
-    config_file    = E.get_configfile()
+    #verbosity      = E.get_verbosity()
+    #diag_script    = E.get_diag_script_name()
+    print('Entering the diagnostic tool')
+    workdir        = e.work_dir()
+    #config_file    = E.get_configfile()
     diagworkdir_up = workdir + 'Thermodyn_diagnostics'
     if not os.path.exists(diagworkdir_up):
-	os.makedirs(diagworkdir_up)
+        os.makedirs(diagworkdir_up)
     for item in os.listdir(diagworkdir_up):
         file_path = os.path.join(diagworkdir_up, item)
         if os.path.isfile(file_path):
             os.remove(file_path)
 	    pass
-    plotpath       = E.get_plot_dir()
+    logger.info(workdir)
+    plotpath       = e.plot_dir()
+    logger.info(plotpath)
     if not os.path.exists(plotpath):
-	os.makedirs(plotpath)
+        os.makedirs(plotpath)
     for item in os.listdir(plotpath):
         file_path = os.path.join(plotpath, item)
         if os.path.isfile(file_path):
@@ -262,25 +274,27 @@ def main(project_info):
 	    pass
     inputpath      = commands.getoutput("pwd")
     plotscript     = inputpath + "/plot_scripts/python/lembo17_plots.py"
-    plotsmod       = imp.load_source("lembo17_plots", plotscript)
+    #plotsmod       = imp.load_source("lembo17_plots", plotscript)
     auxpath        = '{}/diag_scripts/aux/Thermodynamics'.format(inputpath)
-    auxscript      = auxpath + "/mkthe.py"
-    auxmod         = imp.load_source("mkthe", auxscript)
+    #auxscript      = auxpath + "/mkthe.py"
+    #auxmod         = imp.load_source("mkthe", auxscript)
     #lec_script     = auxpath + '/lorenz_cycle_wfft.py'
-    lec_script     = auxpath + '/lorenz_cycle.py'
-    lecscript      = imp.load_source('lorenz_cycle', lec_script)
-    fourc_script   = auxpath + '/fourier_coefficients.py'
-    fourc          = imp.load_source('fourier_coefficients', fourc_script)
+    #lec_script     = auxpath + '/lorenz_cycle.py'
+    #lecscript      = imp.load_source('lorenz_cycle', lec_script)
+    #fourc_script   = auxpath + '/fourier_coefficients.py'
+    #fourc          = imp.load_source('fourier_coefficients', fourc_script)
 
-    log.write("Starting thermodynamics diagnostic\n")
+    #log.write("Starting thermodynamics diagnostic\n")
 
     cdo = Cdo()
 
-    basetags = [x.strip().encode('ascii')
-                for x in project_info.get('GLOBAL')['tags']]
+    #basetags = [x.strip().encode('ascii')
+    #            for x in project_info.get('GLOBAL')['tags']]
     # Get names of models and sftlf files
     sftlf_fx = {}
     model_names = []
+    data = e.Datasets(cfg)
+    print(data)
     for model in project_info['MODELS']:
         currProject = getattr(projects, model.split_entries()[0])()
         model_name = currProject.get_model_name(model)
@@ -457,8 +471,9 @@ def main(project_info):
         if entr in {'y','yes'}:
                 if met in {'2','3'}:
                     os.chdir(diagworkdir)
-                    auxmod.mkthe(diagworkdir,ts_file,hus_file,tas_file,ps_file,
-                                 uas_file,vas_file,hfss_file,te_file,model_name)
+                    auxmod.mkthe_main(diagworkdir,ts_file,hus_file,tas_file,
+                                      ps_file,uas_file,vas_file,hfss_file,
+                                      te_file,model_name)
                     tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
                     cdo.setrtomiss('400,1e36',input = 'tlcl.nc ', output = tlcl_file) 
                     tabl_file = diagworkdir+'/{}_tabl.nc'.format(model_name)
@@ -644,9 +659,9 @@ def main(project_info):
                 cdo.sub(input = '{} {}'.format(toab_file, toab_ocean_file),
                         output = toab_land_file)
                 cdo.setctomiss('0', input = toab_ocean_file, output = aux_file)
-                shutil.move(aux_file, toab_ocean_file)
+                move(aux_file, toab_ocean_file)
                 cdo.setctomiss('0', input = toab_land_file, output = aux_file)
-                shutil.move(aux_file, toab_land_file)
+                move(aux_file, toab_land_file)
                 toab_la_gmean_file = diagworkdir + '/{}_toab_la_gmean.nc'.format(model_name)
                 cdo.timmean(input = '-fldmean {}'.format(toab_land_file), 
                             output = toab_la_gmean_file)        
@@ -670,9 +685,9 @@ def main(project_info):
                         output = atmb_land_file)
                 aux_file = diagworkdir+'/{}_aux.nc'.format(model_name)
                 cdo.setctomiss('0', input = atmb_ocean_file, output = aux_file)
-                shutil.move(aux_file, atmb_ocean_file)
+                move(aux_file, atmb_ocean_file)
                 cdo.setctomiss('0', input = atmb_land_file, output = aux_file)
-                shutil.move(aux_file, atmb_land_file)
+                move(aux_file, atmb_land_file)
                 atmb_la_gmean_file = diagworkdir + '/{}_atmb_la_gmean.nc'.format(model_name)
                 cdo.timmean(input = '-fldmean {}'.format(atmb_land_file), 
                             output = atmb_la_gmean_file)        
@@ -696,9 +711,9 @@ def main(project_info):
                         output = surb_land_file)
                 aux_file = diagworkdir+'/{}_aux.nc'.format(model_name)
                 cdo.setctomiss('0', input = surb_ocean_file, output=aux_file)
-                shutil.move(aux_file, surb_ocean_file)
+                move(aux_file, surb_ocean_file)
                 cdo.setctomiss('0', input = surb_land_file, output = aux_file)
-                shutil.move(aux_file, surb_land_file)
+                move(aux_file, surb_land_file)
                 surb_la_gmean_file = diagworkdir+'/{}_surb_la_gmean.nc'.format(model_name)
                 cdo.timmean(input = '-fldmean {}'.format(surb_land_file), 
                             output = surb_la_gmean_file)        
@@ -722,9 +737,9 @@ def main(project_info):
                         .format(wmassBudget_file, wmassBudget_ocean_file), 
                         output = wmassBudget_land_file)
                 cdo.setctomiss('0', input=wmassBudget_ocean_file, output = aux_file)
-                shutil.move(aux_file, wmassBudget_ocean_file)
+                move(aux_file, wmassBudget_ocean_file)
                 cdo.setctomiss('0', input = wmassBudget_land_file, output = aux_file)
-                shutil.move(aux_file, wmassBudget_land_file)
+                move(aux_file, wmassBudget_land_file)
                 wmass_oc_gmean_file = diagworkdir+'/{}_wmass_oc_gmean.nc'.format(model_name)
                 cdo.timmean(input = '-fldmean {}'
                             .format(wmassBudget_ocean_file), 
@@ -752,10 +767,10 @@ def main(project_info):
                 aux_file = diagworkdir+'/{}_aux.nc'.format(model_name)
                 cdo.setctomiss('0', input = latentEnergy_ocean_file, 
                                output = aux_file)
-                shutil.move(aux_file, latentEnergy_ocean_file)
+                move(aux_file, latentEnergy_ocean_file)
                 cdo.setctomiss('0', input = latentEnergy_land_file, 
                                output = aux_file )
-                shutil.move(aux_file, latentEnergy_land_file)
+                move(aux_file, latentEnergy_land_file)
                 latent_oc_gmean_file = diagworkdir + '/{}_latent_oc_gmean.nc'.format(model_name)
                 cdo.timmean(input = '-fldmean {}'.format(latentEnergy_ocean_file),
                             output = latent_oc_gmean_file)        
@@ -839,8 +854,8 @@ def main(project_info):
                          output = 'fourier_coeff.srv')
                 srvfile=diagworkdir + '/{}_{}_fc.srv'.format(model_name,yr)
                 ncfile=diagworkdir + '/{}_{}_fc.nc'.format(model_name,yr)
-                shutil.move('fourier_coeff.srv', srvfile)
-                shutil.move('fourier_coeff.nc', ncfile)
+                move('fourier_coeff.srv', srvfile)
+                move('fourier_coeff.nc', ncfile)
                 
                 diagfile = plotpath2+'/{}_{}_lec_diagram.png'.format(model_name, yr)
                 logfile = plotpath2 + '/{}_{}_lec_table.txt'.format(model_name, yr)
@@ -895,14 +910,14 @@ def main(project_info):
                          .format(ts_file, te_file, aux_file), output = verticalEntropy_file)
                 cdo.chname('ts,sver',input = verticalEntropy_file,
                            options = '-b F32',output = aux_file)
-                shutil.move(aux_file, verticalEntropy_file)	
+                move(aux_file, verticalEntropy_file)	
                 verticalEntropy_mean_file = diagworkdir+'/{}_vertEntropy_gmean.nc'.format(model_name)
                 removeif(verticalEntropy_mean_file)
                 cdo.mermean(input = '-zonmean {}'.format(verticalEntropy_file),
                             options = '-b F32',output = verticalEntropy_mean_file)
                 cdo.chname('ts,sver',input = verticalEntropy_mean_file,
                            options = '-b F32',output = aux_file)
-                shutil.move(aux_file, verticalEntropy_mean_file)
+                move(aux_file, verticalEntropy_mean_file)
                 fl = Dataset(verticalEntropy_mean_file)
                 vertentr_mean = fl.variables['sver'][:, :, :]
                 vertentr_all[i,0] = np.nanmean(vertentr_mean)
@@ -1448,10 +1463,10 @@ def main(project_info):
                 cdo.merge(input = '{} {}/{}'
                           .format(tot_transp_file, diagworkdir_up, listf[j]), 
                           options = '-b F32', output = aux_file)
-                shutil.move(aux_file,tot_transp_file)
+                move(aux_file,tot_transp_file)
         else:
             inp=diagworkdir_up+'/'+listf[0]
-            shutil.move(inp,tot_transp_file)
+            move(inp,tot_transp_file)
         atm_transp_file = diagworkdir_up+'/atmos_transp_mean.nc'.format(model_name)            
         listf = filter(lambda x: x.startswith('atmos_transp_mean_'),
                        os.listdir(diagworkdir_up))
@@ -1464,10 +1479,10 @@ def main(project_info):
                 cdo.merge(input = '{} {}/{}'
                           .format(atm_transp_file, diagworkdir_up, listf[j]),
                           options = '-b F32', output = aux_file)
-                shutil.move(aux_file, atm_transp_file)
+                move(aux_file, atm_transp_file)
         else:
             inp=diagworkdir_up+'/'+listf[0]
-            shutil.move(inp,atm_transp_file)
+            move(inp,atm_transp_file)
         oce_transp_file = diagworkdir_up + '/ocean_transp_mean.nc'.format(model_name)
         listf=filter(lambda x: x.startswith('ocean_transp_mean_'),
                      os.listdir(diagworkdir_up))
@@ -1480,10 +1495,10 @@ def main(project_info):
                 cdo.merge(input = '{} {}/{}'
                           .format(oce_transp_file, diagworkdir_up, listf[j]),
                           options = '-b F32', output = aux_file)
-                shutil.move(aux_file,oce_transp_file)
+                move(aux_file,oce_transp_file)
         else:
             inp=diagworkdir_up+'/'+listf[0]
-            shutil.move(inp,oce_transp_file)
+            move(inp,oce_transp_file)
         info('Meridional heat transports', verbosity, 1)
         
         fig = plt.figure()
@@ -1859,7 +1874,7 @@ def main(project_info):
     
     log.close()   
     
-    E.write_references( diag_script,["A_lemb_va"],
+    e.write_references( diag_script,["A_lemb_va"],
                                     ["A_kold_ni"], 	       # contributors
                                     ["D0001","D0002"],      # diag_references
                                     [""],                   # obs_references

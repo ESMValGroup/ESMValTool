@@ -53,82 +53,82 @@ diagnostics:
         preprocessor: prep0
         mip: Amon
         field: T2Ms
-      pr:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      ps:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      prsn:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rlds:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rlus:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rlut:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rsds:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rsus:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rsdt:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      rsut:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      ts:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      uas:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      vas:
-        preprocessor: prep0
-        mip: Amon
-        field: T2Ms
-      hus:
-        preprocessor: prep0
-        mip: Amon
-        field: T3M
-      tas:
-        preprocessor: prep0
-        mip: day
-        field: T2Ds
-      ta:
-        preprocessor: prep0
-        mip: day
-        field: T3D
-      ua:
-        preprocessor: prep0
-        mip: day
-        field: T3D
-      va:
-        preprocessor: prep0
-        mip: day
-        field: T3D
-      wap:
-        preprocessor: prep0
-        mip: day
-        field: T3D
+     # pr:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  ps:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  prsn:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rlds:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rlus:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rlut:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rsds:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rsus:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rsdt:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  rsut:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  ts:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  uas:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  vas:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T2Ms
+     #  hus:
+     #    preprocessor: prep0
+     #    mip: Amon
+     #    field: T3M
+     #tas:
+     #  preprocessor: prep0
+     #  mip: day
+     #   field: T2Ds
+     # ta:
+     #   preprocessor: prep0
+     #   mip: day
+     #   field: T3D
+     # ua:
+     #   preprocessor: prep0
+     #   mip: day
+     #   field: T3D
+     # va:
+     #   preprocessor: prep0
+     #   mip: day
+     #   field: T3D
+     # wap:
+     #   preprocessor: prep0
+     #   mip: day
+     #   field: T3D
     scripts:
       Thermodyn_Diag:
         script: Thermodyn_diagtool/thermodyn_diagnostics.py
