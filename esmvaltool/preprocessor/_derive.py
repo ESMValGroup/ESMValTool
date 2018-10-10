@@ -254,8 +254,12 @@ def calc_toz(cubes):
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 0 Pa is used.
 
+    Ramiro Checa-Garcia: this could be update to calculate also toz or
+    stratospheric ozone column. The last one will just took the tropopause
+    pressure instead of the surface_air_pressure.
+
     Arguments
-    ----
+    ---------
         cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
                and ps_cube (surface_air_pressure).
 
