@@ -78,14 +78,13 @@ def _compute_statistic(datas, name):
     elif name == 'mean':
         statistic_function = np.ma.mean
     elif name == 'range'
-        statistic_function = np.ma.mean    
+        statistic_function = np.ma.ptp  
     elif name == 'maximum'
         statistic_function = np.ma.max
     elif name == 'minimum'
         statistic_function = np.ma.min
-    elif name == 'coef_variation'
-        statistic_function = np.ma.cef
-    
+    elif name == 'anomalies'
+        statistic_function = np.ma.anom
     else:
         raise NotImplementedError
 
