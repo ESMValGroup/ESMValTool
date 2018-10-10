@@ -1,10 +1,22 @@
-"""multimodel statistics
+"""Multimodel statistics
 
 Functions for multi-model operations
 supports a multitude of multimodel statistics
 computations; the only requisite is the ingested
 cubes have (TIME-LAT-LON) or (TIME-PLEV-LAT-LON)
 dimensions; and obviously consistent units.
+
+In general the orginal approach would limit the 
+applicability if any dataset is for example given 
+as zonal mean. An example could be the 
+Meinhaousen et al, 2017 CMIP6 well mixed 
+greenhouse gases forcings. So I tried to refactor 
+this module.
+
+Terminology:
+
+cspec -> coordinates specs for cube
+dspec -> 
 
 It operates on different (time) spans:
 - full: computes stats on full dataset time;
@@ -65,6 +77,15 @@ def _compute_statistic(datas, name):
         statistic_function = np.ma.median
     elif name == 'mean':
         statistic_function = np.ma.mean
+    elif name == 'range'
+        statistic_function = np.ma.mean    
+    elif name == 'maximum'
+        statistic_function = np.ma.max
+    elif name == 'minimum'
+        statistic_function = np.ma.min
+    elif name == 'coef_variation'
+        statistic_function = np.ma.cef
+    
     else:
         raise NotImplementedError
 
@@ -103,7 +124,10 @@ def _compute_statistic(datas, name):
 
 def _put_in_cube(template_cube, cube_data, stat_name,
                  file_name, time_bounds, t_axis):
-    """Quick cube building and saving"""
+    """Quick cube building and saving. 
+    Currently this limites the possibilies of 
+    this multimodel methods.
+    """
     # grab coordinates from any cube
     times = template_cube.coord('time')
     # or get the FULL time axis
