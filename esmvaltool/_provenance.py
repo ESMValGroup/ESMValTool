@@ -3,6 +3,9 @@ import copy
 import logging
 import os
 
+from netCDF4 import Dataset
+from PIL import Image
+from PIL.PngImagePlugin import PngInfo
 from prov.dot import prov_to_dot
 from prov.model import ProvDocument
 
@@ -185,8 +188,51 @@ class TrackedFile(object):
             raise ValueError("Activity not initialized.")
         self.entity.wasDerivedFrom(entity, self._activity)
 
+    def _select_for_include(self):
+        attributes = {
+            'provenance': self.provenance.serialize(format='xml'),
+        }
+        if 'caption' in self.attributes:
+            attributes['caption'] = self.attributes['caption']
+        return attributes
+
+    @staticmethod
+    def _include_provenance_nc(filename, attributes):
+        with Dataset(filename, 'a') as dataset:
+            for key, value in attributes.items():
+                setattr(dataset, key, value)
+
+    @staticmethod
+    def _include_provenance_png(filename, attributes):
+        pnginfo = PngInfo()
+        exif_tags = {
+            'provenance': 'ImageHistory',
+            'caption': 'ImageDescription',
+        }
+        for key, value in attributes.items():
+            pnginfo.add_text(exif_tags.get(key, key), value, zip=True)
+        with Image.open(filename) as image:
+            image.save(filename, pnginfo=pnginfo)
+
+    def _include_provenance(self):
+        """Include provenance information as metadata."""
+        attributes = self._select_for_include()
+
+        # List of files to attach provenance to
+        files = [self.filename]
+        if 'plot_file' in self.attributes:
+            files.append(self.attributes['plot_file'])
+
+        # Attach provenance to supported file types
+        for filename in files:
+            ext = os.path.splitext(filename)[1].lstrip('.').lower()
+            write = getattr(self, '_include_provenance_' + ext, None)
+            if write:
+                write(filename, attributes)
+
     def save_provenance(self):
         """Export provenance information."""
+        self._include_provenance()
         filename = os.path.splitext(self.filename)[0] + '_provenance'
         self.provenance.serialize(filename + '.xml', format='xml')
         figure = prov_to_dot(self.provenance)
