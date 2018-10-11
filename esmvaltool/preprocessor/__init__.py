@@ -311,7 +311,6 @@ class PreprocessorFile(TrackedFile):
         """Close the file."""
         self.save()
         self._cubes = None
-        self.save_provenance()
 
     @property
     def is_closed(self):
