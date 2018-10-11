@@ -90,14 +90,6 @@ def get_task_provenance(task, recipe_entity):
     """Create a provenance activity describing a task."""
     provenance = ProvDocument()
     create_namespace(provenance, 'task')
-    # TODO: add this to task output product instead
-    #     create_namespace(provenance, 'attribute')
-    #     attributes = {}
-    #     if hasattr(task, 'settings'):
-    #         for attr in task.settings:
-    #             attributes['attribute:' + attr] = str(task.settings[attr])
-    #     if hasattr(task, 'script'):
-    #         attributes['attribute:script'] = task.script
 
     activity = provenance.activity('task:' + task.name)
 

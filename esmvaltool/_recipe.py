@@ -769,9 +769,6 @@ class Recipe(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
-            for key in ('themes', 'realms'):
-                diagnostic[key] = replace_tags(key, raw_diagnostic.get(
-                    key, []))
             diagnostic['preprocessor_output'] = \
                 self._initialize_preprocessor_output(
                     name,
@@ -781,6 +778,11 @@ class Recipe(object):
             variable_names = tuple(raw_diagnostic.get('variables', {}))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'), variable_names)
+            for key in ('themes', 'realms'):
+                diagnostic[key] = replace_tags(key, raw_diagnostic.get(
+                    key, []))
+                for script in diagnostic['scripts'].values():
+                    script[key] = diagnostic[key]
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -879,7 +881,7 @@ class Recipe(object):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
-            settings = dict(copy.deepcopy(raw_settings))
+            settings = copy.deepcopy(raw_settings)
             settings['recipe'] = self._filename
             settings['version'] = __version__
             settings['script'] = script_name

@@ -476,17 +476,44 @@ class DiagnosticTask(BaseTask):
         with open(provenance_file, 'r') as file:
             table = yaml.safe_load(file)
 
+        ignore = (
+            'exit_on_ncl_warning',
+            'input_files',
+            'log_level',
+            'max_data_filesize',
+            'output_file_type',
+            'plot_dir',
+            'profile_diagnostic',
+            'recipe',
+            'run_dir',
+            'version',
+            'write_netcdf',
+            'write_ncl_interface',
+            'write_plots',
+            'work_dir',
+        )
+        attrs = {
+            'script_file': self.script,
+        }
+        for key in self.settings:
+            if key not in ignore:
+                attrs[key] = self.settings[key]
+
         ancestor_products = {p for a in self.ancestors for p in a.products}
         self.products = set()
+
         for filename, attributes in table.items():
             ancestor_files = attributes.pop('ancestors', [])
             ancestors = {
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
+
+            attributes.update(attrs)
             for key in attributes:
                 if key in TAGS:
                     attributes[key] = replace_tags(key, attributes[key])
+
             product = TrackedFile(filename, attributes, ancestors)
             product.initialize_provenance(self.activity)
             product.save_provenance()
