@@ -324,7 +324,7 @@ class PreprocessorFile(TrackedFile):
             'preprocessor:' + k: str(v)
             for k, v in self.settings.items()
         }
-        self.entity = self.provenance.entity('file:' + self.filename, settings)
+        self.entity.add_attributes(settings)
 
 
 # TODO: use a custom ProductSet that raises an exception if you try to
