@@ -72,8 +72,7 @@ def read_config_user_file(config_file, recipe_name):
 
 
 def _normalize_path(path):
-    """
-    Normalize paths
+    """Normalize paths.
 
     Expand ~ character and environment variables and convert path to absolute
 
@@ -108,7 +107,7 @@ def read_config_developer_file(cfg_file=None):
 
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
-    """Set up logging"""
+    """Set up logging."""
     if cfg_file is None:
         cfg_file = os.path.join(
             os.path.dirname(__file__), 'config-logging.yml')
@@ -132,6 +131,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
 
     logging.config.dictConfig(cfg)
     logging.Formatter.converter = time.gmtime
+    logging.captureWarnings(True)
 
     return log_files
 
