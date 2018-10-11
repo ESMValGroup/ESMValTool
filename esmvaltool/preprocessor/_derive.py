@@ -35,6 +35,12 @@ def get_required(short_name, field=None):
             ('clwvi', 'T2' + frequency + 's'),
             ('clivi', 'T2' + frequency + 's'),
         ],
+        'netcre': [
+            ('rlut', 'T2' + frequency + 's'),
+            ('rlutcs', 'T2' + frequency + 's'),
+            ('rsut', 'T2' + frequency + 's'),
+            ('rsutcs', 'T2' + frequency + 's'),
+        ],
         'swcre': [
             ('rsut', 'T2' + frequency + 's'),
             ('rsutcs', 'T2' + frequency + 's'),
@@ -83,6 +89,7 @@ def derive(cubes, variable):
     functions = {
         'lwcre': calc_lwcre,
         'lwp': calc_lwp,
+        'netcre': calc_netcre,
         'swcre': calc_swcre,
         'toz': calc_toz,
         'rtnt': calc_rtnt,
@@ -189,6 +196,33 @@ def calc_lwp(cubes):
     return lwp_cube
 
 
+def calc_netcre(cubes):
+    """Compute net cloud radiative effect.
+
+       Calculate net cre as sum of longwave and shortwave cloud
+       radiative effects.
+
+    Arguments
+    ----
+        cubes: cubelist containing rlut (toa_outgoing_longwave_flux), rlutcs
+               (toa_outgoing_longwave_flux_assuming_clear_sky), rsut
+               (toa_outgoing_shortwave_flux) and rsutcs
+               (toa_outgoing_shortwave_flux_assuming_clear_sky).
+
+    Returns
+    -------
+        Cube containing net cloud radiative effect.
+
+    """
+    lwcre = calc_lwcre(cubes)
+    swcre = calc_swcre(cubes)
+
+    netcre = lwcre + swcre
+    netcre.units = lwcre.units
+
+    return netcre
+
+
 def calc_swcre(cubes):
     """Compute shortwave cloud radiative effect from all-sky and clear-sky
 
@@ -218,7 +252,7 @@ def calc_toz(cubes):
     """Compute total column ozone from ozone mol fraction on pressure levels.
 
     The surface pressure is used as a lower integration bound. A fixed upper
-    integration bound of 100 Pa is used.
+    integration bound of 0 Pa is used.
 
     Arguments
     ----
@@ -234,7 +268,7 @@ def calc_toz(cubes):
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
-    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
+    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=0)
     toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
     toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
@@ -244,6 +278,7 @@ def calc_toz(cubes):
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
+    toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
 
     return toz
 
@@ -587,7 +622,7 @@ def calc_clhtkisccp(cubes):
     return clhtkisccp_cube
 
 
-def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
+def _pressure_level_widths(tro3_cube, ps_cube, top_limit=0):
     """Create a cube with pressure level widths.
 
     This is done by taking a 2D surface pressure field as lower bound.
