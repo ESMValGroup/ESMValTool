@@ -21,8 +21,17 @@ datasets:
 
 preprocessors:
   preproc:
-    extract_levels: false
-
+    extract_region:    
+      # The selected region needs to have equal and even number of longitude 
+      # and latitude grid points (e.g., 2x2, 4x4, ...). 
+      # Warning: downcaling can reach very high resolution so select a limited area.
+      start_longitude: 3
+      end_longitude: 13
+      start_latitude: 43
+      end_latitude: 53
+    regrid:
+      target_grid: 1x1  # in degrees, can also be the name of one of the datasets to use the grid from that dataset
+      scheme: linear  # can be linear, nearest, area_weighted, unstructured_nearest
 diagnostics:
   rainfarm:
     description: RainFARM stochastic downscaling of precipitation fields
@@ -35,15 +44,16 @@ diagnostics:
     scripts:
       main:
         script: rainfarm/main.r
-        # Diagnostic arguments: set FALSE to void and allow RainFARM automated setting
-        force_processing: true      # TRUE to rewrite existing output file
-        rlonlatdata: [4,13,44,53]   # Subsetting of region where calculation is to be performed. 
-                                    # The selected region needs to have equal number of longitude 
-                                    # and latitude grid points. 
-                                    # Warning: downcaling can reach very high resolution so select limited area.  
-                                    # NOTE: lon(0/360) 
-        rgrid: false #"r320x160"    # set desired regridding resolution (e.g., comparing different datasets)  
-        slope: 1.7 # spatial spectral slope       
-        nens: 2    # number of ensemble members to be calculated
-        nf:   8    # subdivisions for downscaling
+        # RainFARM options 
+        # Note - RainFARM usage:  rfarm [-s SLOPE] [-e NENS] [-n NF] [-r REGION] [-w WEIGHTS]
+        #                               [-o OUTFILE] [-v VARNAME] [-g] [-c]
+        # NOTE: for more information type 'rfarm -h' from terminal
+        slope: 1.7             # spatial spectral slope       
+        nens: 2                # number of ensemble members to be calculated
+        nf: 8                  # subdivisions for downscaling
+        varname: false         # input variable name - this is assigned by ESMValTool pre-processing 
+        conserv_glob: true     # conserve precipitation over full domain
+        conserv_smooth: true   # conserve precipitation using convolution
+        # orographic weights: set false or climatology file to be used (calling rfweights) 
+        weights_climo: false
 

@@ -25,30 +25,25 @@
 library(tools)
 library(yaml)
 
-# read parameters
-source('esmvaltool/diag_scripts/rainfarm/rainfarm_parameters.r')
-
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
-#settings <- yaml::read_yaml(settings_file)
-metadata <- yaml::read_yaml(settings$input_files)
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)}
+metadata <- yaml::read_yaml(settings$input_files)
 
 # store needed arguments in lists (outfile is generated based on the input file)
 rainfarm_args=list(slope=slope,nens=nens,nf=nf,weights_climo=weights_climo,varname=varname,
 		                      conserv_glob=conserv_glob,conserv_smooth=conserv_smooth)
 rainfarm_options=list("-s","-e","-n","-w","-v","-g","-c")
 
-# get first variable and list associated to pr variable
+# set variable
 var0 <- "pr"
-list0 <- metadata
 
-# get name of climofile for first variable and list associated to first climofile
-climofiles <- names(list0)
-climolist0 <- get(climofiles[1],list0)
+# get name of climofile for selected variable and list associated to first climofile
+climofiles <- names(metadata)
+climolist <- get(climofiles[1],metadata)
 
-diag_base = climolist0$diagnostic
+diag_base = climolist$diagnostic
 print(paste(diag_base,": starting routine"))
 
 # create working dirs if they do not exist
@@ -58,12 +53,12 @@ dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'dataset'))
-reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
-models_start_year=unname(sapply(list0, '[[', 'start_year'))
-models_end_year=unname(sapply(list0, '[[', 'end_year'))
-models_experiment=unname(sapply(list0, '[[', 'exp'))
-models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+models_name=unname(sapply(metadata, '[[', 'dataset'))
+reference_model=unname(sapply(metadata, '[[', 'reference_dataset'))[1]
+models_start_year=unname(sapply(metadata, '[[', 'start_year'))
+models_end_year=unname(sapply(metadata, '[[', 'end_year'))
+models_experiment=unname(sapply(metadata, '[[', 'exp'))
+models_ensemble=unname(sapply(metadata, '[[', 'ensemble'))
 
 ## Loop through input models, apply pre-processing and call RainFARM
 for (model_idx in c(1:(length(models_name)))) {
@@ -74,22 +69,14 @@ for (model_idx in c(1:(length(models_name)))) {
   infile <- climofiles[model_idx]
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
-  sgrid <- "noregrid"
-  if (rgrid != F) {sgrid <- rgrid} 
-  inregname <- paste0(exp,"_",model_exp,"_",model_ens,"_",toString(year1),"-",toString(year2),"_",var0,"_",sgrid,
-                      "_",paste(rlonlatdata,collapse="-"))
+  inregname <- file_path_sans_ext(basename(infile))
   inregfile <- paste0(regridding_dir,"/",inregname,".nc")
 
-  ## If needed, pre-process file selecting a limited lon/lat region of interest 
-  if((!file.exists(inregfile) | force_processing)) { 
-    cdo_command<-paste(paste0("cdo -sellonlatbox,",paste(rlonlatdata,sep="",collapse=",")), 
-                       infile, paste0(inregfile,"regtmp"))
-    cdo_command2<-paste("cdo -f nc4 -copy ", paste0(inregfile,"regtmp"), inregfile)
-    rm_command<-paste("rm ", paste0(inregfile,"regtmp"))
+  ## Pre-process file converting it to NetCDF4 format 
+  if(!file.exists(inregfile)) { 
+    cdo_command<-paste("cdo -f nc4 -copy ", infile, inregfile)
     print(paste0(diag_base,": pre-processing file: ", infile))
     system(cdo_command)
-    system(cdo_command2)
-    system(rm_command)
     print(paste0(diag_base,": pre-processed file: ", inregfile))
   } else {
     print(paste0(diag_base,": data file exists: ", inregfile))  
@@ -103,7 +90,7 @@ for (model_idx in c(1:(length(models_name)))) {
   if (rainfarm_args$conserv_glob == T) {rainfarm_args$conserv_glob <- ""}
   if (rainfarm_args$conserv_smooth == T) {rainfarm_args$conserv_smooth <- ""}
  
-  # generate weights file if needed
+  # generate weights file if requested
   # (for more information use 'rfweights -h')
   if (rainfarm_args$weights_climo != F) {
     fileweights <- paste0(work_dir,"/",inregname,"_w.nc")
@@ -111,18 +98,17 @@ for (model_idx in c(1:(length(models_name)))) {
     if (rainfarm_args$nf != F) {snf <- paste("-n ",rainfarm_args$nf)}
     command_w<-paste("rfweights -w ",fileweights,snf," -c ",rainfarm_args$weights_climo,inregfile)  
     print(paste0(diag_base,": generating weights file"))
-    print(fileweights)
+    print(command_w)
     system(command_w)
-    #print(command_w)
     rainfarm_args$weights_climo<-fileweights
   }  
+  # assign user defined options
   ret <- which(as.logical(rainfarm_args)!=F|is.na(as.logical(rainfarm_args)))
   rargs <- paste(rainfarm_options[ret],rainfarm_args[ret],collapse=" ")
   # call rfarm
   # (for more information use 'rfarm -h')
   command<-paste0("rfarm -o '", filename,"' ",rargs," ",inregfile) 
+  print(command)
   system(command)
   print(paste0(diag_base,": downscaled data written to ",paste0(filename,"_*.nc")))
 }
-
-#info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)
