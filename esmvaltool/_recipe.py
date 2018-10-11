@@ -598,6 +598,9 @@ def _get_single_preprocessor_task(variables,
         debug=config_user['save_intermediary_cubes'],
         write_ncl_interface=config_user['write_ncl_interface'])
 
+    logger.info("PreprocessingTask %s created. It will create the files:\n%s",
+                task.name, '\n'.join(p.filename for p in task.products))
+
     return task
 
 
