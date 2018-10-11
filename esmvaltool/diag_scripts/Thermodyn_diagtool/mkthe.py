@@ -20,8 +20,8 @@ Created on Fri Jun 15 10:06:30 2018
 from netCDF4 import Dataset
 import numpy as np
 import os
-from cdo import *
-cdo = Cdo()
+#from cdo import *
+#cdo = Cdo()
 
 #Temporary definitions
 #modelname = 'MPI-ESM-LR'
@@ -65,7 +65,7 @@ class mkthe:
         cdo.setctomiss('0',input=hus_file,output = hus_miss_file)
         tas_miss_file=wdir+'/tas.nc'
         removeif(tas_miss_file)
-        cdo.setctomiss('0',input='-monmean {}'.format(tas_file),output = tas_miss_file)
+        cdo.setctomiss('0',input=tas_file,output = tas_miss_file)
         ps_miss_file=wdir+'/ps.nc'
         removeif(ps_miss_file)
         cdo.setctomiss('0',input=ps_file,output = ps_miss_file)

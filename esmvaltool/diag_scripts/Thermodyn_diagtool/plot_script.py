@@ -17,7 +17,7 @@ from PyAstronomy import pyaC
 
 ###############################################################################
 
-class plotscript:
+class plot_script:
         
     def latwgt(lat,tr):
         
@@ -38,7 +38,7 @@ class plotscript:
             tr2[:,j] = tr[:,j]*np.cos(latr[j])*dlatr[j]/2
         return tr2
     
-    ###############################################################################
+###############################################################################
     
     
     def hemean(hem,lat,inp):
