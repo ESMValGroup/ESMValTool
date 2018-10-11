@@ -362,6 +362,7 @@ def run_diagnostic():
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     logging.Formatter.converter = time.gmtime
+    logging.captureWarnings(True)
     logging.getLogger().setLevel(cfg['log_level'].upper())
 
     # Read input metadata
