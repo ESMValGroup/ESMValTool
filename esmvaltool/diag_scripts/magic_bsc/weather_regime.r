@@ -1,7 +1,7 @@
 library(s2dverification)
 library(ggplot2)
 library(multiApply)
-library(devtools)
+library(ncdf4)
 library(startR)
 library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/WeatherRegime.R')
@@ -44,10 +44,18 @@ projection_files <- which(unname(experiment) != "historical")
 
 
 #Region considered
-lat.max <- params$end_latitude
-lat.min <- params$start_latitude
-lon.max <- params$end_longitude
-lon.min <- params$start_longitude
+region <- params$region
+if (region == 'North-Atlantic') {
+    lon.min <-  -60
+    lon.max <-  40
+    lat.min <- 30
+    lat.max <- 80
+} else if (region == 'Polar')  {
+    lat.max <- 90
+    lat.min <- 60
+    lon.max <- 0
+    lon.min <- 360
+}
 
 #Start and end periods for the historical and projection periods
 start_historical <- as.POSIXct(params$start_historical)
@@ -88,7 +96,7 @@ reference_data <- Start(model = fullpath_filenames[reference_files],
  lat <- attr(reference_data, "Variables")$dat1$lat
  time <- attr(reference_data, "Variables")$dat1$time
  calendario <- attributes(time)$variables$time$calendar
- dates_historical <- seq(start_historical, end_historical, "day")
+ dates_historical <- seq(start_historical, end_historical, "month")
 if (length(dates_historical) != length(time)) {
    if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
 	dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
@@ -339,3 +347,4 @@ ArrayToNetCDF(list(rmse),
               paste0(plot_dir, "/", var0, "_", frequency, "_RMSE_", model_names, "_",
               start_projection, "_", end_projection,"_", start_historical, "_", end_historical,
               ".nc"))
+print(plot_dir)

@@ -30,17 +30,17 @@
 ---
 
 datasets:
-  - {dataset: MIROC5, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i0p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: MIROC5, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i0p1,  start_year: 2006,  end_year: 2026}
-  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  #- {dataset: MIROC5, type: exp,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  #- {dataset: MIROC5, type: exp,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
   #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
     #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i0p1,  start_year: 1961,  end_year: 1990}
 
 preprocessors:
   preproc:
     regrid:
-      target_grid: MIROC5
+      target_grid: bcc-csm1-1
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -51,17 +51,15 @@ diagnostics:
     variables:
       psl:
         preprocessor: preproc
-        mip: day
+        mip: Amon
         field: T2M
     scripts:
       main:
         script: magic_bsc/weather_regime.r #(in diag_scripts)
 
         #Region considered
-        start_longitude: -60
-        end_longitude: 40
-        start_latitude: 30
-        end_latitude: 80
+        region: North-Atlantic # North-Atlantic or Polar
+
 
         #Start and end periods for the historical and projection periods
         start_historical: "1961-01-01"
