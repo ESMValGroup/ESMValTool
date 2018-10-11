@@ -9,7 +9,6 @@ from PIL.PngImagePlugin import PngInfo
 from prov.dot import prov_to_dot
 from prov.model import ProvDocument
 
-from ._config import replace_tags
 from ._version import __version__
 
 logger = logging.getLogger(__name__)
@@ -44,12 +43,11 @@ def get_esmvaltool_provenance():
 ESMVALTOOL_PROVENANCE = get_esmvaltool_provenance()
 
 
-def attribute_to_authors(entity, author_tags):
+def attribute_to_authors(entity, authors):
     """Attribute entity to authors."""
     namespace = 'author'
     create_namespace(entity.bundle, namespace)
 
-    authors = replace_tags('authors', author_tags)
     for author in authors:
         agent = entity.bundle.agent(
             namespace + ':' + author['name'],
@@ -58,12 +56,11 @@ def attribute_to_authors(entity, author_tags):
         entity.wasAttributedTo(agent)
 
 
-def attribute_to_projects(entity, project_tags):
+def attribute_to_projects(entity, projects):
     """Attribute entity to projecs."""
     namespace = 'project'
     create_namespace(entity.bundle, namespace)
 
-    projects = replace_tags('projects', project_tags)
     for project in projects:
         agent = entity.bundle.agent(namespace + ':' + project)
         entity.wasAttributedTo(agent)
@@ -76,13 +73,11 @@ def get_recipe_provenance(documentation, filename):
     for namespace in ('recipe', 'attribute'):
         create_namespace(provenance, namespace)
 
-    references = replace_tags('references', documentation.get(
-        'references', []))
-
     entity = provenance.entity(
         'recipe:{}'.format(filename), {
             'attribute:description': documentation.get('description', ''),
-            'attribute:references': ', '.join(references),
+            'attribute:references': ', '.join(
+                documentation.get('references', [])),
         })
 
     attribute_to_authors(entity, documentation.get('authors', []))
@@ -165,9 +160,12 @@ class TrackedFile(object):
         attributes = {
             'attribute:' + k: str(v)
             for k, v in self.attributes.items()
+            if k not in ('authors', 'projects')
         }
         self.entity = self.provenance.entity('file:' + self.filename,
                                              attributes)
+        attribute_to_authors(self.entity, self.attributes.get('authors', []))
+        attribute_to_projects(self.entity, self.attributes.get('projects', []))
 
     def _initialize_ancestors(self, activity):
         """Register ancestor files for provenance tracking."""

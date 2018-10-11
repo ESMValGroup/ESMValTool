@@ -13,6 +13,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
+from ._config import TAGS, replace_tags
 from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
@@ -483,6 +484,9 @@ class DiagnosticTask(BaseTask):
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
+            for key in attributes:
+                if key in TAGS:
+                    attributes[key] = replace_tags(key, attributes[key])
             product = TrackedFile(filename, attributes, ancestors)
             product.initialize_provenance(self.activity)
             product.save_provenance()

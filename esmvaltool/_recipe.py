@@ -10,7 +10,7 @@ from netCDF4 import Dataset
 
 from . import __version__
 from . import _recipe_checks as check
-from ._config import get_institutes, replace_tags
+from ._config import TAGS, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_output_file, get_rootpath,
                            get_statistic_output_file)
@@ -753,7 +753,12 @@ class Recipe(object):
 
     def _initalize_provenance(self, raw_documentation):
         """Initialize the recipe provenance."""
-        return get_recipe_provenance(raw_documentation, self._filename)
+        doc = dict(raw_documentation)
+        for key in doc:
+            if key in TAGS:
+                doc[key] = replace_tags(key, doc[key])
+
+        return get_recipe_provenance(doc, self._filename)
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
         """Define diagnostics in recipe."""
