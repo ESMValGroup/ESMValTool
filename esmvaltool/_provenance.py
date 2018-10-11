@@ -236,17 +236,4 @@ class TrackedFile(object):
         filename = os.path.splitext(self.filename)[0] + '_provenance'
         self.provenance.serialize(filename + '.xml', format='xml')
         figure = prov_to_dot(self.provenance)
-        figure.write_png(filename + '.png')
-
-
-def write_provenance(provenance, output_dir):
-    """Write provenance information to output_dir."""
-    filename = os.path.join(output_dir, 'provenance')
-    logger.info("Writing provenance to %s.xml", filename)
-    provenance.serialize(filename + '.xml', format='xml')
-
-    graph = prov_to_dot(provenance)
-    logger.info("Writing provenance to %s.png", filename)
-    graph.write_png(filename + '.png')
-    logger.info("Writing provenance to %s.pdf", filename)
-    graph.write_pdf(filename + '.pdf')
+        figure.write_svg(filename + '.svg')
