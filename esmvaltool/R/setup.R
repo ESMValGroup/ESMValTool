@@ -15,11 +15,6 @@ cat("\nINFO: Installing packages to --> ", RLIBLOC, "\n\n")
 
 # define the R mirror to download packages
 pkgMirror <- 'https://cloud.r-project.org'
-#pkgMirror <- 'https://cran.r-project.org'
-#chooseCRANmirror(ind=1)
-#chooseCRANmirror(81)
-#chooseCRANmirror(1, graphics=FALSE)
-
 
 # get the script path
 initial.options <- commandArgs(trailingOnly = FALSE)
@@ -41,6 +36,6 @@ if (length(packageList)==0) {
 
 for (pack in packageList) {
     print(paste("Installing package --> ", pack))
-   install.packages(pack, repos = pkgMirror, type="source")
-    # install.packages(pack, type="source")
+    # install.packages(pack, repos = pkgMirror, type="source")
+    install.packages(pack, repos = pkgMirror)
 }
