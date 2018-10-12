@@ -78,7 +78,7 @@ def _compute_statistic(datas, name):
     elif name == 'mean':
         statistic_function = np.ma.mean
     elif name == 'range'
-        statistic_function = np.ma.ptp  
+        statistic_function = np.ma.ptp
     elif name == 'maximum'
         statistic_function = np.ma.max
     elif name == 'minimum'

@@ -113,14 +113,6 @@ def time_average(cube):
                           weights=time_weights)
 
 
-# get the seasonal mean
-def seasonal_data(cube):
-    '''
-    In this case the idea would be return a dataset where the time-coord is season.
-    '''
-    
-    return season_cube
-
 def seasonal_mean(cube):
     """
     Function to compute seasonal means with MEAN
