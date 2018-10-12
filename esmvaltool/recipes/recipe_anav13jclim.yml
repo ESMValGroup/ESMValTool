@@ -50,6 +50,26 @@ preprocessors:
     mask_fillvalues: True
 
 
+datasets:
+  - {dataset: BNU-ESM}
+  - {dataset: CanESM2}
+  - {dataset: CESM1-BGC}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: GFDL-ESM2M}
+  - {dataset: HadGEM2-CC}
+  - {dataset: HadGEM2-ES}
+  - {dataset: inmcm4}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  # Overlapping files for several variables at mistral
+  # - {dataset: IPSL-CM5B-LR}
+  - {dataset: MIROC-ESM}
+  - {dataset: MIROC-ESM-CHEM}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
+  - {dataset: NorESM1-ME}
+
+
 diagnostics:
 
   diag_mvi_tas: &diag_mvi
@@ -74,22 +94,6 @@ diagnostics:
       - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
     scripts:
       mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
@@ -198,25 +202,8 @@ diagnostics:
   #     - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
   #     - {dataset: bcc-csm1-1}
   #     - {dataset: bcc-csm1-1-m}
-  #     # No data
-  #     # - {dataset: BNU-ESM}
-  #     - {dataset: CanESM2}
-  #     - {dataset: CESM1-BGC}
-  #     - {dataset: GFDL-ESM2G}
-  #     # Wrong standard_name -> Fix needed
-  #     # - {dataset: GFDL-ESM2M}
-  #     - {dataset: HadGEM2-CC}
-  #     - {dataset: HadGEM2-ES}
-  #     - {dataset: inmcm4}
-  #     - {dataset: IPSL-CM5A-LR}
-  #     - {dataset: IPSL-CM5A-MR}
-  #     - {dataset: IPSL-CM5B-LR}
-  #     # No data
-  #     # - {dataset: MIROC-ESM}
-  #     # - {dataset: MIROC-ESM-CHEM}
-  #     - {dataset: MPI-ESM-LR}
-  #     - {dataset: MPI-ESM-MR}
-  #     - {dataset: NorESM1-ME}
+  #     # No data: BNU-ESM, MIROC-ESM, MIROC-ESM-CHEM
+  #     # Wrong standard_name -> Fix needed: GFDL-ESM2M
   #   scripts:
   #     mvi_global:
   #       <<: *mvi_global
@@ -266,29 +253,10 @@ diagnostics:
         mip: Lmon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
+        additional_datasets:
+          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
     additional_datasets: &nbp_datasets
-      - {dataset: GCP,          project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
-      # No data
-      # - {dataset: bcc-csm1-1}
-      # - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Two overlapping files -> iris: cannot concatenate cubes (#538)
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
     scripts:
       main_global:
         <<: *main_global
@@ -331,23 +299,6 @@ diagnostics:
       - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Two overlapping files -> iris: cannot concatenate cubes (#538)
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_global
@@ -400,23 +351,6 @@ diagnostics:
       - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Two overlapping files -> iris: cannot concatenate cubes (#538)
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_global
@@ -471,48 +405,12 @@ diagnostics:
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
-  #         - {dataset: bcc-csm1-1}
-  #         - {dataset: bcc-csm1-1-m}
-  #         - {dataset: BNU-ESM}
-  #         - {dataset: CanESM2}
-  #         - {dataset: CESM1-BGC}
-  #         - {dataset: GFDL-ESM2G}
-  #         - {dataset: GFDL-ESM2M}
-  #         - {dataset: HadGEM2-CC}
-  #         - {dataset: HadGEM2-ES}
-  #         - {dataset: inmcm4}
-  #         - {dataset: IPSL-CM5A-LR}
-  #         - {dataset: IPSL-CM5A-MR}
-  #         - {dataset: IPSL-CM5B-LR}
-  #         - {dataset: MIROC-ESM}
-  #         - {dataset: MIROC-ESM-CHEM}
-  #         - {dataset: MPI-ESM-LR}
-  #         - {dataset: MPI-ESM-MR}
-  #         - {dataset: NorESM1-ME}
   #     cVeg:
   #       <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
-  #         - {dataset: bcc-csm1-1}
-  #         - {dataset: bcc-csm1-1-m}
-  #         - {dataset: BNU-ESM}
-  #         - {dataset: CanESM2}
-  #         - {dataset: CESM1-BGC}
-  #         - {dataset: GFDL-ESM2G}
-  #         - {dataset: GFDL-ESM2M}
-  #         - {dataset: HadGEM2-CC}
-  #         - {dataset: HadGEM2-ES}
-  #         - {dataset: inmcm4}
-  #         - {dataset: IPSL-CM5A-LR}
-  #         - {dataset: IPSL-CM5A-MR}
-  #         - {dataset: IPSL-CM5B-LR}
-  #         - {dataset: MIROC-ESM}
-  #         - {dataset: MIROC-ESM-CHEM}
-  #         - {dataset: MPI-ESM-LR}
-  #         - {dataset: MPI-ESM-MR}
-  #         - {dataset: NorESM1-ME}
   #   scripts:
   #     scat_global: &scat_glob
   #       script: carbon_cycle/two_variables.ncl
@@ -538,6 +436,8 @@ diagnostics:
   #       preprocessor: # FIXME
   #       mip: Omon
   #       reference_dataset: # FIXME
+  #       additional_datasets:
+  #         - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
   #   additional_datasets: *nbp_datasets
   #   scripts:
   #     main_global:
@@ -640,28 +540,7 @@ diagnostics:
         <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
         preprocessor: regrid_to_ref
         reference_dataset: JMA-TRANSCOM
-    additional_datasets:
-      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
-      # No data
-      # - {dataset: bcc-csm1-1}
-      # - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Two overlapping files -> iris: cannot concatenate cubes (#538)
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
+    additional_datasets: *nbp_datasets
     scripts:
       cycle_global:
         <<: *cycle_global
