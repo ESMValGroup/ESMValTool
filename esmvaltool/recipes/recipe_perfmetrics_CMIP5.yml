@@ -1775,6 +1775,46 @@ diagnostics:
 
 
   ### toz: TOTAL COLUMN OZONE #################################################
+  toz:
+    description: Total column ozone
+    variables:
+      toz:
+        preprocessor: ppNOLEV2thr10
+        reference_dataset: ESACCI-OZONE
+        alternative_dataset: NIWA
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: CESM1-WACCM, ensemble: r2i1p1}
+      - {dataset: CNRM-CM5}
+      - {dataset: GFDL-CM3}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2}
+      - {dataset: NIWA, project: OBS, type: reanaly, version: 1, tier: 3}
+    scripts:
+      grading_global:
+        <<: *grading_settings
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+      grading_antarctic:
+        <<: *grading_settings
+        # Region
+        region: Antarctic
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
 
   ### sic: SEA-ICE CONCENTRATION (NH) #########################################
 
@@ -1789,7 +1829,7 @@ diagnostics:
     scripts:
       RMSD:
         script: perfmetrics/collect.ncl
-        ancestors: ['*/grading']
+        ancestors: ['*/grading*']
         metric: RMSD
         label_bounds: [-0.5, 0.5]
         label_scale: 0.1
