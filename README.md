@@ -9,7 +9,7 @@
 ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP
 
 ## Developing
-This is the development branch for version 2 of ESMValTool. To get started developing esmvaltool or developing/porting diagnostics, follow the instructions below. More detailed instructions can be found in the [manual](http://esmvaltool.readthedocs.io/en/refactoring_backend/).
+This is the development branch for version 2 of ESMValTool. To get started developing esmvaltool or developing/porting diagnostics, follow the instructions below. More detailed instructions can be found in the [manual](https://esmvaltool.readthedocs.io/en/version2_development/).
 
 ### Getting started
 To install in development mode, follow these instructions.

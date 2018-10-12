@@ -329,14 +329,19 @@ def _update_target_levels(variable, variables, settings, config_user):
         settings['extract_levels']['levels'] = get_cmor_levels(
             levels['cmor_table'], levels['coordinate'])
     elif 'dataset' in levels:
-        if variable['dataset'] == levels['dataset']:
+        dataset = levels['dataset']
+        if variable['dataset'] == dataset:
             del settings['extract_levels']
         else:
+            variable_data = _get_dataset_info(dataset, variables)
             filename = \
-                _dataset_to_file(levels['dataset'], variables, config_user)
+                _dataset_to_file(variable_data, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
-                filename, coordinate)
+                filename,
+                variable_data['project'], dataset, variable_data['short_name'],
+                os.path.splitext(variable_data['filename'])[0] + '_fixed',
+                coordinate)
 
 
 def _update_target_grid(variable, variables, settings, config_user):
@@ -351,30 +356,35 @@ def _update_target_grid(variable, variables, settings, config_user):
         del settings['regrid']
     elif any(grid == v['dataset'] for v in variables):
         settings['regrid']['target_grid'] = _dataset_to_file(
-            grid, variables, config_user)
+            _get_dataset_info(grid, variables), config_user)
 
 
-def _dataset_to_file(dataset, variables, config_user):
-    """Find the first file belonging to dataset."""
-    for variable in variables:
-        if variable['dataset'] == dataset:
-            files = get_input_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'])
-            if not files and variable.get('derive'):
-                variable = copy.deepcopy(variable)
-                variable['short_name'], variable['field'] = get_required(
-                    variable['short_name'], variable['field'])[0]
-                files = get_input_filelist(
-                    variable=variable,
-                    rootpath=config_user['rootpath'],
-                    drs=config_user['drs'])
-            check_data_availability(files, variable)
-            return files[0]
-
+def _get_dataset_info(dataset, variables):
+    for var in variables:
+        if var['dataset'] == dataset:
+            return var
     raise RecipeError(
-        "Unable to find matching file for dataset {}".format(dataset))
+        "Unable to find matching file for dataset"
+        "{}".format(dataset)
+    )
+
+
+def _dataset_to_file(variable, config_user):
+    """Find the first file belonging to dataset from variable info."""
+    files = get_input_filelist(
+        variable=variable,
+        rootpath=config_user['rootpath'],
+        drs=config_user['drs'])
+    if not files and variable.get('derive'):
+        variable = copy.deepcopy(variable)
+        variable['short_name'], variable['field'] = get_required(
+            variable['short_name'], variable['field'])[0]
+        files = get_input_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+    check_data_availability(files, variable)
+    return files[0]
 
 
 def _limit_datasets(variables, profile, max_datasets=None):
