@@ -18,9 +18,9 @@
 ---
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -32,8 +32,8 @@ diagnostics:
   aa_landsurf_snow:
     description: Autoassess test diag for Land-Surface Snow.
     variables:
-      prsn: # snow flux
-        mip: Amon
+      snw: # surface_snow_amount (CMOR name=snw)
+        mip: LImon
         field: T2Ms
         fx_files: [sftlf]
     scripts:
