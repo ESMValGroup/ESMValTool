@@ -1,10 +1,16 @@
 #!/usr/bin/env julia
 
+scriptFile=@__FILE__
+scriptDir=@__DIR__
+#println("file: ", scriptFile)
+#println("directory: ", scriptDir)
+
+
 using Pkg
 
 println("Installing the packages.")
 pkgName=in
-open("julia_requirements.txt") do f
+open(scriptDir * "/julia_requirements.txt") do f
     for i in enumerate(eachline(f))
 
       pkgId=i[1]
@@ -12,9 +18,9 @@ open("julia_requirements.txt") do f
       println(pkgId, ": ", pkgName)
       Pkg.add(pkgName)
 
-#      println("Testing: ", pkgName)
-#      # load the package this needs to be called at top-level
-#      Expr(:toplevel, :(module ($pkgName) end))
+      println("Testing: ", pkgName)
+      # load the package this needs to be called at top-level
+      Expr(:toplevel, :(module ($pkgName) end))
 
     end
 end
