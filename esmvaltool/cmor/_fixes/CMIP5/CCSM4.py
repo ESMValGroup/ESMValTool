@@ -35,6 +35,12 @@ class rlutcs(rlut):
     pass
 
 
+class rsdt(rlut):
+    """Fixes for rsut"""
+
+    pass
+
+
 class rsut(rlut):
     """Fixes for rsut"""
 
