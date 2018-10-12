@@ -240,6 +240,7 @@ class DiagnosticTask(AbstractTask):
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript'), '--slave', '--quiet'],
+                    'jl': [which('julia')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -249,6 +250,7 @@ class DiagnosticTask(AbstractTask):
                            '-o', profile_file],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript'), '--slave', '--quiet'],
+                    'jl': [which('julia')],
                 }
 
             if extension not in executables:
