@@ -35,12 +35,18 @@ import logging
 import os
 import shutil
 import sys
+
+if not sys.warnoptions:
+    import warnings
+    warnings.simplefilter("ignore")
+
 from multiprocessing import cpu_count
 
 from . import __version__
 from ._config import configure_logging, read_config_user_file
 from ._recipe import read_recipe_file
 from ._task import resource_usage_logger
+
 
 # set up logging
 logger = logging.getLogger(__name__)
