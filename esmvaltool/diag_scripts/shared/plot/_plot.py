@@ -118,13 +118,14 @@ def get_dataset_style(dataset, style_file=None):
     return style[dataset]
 
 
-def quickplot(cube, filename, plot_type, **kwargs):
+def quickplot(cube, filename, plot_type, maps=False, **kwargs):
     """Plot a cube using one of the iris.quickplot functions."""
     logger.debug("Creating '%s' plot %s", plot_type, filename)
     plot_function = getattr(iris.quickplot, plot_type)
     fig = plt.figure()
     plot_function(cube, **kwargs)
-    # plt.gca().coastlines()
+    if maps:
+        plt.gca().coastlines() # in general we should be able to tell that it is a map
     fig.savefig(filename)
     plt.close(fig)
 
@@ -282,7 +283,7 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         if 'markerfacecolor' in plot_kwargs and filepath.endswith('ps'):
             plot_kwargs.pop('markerfacecolor')
 
-        # Plot
+        # Plot 
         axes.plot(x_vals, y_data[idx],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 

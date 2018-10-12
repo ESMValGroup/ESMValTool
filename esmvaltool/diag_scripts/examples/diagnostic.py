@@ -1,4 +1,11 @@
-"""Python example diagnostic."""
+"""Python example diagnostic.
+
+@RCHG: I have added few changes on _plots.py to have additional functionality in
+       this simple recipe. Information is written in recipe_python.xml
+
+"""
+
+
 import logging
 import os
 from pprint import pformat
@@ -33,6 +40,7 @@ def plot_results(cube, filename, cfg):
 
 def main(cfg):
     """Compute the time average for each input dataset."""
+
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
