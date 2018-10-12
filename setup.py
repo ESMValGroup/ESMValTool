@@ -126,7 +126,7 @@ class RunTests(CustomCommand):
 
         version = sys.version_info[0]
         report_dir = 'test-reports/python{}'.format(version)
-        errno = pytest.main([
+        args = [
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
@@ -136,8 +136,10 @@ class RunTests(CustomCommand):
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
-            '--installation' if self.installation else ''
-        ])
+        ]
+        if self.installation:
+            args.append('--installation')
+        errno = pytest.main(args)
 
         sys.exit(errno)
 
