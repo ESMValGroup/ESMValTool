@@ -28,12 +28,12 @@ To install in development mode, follow these instructions.
 - Available recipes are located in the directory `esmvaltool/recipes`.
 
 #### R support
-One more step is requoired for R diagnostics. You should run:
+One more step is requoired for R diagnostics. You should run the command below to install R dependencies:
 ```
 Rscript esmvaltool/R/setup.R
 ```
 
-If you need dependencies of your R diagostics to be added to esmvaltool, please create an issue.
+The dependencies of R diagostics should be added to `esmvaltool/R/r_requirements.txt` file.
 
 ### Running tests
 Go to the directory where the repository is cloned and run `./setup.py test`. Tests will also be run automatically by CircleCI.
