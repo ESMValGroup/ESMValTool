@@ -51,12 +51,12 @@ def get_required(short_name, field=None):
         ],
         'tropoz': [
             ('tro3', 'T3' + frequency),
-            ('ps',   'T2' + frequency + 's'),
-            ('ptp',  'T2' + frequency + 's'),
+            ('ps',  'T2' + frequency + 's'),
+            ('ptp', 'T2' + frequency + 's'),
         ],
         'stratoz': [
             ('tro3', 'T3' + frequency),
-            ('ptp',  'T2' + frequency + 's'),
+            ('ptp', 'T2' + frequency + 's'),
         ],
         'rtnt': [('rsdt', 'T2' + frequency + 's'),
                  ('rsut', 'T2' + frequency + 's'), ('rlut',
@@ -258,8 +258,10 @@ def calc_swcre(cubes):
 
     return swcre
 
+
 def calc_tropoz(cubes):
-    """Compute tropospheric column ozone from ozone mol fraction on pressure levels.
+    """Compute tropospheric column ozone from ozone mol fraction on
+       pressure levels.
 
     - The surface pressure is used as a lower integration bound.
     - A fixed upper-integration bound of tropopause pressure in Pa is used.
@@ -277,9 +279,9 @@ def calc_tropoz(cubes):
     """
     tro3_cube = cubes.extract_strict(
         Constraint(name='mole_fraction_of_ozone_in_air'))
-    ptp_cube = cubes.extract_strict( Constraint( name='tropopause_air_pressure' ) )
-    ps_cube  = cubes.extract_strict( Constraint( name='surface_air_pressure' ) )
-    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=ps_cube)
+    ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
+    ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
+    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=ptp_cube)
     # note that here it is needed an update of the function _pressure_level_widths
     tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
@@ -296,7 +298,8 @@ def calc_tropoz(cubes):
 
 
 def calc_stratoz(cubes):
-    """Compute stratospheric column ozone from ozone mol fraction on pressure levels.
+    """Compute stratospheric column ozone from ozone mol fraction on 
+       pressure levels.
 
     - The tropopause pressure is used as a lower integration bound.
     - A fixed upper integration bound of 0 Pa is used.
