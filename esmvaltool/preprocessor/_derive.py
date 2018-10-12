@@ -49,6 +49,15 @@ def get_required(short_name, field=None):
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
         ],
+        'tropoz': [
+            ('tro3', 'T3' + frequency),
+            ('ps',   'T2' + frequency + 's'),
+            ('ptp',  'T2' + frequency + 's'),
+        ],
+        'stratoz': [
+            ('tro3', 'T3' + frequency),
+            ('ptp',  'T2' + frequency + 's'),
+        ],
         'rtnt': [('rsdt', 'T2' + frequency + 's'),
                  ('rsut', 'T2' + frequency + 's'), ('rlut',
                                                     'T2' + frequency + 's')],
@@ -92,6 +101,8 @@ def derive(cubes, variable):
         'netcre': calc_netcre,
         'swcre': calc_swcre,
         'toz': calc_toz,
+        'tropoz': calc_tropoz,
+        'stratoz': calc_stratoz,
         'rtnt': calc_rtnt,
         'rsnt': calc_rsnt,
         'rsns': calc_rsns,
@@ -247,6 +258,77 @@ def calc_swcre(cubes):
 
     return swcre
 
+def calc_tropoz(cubes):
+    """Compute tropospheric column ozone from ozone mol fraction on pressure levels.
+
+    - The surface pressure is used as a lower integration bound.
+    - A fixed upper-integration bound of tropopause pressure in Pa is used.
+
+    Arguments
+    ---------
+        cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+               , ptp_cube (trospopause_air_pressure),
+               , ps_cube  (surface_air_pressure)
+
+    Returns
+    -------
+        Cube containing tropospheric column ozone.
+
+    """
+    tro3_cube = cubes.extract_strict(
+        Constraint(name='mole_fraction_of_ozone_in_air'))
+    ptp_cube = cubes.extract_strict( Constraint( name='tropopause_air_pressure' ) )
+    ps_cube  = cubes.extract_strict( Constraint( name='surface_air_pressure' ) )
+    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=ps_cube)
+    # note that here it is needed an update of the function _pressure_level_widths
+    tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
+    tropoz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
+                    mw_air_unit)
+
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
+    tropoz = tropoz / mw_O3 * Avogadro_const
+    tropoz.units = tropoz.units / mw_O3_unit * Avogadro_const_unit
+    tropoz.convert_units(Dobson_unit)
+    tropoz.data = np.ma.array(tropoz.data, dtype=np.dtype('float32'))
+
+    return tropoz
+
+
+def calc_stratoz(cubes):
+    """Compute stratospheric column ozone from ozone mol fraction on pressure levels.
+
+    - The tropopause pressure is used as a lower integration bound.
+    - A fixed upper integration bound of 0 Pa is used.
+
+    Arguments
+    ---------
+        cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+               and ptp_cube (trospopause_air_pressure).
+
+    Returns
+    -------
+        Cube containing total column ozone.
+
+    """
+    tro3_cube = cubes.extract_strict(
+        Constraint(name='mole_fraction_of_ozone_in_air'))
+    ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
+
+    p_layer_widths = _pressure_level_widths(tro3_cube, ptp_cube, top_limit=0)
+    stratoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    stratoz = stratoz.collapsed('air_pressure', iris.analysis.SUM)
+    stratoz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
+                 mw_air_unit)
+
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
+    stratoz = stratoz / mw_O3 * Avogadro_const
+    stratoz.units = stratoz.units / mw_O3_unit * Avogadro_const_unit
+    stratoz.convert_units(Dobson_unit)
+    stratoz.data = np.ma.array(stratoz.data, dtype=np.dtype('float32'))
+
+    return stratoz
+
 
 def calc_toz(cubes):
     """Compute total column ozone from ozone mol fraction on pressure levels.
@@ -254,9 +336,12 @@ def calc_toz(cubes):
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 0 Pa is used.
 
-    Ramiro Checa-Garcia: this could be update to calculate also toz or
-    stratospheric ozone column. The last one will just took the tropopause
-    pressure instead of the surface_air_pressure.
+    @Ramiro Checa-Garcia: this could be update to calculate also tropospheric
+    ozone column or stratospheric ozone column. The last one will just took
+    the tropopause pressure instead of the surface_air_pressure. I have added
+    two new function named calc_tropoz and calc_straoz, but formally all of them
+    could be one single function with an extra argument indicating with is the
+    desired case.
 
     Arguments
     ---------
@@ -285,6 +370,7 @@ def calc_toz(cubes):
     toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
 
     return toz
+
 
 
 def calc_rtnt(cubes):
@@ -631,6 +717,11 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=0):
 
     This is done by taking a 2D surface pressure field as lower bound.
 
+    @R. Checa-Garcia: I would not name the cube here as tro3_cube
+    as formally it could be other variable. Also with an extension
+    considering that top_limit could be a cube this function would
+    be useful for stratospheric and tropospheric ozone column.
+
     Arguments
     ---------
         tro3_cube: Cube containing mole_fraction_of_ozone_in_air
@@ -661,6 +752,10 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     The array is created from the tro3_cube with the same dimensions
     as tro3_cube. This array is then sandwiched with a 2D array containing
     the surface pressure, and a 2D array containing the top pressure limit.
+
+    @R. Checa-Garcia: top_limit can be other cube and we could use
+    this function to calculate also tropospheric ozone column as the top
+    limit could be defined as an analogous of surface pressure.
     """
     # create 4D array filled with pressure level values
     p_levels = tro3_cube.coord('air_pressure').points
@@ -676,6 +771,7 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     pressure_4d = np.where((ps_4d_array - p_4d_array) < 0, np.NaN, p_4d_array)
 
     # make top_limit last pressure level
+    # formally using broadcasing top_limit might be a cube like ps_cube, no problem 
     top_limit_array = np.ones(ps_cube.shape) * top_limit
     data = top_limit_array[:, np.newaxis, :, :]
     pressure_4d = np.concatenate((pressure_4d, data), axis=1)
