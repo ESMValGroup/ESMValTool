@@ -27,6 +27,13 @@ To install in development mode, follow these instructions.
 - Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
 - Available recipes are located in the directory `esmvaltool/recipes`.
 
+
+### Julia support
+
+To install the Julia dependencies you need to run: `./esmvaltool/Julia/setup.jl`.
+The dependencies for Julia diagnostics should be added to `esmvaltool/Julia/julia_requirements.txt` file.
+
+
 ### Running tests
 Go to the directory where the repository is cloned and run `./setup.py test`. Tests will also be run automatically by CircleCI.
 
