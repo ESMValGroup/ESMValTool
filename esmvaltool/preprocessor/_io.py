@@ -6,6 +6,7 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np       # needed by iris v2 in load.cubes
 import yaml
 
 from .._task import write_ncl_settings
