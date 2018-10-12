@@ -37,5 +37,8 @@ if (length(packageList)==0) {
 for (pack in packageList) {
     print(paste("Installing package --> ", pack))
     # install.packages(pack, repos = pkgMirror, type="source")
-    install.packages(pack, repos = pkgMirror)
+    install.packages(pack, repos = pkgMirror, dependencies=TRUE)
 }
+
+print("List of installed packages:")
+installed.packages()
