@@ -306,6 +306,7 @@ workflows:
     jobs:
       - python3_test
       - python2_test
+      - python3_install   
   nightly:
     triggers:
       - schedule:
