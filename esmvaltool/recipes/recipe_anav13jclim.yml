@@ -16,6 +16,27 @@ documentation:
   projects:
     - embrace
 
+
+datasets:
+  - {dataset: BNU-ESM}
+  - {dataset: CanESM2}
+  - {dataset: CESM1-BGC}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: GFDL-ESM2M}
+  - {dataset: HadGEM2-CC}
+  - {dataset: HadGEM2-ES}
+  - {dataset: inmcm4}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  # Overlapping files for several variables at mistral
+  # - {dataset: IPSL-CM5B-LR}
+  - {dataset: MIROC-ESM}
+  - {dataset: MIROC-ESM-CHEM}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
+  - {dataset: NorESM1-ME}
+
+
 preprocessors:
   noop:
     {}
@@ -48,26 +69,6 @@ preprocessors:
       target_grid: ref_dataset
       regrid_scheme: linear
     mask_fillvalues: True
-
-
-datasets:
-  - {dataset: BNU-ESM}
-  - {dataset: CanESM2}
-  - {dataset: CESM1-BGC}
-  - {dataset: GFDL-ESM2G}
-  - {dataset: GFDL-ESM2M}
-  - {dataset: HadGEM2-CC}
-  - {dataset: HadGEM2-ES}
-  - {dataset: inmcm4}
-  - {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
-  # Overlapping files for several variables at mistral
-  # - {dataset: IPSL-CM5B-LR}
-  - {dataset: MIROC-ESM}
-  - {dataset: MIROC-ESM-CHEM}
-  - {dataset: MPI-ESM-LR}
-  - {dataset: MPI-ESM-MR}
-  - {dataset: NorESM1-ME}
 
 
 diagnostics:
