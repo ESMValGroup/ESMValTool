@@ -77,13 +77,13 @@ def _compute_statistic(datas, name):
         statistic_function = np.ma.median
     elif name == 'mean':
         statistic_function = np.ma.mean
-    elif name == 'range'
+    elif name == 'range':
         statistic_function = np.ma.ptp
-    elif name == 'maximum'
+    elif name == 'maximum':
         statistic_function = np.ma.max
-    elif name == 'minimum'
+    elif name == 'minimum':
         statistic_function = np.ma.min
-    elif name == 'anomalies'
+    elif name == 'anomalies':
         statistic_function = np.ma.anom
     else:
         raise NotImplementedError
