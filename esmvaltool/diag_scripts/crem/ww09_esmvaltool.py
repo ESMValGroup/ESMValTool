@@ -28,6 +28,7 @@ Cloud Regime Error Metrics (CREM).
       3) use preprocessor for regridding input data
 
   Modification history
+    20181012-A_laue_ax: extended (optional) netCDF output
     20180920-A_laue_ax: code adapted for ESMValTool v2.0
     20171128-A_laue_ax: added author and diagname to meta data
                         switched off "replacing of exact values"
@@ -47,11 +48,12 @@ import os
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
 from netCDF4 import Dataset
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata)
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
+
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -76,6 +78,28 @@ def main(cfg):
     ww_vars = ('albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
                'rlutcs', 'sic')
     ww_vars_plus = ('snc', 'snw')
+
+    # for human readable output
+    # regions/regimes as they come from the CREM calculation
+    regions = {'tropics': ['shallow cumulus', 'congestus', 'thin cirrus',
+                           'stratocumulus/cumulus transition',
+                           'anvil cirrus', 'deep convection',
+                           'stratocumulus'],
+               'ice-free-extra-tropics': ['shallow cumulus', 'congestus',
+                                          'stratocumulus/cumulus transition',
+                                          'cirrus', 'stratocumulus',
+                                          'frontal', 'thin cirrus'],
+               'snow-ice-covered': ['shallow cumulus', 'stratocumulus',
+                                    'thick mid-level', 'frontal',
+                                    'thin mid-level', 'thin cirrus']}
+    # regimes as we write them to netCDF
+    allregimes = ['shallow cumulus', 'congestus', 'thin cirrus',
+                  'stratocumulus/cumulus transition', 'anvil cirrus',
+                  'deep convection', 'stratocumulus', 'cirrus',
+                  'frontal', 'thick mid-level', 'thin mid-level']
+    # field for (optional) netCDF output of individual regions and regimes
+    r_crems = np.empty((nummod, len(regions), len(allregimes)))
+    r_crems[:] = 999.9
 
     # provenance information
     climofiles = []
@@ -127,8 +151,8 @@ def main(cfg):
         if missing_snow:
             missing_vars.append(ww_vars_plus[0] + " or " + ww_vars_plus[1])
 
-        for fn in pointers:
-            climofiles.append(','.join(fn))
+        for filen in pointers:
+            climofiles.append(','.join(filen))
 
         # check if all variables are available
 
@@ -143,11 +167,35 @@ def main(cfg):
         (crem_pd, r_crem_pd) = crem_calc(pointers)
 
         crems[i] = crem_pd
+
+        # sort results into output array
+
+        # logger.info("==================================")
+        # logger.info(dataset)
+        # logger.info("==================================")
+        # logger.info(crem_pd)
+        # logger.info("..................................")
+        j = 0
+        for region in regions:
+            # logger.info("*** " + region + " ***")
+            regime = regions[region]
+            k = 0
+            for reg in regime:
+                idx = allregimes.index(reg)
+                r_crems[i, j, idx] = r_crem_pd[j, k]
+                # printstr = ": %f" % r_crem_pd[j, k]
+                # logger.info("  * " + reg + printstr)
+                k = k + 1
+            j = j + 1
+        # logger.info("==================================")
+
         i = i + 1
 
-    logger.info("------------------------------------")
+    logger.info("==================================")
+    logger.info("*** Cloud Regime Error Metrics ***")
+    logger.info("==================================")
     logger.info(crems)
-    logger.info("------------------------------------")
+    logger.info("==================================")
 
     # plot results
 
@@ -185,19 +233,39 @@ def main(cfg):
         oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodel.nc')
         logger.debug("Saving results to %s", oname)
         # convert strings
-        str_out = np.array(models, dtype=object)
+        modstr_out = np.array(models, dtype=object)
+        regionstr_out = np.array(list(regions.keys()), dtype=object)
+        regimestr_out = np.array(allregimes, dtype=object)
         # open a new netCDF file for writing
         ncfile = Dataset(oname, 'w')
-        # create the x dimension
-        ncfile.createDimension('n', nummod)
-        # create the variable
-        # first argument is name of variable, second is datatype, third is
-        # a tuple with the name(s) of dimension(s)
-        data = ncfile.createVariable('crem', np.dtype('float32').char, ('n'))
-        mods = ncfile.createVariable('model', str, ('n'))
+        # create dimensions
+        ncfile.createDimension('model', nummod)
+        ncfile.createDimension('region', len(regions))
+        ncfile.createDimension('regime', len(allregimes))
+        # create variables
+        data = ncfile.createVariable('crem', np.dtype('float32').char,
+                                     ('model'))
+        r_data = ncfile.createVariable('r_crem', np.dtype('float32').char,
+                                       ('model', 'region', 'regime'),
+                                       fill_value=999.9)
+        mod = ncfile.createVariable('model', np.dtype('int32').char,
+                                    ('model'))
+        reg = ncfile.createVariable('region', np.dtype('int32').char,
+                                    ('region'))
+        rgm = ncfile.createVariable('regime', np.dtype('int32').char,
+                                    ('regime'))
+        mod_name = ncfile.createVariable('model_name', str, ('model'))
+        reg_name = ncfile.createVariable('region_name', str, ('region'))
+        rgm_name = ncfile.createVariable('regime_name', str, ('regime'))
         # write data to variable
         data[:] = crems
-        mods[:] = str_out
+        r_data[:, :, :] = r_crems
+        mod[:] = range(nummod)
+        reg[:] = range(len(regions))
+        rgm[:] = range(len(allregimes))
+        mod_name[:] = modstr_out
+        reg_name[:] = regionstr_out
+        rgm_name[:] = regimestr_out
         # close the file
         ncfile.close()
 
@@ -212,18 +280,19 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
     Regridding data onto 2.5 degree lat-long grid as the ISCCP
     obs data used for comparison was stored on.
 
-    a_in : xx
-        xxx
-    x_in : xxx
-        xxx
-    y_in : xxx
-        xxx
-    x_out : xxx
-        xxx
-    y_out : xxx
-        xxx
+    a_in : float
+        input data
+    x_in : float
+        x coordinates (longitudes) of input data
+    y_in : float
+        y coordinates (latitudes) of input data
+    x_out : float
+        x coordinates (longitudes) of target grid
+    y_out : float
+        y coordinates (latitudes) of target grid
     fixmdis : Bool
-        xxx
+        post-process regridded results: replace with original values for
+        any "exact" coordinate matches
     x_cyclic : float
         xxxxx
     """
@@ -242,8 +311,8 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
     y_in = y_in.copy()
 
     # sort the input Xs and Ys to guarantee ascending order
-    nx = len(x_in)
-    ny = len(y_in)
+    n_x = len(x_in)
+    n_y = len(y_in)
     i_sort_x = np.argsort(x_in)
     x_in = np.array(x_in)[i_sort_x]
     a_in = a_in[:, i_sort_x]
@@ -253,20 +322,20 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
 
     # simulate cyclic X-coords, if enabled
     if x_cyclic > 0.0:
-        a_inew = list(range(nx)) + [0]   # Python 2-->3: range-->list(range)
-        nx += 1
+        a_inew = list(range(n_x)) + [0]   # Python 2-->3: range-->list(range)
+        n_x += 1
         a_in = a_in[:, a_inew]   # recopy one lhs column on rhs
         x_in = x_in[a_inew]      # ditto for coords
         x_in[-1] += x_cyclic    # bump last element by range
 
     # convert input+output coordinate specs to "fractional coordinate values"
-    xinds = np.interp(x_out, x_in, range(nx))
-    yinds = np.interp(y_out, y_in, range(ny))
+    xinds = np.interp(x_out, x_in, range(n_x))
+    yinds = np.interp(y_out, y_in, range(n_y))
 
     # make a full coordinate mesh
-    a_inds = np.meshgrid(xinds, yinds)
-    a_inds = np.array(a_inds)
-    a_inds = a_inds[[1, 0]]
+    ainds = np.meshgrid(xinds, yinds)
+    ainds = np.array(ainds)
+    ainds = ainds[[1, 0]]
 
     # do main interpolation
     result = interp2d(a_in, ainds, order=1, mode='nearest', cval=np.NAN,
@@ -275,17 +344,17 @@ def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
 
     # post-process replacing originals for any "exact" coordinate matches
     if fixmdis:
-        bXexact = abs(xinds - np.round(xinds, 0)) < 1e-6
-        iXoutExact = np.arange(nx)[bXexact]
-        iXinExact = [int(round(ix)) for ix in xinds[iXoutExact]]
+        bx_exact = abs(xinds - np.round(xinds, 0)) < 1e-6
+        i_xout_exact = np.arange(n_x)[bx_exact]
+        i_xin_exact = [int(round(ix)) for ix in xinds[i_xout_exact]]
 
-        bYexact = abs(yinds - np.round(yinds, 0)) < 1e-6
-        iYoutExact = np.arange(ny)[bYexact]
-        iYinExact = [int(round(iy)) for iy in yinds[iYoutExact]]
+        by_exact = abs(yinds - np.round(yinds, 0)) < 1e-6
+        i_yout_exact = np.arange(n_y)[by_exact]
+        i_yin_exact = [int(round(iy)) for iy in yinds[i_yout_exact]]
 
-        for (i, ix_out) in enumerate(iXoutExact):
-            for (j, iy_out) in enumerate(iYoutExact):
-                result[iy_out, ix_out] = a_in[iYinExact[j], iXinExact[i]]
+        for (i, ix_out) in enumerate(i_xout_exact):
+            for (j, iy_out) in enumerate(i_yout_exact):
+                result[iy_out, ix_out] = a_in[i_yin_exact[j], i_xin_exact[i]]
 
     return result
 
@@ -297,33 +366,33 @@ def read_and_regrid(srcfilename, varname, lons2, lats2):
     Parameters
     ----------
     srcfilename : str
-        filename
+        filename containing input data
     varname : str
-        xxxxx
-    lons2 : xxxx
-        xxxxx
-    lats2 : xxxxx
-        xxxxxx
+        variable name in netcdf
+    lons2 : float
+        longitudes of target grid
+    lats2 : float
+        latitudes of target grid
     """
     npts = len(lons2)
     nrows = len(lats2)
 
-    nt = len(Dataset(srcfilename, 'r').variables['time'][:])
-    data_rg = np.zeros((nt, nrows, npts))
-    logger.debug('Number of data times in file %i', nt)
+    n_time = len(Dataset(srcfilename, 'r').variables['time'][:])
+    data_rg = np.zeros((n_time, nrows, npts))
+    logger.debug('Number of data times in file %i', n_time)
 
     # read data
-    srcDataset = Dataset(srcfilename, 'r', format='NETCDF3')
-    srcData = srcDataset.variables[varname]
+    src_dataset = Dataset(srcfilename, 'r')
+    src_data = src_dataset.variables[varname]
 
     # grid of input data
-    lats = srcDataset.variables['lat'][:]
-    lons = srcDataset.variables['lon'][:]
+    lats = src_dataset.variables['lat'][:]
+    lons = src_dataset.variables['lon'][:]
 
     # create mask (missing values)
-    data = np.ma.masked_equal(srcData, getattr(srcData, "_FillValue"))
+    data = np.ma.masked_equal(src_data, getattr(src_data, "_FillValue"))
 
-    for i_t in range(nt):    # range over fields in the file
+    for i_t in range(n_time):    # range over fields in the file
         data_rg[i_t, :, :] = regrid(data[i_t, :, :], lons, lats, lons2, lats2,
                                     False, x_cyclic=360.0)
 
@@ -355,9 +424,9 @@ def crem_calc(pointers):
 
     Returns
     -------
-    crem_pd : xxxx
+    crem_pd : float
         present-day cloud regime error metric of WW09.
-    r_crem_pd : xxxx
+    r_crem_pd : float
         component from each regime.
     """
     # Lookup arrays
@@ -397,7 +466,7 @@ def crem_calc(pointers):
     solar_weights = np.array([1.000, 0.998, 0.846])
 
     # number of regimes in each region (Table 3 of WW09)
-    nregimes = np.array([7, 7, 6])
+    nregimes = {'tropics': 7, 'extra-tropics': 7, 'snow-ice': 6}
 
     # -----------------------------------------------------------
 
@@ -416,13 +485,13 @@ def crem_calc(pointers):
     # target grid spec
     npts = 144
     nrows = 72
-    zx = -1.25
-    dx = 2.5
-    zy = -91.25
-    dy = 2.5
+    z_x = -1.25
+    d_x = 2.5
+    z_y = -91.25
+    d_y = 2.5
 
-    lons2 = np.array([zx + dx * (i + 1.0) for i in range(npts)])
-    lats2 = np.array([zy + dy * (j + 1.0) for j in range(nrows)])
+    lons2 = np.array([z_x + d_x * (i + 1.0) for i in range(npts)])
+    lats2 = np.array([z_y + d_y * (j + 1.0) for j in range(nrows)])
 
     # Read in and regrid input data
 
@@ -472,9 +541,12 @@ def crem_calc(pointers):
     # -----------------------------------------------------------
 
     # Set up storage arrays
-    model_rfo = np.zeros((3, 7))
-    model_ncf = np.zeros((3, 7))
-    r_crem_pd = np.zeros((3, 7))
+    numreg = len(nregimes)            # = 3
+    numrgm = nregimes[max(nregimes)]  # = 7
+
+    model_rfo = np.zeros((numreg, numrgm))
+    model_ncf = np.zeros((numreg, numrgm))
+    r_crem_pd = np.zeros((numreg, numrgm))
     model_rfo[:] = 999.9
     model_ncf[:] = 999.9
     r_crem_pd[:] = 999.9
@@ -487,20 +559,19 @@ def crem_calc(pointers):
     swcf_data = rsutcs_data - rsut_data
     lwcf_data = rlutcs_data - rlut_data
 
-    logger.debug('Assigning data to observational cloud regimes')
-
-    # loop over 3 regions (tropics, extra tropics, snow/ice)
-    for region in range(3):
+    # loop over 3 regions
+    # (0 = tropics, 1 = ice-free extra-tropics, 2 = snow/ice covered)
+    for idx_region, (region, regime) in enumerate(nregimes.items()):
 
         # Set up validity mask for region
 
         mask = pctisccp_data.copy()
-        if region == 0:
+        if region == 'tropics':
             mask[:, (lats2 < -20) | (lats2 > 20), :] = np.NAN
-        elif region == 1:
+        elif region == 'extra-tropics':
             mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
             mask[(snc_data >= 0.1) | (sic_data >= 0.1)] = np.NAN
-        elif region == 2:
+        elif region == 'snow-ice':
             mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
             mask[(snc_data < 0.1) & (sic_data < 0.1)] = np.NAN
 
@@ -510,48 +581,49 @@ def crem_calc(pointers):
         npoints = len(mask[points])  # Number of valid data points in region
 
         group = np.zeros(npoints)
-        ed = np.zeros((npoints, nregimes[region]))
+        e_d = np.zeros((npoints, regime))
 
         swcf_data_pts = swcf_data[points]
         lwcf_data_pts = lwcf_data[points]
 
         # Assign model data to observed regimes
 
-        for i in range(nregimes[region]):
-            ed[:, i] = ((albisccp_data[points] - obs_alb[region, i]) ** 2) + \
-                       ((pctisccp_data[points] - obs_pct[region, i]) ** 2) + \
-                       ((cltisccp_data[points] - obs_clt[region, i]) ** 2)
+        for i in range(regime):
+            e_d[:, i] = \
+                ((albisccp_data[points] - obs_alb[idx_region, i]) ** 2) + \
+                ((pctisccp_data[points] - obs_pct[idx_region, i]) ** 2) + \
+                ((cltisccp_data[points] - obs_clt[idx_region, i]) ** 2)
 
-        group[:] = np.argmin(ed, axis=1)
+        group[:] = np.argmin(e_d, axis=1)
 
-        for i in range(nregimes[region]):
+        for i in range(regime):
             mem = (group == i)
 
             count = len(group[mem])
 
             if count > 0:
 
-                model_rfo[region, i] = float(count) / float(npoints)
-                model_ncf[region, i] = np.average(swcf_data_pts[mem]) \
-                    * solar_weights[region] +                         \
+                model_rfo[idx_region, i] = float(count) / float(npoints)
+                model_ncf[idx_region, i] = np.average(swcf_data_pts[mem]) \
+                    * solar_weights[idx_region] +                         \
                     np.average(lwcf_data_pts[mem])
             else:
                 logger.info("Model does not reproduce all observed cloud "
                             "regimes.")
                 logger.info("Cannot calculate CREM. Abort.")
                 sys.exit()
-                model_rfo[region, i] = 0.0
-                model_ncf[region, i] = 0.0
+                model_rfo[idx_region, i] = 0.0
+                model_ncf[idx_region, i] = 0.0
 
     # Calculation of eq 3 in WW09
-    for region in range(3):
-        r_crem_pd[region, 0:nregimes[region]] = area_weights[region] * \
-            (((model_ncf[region, 0:nregimes[region]] -
-               obs_ncf[region, 0:nregimes[region]]) *
-              obs_rfo[region, 0:nregimes[region]]) ** 2 +
-             ((model_rfo[region, 0:nregimes[region]] -
-               obs_rfo[region, 0:nregimes[region]]) *
-              obs_ncf[region, 0:nregimes[region]]) ** 2) ** 0.5
+    for idx_region, (region, regime) in enumerate(nregimes.items()):
+        r_crem_pd[idx_region, 0:regime] = area_weights[idx_region] * \
+            (((model_ncf[idx_region, 0:regime] -
+               obs_ncf[idx_region, 0:regime]) *
+              obs_rfo[idx_region, 0:regime]) ** 2 +
+             ((model_rfo[idx_region, 0:regime] -
+               obs_rfo[idx_region, 0:regime]) *
+              obs_ncf[idx_region, 0:regime]) ** 2) ** 0.5
 
     # Calculation of eq 4 in WW09
     crem_pd = ((np.sum(r_crem_pd[0, :] ** 2) + np.sum(r_crem_pd[1, :] ** 2) +
