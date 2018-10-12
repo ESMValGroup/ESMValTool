@@ -281,11 +281,13 @@ def calc_tropoz(cubes):
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
-    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=ptp_cube)
-    # note that here it is needed an update of the function _pressure_level_widths
+    p_layer_widths = _pressure_level_widths(tro3_cube,
+                                            ps_cube, top_limit=ptp_cube)
+    # note that here it is needed an update of function _pressure_level_widths
     tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
-    tropoz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
+    tropoz.units = (tro3_cube.units * p_layer_widths.units /
+                    g_unit * mw_O3_unit /
                     mw_air_unit)
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
@@ -321,7 +323,8 @@ def calc_stratoz(cubes):
     p_layer_widths = _pressure_level_widths(tro3_cube, ptp_cube, top_limit=0)
     stratoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     stratoz = stratoz.collapsed('air_pressure', iris.analysis.SUM)
-    stratoz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
+    stratoz.units = (tro3_cube.units * p_layer_widths.units /
+                 g_unit * mw_O3_unit /
                  mw_air_unit)
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
@@ -774,7 +777,7 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     pressure_4d = np.where((ps_4d_array - p_4d_array) < 0, np.NaN, p_4d_array)
 
     # make top_limit last pressure level
-    # formally using broadcasing top_limit might be a cube like ps_cube, no problem 
+    # formally using broadcasing top_limit might be a cube like ps_cube?
     top_limit_array = np.ones(ps_cube.shape) * top_limit
     data = top_limit_array[:, np.newaxis, :, :]
     pressure_4d = np.concatenate((pressure_4d, data), axis=1)
