@@ -13,6 +13,7 @@ dependencies:
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1
+  - julia
   # TODO: add R, julia
 
   - pip:
