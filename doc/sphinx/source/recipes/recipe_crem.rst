@@ -88,9 +88,12 @@ data are required at runtime.
 References
 ----------
 
+* Nam, C., Bony, S., Dufresne, J.-L., and Chepfer, H.: The 'too few, too bright'
+  tropical low-cloud problem in CMIP5 models, Geophys. Res. Lett., 39, L21801,
+  doi: 10.1029/2012GL053421, 2012.
 * Williams, K.D. and Webb, M.J.: A quantitative performance assessment of
-cloud regimes in climate models. Clim. Dyn. 33, 141-157, doi:
-10.1007/s00382-008-0443-1, 2009.
+  cloud regimes in climate models. Clim. Dyn. 33, 141-157, doi:
+  10.1007/s00382-008-0443-1, 2009.
 
 
 Example plots
@@ -101,6 +104,6 @@ Example plots
    :alt: xxxxx
 
    Cloud Regime Error Metrics (CREMpd) from William and Webb (2009) applied
-to those CMIP5 AMIP simulations with the required data in the archive. A
-perfect score with respect to ISCCP is zero; the dashed red line is an
-indication of observational uncertainty.
+   to those CMIP5 AMIP simulations with the required data in the archive. A
+   perfect score with respect to ISCCP is zero; the dashed red line is an
+   indication of observational uncertainty.
