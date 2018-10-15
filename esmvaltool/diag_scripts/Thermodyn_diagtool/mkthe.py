@@ -20,7 +20,8 @@ Created on Fri Jun 15 10:06:30 2018
 from netCDF4 import Dataset
 import numpy as np
 import os
-#from cdo import *
+from cdo import *
+
 #cdo = Cdo()
 
 #Temporary definitions
@@ -53,33 +54,38 @@ g       = 9.81        #Gravity acceleration (m*s^-2)
 #hfss_file= folder+'CMIP5_Amon_historical_MPI-ESM-LR_r1i1p1_T2Ms_hfss_1990-1995.nc' #fort.15
 #te_file  = folder+'MPI-ESM-LR_te.nc' #fort.16
 
-class mkthe:
+class Mkthe():
     
-    def mkthe_main(wdir,ts_file,hus_file,tas_file,ps_file,uas_file,vas_file,hfss_file,te_file,modelname):
+    from mkthe import *
+    
+    def mkthe_main(self,wdir,ts_file,hus_file,tas_file,ps_file,uas_file,vas_file,hfss_file,te_file,modelname):
         
+        cdo = Cdo()        
+        mkthe = Mkthe()
+    
         ts_miss_file=wdir+'/ts.nc'
-        removeif(ts_miss_file)
+        mkthe.removeif(ts_miss_file)
         cdo.setctomiss('0',input=ts_file,output = ts_miss_file)
         hus_miss_file=wdir+'/hus.nc'
-        removeif(hus_miss_file)
+        mkthe.removeif(hus_miss_file)
         cdo.setctomiss('0',input=hus_file,output = hus_miss_file)
         tas_miss_file=wdir+'/tas.nc'
-        removeif(tas_miss_file)
+        mkthe.removeif(tas_miss_file)
         cdo.setctomiss('0',input=tas_file,output = tas_miss_file)
         ps_miss_file=wdir+'/ps.nc'
-        removeif(ps_miss_file)
+        mkthe.removeif(ps_miss_file)
         cdo.setctomiss('0',input=ps_file,output = ps_miss_file)
         V_miss_file=wdir+'/V.nc'
-        removeif(V_miss_file)
+        mkthe.removeif(V_miss_file)
         V_file=wdir+'/{}_V.nc'.format(modelname)
-        removeif(V_file)
+        mkthe.removeif(V_file)
         cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file,vas_file),options='-b F32',output = V_file)
         cdo.setctomiss('0',input=V_file,output = V_miss_file)
         hfss_miss_file=wdir+'/hfss.nc'
-        removeif(hfss_miss_file)
+        mkthe.removeif(hfss_miss_file)
         cdo.setctomiss('0',input=hfss_file,output = hfss_miss_file)
         te_miss_file=wdir+'/te.nc'
-        removeif(te_miss_file)
+        mkthe.removeif(te_miss_file)
         cdo.setctomiss('0',input=te_file,output = te_miss_file)
         
         dataset0 = Dataset(ts_miss_file)
@@ -162,10 +168,10 @@ class mkthe:
         pz=ps*np.exp((-g*h)/(gascon*ts))  # Barometric equation 
         tz=thz*(p0/pz)**(-akap)
         
-        nc_attrs, nc_dims, nc_vars = ncdump(dataset0,'ts',True)
+        nc_attrs, nc_dims, nc_vars = mkthe.ncdump(dataset0,'ts',True)
         
         nc_f = wdir+'/tlcl.nc'.format(modelname)
-        removeif(nc_f)
+        mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean LCL temperature from {} model. Calculated by Thermodynamics model diagnostics \
                                 in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
@@ -196,7 +202,7 @@ class mkthe:
         w_nc_fid.close()  # close the new file
         
         nc_f = wdir+'/tabl.nc'.format(modelname)
-        removeif(nc_f)
+        mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean temperature at BL top for {} model. Calculated by Thermodynamics model diagnostics \
                                 in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
@@ -227,7 +233,7 @@ class mkthe:
         w_nc_fid.close()  # close the new file
         
         nc_f = wdir+'/htop.nc'.format(modelname)
-        removeif(nc_f)
+        mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean height of the BL top for {} model. Calculated by Thermodynamics model diagnostics \
                                 in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
@@ -259,7 +265,7 @@ class mkthe:
         
         #return ztlcl,tz,htop
     
-    def ncdump(nc_fid,key,verb):
+    def ncdump(self,nc_fid,key,verb):
         """
         Prints the NetCDF file attributes for a given key
     
@@ -277,7 +283,7 @@ class mkthe:
         return nc_attrs, nc_dims, nc_vars
     
         
-    def removeif(filename):
+    def removeif(self,filename):
         try:
             os.remove(filename)
         except OSError:

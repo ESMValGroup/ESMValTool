@@ -8,6 +8,7 @@ from netCDF4 import Dataset as netcdf_dataset
 import numpy as np
 from scipy import interpolate
 import math
+import logging
 #from cartopy import config
 import cartopy.crs as ccrs
 from cartopy.mpl.geoaxes import GeoAxes
@@ -17,9 +18,11 @@ from PyAstronomy import pyaC
 
 ###############################################################################
 
-class plot_script:
+class Plot_script():
+    
+    from plot_script import *
         
-    def latwgt(lat,tr):
+    def latwgt(self,lat,tr):
         
         #Routine to weigh fields with cosines of latitude
         pi    = math.pi
@@ -41,13 +44,15 @@ class plot_script:
 ###############################################################################
     
     
-    def hemean(hem,lat,inp):
+    def hemean(self,hem,lat,inp):
         
         #Routine for hemispheric means:
         #hem=1 indicates SH, hem=else indicates NH
         
+        plotsmod = Plot_script()
+        
         j_end = np.shape(inp)[1]
-        zmn = latwgt(lat,inp)
+        zmn = plotsmod.latwgt(lat,inp)
         hmean = []
         if hem == 1:
             if j_end%2 == 0:
@@ -65,10 +70,12 @@ class plot_script:
     ###############################################################################
     
     
-    def transport(zmean,gmean,lat):
+    def transport(self,zmean,gmean,lat):
         
         #Routine for the computation of meridional transports (of energy,
         # as well as other quantities)
+        plotsmod = Plot_script()
+        
         pi  = math.pi
         
         dlat             = np.zeros(len(lat))
@@ -86,7 +93,7 @@ class plot_script:
         transp                      = np.zeros((np.shape(zmean)[0],np.shape(zmean)[1]))
         
         for j in range(len(lat)-1):
-            cumb[:,j] = -2*np.nansum(latwgt(lat[j:len(lat)],zmn_ub[:,j:len(lat)]),axis=1)
+            cumb[:,j] = -2*np.nansum(plotsmod.latwgt(lat[j:len(lat)],zmn_ub[:,j:len(lat)]),axis=1)
         
         R      = 6.371*10**6
         transp = 2*pi*cumb*R*R
@@ -96,7 +103,7 @@ class plot_script:
     
     ###############################################################################
     
-    def transp_max(lat,transp,lim):
+    def transp_max(self,lat,transp,lim):
         
         deriv  = np.gradient(transp)
         #print(deriv)
@@ -121,7 +128,9 @@ class plot_script:
     
     ###############################################################################
     
-    def postsealand(path,file,filemask,model,name,transp_name,transpy,time,lat,lon,opt):
+    def postsealand(self,path,file,filemask,model,name,transp_name,transpy,time,lat,lon,opt):
+        
+        plotsmod = Plot_script()
         
         dataset = netcdf_dataset(filemask)
         lsmsk = dataset.variables['sftlf'][:, :]
@@ -135,11 +144,11 @@ class plot_script:
             zmnlsm   = np.nanmean(lsm_ext,axis=2)
             mytitle  = '{} meridional transports - Land'.format(transp_name)
         else:
-            info('No meaningful option',verbosity,1)
-        glob       = np.nansum(latwgt(lat,zmnlsm),axis=1)
+            logger.debug('No meaningful option')
+        glob       = np.nansum(plotsmod.latwgt(lat,zmnlsm),axis=1)
         dlon       = lon[1]-lon[0]
-        NHlsm      = hemean(0,lat,zmnlsm)*360/dlon
-        SHlsm      = hemean(1,lat,zmnlsm)*360/dlon
+        NHlsm      = plotsmod.hemean(0,lat,zmnlsm)*360/dlon
+        SHlsm      = plotsmod.hemean(1,lat,zmnlsm)*360/dlon
         dataset = netcdf_dataset(file)
         var   = dataset.variables[name][:, :, :]
         dataset = netcdf_dataset(filemask)
@@ -150,14 +159,14 @@ class plot_script:
         for i in range(len(lat)):
             zmean[:,i]   = np.nanmean(var[:,i,:],axis=1)*zmnlsm[0,i]
         zmean[np.isnan(zmean)] = 0
-        zmean_w  = latwgt(lat,zmean)
+        zmean_w  = plotsmod.latwgt(lat,zmean)
         gmean    = np.nansum(zmean_w,axis=1)*glob
-        nhgmean  = hemean(0,lat,zmean_w)*NHlsm
-        shgmean  = hemean(1,lat,zmean_w)*SHlsm
+        nhgmean  = plotsmod.hemean(0,lat,zmean_w)*NHlsm
+        shgmean  = plotsmod.hemean(1,lat,zmean_w)*SHlsm
         timeser = np.column_stack((gmean,shgmean,nhgmean))
         #Compute metrics for the transports
         transp = []
-        transp  = transport(zmean,gmean,lat)
+        transp  = plotsmod.transport(zmean,gmean,lat)
         #zmnba   = transp[0]
         transpp = transp[1]
         transp_mn= np.nanmean(transpp,axis=0)
@@ -166,7 +175,7 @@ class plot_script:
         tr_max  = list()
         lim=45
         for i in range(len(time)):
-            yr_ext       = transp_max(lat,transpp[i,:],lim)
+            yr_ext       = plotsmod.transp_max(lat,transpp[i,:],lim)
             lat_max.append(yr_ext[0])
             tr_max.append(yr_ext[1])
         fig = plt.figure()
@@ -187,8 +196,10 @@ class plot_script:
     
     ###############################################################################
     
-    def balances(workdir,plotpath,filena,filemask,name,model_name,lsm):
+    def balances(self,workdir,plotpath,filena,name,model_name,lsm):
     
+        plotsmod = Plot_script()
+        
         nsub       = len(filena)
         sep        = '.nc'
         path       = plotpath
@@ -211,8 +222,8 @@ class plot_script:
             rangecl       = [-150,150]
             transply     = (-6E15, 6E15)
         else:           
-            info('No option recognized',verbosity,1)
-            info('I will now quit',verbosity,1)
+            logger.debug('No option recognized')
+            logger.debug('I will now quit')
             quit()
         #Import files
         filena[0]     = filena[0].split(sep, 1)[0]
@@ -248,20 +259,20 @@ class plot_script:
         tr_maxm=np.zeros([nsub,2,len(timey)])
         lim=[55,55,30]
         for i in np.arange(nsub):
-            zmean_w = latwgt(lats,zmean[i,:,:])
+            zmean_w = plotsmod.latwgt(lats,zmean[i,:,:])
             gmean   = np.nansum(zmean_w, axis=1)
-            shmean  = hemean(0,lats,zmean[i,:,:])
-            nhmean  = hemean(1,lats,zmean[i,:,:])
+            shmean  = plotsmod.hemean(0,lats,zmean[i,:,:])
+            nhmean  = plotsmod.hemean(1,lats,zmean[i,:,:])
             timeser = np.column_stack((gmean,shmean,nhmean))
             #Compute transports
-            transp  = transport(zmean[i,:,:],gmean,lats) 
+            transp  = plotsmod.transport(zmean[i,:,:],gmean,lats) 
             transpp = transp[1]
             transp_mean[i,:] = np.nanmean(transpp,axis=0)
             yr_ext = []
             lat_max = list()
             tr_max  = list()
             for t in range(len(timey)):
-                yr_ext       = transp_max(lats,transpp[t,:],lim[i])
+                yr_ext       = plotsmod.transp_max(lats,transpp[t,:],lim[i])
                 lat_max.append(yr_ext[0])
                 tr_max.append(yr_ext[1])       
             for t in range(len(timey)):
@@ -354,8 +365,8 @@ class plot_script:
                 elif name[i]=='surb':
                     nameout='ocean'
                 nc_f=workdir+'/{}_transp_mean_{}.nc'.format(nameout,model_name)
-                removeif(nc_f)
-                pr_output(transp_mean[i,:],filename, nc_f, nameout, verb=True)
+                plotsmod.removeif(nc_f)
+                plotsmod.pr_output(transp_mean[i,:],filename, nc_f, nameout, verb=True)
                 plt.plot(lats, transp_mean[i,:])
             plt.title('Meridional heat transports')
             plt.xlabel('Latitude [deg]',fontsize=10)
@@ -371,8 +382,8 @@ class plot_script:
             fig = plt.figure()
             ax  = plt.subplot(111)
             nc_f=workdir+'/{}_transp_mean_{}.nc'.format('wmass',model)
-            removeif(nc_f)
-            pr_output(transp_mean[0,:],filename, nc_f, 'wmass', verb=True)
+            plotsmod.removeif(nc_f)
+            plotsmod.pr_output(transp_mean[0,:],filename, nc_f, 'wmass', verb=True)
             plt.plot(lats, transp_mean[0,:])
             plt.title('Water mass transports',fontsize=10)
             plt.xlabel('Latitude [deg]',fontsize=10)
@@ -386,8 +397,8 @@ class plot_script:
             fig = plt.figure()
             ax  = plt.subplot(111)
             nc_f=workdir+'/{}_transp_mean_{}.nc'.format('latent',model)
-            removeif(nc_f)
-            pr_output(transp_mean[1,:],filename, nc_f, 'latent', verb=True)
+            plotsmod.removeif(nc_f)
+            plotsmod.pr_output(transp_mean[1,:],filename, nc_f, 'latent', verb=True)
             plt.plot(lats, transp_mean[1,:])
             plt.title('Latent heat transports',fontsize=10)
             plt.xlabel('Latitude [deg]',fontsize=10)
@@ -489,7 +500,7 @@ class plot_script:
         
         #map2d(np.nanmean(varla,axis=0),lons,lats)
     
-    def entropy(plotpath,filename,name,ext_name,model_name):
+    def entropy(self,plotpath,filename,name,ext_name,model_name):
     
         path       = plotpath
         model      = model_name
@@ -522,8 +533,8 @@ class plot_script:
             rangec       = [0,0.1]
             cm           = 'YlOrBr'
         else:           
-            info('No name recognized',verbosity,1)
-            info('I will now quit',verbosity,1)
+            logger.debug('No name recognized')
+            logger.debug('I will now quit')
             quit()
             #Import files
             #filename="/Users/Valerio2/ESMValTool-private/TRR181_valerio/MPI-ESM-LR_toab_ymm.nc"
@@ -549,12 +560,15 @@ class plot_script:
         #plt.show()
         plt.close(fig)
     
-    def plot_ellipse(semimaj=1,semimin=1,phi=0,x_cent=0,y_cent=0,theta_num=1e3,ax=None,plot_kwargs=None,\
-                        fill=False,fill_kwargs=None,data_out=False,cov=None,mass_level=0.68):
+    def plot_ellipse(self,semimaj=1,semimin=1,phi=0,x_cent=0,y_cent=0,theta_num=1e3,
+                     ax=None,plot_kwargs=None,fill=False,fill_kwargs=None,
+                     data_out=False,cov=None,mass_level=0.68):
         '''
             An easy to use function for plotting ellipses in Python 2.7!
         '''
     
+        plotsmod = Plot_script()
+        
         # Get Ellipse Properties from cov matrix
         if cov is not None:
             eig_vec,eig_val,u = np.linalg.svd(cov)
@@ -567,7 +581,7 @@ class plot_script:
                 multiplier = np.sqrt(2.279)
             else:
                 distances = np.linspace(0,20,20001)
-                chi2_cdf = chi2.cdf(distances,df=2)
+                chi2_cdf = plotsmod.chi2.cdf(distances,df=2)
                 multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf-mass_level)==np.abs(chi2_cdf-mass_level).min())[0][0]])
             semimaj *= multiplier
             semimin *= multiplier
@@ -610,7 +624,7 @@ class plot_script:
         if return_fig == True:
             return fig
         
-    def pr_output(varout, filep, nc_f, nameout, verb=True):
+    def pr_output(self,varout, filep, nc_f, nameout, verb=True):
         '''
         NAME
             NetCDF with Python
@@ -622,9 +636,11 @@ class plot_script:
                         Thanks to K.-Michael Aye for highlighting the issue
         '''
     
+        plotsmod = Plot_script()
+        
         nc_fid = netcdf_dataset(filep, 'r')  # Dataset is the class behavior to open the file
                                              # and create an instance of the ncCDF4 class
-        nc_attrs, nc_dims, nc_vars = ncdump(nc_fid,nameout,verb)
+        nc_attrs, nc_dims, nc_vars = plotsmod.ncdump(nc_fid,nameout,verb)
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract the coordinate
         
@@ -641,7 +657,7 @@ class plot_script:
             w_nc_dim.setncattr(ncattr, nc_fid.variables['lat'].getncattr(ncattr))
         w_nc_fid.variables['lat'][:] = lats
         w_nc_var = w_nc_fid.createVariable(nameout, 'f8', ('lat'))
-        varatts(w_nc_var,nameout)
+        plotsmod.varatts(w_nc_var,nameout)
         w_nc_fid.variables[nameout][:] = varout
         w_nc_fid.close()  # close the new file
        
@@ -649,7 +665,7 @@ class plot_script:
         
     
     
-    def ncdump(nc_fid,key,verb):
+    def ncdump(self,nc_fid,key,verb):
         """
         Prints the NetCDF file attributes for a given key
     
@@ -666,7 +682,7 @@ class plot_script:
         
         return nc_attrs, nc_dims, nc_vars
     
-    def varatts(w_nc_var,varname):
+    def varatts(self,w_nc_var,varname):
         
         if varname == 'total':
             w_nc_var.setncatts({'long_name': u"Total meridional heat transport",'units': u"W", 'level_desc': 'TOA'})
@@ -679,7 +695,7 @@ class plot_script:
         elif varname == 'latent':
              w_nc_var.setncatts({'long_name': u"Meridional latent heat transport",'units': u"W", 'level_desc': 'sfc'})
              
-    def removeif(filename):
+    def removeif(self,filename):
         try:
             os.remove(filename)
         except OSError:
