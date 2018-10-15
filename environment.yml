@@ -11,7 +11,7 @@ dependencies:
   - iris=1.13
   - python-stratify
   # Multi language support:
-  - ncl
+  - ncl>6.5.0
   - ncurses=6.1=hfc679d8_1
   # TODO: add R, julia
 
