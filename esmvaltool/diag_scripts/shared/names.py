@@ -16,6 +16,7 @@ YEAR = 'year'
 
 DATASET = 'dataset'
 EXP = 'exp'
+ENSEMBLE = 'ensemble'
 LONG_NAME = 'long_name'
 OBS = 'OBS'
 PROJECT = 'project'
