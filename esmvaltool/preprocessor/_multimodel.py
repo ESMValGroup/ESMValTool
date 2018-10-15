@@ -197,7 +197,7 @@ def _datetime_to_int_days(cube):
     # TODO replace the block when using iris 2.0
     # time_cells = [cell.point for cell in cube.coord('time').cells()]
     if int(iris.__version__.split('.')[0]) >= 2:
-       time_cells = [cell.point for cell in cube.coord('time').cells()]
+        time_cells = [cell.point for cell in cube.coord('time').cells()]
     else:
         time_cells = [cube.coord('time').units.num2date(cell.point)
                       for cell in cube.coord('time').cells()]

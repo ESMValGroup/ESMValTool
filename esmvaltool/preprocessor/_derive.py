@@ -16,9 +16,9 @@ Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
 g_unit = cf_units.Unit('m s^-2')
-mw_air = 29
+mw_air = 29.0
 mw_air_unit = cf_units.Unit('g mol^-1')
-mw_O3 = 48
+mw_O3 = 48.0
 mw_O3_unit = cf_units.Unit('g mol^-1')
 Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
@@ -51,7 +51,7 @@ def get_required(short_name, field=None):
         ],
         'tropoz': [
             ('tro3', 'T3' + frequency),
-            ('ps',  'T2' + frequency + 's'),
+            ('ps', 'T2' + frequency + 's'),
             ('ptp', 'T2' + frequency + 's'),
         ],
         'stratoz': [
@@ -260,8 +260,8 @@ def calc_swcre(cubes):
 
 
 def calc_tropoz(cubes):
-    """Compute tropospheric column ozone from ozone mol fraction on
-       pressure levels.
+    """Compute tropospheric column ozone.
+    From ozone mol fraction on pressure levels.
 
     - The surface pressure is used as a lower integration bound.
     - A fixed upper-integration bound of tropopause pressure in Pa is used.
@@ -277,6 +277,7 @@ def calc_tropoz(cubes):
         Cube containing tropospheric column ozone.
 
     """
+
     tro3_cube = cubes.extract_strict(
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
@@ -300,8 +301,8 @@ def calc_tropoz(cubes):
 
 
 def calc_stratoz(cubes):
-    """Compute stratospheric column ozone from ozone mol fraction on 
-       pressure levels.
+    """Compute stratospheric column ozone.
+       From ozone mol fraction on pressure levels.
 
     - The tropopause pressure is used as a lower integration bound.
     - A fixed upper integration bound of 0 Pa is used.
@@ -316,6 +317,7 @@ def calc_stratoz(cubes):
         Cube containing total column ozone.
 
     """
+
     tro3_cube = cubes.extract_strict(
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
@@ -342,10 +344,10 @@ def calc_toz(cubes):
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 0 Pa is used.
 
-    @Ramiro Checa-Garcia: this could be update to calculate also tropospheric
+    @R. Checa-Garcia: this could be update to calculate also tropospheric
     ozone column or stratospheric ozone column. The last one will just took
     the tropopause pressure instead of the surface_air_pressure. I have added
-    two new function named calc_tropoz and calc_straoz, but formally all of them
+    two new function named calc_tropoz and calc_straoz, but formally all
     could be one single function with an extra argument indicating with is the
     desired case.
 
@@ -359,6 +361,7 @@ def calc_toz(cubes):
         Cube containing total column ozone.
 
     """
+
     tro3_cube = cubes.extract_strict(
         Constraint(name='mole_fraction_of_ozone_in_air'))
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))

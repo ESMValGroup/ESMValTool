@@ -125,7 +125,7 @@ def quickplot(cube, filename, plot_type, maps=False, **kwargs):
     fig = plt.figure()
     plot_function(cube, **kwargs)
     if maps:
-        plt.gca().coastlines() # in general we should be able to tell that it is a map
+        plt.gca().coastlines()
     fig.savefig(filename)
     plt.close(fig)
 
@@ -283,7 +283,7 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         if 'markerfacecolor' in plot_kwargs and filepath.endswith('ps'):
             plot_kwargs.pop('markerfacecolor')
 
-        # Plot 
+        # Plot
         axes.plot(x_vals, y_data[idx],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 

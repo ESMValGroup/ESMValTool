@@ -40,11 +40,13 @@ def time_slice(mycube, start_year, start_month, start_day,
     # TODO replace the block below for when using iris 2.0
     # my_constraint = iris.Constraint(time=lambda t: (
     #     t_1 < time_units.date2num(t.point) < t_2))
-    if int(iris.__version__.split('.')[0])>= 2:
+    if int(iris.__version__.split('.')[0]) >= 2:
         my_constraint = iris.Constraint(time=lambda t: (
-        start_date
-        < PartialDateTime(year=t.point.year, month=t.point.month, day=t.point.day) <
-        end_date ))
+          start_date
+          < PartialDateTime(year=t.point.year,
+                            month=t.point.month,
+                            day=t.point.day)
+          < end_date))
     else:
         my_constraint = iris.Constraint(time=lambda t: (
                         t_1 < t.point < t_2))

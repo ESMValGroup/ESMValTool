@@ -1,7 +1,8 @@
 """Python example diagnostic.
 
-@RCHG: I have added few changes on _plots.py to have additional functionality in
-       this simple recipe. Information is written in recipe_python.xml
+@RCHG: I have added few changes on _plots.py to have additional
+       functionality in this simple recipe. Information is
+       written in recipe_python.xml
 
 """
 
