@@ -7,6 +7,7 @@ and geographical area eslection
 
 from __future__ import print_function
 
+import os
 import logging
 
 import iris
@@ -17,160 +18,240 @@ from iris.util import rolling_window
 logger = logging.getLogger(__name__)
 
 
-def mask_landocean(cube, land_mask=None, ocean_mask=None):
-    """Mask land or ocean"""
-    if land_mask or ocean_mask:
-        raise NotImplementedError
+def _check_dims(cube, mask_cube):
+    """Check for same dims for mask and data"""
+    x_dim = cube.coord('longitude').points.ndim
+    y_dim = cube.coord('latitude').points.ndim
+    mx_dim = mask_cube.coord('longitude').points.ndim
+    my_dim = mask_cube.coord('latitude').points.ndim
+    len_x = len(cube.coord('longitude').points)
+    len_y = len(cube.coord('latitude').points)
+    len_mx = len(mask_cube.coord('longitude').points)
+    len_my = len(mask_cube.coord('latitude').points)
+    if (x_dim == mx_dim and y_dim == my_dim and
+            len_x == len_mx and len_y == len_my):
+        logger.debug('Data cube and fx mask have same dims')
+        return True
+
+    logger.debug(
+        'Data cube and fx mask differ in dims: '
+        'cube: ((%i, %i), grid=(%i, %i)), mask: ((%i, %i), grid=(%i, %i))',
+        x_dim, y_dim, len_x, len_y, mx_dim, my_dim, len_mx, len_my)
+    return False
 
 
-def fx_mask(mycube, fx):
-    """Reweighting function"""
-    masked_cube = mycube.copy()
-    masked_cube.data = mycube.data * fx.data / 100.
-    return masked_cube
+def _get_fx_mask(fx_data, fx_option, mask_type):
+    """Build a 50 percent land or sea mask"""
+    inmask = np.zeros_like(fx_data, bool)
+    if mask_type == 'sftlf':
+        if fx_option == 'land':
+            # Mask land out
+            inmask[fx_data > 50.] = True
+        elif fx_option == 'sea':
+            # Mask sea out
+            inmask[fx_data <= 50.] = True
+    elif mask_type == 'sftof':
+        if fx_option == 'land':
+            # Mask land out
+            inmask[fx_data < 50.] = True
+        elif fx_option == 'sea':
+            # Mask sea out
+            inmask[fx_data >= 50.] = True
+    elif mask_type == 'sftgif':
+        if fx_option == 'ice':
+            # Mask ice out
+            inmask[fx_data > 50.] = True
+        elif fx_option == 'landsea':
+            # Mask landsea out
+            inmask[fx_data <= 50.] = True
+
+    return inmask
 
 
-def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
+def _apply_fx_mask(fx_mask, var_data):
+    """Apply the fx mask"""
+    # Broadcast mask
+    var_mask = np.zeros_like(var_data, bool)
+    var_mask = np.broadcast_to(fx_mask, var_mask.shape).copy()
+
+    # Aplly mask accross
+    if np.ma.is_masked(var_data):
+        var_mask |= var_data.mask
+
+    # Build the new masked data
+    var_data = np.ma.array(var_data, mask=var_mask, fill_value=1e+20)
+
+    return var_data
+
+
+def mask_landsea(cube, fx_files, mask_out):
     """
-    Mask function 1 -- simple cube cropping
+    Mask out either land or sea
 
-    masking for a specific variable slicevar (string)
-    arguments: cube, variable, min value, max value, threshold
+    Function that masks out either land mass or seas (oceans, seas and lakes)
+
+    It uses dedicated fx files (sftlf or sftof) or, in their absence, it
+    applies a Natural Earth mask (land or ocean contours). Not that the
+    Natural Earth masks have different resolutions: 10m for land, and 50m
+    for seas; these are more than enough for ESMValTool puprpose.
+
+    Parameters
+    ----------
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "land" to mask out land mass or "sea" to mask out seas.
+
+    Returns
+    -------
+    masked iris cube
 
     """
-    import numpy.ma as ma
-    coord_names = [coord.name() for coord in mycube.coords()]
-    if slicevar in coord_names:
-        coord = mycube.coord(slicevar)
-        print('Masking on variable: %s' % coord.standard_name)
-        cubeslice = mycube.extract(
-            iris.Constraint(
-                coord_values={
-                    coord.standard_name: lambda cell: v1 <= cell.point <= v2
-                }))
-        if cubeslice is not None:
-            masked_cubeslice = cubeslice.copy()
-            masked_cubeslice.data = ma.masked_greater(cubeslice.data,
-                                                      threshold)
-            print('Masking cube keeping only what is in between %f and %f' %
-                  (v1, v2))
-            return masked_cubeslice
+    # Dict to store the Natural Earth masks
+    cwd = os.path.dirname(__file__)
+    # ne_10m_land is fast; ne_10m_ocean is very slow
+    shapefiles = {
+        'land': os.path.join(cwd, 'ne_masks/ne_10m_land.shp'),
+        'sea': os.path.join(cwd, 'ne_masks/ne_50m_ocean.shp')
+    }
+
+    if fx_files:
+        fx_cubes = {}
+        for fx_file in fx_files:
+            fx_root = os.path.basename(fx_file).split('_')[0]
+            fx_cubes[fx_root] = iris.load_cube(fx_file)
+
+        # preserve importance order: try stflf first then sftof
+        if ('sftlf' in fx_cubes.keys() and
+                _check_dims(cube, fx_cubes['sftlf'])):
+            landsea_mask = _get_fx_mask(fx_cubes['sftlf'].data, mask_out,
+                                        'sftlf')
+            cube.data = _apply_fx_mask(landsea_mask, cube.data)
+            logger.debug("Applying land-sea mask: sftlf")
+        elif ('sftof' in fx_cubes.keys() and
+              _check_dims(cube, fx_cubes['sftof'])):
+            landsea_mask = _get_fx_mask(fx_cubes['sftof'].data, mask_out,
+                                        'sftof')
+            cube.data = _apply_fx_mask(landsea_mask, cube.data)
+            logger.debug("Applying land-sea mask: sftof")
         else:
-            print('NOT masking the cube')
-            return mycube
+            if cube.coord('longitude').points.ndim < 2:
+                cube = _mask_with_shp(cube, shapefiles[mask_out])
+                logger.debug(
+                    "Applying land-sea mask from Natural Earth"
+                    " shapefile: \n%s", shapefiles[mask_out])
+            else:
+                logger.error("Use of shapefiles with irregular grids not "
+                             "yet implemented, land-sea mask not applied")
     else:
-        print('Variable is not a cube dimension, leaving cube untouched')
-        return mycube
+        if cube.coord('longitude').points.ndim < 2:
+            cube = _mask_with_shp(cube, shapefiles[mask_out])
+            logger.debug(
+                "Applying land-sea mask from Natural Earth"
+                " shapefile: \n%s", shapefiles[mask_out])
+        else:
+            logger.error("Use of shapefiles with irregular grids not "
+                         "yet implemented, land-sea mask not applied")
+
+    return cube
 
 
-def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
+def mask_landseaice(cube, fx_files, mask_out):
     """
-    Mask function 2 -- simple cube cropping on (min,max) lon,lat
+    Mask out either landsea (combined) or ice
 
-    Builds a box and keeps only the values inside the box
-    args: cube, min value, max value, where value=(lon, lat), threshold
+    Function that masks out either landsea (land and seas) or ice (Antarctica
+    and Greenland and some wee glaciers). It uses dedicated fx files (sftgif).
+
+    Parameters
+    ----------
+
+    * cube (iris.Cube.cube instance):
+        data cube to be masked.
+
+    * fx_files (list):
+        list holding the full paths to fx files.
+
+    * mask_out (string):
+        either "landsea" to mask out landsea or "ice" to mask out ice.
+
+    Returns
+    -------
+    masked iris cube
 
     """
-    import numpy.ma as ma
-    cubeslice = mycube.extract(
-        iris.Constraint(
-            longitude=lambda v: lon1 <= v.point <= lon2,
-            latitude=lambda v: lat1 <= v.point <= lat2))
-    if cubeslice is not None:
-        masked_cubeslice = cubeslice.copy()
-        masked_cubeslice.data = ma.masked_greater(cubeslice.data, threshold)
-        print('Masking cube on lon-lat')
-        return masked_cubeslice
+    # sftgif is the only one so far
+    if fx_files:
+        for fx_file in fx_files:
+            fx_cube = iris.load_cube(fx_file)
+
+            if _check_dims(cube, fx_cube):
+                landice_mask = _get_fx_mask(fx_cube.data, mask_out,
+                                            'sftgif')
+                cube.data = _apply_fx_mask(landice_mask, cube.data)
+                logger.debug("Applying landsea-ice mask: sftgif")
     else:
-        print('NOT masking the cube')
-        return mycube
+        logger.warning("Landsea-ice mask could not be found ")
+
+    return cube
 
 
-def cube_shape(mycube):
-    """Function that converts a cube into a shapely MultiPoint geometry"""
-    import shapely.geometry as sg
-    lon = mycube.coord('longitude')
-    lat = mycube.coord('latitude')
-    region = sg.MultiPoint(list(zip(lon.points.flat, lat.points.flat)))
-    return region
-
-
-def maskgeometry(shapefilename, att, argv):
-    """
-    Mask for a specific geometry
-
-    This function takes in a shapefile shapefilename
-    and creates a specific geometry based on a set of conditions
-    on contour attributes att is argv e.g.
-    contour.attributes['name'] == 'land_mass'
-    """
+def _get_geometry_from_shp(shapefilename):
+    """Get the mask geometry out from a shapefile"""
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
-    contours = reader.records()
-    contour_polygons, = [
-        contour.geometry for contour in contours
-        if contour.attributes[att] == argv
-    ]
-    main_geom = sorted(contour_polygons.geoms, key=lambda geom: geom.area)[-1]
+    # Index 0 grabs the lowest resolution mask (no zoom)
+    main_geom = [contour for contour in reader.geometries()][0]
     return main_geom
 
 
-def mask_2d(mycube, geom):
-    """
-    Mask any 2D geometry
+def _mask_with_shp(cube, shapefilename):
+    """Apply a Natural Earth land/sea mask"""
+    import shapely.vectorized as shp_vect
 
-    This function masks off any given 2D geometry geom
-    and keeps only the values that fall in geom, nulling
-    everything else in mycube
-    WARNING: as of now this function works with cubes that have time as coord
-    it is adusted to save time and loop over only lon-lat points
-    """
-    from shapely.geometry import Point
-    ccube = mycube.collapsed('time', iris.analysis.MEAN)
-    mask = np.ones(ccube.data.shape)
-    p = -1
-    for i in np.ndindex(ccube.data.shape):
-        if i[0] != p:
-            print(i[0], end=' ')
-            p = i[0]
-        this_cube = ccube[i]
-        this_lat = this_cube.coord('latitude').points[0]
-        this_lon = this_cube.coord('longitude').points[0] - 360
-        this_point = Point(this_lon, this_lat)
-        mask[i] = this_point.within(geom)
+    # Create the region
+    region = _get_geometry_from_shp(shapefilename)
 
-    mycube.data = mycube.data * mask
-    return mycube
+    # Create a mask for the data
+    mask = np.zeros(cube.shape, dtype=bool)
 
+    # Create a set of x,y points from the cube
+    # 1D regular grids
+    if cube.coord('longitude').points.ndim < 2:
+        x_p, y_p = np.meshgrid(
+            cube.coord(axis='X').points, cube.coord(axis='Y').points)
+    # 2D irregular grids; spit an error for now
+    else:
+        logger.error('No fx-files found (sftlf or sftof)!\n \
+                     2D grids are suboptimally masked with\n \
+                     Natural Earth masks. Exiting.')
 
-def polygon_shape(xlist, ylist):
-    """
-    Make a polygon
+    # Wrap around longitude coordinate to match data
+    x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
+    # the NE mask has no points at x = -180 and y = +/-90
+    # so we will fool it and apply the mask at (-179, -89, 89) instead
+    x_p_180 = np.where(x_p_180 == -180., x_p_180 + 1., x_p_180)
+    y_p_0 = np.where(y_p == -90., y_p + 1., y_p)
+    y_p_90 = np.where(y_p_0 == 90., y_p_0 - 1., y_p_0)
 
-    Function that takes a list of x-coordinates and a list of y-coordinates
-    and returns a polygon and its (x,y) points on the polygon's border
-    """
-    from shapely.geometry import Polygon
-    poly = Polygon(xlist, ylist)
-    x, y = poly.exterior.coords.xy
-    return poly, x, y
+    # Build mask with vectorization
+    if len(cube.data.shape) == 3:
+        mask[:] = shp_vect.contains(region, x_p_180, y_p_90)
+    elif len(cube.data.shape) == 4:
+        mask[:, :] = shp_vect.contains(region, x_p_180, y_p_90)
 
+    # Then apply the mask
+    if isinstance(cube.data, np.ma.MaskedArray):
+        cube.data.mask |= mask
+    else:
+        cube.data = np.ma.masked_array(cube.data, mask)
 
-"""
-Calculating a custom statistic
-==============================
-
-This example shows how to define and use a custom
-:class:`iris.analysis.Aggregator`, that provides a new statistical operator for
-use with cube aggregation functions such as :meth:`~iris.cube.Cube.collapsed`,
-:meth:`~iris.cube.Cube.aggregated_by` or
-:meth:`~iris.cube.Cube.rolling_window`.
-
-In this case, we have a time sequence of measurements (time unit dt), and we
-want to calculate how many times N the measurements exceed a certain threshold
-R over a sliding window dT (multiple of dt). The threshold could be 0 for any
-unwanted value for instance.
-"""
+    return cube
 
 
 # Define a function to perform the custom statistical operation.
@@ -249,11 +330,11 @@ def window_counts(mycube, value_threshold, window_size, pctile):
 
     # if one wants to print the whole array
     # np.set_printoptions(threshold=np.nan)
-    r = counts_windowed_cube.data.flatten()
-    meanr = np.mean(r)
-    stdr = np.std(r)
-    prcr = np.percentile(r, pctile)
-    return r, meanr, stdr, prcr
+    r_p = counts_windowed_cube.data.flatten()
+    meanr = np.mean(r_p)
+    stdr = np.std(r_p)
+    prcr = np.percentile(r_p, pctile)
+    return r_p, meanr, stdr, prcr
 
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
@@ -281,18 +362,48 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     return counts_windowed_cube, newmask, masked_cube
 
 
-def mask_threshold(mycube, threshold):
+def mask_above_threshold(mycube, threshold):
     """
-    Mask with threshold
+    Mask above a specific threshold value.
 
-    Takes a MINIMUM value `threshold'
-    and removes by masking off anything that's below it in the cube data
+    Takes a value 'threshold' and masks off anything that is above
+    it in the cube data. Values equal to the threshold are not masked.
     """
-    import numpy.ma as ma
-    mcube = mycube.copy()
-    # apply masking for threshold of MINIMUM value threshold
-    mcube.data = ma.masked_less(mycube.data, threshold)
-    return mcube
+    mycube.data = np.ma.masked_where(mycube.data > threshold, mycube.data)
+    return mycube
+
+
+def mask_below_threshold(mycube, threshold):
+    """
+    Mask below a specific threshold value.
+
+    Takes a value 'threshold' and masks off anything that is below
+    it in the cube data. Values equal to the threshold are not masked.
+    """
+    mycube.data = np.ma.masked_where(mycube.data < threshold, mycube.data)
+    return mycube
+
+
+def mask_inside_range(mycube, minimum, maximum):
+    """
+    Mask inside a specific threshold range.
+
+    Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
+    that's between the two in the cube data.
+    """
+    mycube.data = np.ma.masked_inside(mycube.data, minimum, maximum)
+    return mycube
+
+
+def mask_outside_range(mycube, minimum, maximum):
+    """
+    Mask outside a specific threshold range.
+
+    Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
+    that's outside the two in the cube data.
+    """
+    mycube.data = np.ma.masked_outside(mycube.data, minimum, maximum)
+    return mycube
 
 
 def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,

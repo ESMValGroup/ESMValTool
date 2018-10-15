@@ -29,7 +29,10 @@ remove_preproc_dir: true
 max_parallel_tasks: 1
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
-config_developer_file: None
+config_developer_file: null
+# Get profiling information for diagnostics
+# Only available for Python diagnostics
+profile_diagnostic: false
 
 rootpath:
   # Rootpath to CMIP5 data

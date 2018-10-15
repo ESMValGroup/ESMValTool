@@ -5,21 +5,27 @@ import os
 from iris.cube import Cube
 
 from .._task import AbstractTask
+from ._area_pp import area_average as average_region
+from ._area_pp import area_slice as extract_region
+from ._area_pp import zonal_means
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
-from ._mask import mask_fillvalues, mask_landocean
+from ._mask import (mask_fillvalues, mask_landsea, mask_landseaice,
+                    mask_above_threshold,
+                    mask_below_threshold, mask_inside_range,
+                    mask_outside_range)
 from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import regrid
 from ._regrid import vinterp as extract_levels
-from ._time_area import area_average as average_region
-from ._time_area import area_slice as extract_region
-from ._time_area import extract_season
-from ._time_area import extract_month
-from ._time_area import seasonal_mean
+from ._volume_pp import depth_integration, extract_trajectory, extract_transect
+from ._volume_pp import volume_average as average_volume
+from ._volume_pp import volume_slice as extract_volume
 from ._time_area import time_slice as extract_time
+from ._time_area import (extract_month, extract_season, seasonal_mean,
+                         time_average)
 
 logger = logging.getLogger(__name__)
 
@@ -44,22 +50,36 @@ __all__ = [
     'fix_data',
     # Level extraction
     'extract_levels',
+    # Mask landsea (fx or Natural Earth)
+    'mask_landsea',
+    # Mask landseaice, sftgif only
+    'mask_landseaice',
     # Regridding
     'regrid',
-    # Masking
-    'mask_landocean',
+    # Masking missing values
     'mask_fillvalues',
+    'mask_above_threshold',
+    'mask_below_threshold',
+    'mask_inside_range',
+    'mask_outside_range',
     # Region selection
     'extract_region',
-    # Grid-point operations
-    'average_region',
+    'extract_volume',
+    'extract_trajectory',
+    'extract_transect',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
-    'seasonal_mean',
     'multi_model_statistics',
+    # Grid-point operations
+    'depth_integration',
+    'average_region',
+    'average_volume',
+    'zonal_means',
+    'seasonal_mean',
+    'time_average',
     'cmor_check_data',
     # Save to file
     'save',

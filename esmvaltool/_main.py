@@ -1,4 +1,4 @@
-"""ESMValTool - Earth System Model Evaluation Tool
+"""ESMValTool - Earth System Model Evaluation Tool.
 
 http://www.esmvaltool.org
 
@@ -58,7 +58,7 @@ ______________________________________________________________________
 
 
 def get_args():
-    """Define the `esmvaltool` command line"""
+    """Define the `esmvaltool` command line."""
     # parse command line args
     parser = argparse.ArgumentParser(
         description=HEADER,
@@ -85,12 +85,16 @@ def get_args():
         '--max-datasets',
         type=int,
         help='Try to limit the number of datasets used to MAX_DATASETS.')
+    parser.add_argument(
+        '--max-years',
+        type=int,
+        help='Limit the number of years to MAX_YEARS.')
     args = parser.parse_args()
     return args
 
 
 def main(args):
-    """Define the `esmvaltool` program"""
+    """Define the `esmvaltool` program."""
     recipe = args.recipe
     if not os.path.exists(recipe):
         installed_recipe = os.path.join(
@@ -126,7 +130,13 @@ def main(args):
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     cfg['synda_download'] = args.synda_download
-    cfg['max_datasets'] = args.max_datasets
+    for limit in ('max_datasets', 'max_years'):
+        value = getattr(args, limit)
+        if value is not None:
+            if value < 1:
+                raise ValueError("--{} should be larger than 0.".format(
+                    limit.replace('_', '-')))
+            cfg[limit] = value
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
@@ -135,7 +145,7 @@ def main(args):
 
 
 def process_recipe(recipe_file, config_user):
-    """Process recipe"""
+    """Process recipe."""
     if not os.path.isfile(recipe_file):
         raise OSError(errno.ENOENT, "Specified recipe file does not exist",
                       recipe_file)
@@ -193,8 +203,9 @@ def process_recipe(recipe_file, config_user):
     out_refs = glob.glob(
         os.path.join(config_user['output_dir'], '*', '*',
                      'references-acknowledgements.txt'))
-    logger.info("For the required references/acknowledgements of these "
-                "diagnostics see:\n%s", '\n'.join(out_refs))
+    logger.info(
+        "For the required references/acknowledgements of these "
+        "diagnostics see:\n%s", '\n'.join(out_refs))
 
 
 def run():
@@ -203,6 +214,9 @@ def run():
     try:
         conf = main(args)
     except:  # noqa
+        if not logger.handlers:
+            # Add a logging handler if main failed to do so.
+            logging.basicConfig()
         logger.exception(
             "Program terminated abnormally, see stack trace "
             "below for more information",

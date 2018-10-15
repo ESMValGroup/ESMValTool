@@ -1520,20 +1520,20 @@ begin
 
   ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "models"
-    temp = models
+    ; Project_style evaluates metadata of variable "input_file_info"
+    temp = input_file_info
 
-    ; -> keep original "models" in "temp" and restore later
-    copy_VarMeta(models, temp)
-    delete(models)
+    ; -> keep original "input_file_info" in "temp" and restore later
+    copy_VarMeta(input_file_info, temp)
+    delete(input_file_info)
 
-    ; Use "models" to pass on attribute names
-    models = getvaratts(temp)  ; use "models" to pass on attribute names
-    do i = 0, dimsizes(models) - 1
+    ; Use "input_file_info" to pass on attribute names
+    input_file_info = getvaratts(temp)
+    do i = 0, dimsizes(input_file_info) - 1
       ; Define all original attributes again, but empty
-      models@$models(i)$ = ""
+      input_file_info@$input_file_info(i)$ = ""
     end do
-    models@name = "model_mean"
+    input_file_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
@@ -1541,31 +1541,11 @@ begin
     thicks_mmm = project_style(diag_script_info, "thicks")
     annots_mmm = project_style(diag_script_info, "annots")
     avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(models)
-    models = temp  ; restore original "models"
-    copy_VarMeta(temp, models)
+    delete(input_file_info)
+    input_file_info = temp  ; restore original "input_file_info"
+    copy_VarMeta(temp, input_file_info)
     delete(temp)
   end if
-
-  ; Highlight ESA OBS
-  do i = 0, dimsizes(models@name) - 1
-    if (models@name(i).eq."ESACCI-SSMI") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 0
-    else if (models@name(i).eq."ESACCI-AMSR") then
-      thicks(i) = 5 * thicks(i)
-      dashes(i) = 1
-    else if (models@name(i).eq."NSIDC-NT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 2
-    else if (models@name(i).eq."NSIDC-BT") then
-      thicks(i) = 3 * thicks(i)
-      dashes(i) = 12
-    end if
-    end if
-    end if
-    end if
-  end do
 
   ; Set/copy resources
   res                   = True
@@ -1588,22 +1568,22 @@ begin
 
   ; Add multi model mean and stddev
   if (diag_script_info@multi_model_mean .eq. "y") then
-      ; Stddev
+    ; Stddev
     res_stddev = True
     copy_VarMeta(res, res_stddev)
     res_stddev@gsnXYFillColors = "LightGrey"
     delete(res_stddev@xyLineColors)
 
     ; We don't want the line, so make it transparent.
-    res_stddev@xyLineColor     = -1
-    shading_plot  = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
-                               res_stddev)
+    res_stddev@xyLineColor = -1
+    shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
+                              res_stddev)
     overlay(plot, shading_plot)
-    ; mmm
+    ; MMM
     delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
     res@xyLineThicknesses = thicks_mmm
-    res@xyLineColors      = colors_mmm
-    res@xyDashPatterns    = dashes_mmm
+    res@xyLineColors = colors_mmm
+    res@xyDashPatterns = dashes_mmm
     mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
     overlay(plot, mmm)
   end if
@@ -1624,11 +1604,11 @@ begin
     diag_script_info@EMs_in_lg = True  ; Set default
   end if
   if (.not.diag_script_info@EMs_in_lg) then
-    idcs_modelnames = UNIQ(dataset_info@dataset)
+    idcs_modelnames = UNIQ(input_file_info@dataset)
     colors := colors(idcs_modelnames)
     dashes := dashes(idcs_modelnames)
     thicks := thicks(idcs_modelnames)
-    annots := dataset_info@dataset(idcs_modelnames)
+    annots := input_file_info@dataset(idcs_modelnames)
   end if
   if (diag_script_info@multi_model_mean .eq. "y") then
     lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)

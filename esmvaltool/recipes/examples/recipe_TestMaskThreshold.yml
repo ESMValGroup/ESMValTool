@@ -1,0 +1,144 @@
+###############################################################################
+# recipe_OceanPhysics.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103. 
+    Written by Lee de Mora, Plymouth Marine Laboratory
+    
+  authors:
+    - ledm
+
+  references:
+    - BGC-val:gmd-2018-103
+
+  projects:
+    - ukesm
+    
+
+datasets:
+  # working datasets
+  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+  # Problem with latitude > 90.
+  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+  #####
+  # Data with Errors right now -June 2018
+  ###
+  # Problem with times
+#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+  # Unstructured grids
+#  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+#  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_timeseries_1: # For 2D fields
+    custom_order: true 
+    mask_above_threshold:
+      threshold: 280.
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  prep_timeseries_2: # For 2D fields
+    custom_order: true 
+    mask_below_threshold:
+      threshold: 280.
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  prep_timeseries_3: # For 2D fields
+    custom_order: true 
+    mask_inside_range:
+      minimum: 280.
+      maximum: 285.      
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  prep_timeseries_4: # For 2D fields
+    custom_order: true 
+    mask_outside_range:
+      minimum: 280.
+      maximum: 285.      
+    average_region:
+      coord1: longitude
+      coord2: latitude
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  diag_timeseries_1:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_1
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries1
+        script: ocean/diagnostic_timeseries.py
+
+  diag_timeseries_2:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_2
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries2
+        script: ocean/diagnostic_timeseries.py
+
+  diag_timeseries_3:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_3
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries3
+        script: ocean/diagnostic_timeseries.py
+        
+  diag_timeseries_4:
+    description: Global Ocean Surface mean timeseries
+    variables:
+      tos: # Temperature ocean surface
+        preprocessor: prep_timeseries_4
+        field: TO2Ms
+    scripts:
+      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries4
+        script: ocean/diagnostic_timeseries.py
+                        
