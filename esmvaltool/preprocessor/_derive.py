@@ -12,6 +12,31 @@ from scipy import constants
 
 logger = logging.getLogger(__name__)
 
+# Possible create object for ctes 
+
+class ctes(object):
+    cname = ''
+    value = ''
+    units = cf_units.Unit('')
+
+    # The class "constructor"
+    def __init__(self, cname, value, units):
+        self.cname = cname
+        self.value = value
+        self.units = units
+
+def make_ctes(cname, value, units):
+    ctes = ctes(cname, value, units)
+    return ctes
+
+# now ---->
+# g_cte = make_ctes('Gravity', 9.81, cf_units.Unit('m s^-2')
+# avo_cte
+# mw_air_cte
+# mw_O3_cte
+# DU_cte = make_ctes('Dobson Unit','1',cf_units.Unit('2.69e20 m^-2')
+
+
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
@@ -377,6 +402,10 @@ def calc_toz(cubes):
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
     toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
+    toz.var_name = 'toz'
+    toz.standard_name= 'equivalent_thickness_at_stp_of_atmosphere_ozone_content'
+    #toz.standard_name='total_ozone_column'
+    toz.long_name='Total Ozone Column'
 
     return toz
 

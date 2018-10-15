@@ -85,8 +85,8 @@ def _compute_statistic(datas, name):
         statistic_function = np.ma.max
     elif name == 'minimum':
         statistic_function = np.ma.min
-    elif name == 'anomalies':
-        statistic_function = np.ma.anom
+    #elif name == 'anomalies':
+    #    statistic_function = np.ma.anom
     else:
         raise NotImplementedError
 

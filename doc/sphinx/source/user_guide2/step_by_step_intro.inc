@@ -9,8 +9,9 @@ basic background with Python would be useful.
 File Structure
 ===============
 
+Here is it just added how looks like the file structure of the tool: 
 
-├── conda_build_config.yaml
+├── conda_build_config.yaml 
 ├── doc
 │   └── sphinx
 │       └── source
@@ -32,12 +33,12 @@ File Structure
 │   ├── config-references.yml
 │   ├── config-user.yml
 │   ├── _data_finder.py
-│   ├── diag_scripts
+│   ├── diag_scripts --------------> here diagnostics (python and others) live.
 │   │   ├── autoassess
 │   │   ├── climate_metrics
 │   │   ├── clouds
 │   │   ├── examples
-│   │   ├── __init__.py
+│   │   ├── __init_../../../../esmvaltool/preprocessor/_.py
 │   │   ├── ipcc_ar5
 │   │   ├── ocean
 │   │   ├── perfmetrics
@@ -53,12 +54,12 @@ File Structure
 │   │   ├── write_header.ncl
 │   │   └── write_references.ncl
 │   ├── _main.py
-│   ├── preprocessor
+│   ├── preprocessor -------------> here preprocessors. Usually users do not have to change
 │   │   ├── _area_pp.py
 │   │   ├── _derive.py
 │   │   ├── _download.py
 │   │   ├── __init__.py
-│   │   ├── _io.py
+│   │   ├── _io.py../../../../esmvaltool/preprocessor/
 │   │   ├── _mask.py
 │   │   ├── _multimodel.py
 │   │   ├── ne_masks
@@ -67,12 +68,12 @@ File Structure
 │   │   ├── _time_area.py
 │   │   └── _volume_pp.py
 │   ├── _recipe.py
-│   ├── recipes
+│   ├── recipes -----------------> here recipes YAML are living.
 │   │   ├── examples
 │   │   ├── recipe_autoassess_landsurface_snow.yml
 │   │   ├── recipe_autoassess_landsurface_surfrad.yml
 │   │   ├── recipe_autoassess_radiation_rms_Amon_all.yml
-│   │   ├── recipe_autoassess_radiation_rms_Amon_obs.yml
+│   │   ├── recipe_autoassess_radiatioseason_yearn_rms_Amon_obs.yml
 │   │   ├── recipe_autoassess_radiation_rms_cfMon_all.yml
 │   │   ├── recipe_autoassess_stratosphere.yml
 │   │   ├── recipe_clouds_bias.yml
@@ -103,7 +104,7 @@ File Structure
 ├── RELEASE_NOTES
 ├── setup.cfg
 ├── setup.py ---------------------------> setup.py for manual installation
-└── tests ------------------------------> testing units to ensure code works
+└── tests ---------../../../../esmvaltool/preprocessor/---------------------> testing units to ensure code works
     ├── __init__.py
     ├── integration
     │   ├── cmor
@@ -142,6 +143,7 @@ def run():
 ```
 
 And removing the exceptions and logs parts of the code it basically:
+
 ```
 def main(args):
     """Define the `esmvaltool` program."""
@@ -199,7 +201,7 @@ but it basically read the recipe file and create a python object (whose class is
 that has a method named run so at some point we have to understand **recipe.run()**
 
 The **recipe object** is something relatively complex with several methods with decorators that
-require carefull reading. My understanding indice that this object has the following components:
+require carefull reading. To my understanding recipe object has the following components:
 
 ```
         """Parse a recipe file into an object."""
@@ -220,7 +222,9 @@ So now we understand better what a recipe, or at least what components it has:
 2. recipe file        [yaml file?]
 3. preprocessors      [a recipe will have a number of pre-processing steps defined here]
 4. support_ncl        [legacy dependence in ncl or to use ncl?]
-5. diagnostics        [derived information using diagnostics on raw-recipe and datasets]
+5. diagnostics        [derived information using diagnostics of raw-recipe and datasets]
 6. tasks              [probably all the other aspects are coded in a number of tasks]
+
+
 
 

@@ -49,7 +49,14 @@ from ._task import resource_usage_logger
 
 
 # set up logging
+# import coloredlogs -> another option is coloredlogs 
+# which add colors to the logs easily. One it is needed
+# to add a new line:
+# coloredlogs.install(level='DEGUB', logger=logger)
+
 logger = logging.getLogger(__name__)
+
+#coloredlogs.install(level='DEGUB', logger=logger)
 
 HEADER = r"""
 ______________________________________________________________________
