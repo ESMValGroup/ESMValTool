@@ -3,6 +3,7 @@
 name: esmvaltool
 channels:
   - conda-forge
+  - r
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
@@ -13,7 +14,10 @@ dependencies:
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1
-  # TODO: add R, julia
+  - r-base=3.5.1
+  - r-rcpp
+  - libgfortran-ng # needed by r packages
+  # TODO: add julia
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py
