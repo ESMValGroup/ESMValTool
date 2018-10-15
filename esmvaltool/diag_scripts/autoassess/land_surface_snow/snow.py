@@ -35,7 +35,8 @@ def land_swe_top(run):
             swe_clim.data, mask=(swe_clim.data == -1e20))
 
         # snowfall
-        swe_run = get_supermean('surface_snow_amount', season, supermean_data_dir)
+        swe_run = get_supermean('surface_snow_amount', season,
+                                supermean_data_dir)
 
         # Force same coord_system
         swe_run.coord('longitude').coord_system = swe_clim.coord(
