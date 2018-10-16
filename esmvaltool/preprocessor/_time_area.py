@@ -4,6 +4,7 @@ Time operations on cubes
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+
 import iris
 import iris.coord_categorisation
 import numpy as np
@@ -138,6 +139,8 @@ def seasonal_mean(cube):
     iris.cube.Cube
         Seasonal mean cube
     """
+    import datetime
+    #print(cube)
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
@@ -146,10 +149,17 @@ def seasonal_mean(cube):
     annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
                                               iris.analysis.MEAN)
 
+    #print(annual_seasonal_mean)
+
     # TODO: This preprocessor is not calendar independent.
+
+    dt_3months = datetime.timedelta(hours=24*3*28)
+
     def spans_three_months(time):
         """Check for three months"""
-        return (time.bound[1] - time.bound[0]) == 2160
+        return (time.bound[1] - time.bound[0]) > dt_3months
 
     three_months_bound = iris.Constraint(time=spans_three_months)
+    #print(three_months_bound)
+    #print(annual_seasonal_mean.extract(three_months_bound))
     return annual_seasonal_mean.extract(three_months_bound)
