@@ -94,4 +94,5 @@ def test_r_lint():
             Please fix the following issues:
         """))
         print(process.stdout)
+        print(process.stderr)
         assert False, 'Your R code does not follow our formatting standards.'
