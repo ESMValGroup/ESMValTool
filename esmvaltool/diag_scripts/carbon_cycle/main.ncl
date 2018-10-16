@@ -203,6 +203,8 @@ begin
     end if
 
     ; Set type of area operation (flux vs. non-flux variables)
+    ; Flux variables need to be integrated and area weighted ("sum"), non-flux
+    ; variables need to be averaged, area weighted and normalized ("average")
     if (data_var@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
       sp_opt = "sum"
     else
@@ -234,7 +236,7 @@ begin
 
     ; Special case for LAI:
     ; Since datasets have different land covers, all sparse vegetated points
-    ;  must be masked
+    ; must be masked
     if (var0 .eq. "lai") then
       data_yearly = where(data_yearly .ge. 0.025, data_yearly, \
                           data_yearly@_FillValue)
@@ -242,8 +244,8 @@ begin
                            data_monthly@_FillValue)
     end if
 
-    ; Calculate spatial means and total global area (not necessary for GCP)
-    if (input_file_info@dataset(idat) .ne. "GCP") then
+    ; Calculate spatial mean/sum and total global area if necessary
+    if (dimsizes(dimsizes(data_yearly)) .gt. 1) then
       y_mean = area_operations(data_yearly, region(0), region(1), \
                                region(2), region(3), sp_opt, True)
       m_mean = area_operations(data_monthly, region(0), region(1), \

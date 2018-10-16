@@ -342,13 +342,15 @@ begin
   regional_mvi&dataset = input_file_info@dataset
 
   ; Set type of area operation (flux vs. non-flux variables)
+  ; Flux variables need to be integrated and area weighted ("sum"), non-flux
+  ; variables need to be averaged, area weighted and normalized ("average")
   if (all_data_mean@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
     sp_opt = "sum"
   else
     sp_opt = "average"
   end if
 
-  ; Regional averages for every dataset
+  ; Regional averages/sums for every dataset
   do idat = 0, DIM_DAT - 1
     regional_mean(idat) = area_operations(all_data_mean(idat, :, :), \
                                           region(0), region(1), region(2), \
