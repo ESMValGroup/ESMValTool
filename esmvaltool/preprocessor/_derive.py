@@ -1,4 +1,4 @@
-"""Miscellaneous functions for deriving variables."""
+"""Automatically derive variables."""
 
 import logging
 
