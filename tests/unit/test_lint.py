@@ -82,14 +82,16 @@ def test_r_lint():
     """Test R lint"""
     package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
-    results = subprocess.run(('Rscript', checker, package_root))
-    if results.returncode:
+    process = subprocess.run(
+        ('Rscript', checker, package_root),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    if process.returncode:
         print(textwrap.dedent("""
             Your R code does not follow our formatting standards.
 
-            A list of warning and error messages can be found above,
-            prefixed with filename:line number:column number.
-
-            Please fix the mentioned issues.
+            Please fix the following issues:
         """))
+        print(process.stdout)
         assert False, 'Your R code does not follow our formatting standards.'
