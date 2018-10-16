@@ -24,7 +24,7 @@ jobs:
               conda create -y --name esmvaltool python=3
             fi
             conda env update --name esmvaltool
-            Rscript esmvaltool/R/setup.R
+            Rscript esmvaltool/R/setup.R > /logs/install_r.txt 2>&1
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -138,6 +138,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript esmvaltool/R/setup.R > /logs/install_r.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
