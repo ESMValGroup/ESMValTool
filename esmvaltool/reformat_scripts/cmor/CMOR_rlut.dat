@@ -1,0 +1,27 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rlut
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     toa_outgoing_longwave_flux
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         TOA Outgoing Longwave Radiation
+comment:           at the top of the atmosphere (to be compared with satellite measurements)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rlut
+type:              real
+positive:          up
+valid_min:         67.48
+valid_max:         383.2
+ok_min_mean_abs:   207.4
+ok_max_mean_abs:   234.4
+!----------------------------------
+!
