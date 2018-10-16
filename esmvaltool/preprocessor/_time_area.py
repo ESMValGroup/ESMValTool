@@ -153,7 +153,7 @@ def seasonal_mean(cube):
 
     # TODO: This preprocessor is not calendar independent.
 
-    dt_3months = datetime.timedelta(hours=24*3*28)
+    dt_3months = datetime.timedelta(hours=24*3*29)
 
     def spans_three_months(time):
         """Check for three months"""
