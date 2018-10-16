@@ -17,6 +17,7 @@ dependencies:
   - r-base=3.5.1
   - r-rcpp
   - libgfortran-ng # needed by r packages
+  - {{ compiler('fortran') }}
   # TODO: add julia
 
   - pip:
