@@ -20,7 +20,6 @@ for (path in check_paths){
                     has_errors <- TRUE
                 }
             }
-
         }
     }
 }

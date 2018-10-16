@@ -83,6 +83,8 @@ def test_r_lint():
     package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
     results = subprocess.run(('Rscript', checker, package_root))
+    print(results)
+    print(results.returncode)
     if results.returncode:
         print(textwrap.dedent("""
             Your R code does not follow our formatting standards.
