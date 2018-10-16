@@ -78,6 +78,7 @@ jobs:
           command: |
             source activate esmvaltool
             Rscript esmvaltool/R/setup.R
+            Rscript tests/unit/check_r_code.R
             python setup.py test
       - store_test_results:
           path: test-reports/
