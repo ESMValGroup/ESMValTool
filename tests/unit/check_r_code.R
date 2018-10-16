@@ -15,7 +15,12 @@ for (path in check_paths){
                        parse_settings = FALSE)
         if (!is.null(errors)){
             print(errors)
-            has_errors <- TRUE
+            for (error in errors){
+                if (error["type"] != "warning"){
+                    has_errors <- TRUE
+                }
+            }
+
         }
     }
 }
