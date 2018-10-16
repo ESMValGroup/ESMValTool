@@ -14,8 +14,8 @@ for (path in check_paths){
         errors <- lint(file.path(check_path, file), linters = linters,
                        parse_settings = FALSE)
         if (!is.null(errors)){
-            print(errors)
             for (error in errors){
+                print(error)
                 if (error["type"] != "warning"){
                     has_errors <- TRUE
                 }
