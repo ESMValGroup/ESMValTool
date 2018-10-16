@@ -45,10 +45,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def regrid_irregulars(cube,scheme='nearest'):
+def regrid_irregulars(cube, scheme='nearest'):
     """Regrid irregular grids."""
     lats = cube.coord('latitude')
-    if lats.ndim == 1: return cube
+    if lats.ndim == 1:
+        return cube
     print(cube)
     horizontal_schemes = dict(
         linear=iris.analysis.Linear(extrapolation_mode='mask'),
@@ -90,7 +91,7 @@ def make_map_plots(
         layer = str(layer)
 
         # cube_layer = regrid_irregulars(cube_layer)
-        #iris.plot.contourf(cube_layer, 25, linewidth=0, rasterized=True)
+        # iris.plot.contourf(cube_layer, 25, linewidth=0, rasterized=True)
         qplt.contourf(cube_layer, 25, linewidth=0, rasterized=True)
 
         try:
@@ -98,11 +99,11 @@ def make_map_plots(
         except AttributeError:
             logger.warning('Not able to add coastlines')
         try:
-                plt.gca().add_feature(cartopy.feature.LAND,
-                              zorder=10,
-                              facecolor=[0.8, 0.8, 0.8])
+            plt.gca().add_feature(cartopy.feature.LAND,
+                                  zorder=10,
+                                  facecolor=[0.8, 0.8, 0.8])
         except AttributeError:
-           logger.warning('Not able to add coastlines')
+            logger.warning('Not able to add coastlines')
 
         # Add title to plot
         title = ' '.join([metadata['dataset'], metadata['long_name']])
@@ -197,8 +198,8 @@ def make_map_contour(
             logger.warning('Not able to add coastlines')
         try:
             plt.gca().add_feature(cartopy.feature.LAND,
-                              zorder=10,
-                              facecolor=[0.8, 0.8, 0.8])
+                                  zorder=10,
+                                  facecolor=[0.8, 0.8, 0.8])
         except AttributeError:
             logger.warning('Not able to add coastlines')
         # Add legend
@@ -283,10 +284,9 @@ def multi_model_contours(
             else:
                 color = 'blue'
 
-            cube =   model_cubes[filename][layer]
+            cube = model_cubes[filename][layer]
         #     cube = regrid_irregulars(cube)
 
-            print(index, os.path.basename(filename), layer, threshold, model_cubes[filename][layer].shape)
             if 'MultiModel' in metadata[filename]['dataset']:
                 qplt.contour(cube,
                              [threshold, ],

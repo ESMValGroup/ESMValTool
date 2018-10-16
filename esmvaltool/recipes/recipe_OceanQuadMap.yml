@@ -24,7 +24,6 @@ datasets:
   - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
 
-
 preprocessors:
   prep_quad_map: # For Global 2D fields
     extract_time:
@@ -38,7 +37,6 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-
 
 diagnostics:
 # --------------------------------------------------

@@ -354,8 +354,8 @@ def extract_transect(cube, latitude=None, longitude=None):
 
     if lats.ndim == 2:
         raise ValueError(
-            'extract_slice: Not implemented for irregular arrays!'+\
-            '\nTry regridding the data first.')
+            'extract_slice: Not implemented for irregular arrays!'
+            + '\nTry regridding the data first.')
 
     if isinstance(latitude, float) and isinstance(longitude, float):
         raise ValueError(

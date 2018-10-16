@@ -112,13 +112,13 @@ def guess_calendar_datetime(cube):
 
     if time_coord.units.calendar in ['360_day', ]:
         dt = cftime.Datetime360Day
-    elif time_coord.units.calendar in ['365_day', 'noleap'] :
+    elif time_coord.units.calendar in ['365_day', 'noleap']:
         dt = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
         dt = cftime.DatetimeJulian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
-                   time_coord.units.calendar)
+                       time_coord.units.calendar)
         dt = cftime.DatetimeGregorian
     return dt
 

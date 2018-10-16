@@ -17,8 +17,8 @@ documentation:
 
 datasets:
 # Note that there is no way to extract specific months here, need to add times twice in extract_time
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1960, end_year: 2005, }
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1960, end_year: 2005, }
 
 
 preprocessors:
@@ -26,10 +26,10 @@ preprocessors:
   timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
     custom_order: true
     extract_time: &time_anchor # declare time here.
-        start_year: 1989
+        start_year: 1960
         start_month: 12
         start_day: 1
-        end_year: 2004
+        end_year: 2005
         end_month: 9
         end_day: 31
     extract_season:
