@@ -34,7 +34,7 @@ REQUIREMENTS = {
         'cf_units',
         'cython',
         # 'scitools-iris',  # Only iris 2 is on PyPI
-        'matplotlib<3.0.0',
+        'matplotlib<3.0.0', #See issue #637 and PR#661
         'netCDF4',
         'numba',
         'numpy',

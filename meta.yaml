@@ -40,7 +40,7 @@ requirements:
     - cartopy
     - cf_units
     - cython
-    - matplotlib<3.0.0
+    - matplotlib<3.0.0 #See issue #637 and PR#661
     - netCDF4
     - numba
     - numpy
@@ -52,7 +52,7 @@ requirements:
     - six
     - yamale  # in birdhouse channel
     # Multi language support:
-    - ncl<6.5.0
+    - ncl<6.5.0 #See issue #637 and PR#661
     - ncurses=6.1=hfc679d8_1
     # TODO: add R, julia
 test:
