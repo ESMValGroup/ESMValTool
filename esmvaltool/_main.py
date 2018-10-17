@@ -38,8 +38,7 @@ import sys
 from multiprocessing import cpu_count
 
 from . import __version__
-from ._config import (configure_logging,
-                      read_config_user_file, read_config_reformat_user_file)
+from ._config import configure_logging, read_config_user_file
 from ._recipe import read_recipe_file
 from ._task import resource_usage_logger
 
@@ -93,42 +92,47 @@ def get_args():
 
     # for reformatting obs files
     parser.add_argument(
-        '-cr',
-        '--config-reformat-file',
-        default=os.path.join(os.path.dirname(__file__),
-                             'config-reformat-user.yml'),
-        help='Config reformat file')
+        '-cm',
+        '--cmorize',
+        action='store_true',
+        help='Start the CMORization mode')
 
     args = parser.parse_args()
     return args
 
 
+def set_logging(cfg, config_file):
+    """Set logging and create run directory."""
+    # Create run dir
+    if os.path.exists(cfg['run_dir']):
+        print("ERROR: run_dir {} already exists, aborting to "
+              "prevent data loss".format(cfg['output_dir']))
+    os.makedirs(cfg['run_dir'])
+
+    # configure logging
+    log_files = configure_logging(
+        output=cfg['run_dir'], console_log_level=cfg['log_level'])
+
+    # log header
+    logger.info(HEADER)
+
+    logger.info("Using config file %s", config_file)
+    logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+
 def main(args):
     """Define the `esmvaltool` program."""
-    if args.config_reformat_file:
-        config_file = os.path.abspath(
-            os.path.expandvars(os.path.expanduser(args.config_reformat_file)))
-        # Read user config file
-        if not os.path.exists(config_file):
-            print("ERROR: config file {} does not exist".format(config_file))
-        cfg = read_config_reformat_user_file(config_file)
+    config_file = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(args.config_file)))
 
-        # Create run dir
-        if os.path.exists(cfg['output_dir']):
-            print("ERROR: output_dir {} already exists, aborting to "
-                  "prevent data loss".format(cfg['output_dir']))
-        else:
-            os.makedirs(cfg['output_dir'])
+    # Read user config file
+    if not os.path.exists(config_file):
+        print("ERROR: config file {} does not exist".format(config_file))
 
-        # configure logging
-        log_files = configure_logging(
-            output=cfg['output_dir'], console_log_level='info')
-
-        # log header
-        logger.info(HEADER)
-
-        logger.info("Using config reformat file %s", config_file)
-        logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+    if args.cmorize:
+        recipe_name = 'CMORization'
+        cfg = read_config_user_file(config_file, recipe_name)
+        set_logging(cfg, config_file)
         process_reformat(cfg)
     else:
         recipe = args.recipe
@@ -138,32 +142,10 @@ def main(args):
             if os.path.exists(installed_recipe):
                 recipe = installed_recipe
         recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
-
-        config_file = os.path.abspath(
-            os.path.expandvars(os.path.expanduser(args.config_file)))
-
-        # Read user config file
-        if not os.path.exists(config_file):
-            print("ERROR: config file {} does not exist".format(config_file))
-
         recipe_name = os.path.splitext(os.path.basename(recipe))[0]
+
         cfg = read_config_user_file(config_file, recipe_name)
-
-        # Create run dir
-        if os.path.exists(cfg['run_dir']):
-            print("ERROR: run_dir {} already exists, aborting to "
-                  "prevent data loss".format(cfg['output_dir']))
-        os.makedirs(cfg['run_dir'])
-
-        # configure logging
-        log_files = configure_logging(
-            output=cfg['run_dir'], console_log_level=cfg['log_level'])
-
-        # log header
-        logger.info(HEADER)
-
-        logger.info("Using config file %s", config_file)
-        logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+        set_logging(cfg, config_file)
 
         cfg['synda_download'] = args.synda_download
         for limit in ('max_datasets', 'max_years'):
@@ -191,7 +173,7 @@ def process_reformat(config_user):
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
-    logger.info("INPUT DIR    = %s", config_user["input_dir"])
+    logger.info("INPUT DIR    = %s", config_user["rootpath"]["RAWOBS"][0])
     logger.info("OUTPUT DIR = %s", config_user["output_dir"])
     logger.info(70 * "-")
 
@@ -289,7 +271,7 @@ def run():
             exc_info=True)
         sys.exit(1)
     else:
-        if conf['reformat_mode']:
+        if args.cmorize:
             logger.info("Finished the reformatting module")
         else:
             if conf["remove_preproc_dir"]:

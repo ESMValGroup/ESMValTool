@@ -75,31 +75,6 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
-def read_config_reformat_user_file(config_file):
-    """Read config reformat user file and store settings in a dictionary."""
-    with open(config_file, 'r') as file:
-        cfg = yaml.safe_load(file)
-
-    # set defaults
-    defaults = {
-        'reformat_mode': True,
-        'input_dir': './input_dir',
-        'output_dir': './output_dir',
-    }
-
-    for key in defaults:
-        if key not in cfg:
-            logger.warning(
-                "No %s specification in config file, "
-                "defaulting to %s", key, defaults[key])
-            cfg[key] = defaults[key]
-
-    cfg['input_dir'] = _normalize_path(cfg['input_dir'])
-    cfg['output_dir'] = _normalize_path(cfg['output_dir'])
-
-    return cfg
-
-
 def _normalize_path(path):
     """
     Normalize paths.
