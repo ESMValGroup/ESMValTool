@@ -10,6 +10,6 @@ input_dir: ./TEST_INPUT
 # Destination directory
 output_dir: ./TEST_OUTPUT
 # Dataset
-datasets: ['ESRL']
+datasets: ['DUMMY']
 # Variables
 variables: ['pr']
