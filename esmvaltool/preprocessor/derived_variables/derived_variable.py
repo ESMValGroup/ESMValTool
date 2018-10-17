@@ -1,4 +1,6 @@
 """Contains the base class for derived variables."""
+
+
 import importlib
 
 
@@ -7,7 +9,6 @@ class DerivedVariable(object):
 
     def __init__(self, short_name=None):
         """Save desired short_name."""
-
         if short_name:
             self.short_name = short_name
         else:
@@ -69,7 +70,8 @@ class DerivedVariable(object):
 
     @staticmethod
     def get_derived_variable(short_name):
-        """
+        """Select correct python module for derived variable.
+
         Get derived variable by searching for a file `short_name.py` in the
         module esmvaltool.preprocessor._derived_variables.
 
