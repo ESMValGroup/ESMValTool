@@ -241,7 +241,7 @@ def _find_input_files(variable, rootpath, drs, fx_var=None):
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    variable['institute'] = get_institutes(variable['dataset'])
+    variable['institute'] = get_institutes(variable)
     files = _find_input_files(variable, rootpath, drs)
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
@@ -257,7 +257,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
         var['modeling_realm'] = realm if realm else table.realm
-        var['institute'] = get_institutes(var['dataset'])
+        var['institute'] = get_institutes(variable)
 
         files = _find_input_files(var, rootpath, drs, fx_var)
         fx_files[fx_var] = files[0] if files else None
