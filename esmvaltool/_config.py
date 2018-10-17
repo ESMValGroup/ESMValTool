@@ -50,7 +50,11 @@ def read_config_user_file(config_file, recipe_name):
         cfg['config_developer_file'])
 
     for key in cfg['rootpath']:
-        cfg['rootpath'][key] = _normalize_path(cfg['rootpath'][key])
+        root = cfg['rootpath'][key]
+        if isinstance(root, six.string_types):
+            cfg['rootpath'][key] = [_normalize_path(root)]
+        else:
+            cfg['rootpath'][key] = [_normalize_path(path) for path in root]
 
     # insert a directory date_time_recipe_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -71,9 +75,34 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
+def read_config_reformat_user_file(config_file):
+    """Read config reformat user file and store settings in a dictionary."""
+    with open(config_file, 'r') as file:
+        cfg = yaml.safe_load(file)
+
+    # set defaults
+    defaults = {
+        'reformat_mode': True,
+        'input_dir': './input_dir',
+        'output_dir': './output_dir',
+    }
+
+    for key in defaults:
+        if key not in cfg:
+            logger.warning(
+                "No %s specification in config file, "
+                "defaulting to %s", key, defaults[key])
+            cfg[key] = defaults[key]
+
+    cfg['input_dir'] = _normalize_path(cfg['input_dir'])
+    cfg['output_dir'] = _normalize_path(cfg['output_dir'])
+
+    return cfg
+
+
 def _normalize_path(path):
     """
-    Normalize paths
+    Normalize paths.
 
     Expand ~ character and environment variables and convert path to absolute
 
@@ -108,7 +137,7 @@ def read_config_developer_file(cfg_file=None):
 
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
-    """Set up logging"""
+    """Set up logging."""
     if cfg_file is None:
         cfg_file = os.path.join(
             os.path.dirname(__file__), 'config-logging.yml')
@@ -142,10 +171,12 @@ def get_project_config(project):
     return CFG[project]
 
 
-def get_institutes(dataset):
+def get_institutes(variable):
     """Return the institutes given the dataset name in CMIP5."""
+    dataset = variable['dataset']
+    project = variable['project']
     logger.debug("Retrieving institutes for dataset %s", dataset)
-    return CFG['CMIP5']['institutes'].get(dataset, [])
+    return CFG.get(project, {}).get(dataset, [])
 
 
 def replace_mip_fx(fx_file):

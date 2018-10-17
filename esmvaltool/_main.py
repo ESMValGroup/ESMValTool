@@ -38,7 +38,8 @@ import sys
 from multiprocessing import cpu_count
 
 from . import __version__
-from ._config import configure_logging, read_config_user_file
+from ._config import (configure_logging,
+                      read_config_user_file, read_config_reformat_user_file)
 from ._recipe import read_recipe_file
 from ._task import resource_usage_logger
 
@@ -89,59 +90,124 @@ def get_args():
         '--max-years',
         type=int,
         help='Limit the number of years to MAX_YEARS.')
+
+    # for reformatting obs files
+    parser.add_argument(
+        '-cr',
+        '--config-reformat-file',
+        default=os.path.join(os.path.dirname(__file__),
+                             'config-reformat-user.yml'),
+        help='Config reformat file')
+
     args = parser.parse_args()
     return args
 
 
 def main(args):
     """Define the `esmvaltool` program."""
-    recipe = args.recipe
-    if not os.path.exists(recipe):
-        installed_recipe = os.path.join(
-            os.path.dirname(__file__), 'recipes', recipe)
-        if os.path.exists(installed_recipe):
-            recipe = installed_recipe
-    recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
+    if args.config_reformat_file:
+        config_file = os.path.abspath(
+            os.path.expandvars(os.path.expanduser(args.config_reformat_file)))
+        # Read user config file
+        if not os.path.exists(config_file):
+            print("ERROR: config file {} does not exist".format(config_file))
+        cfg = read_config_reformat_user_file(config_file)
 
-    config_file = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.config_file)))
+        # Create run dir
+        if os.path.exists(cfg['output_dir']):
+            print("ERROR: output_dir {} already exists, aborting to "
+                  "prevent data loss".format(cfg['output_dir']))
+        else:
+            os.makedirs(cfg['output_dir'])
 
-    # Read user config file
-    if not os.path.exists(config_file):
-        print("ERROR: config file {} does not exist".format(config_file))
+        # configure logging
+        log_files = configure_logging(
+            output=cfg['output_dir'], console_log_level='info')
 
-    recipe_name = os.path.splitext(os.path.basename(recipe))[0]
-    cfg = read_config_user_file(config_file, recipe_name)
+        # log header
+        logger.info(HEADER)
 
-    # Create run dir
-    if os.path.exists(cfg['run_dir']):
-        print("ERROR: run_dir {} already exists, aborting to "
-              "prevent data loss".format(cfg['output_dir']))
-    os.makedirs(cfg['run_dir'])
+        logger.info("Using config reformat file %s", config_file)
+        logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+        process_reformat(cfg)
+    else:
+        recipe = args.recipe
+        if not os.path.exists(recipe):
+            installed_recipe = os.path.join(
+                os.path.dirname(__file__), 'recipes', recipe)
+            if os.path.exists(installed_recipe):
+                recipe = installed_recipe
+        recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
 
-    # configure logging
-    log_files = configure_logging(
-        output=cfg['run_dir'], console_log_level=cfg['log_level'])
+        config_file = os.path.abspath(
+            os.path.expandvars(os.path.expanduser(args.config_file)))
 
-    # log header
-    logger.info(HEADER)
+        # Read user config file
+        if not os.path.exists(config_file):
+            print("ERROR: config file {} does not exist".format(config_file))
 
-    logger.info("Using config file %s", config_file)
-    logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+        recipe_name = os.path.splitext(os.path.basename(recipe))[0]
+        cfg = read_config_user_file(config_file, recipe_name)
 
-    cfg['synda_download'] = args.synda_download
-    for limit in ('max_datasets', 'max_years'):
-        value = getattr(args, limit)
-        if value is not None:
-            if value < 1:
-                raise ValueError("--{} should be larger than 0.".format(
-                    limit.replace('_', '-')))
-            cfg[limit] = value
+        # Create run dir
+        if os.path.exists(cfg['run_dir']):
+            print("ERROR: run_dir {} already exists, aborting to "
+                  "prevent data loss".format(cfg['output_dir']))
+        os.makedirs(cfg['run_dir'])
 
-    resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
-    with resource_usage_logger(pid=os.getpid(), filename=resource_log):
-        process_recipe(recipe_file=recipe, config_user=cfg)
+        # configure logging
+        log_files = configure_logging(
+            output=cfg['run_dir'], console_log_level=cfg['log_level'])
+
+        # log header
+        logger.info(HEADER)
+
+        logger.info("Using config file %s", config_file)
+        logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+        cfg['synda_download'] = args.synda_download
+        for limit in ('max_datasets', 'max_years'):
+            value = getattr(args, limit)
+            if value is not None:
+                if value < 1:
+                    raise ValueError("--{} should be larger than 0.".format(
+                        limit.replace('_', '-')))
+                cfg[limit] = value
+
+        resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
+        with resource_usage_logger(pid=os.getpid(), filename=resource_log):
+            process_recipe(recipe_file=recipe, config_user=cfg)
+
     return cfg
+
+
+def process_reformat(config_user):
+    """Process the reformat request."""
+    timestamp1 = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+
+    logger.info(
+        "Starting the ESMValTool Reformat Mode v%s at time: %s UTC",
+        __version__, timestamp1.strftime(timestamp_format))
+
+    logger.info(70 * "-")
+    logger.info("INPUT DIR    = %s", config_user["input_dir"])
+    logger.info("OUTPUT DIR = %s", config_user["output_dir"])
+    logger.info(70 * "-")
+
+    # do the main business
+    # import the reformat module
+    from .reformat import cmor_reformat
+
+    # call the reformat function
+    cmor_reformat(config_user, logger)
+
+    # End time timing
+    timestamp2 = datetime.datetime.utcnow()
+    logger.info(
+        "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
+        __version__, timestamp2.strftime(timestamp_format))
+    logger.info("Time for running the recipe was: %s", timestamp2 - timestamp1)
 
 
 def process_recipe(recipe_file, config_user):
@@ -223,9 +289,12 @@ def run():
             exc_info=True)
         sys.exit(1)
     else:
-        if conf["remove_preproc_dir"]:
-            logger.info("Removing preproc containing preprocessed data")
-            logger.info("If this data is further needed, then")
-            logger.info("set remove_preproc_dir to false in config")
-            shutil.rmtree(conf["preproc_dir"])
+        if conf['reformat_mode']:
+            logger.info("Finished the reformatting module")
+        else:
+            if conf["remove_preproc_dir"]:
+                logger.info("Removing preproc containing preprocessed data")
+                logger.info("If this data is further needed, then")
+                logger.info("set remove_preproc_dir to false in config")
+                shutil.rmtree(conf["preproc_dir"])
         logger.info("Run was succesful")

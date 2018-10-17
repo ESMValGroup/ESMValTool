@@ -1,0 +1,15 @@
+###############################################################################
+## User's configuration file for the ESMValTool reformatting routine
+################################################################################
+---
+
+# Start the reformat
+reformat_mode: true
+# Input directory
+input_dir: ./TEST_INPUT
+# Destination directory
+output_dir: ./TEST_OUTPUT
+# Dataset
+datasets: ['ESRL']
+# Variables
+variables: ['pr']
