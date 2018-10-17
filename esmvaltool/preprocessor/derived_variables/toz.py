@@ -45,7 +45,7 @@ class toz(DerivedVariable):  # noqa
                 ('ps', 'T2' + frequency + 's')]
 
     def calculate(self, cubes):
-        """Compute total column ozone from ozone mol fraction on levels.
+        """Compute total column ozone.
 
         The surface pressure is used as a lower integration bound. A fixed
         upper integration bound of 0 Pa is used.
@@ -53,8 +53,8 @@ class toz(DerivedVariable):  # noqa
         Parameters
         ----------
         cubes : iris.cube.CubeList
-            `CubeList` containing `mole_fraction_of_ozone_in_air` and
-            `surface_air_pressure`.
+            `CubeList` containing `tro3`(`mole_fraction_of_ozone_in_air`) and
+            `ps`(`surface_air_pressure`).
 
         Returns
         -------

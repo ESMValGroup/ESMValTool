@@ -19,10 +19,6 @@ def get_required(short_name, field=None):
     return derived_var.get_required(frequency)
 
     # required = {
-    #     'lwcre': [
-    #         ('rlut', 'T2' + frequency + 's'),
-    #         ('rlutcs', 'T2' + frequency + 's'),
-    #     ],
     #     'lwp': [
     #         ('clwvi', 'T2' + frequency + 's'),
     #         ('clivi', 'T2' + frequency + 's'),
@@ -118,30 +114,6 @@ def derive(cubes, variable):
     cube.attributes['metadata'] = yaml.safe_dump(variable)
 
     return cube
-
-
-# def calc_lwcre(cubes):
-#     """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
-
-#     Arguments
-#     ----
-#         cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
-#                (toa_outgoing_longwave_flux_assuming_clear_sky).
-
-#     Returns
-#     -------
-#         Cube containing longwave cloud radiative effect.
-
-#     """
-#     rlut_cube = cubes.extract_strict(
-#         Constraint(name='toa_outgoing_longwave_flux'))
-#     rlutcs_cube = cubes.extract_strict(
-#         Constraint(name='toa_outgoing_longwave_flux_assuming_clear_sky'))
-
-#     lwcre = rlutcs_cube - rlut_cube
-#     lwcre.units = rlut_cube.units
-
-#     return lwcre
 
 
 # def calc_lwp(cubes):
