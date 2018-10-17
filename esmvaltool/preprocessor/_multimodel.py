@@ -14,8 +14,8 @@ It operates on different (time) spans:
 
 import logging
 from datetime import datetime, timedelta
-from functools import reduce
 from distutils.version import LooseVersion
+from functools import reduce
 
 import cf_units
 import iris

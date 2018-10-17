@@ -2,13 +2,13 @@
 import logging
 import os
 import shutil
-from itertools import groupby
 from distutils.version import LooseVersion
+from itertools import groupby
 
 import iris
 import iris.exceptions
-import yaml
 import numpy as np
+import yaml
 
 from .._task import write_ncl_settings
 
