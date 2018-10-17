@@ -84,9 +84,6 @@ def _create_cube_time(src_cube, data, times):
         scalar vertical coordinate will be added.
 
     """
-    print(src_cube.coords)
-    print(len(data))
-    print(times)
     # Get the source cube vertical coordinate and associated dimension.
     src_times = src_cube.coord('time')
     t_dim, = src_cube.coord_dims(src_times)
