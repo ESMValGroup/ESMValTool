@@ -4,7 +4,6 @@ datasets:
   - {dataset: GFDL-CM3,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1}
   - {dataset: GISS-E2-H,    project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2}
   - {dataset: GISS-E2-R,    project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2}
-  - {dataset: ESACCI-OZONE, project: OBS,   tier: 2,   type: sat,       version: L3}
 
 
 diagnostics:
@@ -12,10 +11,38 @@ diagnostics:
   derive_diagnostic:
     description: Test variable derivation
     variables:
-      toz:
-        start_year: 1997
+      toz: &toz
+        start_year: 2000
         end_year: 2005
         field: T2Ms
         derive: true
         force_derivation: false
+      swcre:
+        <<: *toz
+      rtnt:
+        <<: *toz
+      rsnt:
+        <<: *toz
+      rsns:
+        <<: *toz
+      rlns:
+        <<: *toz
+      netcre:
+        <<: *toz
+      lwp:
+        <<: *toz
+      lwcre:
+        <<: *toz
+      clhmtisccp:
+        <<: *toz
+      clhtkisccp:
+        <<: *toz
+      clmmtisccp:
+        <<: *toz
+      clmtkisccp:
+        <<: *toz
+      cllmtisccp:
+        <<: *toz
+      clltkisccp:
+        <<: *toz
     scripts: null

@@ -53,8 +53,8 @@ class toz(DerivedVariable):  # noqa
         Parameters
         ----------
         cubes : iris.cube.CubeList
-            `CubeList` containing `tro3`(`mole_fraction_of_ozone_in_air`) and
-            `ps`(`surface_air_pressure`).
+            `CubeList` containing `tro3` (`mole_fraction_of_ozone_in_air`) and
+            `ps` (`surface_air_pressure`).
 
         Returns
         -------

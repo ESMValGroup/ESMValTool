@@ -33,8 +33,8 @@ class lwcre(DerivedVariable):  # noqa
         Parameters
         ----------
         cubes : iris.cube.CubeList
-            `CubeList` containing `rlut`(`toa_outgoing_longwave_flux`) and
-            `rlutcs`(`toa_outgoing_longwave_flux_assuming_clear_sky`).
+            `CubeList` containing `rlut` (`toa_outgoing_longwave_flux`) and
+            `rlutcs` (`toa_outgoing_longwave_flux_assuming_clear_sky`).
 
         Returns
         -------
