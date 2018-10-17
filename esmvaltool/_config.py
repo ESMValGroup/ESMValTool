@@ -50,7 +50,11 @@ def read_config_user_file(config_file, recipe_name):
         cfg['config_developer_file'])
 
     for key in cfg['rootpath']:
-        cfg['rootpath'][key] = _normalize_path(cfg['rootpath'][key])
+        root = cfg['rootpath'][key]
+        if isinstance(root, six.string_types):
+            cfg['rootpath'][key] = [_normalize_path(root)]
+        else:
+            cfg['rootpath'][key] = [_normalize_path(path) for path in root]
 
     # insert a directory date_time_recipe_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -142,10 +146,12 @@ def get_project_config(project):
     return CFG[project]
 
 
-def get_institutes(dataset):
+def get_institutes(variable):
     """Return the institutes given the dataset name in CMIP5."""
+    dataset = variable['dataset']
+    project = variable['project']
     logger.debug("Retrieving institutes for dataset %s", dataset)
-    return CFG['CMIP5']['institutes'].get(dataset, [])
+    return CFG.get(project, {}).get(dataset, [])
 
 
 def replace_mip_fx(fx_file):
