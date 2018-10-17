@@ -1,9 +1,29 @@
 ---
 
+# @RCHG: Example modified to show more properties and made it more flexible. This means to change quickplot on shared
+#        for example.
+#        *Datasets* can be downloaded on CEDA for example. Loading of files is working fine but this recipe needed
+#        changes on the main code to be able to work with Iris v2. I have added an if on preprocessors to detect which
+#        Iris version is installed.
+#
+#        It has been added also a new keyword to quickplot in esmvaltool/diag_scripts/shared/plot/_plot.py
+#        def quickplot(cube, filename, plot_type, maps=False, **kwargs):
+#        now by default is maps=True it will plot the coastlines. Also the example now shows how to add kwargs to 
+#        the iris quickplot by including them explicitly the example. 
+#
+#        (Ramiro Checa-Garcia LSCE-IPSL rcheca@lsce.ipsl.fr)
+
+#datasets:
+#  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+# An alternative equivalent specification of the datasets less verbose will be:
 datasets:
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - &default {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {<<: *default , dataset: GFDL-ESM2G}
+  - {<<: *default , dataset: MPI-ESM-LR}
+
 
 preprocessors:
 
@@ -16,10 +36,10 @@ preprocessors:
       scheme: linear
     multi_model_statistics:
       span: overlap
-      statistics: [mean, median]
-
+      statistics: [mean, median, maximum, minimum, range]
+      # in this case new multimodel preprocesors has been added that could be useful: maximum, minimun, range all tested
 diagnostics:
-
+  # note that here we defined one diagnostic 
   diagnostic1:
     description: Air temperature and precipitation Python tutorial diagnostic.
     variables:
@@ -34,4 +54,7 @@ diagnostics:
       script1:
         script: examples/diagnostic.py
         quickplot:
-          plot_type: pcolormesh
+          plot_type: contourf
+          maps: True
+          cmap: Spectral
+

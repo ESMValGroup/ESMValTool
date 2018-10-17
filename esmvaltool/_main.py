@@ -35,6 +35,11 @@ import logging
 import os
 import shutil
 import sys
+
+if not sys.warnoptions:
+    import warnings
+    warnings.simplefilter("ignore")
+
 from multiprocessing import cpu_count
 
 from . import __version__
@@ -42,8 +47,16 @@ from ._config import configure_logging, read_config_user_file
 from ._recipe import read_recipe_file
 from ._task import resource_usage_logger
 
+
 # set up logging
+# import coloredlogs -> another option is coloredlogs 
+# which add colors to the logs easily. One it is needed
+# to add a new line:
+# coloredlogs.install(level='DEGUB', logger=logger)
+
 logger = logging.getLogger(__name__)
+
+#coloredlogs.install(level='DEGUB', logger=logger)
 
 HEADER = r"""
 ______________________________________________________________________

@@ -1,10 +1,22 @@
-"""multimodel statistics
+"""Multimodel statistics/.
 
 Functions for multi-model operations
 supports a multitude of multimodel statistics
 computations; the only requisite is the ingested
 cubes have (TIME-LAT-LON) or (TIME-PLEV-LAT-LON)
 dimensions; and obviously consistent units.
+
+@RCHG: In general the original approach would limit the
+applicability if any dataset is for example given
+as zonal mean. An example could be the
+Meinhausen et al, 2017 CMIP6 well mixed
+greenhouse gases forcings. So I will try to refactor
+this module.
+
+Terminology:
+
+cspec -> coordinates specs for cube
+dspec -> ?
 
 It operates on different (time) spans:
 - full: computes stats on full dataset time;
@@ -65,6 +77,16 @@ def _compute_statistic(datas, name):
         statistic_function = np.ma.median
     elif name == 'mean':
         statistic_function = np.ma.mean
+
+    # Added other possible statistics useful on comparisons
+    elif name == 'range':
+        statistic_function = np.ma.ptp
+    elif name == 'maximum':
+        statistic_function = np.ma.max
+    elif name == 'minimum':
+        statistic_function = np.ma.min
+    #elif name == 'anomalies':
+    #    statistic_function = np.ma.anom
     else:
         raise NotImplementedError
 
@@ -103,7 +125,15 @@ def _compute_statistic(datas, name):
 
 def _put_in_cube(template_cube, cube_data, stat_name,
                  file_name, time_bounds, t_axis):
-    """Quick cube building and saving"""
+    """Quick cube building and saving.
+    Currently this limites the possibilies of
+    this multimodel methods.
+
+    @RCHG: Own note that it is possible to have cases with
+    cspec = [(times, 0), (lats, 1)]
+    the idea of use len(template_cube.shape)
+    might be fail on those cases??
+    """
     # grab coordinates from any cube
     times = template_cube.coord('time')
     # or get the FULL time axis
@@ -129,6 +159,9 @@ def _put_in_cube(template_cube, cube_data, stat_name,
         # might as well have depth here too.
         plev = template_cube.coord('depth')
         cspec = [(times, 0), (plev, 1), ]
+
+
+
 
     # correct dspec if necessary
     fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
@@ -163,8 +196,11 @@ def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
     # TODO replace the block when using iris 2.0
     # time_cells = [cell.point for cell in cube.coord('time').cells()]
-    time_cells = [cube.coord('time').units.num2date(cell.point)
-                  for cell in cube.coord('time').cells()]
+    if int(iris.__version__.split('.')[0]) >= 2:
+        time_cells = [cell.point for cell in cube.coord('time').cells()]
+    else:
+        time_cells = [cube.coord('time').units.num2date(cell.point)
+                      for cell in cube.coord('time').cells()]
     time_unit = cube.coord('time').units.name
     time_offset = _get_time_offset(time_unit)
 

@@ -4,6 +4,7 @@ Time operations on cubes
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+
 import iris
 import iris.coord_categorisation
 import numpy as np
@@ -22,7 +23,14 @@ def time_slice(mycube, start_year, start_month, start_day,
     time_slice(cube, '2006', '2', '2', '2010', '1', '1');
 
     Returns a cube
+
+    History
+    -------
+    - 13-Oct-2018: @RCHG added detection of Iris Library
+    - 14-Oct-2018: @RCHG added a changes on time-constrain
+
     """
+    from iris.time import PartialDateTime
     import datetime
     time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
@@ -39,9 +47,17 @@ def time_slice(mycube, start_year, start_month, start_day,
     # TODO replace the block below for when using iris 2.0
     # my_constraint = iris.Constraint(time=lambda t: (
     #     t_1 < time_units.date2num(t.point) < t_2))
-    my_constraint = iris.Constraint(time=lambda t: (
-        t_1 < t.point < t_2))
-    cube_slice = mycube.extract(my_constraint)
+    if int(iris.__version__.split('.')[0]) >= 2:
+        time_constraint = iris.Constraint(time=lambda t: (
+          start_date
+          < PartialDateTime(year=t.point.year,
+                            month=t.point.month,
+                            day=t.point.day)
+          < end_date))
+    else:
+        time_constraint = iris.Constraint(time=lambda t: (
+                        t_1 < t.point < t_2))
+    cube_slice = mycube.extract(time_constraint)
     return cube_slice
 
 
@@ -76,8 +92,8 @@ def extract_month(mycube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
-    season_cube = mycube.extract(iris.Constraint(month_number=month))
-    return season_cube
+    month_cube = mycube.extract(iris.Constraint(month_number=month))
+    return month_cube
 
 
 # get the time average
@@ -99,6 +115,7 @@ def time_average(cube):
         time averaged cube.
     """
     time = cube.coord('time')
+    # homogeneous time
     time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
 
     # The weights need to match the dimensionality of the cube.
@@ -113,7 +130,6 @@ def time_average(cube):
                           weights=time_weights)
 
 
-# get the seasonal mean
 def seasonal_mean(cube):
     """
     Function to compute seasonal means with MEAN
@@ -129,7 +145,13 @@ def seasonal_mean(cube):
     -------
     iris.cube.Cube
         Seasonal mean cube
+
+    History
+    -------
+    - 16-Oct-2018: @RCHG added a dt object for span function.
+
     """
+    import datetime
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
@@ -139,9 +161,13 @@ def seasonal_mean(cube):
                                               iris.analysis.MEAN)
 
     # TODO: This preprocessor is not calendar independent.
+
+    dt_3months = datetime.timedelta(hours=24*3*29)
+
     def spans_three_months(time):
         """Check for three months"""
-        return (time.bound[1] - time.bound[0]) == 2160
+        return (time.bound[1] - time.bound[0]) > dt_3months
 
     three_months_bound = iris.Constraint(time=spans_three_months)
+
     return annual_seasonal_mean.extract(three_months_bound)

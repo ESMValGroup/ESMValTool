@@ -6,6 +6,7 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np       # needed by iris v2 in load.cubes
 import yaml
 
 from .._task import write_ncl_settings
@@ -60,8 +61,9 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
         # TODO add block below when using iris 2.0
         # always set fillvalue to 1e+20
-        # if np.ma.is_masked(cube.data):
-        #     np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
+        if int(iris.__version__.split('.')[0]) >= 2:
+           if np.ma.is_masked(cube.data):
+              np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 

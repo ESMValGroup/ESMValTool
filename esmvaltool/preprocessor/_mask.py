@@ -2,7 +2,7 @@
 _mask.py
 
 module that performs missing values masking
-and geographical area eslection
+and geographical area selection
 """
 
 from __future__ import print_function

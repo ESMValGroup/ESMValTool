@@ -8,30 +8,20 @@ datasets:
 #  - {dataset: GISS-E2-R,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 1997, end_year: 2005}
 #   - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 2005}
 #  - {dataset: ESACCI-OZONE,   project: OBS,   tier: 2,   type: sat,       version: L3,      start_year: 1997, end_year: 2005}
+#   - {dataset: NIWA,           project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 1997, end_year: 2005}
 
 preprocessors:
 
    # preprocessor: {} -- 'if not preprocessor is used'
-   prep_season_DJF:
-     extract_season: 
-       season: DJF
-   prep_season_MAM:
-     extract_season: 
-       season: MAM 
-   prep_season_JJA:
-     extract_season: 
-       season: JJA 
-   prep_season_SON:
-     extract_season: 
-       season: SON 
-
+   prep_season_mean:
+     seasonal_mean: 
 diagnostics:
 
-  derive_diagnostic_DJF:
+  derive_diagnostic_seasons:
     description: Test variable derivation
     variables:
       toz:
-        preprocessor: prep_season_DJF
+        preprocessor: prep_season_mean
         field: T2Ms
         derive: true
         force_derivation: false
@@ -45,44 +35,6 @@ diagnostics:
           maps: True
           cmap: Spectral
 
-  derive_diagnostic_MAM:
-    description: Test variable derivation
-    variables:
-      toz:
-        preprocessor: prep_season_MAM
-        field: T2Ms
-        derive: true
-        force_derivation: false
-    additional_datasets: []
-    scripts:
-      script1:
-        <<: *test_plot
-
-  derive_diagnostic_JJA:
-    description: Test variable derivation season JJA
-    variables:
-      toz:
-        preprocessor: prep_season_JJA
-        field: T2Ms
-        derive: true
-        force_derivation: false
-    additional_datasets: []
-    scripts:
-      script1:
-        <<: *test_plot
-
-  derive_diagnostic_SON:
-    description: Test variable derivation
-    variables:
-      toz:
-        preprocessor: prep_season_SON
-        field: T2Ms
-        derive: true
-        force_derivation: false
-    additional_datasets: []
-    scripts:
-      script1:
-        <<: *test_plot
 
 
 

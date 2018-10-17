@@ -1,4 +1,22 @@
-"""Miscellaneous functions for deriving variables."""
+"""Miscellaneous functions for deriving variables.
+
+
+
+
+
+
+
+
+Modifications history
+--------------------
+13-Oct-2018: @RCHG added functions to calculate stratospheric and tropos.
+                   ozone columns. Tropospheric case needs to be tested.
+                   It is proposed more general functions to get pressure
+                   level thickness to add top_limit as a surface pressure
+                   to have more generality. In functions are commented the
+                   needed changes.
+
+"""
 
 import logging
 
@@ -12,19 +30,54 @@ from scipy import constants
 
 logger = logging.getLogger(__name__)
 
+#####################################################################
+# Possible create object for ctes?? 
+#
+#class cte(object):
+#    cname = ''
+#    value = ''
+#    units = cf_units.Unit('')
+#
+# The class "constructor"
+#    def __init__(self, cname, value, units):
+#        self.cname = cname
+#        self.value = value
+#        self.units = units
+#
+#def make_cte(cname, value, units):
+#    ctes = cte(cname, value, units)
+#    return ctes
+#
+# now ---->
+#g_cte = make_cte('Gravity', 9.81, cf_units.Unit('m s^-2'))
+#mw_air_cte = make_cte('molecular weight air',29.0,cf_units.Unit('g mol^-1'))
+#mw_O3_cte = make_cte('molecular weight ozone',48.0,cf_units.Unit('g mol^-1'))
+#avo_cte = make_cte('Avogadro Constant', 
+#                    constants.value('Avogadro constant'),
+#                    constants.unit('Avogadro constant'))
+#DU_cte = make_cte('Dobson Unit','1',cf_units.Unit('2.69e20 m^-2'))
+###########################################################################
+
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
 g_unit = cf_units.Unit('m s^-2')
-mw_air = 29
+mw_air = 29.0
 mw_air_unit = cf_units.Unit('g mol^-1')
-mw_O3 = 48
+mw_O3 = 48.0
 mw_O3_unit = cf_units.Unit('g mol^-1')
 Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
 
 def get_required(short_name, field=None):
-    """Get variable short_name and field pairs required to derive variable"""
+    """Get variable short_name and field pairs required to derive variable
+
+    Args:
+        short_name (str): variable short_name parsed
+    Kwargs:
+        field:
+
+    """
     frequency = field[2] if field else 'M'
     required = {
         'lwcre': [
@@ -48,6 +101,15 @@ def get_required(short_name, field=None):
         'toz': [
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
+        ],
+        'tropoz': [
+            ('tro3', 'T3' + frequency),
+            ('ps', 'T2' + frequency + 's'),
+            ('ptp', 'T2' + frequency + 's'),
+        ],
+        'stratoz': [
+            ('tro3', 'T3' + frequency),
+            ('ptp', 'T2' + frequency + 's'),
         ],
         'rtnt': [('rsdt', 'T2' + frequency + 's'),
                  ('rsut', 'T2' + frequency + 's'), ('rlut',
@@ -92,6 +154,8 @@ def derive(cubes, variable):
         'netcre': calc_netcre,
         'swcre': calc_swcre,
         'toz': calc_toz,
+        'tropoz': calc_tropoz,
+        'stratoz': calc_stratoz,
         'rtnt': calc_rtnt,
         'rsnt': calc_rsnt,
         'rsns': calc_rsns,
@@ -108,7 +172,7 @@ def derive(cubes, variable):
         raise NotImplementedError(
             "Don't know how to derive {}".format(short_name))
 
-    # Preprare input cubes and derive
+    # Prepare input cubes and derive
     cubes = iris.cube.CubeList(cubes)
     cube = functions[short_name](cubes)
 
@@ -132,7 +196,7 @@ def calc_lwcre(cubes):
     """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
 
     Arguments
-    ----
+    ---------
         cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
                (toa_outgoing_longwave_flux_assuming_clear_sky).
 
@@ -151,6 +215,9 @@ def calc_lwcre(cubes):
 
     return lwcre
 
+    toz = toz / mw_O3 * Avogadro_const
+    toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
+    toz.convert_units(Dobson_unit)
 
 def calc_lwp(cubes):
     """Compute liquid water path.
@@ -248,14 +315,130 @@ def calc_swcre(cubes):
     return swcre
 
 
+def calc_tropoz(cubes):
+    """Compute tropospheric column ozone.
+    From ozone mol fraction on pressure levels.
+
+    - The surface pressure is used as a lower integration bound.
+    - A fixed upper-integration bound of tropopause pressure in Pa is used.
+
+    Arguments
+    ---------
+        cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+               , ptp_cube (trospopause_air_pressure),
+               , ps_cube  (surface_air_pressure)
+
+    Returns
+    -------
+        Cube containing tropospheric column ozone.
+
+    """
+
+    tro3_cube = cubes.extract_strict(
+        Constraint(name='mole_fraction_of_ozone_in_air'))
+    ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
+    ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
+    p_layer_widths = _pressure_level_widths(tro3_cube,
+                                            ps_cube, top_limit=ptp_cube)
+    #==========================================================================
+    # note that here it is needed an update of function _pressure_level_widths
+    # tropoz = (tro3_cube * p_layer_widths
+    #          / g_cte.value * mw_O3_cte.value
+    #          / mw_air_cte.value)
+    # tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
+    # tropoz = tropoz / mw_O3 * Avogadro_const
+    # tropoz.units = (tro3_cube.units * p_layer_widths.units
+    #                / g_cte.units * mw_O3_cte.units
+    #                / mw_air_cte.units)
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 ) 
+    #tropoz = tropoz / mw_O3_cte.value * avo_cte.value
+    #tropoz.units = tropoz.units / mw_O3_cte.units * avo_cte.units
+    #==========================================================================
+
+    tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
+    tropoz.units = (tro3_cube.units * p_layer_widths.units
+                    / g_unit * mw_O3_unit / mw_air_unit)
+    tropoz = tropoz / mw_O3 * Avogadro_const
+    tropoz.units = tropoz.units / mw_O3_unit * Avogadro_const_unit
+    tropoz.convert_units(Dobson_unit)
+    tropoz.data = np.ma.array(tropoz.data, dtype=np.dtype('float32'))
+    return tropoz
+
+
+def calc_stratoz(cubes):
+    """Compute stratospheric column ozone.
+       From ozone mol fraction on pressure levels.
+
+    - The tropopause pressure is used as a lower integration bound.
+    - A fixed upper integration bound of 0 Pa is used.
+
+    Arguments
+    ---------
+        cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+               and ptp_cube (trospopause_air_pressure).
+
+    Returns
+    -------
+        Cube containing stratospheric column ozone.
+
+    """
+
+    tro3_cube = cubes.extract_strict(
+        Constraint(name='mole_fraction_of_ozone_in_air'))
+    ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
+
+    p_layer_widths = _pressure_level_widths(tro3_cube, ptp_cube, top_limit=0)
+
+    #==========================================================================
+    # stratoz = (tro3_cube * p_layer_widths
+    #           / g_cte.value * mw_O3_cte.value
+    #           / mw_air_cte.value)
+    # stratoz = stratoz.collapsed('air_pressure', iris.analysis.SUM)
+    # stratoz.units = (tro3_cube.units * p_layer_widths.units /
+    #             g_cte.units * mw_O3_cte.units /
+    #             mw_air_cte.units   
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )    
+    # stratoz = stratoz / mw_O3_cte.value * avo_cte.value
+    # stratoz.units = stratoz.units / mw_O3_cte.value * avo_cte.value
+    #==========================================================================
+
+    stratoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    stratoz = stratoz.collapsed('air_pressure', iris.analysis.SUM)
+    stratoz.units = (tro3_cube.units * p_layer_widths.units
+                    / g_unit * mw_O3_unit / mw_air_unit)
+    stratoz = stratoz / mw_O3 * Avogadro_const
+    stratoz.units = stratoz.units / mw_O3_unit * Avogadro_const_unit
+    stratoz.convert_units(Dobson.units)
+    stratoz.data = np.ma.array(stratoz.data, dtype=np.dtype('float32'))
+
+    return stratoz
+
+
+def calc_temiflux(cubes):
+    """ Compute the total emission flux based on a surface
+    field"""
+
+
+
+    return
+
+
 def calc_toz(cubes):
     """Compute total column ozone from ozone mol fraction on pressure levels.
 
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 0 Pa is used.
 
+    @R. Checa-Garcia: this could be update to calculate also tropospheric
+    ozone column or stratospheric ozone column. The last one will just took
+    the tropopause pressure instead of the surface_air_pressure. I have added
+    two new function named calc_tropoz and calc_straoz, but formally all
+    could be one single function with an extra argument indicating with is the
+    desired case.
+
     Arguments
-    ----
+    ---------
         cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
                and ps_cube (surface_air_pressure).
 
@@ -269,18 +452,38 @@ def calc_toz(cubes):
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
     p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=0)
+
+
+    #==========================================================================
+    # toz = (tro3_cube * p_layer_widths
+    #       / g_cte.value * mw_O3_cte.value
+    #       / mw_air_cte.value)
+    # toz = toz.collapsed('air_pressure', iris.analysis.SUM)
+    # toz.units = (tro3_cube.units * p_layer_widths.units
+    #             / g_cte.units * mw_O3_cte.units
+    #             / mw_air_cte.units)
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
+    # toz = toz / mw_O3_cte.value * avo_cte.value
+    # toz.units = toz.units / mw_O3_cte.units * avo_cte.units
+    # toz.convert_units(DU_cte.units)
+    #==========================================================================
+
     toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
     toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
                  mw_air_unit)
-
-    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
+
     toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
+    toz.var_name = 'toz'
+    toz.standard_name='equivalent_thickness_at_stp_of_atmosphere_ozone_content'
+    #toz.standard_name='total_ozone_column'
+    toz.long_name='Total Ozone Column'
 
     return toz
+
 
 
 def calc_rtnt(cubes):
@@ -410,6 +613,7 @@ def calc_cllmtisccp(cubes):
 
     tau = iris.Constraint(
         atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
     plev = iris.Constraint(air_pressure=lambda p: p > 68000.)
     cllmtisccp_cube = clisccp_cube
     cllmtisccp_cube = cllmtisccp_cube.extract(tau & plev)
@@ -627,6 +831,11 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=0):
 
     This is done by taking a 2D surface pressure field as lower bound.
 
+    @R. Checa-Garcia: I would not name the cube here as tro3_cube
+    as formally it could be other variable. Also with an extension
+    considering that top_limit could be a cube this function would
+    be useful for stratospheric and tropospheric ozone column.
+
     Arguments
     ---------
         tro3_cube: Cube containing mole_fraction_of_ozone_in_air
@@ -657,6 +866,10 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     The array is created from the tro3_cube with the same dimensions
     as tro3_cube. This array is then sandwiched with a 2D array containing
     the surface pressure, and a 2D array containing the top pressure limit.
+
+    @R. Checa-Garcia: top_limit can be other cube and we could use
+    this function to calculate also tropospheric ozone column as the top
+    limit could be defined as an analogous of surface pressure.
     """
     # create 4D array filled with pressure level values
     p_levels = tro3_cube.coord('air_pressure').points
@@ -672,6 +885,7 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     pressure_4d = np.where((ps_4d_array - p_4d_array) < 0, np.NaN, p_4d_array)
 
     # make top_limit last pressure level
+    # formally using broadcasing top_limit might be a cube like ps_cube?
     top_limit_array = np.ones(ps_cube.shape) * top_limit
     data = top_limit_array[:, np.newaxis, :, :]
     pressure_4d = np.concatenate((pressure_4d, data), axis=1)
