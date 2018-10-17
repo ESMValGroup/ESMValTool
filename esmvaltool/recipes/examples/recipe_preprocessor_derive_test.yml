@@ -1,22 +1,22 @@
 ---
-
-datasets:
-  - {dataset: GFDL-CM3,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1}
-  - {dataset: GISS-E2-H,    project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2}
-  - {dataset: GISS-E2-R,    project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2}
-
-
 diagnostics:
 
   derive_diagnostic:
     description: Test variable derivation
     variables:
       toz: &toz
+        project: CMIP5
+        mip: Amon
+        exp: historical
         start_year: 2000
         end_year: 2005
         field: T2Ms
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, ensemble: r1i1p2}
+          - {dataset: GISS-E2-R, ensemble: r1i1p2}
       swcre:
         <<: *toz
       rtnt:
@@ -33,16 +33,26 @@ diagnostics:
         <<: *toz
       lwcre:
         <<: *toz
-      clhmtisccp:
-        <<: *toz
+      clhmtisccp: &cloud
+        project: CMIP5
+        mip: cfMon
+        exp: amip
+        start_year: 1985
+        end_year: 1988
+        ensemble: r1i1p1
+        field: T4M
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: HadGEM2-A}
       clhtkisccp:
-        <<: *toz
+        <<: *cloud
       clmmtisccp:
-        <<: *toz
+        <<: *cloud
       clmtkisccp:
-        <<: *toz
+        <<: *cloud
       cllmtisccp:
-        <<: *toz
+        <<: *cloud
       clltkisccp:
-        <<: *toz
+        <<: *cloud
     scripts: null

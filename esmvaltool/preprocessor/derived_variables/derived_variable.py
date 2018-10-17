@@ -88,7 +88,7 @@ class DerivedVariable(object):
         derived_var = DerivedVariable(short_name)
         try:
             derived_var_module = importlib.import_module(
-                'esmvaltool.preprocessor._derived_variables.'
+                'esmvaltool.preprocessor.derived_variables.'
                 '{0}'.format(short_name))
             try:
                 derived_var = getattr(derived_var_module, short_name)()
