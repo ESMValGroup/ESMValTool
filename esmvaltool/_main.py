@@ -141,7 +141,8 @@ def main(args):
                 os.path.dirname(__file__), 'recipes', recipe)
             if os.path.exists(installed_recipe):
                 recipe = installed_recipe
-        recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
+        recipe = os.path.abspath(
+            os.path.expandvars(os.path.expanduser(recipe)))
         recipe_name = os.path.splitext(os.path.basename(recipe))[0]
 
         cfg = read_config_user_file(config_file, recipe_name)
