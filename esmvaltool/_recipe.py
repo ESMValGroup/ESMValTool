@@ -426,9 +426,9 @@ def _get_default_settings(variable, config_user, derive=False):
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
         # TODO: make this respect drs or download to preproc dir?
-        local_dir = get_rootpath(config_user['rootpath'], variable['project'])
+        download_folder = os.path.join(config_user['preproc_dir'], 'downloads')
         settings['download'] = {
-            'dest_folder': local_dir,
+            'dest_folder': download_folder,
         }
 
     # Configure loading
@@ -877,7 +877,7 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
-            institute = get_institutes(variable['dataset'])
+            institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
             check_variable(variable, required_keys)
