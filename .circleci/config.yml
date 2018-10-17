@@ -108,6 +108,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
+            python setup.py test --installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
@@ -139,6 +140,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
+            python setup.py test --installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
@@ -304,6 +306,7 @@ workflows:
     jobs:
       - python3_test
       - python2_test
+      - python3_install   
   nightly:
     triggers:
       - schedule:

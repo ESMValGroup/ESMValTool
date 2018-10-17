@@ -207,13 +207,14 @@ def _find_input_dirs(variable, rootpath, drs, fx_var=None):
 
     dirnames = []
     for dirname_template in _replace_tags(path_template, variable, fx_var):
-        dirname_template = os.path.join(root, dirname_template)
-        dirname = _resolve_latestversion(dirname_template)
-        if os.path.exists(dirname):
-            logger.debug("Found %s", dirname)
-            dirnames.append(dirname)
-        else:
-            logger.debug("Skipping non-existent %s", dirname)
+        for base_path in root:
+            dirname = os.path.join(base_path, dirname_template)
+            dirname = _resolve_latestversion(dirname)
+            if os.path.exists(dirname):
+                logger.debug("Found %s", dirname)
+                dirnames.append(dirname)
+            else:
+                logger.debug("Skipping non-existent %s", dirname)
 
     return dirnames
 
