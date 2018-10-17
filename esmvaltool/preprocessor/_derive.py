@@ -6,7 +6,7 @@ import logging
 import iris
 import yaml
 
-from .derived_variables.derived_variable import DerivedVariable
+from .derived_variables._derived_variable import DerivedVariable
 
 logger = logging.getLogger(__name__)
 

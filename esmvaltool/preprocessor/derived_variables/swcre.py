@@ -3,7 +3,7 @@
 
 from iris import Constraint
 
-from .derived_variable import DerivedVariable
+from ._derived_variable import DerivedVariable
 
 
 class swcre(DerivedVariable):  # noqa

@@ -1,7 +1,7 @@
 """Derivation of variable `netcre`."""
 
 
-from .derived_variable import DerivedVariable
+from ._derived_variable import DerivedVariable
 from .lwcre import lwcre
 from .swcre import swcre
 

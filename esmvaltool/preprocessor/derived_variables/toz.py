@@ -8,7 +8,7 @@ import numba
 import numpy as np
 from scipy import constants
 
-from .derived_variable import DerivedVariable
+from ._derived_variable import DerivedVariable
 
 
 # Constants
