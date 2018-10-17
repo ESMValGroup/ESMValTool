@@ -1,4 +1,22 @@
-"""Miscellaneous functions for deriving variables."""
+"""Miscellaneous functions for deriving variables.
+
+
+
+
+
+
+
+
+Modifications history
+--------------------
+13-Oct-2018: @RCHG added functions to calculate stratospheric and tropos.
+                   ozone columns. Tropospheric case needs to be tested.
+                   It is proposed more general functions to get pressure
+                   level thickness to add top_limit as a surface pressure
+                   to have more generality. In functions are commented the
+                   needed changes.
+
+"""
 
 import logging
 
@@ -12,9 +30,9 @@ from scipy import constants
 
 logger = logging.getLogger(__name__)
 
-# Possible create object for ctes 
+# Possible create object for ctes?? 
 
-class ctes(object):
+class cte(object):
     cname = ''
     value = ''
     units = cf_units.Unit('')
@@ -25,16 +43,18 @@ class ctes(object):
         self.value = value
         self.units = units
 
-def make_ctes(cname, value, units):
-    ctes = ctes(cname, value, units)
+def make_cte(cname, value, units):
+    ctes = cte(cname, value, units)
     return ctes
 
 # now ---->
-# g_cte = make_ctes('Gravity', 9.81, cf_units.Unit('m s^-2')
-# avo_cte
-# mw_air_cte
-# mw_O3_cte
-# DU_cte = make_ctes('Dobson Unit','1',cf_units.Unit('2.69e20 m^-2')
+g_cte = make_cte('Gravity', 9.81, cf_units.Unit('m s^-2'))
+mw_air_cte = make_cte('molecular weight air',29.0,cf_units.Unit('g mol^-1'))
+mw_O3_cte = make_cte('molecular weight ozone',48.0,cf_units.Unit('g mol^-1'))
+avo_cte = make_cte('Avogadro Constant', 
+                    constants.value('Avogadro constant'),
+                    constants.unit('Avogadro constant'))
+DU_cte = make_cte('Dobson Unit','1',cf_units.Unit('2.69e20 m^-2'))
 
 
 Avogadro_const = constants.value('Avogadro constant')
@@ -49,7 +69,14 @@ Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
 
 def get_required(short_name, field=None):
-    """Get variable short_name and field pairs required to derive variable"""
+    """Get variable short_name and field pairs required to derive variable
+
+    Args:
+        short_name (str): variable short_name parsed
+    Kwargs:
+        field:
+
+    """
     frequency = field[2] if field else 'M'
     required = {
         'lwcre': [
@@ -168,7 +195,7 @@ def calc_lwcre(cubes):
     """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
 
     Arguments
-    ----
+    ---------
         cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
                (toa_outgoing_longwave_flux_assuming_clear_sky).
 
@@ -310,15 +337,19 @@ def calc_tropoz(cubes):
     p_layer_widths = _pressure_level_widths(tro3_cube,
                                             ps_cube, top_limit=ptp_cube)
     # note that here it is needed an update of function _pressure_level_widths
-    tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    # tropoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    tropoz = (tro3_cube * p_layer_widths
+              / g_cte.value * mw_O3_cte.value
+              / mw_air_cte.value)
     tropoz = tropoz.collapsed('air_pressure', iris.analysis.SUM)
-    tropoz.units = (tro3_cube.units * p_layer_widths.units /
-                    g_unit * mw_O3_unit /
-                    mw_air_unit)
+    tropoz.units = (tro3_cube.units * p_layer_widths.units
+                    / g_cte.units * mw_O3_cte.units
+                    / mw_air_cte.units)
 
-    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
-    tropoz = tropoz / mw_O3 * Avogadro_const
-    tropoz.units = tropoz.units / mw_O3_unit * Avogadro_const_unit
+
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 ) 
+    tropoz = tropoz / mw_O3_cte.value * avo_cte.value
+    tropoz.units = tropoz.units / mw_O3_cte.units * avo_cte.units
     tropoz.convert_units(Dobson_unit)
     tropoz.data = np.ma.array(tropoz.data, dtype=np.dtype('float32'))
 
@@ -348,19 +379,34 @@ def calc_stratoz(cubes):
     ptp_cube = cubes.extract_strict(Constraint(name='tropopause_air_pressure'))
 
     p_layer_widths = _pressure_level_widths(tro3_cube, ptp_cube, top_limit=0)
-    stratoz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    stratoz = (tro3_cube * p_layer_widths
+               / g_cte.value * mw_O3_cte.value 
+               / mw_air_cte.value)
+
     stratoz = stratoz.collapsed('air_pressure', iris.analysis.SUM)
     stratoz.units = (tro3_cube.units * p_layer_widths.units /
-                 g_unit * mw_O3_unit /
-                 mw_air_unit)
+                 g_cte.units * mw_O3_cte.units /
+                 mw_air_cte.units)
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
-    stratoz = stratoz / mw_O3 * Avogadro_const
-    stratoz.units = stratoz.units / mw_O3_unit * Avogadro_const_unit
-    stratoz.convert_units(Dobson_unit)
+    stratoz = stratoz / mw_O3_cte.value * avo_cte.value
+    stratoz.units = stratoz.units / mw_O3_cte.value * avo_cte.value
+    stratoz.convert_units(DU_cte.units)
     stratoz.data = np.ma.array(stratoz.data, dtype=np.dtype('float32'))
 
     return stratoz
+
+
+def calc_temiflux(cubes):
+    """ Compute the total emission flux based on a surface
+    field"""
+
+
+
+    return
+
+
+
 
 
 def calc_toz(cubes):
@@ -392,15 +438,18 @@ def calc_toz(cubes):
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
     p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=0)
-    toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    toz = (tro3_cube * p_layer_widths
+          / g_cte.value * mw_O3_cte.value
+          / mw_air_cte.value)
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
-    toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
-                 mw_air_unit)
+    toz.units = (tro3_cube.units * p_layer_widths.units
+                / g_cte.units * mw_O3_cte.units
+                / mw_air_cte.units)
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
-    toz = toz / mw_O3 * Avogadro_const
-    toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
-    toz.convert_units(Dobson_unit)
+    toz = toz / mw_O3_cte.value * avo_cte.value
+    toz.units = toz.units / mw_O3_cte.units * avo_cte.units
+    toz.convert_units(DU_cte.units)
     toz.data = np.ma.array(toz.data, dtype=np.dtype('float32'))
     toz.var_name = 'toz'
     toz.standard_name= 'equivalent_thickness_at_stp_of_atmosphere_ozone_content'

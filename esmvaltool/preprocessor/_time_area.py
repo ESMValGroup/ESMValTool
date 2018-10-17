@@ -23,6 +23,12 @@ def time_slice(mycube, start_year, start_month, start_day,
     time_slice(cube, '2006', '2', '2', '2010', '1', '1');
 
     Returns a cube
+
+    History
+    -------
+    - 13-Oct-2018: @RCHG added detection of Iris Library
+    - 14-Oct-2018: @RCHG added a changes on time-constrain
+
     """
     from iris.time import PartialDateTime
     import datetime
@@ -42,16 +48,16 @@ def time_slice(mycube, start_year, start_month, start_day,
     # my_constraint = iris.Constraint(time=lambda t: (
     #     t_1 < time_units.date2num(t.point) < t_2))
     if int(iris.__version__.split('.')[0]) >= 2:
-        my_constraint = iris.Constraint(time=lambda t: (
+        time_constraint = iris.Constraint(time=lambda t: (
           start_date
           < PartialDateTime(year=t.point.year,
                             month=t.point.month,
                             day=t.point.day)
           < end_date))
     else:
-        my_constraint = iris.Constraint(time=lambda t: (
+        time_constraint = iris.Constraint(time=lambda t: (
                         t_1 < t.point < t_2))
-    cube_slice = mycube.extract(my_constraint)
+    cube_slice = mycube.extract(time_constraint)
     return cube_slice
 
 
@@ -109,6 +115,7 @@ def time_average(cube):
         time averaged cube.
     """
     time = cube.coord('time')
+    # homogeneous time
     time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
 
     # The weights need to match the dimensionality of the cube.
@@ -138,9 +145,13 @@ def seasonal_mean(cube):
     -------
     iris.cube.Cube
         Seasonal mean cube
+
+    History
+    -------
+    - 16-Oct-2018: @RCHG added a dt object for span function.
+
     """
     import datetime
-    #print(cube)
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
@@ -148,8 +159,6 @@ def seasonal_mean(cube):
             cube, 'time', name='season_year')
     annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
                                               iris.analysis.MEAN)
-
-    #print(annual_seasonal_mean)
 
     # TODO: This preprocessor is not calendar independent.
 
@@ -160,6 +169,5 @@ def seasonal_mean(cube):
         return (time.bound[1] - time.bound[0]) > dt_3months
 
     three_months_bound = iris.Constraint(time=spans_three_months)
-    #print(three_months_bound)
-    #print(annual_seasonal_mean.extract(three_months_bound))
+
     return annual_seasonal_mean.extract(three_months_bound)
