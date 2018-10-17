@@ -6,8 +6,8 @@ Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
 Module for personal diagnostics (example).
 Internal imports from exmvaltool work e.g.:
 
-from esmvaltool.preprocessor._regrid import regrid
-from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+from esmvaltool.preprocessor import regrid
+from esmvaltool.diag_scripts.shared.supermeans import get_supermean
 
 Pipe output through logger;
 
@@ -31,7 +31,7 @@ import iris
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
-from esmvaltool.preprocessor._area_pp import area_average
+from esmvaltool.preprocessor import average_region
 
 
 def _plot_time_series(cfg, cube, dataset):
@@ -125,7 +125,7 @@ def run_my_diagnostic(cfg):
         # compute an area average over the squared cube
         # to apply the area average use a preprocessor function
         # rather than writing your own function
-        area_avg_cube = area_average(squared_cube, 'latitude', 'longitude')
+        area_avg_cube = average_region(squared_cube, 'latitude', 'longitude')
 
         # finalize your analysis by plotting a time series of the
         # diffed, squared and area averaged cube; call the plot function:
