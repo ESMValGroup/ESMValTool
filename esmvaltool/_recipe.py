@@ -10,7 +10,6 @@ from collections import OrderedDict
 import yamale
 import yaml
 
-from . import reformat
 from . import __version__, preprocessor
 from ._config import get_institutes
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
@@ -427,9 +426,9 @@ def _get_default_settings(variable, config_user, derive=False):
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
         # TODO: make this respect drs or download to preproc dir?
-        local_dir = get_rootpath(config_user['rootpath'], variable['project'])
+        download_folder = os.path.join(config_user['preproc_dir'], 'downloads')
         settings['download'] = {
-            'dest_folder': local_dir,
+            'dest_folder': download_folder,
         }
 
     # Configure loading
@@ -549,12 +548,6 @@ def _update_fx_settings(settings, variable, config_user):
                 fx_files_dict['sftgif'])
 
 
-def _apply_reformat(variable, input_files):
-    """Run a reformatting stage on the files that need reformatting."""
-    for key, value in input_files.items():
-        input_files[key] = reformat.cmor_reformat(variable, value)
-    return input_files
-
 def _get_input_files(variable, config_user):
     """Get the input files for a single dataset"""
     # Find input files locally.
@@ -572,8 +565,6 @@ def _get_input_files(variable, config_user):
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
     check_data_availability(input_files, variable)
-    if config_user['apply_reformat']:
-        input_files = _apply_reformat(variable, input_files)
 
     return input_files
 
@@ -886,7 +877,7 @@ class Recipe(object):
 
         for variable in variables:
             _update_from_others(variable, ['cmor_table', 'mip'], datasets)
-            institute = get_institutes(variable['dataset'])
+            institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
             check_variable(variable, required_keys)
@@ -905,7 +896,6 @@ class Recipe(object):
                             variable['fx_files'])
 
         return variables
-
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
                                         raw_datasets):
