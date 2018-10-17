@@ -1,7 +1,10 @@
+# Note: the different diagnostics are necessary because some of the derived
+# variables use the same basic variables, which leads to PermissionDenied
+# errors.
 ---
 diagnostics:
 
-  derive_diagnostic:
+  diag1:
     description: Test variable derivation
     variables:
       toz: &toz
@@ -19,18 +22,6 @@ diagnostics:
           - {dataset: GISS-E2-R, ensemble: r1i1p2}
       swcre:
         <<: *toz
-      rtnt:
-        <<: *toz
-      rsnt:
-        <<: *toz
-      rsns:
-        <<: *toz
-      rlns:
-        <<: *toz
-      netcre:
-        <<: *toz
-      lwp:
-        <<: *toz
       lwcre:
         <<: *toz
       clhmtisccp: &cloud
@@ -45,14 +36,58 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM2-A}
+    scripts: null
+
+  diag2:
+    description: Test variable derivation
+    variables:
+      rtnt:
+        <<: *toz
       clhtkisccp:
         <<: *cloud
+    scripts: null
+
+  diag3:
+    description: Test variable derivation
+    variables:
+      rsnt:
+        <<: *toz
       clmmtisccp:
         <<: *cloud
+    scripts: null
+
+  diag4:
+    description: Test variable derivation
+    variables:
+      rsns:
+        <<: *toz
       clmtkisccp:
         <<: *cloud
+    scripts: null
+
+  diag5:
+    description: Test variable derivation
+    variables:
+      rlns:
+        <<: *toz
+      clmtkisccp:
+        <<: *cloud
+    scripts: null
+
+  diag6:
+    description: Test variable derivation
+    variables:
+      lwp:
+        <<: *toz
       cllmtisccp:
         <<: *cloud
+    scripts: null
+
+  diag7:
+    description: Test variable derivation
+    variables:
       clltkisccp:
         <<: *cloud
+      netcre:
+        <<: *toz
     scripts: null

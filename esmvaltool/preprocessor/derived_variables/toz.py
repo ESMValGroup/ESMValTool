@@ -74,11 +74,11 @@ class toz(DerivedVariable):  # noqa
                     MW_AIR)
         toz_cube = toz_cube.collapsed('air_pressure', iris.analysis.SUM)
         toz_cube.units = (tro3_cube.units * p_layer_widths.units /
-                          STANDARD_GRAVITY_UNIT * MW_O3_UNIT / MW_AIR)
+                          STANDARD_GRAVITY_UNIT * MW_O3_UNIT / MW_AIR_UNIT)
 
         # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
         toz_cube = toz_cube / MW_O3 * AVOGADRO_CONST
-        toz_cube.units = toz_cube.units / MW_O3 * AVOGADRO_CONST_UNIT
+        toz_cube.units = toz_cube.units / MW_O3_UNIT * AVOGADRO_CONST_UNIT
         toz_cube.convert_units(DOBSON_UNIT)
         toz_cube.data = np.ma.array(toz_cube.data, dtype=np.dtype('float32'))
 
