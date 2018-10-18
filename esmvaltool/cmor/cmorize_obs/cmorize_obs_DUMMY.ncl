@@ -1,6 +1,3 @@
-;; this is a dummy test script
-;; author: Mattia Righi, DLR
-
 load "./DUMMY_info.ncl"
 
 begin

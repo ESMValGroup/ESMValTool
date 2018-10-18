@@ -37,7 +37,7 @@ def cmor_reformat(config):
         for dataset in datasets:
             project_info[dataset] = {}
             reformat_script = os.path.join(reformat_scripts,
-                                           'reformat_obs_' + dataset + '.ncl')
+                                           'cmorize_obs_' + dataset + '.ncl')
             logger.info("Attempting to CMORize using script %s, if it exists",
                         reformat_script)
             if os.path.isfile(reformat_script):
