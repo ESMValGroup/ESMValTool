@@ -3,6 +3,20 @@ import fnmatch
 import os
 from subprocess import call
 
+from ._task import write_ncl_settings
+
+
+def _write_ncl_infofile(project_info, dataset, output_dir):
+    """Write the information needed by the ncl reformat script."""
+    info = {
+        'input_file_path': project_info[dataset]['infile'],
+        'output_file_path': project_info[dataset]['outfile'],
+    }
+
+    filename = os.path.join(output_dir, dataset + '_info.ncl')
+    if not os.path.isfile(filename):
+        write_ncl_settings(info, filename)
+
 
 def cmor_reformat(config, logvar):
     """Run the oldskool v1 reformat scripts."""
@@ -28,6 +42,9 @@ def cmor_reformat(config, logvar):
                 out_data_dir = os.path.join(config['output_dir'], dataset)
                 if not os.path.isdir(out_data_dir):
                     os.makedirs(out_data_dir)
+                # copy over the reformat script and get in the dir
+                call(['cp', reformat_script, out_data_dir])
+                os.chdir(out_data_dir)
                 for path, _, files in os.walk(data_dir, followlinks=True):
                     files = fnmatch.filter(files, '*' + dataset + '*')
                     in_fullpaths = [os.path.join(path, fil) for fil in files]
@@ -38,7 +55,9 @@ def cmor_reformat(config, logvar):
                     for in_fil, out_fil in zip(in_fullpaths, out_fullpaths):
                         project_info[dataset]['infile'] = in_fil
                         project_info[dataset]['outfile'] = out_fil
-                        ncl_call = ['ncl', reformat_script]
+                        _write_ncl_infofile(project_info,
+                                            dataset, out_data_dir)
+                        ncl_call = ['ncl', os.path.basename(reformat_script)]
                         logvar.info("Executing cmd: %s", ' '.join(ncl_call))
                         call(ncl_call)
             else:
