@@ -7,12 +7,14 @@ import importlib
 class DerivedVariable(object):
     """Base class for derived variables."""
 
-    def __init__(self, short_name=None):
-        """Save desired short_name."""
-        if short_name:
-            self.short_name = short_name
+    def __init__(self, variable=None):
+        """Save `variable` dict and add `short_name` if necessary."""
+        if variable is None:
+            self.variable = {}
         else:
-            self.short_name = self.__class__.__name__
+            self.variable = dict(variable)
+        if 'short_name' not in self.variable:
+            self.variable['short_name'] = self.__class__.__name__
 
     def get_required(self, frequency):
         """Get variable `short_name` and `field` pairs required for derivation.
@@ -39,7 +41,7 @@ class DerivedVariable(object):
 
         """
         raise NotImplementedError("Don't know how to derive variable "
-                                  "'{}'".format(self.short_name))
+                                  "'{}'".format(self.variable['short_name']))
 
     def calculate(self, cubes):
         """Compute desired derived variable.
@@ -66,10 +68,10 @@ class DerivedVariable(object):
 
         """
         raise NotImplementedError("Don't know how to derive variable "
-                                  "'{}'".format(self.short_name))
+                                  "'{}'".format(self.variable['short_name']))
 
     @staticmethod
-    def get_derived_variable(short_name):
+    def get_derived_variable(variable):
         """Select correct python module for derived variable.
 
         Get derived variable by searching for a file `short_name.py` in the
@@ -77,21 +79,22 @@ class DerivedVariable(object):
 
         Parameters
         ----------
-        short_name : str
-            `short_name` of the variable to derive.
+        variable : dict
+            Contains all information of the requested variable.
 
         Returns
         -------
         DerivedVariable
 
         """
-        derived_var = DerivedVariable(short_name)
+        derived_var = DerivedVariable(variable)
         try:
             derived_var_module = importlib.import_module(
                 'esmvaltool.preprocessor.derived_variables.'
-                '{0}'.format(short_name))
+                '{0}'.format(variable['short_name']))
             try:
-                derived_var = getattr(derived_var_module, short_name)()
+                derived_var = getattr(derived_var_module,
+                                      variable['short_name'])()
             except AttributeError:
                 pass
         except ImportError:

@@ -11,10 +11,10 @@ from .derived_variables._derived_variable import DerivedVariable
 logger = logging.getLogger(__name__)
 
 
-def get_required(short_name, field=None):
+def get_required(variable):
     """Get variable short_name and field pairs required to derive variable."""
-    frequency = field[2] if field else 'M'
-    derived_var = DerivedVariable.get_derived_variable(short_name)
+    frequency = variable['field'][2] if variable.get('field') else 'M'
+    derived_var = DerivedVariable.get_derived_variable(variable)
     return derived_var.get_required(frequency)
 
 
@@ -28,7 +28,7 @@ def derive(cubes, variable):
 
     # Preprare input cubes and derive correct variable
     cubes = iris.cube.CubeList(cubes)
-    derived_var = DerivedVariable.get_derived_variable(short_name)
+    derived_var = DerivedVariable.get_derived_variable(variable)
     cube = derived_var.calculate(cubes)
 
     # Set standard attributes
