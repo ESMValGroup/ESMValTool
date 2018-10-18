@@ -94,25 +94,29 @@ def test_r_lint():
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 universal_newlines=True
             )
+            stdout = process.stdout
+            stderr = process.stderr
         else:
-            process = subprocess.call(
+            process = subprocess.Popen(
                 ('Rscript', checker, package_root),
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 universal_newlines=True
             )
+            stdout, stderr = process.communicate()
+
         if process.returncode:
             print(textwrap.dedent("""
                 Your R code does not follow our formatting standards.
 
                 Please fix the following issues:
             """))
-            print(process.stdout)
-            print(process.stderr)
+            print(stdout)
+            print(stderr)
             assert False,\
                 'Your R code does not follow our formatting standards.'
         else:
-            print(process.stdout)
-            print(process.stderr)
+            print(stdout)
+            print(stderr)
     except Exception:
         raise
     finally:
