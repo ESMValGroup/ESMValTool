@@ -4,8 +4,6 @@ Time operations on cubes
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
-from distutils.version import LooseVersion
-
 import iris
 import iris.coord_categorisation
 import numpy as np
