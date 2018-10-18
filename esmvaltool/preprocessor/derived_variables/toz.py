@@ -106,9 +106,6 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=0.0):
     `Cube` of same shape as `tro3_cube` containing pressure level widths.
 
     """
-    assert ps_cube.units == 'Pa'
-    assert tro3_cube.coord('air_pressure').units == 'Pa'
-
     pressure_array = _create_pressure_array(tro3_cube, ps_cube, top_limit)
 
     data = _apply_pressure_level_widths(pressure_array)
@@ -132,14 +129,12 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     p_4d_array = iris.util.broadcast_to_shape(p_levels,
                                               tro3_cube.shape,
                                               [1])
-    assert p_4d_array.shape == tro3_cube.shape
 
     # Create 4d array filled with surface pressure values
     shape = tro3_cube.shape
     ps_4d_array = iris.util.broadcast_to_shape(ps_cube.data,
                                                shape,
                                                [0, 2, 3])
-    assert ps_4d_array.shape == tro3_cube.shape
 
     # Set pressure levels below the surface pressure to NaN
     pressure_4d = np.where((ps_4d_array - p_4d_array) < 0,
@@ -150,12 +145,10 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     top_limit_array = np.ones(ps_cube.shape) * top_limit
     data = top_limit_array[:, np.newaxis, :, :]
     pressure_4d = np.concatenate((pressure_4d, data), axis=1)
-    assert (pressure_4d[:, -1, :, :] == top_limit).all()
 
     # Make surface pressure the first pressure level
     data = ps_cube.data[:, np.newaxis, :, :]
     pressure_4d = np.concatenate((data, pressure_4d), axis=1)
-    assert (pressure_4d[:, 0, :, :] == ps_cube.data).all()
 
     return pressure_4d
 
