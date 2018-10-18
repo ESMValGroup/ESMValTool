@@ -90,7 +90,7 @@ def get_args():
         type=int,
         help='Limit the number of years to MAX_YEARS.')
 
-    # for reformatting obs files
+    # for cmorizing obs files
     parser.add_argument(
         '-cm',
         '--cmorize',
@@ -170,7 +170,7 @@ def process_reformat(config_user):
     timestamp_format = "%Y-%m-%d %H:%M:%S"
 
     logger.info(
-        "Starting the ESMValTool Reformat Mode v%s at time: %s UTC",
+        "Starting the ESMValTool CMORization Mode v%s at time: %s UTC",
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
@@ -183,7 +183,7 @@ def process_reformat(config_user):
     from .reformat import cmor_reformat
 
     # call the reformat function
-    cmor_reformat(config_user, logger)
+    cmor_reformat(config_user)
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()

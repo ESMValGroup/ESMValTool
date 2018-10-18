@@ -1,9 +1,13 @@
-"""Port reformat.py from v1 to v2 (life hack)."""
+"""Run the CMORization module."""
+import logging
 import fnmatch
 import os
 from subprocess import call
 
 from ._task import write_ncl_settings
+
+
+logger = logging.getLogger(__name__)
 
 
 def _write_ncl_infofile(project_info, dataset, output_dir):
@@ -18,13 +22,13 @@ def _write_ncl_infofile(project_info, dataset, output_dir):
         write_ncl_settings(info, filename)
 
 
-def cmor_reformat(config, logvar):
-    """Run the oldskool v1 reformat scripts."""
-    logvar.info("Running the oldschool reformatting scripts.")
+def cmor_reformat(config):
+    """Run the oldskool v1 cmorization scripts."""
+    logger.info("Running the CMORization scripts.")
 
     # set the reformat scripts dir
     reformat_scripts = os.path.join(os.path.dirname(__file__),
-                                    'reformat_scripts')
+                                    'cmor/cmorize_obs')
 
     # assemble i/o information
     project_info = {}
@@ -34,10 +38,10 @@ def cmor_reformat(config, logvar):
             project_info[dataset] = {}
             reformat_script = os.path.join(reformat_scripts,
                                            'reformat_obs_' + dataset + '.ncl')
-            logvar.info("Attempting to reformat using script %s, if it exists",
+            logger.info("Attempting to CMORize using script %s, if it exists",
                         reformat_script)
             if os.path.isfile(reformat_script):
-                logvar.info("Script exists, will proceed to reformatting...")
+                logger.info("Script exists, will proceed to CMORize...")
                 data_dir = os.path.join(raw_obs, dataset)
                 out_data_dir = os.path.join(config['output_dir'], dataset)
                 if not os.path.isdir(out_data_dir):
@@ -58,7 +62,7 @@ def cmor_reformat(config, logvar):
                         _write_ncl_infofile(project_info,
                                             dataset, out_data_dir)
                         ncl_call = ['ncl', os.path.basename(reformat_script)]
-                        logvar.info("Executing cmd: %s", ' '.join(ncl_call))
+                        logger.info("Executing cmd: %s", ' '.join(ncl_call))
                         call(ncl_call)
             else:
-                logvar.info("No need to reformat, no reformat script.")
+                logger.info("No need to CMORize, no CMOR reformat script.")
