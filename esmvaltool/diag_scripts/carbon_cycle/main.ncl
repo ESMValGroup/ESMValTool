@@ -245,7 +245,9 @@ begin
     end if
 
     ; Calculate spatial mean/sum and total global area if necessary
-    if (dimsizes(dimsizes(data_yearly)) .gt. 1) then
+    dims = dimsizes(data_yearly)
+    rank = dimsizes(dims)
+    if ((rank .gt. 1) .and. .not. any(dims .eq. 1)) then
       y_mean = area_operations(data_yearly, region(0), region(1), \
                                region(2), region(3), sp_opt, True)
       m_mean = area_operations(data_monthly, region(0), region(1), \

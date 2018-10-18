@@ -241,7 +241,7 @@ diagnostics:
   #       <<: *main_trop
   #       evolution_plot_ref_dataset: HadISST
 
-  diag_main_npb:
+  diag_main_nbp:
     <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
     realms:
