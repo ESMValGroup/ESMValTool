@@ -208,6 +208,10 @@ authors:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
     email: 'at'
+  stac_to:
+    name: Stacke, Tobias
+    institute: MPI-M, Germany
+    email: tobias.stacke 'at' mpimet.mpg.de
   ster_an:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
@@ -347,6 +351,9 @@ authors:
     email: carolin.klinger 'at' physik.uni-muenchen.de
   kola_mi:
     name: Kolax, Michael
+  loew_al:
+    name: Loew, Alexander
+    institute: LMU, Germany
   neal_ri:
     name: Neale, Richard
     institute: NCAR, US

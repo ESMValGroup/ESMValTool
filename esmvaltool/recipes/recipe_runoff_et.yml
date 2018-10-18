@@ -1,52 +1,55 @@
-# 
-# ###############################################################################
-# namelist_runoff_et.xml
-# 
-# Description
-# Namelist for the runoff and ET diagnostics. The diagnostics calculates water
-# balance components for different catchments and compares the results against
-# observations
-# 
-# Authors
-# Stefan Hagemann (MPI, Germany - stefan.hagemann@mpimet.mpg.de)
-# Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
-# 
-# Project
-# EMBRACE
-# 
-# References
-# Duemenil Gates et al., Observed historical discharge data from major rivers for
-# climate model validation. Max Planck Institute for Meteorology Report 307,
-# Hamburg, Germany (2000)
-# Hagemann, S. et al.,J. Adv. Model. Earth Syst., 5, 259-286, doi:10.1029/2012MS000173 (2013)
-# Weedon, G. P. et al., Water Resour. Res., 50, 7505–7514, doi:10.1002/2014WR015638 (2014)
-# 
-# This namelist is part of the ESMValTool
-# ###############################################################################
-# 
-
+# recipe_runoff_et.xml
 ---
+documentation:
+  description:
+    Recipe for plotting runoff and ET diagnostics. The diagnostics calculates water
+    balance components for different catchments and compares the results against
+    observations
+
+  authors:
+    - hage_st
+    - loew_al
+    - stac_to
+
+  references:
+    - duemenil00mpimr
+    - hagemann13jadvmodelearthsyst
+    - weedon14wrr
+
+  projects:
+    - embrace
+    - crescendo
+
 datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+
+
 preprocessors:
-  prep0: {}
+  prep_grid:
+    regrid:
+      target_grid: basins
+      scheme:      area_weighted
 
 diagnostics:
-  catchment_analysis_val:
+  catchment_analysis:
     description: EMBRACE runoff and land surface evaporation diagnostic
     variables:
       evspsbl:
-        preprocessor: prep0
-        mip: #missing
+        preprocessor: prep_grid
+        mip: Amon
         field: T2Ms
+        fx_files: [basins,]
       mrro:
-        preprocessor: prep0
-        mip: #missing
+        preprocessor: prep_grid
+        mip: Lmon
         field: T2Ms
+        fx_files: [basins,]
       pr:
-        preprocessor: prep0
-        mip: #missing
+        preprocessor: prep_grid
+        mip: Amon
         field: T2Ms
+        fx_files: [basins,]
     scripts:
-      catchment_analysis_val:
-        script: catchment_analysis_val.py
+      catchment_analysis:
+        script: runoff_et/catchment_analysis.py
 
