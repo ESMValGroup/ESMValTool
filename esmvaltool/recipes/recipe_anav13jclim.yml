@@ -247,13 +247,14 @@ diagnostics:
     realms:
       - land
     variables:
-      nbp:
+      nbp_grid:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
         # Masking not possible because GCP is actually T0M field
         preprocessor: noop
         mip: Lmon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
+        derive: True
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
     additional_datasets: &nbp_datasets
@@ -296,6 +297,7 @@ diagnostics:
         start_year: 1986
         end_year: 2005
         reference_dataset: LAI3g
+        derive: True
     additional_datasets: &lai_datasets
       - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
@@ -537,7 +539,7 @@ diagnostics:
     realms:
       - land
     variables:
-      nbp:
+      nbp_grid:
         <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
         preprocessor: regrid_to_ref
         reference_dataset: JMA-TRANSCOM
