@@ -80,19 +80,31 @@ def test_nclcodestyle():
 
 def test_r_lint():
     """Test R lint"""
-    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
-    process = subprocess.run(
-        ('Rscript', checker, package_root),
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        universal_newlines=True
-    )
-    if process.returncode:
-        print(textwrap.dedent("""
-            Your R code does not follow our formatting standards.
+    environ = dict(os.environ)
+    try:
+        os.environ["LINTR_COMMENT_BOT"] = "FALSE"
+        package_root = os.path.dirname(
+            os.path.dirname(os.path.dirname(__file__))
+        )
+        checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
+        process = subprocess.run(
+            ('Rscript', '-e', checker, package_root),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            universal_newlines=True
+        )
+        if process.returncode:
+            print(textwrap.dedent("""
+                Your R code does not follow our formatting standards.
 
-            Please fix the following issues:
-        """))
-        print(process.stdout)
-        print(process.stderr)
-        assert False, 'Your R code does not follow our formatting standards.'
+                Please fix the following issues:
+            """))
+            print(process.stdout)
+            print(process.stderr)
+            assert (False,
+                    'Your R code does not follow our formatting standards.')
+    except:
+        raise
+    finally:
+        os.environ.clear()
+        os.environ.update(environ)
+
