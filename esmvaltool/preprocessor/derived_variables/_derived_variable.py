@@ -94,7 +94,7 @@ class DerivedVariable(object):
                 '{0}'.format(variable['short_name']))
             try:
                 derived_var = getattr(derived_var_module,
-                                      variable['short_name'])()
+                                      variable['short_name'])(variable)
             except AttributeError:
                 pass
         except ImportError:

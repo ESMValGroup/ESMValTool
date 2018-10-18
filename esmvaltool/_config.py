@@ -13,6 +13,7 @@ from .cmor.table import read_cmor_tables
 logger = logging.getLogger(__name__)
 
 CFG = {}
+CFG_USER = {}
 
 
 def read_config_user_file(config_file, recipe_name):
@@ -67,6 +68,11 @@ def read_config_user_file(config_file, recipe_name):
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
+    # Save user configuration in global variable
+    for key, value in six.iteritems(cfg):
+        CFG_USER[key] = value
+
+    # Read developer configuration file
     cfg_developer = read_config_developer_file(cfg['config_developer_file'])
     for key, value in six.iteritems(cfg_developer):
         CFG[key] = value
@@ -75,9 +81,14 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
+def get_config_user_file():
+    """Return user configuration dictionary."""
+    return CFG_USER
+
+
 def _normalize_path(path):
     """
-    Normalize paths
+    Normalize paths.
 
     Expand ~ character and environment variables and convert path to absolute
 
@@ -112,7 +123,7 @@ def read_config_developer_file(cfg_file=None):
 
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
-    """Set up logging"""
+    """Set up logging."""
     if cfg_file is None:
         cfg_file = os.path.join(
             os.path.dirname(__file__), 'config-logging.yml')
