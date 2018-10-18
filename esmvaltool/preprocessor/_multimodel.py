@@ -14,7 +14,6 @@ It operates on different (time) spans:
 
 import logging
 from datetime import datetime, timedelta
-from distutils.version import LooseVersion
 from functools import reduce
 
 import cf_units
@@ -22,6 +21,7 @@ import iris
 import numpy as np
 import yaml
 
+from .. import use_legacy_iris
 from ._io import save
 
 logger = logging.getLogger(__name__)
@@ -169,7 +169,7 @@ def _put_in_cube(template_cube, cube_data, stat_name, file_name, time_bounds,
 
 def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
-    if LooseVersion(iris.__version__) < LooseVersion("2.0.0"):
+    if use_legacy_iris():
         time_cells = [
             cube.coord('time').units.num2date(cell.point)
             for cell in cube.coord('time').cells()

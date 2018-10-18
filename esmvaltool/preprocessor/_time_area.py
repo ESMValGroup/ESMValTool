@@ -10,6 +10,8 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 
+from .. import use_legacy_iris
+
 
 # slice cube over a restricted time period
 def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
@@ -38,7 +40,7 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
-    if LooseVersion(iris.__version__) < LooseVersion("2.0.0"):
+    if use_legacy_iris():
         my_constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
     else:
         my_constraint = iris.Constraint(
