@@ -50,7 +50,7 @@ def concatenate_callback(raw_cube, field, _):
 
 
 def load_cubes(files, filename, metadata, constraints=None, callback=None):
-    """Load iris cubes from files"""
+    """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
@@ -69,7 +69,7 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
 
 
 def concatenate(cubes):
-    """Concatenate all cubes after fixing metadata"""
+    """Concatenate all cubes after fixing metadata."""
     try:
         cube = iris.cube.CubeList(cubes).concatenate_cube()
         return cube
@@ -154,7 +154,8 @@ def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
 
     Returns
     -------
-
+    list
+        List of paths
     """
     paths = {}
     for cube in cubes:
@@ -227,7 +228,7 @@ def extract_metadata(files, write_ncl=False):
 
 
 def _write_ncl_metadata(output_dir, metadata):
-    """Write NCL metadata files to output_dir"""
+    """Write NCL metadata files to output_dir."""
     variables = list(metadata.values())
     # 'variables' is a list of dicts, but NCL does not support nested
     # dicts, so convert to dict of lists.
@@ -240,7 +241,10 @@ def _write_ncl_metadata(output_dir, metadata):
                 if key not in input_file_info:
                     input_file_info[key] = []
                 input_file_info[key].append(fx_files[key])
-
+    # NCL cannot handle nested arrays so delete for now
+    # TODO: switch to NCL list type
+    input_file_info.pop('institute', None)
+    input_file_info.pop('modeling_realm', None)
     info = {
         'input_file_info': input_file_info,
         'dataset_info': {},
@@ -272,6 +276,4 @@ def _write_ncl_metadata(output_dir, metadata):
 
 
 class ConcatenationError(Exception):
-    """Exception class for concatenation errors"""
-
-    pass
+    """Exception class for concatenation errors."""
