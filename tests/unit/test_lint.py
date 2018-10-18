@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import six
 import textwrap
 import subprocess
 
@@ -87,11 +88,18 @@ def test_r_lint():
             os.path.dirname(os.path.dirname(__file__))
         )
         checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
-        process = subprocess.run(
-            ('Rscript', '-e', checker, package_root),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            universal_newlines=True
-        )
+        if six.PY3:
+            process = subprocess.run(
+                ('Rscript', checker, package_root),
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                universal_newlines=True
+            )
+        else:
+            process = subprocess.call(
+                ('Rscript', checker, package_root),
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                universal_newlines=True
+            )
         if process.returncode:
             print(textwrap.dedent("""
                 Your R code does not follow our formatting standards.
@@ -100,11 +108,13 @@ def test_r_lint():
             """))
             print(process.stdout)
             print(process.stderr)
-            assert (False,
-                    'Your R code does not follow our formatting standards.')
-    except:
+            assert False,\
+                'Your R code does not follow our formatting standards.'
+        else:
+            print(process.stdout)
+            print(process.stderr)
+    except Exception:
         raise
     finally:
         os.environ.clear()
         os.environ.update(environ)
-
