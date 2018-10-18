@@ -2,10 +2,10 @@
 from __future__ import print_function
 
 import os
-import six
 import textwrap
 import subprocess
 
+import six
 import pycodestyle  # formerly known as pep8
 
 from esmvaltool.utils.nclcodestyle import nclcodestyle
