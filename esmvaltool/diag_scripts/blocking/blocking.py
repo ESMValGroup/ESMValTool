@@ -158,8 +158,10 @@ class Blocking(object):
 
                 error[filename] = rms
                 correlation[filename] = corr
-                logger.info('Correlation: %f', corr.data)
-                logger.info('RMSE: %f', rms.data)
+                logger.info('Correlation:')
+                logger.info(corr.data)
+                logger.info('Root Mean Square Error:')
+                logger.info(rms.data)
 
         if self.cfg[n.WRITE_PLOTS]:
             self.create_comparison_plot(datasets, correlation, error)
