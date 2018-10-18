@@ -6,7 +6,6 @@
 # - ncl
 # - iris
 # - python-stratify
-# - basemap
 
 import os
 import re
@@ -28,7 +27,6 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'basemap',
         'cartopy',
         'cdo',
         'cf_units',
