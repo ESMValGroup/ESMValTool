@@ -97,6 +97,13 @@ def get_args():
         action='store_true',
         help='Start the CMORization mode')
 
+    # for cmorizing obs files
+    parser.add_argument(
+        '-ol',
+        '--obs-list-cmorize',
+        type=str,
+        help='List of obs datasets to cmorize')
+
     args = parser.parse_args()
     return args
 
@@ -133,7 +140,10 @@ def main(args):
         recipe_name = 'CMORization'
         cfg = read_config_user_file(config_file, recipe_name)
         set_logging(cfg, config_file)
-        process_reformat(cfg)
+        if args.obs_list_cmorize:
+            process_reformat(cfg, args.obs_list_cmorize)
+        else:
+            process_reformat(cfg)
     else:
         recipe = args.recipe
         if not os.path.exists(recipe):
@@ -164,7 +174,7 @@ def main(args):
     return cfg
 
 
-def process_reformat(config_user):
+def process_reformat(config_user, obs_list=None):
     """Process the reformat request."""
     timestamp1 = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d %H:%M:%S"
@@ -183,7 +193,7 @@ def process_reformat(config_user):
     from .reformat import cmor_reformat
 
     # call the reformat function
-    cmor_reformat(config_user)
+    cmor_reformat(config_user, obs_list)
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
