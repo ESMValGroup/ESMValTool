@@ -8,7 +8,7 @@ class zg(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata.
+        Fix cube metadata.
 
         Parameters
         ----------

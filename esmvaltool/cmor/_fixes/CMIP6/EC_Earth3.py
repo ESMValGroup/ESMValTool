@@ -1,4 +1,4 @@
-"""Fixes for EC-Earth3-HR CMIP6 project data."""
+"""Fixes for EC-Earth3 CMIP6 project data."""
 import iris.coords
 import iris.util
 from ..fix import Fix
@@ -9,7 +9,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Parameters
         ----------
@@ -34,7 +34,7 @@ class siconc(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Add typesi coordinate
 
@@ -60,7 +60,7 @@ class zg(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Simplify lat lon coordinates to make them 1D
 

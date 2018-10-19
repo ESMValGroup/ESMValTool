@@ -34,7 +34,7 @@ class siconc(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Add typesi coordinate
 
@@ -60,7 +60,7 @@ class zg(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata.
+        Fix cube metadata.
 
         Simplify lat lon coordinates to make them 1D
 
@@ -93,5 +93,5 @@ class zg(Fix):
 
 class tas(zg):
     """Fixes for surface temperature."""
-    
+
     pass
