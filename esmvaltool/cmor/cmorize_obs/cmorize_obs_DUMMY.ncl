@@ -2,7 +2,7 @@ load "./DUMMY_info.ncl"
 
 begin
 
-  print(input_file_path)
-  print(output_file_path)
+  print(input_dir_path)
+  print(output_dir_path)
 
 end

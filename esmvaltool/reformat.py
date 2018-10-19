@@ -1,6 +1,5 @@
 """Run the CMORization module."""
 import logging
-import fnmatch
 import os
 import sys
 from subprocess import call
@@ -11,11 +10,43 @@ from ._task import write_ncl_settings
 logger = logging.getLogger(__name__)
 
 
+def _assemble_datasets(raw_obs, obs_list):
+    """Get my datasets as dictionary keyed on Tier."""
+    # check for desired datasets only (if any)
+    # if not, walk all over rawobs dir
+    # assume a RAWOBS/TierX/DATASET input structure
+    tiers = []
+    datasets = {}
+
+    # get all available tiers in source dir
+    for _, tier, _ in os.walk(raw_obs, followlinks=True):
+        tiers.append(tier)
+
+    # if user specified obs list
+    if obs_list:
+        for tier in tiers[0]:
+            datasets[tier] = []
+            for dataset_name in obs_list.split(','):
+                if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
+                    datasets[tier].append(dataset_name)
+
+    # otherwise go through the whole raw_obs dir
+    else:
+        for tier in tiers[0]:
+            datasets[tier] = []
+            for _, dats, _ in os.walk(os.path.join(raw_obs, tier),
+                                      followlinks=True):
+                datasets[tier].append(dats)
+            datasets[tier] = datasets[tier][0]
+
+    return datasets
+
+
 def _write_ncl_infofile(project_info, dataset, output_dir):
     """Write the information needed by the ncl reformat script."""
     info = {
-        'input_file_path': project_info[dataset]['infile'],
-        'output_file_path': project_info[dataset]['outfile'],
+        'input_dir_path': project_info[dataset]['indir'],
+        'output_dir_path': project_info[dataset]['outdir'],
     }
 
     filename = os.path.join(output_dir, dataset + '_info.ncl')
@@ -24,111 +55,81 @@ def _write_ncl_infofile(project_info, dataset, output_dir):
     return filename
 
 
-def _run_ncl_script(in_fullpaths,
-                    out_fullpaths,
+def _run_ncl_script(in_dir,
+                    out_dir,
                     dataset,
-                    reformat_script,
-                    project_info,
-                    out_data_dir):
+                    reformat_script):
     """Run the NCL cmorization mechanism."""
-    for in_fil, out_fil in zip(in_fullpaths, out_fullpaths):
-        project_info[dataset]['infile'] = in_fil
-        project_info[dataset]['outfile'] = out_fil
-        info_file = _write_ncl_infofile(project_info,
-                                        dataset, out_data_dir)
-        ncl_call = ['ncl', os.path.basename(reformat_script)]
-        logger.info("Executing cmd: %s", ' '.join(ncl_call))
-        call(ncl_call)
-        to_rename_file = os.path.join(
-            os.path.dirname(info_file),
-            os.path.basename(in_fil).split('_')[0] + '_' +
-            os.path.basename(info_file)
-        )
-        call(['mv', info_file, to_rename_file])
+    project = {}
+    project[dataset] = {}
+    project[dataset]['indir'] = in_dir
+    project[dataset]['outdir'] = out_dir
+    _write_ncl_infofile(project, dataset, out_dir)
+    ncl_call = ['ncl', os.path.basename(reformat_script)]
+    logger.info("Executing cmd: %s", ' '.join(ncl_call))
+    call(ncl_call)
 
 
-def _run_pyt_script(in_fullpaths, out_fullpaths):
+def _run_pyt_script(in_dir, out_dir):
     """Run the Python cmorization mechanism."""
     import py_cmor
-    for in_fil, out_fil in zip(in_fullpaths, out_fullpaths):
-        py_cmor.cmorization(in_fil, out_fil)
-
-
-def _get_all_files(files, path, out_data_dir, dataset):
-    """Find the I/O files paths."""
-    files = fnmatch.filter(files, '*' + dataset + '*')
-    in_fullpaths = [os.path.join(path, fil) for fil in files]
-    out_fullpaths = [
-        os.path.join(out_data_dir,
-                     dataset, fil) for fil in files
-    ]
-    return in_fullpaths, out_fullpaths
+    py_cmor.cmorization(in_dir, out_dir)
 
 
 def cmor_reformat(config, obs_list):
     """Run the oldskool v1 cmorization scripts."""
     logger.info("Running the CMORization scripts.")
 
+    # master directory
+    raw_obs = config["rootpath"]["RAWOBS"][0]
+
     # set the reformat scripts dir
     reformat_scripts = os.path.join(os.path.dirname(__file__),
                                     'cmor/cmorize_obs')
 
+    # datsets dictionary of Tier keys
+    datasets = _assemble_datasets(raw_obs, obs_list)
+    logger.info("We will be processing %s", datasets)
+
     # assemble i/o information
     project_info = {}
-    raw_obs = config["rootpath"]["RAWOBS"][0]
 
-    # check for desired datasets only (if any)
-    # if not, walk all over rawobs dir
-    if obs_list:
-        datasets = obs_list.split(',')
-    else:
-        datasets = []
-        for _, datas, _ in os.walk(raw_obs, followlinks=True):
-            datasets.append(datas)
+    # loop through tier/datasets to be cmorized
+    for tier, _ in datasets.items():
+        for dataset in datasets[tier]:
+            project_info[dataset] = {}
+            reformat_script_root = os.path.join(reformat_scripts,
+                                                'cmorize_obs_' + dataset)
 
-    # loop through datasets to be cmorized
-    for dataset in datasets[0]:
-        project_info[dataset] = {}
-        reformat_script_root = os.path.join(reformat_scripts,
-                                            'cmorize_obs_' + dataset)
+            # in-data dir; build out-dir tree
+            in_data_dir = os.path.join(raw_obs, tier, dataset)
+            out_data_dir = os.path.join(config['output_dir'], tier, dataset)
+            if not os.path.isdir(out_data_dir):
+                os.makedirs(out_data_dir)
 
-        # build directory tree
-        data_dir = os.path.join(raw_obs, dataset)
-        out_data_dir = os.path.join(config['output_dir'], dataset)
-        if not os.path.isdir(out_data_dir):
-            os.makedirs(out_data_dir)
-        # all operations are done in the working dir now
-        os.chdir(out_data_dir)
+            # all operations are done in the working dir now
+            os.chdir(out_data_dir)
 
-        # figure out what language the script is in
-        if os.path.isfile(reformat_script_root + '.ncl'):
-            reformat_script = reformat_script_root + '.ncl'
-            logger.info("Attempting to CMORize using NCL script %s",
-                        reformat_script)
-            # copy over the reformat script
-            call(['cp', reformat_script, out_data_dir])
-            for path, _, files in os.walk(data_dir, followlinks=True):
-                in_fullpaths, out_fullpaths = _get_all_files(files, path,
-                                                             out_data_dir,
-                                                             dataset)
-                _run_ncl_script(in_fullpaths,
-                                out_fullpaths,
+            # figure out what language the script is in
+            if os.path.isfile(reformat_script_root + '.ncl'):
+                reformat_script = reformat_script_root + '.ncl'
+                logger.info("Attempting to CMORize using NCL script %s",
+                            reformat_script)
+                # copy over the reformat script
+                call(['cp', reformat_script, out_data_dir])
+                # call the ncl script
+                _run_ncl_script(in_data_dir,
+                                out_data_dir,
                                 dataset,
-                                reformat_script,
-                                project_info,
-                                out_data_dir)
-        elif os.path.isfile(reformat_script_root + '.py'):
-            py_reformat_script = reformat_script_root + '.py'
-            logger.info("Attempting to CMORize using Python script %s",
-                        py_reformat_script)
-            # copy over the reformat script
-            call(['cp', py_reformat_script,
-                  os.path.join(out_data_dir, 'py_cmor.py')])
-            sys.path.append(out_data_dir)
-            for path, _, files in os.walk(data_dir, followlinks=True):
-                in_fullpaths, out_fullpaths = _get_all_files(files, path,
-                                                             out_data_dir,
-                                                             dataset)
-                _run_pyt_script(in_fullpaths, out_fullpaths)
-        else:
-            logger.info("No need to CMORize, could not find CMOR script.")
+                                reformat_script)
+            elif os.path.isfile(reformat_script_root + '.py'):
+                py_reformat_script = reformat_script_root + '.py'
+                logger.info("Attempting to CMORize using Python script %s",
+                            py_reformat_script)
+                # copy over the reformat script
+                call(['cp', py_reformat_script,
+                      os.path.join(out_data_dir, 'py_cmor.py')])
+                sys.path.append(out_data_dir)
+                _run_pyt_script(in_data_dir, out_data_dir)
+            else:
+                logger.info("No need to CMORize, could not find CMOR script.")
