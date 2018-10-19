@@ -4,10 +4,10 @@
 import iris
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class clltkisccp(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `clltkisccp`."""
 
     def get_required(self, frequency):

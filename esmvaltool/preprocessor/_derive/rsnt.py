@@ -1,13 +1,13 @@
-"""Derivation of variable `rtnt`."""
+"""Derivation of variable `rsnt`."""
 
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class rtnt(DerivedVariable):  # noqa
-    """Derivation of variable `rtnt`."""
+class DerivedVariable(DerivedVariableBase):
+    """Derivation of variable `rsnt`."""
 
     def get_required(self, frequency):
         """Get variable `short_name` and `field` pairs required for derivation.
@@ -25,32 +25,28 @@ class rtnt(DerivedVariable):  # noqa
 
         """
         return [('rsdt', 'T2' + frequency + 's'),
-                ('rsut', 'T2' + frequency + 's'),
-                ('rlut', 'T2' + frequency + 's')]
+                ('rsut', 'T2' + frequency + 's')]
 
     def calculate(self, cubes):
-        """Compute toa net downward total radiation.
+        """Compute toa net downward shortwave radiation.
 
         Parameters
         ----------
         cubes : iris.cube.CubeList
-            `CubeList` containing `rsut` (`toa_outgoing_shortwave_flux`),
-            `rsdt` (`toa_incoming_shortwave_flux`) and `rlut`
-            (`toa_outgoing_longwave_flux`).
+            `CubeList` containing `rsut` (`toa_outgoing_shortwave_flux`) and
+            `rsdt` (`toa_incoming_shortwave_flux`).
 
         Returns
         -------
         iris.cube.Cube
-            `Cube` containing toa net downward total radiation.
+            `Cube` containing toa net downward shortwave radiation.
 
         """
         rsdt_cube = cubes.extract_strict(
             Constraint(name='toa_incoming_shortwave_flux'))
         rsut_cube = cubes.extract_strict(
             Constraint(name='toa_outgoing_shortwave_flux'))
-        rlut_cube = cubes.extract_strict(
-            Constraint(name='toa_outgoing_longwave_flux'))
 
-        rtnt_cube = rsdt_cube - rsut_cube - rlut_cube
+        rsnt_cube = rsdt_cube - rsut_cube
 
-        return rtnt_cube
+        return rsnt_cube

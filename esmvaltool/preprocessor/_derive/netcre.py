@@ -1,12 +1,12 @@
 """Derivation of variable `netcre`."""
 
 
-from ._derived_variable import DerivedVariable
-from .lwcre import lwcre
-from .swcre import swcre
+from ._derived_variable_base import DerivedVariableBase
+from .lwcre import DerivedVariable as Lwcre
+from .swcre import DerivedVariable as Swcre
 
 
-class netcre(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `netcre`."""
 
     def get_required(self, frequency):
@@ -49,8 +49,8 @@ class netcre(DerivedVariable):  # noqa
             `Cube` containing net cloud radiative effect.
 
         """
-        lwcre_var = lwcre()
-        swcre_var = swcre()
+        lwcre_var = Lwcre()
+        swcre_var = Swcre()
         lwcre_cube = lwcre_var.calculate(cubes)
         swcre_cube = swcre_var.calculate(cubes)
 

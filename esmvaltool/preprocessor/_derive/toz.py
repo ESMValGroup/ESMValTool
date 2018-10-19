@@ -8,7 +8,7 @@ import numba
 import numpy as np
 from scipy import constants
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
 # Constants
@@ -23,7 +23,7 @@ MW_O3_UNIT = cf_units.Unit('g mol^-1')
 DOBSON_UNIT = cf_units.Unit('2.69e20 m^-2')
 
 
-class toz(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
     def get_required(self, frequency):

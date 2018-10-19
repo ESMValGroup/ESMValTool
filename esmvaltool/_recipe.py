@@ -377,7 +377,8 @@ def _dataset_to_file(variable, config_user):
         drs=config_user['drs'])
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
-        variable['short_name'], variable['field'] = get_required(variable)[0]
+        variable['short_name'], variable['field'] = get_required(
+            variable['short_name'], variable['field'])[0]
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -754,7 +755,8 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for short_name, field in get_required(variable):
+                for short_name, field in get_required(variable['short_name'],
+                                                      variable['field']):
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)

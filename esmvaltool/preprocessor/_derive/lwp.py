@@ -5,12 +5,12 @@ import logging
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 logger = logging.getLogger(__name__)
 
 
-class lwp(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwp`."""
 
     def get_required(self, frequency):
