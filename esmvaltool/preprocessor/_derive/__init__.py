@@ -84,6 +84,7 @@ def derive(cubes, variable):
 
     return cube
 
+
 def get_all_derived_variables():
     """Get all possible derived variables.
 
