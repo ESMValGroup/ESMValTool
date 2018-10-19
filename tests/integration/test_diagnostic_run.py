@@ -87,6 +87,12 @@ SCRIPTS = {
 
         system("echo '" + result + "' > " + diag_script_info@setting_name)
         """),
+    'diagnostic.R':
+    dedent("""
+        library(yaml)
+        settings <- Sys.getenv("settings")
+        print(paste0(INFO    Loading settings from ", settings))
+        """),
 }
 
 
