@@ -16,13 +16,13 @@ documentation:
 datasets:
   - {dataset: GFDL-ESM2M,
      project: CMIP5, exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 2000}
+     start_year: 1950,  end_year: 1999}
   - {dataset: MPI-ESM-LR,
      project: CMIP5, exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 2000}
+     start_year: 1950,  end_year: 1999}
   - {dataset: HadGEM2-CC,
      project: CMIP5,  exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 2000}
+     start_year: 1950,  end_year: 1999}
 
 preprocessors:
   extract:
