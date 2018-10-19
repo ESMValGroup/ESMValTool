@@ -2,7 +2,6 @@
 import logging
 import os
 import sys
-from subprocess import call
 import subprocess
 
 from ._task import write_ncl_settings
@@ -121,7 +120,7 @@ def cmor_reformat(config, obs_list):
                 logger.info("Attempting to CMORize using NCL script %s",
                             reformat_script)
                 # copy over the reformat script
-                call(['cp', reformat_script, out_data_dir])
+                subprocess.call(['cp', reformat_script, out_data_dir])
                 # call the ncl script
                 _run_ncl_script(in_data_dir,
                                 out_data_dir,
@@ -132,8 +131,8 @@ def cmor_reformat(config, obs_list):
                 logger.info("Attempting to CMORize using Python script %s",
                             py_reformat_script)
                 # copy over the reformat script
-                call(['cp', py_reformat_script,
-                      os.path.join(out_data_dir, 'py_cmor.py')])
+                subprocess.call(['cp', py_reformat_script,
+                                 os.path.join(out_data_dir, 'py_cmor.py')])
                 sys.path.append(out_data_dir)
                 _run_pyt_script(in_data_dir, out_data_dir)
             else:
