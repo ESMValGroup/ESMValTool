@@ -5,11 +5,11 @@ from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata.
+        Fix cube metadata.
 
         Parameters
         ----------
@@ -30,11 +30,11 @@ class allvars(Fix):
 
 
 class siconc(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata.
+        Fix cube metadata.
 
         Add typesi coordinate
 
@@ -60,7 +60,7 @@ class zg(Fix):
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata.
+        Fix cube metadata.
 
         Simplify lat lon coordinates to make them 1D
 
