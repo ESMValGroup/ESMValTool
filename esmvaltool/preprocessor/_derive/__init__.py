@@ -12,14 +12,48 @@ logger = logging.getLogger(__name__)
 
 
 def get_required(short_name, field=None):
-    """Get variable short_name and field pairs required to derive variable."""
+    """Get variable short_name and field pairs required to derive variable.
+
+    It is also possible to process fx variables using the tuple ('fx_files',
+    [...]), e.g. ('fx_files', ['sftlf, 'orog']).
+
+    Parameters
+    ----------
+    short_name : str
+        `short_name` of the derived variable.
+    field : str, optional
+        `field_type` of the derived variable.
+
+    Returns
+    -------
+    list of tuples
+        List of tuples `(short_name, field)` of all variables required for
+        derivation, in case of fx variables also the tuple `('fx_files',
+        [...]).
+
+    """
     frequency = field[2] if field else 'M'
     derived_var = DerivedVariableBase.get_derived_variable(short_name)
     return derived_var.get_required(frequency)
 
 
 def derive(cubes, variable):
-    """Derive variable."""
+    """Derive variable.
+
+    Parameters
+    ----------
+    cubes : iris.cube.CubeList
+        Includes all the needed variables for derivation defined in
+        :func:`get_required`.
+    variable : dict
+        All information of the derived variable.
+
+    Returns
+    -------
+    iris.cube.Cube
+        The new derived variable.
+
+    """
     short_name = variable['short_name']
 
     # Do nothing if variable is already available
