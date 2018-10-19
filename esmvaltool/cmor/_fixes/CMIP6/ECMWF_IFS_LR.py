@@ -1,7 +1,4 @@
-"""Fixes for EC-Earth3-HR PRIMAVERA project data"""
-from netCDF4 import Dataset
-import iris.coords
-import iris.util
+"""Fixes for ECMWF-IFS-LR CMIP6 project data"""
 from ..fix import Fix
 
 

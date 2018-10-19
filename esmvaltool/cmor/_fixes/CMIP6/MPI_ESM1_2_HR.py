@@ -1,7 +1,4 @@
-"""Fixes for EC-Earth3-HR PRIMAVERA project data"""
-from netCDF4 import Dataset
-import iris.coords
-import iris.util
+"""Fixes for EC-Earth3-HR CMIP6 project data"""
 from iris.cube import CubeList
 from ..fix import Fix
 
@@ -23,8 +20,8 @@ class zg(Fix):
         Cube:
             Fixed cube. It is the same instance that was received
         """
-        zg = cube.coord('air_pressure')
-        zg.var_name = 'plev'
+        plev = cube.coord('air_pressure')
+        plev.var_name = 'plev'
         slices = CubeList(reversed(
             [lat_slice for lat_slice in cube.slices_over('latitude')]
         ))
