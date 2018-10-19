@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from subprocess import call
+import subprocess
 
 from ._task import write_ncl_settings
 
@@ -67,7 +68,11 @@ def _run_ncl_script(in_dir,
     _write_ncl_infofile(project, dataset, out_dir)
     ncl_call = ['ncl', os.path.basename(reformat_script)]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
-    call(ncl_call)
+    process = subprocess.Popen(ncl_call, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+    output, _ = process.communicate()
+    for oline in str(output).split('\\n'):
+        logger.info('[NCL] ' + oline)
 
 
 def _run_pyt_script(in_dir, out_dir):
