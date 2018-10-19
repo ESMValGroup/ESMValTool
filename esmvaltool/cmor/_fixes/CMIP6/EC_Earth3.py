@@ -92,5 +92,6 @@ class zg(Fix):
 
 
 class tas(zg):
-    """Fixes for surface temperature variable"""
+    """Fixes for surface temperature variable."""
+
     pass
