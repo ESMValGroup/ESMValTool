@@ -93,7 +93,7 @@ def cmor_reformat(config, obs_list):
 
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
-    logger.info("We will be processing %s", datasets)
+    logger.info("Processing datasets %s", datasets)
 
     # assemble i/o information
     project_info = {}
@@ -117,8 +117,8 @@ def cmor_reformat(config, obs_list):
             # figure out what language the script is in
             if os.path.isfile(reformat_script_root + '.ncl'):
                 reformat_script = reformat_script_root + '.ncl'
-                logger.info("Attempting to CMORize using NCL script %s",
-                            reformat_script)
+                logger.info("CMORizing dataset %s using NCL script %s",
+                            dataset, reformat_script)
                 # copy over the reformat script
                 subprocess.call(['cp', reformat_script, out_data_dir])
                 # call the ncl script
@@ -128,8 +128,8 @@ def cmor_reformat(config, obs_list):
                                 reformat_script)
             elif os.path.isfile(reformat_script_root + '.py'):
                 py_reformat_script = reformat_script_root + '.py'
-                logger.info("Attempting to CMORize using Python script %s",
-                            py_reformat_script)
+                logger.info("CMORizing dataset %s using Python script %s",
+                            dataset, py_reformat_script)
                 # copy over the reformat script
                 subprocess.call(['cp', py_reformat_script,
                                  os.path.join(out_data_dir, 'py_cmor.py')])

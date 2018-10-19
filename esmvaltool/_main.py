@@ -180,12 +180,13 @@ def process_reformat(config_user, obs_list=None):
     timestamp_format = "%Y-%m-%d %H:%M:%S"
 
     logger.info(
-        "Starting the ESMValTool CMORization Mode v%s at time: %s UTC",
+        "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp1.strftime(timestamp_format))
+    logger.info("CMORization Mode for observational data")
 
     logger.info(70 * "-")
-    logger.info("INPUT DIR    = %s", config_user["rootpath"]["RAWOBS"][0])
-    logger.info("OUTPUT DIR = %s", config_user["output_dir"])
+    logger.info("INPUTDIR  = %s", config_user["rootpath"]["RAWOBS"][0])
+    logger.info("OUTPUTDIR = %s", config_user["output_dir"])
     logger.info(70 * "-")
 
     # do the main business
@@ -200,7 +201,9 @@ def process_reformat(config_user, obs_list=None):
     logger.info(
         "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
         __version__, timestamp2.strftime(timestamp_format))
-    logger.info("Time for running the recipe was: %s", timestamp2 - timestamp1)
+    logger.info(
+        "Time for running the CMORization scripts was: %s",
+        timestamp2 - timestamp1)
 
 
 def process_recipe(recipe_file, config_user):
@@ -217,7 +220,7 @@ def process_recipe(recipe_file, config_user):
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
-    logger.info("RECIPE   = %s", recipe_file)
+    logger.info("RECIPE     = %s", recipe_file)
     logger.info("RUNDIR     = %s", config_user['run_dir'])
     logger.info("WORKDIR    = %s", config_user["work_dir"])
     logger.info("PREPROCDIR = %s", config_user["preproc_dir"])
