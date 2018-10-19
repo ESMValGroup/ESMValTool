@@ -1,4 +1,4 @@
-"""Fixes for HadGEM3-GC31-MM CMIP6 project data"""
+"""Fixes for HadGEM3-GC31-MM CMIP6 project data."""
 from ..fix import Fix
 
 

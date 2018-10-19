@@ -1,13 +1,13 @@
-"""Fixes for ECMWF-IFS-LR CMIP6 project data"""
+"""Fixes for ECMWF-IFS-LR CMIP6 project data."""
 from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Parameters
         ----------

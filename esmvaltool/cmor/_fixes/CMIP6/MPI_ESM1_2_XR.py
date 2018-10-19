@@ -1,14 +1,14 @@
-"""Fixes for EC-Earth3-HR CMIP6 project data"""
+"""Fixes for MPI-ESM1-2-XR CMIP6 project data."""
 from iris.cube import CubeList
 from ..fix import Fix
 
 
 class zg(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Parameters
         ----------

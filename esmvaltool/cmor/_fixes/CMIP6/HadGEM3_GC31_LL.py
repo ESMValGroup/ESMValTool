@@ -1,13 +1,13 @@
-"""Fixes for HadGEM3-GC31-LL CMIP6 project data"""
+"""Fixes for HadGEM3-GC31-LL CMIP6 project data."""
 from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cube):
         """
-        Fixes cube metadata
+        Fixes cube metadata.
 
         Parameters
         ----------
