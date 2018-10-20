@@ -23,6 +23,7 @@ from numpy import ma
 
 from . import _regrid_esmpy
 from ..cmor.table import CMOR_TABLES
+from ..cmor.fix import fix_file, fix_metadata
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -453,7 +454,8 @@ def get_cmor_levels(cmor_table, coordinate):
                          .format(coordinate, cmor_table))
 
 
-def get_reference_levels(filename, coordinate='air_pressure'):
+def get_reference_levels(filename, project, dataset, short_name, fix_dir,
+                         coordinate='air_pressure'):
     """Get level definition from a CMOR coordinate.
 
     Parameters
@@ -475,7 +477,11 @@ def get_reference_levels(filename, coordinate='air_pressure'):
 
     """
     try:
-        coord = iris.load_cube(filename).coord(coordinate)
+        filename = fix_file(filename, short_name, project, dataset, fix_dir)
+        cube = iris.load_cube(filename)
+        cube = fix_metadata(cube, short_name, project, dataset)
+        coord = cube.coord(coordinate)
+
     except iris.exceptions.CoordinateNotFoundError:
         raise ValueError('Coordinate {} not available in {}'.format(
             coordinate, filename))

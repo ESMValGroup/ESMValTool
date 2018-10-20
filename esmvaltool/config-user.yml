@@ -30,14 +30,15 @@ max_parallel_tasks: 1
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
 config_developer_file: null
+# Get profiling information for diagnostics
+# Only available for Python diagnostics
+profile_diagnostic: false
 
+# Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  # Rootpath to CMIP5 data
-  CMIP5: ~/esmvaltool_input
-  # Rootpath to OBS data
-  OBS: ~/esmvaltool_input
-  # Default
-  default: ~/esmvaltool_input
+  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  OBS: ~/obs_inputpath
+  default: ~/default_inputpath
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
