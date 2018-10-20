@@ -27,7 +27,7 @@ class DerivedVariable(DerivedVariableBase):
         return [('rsdt', 'T2' + frequency + 's'),
                 ('rsut', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute toa net downward shortwave radiation.
 
         Parameters
@@ -35,6 +35,9 @@ class DerivedVariable(DerivedVariableBase):
         cubes : iris.cube.CubeList
             `CubeList` containing `rsut` (`toa_outgoing_shortwave_flux`) and
             `rsdt` (`toa_incoming_shortwave_flux`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

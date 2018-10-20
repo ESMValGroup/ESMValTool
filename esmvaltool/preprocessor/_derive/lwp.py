@@ -31,7 +31,7 @@ class DerivedVariable(DerivedVariableBase):
         return [('clwvi', 'T2' + frequency + 's'),
                 ('clivi', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute liquid water path.
 
         Liquid water path is calculated by subtracting `clivi` (ice water) from
@@ -45,6 +45,9 @@ class DerivedVariable(DerivedVariableBase):
             `CubeList` containing `clwvi`
             (`atmosphere_cloud_condensed_water_content`) and `clivi`
             (`atmosphere_cloud_ice_content`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

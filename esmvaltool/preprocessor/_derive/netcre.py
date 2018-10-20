@@ -29,7 +29,7 @@ class DerivedVariable(DerivedVariableBase):
                 ('rsut', 'T2' + frequency + 's'),
                 ('rsutcs', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute net cloud radiative effect.
 
         Calculate net cloud radiative effect as sum of longwave and shortwave
@@ -42,6 +42,9 @@ class DerivedVariable(DerivedVariableBase):
             `rlutcs` (`toa_outgoing_longwave_flux_assuming_clear_sky`),
             `rsut` (`toa_outgoing_shortwave_flux`) and `rsutcs`
             (`toa_outgoing_shortwave_flux_assuming_clear_sky`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

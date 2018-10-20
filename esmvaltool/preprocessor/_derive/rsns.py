@@ -27,7 +27,7 @@ class DerivedVariable(DerivedVariableBase):
         return [('rsds', 'T2' + frequency + 's'),
                 ('rsus', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute surface net downward shortwave radiation.
 
         Parameters
@@ -36,6 +36,9 @@ class DerivedVariable(DerivedVariableBase):
             `CubeList` containing `rsus`
             (`surface_upwelling_shortwave_flux_in_air`) and `rsds`
             (`surface_downwelling_shortwave_flux_in_air`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

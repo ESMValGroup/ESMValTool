@@ -27,7 +27,7 @@ class DerivedVariable(DerivedVariableBase):
         return [('rlut', 'T2' + frequency + 's'),
                 ('rlutcs', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute longwave cloud radiative effect.
 
         Parameters
@@ -35,6 +35,9 @@ class DerivedVariable(DerivedVariableBase):
         cubes : iris.cube.CubeList
             `CubeList` containing `rlut` (`toa_outgoing_longwave_flux`) and
             `rlutcs` (`toa_outgoing_longwave_flux_assuming_clear_sky`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

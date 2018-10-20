@@ -27,13 +27,16 @@ class DerivedVariable(DerivedVariableBase):
         """
         return [('clisccp', 'T4' + frequency)]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute ISCCP high level thick cloud area fraction.
 
         Parameters
         ----------
         cubes : iris.cube.CubeList
             `CubeList` containing `clisccp` (`isccp_cloud_area_fraction`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

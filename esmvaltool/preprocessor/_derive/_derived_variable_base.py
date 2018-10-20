@@ -45,7 +45,7 @@ class DerivedVariableBase(object):
         raise NotImplementedError("Don't know how to derive variable "
                                   "'{}'".format(self.short_name))
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute desired derived variable.
 
         This method needs to be overridden in the child class belonging to the
@@ -56,6 +56,9 @@ class DerivedVariableBase(object):
         cubes : iris.cube.CubeList
             Includes all the needed variables for derivation defined in
             :func:`get_required`.
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

@@ -41,7 +41,7 @@ def get_required(short_name, field=None):
     return derived_var.get_required(frequency)
 
 
-def derive(cubes, variable):
+def derive(cubes, variable, fx_files=None):
     """Derive variable.
 
     Parameters
@@ -51,6 +51,9 @@ def derive(cubes, variable):
         :func:`get_required`.
     variable : dict
         All information of the derived variable.
+    fx_files : dict, optional
+        If required, dictionary containing fx files  with `short_name`
+        (key) and path (value) of the fx variable.
 
     Returns
     -------
@@ -67,7 +70,7 @@ def derive(cubes, variable):
     # Preprare input cubes and derive correct variable
     cubes = iris.cube.CubeList(cubes)
     derived_var = DerivedVariableBase.get_derived_variable(short_name)
-    cube = derived_var.calculate(cubes)
+    cube = derived_var.calculate(cubes, fx_files)
 
     # Set standard attributes
     cube.var_name = short_name
