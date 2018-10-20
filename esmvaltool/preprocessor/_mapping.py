@@ -76,7 +76,7 @@ def ref_to_dims_index(cube, ref_to_slice):
             try:
                 # attempt to handle as dimension index
                 dim = int(ref)
-            except ValueError:
+            except (ValueError, TypeError):
                 raise ValueError('{} Incompatible type {} for '
                                  'slicing'.format(ref, type(ref)))
             if dim < 0 or dim > cube.ndim:
@@ -85,9 +85,6 @@ def ref_to_dims_index(cube, ref_to_slice):
                 raise ValueError(msg)
             dim_to_slice.append(dim)
     dim_to_slice = np.unique(dim_to_slice)
-    if len(set(dim_to_slice)) != len(dim_to_slice):
-        msg = 'The requested coordinates are not orthogonal.'
-        raise ValueError(msg)
     return dim_to_slice
 
 
@@ -104,15 +101,13 @@ def get_associated_coords(cube, dimensions):
         if dim not in dim_set:
             dims.append(dim)
             dim_set.add(dim)
-    dim_coords = set(
-        itertools.chain.from_iterable([
-            cube.coords(contains_dimension=i, dim_coords=True) for i in dims
-        ]))
-    aux_coords = set(
-        itertools.chain.from_iterable([
-            cube.coords(contains_dimension=i, dim_coords=False) for i in dims
-        ]))
-    return list(dim_coords), list(aux_coords)
+    dim_coords = [
+        cube.coords(contains_dimension=i, dim_coords=True)[0] for i in dims
+    ]
+    aux_coords = [
+        cube.coords(contains_dimension=i, dim_coords=False)[0] for i in dims
+    ]
+    return dim_coords, aux_coords
 
 
 def get_empty_data(shape):
@@ -138,18 +133,6 @@ def get_slice_spec(cube, ref_to_slice):
     slice_shape = tuple(cube.shape[d] for d in slice_dims)
     dim_coords, aux_coords = get_associated_coords(cube, slice_dims)
     return slice_shape, dim_coords, aux_coords
-
-
-def check_slice_spec(shape, dim_coords):
-    """Check consistency of slice specification"""
-    if shape is None:
-        shape = tuple(c.shape[0] for c in dim_coords)
-    if dim_coords is not None:
-        for length, coord in zip(shape, dim_coords):
-            if length != coord.shape[0]:
-                raise ValueError('Invalid slice: shape and '
-                                 'dim_coord sizes disagree.')
-    return shape
 
 
 def index_iterator(dims_to_slice, shape):
@@ -186,7 +169,7 @@ def map_slices(src, func, src_rep, dst_rep):
     src: :class:`iris.cube.Cube`
         Source cube to be mapped.
     func: callable
-        Callable that takes a single cube and returns a single cube.
+        Callable that takes a single cube and returns a single numpy array.
     src_rep: :class:`iris.cube.Cube`
         Source representant that specifies the dimensions to be removed from
         the source cube.
