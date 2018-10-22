@@ -90,8 +90,13 @@ SCRIPTS = {
     'diagnostic.R':
     dedent("""
         library(yaml)
-        settings <- Sys.getenv("settings")
-        print(paste0(INFO    Loading settings from ", settings))
+
+        args <- commandArgs(trailingOnly = TRUE)
+        print(paste0("INFO    Loading settings from ", args[1]))
+        settings <- yaml::read_yaml(args[1])
+
+        print(paste0("INFO    Writing settings to ", settings$setting_name))
+        yaml::write_yaml(settings, settings$setting_name)
         """),
 }
 
