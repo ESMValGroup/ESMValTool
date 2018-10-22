@@ -33,6 +33,9 @@ config_developer_file: null
 # Get profiling information for diagnostics
 # Only available for Python diagnostics
 profile_diagnostic: false
+# Choose if automatic downloads should go to a temporary folder or to the main
+# repository
+download_to_repository: false
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:

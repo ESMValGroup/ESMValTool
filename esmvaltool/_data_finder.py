@@ -197,8 +197,9 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _find_input_dirs(variable, rootpath, drs, fx_var=None):
-    """Return a the full paths to input directories."""
+def list_input_dirs(variable, rootpath, drs, fx_var=None,
+                    skip_non_existent=True):
+    """Return all the full paths to input directories."""
     project = variable['project']
 
     root = get_rootpath(rootpath, project)
@@ -210,11 +211,14 @@ def _find_input_dirs(variable, rootpath, drs, fx_var=None):
         for base_path in root:
             dirname = os.path.join(base_path, dirname_template)
             dirname = _resolve_latestversion(dirname)
-            if os.path.exists(dirname):
-                logger.debug("Found %s", dirname)
+            if skip_non_existent:
                 dirnames.append(dirname)
             else:
-                logger.debug("Skipping non-existent %s", dirname)
+                if os.path.exists(dirname):
+                    logger.debug("Found %s", dirname)
+                    dirnames.append(dirname)
+                else:
+                    logger.debug("Skipping non-existent %s", dirname)
 
     return dirnames
 
@@ -232,7 +236,7 @@ def _find_input_files(variable, rootpath, drs, fx_var=None):
                  fx_var + ' fx ' if fx_var else '', variable['short_name'],
                  variable['dataset'])
 
-    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
+    input_dirs = list_input_dirs(variable, rootpath, drs, fx_var)
     filename_glob = _get_filename_glob(variable, drs, fx_var)
     files = find_files(input_dirs, filename_glob)
 

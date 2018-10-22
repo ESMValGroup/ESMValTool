@@ -35,6 +35,7 @@ def read_config_user_file(config_file, recipe_name):
         'run_diagnostic': True,
         'profile_diagnostic': False,
         'config_developer_file': None,
+        'download_to_repository': False,
         'drs': {},
     }
 

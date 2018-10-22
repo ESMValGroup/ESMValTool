@@ -425,10 +425,14 @@ def _get_default_settings(variable, config_user, derive=False):
 
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
-        # TODO: make this respect drs or download to preproc dir?
+        # TODO: make this respect drs
         download_folder = os.path.join(config_user['preproc_dir'], 'downloads')
         settings['download'] = {
             'dest_folder': download_folder,
+            'variable': variable,
+            'rootpath': config_user['rootpath'],
+            'drs': config_user['drs'],
+            'to_repository': config_user['download_to_repository'],
         }
 
     # Configure loading
