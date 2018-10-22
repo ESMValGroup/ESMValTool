@@ -68,3 +68,27 @@ class so(Fix):
         cube.units = '1e3'
 
         return cube
+
+class tas(Fix):
+    """Fixes for tas"""
+
+    def fix_metadata(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between cmor_version etc in different files
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        for attr in ['table_id', 'processing_code_information', 'cmor_version']:
+            if attr in cube.attributes:
+                del cube.attributes[attr]
+
+        return cube
