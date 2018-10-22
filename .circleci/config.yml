@@ -182,7 +182,7 @@ jobs:
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test
+            python setup.py test --installation
             ncl -V
       - store_artifacts:
           path: /logs
