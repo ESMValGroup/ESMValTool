@@ -433,6 +433,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'rootpath': config_user['rootpath'],
             'drs': config_user['drs'],
             'to_repository': config_user['download_to_repository'],
+            'compress_downloads': config_user['compress_downloads'],
         }
 
     # Configure loading

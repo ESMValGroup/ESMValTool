@@ -2,6 +2,7 @@
 import logging
 import os
 import subprocess
+import shutil
 
 from .._data_finder import get_start_end_year, select_files, list_input_dirs
 
@@ -60,18 +61,19 @@ def synda_download(synda_name, dest_folder, variable, rootpath, drs):
             'synda', 'get', '--dest_folder={}'.format(dest_folder),
             '--verify_checksum', synda_name
         ]
-        cmd = ' '.join(cmd)
-        logger.debug("Running: %s", cmd)
-        subprocess.check_call(cmd, shell=True)
+        logger.debug("Running: %s", ' '.join(cmd))
+        subprocess.check_call(cmd)
 
     return local_file
 
 
-def download(files, dest_folder, variable, rootpath, drs, to_repository):
+def download(files, dest_folder, variable, rootpath, drs,
+             to_repository, compress_downloads):
     """Download files that are not available locally"""
     if to_repository:
-        dest_folder = list_input_dirs(variable, rootpath, drs,
-                                    skip_non_existent=False)[0]
+        dest_folder = list_input_dirs(
+            variable, rootpath, drs, skip_non_existent=False
+        )[0]
 
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
@@ -85,6 +87,14 @@ def download(files, dest_folder, variable, rootpath, drs, to_repository):
             rootpath=rootpath,
             drs=drs
         )
+        if compress_downloads:
+            cmd = [
+                'nccopy', '-4', '-d', '4', '-s',
+                local_file, '{}.compressed'.format(local_file)
+            ]
+            logger.debug("Running: %s", cmd)
+            subprocess.check_call(cmd)
+            shutil.move('{}.compressed'.format(local_file), local_file)
         local_files.append(local_file)
 
     return local_files

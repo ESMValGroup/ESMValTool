@@ -36,6 +36,10 @@ profile_diagnostic: false
 # Choose if automatic downloads should go to a temporary folder or to the main
 # repository
 download_to_repository: false
+# Choose if automatic downloads are automatically converted to NetCDF4 and
+# compressed
+compress_downloads: false
+
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
