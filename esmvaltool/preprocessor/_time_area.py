@@ -44,6 +44,15 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
         my_constraint = iris.Constraint(
             time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
     cube_slice = mycube.extract(my_constraint)
+
+    # Issue when time dimension was removed when only one point as selected.
+    if cube_slice.ndim != mycube.ndim:
+        time_1 = mycube.coord('time')
+        time_2 = cube_slice.coord('time')
+        if time_1 == time_2:
+            print('No change needed to time.' )
+            return mycube
+
     return cube_slice
 
 
