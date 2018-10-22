@@ -333,7 +333,7 @@ class CMORCheck(object):
     def _check_coord_monotonicity_and_direction(self, cmor, coord, var_name):
         if not coord.is_monotonic():
             self.report_error(self._is_msg, var_name, 'monotonic')
-
+        if len(coord.points) == 1: return
         if cmor.stored_direction:
             if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
