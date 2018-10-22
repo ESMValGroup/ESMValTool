@@ -80,7 +80,7 @@ def test_nclcodestyle():
 
 
 def test_r_lint():
-    """Test R lint"""
+    """Test R lint."""
     environ = dict(os.environ)
     try:
         os.environ["LINTR_COMMENT_BOT"] = "FALSE"
