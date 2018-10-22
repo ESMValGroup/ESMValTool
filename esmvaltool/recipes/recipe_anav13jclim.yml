@@ -53,13 +53,6 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
 
-  regrid_to_ref:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-
   landmask:
     mask_landsea:
       mask_out: sea
@@ -69,6 +62,14 @@ preprocessors:
       target_grid: ref_dataset
       regrid_scheme: linear
     mask_fillvalues: True
+
+  regrid_to_ref:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
 
 
 diagnostics:
@@ -287,8 +288,8 @@ diagnostics:
     realms:
       - land
     variables:
-      lai: &landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: landmask_and_regrid
+      lai_grid: &regrid_Lmon_1986_2005_refLAI3g
+        preprocessor: regridding
         project: CMIP5
         mip: Lmon
         field: T2Ms
@@ -318,9 +319,9 @@ diagnostics:
     realms:
       - land
     variables:
-      lai:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: landmask
+      lai_grid:
+        <<: *regrid_Lmon_1986_2005_refLAI3g
+        preprocessor: noop
     additional_datasets: *lai_datasets
     scripts:
       main_global:
@@ -346,8 +347,8 @@ diagnostics:
     realms:
       - land
     variables:
-      gpp:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+      gpp_grid:
+        <<: *regrid_Lmon_1986_2005_refLAI3g
         reference_dataset: MTE
         plot_units: PgC y-1
     additional_datasets: &gpp_datasets
@@ -370,9 +371,9 @@ diagnostics:
     realms:
       - land
     variables:
-      gpp:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
-        preprocessor: landmask
+      gpp_grid:
+        <<: *regrid_Lmon_1986_2005_refLAI3g
+        preprocessor: noop
         reference_dataset: MTE
         plot_units: PgC y-1
     additional_datasets: *gpp_datasets
@@ -402,14 +403,14 @@ diagnostics:
   #   realms:
   #     - land
   #   variables:
-  #     cSoil:
-  #       <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+  #     cSoil_grid:
+  #       <<: *regrid_Lmon_1986_2005_refLAI3g
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
-  #     cVeg:
-  #       <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+  #     cVeg_grid:
+  #       <<: *regrid_Lmon_1986_2005_refLAI3g
   #       reference_dataset: HWSD
   #       plot_units: PgC
   #       additional_datasets:
@@ -434,11 +435,12 @@ diagnostics:
   # diag_main_fgco2:
   # description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
   #   variables:
-  #     fgco2:
+  #     fgco2_grid:
   #       <<: *landmaskregrid_Amon_1901_2005_refCRU
   #       preprocessor: # FIXME
   #       mip: Omon
   #       reference_dataset: # FIXME
+  #       derive: True
   #       additional_datasets:
   #         - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
   #   additional_datasets: *nbp_datasets
@@ -540,7 +542,7 @@ diagnostics:
       - land
     variables:
       nbp_grid:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+        <<: *regrid_Lmon_1986_2005_refLAI3g
         preprocessor: regrid_to_ref
         reference_dataset: JMA-TRANSCOM
     additional_datasets: *nbp_datasets
@@ -568,8 +570,8 @@ diagnostics:
     realms:
       - land
     variables:
-      lai:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+      lai_grid:
+        <<: *regrid_Lmon_1986_2005_refLAI3g
         preprocessor: regrid_to_ref
     additional_datasets: *lai_datasets
     scripts:
@@ -596,8 +598,8 @@ diagnostics:
     realms:
       - land
     variables:
-      gpp:
-        <<: *landmaskregrid_Lmon_1986_2005_refLAI3g
+      gpp_grid:
+        <<: *regrid_Lmon_1986_2005_refLAI3g
         preprocessor: regrid_to_ref
         reference_dataset: MTE
     additional_datasets: *gpp_datasets
