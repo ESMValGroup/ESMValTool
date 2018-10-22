@@ -3,10 +3,10 @@
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class lwcre(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwcre`."""
 
     def get_required(self, frequency):
@@ -27,7 +27,7 @@ class lwcre(DerivedVariable):  # noqa
         return [('rlut', 'T2' + frequency + 's'),
                 ('rlutcs', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute longwave cloud radiative effect.
 
         Parameters
@@ -35,6 +35,9 @@ class lwcre(DerivedVariable):  # noqa
         cubes : iris.cube.CubeList
             `CubeList` containing `rlut` (`toa_outgoing_longwave_flux`) and
             `rlutcs` (`toa_outgoing_longwave_flux_assuming_clear_sky`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

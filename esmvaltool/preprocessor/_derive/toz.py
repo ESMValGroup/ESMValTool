@@ -8,7 +8,7 @@ import numba
 import numpy as np
 from scipy import constants
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
 # Constants
@@ -23,7 +23,7 @@ MW_O3_UNIT = cf_units.Unit('g mol^-1')
 DOBSON_UNIT = cf_units.Unit('2.69e20 m^-2')
 
 
-class toz(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
     def get_required(self, frequency):
@@ -44,7 +44,7 @@ class toz(DerivedVariable):  # noqa
         return [('tro3', 'T3' + frequency),
                 ('ps', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute total column ozone.
 
         The surface pressure is used as a lower integration bound. A fixed
@@ -55,6 +55,9 @@ class toz(DerivedVariable):  # noqa
         cubes : iris.cube.CubeList
             `CubeList` containing `tro3` (`mole_fraction_of_ozone_in_air`) and
             `ps` (`surface_air_pressure`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

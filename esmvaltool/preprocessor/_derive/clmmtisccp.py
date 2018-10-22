@@ -1,14 +1,14 @@
-"""Derivation of variable `clhmtisccp`."""
+"""Derivation of variable `clmmtisccp`."""
 
 
 import iris
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class clhmtisccp(DerivedVariable):  # noqa
-    """Derivation of variable `clhmtisccp`."""
+class DerivedVariable(DerivedVariableBase):
+    """Derivation of variable `clmmtisccp`."""
 
     def get_required(self, frequency):
         """Get variable `short_name` and `field` pairs required for derivation.
@@ -27,18 +27,21 @@ class clhmtisccp(DerivedVariable):  # noqa
         """
         return [('clisccp', 'T4' + frequency)]
 
-    def calculate(self, cubes):
-        """Compute ISCCP high level medium-thickness cloud area fraction.
+    def calculate(self, cubes, fx_files=None):
+        """Compute ISCCP middle level medium-thickness cloud area fraction.
 
         Parameters
         ----------
         cubes : iris.cube.CubeList
             `CubeList` containing `clisccp` (`isccp_cloud_area_fraction`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------
         iris.cube.Cube
-            `Cube` containing ISCCP high level medium-thickness cloud area
+            `Cube` containing ISCCP middle level medium-thickness cloud area
             fraction.
 
         """
@@ -47,18 +50,18 @@ class clhmtisccp(DerivedVariable):  # noqa
 
         tau = iris.Constraint(
             atmosphere_optical_thickness_due_to_cloud=lambda t: 3.6 < t <= 23.)
-        plev = iris.Constraint(air_pressure=lambda p: p <= 44000.)
-        clhmtisccp_cube = clisccp_cube
-        clhmtisccp_cube = clhmtisccp_cube.extract(tau & plev)
+        plev = iris.Constraint(air_pressure=lambda p: 44000. < p <= 68000.)
+        clmmtisccp_cube = clisccp_cube
+        clmmtisccp_cube = clmmtisccp_cube.extract(tau & plev)
         coord_names = [
-            coord.standard_name for coord in clhmtisccp_cube.coords()
+            coord.standard_name for coord in clmmtisccp_cube.coords()
             if len(coord.points) > 1
         ]
         if 'atmosphere_optical_thickness_due_to_cloud' in coord_names:
-            clhmtisccp_cube = clhmtisccp_cube.collapsed(
+            clmmtisccp_cube = clmmtisccp_cube.collapsed(
                 'atmosphere_optical_thickness_due_to_cloud', iris.analysis.SUM)
         if 'air_pressure' in coord_names:
-            clhmtisccp_cube = clhmtisccp_cube.collapsed('air_pressure',
+            clmmtisccp_cube = clmmtisccp_cube.collapsed('air_pressure',
                                                         iris.analysis.SUM)
 
-        return clhmtisccp_cube
+        return clmmtisccp_cube

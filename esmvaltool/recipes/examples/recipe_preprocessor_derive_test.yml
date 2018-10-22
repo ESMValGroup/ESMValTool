@@ -36,6 +36,17 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM2-A}
+      nbp_grid:
+        project: CMIP5
+        mip: Lmon
+        exp: historical
+        start_year: 2000
+        end_year: 2005
+        field: T2Ms
+        derive: true
+        additional_datasets:
+          - {dataset: CanESM2,    ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
     scripts: null
 
   diag2:

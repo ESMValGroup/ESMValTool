@@ -3,10 +3,10 @@
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class rlns(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `rlns`."""
 
     def get_required(self, frequency):
@@ -27,7 +27,7 @@ class rlns(DerivedVariable):  # noqa
         return [('rlds', 'T2' + frequency + 's'),
                 ('rlus', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute surface net downward longwave radiation.
 
         Parameters
@@ -36,6 +36,9 @@ class rlns(DerivedVariable):  # noqa
             `CubeList` containing `rlds`
             (`surface_downwelling_longwave_flux_in_air`) and `rlus`
             (`surface_upwelling_longwave_flux_in_air`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

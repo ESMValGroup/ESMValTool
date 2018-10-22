@@ -2,22 +2,23 @@
 
 
 import importlib
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-class DerivedVariable(object):
+class DerivedVariableBase(object):
     """Base class for derived variables."""
 
-    def __init__(self, variable=None):
-        """Save `variable` dict and add `short_name` if necessary."""
-        if variable is None:
-            self.variable = {}
-        else:
-            self.variable = dict(variable)
-        if 'short_name' not in self.variable:
-            self.variable['short_name'] = self.__class__.__name__
+    def __init__(self, short_name='unknown_variable'):
+        """Save `short_name` of derived variable."""
+        self.short_name = short_name
 
     def get_required(self, frequency):
         """Get variable `short_name` and `field` pairs required for derivation.
+
+        With this function, it is also possible to request fx variables using
+        the tuple ('fx_files', [...]), e.g. ('fx_files', ['sftlf', 'orog']).
 
         This method needs to be overridden in the child class belonging to the
         desired variable to derive.
@@ -30,8 +31,9 @@ class DerivedVariable(object):
         Returns
         -------
         list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
+            List of tuples `(short_name, field)` of all variables required for
+            derivation, in case of fx variables also the tuple `('fx_files',
+            [...]).
 
         Raises
         ------
@@ -41,9 +43,9 @@ class DerivedVariable(object):
 
         """
         raise NotImplementedError("Don't know how to derive variable "
-                                  "'{}'".format(self.variable['short_name']))
+                                  "'{}'".format(self.short_name))
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute desired derived variable.
 
         This method needs to be overridden in the child class belonging to the
@@ -54,6 +56,9 @@ class DerivedVariable(object):
         cubes : iris.cube.CubeList
             Includes all the needed variables for derivation defined in
             :func:`get_required`.
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------
@@ -68,10 +73,10 @@ class DerivedVariable(object):
 
         """
         raise NotImplementedError("Don't know how to derive variable "
-                                  "'{}'".format(self.variable['short_name']))
+                                  "'{}'".format(self.short_name))
 
     @staticmethod
-    def get_derived_variable(variable):
+    def get_derived_variable(short_name):
         """Select correct python module for derived variable.
 
         Get derived variable by searching for a file `short_name.py` in the
@@ -79,24 +84,28 @@ class DerivedVariable(object):
 
         Parameters
         ----------
-        variable : dict
-            Contains all information of the requested variable.
+        short_name : str
+            `short_name` of the requested variable.
 
         Returns
         -------
-        DerivedVariable
+        DerivedVariableBase
 
         """
-        derived_var = DerivedVariable(variable)
+        derived_var = DerivedVariableBase(short_name)
         try:
             derived_var_module = importlib.import_module(
-                'esmvaltool.preprocessor.derived_variables.'
-                '{0}'.format(variable['short_name']))
+                'esmvaltool.preprocessor._derive.{0}'.format(short_name))
             try:
                 derived_var = getattr(derived_var_module,
-                                      variable['short_name'])(variable)
+                                      'DerivedVariable')(short_name)
             except AttributeError:
-                pass
+                logger.warning("File ESMValTool/esmvaltool/preprocessor/"
+                               "_derive/%s.py for variable derivation does "
+                               "not contain required class 'DerivedVariable'",
+                               short_name)
         except ImportError:
-            pass
+            logger.warning("No module named '%s' in ESMValTool/esmvaltool/"
+                           "preprocessor/_derive/ for variable derivation",
+                           short_name)
         return derived_var

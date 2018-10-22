@@ -3,10 +3,10 @@
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class rtnt(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `rtnt`."""
 
     def get_required(self, frequency):
@@ -28,7 +28,7 @@ class rtnt(DerivedVariable):  # noqa
                 ('rsut', 'T2' + frequency + 's'),
                 ('rlut', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute toa net downward total radiation.
 
         Parameters
@@ -37,6 +37,9 @@ class rtnt(DerivedVariable):  # noqa
             `CubeList` containing `rsut` (`toa_outgoing_shortwave_flux`),
             `rsdt` (`toa_incoming_shortwave_flux`) and `rlut`
             (`toa_outgoing_longwave_flux`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------

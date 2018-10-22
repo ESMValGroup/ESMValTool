@@ -3,10 +3,10 @@
 
 from iris import Constraint
 
-from ._derived_variable import DerivedVariable
+from ._derived_variable_base import DerivedVariableBase
 
 
-class swcre(DerivedVariable):  # noqa
+class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `swcre`."""
 
     def get_required(self, frequency):
@@ -27,7 +27,7 @@ class swcre(DerivedVariable):  # noqa
         return [('rsut', 'T2' + frequency + 's'),
                 ('rsutcs', 'T2' + frequency + 's')]
 
-    def calculate(self, cubes):
+    def calculate(self, cubes, fx_files=None):
         """Compute shortwave cloud radiative effect.
 
         Parameters
@@ -35,6 +35,9 @@ class swcre(DerivedVariable):  # noqa
         cubes : iris.cube.CubeList
             `CubeList` containing `rsut` (`toa_outgoing_shortwave_flux`) and
             `rsutcs` (`toa_outgoing_shortwave_flux_assuming_clear_sky`).
+        fx_files : dict, optional
+            If required, dictionary containing fx files  with `short_name`
+            (key) and path (value) of the fx variable.
 
         Returns
         -------
