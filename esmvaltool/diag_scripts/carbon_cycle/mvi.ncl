@@ -302,10 +302,10 @@ begin
   ; Cap MVI (TODO: why?)
   all_data_mvi = where(all_data_mvi .lt. 10, all_data_mvi, 50)
 
-  ; Special case for LAI:
+  ; Special case for lai:
   ; Since datasets have different land covers, all sparse vegetated points must
   ; be masked
-  if (var0 .eq. "lai") then
+  if (isStrSubset(var0, "lai")) then
     all_data_yearly = where(all_data_yearly .ge. 0.025, \
                             all_data_yearly, 1.0e20)
   end if
@@ -437,9 +437,9 @@ begin
     trend_label = start_year + "-" + end_year + " Linear trend"
   end if
   if (custom_mvi_time_range) then
-    mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + " MVI"
+    mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + "~C~MVI"
   else
-    mvi_label = start_year + "-" + end_year + " MVI"
+    mvi_label = start_year + "-" + end_year + "~C~MVI"
   end if
 
   ; Pack data
