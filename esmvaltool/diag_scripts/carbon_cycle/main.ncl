@@ -234,10 +234,10 @@ begin
       min((/mean_maxyear, toint(input_file_info@end_year(idat))/)), \
       "average", "monthlyclim", True)
 
-    ; Special case for LAI:
+    ; Special case for lai:
     ; Since datasets have different land covers, all sparse vegetated points
     ; must be masked
-    if (var0 .eq. "lai") then
+    if (isStrSubset(var0, "lai")) then
       data_yearly = where(data_yearly .ge. 0.025, data_yearly, \
                           data_yearly@_FillValue)
       data_monthly = where(data_monthly .ge. 0.025, data_monthly, \
