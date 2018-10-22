@@ -125,7 +125,10 @@ def write_ncl_settings(settings, filename, mode='wt'):
             # If an array contains a str, make all items str
             if any(isinstance(v, str) or v is None for v in value):
                 value = [(str(v)) for v in value]
-            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+            if not value:
+                txt = 'NewList("fifo")'
+            else:
+                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
         else:
             txt = str(value)
         return txt
