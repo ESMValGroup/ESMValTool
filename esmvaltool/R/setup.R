@@ -38,7 +38,6 @@ if (length(package_list) == 0) {
     print("All packages are installed!")
 } else {
     print(paste("Number of packages to be installed: ", length(package_list)))
-    print(package_list)
 }
 
 for (pack in package_list) {
