@@ -29,7 +29,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
-class Fluxogram:
+class Fluxogram():
     """
     a class to draw and maintain all fluxes and storages from a model or 
     some similiar kind of thing to be drawn as a sequence of storages 

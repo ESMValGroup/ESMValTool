@@ -221,8 +221,10 @@ from matplotlib import rcParams
 import srvfile_read as srv
 import fluxogram as fluxogram
 from mkthe import *
-import lorenz_cycle as lecscript
-import fourier_coefficients as fourc
+from fourier_coefficients import *
+from lorenz_cycle import *
+#import lorenz_cycle as lecscript
+#import fourier_coefficients as fourc
 #import plot_script as plotsmod
 from plot_script import *
 
@@ -265,6 +267,8 @@ def main(cfg):
     inputpath      = commands.getoutput("pwd")
 
     cdo = Cdo()
+    fourc = Fourier_coeff()
+    lorenz = Lorenz_cycle()
     mkthe = Mkthe()
     plotsmod = Plot_script() 
 
@@ -353,7 +357,7 @@ def main(cfg):
         filenames = data.get_info_list('filename',dataset = model_name)
         #logger.info(filenames)  
         
-        print(model_name)
+        #print(model_name)
         logger.info('Processing model: {}\n'.format(model_name))
 
         hfls_file  = filenames[0]
@@ -369,14 +373,14 @@ def main(cfg):
         rsdt_file  = filenames[10]
         rsus_file  = filenames[11]
         rsut_file  = filenames[12]
-#        ta_file    = filenames[13]
-        tas_file   = filenames[13]
-        ts_file    = filenames[14]
-#        ua_file    = filenames[16]
-        uas_file   = filenames[15]
-#        va_file    = filenames[18]
-        vas_file   = filenames[16]
-#        wap_file   = filenames[20]
+        ta_file    = filenames[13]
+        tas_file   = filenames[14]
+        ts_file    = filenames[15]
+        ua_file    = filenames[16]
+        uas_file   = filenames[17]
+        va_file    = filenames[18]
+        vas_file   = filenames[19]
+        wap_file   = filenames[20]
 
         aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
         cdo.selvar('tas', input = tas_file,output = aux_file)
@@ -740,6 +744,9 @@ def main(cfg):
 
         if lec in {'y','yes'}: 
             logger.info('Computation of the Lorenz Energy Cycle (year by year)\n')
+            lecpath   = os.path.join(plotpath2, 'LEC_results')
+            if not os.path.exists(lecpath):
+                os.makedirs(lecpath)
             energy_file = diagworkdir + '/energy.nc'
             removeif(energy_file)
             cdo.merge(input = '{} {} {}'.format(ta_file, ua_file, va_file), 
@@ -759,26 +766,27 @@ def main(cfg):
             y = 0
             lect = np.zeros(len(yrs2))
             for yr in yrs2:
-                os.chdir(auxpath)
+                #os.chdir(auxpath)
                 yr = int(filter(str.isdigit,yr))
+                enfile_yr = diagworkdir + '/inputen.nc'
+                srvfile  = diagworkdir + '/fourier_coeff.nc'
+                ncfile = diagworkdir + '/fourier_coeff.srv'
                 cdo.selyear(yr,input='-invertlat {}'.format(energy3_file), 
-                            options = '-b F32', output='inputen.nc')
-                fourc.fourier_coeff('inputen.nc')
-                os.remove('inputen.nc')
-                cdo.copy(input = 'fourier_coeff.nc', options = '-f srv', 
-                         output = 'fourier_coeff.srv')
-                srvfile=diagworkdir + '/{}_{}_fc.srv'.format(model_name,yr)
-                ncfile=diagworkdir + '/{}_{}_fc.nc'.format(model_name,yr)
-                move('fourier_coeff.srv', srvfile)
-                move('fourier_coeff.nc', ncfile)
-                
-                diagfile = plotpath2+'/{}_{}_lec_diagram.png'.format(model_name, yr)
-                logfile = plotpath2 + '/{}_{}_lec_table.txt'.format(model_name, yr)
-                lect[y] = lecscript.lorenz(auxpath, diagworkdir, plotdir, model_name,
-                                            yr, srvfile, ncfile, diagfile, logfile)
+                            options = '-b F32', output=enfile_yr)
+                fourc.fourier_coeff(ncfile, enfile_yr)
+                os.remove(enfile_yr)
+                cdo.copy(input = ncfile, options = '-f srv', output = srvfile)
+                #srvfile=diagworkdir + '/{}_{}_fc.srv'.format(model_name,yr)
+                #ncfile=diagworkdir + '/{}_{}_fc.nc'.format(model_name,yr)
+                #move('fourier_coeff.srv', srvfile)
+                #move('fourier_coeff.nc', ncfile)
+                diagfile = lecpath+'/{}_{}_lec_diagram.png'.format(model_name, yr)
+                logfile = lecpath + '/{}_{}_lec_table.txt'.format(model_name, yr)
+                lect[y] = lorenz.lorenz(diagworkdir, model_name, yr, 
+                    srvfile, ncfile, diagfile, logfile)
                 caption = "Lorenz Energy Cycle for {}, year {}".format(model_name, yr)
                 plot_id = "#lecdiag"
-		dataIDs = "ta, ua, va, wap (time res: daily, vertical: pressure levels)"       
+                dataIDs = "ta, ua, va, wap (time res: daily, vertical: pressure levels)"       
                 #ESMValMD("both", diagfile, plot_tags, caption, plot_id, 
                 #         dataIDs, diag_script, authors)
                 y = y+1
@@ -1088,7 +1096,7 @@ def main(cfg):
                 if met in {'3'}:
                     diffentr = float(np.nanmean(vertentr_mean)) + float(np.nanmean(horzentr_mean)) - matentr
                     logger.info('Difference between the two methods: {}\n'.format(diffentr))
-                    print('Difference of the two methods:', diffentr)
+                    #print('Difference of the two methods:', diffentr)
                     diffentr_all[i,0] = diffentr
                 else:
                     pass
@@ -1111,17 +1119,17 @@ def main(cfg):
             oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'toab')
             caption = "TOA EB annual mean time series (global; NH; SH)"
             plot_id = "#TOAEBtimeser"      
-	    dataIDs = "rlut, rsdt, rsut (time res: monthly, vertical: 2D TOA)" 
+            dataIDs = "rlut, rsdt, rsut (time res: monthly, vertical: 2D TOA)" 
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
             #         diag_script, authors)
             oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'atmb')
-	    dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
+            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
             caption = "Atmospheric EB annual mean time series (global; NH; SH)"
             plot_id = "#AtmEBtimeser"       
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
             #         diag_script, authors)
             oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'surb')
-	    dataIDs = "hfls, hfss, rlds, rlus, rsds, rsus (time res: monthly, vertical: 2D TOA/surf)" 
+            dataIDs = "hfls, hfss, rlds, rlus, rsds, rsus (time res: monthly, vertical: 2D TOA/surf)" 
             caption = "Surface EB annual mean time series (global; NH; SH)"
             plot_id = "#SurEBtimeser"       
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
@@ -1129,19 +1137,19 @@ def main(cfg):
             oname = '{}/{}_transp.png'.format(plotpath2, model_name)
             caption = "Annual mean northward heat transports (total,atmospheric,oceanic)"
             plot_id = "#transp"       
-	    dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
+            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
             #         diag_script, authors)
             oname = '{}/{}_energy_climap.png'.format(plotpath2, model_name)
             caption = "Climatological annual mean energy budgets (EB) (TOA,atmospheric,surface)"
             plot_id = "#enclimap"       
-	    dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
+            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
             #         diag_script, authors)
             oname = '{}/{}_scatpeak.png'.format(plotpath2,model_name)
             caption = "Meridional heat transports hemispheric peak magnitudes vs. positions (total,atmospheric,oceanic)"
             plot_id = "#scatpeak"       
-	    dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
+            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
             #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
             #         diag_script, authors)
             logger.info('Done\n')
@@ -1199,7 +1207,7 @@ def main(cfg):
                 oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean vertical entropy production"
                 plot_id = "#verclimap"       
-	        dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, horizEntropy_file, 'shor', 
@@ -1207,7 +1215,7 @@ def main(cfg):
                 oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean horizontal entropy production"
                 plot_id = "#horclimap"       
-	        dataIDs = "rlut, rsdt rsut (time res: monthly, vertical: 2D TOA)" 
+                dataIDs = "rlut, rsdt rsut (time res: monthly, vertical: 2D TOA)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 logger.info('Done\n')
@@ -1218,7 +1226,7 @@ def main(cfg):
                 oname = '{}/{}_ssens_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean entropy production associated with sensible heat fluxes"
                 plot_id = "#ssensclimap"       
-	        dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, evapentr_file, 'sevap', 
@@ -1226,7 +1234,7 @@ def main(cfg):
                 oname = '{}/{}_sevap_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean entropy production associated with evaporation"
                 plot_id = "#sevapclimap"      
-	        dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, rainentr_file, 'srain', 
@@ -1234,7 +1242,7 @@ def main(cfg):
                 oname = '{}/{}_srain_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean entropy production associated with rainfall"
                 plot_id = "#srainclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, snowentr_file, 'ssnow', 
@@ -1242,7 +1250,7 @@ def main(cfg):
                 oname = '{}/{}_ssnow_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean entropy production associated with snowfall"
                 plot_id = "#snowclimap"       
-	        dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, phir_entr_file, 'slatpr', 
@@ -1251,7 +1259,7 @@ def main(cfg):
                 oname = '{}/{}_slatpr_climap.png'.format(plotpath2,model_name)
                 caption = "Climatological annual mean entropy production associated with phase changes ice->rain"
                 plot_id = "#slatprclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, phvs_entr_file, 'slatps', 
@@ -1260,7 +1268,7 @@ def main(cfg):
                 oname = '{}/{}_slatps_climap.png'.format(plotpath2,model_name)
                 caption = "Climatological annual mean entropy production associated with phase chanes vapour->snow"
                 plot_id = "#slatpslimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, potentr_file, 'spotp', 
@@ -1269,7 +1277,7 @@ def main(cfg):
                 oname = '{}/{}_spotp_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean entropy production associated with potential energy"
                 plot_id = "#spotpclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 logger.info('Done\n')
@@ -1280,14 +1288,14 @@ def main(cfg):
                 oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean vertical entropy production"
                 plot_id = "#verclimap"       
-	        dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2,horizEntropy_file,'shor','Horizontal entropy production',model_name)
                 oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
                 caption = "Climatological annual mean horizontal entropy production"
                 plot_id = "#hprclimap"       
-	        dataIDs = "rlut, rsdt rsut (time res: monthly, vertical: 2D TOA)" 
+                dataIDs = "rlut, rsdt rsut (time res: monthly, vertical: 2D TOA)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 logger.info('Done\n')
@@ -1297,7 +1305,7 @@ def main(cfg):
                 oname = '{}/{}_ssens_climap.png'.format(plotpath2, model_name)
                 caption = "Sensible heat fluxes"
                 plot_id = "#ssensclimap"       
-	        dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, evapentr_file, 'sevap', 
@@ -1305,7 +1313,7 @@ def main(cfg):
                 oname = '{}/{}_sevap_climap.png'.format(plotpath2, model_name)
                 caption = "Evaporation"
                 plot_id = "#sevapclimap"      
-	        dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, rainentr_file, 'srain', 
@@ -1314,7 +1322,7 @@ def main(cfg):
                 oname = '{}/{}_srain_climap.png'.format(plotpath2, model_name)
                 caption = "Rainfall precipitation"
                 plot_id = "#srainclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, snowentr_file, 'ssnow', 
@@ -1323,7 +1331,7 @@ def main(cfg):
                 oname = '{}/{}_ssnow_climap.png'.format(plotpath2, model_name)
                 caption = "Snowfall precipitation"
                 plot_id = "#snowclimap"       
-	        dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, phir_entr_file, 'slatpr', 
@@ -1332,7 +1340,7 @@ def main(cfg):
                 oname = '{}/{}_slatpr_climap.png'.format(plotpath2, model_name)
                 caption = "Phase changes ice->rain"
                 plot_id = "#slatprclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, phvs_entr_file, 'slatps', 
@@ -1341,7 +1349,7 @@ def main(cfg):
                 oname = '{}/{}_slatps_climap.png'.format(plotpath2, model_name)
                 caption = "Phase chanes water vapour->snow"
                 plot_id = "#slatpslimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 plotsmod.entropy(plotpath2, potentr_file, 'spotp', 
@@ -1349,7 +1357,7 @@ def main(cfg):
                 oname = '{}/{}_spotp_climap.png'.format(plotpath2, model_name)
                 caption = "Potential energy of the droplet"
                 plot_id = "#spotpclimap"       
-	        dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
+                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
                 #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
                 #         diag_script, authors)
                 logger.info('Done\n')
@@ -1361,78 +1369,21 @@ def main(cfg):
         i = i+1
     
     logger.info('I will now start multi-model plots')
-    if eb in {'y', 'yes'}:   
-        aux_file        = diagworkdir_up + '/aux.nc'
-        tot_transp_file = diagworkdir_up + '/total_transp_mean.nc'
-        listf = filter(lambda x: x.startswith('total_transp_mean_'),
-                      os.listdir(diagworkdir_up))
-        if modnum>1: 
-            cdo.merge(input = '{}/{} {}/{}'
-                      .format(diagworkdir_up, str(listf[0]), diagworkdir_up,
-                              str(listf[1])), output = tot_transp_file)
-            for j in np.arange(2,modnum):
-                removeif(aux_file)
-                cdo.merge(input = '{} {}/{}'
-                          .format(tot_transp_file, diagworkdir_up, listf[j]), 
-                          options = '-b F32', output = aux_file)
-                move(aux_file,tot_transp_file)
-        else:
-            inp=diagworkdir_up+'/'+listf[0]
-            move(inp,tot_transp_file)
-        atm_transp_file = diagworkdir_up+'/atmos_transp_mean.nc'.format(model_name)            
-        listf = filter(lambda x: x.startswith('atmos_transp_mean_'),
-                       os.listdir(diagworkdir_up))
-        if modnum>1: 
-            cdo.merge(input = '{}/{} {}/{}'
-                      .format(diagworkdir_up, str(listf[0]), diagworkdir_up,
-                              str(listf[1])), output = atm_transp_file)
-            for j in np.arange(2, modnum):
-                removeif(aux_file)
-                cdo.merge(input = '{} {}/{}'
-                          .format(atm_transp_file, diagworkdir_up, listf[j]),
-                          options = '-b F32', output = aux_file)
-                move(aux_file, atm_transp_file)
-        else:
-            inp=diagworkdir_up+'/'+listf[0]
-            move(inp,atm_transp_file)
-        oce_transp_file = diagworkdir_up + '/ocean_transp_mean.nc'.format(model_name)
-        listf=filter(lambda x: x.startswith('ocean_transp_mean_'),
-                     os.listdir(diagworkdir_up))
-        if modnum>1: 
-            cdo.merge(input = '{}/{} {}/{}'
-                      .format(diagworkdir_up, str(listf[0]), diagworkdir_up,
-                              str(listf[1])), output = oce_transp_file)
-            for j in np.arange(2, modnum):
-                removeif(aux_file)
-                cdo.merge(input = '{} {}/{}'
-                          .format(oce_transp_file, diagworkdir_up, listf[j]),
-                          options = '-b F32', output = aux_file)
-                move(aux_file,oce_transp_file)
-        else:
-            inp=diagworkdir_up+'/'+listf[0]
-            move(inp,oce_transp_file)
-        logger.info('Meridional heat transports')
+    if eb in {'y', 'yes'}:           
+        logger.info('Meridional heat transports\n')
         
         fig = plt.figure()
         fig.set_size_inches(12, 22)
         ax = plt.subplot(311)
         ax.set_figsize = (50,50)
-        dataset = Dataset(tot_transp_file)
-        toat = dataset.variables['total'][:]
-        lats = dataset.variables['lat'][:]
-        rank = toat.ndim
-        if rank == 1:
+        for model_name in model_names:
+            tot_transp_file = diagworkdir_up + '/total_transp_mean_{}.nc'.format(model_name)
+            dataset = Dataset(tot_transp_file)
+            name = 'total_{}'.format(model_name)
+            toat = dataset.variables[name][:]
+            lats = dataset.variables['lat'][:]
             plt.plot(np.array(lats), np.array(toat), color = 'black', 
                      linewidth = 1.)
-        else:
-            for i in np.arange(modnum):
-                plt.plot(np.array(lats), np.array(toat[i,:]),color = 'black', 
-                         linewidth = 1.)
-        #for j in np.arange(1, modnum-1):
-        #    name='total_{}'.format(str(j + 1))
-        #    toat =  dataset.variables[name][:]
-        #    lats =  np.linspace(-90, 90, len(toat))
-        #    plt.plot(lats, toat, color = 'black', linewidth = 1.)
         plt.title('Total heat transports', fontsize = 10)
         plt.xlabel('Latitude [deg]', fontsize = 10)
         plt.ylabel('[W]', fontsize = 10)
@@ -1440,24 +1391,17 @@ def main(cfg):
         plt.ylim([-6.25E15, 6.25E15])
         plt.xlim(-90, 90)
         plt.grid()
+        
         ax=plt.subplot(312)
         ax.set_figsize=(50, 50)
-        dataset = Dataset(atm_transp_file)
-        atmt=dataset.variables['atmos'][:]
-        lats=dataset.variables['lat'][:]
-        rank=toat.ndim
-        if rank == 1:
-            plt.plot(np.array(lats), np.array(atmt),color = 'black', 
+        for model_name in model_names:
+            atm_transp_file = diagworkdir_up + '/atmos_transp_mean_{}.nc'.format(model_name)
+            dataset = Dataset(atm_transp_file)
+            name = 'atmos_{}'.format(model_name)
+            atmt = dataset.variables[name][:]
+            lats = dataset.variables['lat'][:]
+            plt.plot(np.array(lats), np.array(atmt), color = 'black', 
                      linewidth = 1.)
-        else:
-            for i in np.arange(modnum):
-                plt.plot(np.array(lats), np.array(atmt[i,:]), color = 'black', 
-                         linewidth = 1.)
-        #for j in np.arange(1, modnum-1):
-        #    name='atmos_{}'.format(str(j + 1))
-        #    atmt =  dataset.variables[name][:]
-        #    lats =  np.linspace(-90, 90, len(atmt))
-        #    plt.plot(lats, atmt, color = 'black', linewidth = 1.)
         plt.title('Atmospheric heat transports', fontsize = 10)
         plt.xlabel('Latitude [deg]', fontsize = 10)
         plt.ylabel('[W]', fontsize = 10)
@@ -1465,24 +1409,17 @@ def main(cfg):
         plt.ylim([-6.25E15, 6.25E15])
         plt.xlim(-90, 90)
         plt.grid()
+        
         ax=plt.subplot(313)
         ax.set_figsize=(50, 50)
-        dataset = Dataset(oce_transp_file)
-        surt=dataset.variables['ocean'][:]
-        lats=dataset.variables['lat'][:]
-        rank=toat.ndim
-        if rank == 1:
-            plt.plot(np.array(lats), np.array(surt),color = 'black', 
+        for model_name in model_names:
+            oce_transp_file = diagworkdir_up + '/ocean_transp_mean_{}.nc'.format(model_name)
+            dataset = Dataset(oce_transp_file)
+            name = 'ocean_{}'.format(model_name)
+            surt = dataset.variables[name][:]
+            lats = dataset.variables['lat'][:]
+            plt.plot(np.array(lats), np.array(surt), color = 'black', 
                      linewidth = 1.)
-        else:
-            for i in np.arange(modnum):
-                plt.plot(np.array(lats), np.array(surt[i,:]), color = 'black', 
-                         linewidth = 1.)
-        #for j in np.arange(1, modnum-1):
-        #    name = 'ocean_{}'.format(str(j + 1))
-        #    surt =  dataset.variables[name][:]
-        #    lats =  np.linspace(-90, 90, len(surt))
-        #    plt.plot(lats, surt, color = 'black',linewidth = 1.)
         plt.title('Oceanic heat transports',fontsize = 10)
         plt.xlabel('Latitude [deg]', fontsize = 10)
         plt.ylabel('[W]', fontsize = 10)
@@ -1490,7 +1427,7 @@ def main(cfg):
         plt.ylim([-3E15, 3E15])
         plt.xlim(-90, 90)
         plt.grid()
-        oname=plotdir + 'meridional_transp.png'
+        oname=plotdir + '/meridional_transp.png'
         plt.savefig(oname)
         plt.show(fig)
         plt.close(fig)
@@ -1663,7 +1600,7 @@ def main(cfg):
     ax.tick_params(axis = 'both', which = 'major', labelsize = 8)
     plt.grid()
     
-    oname = plotdir + 'scatters_summary.png'
+    oname = plotdir + '/scatters_summary.png'
     plt.savefig(oname)
     plt.subplots_adjust(hspace = .3)
     caption = "Summary scatters from thermodynamics"
@@ -1773,7 +1710,7 @@ def main(cfg):
     ax.tick_params(axis = 'both', which = 'major', labelsize = 8)
     plt.subplots_adjust(hspace = .3)
     plt.grid()
-    plt.savefig(plotdir + 'scatters_variability.png')
+    plt.savefig(plotdir + '/scatters_variability.png')
     plt.show(fig)
     plt.close(fig)
     caption = "Inter-annual variability vs. annual mean EBs and entropy"

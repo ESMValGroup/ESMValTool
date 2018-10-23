@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from shutil import move
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -14,6 +15,7 @@ import cartopy.crs as ccrs
 from cartopy.mpl.geoaxes import GeoAxes
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from PyAstronomy import pyaC
+from cdo import *
 #from auxiliary import verbosity
 
 ###############################################################################
@@ -199,6 +201,7 @@ class Plot_script():
     def balances(self,workdir,plotpath,filena,name,model_name,lsm):
     
         plotsmod = Plot_script()
+        cdo      = Cdo()
         
         nsub       = len(filena)
         sep        = '.nc'
@@ -241,7 +244,7 @@ class Plot_script():
         for i in np.arange(nsub):
             filena[i]     = filena[i].split(sep, 1)[0]
             filename   = filena[i]+'.nc'
-            print(filename)
+            #print(filename)
             dataset = netcdf_dataset(filename)
             var[i,:,:,:]   = dataset.variables[name[i]][:, :, :]
         #Compute annual mean values
@@ -366,7 +369,15 @@ class Plot_script():
                     nameout='ocean'
                 nc_f=workdir+'/{}_transp_mean_{}.nc'.format(nameout,model_name)
                 plotsmod.removeif(nc_f)
-                plotsmod.pr_output(transp_mean[i,:],filename, nc_f, nameout, verb=True)
+                plotsmod.pr_output(transp_mean[i,:], filename, nc_f, nameout, verb=True)
+                name_model = '{}_{}'.format(nameout, model_name)
+                lat_model  = 'lat_{}'.format(model_name)
+                cdo.chname('{},{}'.format(nameout,name_model), input=nc_f, 
+                           output='aux.nc')
+                move('aux.nc', nc_f)
+                cdo.chname('lat,{}'.format(lat_model), input=nc_f, 
+                           output='aux.nc')
+                move('aux.nc', nc_f)
                 plt.plot(lats, transp_mean[i,:])
             plt.title('Meridional heat transports')
             plt.xlabel('Latitude [deg]',fontsize=10)

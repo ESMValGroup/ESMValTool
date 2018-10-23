@@ -13,9 +13,10 @@ from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
 import warnings
 warnings.filterwarnings("ignore")
 import imp
-sys.path.append('./diag_scripts/aux/Thermodynamics/')
+#sys.path.append('./diag_scripts/aux/Thermodynamics/')
 import fluxogram as fluxogram
 import srvfile_read as srv
+from diagram_module import *
 #import diag_scripts.aux.Thermodynamics.fluxogram as fluxogram
 #import diag_scripts.aux.Thermodynamics.srvfile_read as srv
 reload(srv)
@@ -35,9 +36,11 @@ nw3   = 21
 
 #log = open('lec_new.txt','w')    
 
-class lorenz_cycle:
+class Lorenz_cycle():
+    
+    from lorenz_cycle import * 
         
-    def lorenz(workpath,outpath,plotpath,model,year,filesrv,filenc,plotfile,logfile):    
+    def lorenz(self, outpath, model, year, filesrv, filenc, plotfile, logfile):    
     #    PROGRAM MAIN
     #C
     #C***  *MAIN* MAIN PROGRAM
@@ -113,8 +116,11 @@ class lorenz_cycle:
     #C     TITLE       CHARACTER TO BE SET IN THE TITLE OF POSTSCRIPT OUTPUT
     #C
     
-        diagscript=workpath+'/diagram_module.py'
-        diagmod=imp.load_source('diagram_module',diagscript)
+        lorenz = Lorenz_cycle()
+        diagram = Diagram()
+        
+#        diagscript='diagram_module.py'
+#        diagmod=imp.load_source('diagram_module',diagscript)
         
         log = open(logfile,'w')    
         
@@ -146,7 +152,7 @@ class lorenz_cycle:
         if(max(lev)<1000):
             lev=lev*100
             wap=wap*100
-        print(lev)
+        #print(lev)
         nlev  = len(lev)
         nfc   = f.dim1
         nlat  = f.dim2
@@ -207,7 +213,7 @@ class lorenz_cycle:
         ds[0]=sig[0]+0.5*abs(sig[1]-sig[0])
         ds[nlev-1]=1-sig[nlev-1]+0.5*abs(sig[nlev-1]-sig[nlev-2])
     #Compute Gaussian weights
-        [pa,pw]=gauaw(nlat)    
+        [pa,pw]=lorenz.gauaw(nlat)    
         gw=np.zeros(nlat)
         y=np.zeros(nlat)
         for jy in range(nlat): 
@@ -241,7 +247,7 @@ class lorenz_cycle:
             va_gmn[j]   = np.nansum(va_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
             wap_gmn[j]  = np.nansum(wap_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
     #Compute stability parameter    
-        gam_tmn = stabil(ta_gmn,lev,nlev)
+        gam_tmn = lorenz.stabil(ta_gmn,lev,nlev)
         
         ek=np.zeros([nlev,ntime,nlat,ntp-1])
         ape=np.zeros([nlev,ntime,nlat,ntp-1])
@@ -289,71 +295,71 @@ class lorenz_cycle:
                 va_tgan[j]   = np.nansum(va_tzan[j,:]*gw)/np.nansum(gw)
                 wap_tgan[j]  = np.nansum(wap_tzan[j,:]*gw)/np.nansum(gw)
          #Compute kinetic energy   
-            ek[:,t,:,:]=makek(ua_tan,va_tan,nlat,ntp,nlev)
+            ek[:,t,:,:]=lorenz.makek(ua_tan,va_tan,nlat,ntp,nlev)
          #Compute available potential energy
-            ape[:,t,:,:]=makea(ta_tan,ta_tgan,gam_tmn,nlat,ntp,nlev)
+            ape[:,t,:,:]=lorenz.makea(ta_tan,ta_tgan,gam_tmn,nlat,ntp,nlev)
          #Compute conversion between kin.en. and pot.en.
-            a2k[:,t,:,:]=mka2k(wap_tan,ta_tan,wap_tgan,ta_tgan,lev,nlat,ntp,nlev)
+            a2k[:,t,:,:]=lorenz.mka2k(wap_tan,ta_tan,wap_tgan,ta_tgan,lev,nlat,ntp,nlev)
          #Compute conversion between zonal and eddy APE
-            ae2az[:,t,:,:]=mkaeaz(va_tan,wap_tan,ta_tan,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
+            ae2az[:,t,:,:]=lorenz.mkaeaz(va_tan,wap_tan,ta_tan,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
          #Compute conversion between zonal and eddy KE
-            ke2kz[:,t,:,:]=mkkekz(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
+            ke2kz[:,t,:,:]=lorenz.mkkekz(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
         #Compute conversion between stationary and transient eddy APE
-            at2as[:,t,:,:]=mkatas(ua_tan,va_tan,wap_tan,ta_tan,ta_tmn,gam_tmn,lev,y,nlat,ntp,nlev)   
+            at2as[:,t,:,:]=lorenz.mkatas(ua_tan,va_tan,wap_tan,ta_tan,ta_tmn,gam_tmn,lev,y,nlat,ntp,nlev)   
         #Compute conversion between stationary and transient eddy KE
-            kt2ks[:,t,:,:]=mkktks(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,wap_tmn,lev,y,nlat,ntp,nlev)
+            kt2ks[:,t,:,:]=lorenz.mkktks(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,wap_tmn,lev,y,nlat,ntp,nlev)
         ##Average transient terms over time to obtain variables from 4001 to 4007 (transient eddies
         ## and zonal terms)
         #Variable 4001
         ek_tmn=np.nanmean(ek,axis=1)
-        ek_tgmn=globall_cg(ek_tmn,gw,ds,nlat,ntp,nlev)
-        table(ek_tgmn,ntp,'TOT. KIN. EN.    ',log)
+        ek_tgmn=lorenz.globall_cg(ek_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table(ek_tgmn,ntp,'TOT. KIN. EN.    ',log)
         #Variable 4002
         ape_tmn=np.nanmean(ape,axis=1)
-        ape_tgmn=globall_cg(ape_tmn,gw,ds,nlat,ntp,nlev)
-        table(ape_tgmn,ntp,'TOT. POT. EN.   ',log)
+        ape_tgmn=lorenz.globall_cg(ape_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table(ape_tgmn,ntp,'TOT. POT. EN.   ',log)
         #Variable 4003
         a2k_tmn=np.nanmean(a2k,axis=1)
-        a2k_tgmn=globall_cg(a2k_tmn,gw,ds,nlat,ntp,nlev)
-        table_conv(a2k_tgmn,ntp,'KE -> APE (trans) ',log)
+        a2k_tgmn=lorenz.globall_cg(a2k_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(a2k_tgmn,ntp,'KE -> APE (trans) ',log)
         #Variable 4004
         ae2az_tmn=np.nanmean(ae2az,axis=1)
-        ae2az_tgmn=globall_cg(ae2az_tmn,gw,ds,nlat,ntp,nlev)
-        table_conv(ae2az_tgmn,ntp,'AZ <-> AE (trans) ',log)
+        ae2az_tgmn=lorenz.globall_cg(ae2az_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(ae2az_tgmn,ntp,'AZ <-> AE (trans) ',log)
         #Variable 4005
         ke2kz_tmn=np.nanmean(ke2kz,axis=1)
-        ke2kz_tgmn=globall_cg(ke2kz_tmn,gw,ds,nlat,ntp,nlev)
-        table_conv(ke2kz_tgmn,ntp,'KZ <-> KE (trans) ',log)
+        ke2kz_tgmn=lorenz.globall_cg(ke2kz_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(ke2kz_tgmn,ntp,'KZ <-> KE (trans) ',log)
         #Variable 4006
         at2as_tmn=np.nanmean(at2as,axis=1)
-        at2as_tgmn=globall_cg(at2as_tmn,gw,ds,nlat,ntp,nlev)
-        table_conv(at2as_tgmn,ntp,'ASE  <->  ATE   ',log)
+        at2as_tgmn=lorenz.globall_cg(at2as_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(at2as_tgmn,ntp,'ASE  <->  ATE   ',log)
         #Variable 4007
         kt2ks_tmn=np.nanmean(kt2ks,axis=1)
-        kt2ks_tgmn=globall_cg(kt2ks_tmn,gw,ds,nlat,ntp,nlev)
-        table_conv(kt2ks_tgmn,ntp,'KSE  <->  KTE   ',log)
+        kt2ks_tgmn=lorenz.globall_cg(kt2ks_tmn,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(kt2ks_tgmn,ntp,'KSE  <->  KTE   ',log)
      
         ##Use time averaged quantities to obtain variables from 4008 to 4012 (stationary terms)
         #Variable 4008
-        ek_st=makek(ua_tmn,va_tmn,nlat,ntp,nlev)
-        ek_stgmn=globall_cg(ek_st,gw,ds,nlat,ntp,nlev)
-        table(ek_stgmn,ntp,'STAT. KIN. EN.    ',log)
+        ek_st=lorenz.makek(ua_tmn,va_tmn,nlat,ntp,nlev)
+        ek_stgmn=lorenz.globall_cg(ek_st,gw,ds,nlat,ntp,nlev)
+        lorenz.table(ek_stgmn,ntp,'STAT. KIN. EN.    ',log)
         #Variable 4009
-        ape_st=makea(ta_tmn,ta_gmn,gam_tmn,nlat,ntp,nlev)
-        ape_stgmn=globall_cg(ape_st,gw,ds,nlat,ntp,nlev)
-        table(ape_stgmn,ntp,'STAT. POT. EN.    ',log)
+        ape_st=lorenz.makea(ta_tmn,ta_gmn,gam_tmn,nlat,ntp,nlev)
+        ape_stgmn=lorenz.globall_cg(ape_st,gw,ds,nlat,ntp,nlev)
+        lorenz.table(ape_stgmn,ntp,'STAT. POT. EN.    ',log)
         #Variable 4010
-        a2k_st=mka2k(wap_tmn,ta_tmn,wap_gmn,ta_gmn,lev,nlat,ntp,nlev)
-        a2k_stgmn=globall_cg(a2k_st,gw,ds,nlat,ntp,nlev)
-        table_conv(a2k_stgmn,ntp,'KE -> APE (stat)',log)
+        a2k_st=lorenz.mka2k(wap_tmn,ta_tmn,wap_gmn,ta_gmn,lev,nlat,ntp,nlev)
+        a2k_stgmn=lorenz.globall_cg(a2k_st,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(a2k_stgmn,ntp,'KE -> APE (stat)',log)
         #Variable 4011
-        ae2az_st=mkaeaz(va_tmn,wap_tmn,ta_tmn,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
-        ae2az_stgmn=globall_cg(ae2az_st,gw,ds,nlat,ntp,nlev)
-        table_conv(ae2az_stgmn,ntp,'AZ <-> AE (stat)',log)
+        ae2az_st=lorenz.mkaeaz(va_tmn,wap_tmn,ta_tmn,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
+        ae2az_stgmn=lorenz.globall_cg(ae2az_st,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(ae2az_stgmn,ntp,'AZ <-> AE (stat)',log)
         #Variable 4012
-        ke2kz_st=mkkekz(ua_tmn,va_tmn,wap_tmn,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
-        ke2kz_stgmn=globall_cg(ke2kz_st,gw,ds,nlat,ntp,nlev)
-        table_conv(ke2kz_stgmn,ntp,'KZ <-> KE (stat)',log)
+        ke2kz_st=lorenz.mkkekz(ua_tmn,va_tmn,wap_tmn,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
+        ke2kz_stgmn=lorenz.globall_cg(ke2kz_st,gw,ds,nlat,ntp,nlev)
+        lorenz.table_conv(ke2kz_stgmn,ntp,'KZ <-> KE (stat)',log)
         
         #This part is for the flux diagram as in Ulbrich and Speth 1991
         apz    = '{:.2f}'.format(ape_tgmn[0,0]+ape_stgmn[0,0])
@@ -377,7 +383,7 @@ class lorenz_cycle:
         kteout = '{:.2f}'.format(float(at2kt)-float(kt2ks)-float(kt2kz))
         kseout = '{:.2f}'.format(float(kt2ks)+float(as2ks)-float(ks2kz))
         kzout  = '{:.2f}'.format(float(kt2kz)+float(ks2kz)-float(az2kz))    
-        diagmod.diagram(plotfile,azin,apz,asein,aps,atein,apt,as2ks,at2kt,kteout,
+        diagram.diagram(plotfile,azin,apz,asein,aps,atein,apt,as2ks,at2kt,kteout,
                                kte,kseout,kse,kzout,kz,az2kz,az2at,az2as,
                                as2at,kt2kz,kt2ks,ks2kz)
         lec_strength=float(kteout)+float(kseout)+float(kzout)
@@ -401,26 +407,26 @@ class lorenz_cycle:
         ke2kz_vmn=np.nansum(ke2kz_aux,axis=0)/np.nansum(ds)
     
         nc_f=outpath+'/ek_tmap_{}_{}.nc'.format(model,year)
-        removeif(nc_f)
-        pr_output(ek_vmn, 'ek', filep, nc_f, 1, verb=True)
+        lorenz.removeif(nc_f)
+        lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1, verb=True)
         nc_f=outpath+'/ape_tmap_{}_{}.nc'.format(model,year)
-        removeif(nc_f)
-        pr_output(ape_vmn, 'ape', filep, nc_f, 1, verb=True)
+        lorenz.removeif(nc_f)
+        lorenz.pr_output(ape_vmn, 'ape', filep, nc_f, 1, verb=True)
         nc_f=outpath+'/a2k_tmap_{}_{}.nc'.format(model,year)
-        removeif(nc_f)
-        pr_output(a2k_vmn, 'a2k', filep, nc_f, 1, verb=True)
+        lorenz.removeif(nc_f)
+        lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1, verb=True)
         nc_f=outpath+'/ae2az_tmap_{}_{}.nc'.format(model,year)
-        removeif(nc_f)
-        pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1, verb=True)
+        lorenz.removeif(nc_f)
+        lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1, verb=True)
         nc_f=outpath+'/ke2kz_tmap_{}_{}.nc'.format(model,year)
-        removeif(nc_f)
-        pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1, verb=True)
+        lorenz.removeif(nc_f)
+        lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1, verb=True)
         
         log.close() 
         
         return lec_strength
     
-    def bsslzr(kdim):
+    def bsslzr(self, kdim):
             
         NDIM=50
         
@@ -450,8 +456,10 @@ class lorenz_cycle:
     
     
                 
-    def gauaw(ny):
-            
+    def gauaw(self, ny):
+        
+        lorenz = Lorenz_cycle()
+        
         c = (1-(2/math.pi)**2)/4
         eps = 0.00000000000001
       
@@ -459,7 +467,7 @@ class lorenz_cycle:
         #print(kk)
         pa=np.zeros(ny)
         #print(len(bsslzr(kk)))
-        pa[0:kk]=bsslzr(kk)
+        pa[0:kk]=lorenz.bsslzr(kk)
         #print(len(pa[0:kk]))
         pw=np.zeros(ny)
         for i in range(kk):
@@ -493,7 +501,7 @@ class lorenz_cycle:
     
     
     
-    def globall_cg(d3v,gw,ds,nlat,ntp,nlev):
+    def globall_cg(self, d3v,gw,ds,nlat,ntp,nlev):
         #C***  *GLOBAL* CALCULATE GLOBAL AND HEMISPHERIC MEANS
         #C
         #C     F.LUNKEIT         UNIHH        01.08.94
@@ -526,7 +534,7 @@ class lorenz_cycle:
         return(gmn)
     
     
-    def makek(u,v,nlat,ntp,nlev):
+    def makek(self, u,v,nlat,ntp,nlev):
     #C
     #C
     #C
@@ -550,7 +558,7 @@ class lorenz_cycle:
         return(ek)
     
         
-    def makea(t,tg,gam,nlat,ntp,nlev):
+    def makea(self, t,tg,gam,nlat,ntp,nlev):
     #C***  *MAKEA* CALCULATE AVAIL. POT. ENERGY
     #C
     #C     F.LUNKEIT         UNIHH        01.08.94
@@ -566,7 +574,7 @@ class lorenz_cycle:
         
         return(a)
     
-    def mka2k(wap,t,wg,tg,p,nlat,ntp,nlev):
+    def mka2k(self, wap,t,wg,tg,p,nlat,ntp,nlev):
     
     #C***  *MKA2K* CALCULATE CONVERSION A->K
     #C
@@ -584,7 +592,7 @@ class lorenz_cycle:
         return(a2k)
         
     
-    def mkaeaz(v,wap,t,tt,ttg,p,lat,gam,nlat,ntp,nlev):
+    def mkaeaz(self, v,wap,t,tt,ttg,p,lat,gam,nlat,ntp,nlev):
     #C
     #C
     #C***  *MKAEAZ* CALCULATE CONVERSION EDDY A->ZONAL A
@@ -642,7 +650,7 @@ class lorenz_cycle:
     
     
     
-    def mkkekz(u,v,wap,ut,vt,p,lat,nlat,ntp,nlev):
+    def mkkekz(self, u,v,wap,ut,vt,p,lat,nlat,ntp,nlev):
     #C
     #C***  *MKKEKZ* CALCULATE CONVERSION EDDY K->ZONAL K
     #C
@@ -694,11 +702,11 @@ class lorenz_cycle:
         c6   = np.zeros([nlev,nlat,ntp-1])
         ke2kz= np.zeros([nlev,nlat,ntp-1])
         
-        uu=u*np.conj(u)+u*np.conj(u)
-        uv=u*np.conj(v)+v*np.conj(u)
-        vv=v*np.conj(v)+v*np.conj(v)
-        uw=u*np.conj(wap)+wap*np.conj(u)
-        vw=v*np.conj(wap)+wap*np.conj(v)
+        uu = u*np.conj(u)+u*np.conj(u)
+        uv = u*np.conj(v)+v*np.conj(u)
+        vv = v*np.conj(v)+v*np.conj(v)
+        uw = u*np.conj(wap)+wap*np.conj(u)
+        vw = v*np.conj(wap)+wap*np.conj(v)
         
         for i in np.arange(nlat):
             c1[:,i,:]=dudy[:,i][:,np.newaxis]*uv[:,i,:]
@@ -716,7 +724,7 @@ class lorenz_cycle:
         return(ke2kz)
     
     
-    def mkatas(u,v,wap,t,tt,gw,p,lat,nlat,ntp,nlev):
+    def mkatas(self, u,v,wap,t,tt,gw,p,lat,nlat,ntp,nlev):
     #C***  *MKATAS* CALCULATE CONVERSION TRANSIENT A -> STATIONARY A
     #C
     #C     F.LUNKEIT         UNIHH        01.08.94
@@ -778,7 +786,7 @@ class lorenz_cycle:
        
     
     
-    def mkktks(u,v,wap,ut,vt,wt,p,lat,nlat,ntp,nlev):    
+    def mkktks(self, u,v,wap,ut,vt,wt,p,lat,nlat,ntp,nlev):    
     #C***  *MKKTKS* CALCULATE CONVERSION TRANSIENT K -> STATIONARY K
     #C
     #C     F.LUNKEIT         UNIHH        01.08.94
@@ -841,7 +849,7 @@ class lorenz_cycle:
         return(kt2ks)   
     
     
-    def ncdump(nc_fid,key,verb):
+    def ncdump(self, nc_fid,key,verb):
         """
         Prints the NetCDF file attributes for a given key
     
@@ -860,7 +868,7 @@ class lorenz_cycle:
     
     
     
-    def pr_output(varo, varname, filep, nc_f, opt, verb=True):
+    def pr_output(self, varo, varname, filep, nc_f, opt, verb=True):
         '''
         NAME
             NetCDF with Python
@@ -872,10 +880,12 @@ class lorenz_cycle:
                         Thanks to K.-Michael Aye for highlighting the issue
         '''
     
+        lorenz = Lorenz_cycle()
+        
         #I need a proxy dataset to extract the information on coordinates and global attributes
         nc_fid = Dataset(filep, 'r')  # Dataset is the class behavior to open the file
                                      # and create an instance of the ncCDF4 class
-        nc_attrs, nc_dims, nc_vars = ncdump(nc_fid,'var130',verb)
+        nc_attrs, nc_dims, nc_vars = lorenz.ncdump(nc_fid,'var130',verb)
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract/copy the data
         time = nc_fid.variables['time'][:]
@@ -908,7 +918,7 @@ class lorenz_cycle:
                                                ('wave',))
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('time','lat','wave'))
-            varatts(w_nc_var,varname,0,0)
+            lorenz.varatts(w_nc_var,varname,0,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
         elif opt ==1:
@@ -925,7 +935,7 @@ class lorenz_cycle:
                 w_nc_dim.setncattr(ncattr, nc_fid.variables['wave'].getncattr(ncattr))
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat','wave'))
-            varatts(w_nc_var,varname,1,0)
+            lorenz.varatts(w_nc_var,varname,1,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
         elif opt == 2:
@@ -936,7 +946,7 @@ class lorenz_cycle:
                 w_nc_dim.setncattr(ncattr, nc_fid.variables['lat'].getncattr(ncattr))
             w_nc_fid.variables['lat'][:] = lats
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat'))
-            varatts(w_nc_var,varname,1,0)
+            lorenz.varatts(w_nc_var,varname,1,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
         elif opt == 3:
@@ -951,7 +961,7 @@ class lorenz_cycle:
                 w_nc_dim.setncattr(ncattr, nc_fid.variables['time'].getncattr(ncattr))
             w_nc_fid.variables['time'][:] = time
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('hem','time'))
-            varatts(w_nc_var,varname,0,0)
+            lorenz.varatts(w_nc_var,varname,0,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
         elif opt == 4:
@@ -972,7 +982,7 @@ class lorenz_cycle:
                 w_nc_dim.setncattr(ncattr, nc_fid.variables['wave'].getncattr(ncattr))
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('hem','time','wave'))
-            varatts(w_nc_var,varname,0,0)
+            lorenz.varatts(w_nc_var,varname,0,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
                 
@@ -981,7 +991,7 @@ class lorenz_cycle:
     
     
         
-    def removeif(filename):
+    def removeif(self, filename):
         try:
             os.remove(filename)
         except OSError:
@@ -989,7 +999,7 @@ class lorenz_cycle:
     
     
     
-    def stabil(ta_gmn,p,nlev):
+    def stabil(self, ta_gmn,p,nlev):
     #C
     #C
     #C***  *STABIL* CALCULATE STABILITY PARAMETER
@@ -1030,7 +1040,7 @@ class lorenz_cycle:
         return gs
     
     
-    def table(varin,ntp,name,log):
+    def table(self, varin,ntp,name,log):
         
         varzon = varin[:,0]
         vared  = np.nansum(varin[:,1:ntp-1],axis=1)
@@ -1053,7 +1063,7 @@ class lorenz_cycle:
         log.write('--------------------------------------\n')
         
     
-    def table_conv(varin,ntp,name,log):
+    def table_conv(self, varin,ntp,name,log):
         
         fac=1e5
         varin=fac*varin
@@ -1079,7 +1089,7 @@ class lorenz_cycle:
     
     
     
-    def varatts(w_nc_var,varname,tres,vres):
+    def varatts(self, w_nc_var,varname,tres,vres):
         if tres == 0:
             tatt= u"Daily\nM"
         elif tres == 1:

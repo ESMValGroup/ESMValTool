@@ -9,16 +9,20 @@ Created on Mon Oct  8 15:40:08 2018
 import numpy as np
 from netCDF4 import Dataset
 
-#tainput = 'inputen.nc'
-#tasinput = 'tas.nc'
+tainput = 'inputen.nc'
+tasinput = 'tas.nc'
 gpres=np.array([16,32,48,64,96,128,256,384,512,1024,2048,4096])
-fcres=np.array([5,10,15,21,31,42,85,127,170,341,682,1365])
+fcres=np.array([5,10,15,21,31,43,85,127,171,341,683,1365])
 
-class fourc:
+class Fourier_coeff():
+    
+    from fourier_coefficients import *
+    
+    def fourier_coeff(self, outfile, tainput):
         
-    def fourier_coeff(tainput):
+        fourcoeff = Fourier_coeff()
         
-        fileo    = 'fourier_coeff.nc'
+        fileo    = outfile
         
         dataset = Dataset(tainput)
         lon   = dataset.variables['lon'][:]
@@ -64,10 +68,11 @@ class fourc:
         wapfft[:,:,0::2,:]=np.real(wapfft_p)
         wapfft[:,:,1::2,:]=np.imag(wapfft_p)
             
-        pr_output(tafft,uafft,vafft,wapfft,tainput,fileo,wave2,'ta','ua','va','wap',verb=True)
+        fourcoeff.pr_output(tafft,uafft,vafft,wapfft,tainput,fileo,wave2, 
+                            'ta','ua','va','wap',verb=True)
         
         
-    def pr_output(var1, var2, var3, var4, nc_f, fileo, wave2, name1, name2, name3, name4, verb=True):
+    def pr_output(self, var1, var2, var3, var4, nc_f, fileo, wave2, name1, name2, name3, name4, verb=True):
         '''
         NAME
             NetCDF with Python
@@ -78,10 +83,14 @@ class fourc:
             20140722 -- Added basic error handling to ncdump
                         Thanks to K.-Michael Aye for highlighting the issue
         '''
+        
+        from fourier_coefficients import *
+        
+        fourcoeff = Fourier_coeff()
     
         nc_fid = Dataset(nc_f, 'r')  # Dataset is the class behavior to open the file
                                              # and create an instance of the ncCDF4 class
-        nc_attrs, nc_dims, nc_vars = ncdump(nc_fid,'ta',verb)
+        nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid,'ta',verb)
         
         # Extract data from NetCDF file
         time = nc_fid.variables['time'][:]  # extract the coordinate
@@ -139,25 +148,25 @@ class fourc:
         nc_fid.close()
         
         var1_nc_var = var_nc_fid.createVariable(name1, 'f8', ('time','plev','wave','lat'))
-        varatts(var1_nc_var,name1)
+        fourcoeff.varatts(var1_nc_var,name1)
         #print(np.shape(var1))
         #print(np.shape(var1_nc_var))
         var_nc_fid.variables[name1][:,:,:,:] = var1
         var2_nc_var = var_nc_fid.createVariable(name2, 'f8', ('time','plev','wave','lat'))
-        varatts(var2_nc_var,name2)
+        fourcoeff.varatts(var2_nc_var,name2)
         var_nc_fid.variables[name2][:,:,:,:] = var2
         var3_nc_var = var_nc_fid.createVariable(name3, 'f8', ('time','plev','wave','lat'))
-        varatts(var3_nc_var,name3)
+        fourcoeff.varatts(var3_nc_var,name3)
         var_nc_fid.variables[name3][:,:,:,:] = var3
         var4_nc_var = var_nc_fid.createVariable(name4, 'f8', ('time','plev','wave','lat'))
-        varatts(var4_nc_var,name4)
+        fourcoeff.varatts(var4_nc_var,name4)
         var_nc_fid.variables[name4][:,:,:,:] = var4
         
         var_nc_fid.close()  # close the new file
         
     
     
-    def ncdump(nc_fid,key,verb):
+    def ncdump(self, nc_fid,key,verb):
         """
         Prints the NetCDF file attributes for a given key
     
@@ -174,7 +183,7 @@ class fourc:
         
         return nc_attrs, nc_dims, nc_vars
     
-    def varatts(w_nc_var,varname):
+    def varatts(self, w_nc_var,varname):
         
         if varname == 'ta':
             w_nc_var.setncatts({'long_name': u"Air temperature",'units': u"K", 'level_desc': 'pressure levels'})
@@ -185,7 +194,7 @@ class fourc:
         elif varname == 'wap':
             w_nc_var.setncatts({'long_name': u"Lagrangian tendency of air pressure",'units': u"Pa s-1", 'level_desc': 'pressure levels'})
             
-    def print_ncattr(key):
+    def print_ncattr(self, key):
             """
             Prints the NetCDF file attributes for a given key
     
