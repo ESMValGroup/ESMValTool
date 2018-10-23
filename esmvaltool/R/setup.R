@@ -15,8 +15,8 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
 cat("\nINFO: Installing packages to --> ", RLIBLOC, "\n\n")
 
 # define the R mirror to download packages
-pkg_mirror <- 'https://cloud.r-project.org'
-print(paste("Using mirror: ", pkgMirror))
+pkg_mirror <- "https://cloud.r-project.org"
+print(paste("Using mirror: ", pkg_mirror))
 
 # get the script path
 initial_options <- commandArgs(trailingOnly = FALSE)
@@ -37,13 +37,13 @@ package_list <- package_list[!(package_list %in%
 if (length(package_list) == 0) {
     print("All packages are installed!")
 } else {
-    print(paste("Number of packages to be installed: ", length(packageList)))
+    print(paste("Number of packages to be installed: ", length(package_list)))
     print(package_list)
 }
 
 for (pack in package_list) {
     print(paste("Installing package --> ", pack))
-    install.packages(pack, repos = pkg_mirror, dependencies=c("Depends"))
+    install.packages(pack, repos = pkg_mirror, dependencies = c("Depends"))
 }
 
 print("List of installed packages:")
