@@ -253,6 +253,7 @@ def multi_model_contours(
     layers = {}
     for filename in sorted(metadata):
         cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
         cubes = diagtools.make_cube_layer_dict(cube)
         model_cubes[filename] = cubes
@@ -279,40 +280,39 @@ def multi_model_contours(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
+
             if len(metadata) > 1:
                 color = cmap(index / (len(metadata) - 1.))
             else:
                 color = 'blue'
+            linewidth = 1.
+            linestyle = '-'
+
+            # Determine line style for Observations
+            if metadata[filename]['project'] in diagtools.get_obs_projects():
+                color = 'black'
+                linewidth = 1.7
+                linestyle = '-'
+
+            # Determine line style for MultiModel statistics:
+            if 'MultiModel' in metadata[filename]['dataset']:
+                color = 'black'
+                linestyle = ':'
+                linewidth = 1.4
 
             cube = model_cubes[filename][layer]
-        #     cube = regrid_irregulars(cube)
-
-            if 'MultiModel' in metadata[filename]['dataset']:
-                qplt.contour(cube,
-                             [threshold, ],
-                             colors=[color, ],
-                             linewidths=2.,
-                             linestyles=':',
-                             rasterized=True)
-                plot_details[filename] = {
-                    'c': color,
-                    'ls': ':',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
-                }
-            else:
-                qplt.contour(cube,
-                             [threshold, ],
-                             colors=[color, ],
-                             linewidths=1.,
-                             linestyles='-',
-                             rasterized=True)
-                plot_details[filename] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
-                }
+            qplt.contour(cube,
+                         [threshold, ],
+                         colors=[color, ],
+                         linewidths=linewidth,
+                         linestyles=linestyle,
+                         rasterized=True)
+            plot_details[filename] = {
+                'c': color,
+                'ls': linestyle,
+                'lw': linewidth,
+                'label': metadata[filename]['dataset']
+            }
 
             if not land_drawn:
                 try:

@@ -249,12 +249,16 @@ def multi_model_contours(
                 color = cmap(index / (len(metadata) - 1.))
             else:
                 color = 'blue'
-
+            linewidth = 1.
+            linestyle = '-'
+            # Determine line style for MultiModel statistics:
             if 'MultiModel' in metadata[filename]['dataset']:
                 linewidth = 2.
                 linestyle = ':'
-            else:
-                linewidth = 1.
+            # Determine line style for Observations
+            if metadata[filename]['project'] in diagtools.get_obs_projects():
+                color = 'black'
+                linewidth = 1.7
                 linestyle = '-'
 
             qplt.contour(model_cubes[filename],
