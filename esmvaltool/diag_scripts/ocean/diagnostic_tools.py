@@ -23,6 +23,13 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+# A list of observations
+def get_obs_projects():
+    """Returns a list of strings with the names of observations projects."""
+    obs_projects = ['obs4mips', ]
+    return obs_projects
+
+
 def folder(name):
     """
     Make a directory out of a string or list or strings.
