@@ -50,7 +50,7 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
         time_1 = mycube.coord('time')
         time_2 = cube_slice.coord('time')
         if time_1 == time_2:
-            print('No change needed to time.' )
+            # print('No change needed to time.')
             return mycube
 
     return cube_slice
