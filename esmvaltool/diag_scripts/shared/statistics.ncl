@@ -1155,7 +1155,8 @@ undef("interannual_variability")
 function interannual_variability(field: numeric,
                                  y1[1]: integer,
                                  y2[1]: integer,
-                                 opt[1]: string)
+                                 opt[1]: string,
+                                 dtr[1]: string)
 ;
 ; Arguments
 ;    field: a numeric array of rank 1 to 4, first dimension must be time.
@@ -1170,6 +1171,10 @@ function interannual_variability(field: numeric,
 ;                            (e.g. "MAM", "SONDJ").
 ;           [1, 12]: climatology of the selected month ("1"=Jan, "2"=Feb, ...,
 ;                    "12"=Dec).
+;    dtr: detrending option:
+;           "None": no detrending before standard deviation is calculated
+;           "linear": linear detrending using dtrend
+;           "quadratic": quadratic detrending using dtrend_quadratic
 ;
 ; Return value
 ;    An array of the same rank as field or of rank-1, depending on opt.
@@ -1185,6 +1190,7 @@ function interannual_variability(field: numeric,
 ; Reference
 ;
 ; Modification history
+;    20181022-A_lore_ru: added option dtr for possible detrending of data v2
 ;    20140314-A_righ_ma: written.
 ;
 local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
@@ -1219,6 +1225,22 @@ begin
   ; Annual climatology
   if (opt.eq."annualclim") then
     field_avg = time_operations(field, y1, y2, "average", "yearly", True)
+    if (dtr.eq."None") then
+      out = dim_stddev_n_Wrap(field_avg, 0)
+    else if (dtr.eq."linear") then
+      field_dtr = dtrend_n(field_avg, False, 0)
+      tmp = dim_avg_n_Wrap(field_avg, 0)
+      tmp_conf = conform(field_dtr, tmp, (/1,2/))
+      field_dtr = field_dtr + tmp_conf
+      copy_VarCoords(field_avg, field_dtr)
+      out = dim_stddev_n_Wrap(field_dtr, 0)
+    else if (dtr.eq."quadratic") then
+      field_dtr = dtrend_quadratic_msg_n(field_avg, False, False, 0)
+      copy_VarCoords(field_avg, field_dtr)
+      out = dim_stddev_n_Wrap(field_dtr, 0)
+    end if
+    end if
+    end if
     out = dim_stddev_n_Wrap(field_avg, 0)
     leave_msg(scriptname, funcname)
     return(out)
@@ -1239,33 +1261,71 @@ begin
                                     "yearly", True)
     field_avg_son = time_operations(field_son, y1, y2, "average", \
                                     "yearly", True)
+    if (dtr.eq."None") then
+      field_avg_djf_dtr = field_avg_djf
+      field_avg_mam_dtr = field_avg_mam
+      field_avg_jja_dtr = field_avg_jja
+      field_avg_son_dtr = field_avg_son
+    else if (dtr.eq."linear") then
+      field_avg_djf_dtr = dtrend_n(field_avg_djf, False, 0)
+      tmp = dim_avg_n_Wrap(field_avg_djf, 0)
+      tmp_conf = conform(field_avg_djf_dtr, tmp, (/1, 2/))
+      field_avg_djf_dtr = field_avg_djf_dtr + tmp_conf
+      delete([/tmp, tmp_conf/])
+      field_avg_mam_dtr = dtrend_n(field_avg_mam, False, 0)
+      tmp = dim_avg_n_Wrap(field_avg_mam, 0)
+      tmp_conf = conform(field_avg_mam_dtr, tmp, (/1, 2/))
+      field_avg_mam_dtr = field_avg_mam_dtr + tmp_conf
+      delete([/tmp, tmp_conf/])
+      field_avg_jja_dtr = dtrend_n(field_avg_jja, False, 0)
+      tmp = dim_avg_n_Wrap(field_avg_jja, 0)
+      tmp_conf = conform(field_avg_jja_dtr, tmp, (/1, 2/))
+      field_avg_jja_dtr = field_avg_jja_dtr + tmp_conf
+      delete([/tmp, tmp_conf/])
+      field_avg_son_dtr = dtrend_n(field_avg_son, False, 0)
+      tmp = dim_avg_n_Wrap(field_avg_son, 0)
+      tmp_conf = conform(field_avg_son_dtr, tmp, (/1, 2/))
+      field_avg_son_dtr = field_avg_son_dtr + tmp_conf
+      delete([/tmp, tmp_conf/])
+    else if (dtr.eq."quadratic") then
+      field_avg_djf_dtr = dtrend_quadratic_msg_n(field_avg_djf, False, \
+					         False, 0)
+      field_avg_mam_dtr = dtrend_quadratic_msg_n(field_avg_mam, False, \
+					         False, 0)
+      field_avg_jja_dtr = dtrend_quadratic_msg_n(field_avg_jja, False, \
+					         False, 0)
+      field_avg_son_dtr = dtrend_quadratic_msg_n(field_avg_son, False, \
+						 False, 0)
+    end if
+    end if
+    end if
     if (rank.eq.1) then
       out = field_djf(0:3)  ; save metadata
-      out(0) = dim_stddev_Wrap(field_avg_djf)
-      out(1) = dim_stddev_Wrap(field_avg_mam)
-      out(2) = dim_stddev_Wrap(field_avg_jja)
-      out(3) = dim_stddev_Wrap(field_avg_son)
+      out(0) = dim_stddev_Wrap(field_avg_djf_dtr)
+      out(1) = dim_stddev_Wrap(field_avg_mam_dtr)
+      out(2) = dim_stddev_Wrap(field_avg_jja_dtr)
+      out(3) = dim_stddev_Wrap(field_avg_son_dtr)
     end if
     if (rank.eq.2) then
       out = field_djf(0:3, :)  ; save metadata
-      out(0, :) = dim_stddev_n_Wrap(field_avg_djf, 0)
-      out(1, :) = dim_stddev_n_Wrap(field_avg_mam, 0)
-      out(2, :) = dim_stddev_n_Wrap(field_avg_jja, 0)
-      out(3, :) = dim_stddev_n_Wrap(field_avg_son, 0)
+      out(0, :) = dim_stddev_n_Wrap(field_avg_djf_dtr, 0)
+      out(1, :) = dim_stddev_n_Wrap(field_avg_mam_dtr, 0)
+      out(2, :) = dim_stddev_n_Wrap(field_avg_jja_dtr, 0)
+      out(3, :) = dim_stddev_n_Wrap(field_avg_son_dtr, 0)
     end if
     if (rank.eq.3) then
       out = field_djf(0:3, :, :)  ; save metadata
-      out(0, :, :) = dim_stddev_n_Wrap(field_avg_djf, 0)
-      out(1, :, :) = dim_stddev_n_Wrap(field_avg_mam, 0)
-      out(2, :, :) = dim_stddev_n_Wrap(field_avg_jja, 0)
-      out(3, :, :) = dim_stddev_n_Wrap(field_avg_son, 0)
+      out(0, :, :) = dim_stddev_n_Wrap(field_avg_djf_dtr, 0)
+      out(1, :, :) = dim_stddev_n_Wrap(field_avg_mam_dtr, 0)
+      out(2, :, :) = dim_stddev_n_Wrap(field_avg_jja_dtr, 0)
+      out(3, :, :) = dim_stddev_n_Wrap(field_avg_son_dtr, 0)
     end if
     if (rank.eq.4) then
       out = field_djf(0:3, :, :, :)  ; save metadata
-      out(0, :, :, :) = dim_stddev_n_Wrap(field_avg_djf, 0)
-      out(1, :, :, :) = dim_stddev_n_Wrap(field_avg_mam, 0)
-      out(2, :, :, :) = dim_stddev_n_Wrap(field_avg_jja, 0)
-      out(3, :, :, :) = dim_stddev_n_Wrap(field_avg_son, 0)
+      out(0, :, :, :) = dim_stddev_n_Wrap(field_avg_djf_dtr, 0)
+      out(1, :, :, :) = dim_stddev_n_Wrap(field_avg_mam_dtr, 0)
+      out(2, :, :, :) = dim_stddev_n_Wrap(field_avg_jja_dtr, 0)
+      out(3, :, :, :) = dim_stddev_n_Wrap(field_avg_son_dtr, 0)
     end if
     leave_msg(scriptname, funcname)
     return(out)
@@ -1283,10 +1343,23 @@ begin
       strlen(opt).ge.2.and.strlen(opt).le.12) then
     field_ext = time_operations(field, y1, y2, "extract", opt, True)
     field_avg = time_operations(field_ext, y1, y2, "average", "yearly", True)
+    if (dtr.eq."None") then
+      field_avg_dtr = field_avg
+    else if (dtr.eq."linear") then
+      field_avg_dtr = dtrend_n(field_avg , False, 0)
+      tmp = dim_avg_n_Wrap(field_avg, 0)
+      tmp_conf = conform(field_avg_dtr, tmp, (/1, 2/))
+      field_avg_dtr = field_avg_dtr + tmp_conf
+      delete([/tmp, tmp_conf/])
+    else if (dtr.eq."quadratic") then
+      field_avg_dtr = dtrend_quadratic_msg_n(field_avg, False, False, 0)
+    end if
+    end if
+    end if
     if (rank.eq.1) then
-      out = dim_stddev_Wrap(field_avg)
+      out = dim_stddev_Wrap(field_avg_dtr)
     else
-      out = dim_stddev_n_Wrap(field_avg, 0)
+      out = dim_stddev_n_Wrap(field_avg_dtr, 0)
     end if
     leave_msg(scriptname, funcname)
     return(out)

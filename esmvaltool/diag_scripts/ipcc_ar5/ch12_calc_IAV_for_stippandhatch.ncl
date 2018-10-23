@@ -284,8 +284,8 @@ begin
       end if
     else
       data1_tmp = interannual_variability(A0, new_start_yr, end_yr_int, \
-                                          diag_script_info@time_avg)
-;                                      , "quadratic")
+                                          diag_script_info@time_avg, \
+                                          "quadratic")
       if (rank .eq. 3) then
         data1(imod, :, :, :) = data1_tmp
       else if (rank .eq. 4) then
