@@ -42,7 +42,8 @@ if (length(package_list) == 0) {
 
 for (pack in package_list) {
     print(paste("Installing package --> ", pack))
-    install.packages(pack, repos = pkg_mirror, dependencies = c("Depends"))
+    install.packages(pack, repos = pkg_mirror,
+                     dependencies = c("Depends", "Imports"))
 }
 
 print("List of installed packages:")
