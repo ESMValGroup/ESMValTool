@@ -5,6 +5,7 @@ Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
 import iris
+import numpy as np
 
 
 # slice cube over a restricted area (box)
@@ -45,12 +46,23 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     start_latitude = float(start_latitude)
     end_latitude = float(end_latitude)
 
-    region_subset = cube.intersection(
-        longitude=(start_longitude, end_longitude),
-        latitude=(start_latitude, end_latitude))
-    region_subset = region_subset.intersection(longitude=(0., 360.))
-
-    return region_subset
+    if cube.coord('latitude').ndim == 1:
+        region_subset = cube.intersection(
+            longitude=(start_longitude, end_longitude),
+            latitude=(start_latitude, end_latitude))
+        region_subset = region_subset.intersection(longitude=(0., 360.))
+        return region_subset
+    else:
+        # irregular grids
+        lats = cube.coord('latitude').points
+        lons = cube.coord('longitude').points
+        mask = np.ma.array(cube.data).mask
+        mask += np.ma.masked_where(lats < start_latitude, lats).mask
+        mask += np.ma.masked_where(lats > end_latitude, lats).mask
+        mask += np.ma.masked_where(lons > start_longitude, lons).mask
+        mask += np.ma.masked_where(lons > end_longitude, lons).mask
+        cube.data = np.ma.masked_where(mask, cube.data)
+        return cube
 
 
 # get zonal means
