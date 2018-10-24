@@ -59,15 +59,11 @@ def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     input file dictionairy in the cfg metadata.
     """
     for input_file, intput_dict in input_files_dict.items():
-        print('\n------------\nmatch_moddel_to_key: intput_dict:', intput_dict)
-        print('match_moddel_to_key: cfg_dict:', cfg_dict)
-        #try:
-
-        print (intput_dict, cfg_dict)
         intersect_keys = intput_dict.keys() & cfg_dict.keys()
         match = True
         for key in intersect_keys:
-            if intput_dict[key] == cfg_dict[key]: continue
+            if intput_dict[key] == cfg_dict[key]:
+                continue
             match = False
         if match:
             return input_file
@@ -92,8 +88,8 @@ def get_array_range(arrays):
     for arr in arrays:
         mins.append(arr.min())
         maxs.append(arr.max())
+    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
     return [np.min(mins), np.max(maxs), ]
-
 
 
 def get_cube_range_diff(cubes):
@@ -102,33 +98,30 @@ def get_cube_range_diff(cubes):
     for cube in cubes:
         ranges.append(np.abs(cube.data.min()))
         ranges.append(np.abs(cube.data.max()))
-    print('get_cube_range_diff:', ranges, -1. * np.max(ranges), np.max(ranges))
-    return [-1. * np.max(ranges), np.max(ranges)]
+    max_range = [-1. * np.max(ranges), np.max(ranges)]
+    logger.info('get_cube_range_diff: %s, %s', max_range)
+    return max_range
 
 
 def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
     """Create a map subplot."""
     plt.subplot(subplot)
-    print(subplot, cube.data.min(), cube.data.max(), nspace)
-
+    logger.info('add_map_subplot: %s', subplot)
     if log:
-        #if n_points[0] == 0.1 and n_points[-1] == 10.:
-        #locator = ticker.LogLocator(numticks=12,) # subs=(10.,), numdecs=10, numticks=None)
-           #print(locator.tick_values(), locator.view_limits())
-        #qplt.contourf(cube, 12, linewidth=0, cmap=plt.cm.get_cmap(cmap), locator = locator)
-        qplot = qplt.contourf(cube, nspace, linewidth=0, cmap=plt.cm.get_cmap(cmap), norm = LogNorm(), zmin = nspace.min(), zmax=nspace.max())
-        #qplot.zmin(nspace.min())
+        qplot = qplt.contourf(cube, nspace, linewidth=0,
+                              cmap=plt.cm.get_cmap(cmap),
+                              norm=LogNorm(),
+                              zmin=nspace.min(),
+                              zmax=nspace.max())
         qplot.colorbar.set_ticks([0.1, 1., 10.])
-
     else:
-        qplot = iris.plot.contourf(cube, nspace, linewidth=0, cmap=plt.cm.get_cmap(cmap), zmin = nspace.min(), zmax=nspace.max())
+        qplot = iris.plot.contourf(cube, nspace, linewidth=0,
+                                   cmap=plt.cm.get_cmap(cmap),
+                                   zmin=nspace.min(),
+                                   zmax=nspace.max())
         cb = pyplot.colorbar(orientation='horizontal')
-        ticks = [nspace.min(), (nspace.max() + nspace.min())/2., nspace.max()]
-        print (subplot, ticks, nspace)
-        cb.set_ticks(ticks)
-
-    #qplot.zmin = nspace.min()
-    #qplot.zmax = nspace.max()
+        cb.set_ticks([nspace.min(), (nspace.max() + nspace.min())/2.,
+                      nspace.max()])
 
     plt.gca().coastlines()
     plt.title(title)
@@ -146,7 +139,7 @@ def make_model_vs_obs_plots(
     input_files is the input files dictionairy
     filename is the preprocessing model file.
     """
-    filenames = {'model' : model_filename, 'obs': obs_filename}
+    filenames = {'model': model_filename, 'obs': obs_filename}
     print('make_model_vs_obs_plots:', filenames)
     # ####
     # Load the data for each layer as a separate cube
@@ -155,7 +148,6 @@ def make_model_vs_obs_plots(
     for model_type, input_file in filenames.items():
         print('loading:', model_type, input_file)
         cube = iris.load_cube(input_file)
-        #cube = diagtools.bgc_units(cube, metadatas[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
@@ -182,14 +174,8 @@ def make_model_vs_obs_plots(
         # Create the cubes
         cube221 = cubes['model'][layer]
         cube222 = cubes['obs'][layer]
-        print (cube221)
-        print (cube222)
-        print ('\nmodel lat:',cube221.coord('latitude').coord_system, '\nobs lat:',cube222.coord('latitude').coord_system)
-        #print (cube221.coord('longitude'), cube222.coord('longitude'))
         cube223 = cubes['model'][layer] - cubes['obs'][layer]
         cube224 = cubes['model'][layer] / cubes['obs'][layer]
-        # cube223 = cubes['model'][layer].data - cubes['obs'][layer].data
-        # cube224 = cubes['model'][layer].data / cubes['obs'][layer].data
 
         # create the z axis for plots 2, 3, 4.
         zrange12 = get_cube_range([cube221, cube222])
@@ -199,10 +185,11 @@ def make_model_vs_obs_plots(
         zrange4 = [0.1, 10.]
 
         n_points = 12
-        linspace12 = np.linspace(zrange12[0], zrange12[1], n_points, endpoint=True)
-        linspace3 = np.linspace(zrange3[0], zrange3[1], n_points, endpoint=True)
+        linspace12 = np.linspace(zrange12[0], zrange12[1], n_points,
+                                 endpoint=True)
+        linspace3 = np.linspace(zrange3[0], zrange3[1], n_points,
+                                endpoint=True)
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
-        #logspace4 = np.linspace(zrange4[0], zrange4[1], 21, endpoint=True)
 
         print('linspace3:', linspace3)
         # Add the sub plots to the figure.
@@ -232,52 +219,56 @@ def make_model_vs_obs_plots(
 
 
 def round_sig(x, sig=3):
-	"""
-	:param x: a float
-	:param sig: number of significant figures
-
-	rounds a value to a specific number of significant figures.
-	"""
-	if x ==0.:	return str(0.)
-	if x<0.:	return str(-1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)	)
-	else: 		return str(    round(x, sig-int(math.floor(math.log10(x)))-1))
-
-
-def add_linear_regression(ax, x, y,showtext=True, addOneToOne=False, extent = [0,0,0,0]):
     """
-    Adds a straight line fit to an axis.
-    """
-    def getLinRegText(ax, x, y, showtext=True):
-        x = [a for a in x if (a is np.ma.masked)==False]
-        y = [a for a in y if (a is np.ma.masked)==False]
-        beta1, beta0, rValue, pValue, stdErr = linregress(x, y)
-        thetext = r'$\^\beta_0$ = '+round_sig(beta0)        \
-            + '\n'+r'$\^\beta_1$ = '+round_sig(beta1)    \
-            + '\nR = '+ round_sig(rValue)        \
-            + '\nP = '+round_sig(pValue)        \
-            + '\nN = '+str(int(len(x)))
-            #+ '\n'+r'$\epsilon$ = ' + round_sig(stdErr)    \
-        if showtext: pyplot.text(0.04, 0.96,thetext ,
-                     horizontalalignment='left',
-                     verticalalignment='top',
-                     transform = ax.transAxes)
-        return beta1, beta0, rValue, pValue, stdErr
+    param x: a float
+    param sig: number of significant figures
 
-    b1, b0, rValue, pValue, stdErr = getLinRegText(ax, x, y, showtext =showtext)
-    if extent == [0,0,0,0]:
-        fx = arange(x.min(), x.max(), (x.max()-x.min())/20.)
-        fy =[b0 + b1*a for a in fx]
+    rounds a value to a specific number of significant figures.
+    """
+    if x == 0.:
+        return str(0.)
+    if x < 0.:
+        return str(-1. * round(abs(x),
+                               sig - int(math.floor(math.log10(abs(x)))) - 1.))
+    else:
+        return str(round(x, sig - int(math.floor(math.log10(x))) - 1.))
+
+
+def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
+                          extent=None):
+    """Add a straight line fit to an axis."""
+
+    beta1, beta0, rValue, pValue, stdErr = linregress(arr_x, arr_y)
+    texts = [r'$\^\beta_0$ = ' + round_sig(beta0),
+             r'$\^\beta_1$ = ' + round_sig(beta1),
+             r'R = ' + round_sig(rValue),
+             r'P = ' + round_sig(pValue),
+             r'N = '+str(int(len(arr_x)))]
+    thetext = r'\n'.join(texts)
+
+    if showtext:
+        pyplot.text(0.04, 0.96, thetext, horizontalalignment='left',
+                    verticalalignment='top', transform=ax.transAxes)
+
+    beta1, beta0, rValue, pValue, stdErr = getLinRegText(ax, arr_x, arr_y,
+                                                         showtext=showtext)
+    if extent is None:
+        fx = arange(arr_x.min(), arr_x.max(),
+                    (arr_x.max() - arr_x.min()) / 20.)
+        fy = [beta0 + beta1 * a for a in fx]
     else:
         minv = min(extent)
         maxv = max(extent)
-        fx = np.arange(minv, maxv, (maxv-minv)/1000.)
-        fy = np.array([b0 + b1*a for a in fx])
+        fx = np.arange(minv, maxv, (maxv - minv)/1000.)
+        fy = np.array([beta0 + beta1 * a for a in fx])
 
-        fx = np.ma.masked_where((fx<minv) + (fy < minv) + (fx>maxv) + (fy > maxv), fx)
-        fy = np.ma.masked_where((fx<minv) + (fy < minv) + (fx>maxv) + (fy > maxv), fy)
+        mask = (fx < minv) + (fy < minv) + (fx > maxv) + (fy > maxv)
+        fx = np.ma.masked_where(mask, fx)
+        fy = np.ma.masked_where(mask, fy)
 
-    pyplot.plot(fx,fy, 'k')
-    if addOneToOne: pyplot.plot(fx,fx, 'k--')
+    pyplot.plot(fx, fy, 'k')
+    if addOneToOne:
+        pyplot.plot(fx, fx, 'k--')
 
 
 def make_scatter(
@@ -292,7 +283,7 @@ def make_scatter(
     input_files is the input files dictionairy
     filename is the preprocessing model file.
     """
-    filenames = {'model' : model_filename, 'obs': obs_filename}
+    filenames = {'model': model_filename, 'obs': obs_filename}
     print('make_model_vs_obs_plots:', filenames)
     # ####
     # Load the data for each layer as a separate cube
@@ -301,7 +292,6 @@ def make_scatter(
     for model_type, input_file in filenames.items():
         print('loading:', model_type, input_file)
         cube = iris.load_cube(input_file)
-        #cube = diagtools.bgc_units(cube, metadatas[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
@@ -333,30 +323,31 @@ def make_scatter(
         model_data = np.ma.masked_where(mask, model_data).compressed()
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
-        colours = 'gist_yarg' # 'Greens'
+        colours = 'gist_yarg'
         zrange = get_array_range([model_data, obs_data])
         print(model_data.shape, obs_data.shape)
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-
         hexbin = pyplot.hexbin(model_data,
                                obs_data,
-                               #xscale='log',
-                               #yscale='log',
+                               # xscale='log',
+                               # yscale='log',
                                bins='log',
-                               #extent=np.log10(plotrange),
-                               gridsize = 50,
+                               # extent=np.log10(plotrange),
+                               gridsize=50,
                                cmap=pyplot.get_cmap(colours),
                                mincnt=0)
         cb = pyplot.colorbar()
         cb.set_label('log10(N)')
-        #cb = pyplot.colorbar(ticks=[0, 1, 2, 3, 4, 5, 6, ],)
-        #cb.set_ticklabels([r'$10^0$',r'$10^1$',r'$10^2$',r'$10^3$',r'$10^4$',r'$10^5$',r'$10^6$',])
 
         pyplot.gca().set_aspect("equal")
         pyplot.axis(plotrange)
 
-        add_linear_regression(pyplot.gca(), model_data, obs_data, showtext =True, addOneToOne=True, extent=plotrange)
+        add_linear_regression(pyplot.gca(),
+                              model_data, obs_data,
+                              showtext=True,
+                              addOneToOne=True,
+                              extent=plotrange)
 
         pyplot.title(long_name)
         pyplot.xlabel(model)
@@ -391,8 +382,6 @@ def main(cfg):
 
         model_type = 'observational_dataset'
         logger.debug('model_type: %s, %s', index, model_type,)
-        #print(cfg.keys(), '\n', metadatas[].keys())
-        #logger.debug('cfg[model_type]: %s, %s', index, cfg[model_type])
         logger.debug('metadatas:  %s, %s', index, metadatas,)
         obs_filename = match_moddel_to_key('observational_dataset',
                                            cfg[model_type],
@@ -409,7 +398,7 @@ def main(cfg):
                 filename,
             )
 
-            ######
+            # #####
             # model vs obs scatter plots
             make_scatter(
                 cfg,
@@ -417,17 +406,13 @@ def main(cfg):
                 filename,
                 obs_filename)
 
-            ######
+            # #####
             # model vs obs map plots
             make_model_vs_obs_plots(
                 cfg,
                 metadatas,
                 filename,
                 obs_filename)
-
-
-
-
     logger.info('Success')
 
 
