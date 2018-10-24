@@ -1,0 +1,110 @@
+---
+
+datasets:
+  # - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: CCSM4,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
+  # - {dataset: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: CMCC-CM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: ACCESS1-3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: ACCESS1-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: HadCM3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  
+  # - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+
+
+preprocessors:
+
+  preprocessor1: {}
+
+diagnostics:
+
+  derive_diagnostic:
+    description: Derive ocean variables
+    variables:
+      thetao:
+        preprocessor: preprocessor1
+        field: T3OM
+        fx_files: [areacello]
+      so:
+        preprocessor: preprocessor1
+        field: T3OM
+        fx_files: [areacello]
+      # uo:
+      #   preprocessor: preprocessor1
+      #   field: T3OM
+      # vo:
+      #   preprocessor: preprocessor1
+      #   field: T3OM
+    additional_datasets:
+      - {dataset: PHC,        project: OBS,    tier: 2,    type: climatology,    version: 3,        start_year: 1800,  end_year: 1800}
+    scripts:
+      script1: &Global_Ocean_surface_map
+        script: ocean3d/ocean3d.py
+        hofm_data: True
+        hofm_regions: ["AB" ,  'EB']
+        hofm_vars: ['thetao', 'salt']
+        hofm_depth: 1500
+
+
+  #     script2: &Global_Ocean_surface_map2
+  #       script: ocean3d/ocean3d.py
+  #       testing: "I am in script 2"
+
+  # derive_diagnostic2:
+  #   description: Derive ocean variables
+  #   variables:
+  #     thetao:
+  #       preprocessor: preprocessor1
+  #       field: T3OM
+  #       fx_files: [areacello]
+  #     so:
+  #       preprocessor: preprocessor1
+  #       field: T3OM
+  #       fx_files: [areacello]
+  #     # uo:
+  #     #   preprocessor: preprocessor1
+  #     #   field: T3OM
+  #     # vo:
+  #     #   preprocessor: preprocessor1
+  #     #   field: T3OM
+  #   additional_datasets:
+  #     - {dataset: PHC,        project: OBS,    tier: 2,    type: climatology,    version: 3,        start_year: 1800,  end_year: 1800}
+  #   scripts:
+  #     script3: &Global_Ocean_surface_map3
+  #       script: ocean3d/ocean3d.py
+  #       testing: "I am in script 3"
+  #     script4: &Global_Ocean_surface_map4
+  #       script: ocean3d/ocean3d.py
+  #       testing: "I am in script 4"
+
+
+
+
+# diagnostics:
+
+
+#   diagnostic1:
+#     description: Air temperature and precipitation Python tutorial diagnostic.
+#     variables:
+#       thetao:
+#         preprocessor: preprocessor1
+#         field: T3OM
+#         # reference_model: ERA-Interim
+        # additional_models:
+        #   - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+      # pr:
+      #   preprocessor: preprocessor2
+      #   field: T2Ms
+      #   reference_model: ERA-Interim
+    # scripts: null
+      # script1:
+      #   script: examples/diagnostic.py
+      #   quickplot:
+      #     plot_type: pcolormesh
