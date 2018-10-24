@@ -50,27 +50,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
-    """
-    Match up the three models and observations dataset from the configs.
-
-    This function checks that the control_model, exper_model and
-    observational_dataset dictionairies from the recipe are matched with the
-    input file dictionairy in the cfg metadata.
-    """
-    for input_file, intput_dict in input_files_dict.items():
-        intersect_keys = intput_dict.keys() & cfg_dict.keys()
-        match = True
-        for key in intersect_keys:
-            if intput_dict[key] == cfg_dict[key]:
-                continue
-            match = False
-        if match:
-            return input_file
-    logger.warning("Unable to match model: %s", model_type)
-    return ''
-
-
 def get_cube_range(cubes):
     """Determinue the minimum and maximum values of an array of cubes."""
     mins = []
@@ -136,7 +115,7 @@ def make_model_vs_obs_plots(
     Make a model vs obs map plot
 
     The cfg is the opened global config,
-    input_files is the input files dictionairy
+    metadata is the input files dictionairy
     filename is the preprocessing model file.
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
@@ -148,6 +127,7 @@ def make_model_vs_obs_plots(
     for model_type, input_file in filenames.items():
         print('loading:', model_type, input_file)
         cube = iris.load_cube(input_file)
+        cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
@@ -206,7 +186,7 @@ def make_model_vs_obs_plots(
         fig.suptitle(long_name, fontsize=14)
 
         # Determine image filename:
-        fn_list = [long_name, model, obs, str(layer), 'maps']
+        fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'maps']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
         path = path.replace(' ', '') + image_extention
 
@@ -229,9 +209,9 @@ def round_sig(x, sig=3):
         return str(0.)
     if x < 0.:
         return str(-1. * round(abs(x),
-                               sig - int(math.floor(math.log10(abs(x)))) - 1.))
+                               sig - int(math.floor(math.log10(abs(x)))) - 1))
     else:
-        return str(round(x, sig - int(math.floor(math.log10(x))) - 1.))
+        return str(round(x, sig - int(math.floor(math.log10(x))) - 1))
 
 
 def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
@@ -244,14 +224,14 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
              r'R = ' + round_sig(rValue),
              r'P = ' + round_sig(pValue),
              r'N = '+str(int(len(arr_x)))]
-    thetext = r'\n'.join(texts)
+    thetext = '\n'.join(texts)
 
     if showtext:
         pyplot.text(0.04, 0.96, thetext, horizontalalignment='left',
                     verticalalignment='top', transform=ax.transAxes)
 
-    beta1, beta0, rValue, pValue, stdErr = getLinRegText(ax, arr_x, arr_y,
-                                                         showtext=showtext)
+    #beta1, beta0, rValue, pValue, stdErr = getLinRegText(ax, arr_x, arr_y,
+#                                                         showtext=showtext)
     if extent is None:
         fx = arange(arr_x.min(), arr_x.max(),
                     (arr_x.max() - arr_x.min()) / 20.)
@@ -280,7 +260,7 @@ def make_scatter(
     Make a model vs obs scatter plot
 
     The cfg is the opened global config,
-    input_files is the input files dictionairy
+    metadata is the input files dictionairy
     filename is the preprocessing model file.
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
@@ -292,6 +272,7 @@ def make_scatter(
     for model_type, input_file in filenames.items():
         print('loading:', model_type, input_file)
         cube = iris.load_cube(input_file)
+        cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
@@ -354,7 +335,7 @@ def make_scatter(
         pyplot.ylabel(obs)
 
         # Determine image filename:
-        fn_list = [long_name, model, obs, str(layer), 'scatter']
+        fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'scatter']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
         path = path.replace(' ', '') + image_extention
 
@@ -383,9 +364,9 @@ def main(cfg):
         model_type = 'observational_dataset'
         logger.debug('model_type: %s, %s', index, model_type,)
         logger.debug('metadatas:  %s, %s', index, metadatas,)
-        obs_filename = match_moddel_to_key('observational_dataset',
-                                           cfg[model_type],
-                                           metadatas)
+        obs_filename = diagtools.match_moddel_to_key('observational_dataset',
+                                                     cfg[model_type],
+                                                     metadatas)
         for filename in sorted(metadatas.keys()):
 
             if filename == obs_filename:

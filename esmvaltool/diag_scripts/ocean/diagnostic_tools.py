@@ -26,9 +26,8 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 # A list of observations
 def get_obs_projects():
     """Returns a list of strings with the names of observations projects."""
-    obs_projects = ['obs4mips', ]
+    obs_projects = ['obs4mips',]
     return obs_projects
-
 
 def folder(name):
     """
@@ -90,6 +89,27 @@ def bgc_units(cube, name):
         cube.convert_units(new_units)
 
     return cube
+
+
+def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+    """
+    Match up the three models and observations dataset from the configs.
+
+    This function checks that the control_model, exper_model and
+    observational_dataset dictionairies from the recipe are matched with the
+    input file dictionairy in the cfg metadata.
+    """
+    for input_file, intput_dict in input_files_dict.items():
+        intersect_keys = intput_dict.keys() & cfg_dict.keys()
+        match = True
+        for key in intersect_keys:
+            if intput_dict[key] == cfg_dict[key]:
+                continue
+            match = False
+        if match:
+            return input_file
+    logger.warning("Unable to match model: %s", model_type)
+    return ''
 
 
 def timecoord_to_float(times):
