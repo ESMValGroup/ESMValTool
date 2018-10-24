@@ -19,17 +19,17 @@ documentation:
 
 datasets:
   # working datasets
-    - {dataset: CESM1-BGC,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: CMCC-CESM,        project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: HadGEM2-ES,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: HadGEM2-CC,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: IPSL-CM5A-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: IPSL-CM5A-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: IPSL-CM5B-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: MPI-ESM-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: MPI-ESM-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: MRI-ESM1,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    - {dataset: NorESM1-ME,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: CESM1-BGC,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: CMCC-CESM,        project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+     - {dataset: HadGEM2-ES,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+     - {dataset: HadGEM2-CC,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: IPSL-CM5A-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: IPSL-CM5A-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: IPSL-CM5B-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: MPI-ESM-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: MPI-ESM-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: MRI-ESM1,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # - {dataset: NorESM1-ME,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
 
 # buggy:
@@ -69,9 +69,9 @@ preprocessors:
     #   start_latitude: -60.
     #   end_latitude: 60.
     time_average:
-#    regrid:
-#      target_grid: 1x1
-#      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
 #    multi_model_statistics:
 #      span: overlap
 #      statistics: [mean ]
@@ -80,6 +80,11 @@ preprocessors:
   prep_transect_South: # For extracting a transect
     custom_order: true
     time_average:
+    extract_region:
+      start_longitude: 140.
+      end_longitude: 310.
+      start_latitude: -20.
+      end_latitude: 0.
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -91,6 +96,11 @@ preprocessors:
   prep_transect_North: # For extracting a transect
     custom_order: true
     time_average:
+    extract_region: #can't extrat region
+      start_longitude: 140.
+      end_longitude: 290.
+      start_latitude: 0.
+      end_latitude: 20.
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -146,33 +156,47 @@ diagnostics:
       o2:
         preprocessor: prep_depth_layers
         field: TO3Y
-    #   chl:
-    #     preprocessor: prep_depth_layers
-    #     field: TO3Y
+    additional_datasets:
+      # /data/sthenno1/scratch/ledm/Observations/WOA/Oxygen_All_Periods/obsdata/Tier2/WOA/OBS_WOA_clim_TO3M_o2_000000-000000.nc
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
     scripts:
       depth_layers:
         script: ocean/diagnostic_maps.py
         thresholds: [0.03, 0.05, 0.08]
 
-  # Don't work with irregular grids:
-#  cabre1c:
-#    description: Oxygen concentration transect, 10 North Pacific.
-#    variables:
-#      o2:
-#        preprocessor: prep_transect_South
-#        field: TO3Y
-#    scripts:
-#      depth_layers:
-#        script: ocean/diagnostic_transects.py
-#        thresholds: [0.03, 0.05, 0.08]
+  cabre1c:
+    description: Oxygen concentration transect, 10 North Pacific.
+    variables:
+      o2:
+        preprocessor: prep_transect_South
+        field: TO3Y
+    scripts:
+      depth_layers:
+        script: ocean/diagnostic_transects.py
+        thresholds: [0.03, 0.05, 0.08]
 
-#  cabre1d:
-#    description: Oxygen concentration transect 10 South Pacific.
-#    variables:
-#      o2:
-#        preprocessor: prep_transect_North
-#        field: TO3Y
-#    scripts:
-#      depth_layers:
-#        script: ocean/diagnostic_transects.py
-#        thresholds: [0.03, 0.05, 0.08]
+  cabre1d:
+    description: Oxygen concentration transect 10 South Pacific.
+    variables:
+      o2:
+        preprocessor: prep_transect_North
+        field: TO3Y
+    scripts:
+      depth_layers:
+        script: ocean/diagnostic_transects.py
+        thresholds: [0.03, 0.05, 0.08]
+
+
+  model_vs_obs:
+    description: Oxygen concentration at 500m, 1000m.
+    variables:
+      o2:
+        preprocessor: prep_depth_layers
+        field: TO3Y
+    additional_datasets:
+      # /data/sthenno1/scratch/ledm/Observations/WOA/Oxygen_All_Periods/obsdata/Tier2/WOA/OBS_WOA_clim_TO3M_o2_000000-000000.nc
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      model_vs_obs:
+         script: ocean/diagnostic_model_vs_obs.py
+         observational_dataset: {dataset: WOA, project: obs4mips,}
