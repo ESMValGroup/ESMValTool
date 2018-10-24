@@ -6,8 +6,8 @@
 ;
 ;  Description
 ;     Calculate Interannual variability from piControl runs for plotting
-;     significance with stippling and hatching, regrid to common grid and save
-;     multi-model mean.
+;     significance with stippling and hatching, save for each model
+;     (iavmode: "each") or multi-model mean only.
 ;     Can either be calculated over full time period of piControl run
 ;     (no periodlength given)
 ;     or first averaged annually/seasonally over periodlength and then standard
@@ -18,10 +18,10 @@
 ;
 ;  Optional diag_script_info attributes (diagnostic specific)
 ;     iavmode: calculate multi-model mean of IAV over all models or calculate
-;              and save IAV for each individual model or ? (mmm, each)
+;              and save IAV for each individual model? (mmm, each)
 ;     periodlength: length of periods to calculate IAV accross, depends on
 ;                   period lengths used in
-;                   map_diff_mmm_stippandhatch_ipcc12.ncl
+;                   ch12_calc_map_diff_mmm_stippandhatch.ncl
 ;                   if not given whole time period calculated at once
 ;
 ;  Caveats
@@ -132,8 +132,6 @@ begin
   lon_name = dims(idx)
 
   index = ispan(0, dim_MOD - 1, 1)
-;  if (isatt(diag_script_info, "seasons")) then
-;    dim_seas = dimsizes(diag_script_info@seasons)
   if diag_script_info@time_avg .eq. "seasonalclim" then
     dim_seas = 4
     diag_script_info@seasons = (/0, 1, 2, 3/)
@@ -236,12 +234,6 @@ begin
             data_tmp(per, 0, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          ; else if ((dim_seas .eq. 1) .and. \
-          ;          (diag_script_info@time_avg .eq. "seasonalclim")) then
-          ;   tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
-          ;                         diag_script_info@time_avg, True)
-          ;   data_tmp(per, 0, :, :) = tmp(diag_script_info@seasons, :, :)
-          ;   delete(tmp)
           else
             data_tmp(per, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
@@ -254,12 +246,6 @@ begin
             data_tmp(per, 0, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          ; else if ((dim_seas .eq. 1) .and. \
-          ;          (diag_script_info@time_avg .eq. "seasonalclim")) then
-          ;   tmp = time_operations(A0, start_yrs(per), new_end_yr, "average",\
-          ;                         diag_script_info@time_avg, True)
-          ;   data_tmp(per, 0, :, :, :) = tmp(diag_script_info@seasons, :, :, :)
-          ;   delete(tmp)
           else
             data_tmp(per, :, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \

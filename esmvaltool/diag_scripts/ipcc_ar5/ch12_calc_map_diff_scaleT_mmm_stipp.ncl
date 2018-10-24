@@ -5,9 +5,9 @@
 ; #############################################################################
 ;
 ; Description
-;    Annual mean or seasonal change sclaed by global T change per model
-;    multi-model mean with signficance in different periods
-;    (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
+;    Pattern scaling. Annual mean or seasonal change scaled by global T
+;    change per model multi-model mean with significance in different 
+;    periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
 ;
 ; Required diag_script_info attributes (diagnostics specific)
 ;    scenarios: list with scenarios to be included in the
@@ -21,7 +21,6 @@
 ;    seasons: list with seasons index to be included if
 ;             averagetime is "seasonalclim" (required for
 ;             seasonalclim), DJF:0, MAM:1, JJA:2, SON:3
-;    grid:    grid for regridding (coarsest, finest, ref, 1x1, 2.5x2.5)
 ;    percent: 0 or 1, difference in percent = 1, default = 0
 ;    explicit_cn_levels: explicit levels for all contour plots
 ;    max_vert: maximum number of plots in vertical
@@ -38,7 +37,7 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
-;    20180618-A_lore_ru: refactored for v2
+;    20180618-A_lore_ru: refactored for v2, fixed calculation of stippling
 ;    20161027-A_lore_ru: written for ESMValTool
 ;
 ; #############################################################################
@@ -128,7 +127,7 @@ begin
   ; # Get data and average time               #
   ; ###########################################
   ; get data from first model
-  imod = 0  ; NCL array indicies start from zero
+  imod = 0  ; NCL array indices start from zero
   log_info("processing " + dataset_info@dataset(imod) + "_"\
            + dataset_info@exp(imod) + "_"\
            + dataset_info@ensemble(imod))
@@ -147,23 +146,16 @@ begin
   if (ismissing(idx)) then
     error_msg("f", diag_script, "", "no lat dimension")
   end if
+  nlat = dimsizes(A0&lat)
   idx = ind(dims .eq. "lon")
   if (ismissing(idx)) then
     error_msg("f", diag_script, "", "no lon dimension")
   end if
-
-  if (isatt(diag_script_info, "iavmode")) then
-    if (diag_script_info@iavmode .eq. "each") then
-      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
-                dimsizes(A0&lon)/), typeof(A0), Fill)
-      copy_VarMeta(A0, iav)
-    end if
-  end if
+  nlon = dimsizes(A0&lon)
 
   temp_avg = new((/dim_MOD/), typeof(A0), Fill)
   temp_avg!0 = "models"
-;  temp_avg&models = dataset_info@dataset
-  data1 = new((/dim_MOD,  dim_seas, dimsizes(A0&lat), dimsizes(A0&lon)/), \
+  data1 = new((/dim_MOD,  dim_seas, nlat, nlon/), \
               typeof(A0), Fill)
   ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
   if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
@@ -184,7 +176,7 @@ begin
                                            diag_script_info@time_avg, True)
   end if
   end if
-rad = (4.0 * atan(1.0) / 180.0)
+  rad = (4.0 * atan(1.0) / 180.0)
   do imod = 0, dim_MOD - 1
     A0_temp = read_data(imod, var1, field_type0)
     temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
@@ -232,20 +224,17 @@ rad = (4.0 * atan(1.0) / 180.0)
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
 
-  to_plot = new((/dim_per * dim_seas, dimsizes(data1&lat), \
-                 dimsizes(data1&lon)/), typeof(data1), Fill)
+  to_plot = new((/dim_per * dim_seas, nlat, nlon/), typeof(data1), Fill)
   if (isatt(diag_script_info, "percent")) then
     percent = diag_script_info@percent
   else
     percent = 0
   end if
-  to_plot_signif = new((/dim_per * dim_seas,  dimsizes(data1&lat), \
-                        dimsizes(data1&lon)/), typeof(data1), Fill)
+  to_plot_signif = new((/dim_per * dim_seas, nlat, nlon/), typeof(data1), Fill)
+  perc95 = new((/dim_per * dim_seas,  nlat, nlon/), typeof(data1), Fill)
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
-      diff_rcp_scal = new((/dim_scen, dimsizes(data1&lat), \
-                           dimsizes(data1&lon)/), typeof(data1), Fill)
       do rcp = 0, dim_scen - 1  ; loop over rcps
         idx_rcp = ind((dataset_info@exp .eq. diag_script_info@scenarios(rcp)) \
                       .and. (dataset_info@start_year .eq. \
@@ -271,8 +260,7 @@ rad = (4.0 * atan(1.0) / 180.0)
           error_msg("f", diag_script, "", \
                     "Only one model found, multi-model needs at least two.")
         end if
-        var_diff_scal = new((/dim_mod, dimsizes(data1&lat), \
-                             dimsizes(data1&lon)/), typeof(data1), Fill)
+        var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
         do imod = 0, dim_mod - 1
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
@@ -282,17 +270,14 @@ rad = (4.0 * atan(1.0) / 180.0)
               (temp_proj(imod) - temp_base(imod))
           else
             var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                         base(imod, :, :)) / \
-                                         (temp_proj(imod) - temp_base(imod))
+                                              base(imod, :, :)) / \
+                                        (temp_proj(imod) - temp_base(imod))
           end if
         end do
         delete(base)
         delete(proj)
         delete(temp_proj)
         delete(temp_base)
-        ;  average over models
-        log_debug("Average over models")
-        diff_rcp_scal(rcp, :, :) = dim_avg_n_Wrap(var_diff_scal, 0)
         if rcp .eq. 0 then
           var_diff_scal_all_mod = var_diff_scal
         else
@@ -306,26 +291,28 @@ rad = (4.0 * atan(1.0) / 180.0)
         delete(idx_rcp)
         delete(var_diff_scal)
       end do  ; rcp
+      var_diff_scal_all_mod!0 = "models"
+      var_diff_scal_all_mod!1 = "lat"
+      var_diff_scal_all_mod!2 = "lon"
+      var_diff_scal_all_mod&lat = data1&lat
+      var_diff_scal_all_mod&lon = data1&lon
       ; average over rcps
-      log_debug("Average over rcps")
-      to_plot(i, :, :) = dim_avg_n_Wrap(diff_rcp_scal, 0)
-      ; calculate 95-percentile over all realizations
-      log_debug("calculate 95-percentile over all realizations")
-      diff_sort = dim_pqsort_n(var_diff_scal_all_mod, 2, 0)
-      ndiff = dim_num_n(.not.ismissing(diff_sort), 0)  ; ndiff(nlat,mlon)
-      log_debug("loop over all lat, lons")
-      ind_95 = tointeger(floor(0.95 * ndiff) - 1)
-      perc95 = new(dimsizes(ind_95), float)
-      do ilat = 0, dimsizes(data1&lat) - 1
-        do ilon = 0, dimsizes(data1&lon) - 1
-          index = ind_95(ilat, ilon)
-          perc95(ilat, ilon) = diff_sort(index(0), ilat, ilon)
-        end do
-      end do
+      log_debug("Average over models and rcps")
+      to_plot(i, :, :) = dim_avg_n_Wrap(var_diff_scal_all_mod, 0)
       log_debug("determine significance")
-      to_plot_signif(i, :, :) = where(abs(to_plot(i, :, :)) .gt. perc95, 1., 0)
+      ; calculate standard deviation and 95-percentile (assuming gaussian
+      ; distribution) over all models and scenarios
+      nvalid = dim_num_n(.not.ismissing(var_diff_scal_all_mod(:, nlat / 2, \
+                                                              nlon / 2)), 0)
+      printVarSummary(nvalid)
+      print(nvalid)
+      perc95(i, :, :) = dim_stddev_n_Wrap(var_diff_scal_all_mod, 0) * 1.96 / \
+                        sqrt(nvalid)  ; standard error
+      ; compare change to perc95
+      to_plot_signif(i, :, :) = where(abs(to_plot(i, :, :)) .gt. \
+                                      abs(perc95(i, :, :)), 1., 0)
       i = i + 1
-      delete([/var_diff_scal_all_mod, diff_sort/])
+      delete([/var_diff_scal_all_mod/])
     end do  ; per
   end do  ; seas
   to_plot!0 = "panel"
@@ -394,10 +381,17 @@ rad = (4.0 * atan(1.0) / 180.0)
 
   to_plot_signif@diag_script = (/diag_script/)
   to_plot_signif@var = "signif"
-  to_plot_signif@var_long_name = "significance: where average change " + \
-                                 "larger than 95-percentile over all " + \
-                                 "realizations"
+  to_plot_signif@var_long_name = "significance: where average change over" + \
+                                 "all realizations is larger than " + \
+                                 "95-percentile of distribution of models."
   to_plot_signif@var_units     = 1
+
+  copy_VarCoords(to_plot, perc95)
+
+  perc95@diag_script = (/diag_script/)
+  perc95@var = "95perc"
+  perc95@var_long_name = "95-percentile of distribution of models"
+  perc95@var_units     = 1
 
   ; ###########################################
   ; # Output to netCDF               #
@@ -409,6 +403,7 @@ rad = (4.0 * atan(1.0) / 180.0)
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   ncdf_file@existing = "append"
   ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)
+  ncdf_outfile = ncdf_write(perc95, ncdf_file)
 
   ; copy preproc info file to work dir
   system("cp " + diag_script_info@input_files + " " + work_dir)
