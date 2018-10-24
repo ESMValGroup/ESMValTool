@@ -26,8 +26,9 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 # A list of observations
 def get_obs_projects():
     """Returns a list of strings with the names of observations projects."""
-    obs_projects = ['obs4mips',]
+    obs_projects = ['obs4mips', ]
     return obs_projects
+
 
 def folder(name):
     """

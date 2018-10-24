@@ -46,22 +46,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-# def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
-#     """
-#     Match up the three models and observations dataset from the configs.
-#
-#     This function checks that the control_model, exper_model and
-#     observational_dataset dictionairies from the recipe are matched with the
-#     input file dictionairy in the cfg metadata.
-#     """
-#     for input_file, intput_dict in input_files_dict.items():
-#         intersection = dict(intput_dict.items() & cfg_dict.items())
-#         if intersection == cfg_dict:
-#             return input_file
-#     logger.warning("Unable to match model: %s", model_type)
-#     return ''
-
-
 def get_cube_range(cubes):
     """Determinue the minimum and maximum values of an array of cubes."""
     mins = []
@@ -84,9 +68,11 @@ def get_cube_range_diff(cubes):
 def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     """Create a map subplot."""
     plt.subplot(subplot)
-    qplot = qplt.contourf(cube, nspace, linewidth=0, cmap=plt.cm.get_cmap(cmap))
-    qplot.colorbar.set_ticks([nspace.min(), (nspace.max() + nspace.min())/2.,
-                                   nspace.max()])
+    qplot = qplt.contourf(cube, nspace, linewidth=0,
+                          cmap=plt.cm.get_cmap(cmap))
+    qplot.colorbar.set_ticks([nspace.min(),
+                              (nspace.max() + nspace.min())/2.,
+                              nspace.max()])
 
     plt.gca().coastlines()
     plt.title(title)
@@ -151,12 +137,11 @@ def multi_model_maps(
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange1 = get_cube_range([cube221,])
+        zrange1 = get_cube_range([cube221, ])
         zrange2 = get_cube_range_diff([cube222, cube223, cube224])
 
-        n_points = 12
-        linspace1 = np.linspace(zrange1[0], zrange1[1], n_points, endpoint=True)
-        linspace2 = np.linspace(zrange2[0], zrange2[1], n_points, endpoint=True)
+        linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+        linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
 
         # Add the sub plots to the figure.
         add_map_subplot(221, cube221, linspace1, cmap='viridis', title=exper)

@@ -230,8 +230,6 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
         pyplot.text(0.04, 0.96, thetext, horizontalalignment='left',
                     verticalalignment='top', transform=ax.transAxes)
 
-    #beta1, beta0, rValue, pValue, stdErr = getLinRegText(ax, arr_x, arr_y,
-#                                                         showtext=showtext)
     if extent is None:
         fx = arange(arr_x.min(), arr_x.max(),
                     (arr_x.max() - arr_x.min()) / 20.)
@@ -335,7 +333,8 @@ def make_scatter(
         pyplot.ylabel(obs)
 
         # Determine image filename:
-        fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'scatter']
+        fn_list = ['model_vs_obs', long_name, model, obs, str(layer),
+                   'scatter']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
         path = path.replace(' ', '') + image_extention
 
