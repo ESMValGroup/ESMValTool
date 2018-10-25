@@ -11,7 +11,7 @@ import tests
 
 from esmvaltool.preprocessor._area_pp import area_slice as extract_region
 from esmvaltool.preprocessor._area_pp import area_average as average_region
-from esmvaltool.preprocessor._area_pp import area_average_general as avg_gen
+# from esmvaltool.preprocessor._area_pp import area_average_general as avg_gen
 
 
 class Test(tests.Test):
@@ -60,11 +60,11 @@ class Test(tests.Test):
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_area_average_general(self):
-        """Test for area average of a 2D field."""
-        result = avg_gen(self.grid, weighted=True)
-        expected = np.array([1.])
-        self.assertArrayEqual(result.data, expected)
+    # def test_area_average_general(self):
+    #    """Test for area average of a 2D field."""
+    #    result = avg_gen(self.grid, weighted=True)
+    #    expected = np.array([1.])
+    #    self.assertArrayEqual(result.data, expected)
 
     def test_area_average_negative_longitude(self):
         """Test for area average of a 2D field."""

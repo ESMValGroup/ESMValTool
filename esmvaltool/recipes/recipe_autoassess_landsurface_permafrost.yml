@@ -30,7 +30,7 @@ diagnostics:
   aa_landsurf_permafrost:
     description: Autoassess test diag for Land-Surface Permafrost.
     variables:
-      ta:
+      tas:
         mip: Amon
         field: T3M
         fx_files: [sftlf, mrsofc]
