@@ -80,7 +80,7 @@ class DerivedVariableBase(object):
         """Select correct python module for derived variable.
 
         Get derived variable by searching for a file `short_name.py` in the
-        module esmvaltool.preprocessor._derived_variables.
+        module esmvaltool.preprocessor._derive.
 
         Parameters
         ----------
