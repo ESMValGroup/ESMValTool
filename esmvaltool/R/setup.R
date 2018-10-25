@@ -25,7 +25,7 @@ script.dirname <- dirname(script.name)
 print(script.dirname)
 
 # read the dependencies
-dependencies <-read.table(paste(script.dirname,"r_requirements.txt", sep="/"), header=FALSE) # TODO: find a solution for script directory
+dependencies <-scan(paste(script.dirname,"r_requirements.txt", sep="/"),what="character") # TODO: find a solution for script directory
 
 packageList <- dependencies[!(dependencies %in% installed.packages()[,"Package"])]
 
@@ -37,7 +37,7 @@ if (length(packageList)==0) {
 
 for (packageName in packageList) {
     print(paste("    Installing package --> ", packageName))
-    install.packages(packageName, repos=pkgMirror, dependencies=c("Depends"))
+    install.packages(packageName, repos=pkgMirror)
 }
 
 print("List of installed packages:")
