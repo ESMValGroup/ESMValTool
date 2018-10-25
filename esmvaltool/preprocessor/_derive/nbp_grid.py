@@ -45,7 +45,7 @@ class DerivedVariable(DerivedVariableBase):
         ----------
         cubes : iris.cube.CubeList
             `CubeList` containing `nbp` (`surface_net_downward_mass_flux_of_
-            carbon_dioxide_expressed_as_carbon_due_to_all_land_processes`)
+            carbon_dioxide_expressed_as_carbon_due_to_all_land_processes`).
         fx_files : dict, optional
             If required, dictionary containing fx files  with `short_name`
             (key) and path (value) of the fx variable.
