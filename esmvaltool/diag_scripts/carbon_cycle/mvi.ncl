@@ -162,6 +162,11 @@ begin
       data_var := dble2flt(data_var)
     end if
 
+    ; Set fill value if necessary
+    if (.not. isatt(data_var, "_FillValue")) then
+      data_var@_FillValue = 1.0e20
+    end if
+
     ; Get dimensions
     if (isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
       DIM_LAT = dimsizes(data_var&lat)
@@ -172,12 +177,13 @@ begin
                 "supported")
     end if
 
-    ; Cut off Antarctica if necessary
+    ; Cut off Antarctica if necessary (for land-based observations)
     if ((isatt(variable_info, "reference_dataset") .and. \
-         variable_info@reference_dataset .eq. "CRU") .or. \
-        input_file_info@mip(0) .eq. "Lmon") then
-      log_info("Masking Antarctica")
-      data_var(:, {:-60}, :) = data_var@_FillValue
+         variable_info@reference_dataset .eq. "CRU")) then
+      if (dimsizes(data_var&lat) .gt. 1) then
+        log_info("Masking Antarctica")
+        data_var(:, {:-60}, :) = data_var@_FillValue
+      end if
     end if
 
     ; Computing annual mean
@@ -307,7 +313,7 @@ begin
   ; be masked
   if (isStrSubset(var0, "lai")) then
     all_data_yearly = where(all_data_yearly .ge. 0.025, \
-                            all_data_yearly, 1.0e20)
+                            all_data_yearly, all_data_yearly@_FillValue)
   end if
 
   ; Compute total temporal mean
@@ -365,21 +371,21 @@ begin
 
   ; Diagnostic- and variable-specific units conversions
   regional_mvi@units = "1"
+  trend_tmp = regional_trend
   if (isatt(variable_info, "plot_units")) then
     new_units = variable_info@plot_units
     regional_mean = convert_units(regional_mean, new_units)
-    if (new_units .ne. "degC") then
-      trend_tmp = convert_units(regional_trend, new_units)
-    else
-      trend_tmp = regional_trend
+    if (new_units .eq. "degC") then
       trend_tmp@units = "degC"
+    else
+      trend_tmp = convert_units(regional_trend, new_units)
     end if
   end if
 
   ; Units conversion for trend
   if (input_file_info@mip(0) .eq. "Lmon") then
     regional_trend = trend_tmp
-    temp_unit = "y-1"
+    temp_unit = "yr-1"
   else
     regional_trend = trend_tmp * 10.0
     temp_unit = "decade-1"

@@ -196,6 +196,11 @@ begin
       data_var := dble2flt(data_var)
     end if
 
+    ; Set fill value if necessary
+    if (.not. isatt(data_var, "_FillValue")) then
+      data_var@_FillValue = 1.0e20
+    end if
+
     ; Check for irregular grids (TODO)
     if (.not. isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
       error_msg("f", diag_script, "", "Irregular grids are currently not " + \
@@ -211,14 +216,13 @@ begin
       sp_opt = "average"
     end if
 
-    ; CRU is only land based - Need landmask and also cut off Antarctica
-    ; (land mask is applied in preprocessor)
-    if (isatt(variable_info, "reference_dataset") .and. \
-        variable_info@reference_dataset .eq. "CRU") then
-
-      ; Mask Antarctica
-      log_info("Masking Antarctica")
-      data_var(:, {:-60}, :) = data_var@_FillValue
+    ; Cut off Antarctica if necessary (for land-based observations)
+    if ((isatt(variable_info, "reference_dataset") .and. \
+         variable_info@reference_dataset .eq. "CRU")) then
+      if (dimsizes(data_var&lat) .gt. 1) then
+        log_info("Masking Antarctica")
+        data_var(:, {:-60}, :) = data_var@_FillValue
+      end if
     end if
 
     ; Calculate annual mean
