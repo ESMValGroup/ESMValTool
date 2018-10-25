@@ -374,15 +374,22 @@ begin
       trend_tmp = regional_trend
       trend_tmp@units = "degC"
     end if
-    if (input_file_info@mip(0) .eq. "Lmon") then
-      regional_trend = trend_tmp
-      regional_trend@units = trend_tmp@units + " y-1"
-    else
-      regional_trend = trend_tmp * 10.0
-      regional_trend@units = trend_tmp@units + " decade-1"
-    end if
-    delete(trend_tmp)
   end if
+
+  ; Units conversion for trend
+  if (input_file_info@mip(0) .eq. "Lmon") then
+    regional_trend = trend_tmp
+    temp_unit = "y-1"
+  else
+    regional_trend = trend_tmp * 10.0
+    temp_unit = "decade-1"
+  end if
+  if (trend_tmp@units .ne. "1") then
+    regional_trend@units = trend_tmp@units + " " + temp_unit
+  else
+    regional_trend@units = temp_unit
+  end if
+  delete([/trend_tmp, temp_unit/])
 
   ; ---------------------------------------------------------------------------
   ; Write NETCDF
