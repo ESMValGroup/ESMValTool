@@ -7,10 +7,11 @@
 ; #############################################################################
 ;
 ; Description:
-;     Write climatological mean of a single variable to netcdf.
+;     Write quantities of a single variable to netcdf for MDER analysis.
 ;
 ; Required diag_script_info attributes:
-;     region: Considered region.
+;     calc_type: calculation type ('mean', 'trend').
+;     region: considered region.
 ;     time_oper: operation for time aggregation.
 ;     time_opt: option for time aggregation.
 ;     area_oper: operation for spacial aggregation.
@@ -65,10 +66,18 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Check required diag_script_info attributes
-  req_atts = (/"region", "time_oper", "time_opt", "area_oper", "wdiag"/)
+  req_atts = (/"calc_type", "region", "time_oper", "time_opt", "area_oper", \
+              "wdiag"/)
   exit_if_missing_atts(diag_script_info, req_atts)
+  calc_type = diag_script_info@calc_type
   wdiag = diag_script_info@wdiag
   delete(req_atts)
+
+  ; Check calc_type
+  if (.not. any(calc_type .eq. (/"mean", "trend"/))) then
+    error_msg("f", diag_script, "", "calc_type " + calc_type + " not " + \
+              "supported yet")
+  end if
 
   ; Check size of wdiag
   if (dimsizes(wdiag) .gt. 1) then
@@ -95,6 +104,7 @@ begin
     if (typeof(var) .eq. "double") then
       var := dble2flt(var)
     end if
+    var@_FillValue = 1.0e20
 
     ; Temporal aggregation
     tmp = time_operations(var, \
@@ -103,6 +113,26 @@ begin
                           diag_script_info@time_oper, \
                           diag_script_info@time_opt, \
                           True)
+
+    ; Special case for lai:
+    ; Since datasets have different land covers, all sparse vegetated points
+    ; must be masked
+    if (isStrSubset(var0, "lai")) then
+      tmp = where(tmp .ge. 0.025, tmp, tmp@_FillValue)
+    end if
+
+    ; Calculate trend if desired
+    if (calc_type .eq. "trend") then
+      time = tmp&$tmp!0$
+      rc = regCoef_n(1.0 * time, tmp, 0, 0)
+      copy_VarAtts(tmp, rc)
+      rc!0 = "lat"
+      rc!1 = "lon"
+      rc&lat = tmp&lat
+      rc&lon = tmp&lon
+      tmp := rc
+      delete(rc)
+    end if
 
     ; Spatial aggregation
     area_op = area_operations(tmp, \
@@ -113,9 +143,36 @@ begin
                               diag_script_info@area_oper, \
                               True)
 
+    ; Convert units if necessary
+    if (isatt(variable_info, "plot_units")) then
+      new_units = variable_info@plot_units
+      if (calc_type .eq. "trend" .and. new_units .eq. "degC") then
+        area_op@units = "degC"
+      else
+        area_op = convert_units(area_op, new_units)
+      end if
+    end if
+
+    ; Units conversion for trend
+    if (calc_type .eq. "trend") then
+      if (input_file_info@mip(0) .eq. "Lmon") then
+        temp_unit = "y-1"
+      else
+        area_op = area_op * 10.0
+        temp_unit = "decade-1"
+      end if
+      if (area_op@units .ne. "1") then
+        area_op@units = area_op@units + " " + temp_unit
+      else
+        area_op@units = temp_unit
+      end if
+      delete(temp_unit)
+    end if
+
     ; Assign to global array
     if (.not. isvar("all_data")) then
-      if (dimsizes(dimsizes(area_op)) .eq. 1) then
+      if (dimsizes(dimsizes(area_op)) .eq. 1 .and. \
+          all(dimsizes(area_op) .eq. 1)) then
         dim_data = (/DIM_DAT/)
       else
         dim_data = array_append_record(DIM_DAT, dimsizes(area_op), 0)
@@ -140,11 +197,6 @@ begin
     delete([/var, tmp, area_op/])
   end do
 
-  ; Convert units if appropriate
-  if (isatt(variable_info, "plot_units")) then
-    all_data = convert_units(all_data, variable_info@plot_units)
-  end if
-
   ; ---------------------------------------------------------------------------
   ; Write NETCDF file for MDER
   ; ---------------------------------------------------------------------------
@@ -153,7 +205,6 @@ begin
   if (output) then
     work_dir = output@work_dir
     opt = diag_script_info
-    log_info(opt@wdiag)
 
     ; Iterate over all datasets
     do idat = 0, DIM_DAT - 1
@@ -185,6 +236,7 @@ begin
         val!idim = dims(idim)
         val&$dims(idim)$ = all_data&$dims(idim)$
       end do
+      val@units = all_data@units
       val@var = var0
       val@diag_script = (/diag_script/)
       copy_VarAtts(diag_script_info, val)
