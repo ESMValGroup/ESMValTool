@@ -377,8 +377,19 @@ def _dataset_to_file(variable, config_user):
         drs=config_user['drs'])
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
-        variable['short_name'], variable['field'] = get_required(
-            variable['short_name'], variable['field'])[0]
+        idx = 0
+        short_name, field = get_required(
+            variable['short_name'], variable['field'])[idx]
+        while short_name == 'fx_files':
+            idx = idx + 1
+            try:
+                short_name, field = get_required(
+                    variable['short_name'], variable['field'])[idx]
+            except IndexError:
+                logger.error("Derivation of %s from fx variables only is not "
+                             "supported yet", variable['short_name'])
+                break
+        variable['short_name'], variable['field'] = short_name, field
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -502,7 +513,24 @@ def _get_default_settings(variable, config_user, derive=False):
 
 
 def _update_fx_settings(settings, variable, config_user):
-    """Find and set the FX mask settings"""
+    """Find and set the FX derive/mask settings"""
+    # update for derive
+    if 'derive' in settings.keys():
+        for short_name, fx_vars in get_required(variable['short_name'],
+                                                variable['field']):
+            if short_name != 'fx_files':
+                continue
+            settings['derive']['fx_files'] = {}
+            variable = dict(variable)
+            variable['fx_files'] = fx_vars
+            fx_files_dict = get_input_fx_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            for fx_var in fx_vars:
+                settings['derive']['fx_files'][fx_var] = (
+                    fx_files_dict[fx_var])
+
     # update for landsea
     if 'mask_landsea' in settings.keys():
         # Configure ingestion of land/sea masks
@@ -757,6 +785,8 @@ def _get_preprocessor_task(variables,
                 # Process input data needed to derive variable
                 for short_name, field in get_required(variable['short_name'],
                                                       variable['field']):
+                    if short_name == 'fx_files':
+                        continue
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
@@ -767,6 +797,9 @@ def _get_preprocessor_task(variables,
                     _add_cmor_info(variable, override=True)
                     derive_input[short_name].append(variable)
 
+        if not derive_input:
+            logger.error("Derivation of %s from fx variables only is not "
+                         "supported yet", variable['short_name'])
         for derive_variables in derive_input.values():
             task = _get_single_preprocessor_task(derive_variables,
                                                  derive_profile, config_user)
