@@ -15,6 +15,18 @@ begin
   loadscript("$settings")
 end
 
+; Convert diag_script_info and config_user_info to scalar
+begin
+  tmp = diag_script_info[0]
+  delete(diag_script_info)
+  diag_script_info = tmp
+
+  tmp = config_user_info[0]
+  delete(config_user_info)
+  config_user_info = tmp
+end
+
+
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
@@ -36,7 +48,7 @@ begin
   config_user_info@run_dir = config_user_info@run_dir + "/"
   config_user_info@work_dir = config_user_info@work_dir + "/"
 
-  ; Copy some info into legacy names
+  ; Copy some info into legacy names (for backward compatibility with v1.0)
   diag_script = diag_script_info@script
   if (isvar("variable_info")) then
     variables = new(ListCount(variable_info), string)
@@ -74,7 +86,7 @@ begin
 
 end
 
-; Load other interface scripts
+; Load other standard interface scripts
 load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"

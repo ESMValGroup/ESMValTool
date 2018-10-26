@@ -134,23 +134,15 @@ def write_ncl_settings(settings, filename, mode='wt'):
         return txt
 
     def _format_dict(name, dictionary):
-        """Format dict as NCL (list of) logical(s) with attributes."""
-        if name in ('diag_script_info', 'config_user_info'):
-            syntax = ['{} = True', '{}@{} = {}']
-        else:
-            syntax = ['{}[i] = True', '{}[i]@{} = {}']
-        lines = [syntax[0].format(name)]
+        """Format dict as NCL list of logical(s) with attributes."""
+        lines = ['{}[i] = True'.format(name)]
         for key, value in sorted(dictionary.items()):
-            lines.append(syntax[1].format(name, key, _format(value)))
+            lines.append('{}[i]@{} = {}'.format(name, key, _format(value)))
         txt = '\n'.join(lines)
         return txt
 
     def _header(name):
-        """Create NCL header either as a logical or as a list of logicals."""
-        if name in ('diag_script_info', 'config_user_info'):
-            return ('if (isvar("{name}")) then\n'
-                    '    delete({name})\n'
-                    'end if\n'.format(name=name))
+        """Create NCL header as a list of logicals."""
         return('if (.not. isdefined("{name}")) then\n'
                '  {name} = NewList("fifo")\n'
                'end if\n'
