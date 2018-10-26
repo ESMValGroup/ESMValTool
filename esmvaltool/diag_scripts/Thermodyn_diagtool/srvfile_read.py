@@ -34,7 +34,7 @@ class srvfile():
     def define_service_format(self):
         self.headersize = int(self.hbyte)*8
         self.read_resolution() # define dim1 and dim2
-        print(self.dim1,self.dim2,self.fbyte)
+        #print(self.dim1,self.dim2,self.fbyte)
         self.fieldsize = self.dim1*self.dim2*int(self.fbyte) + 8       
         self.headtype       = np.dtype([('headstart','i4') , ('code','i'+self.hbyte ), ('level','i'+self.hbyte ), ('date','i'+self.hbyte ), ('time','i'+self.hbyte ), ('X','i'+self.hbyte ), ('Y','i'+self.hbyte ), ('head7','i'+self.hbyte ), ('expnum','i'+self.hbyte ),('headend','i4')])
         self.fieldtype      = np.dtype("("+str(self.dim2)+","+str(self.dim1)+")f"+self.fbyte )
@@ -146,7 +146,7 @@ class srvfile():
             dtdiff = {}
             actuallevels = len(filtlevels)
             #filter for levels
-            print('code: ',code,self.codes)
+            #print('code: ',code,self.codes)
 #            for lev in filtlevels:
 #                print('level: ',lev)
 #                time = np.asarray(list(map(int,rawdata['time'][np.logical_and(rawdata['level']==lev, rawdata['code']==code)])))

@@ -384,7 +384,10 @@ def main(cfg):
 
         aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
         cdo.selvar('tas', input = tas_file,output = aux_file)
-        move(aux_file,tas_file)
+        move(aux_file,tas_file)    
+        tasmn_file = diagworkdir + '/{}_tas_mm.nc'.format(model_name)
+        cdo.selvar('tas',input = '-monmean {}'.format(tas_file), 
+                   option = '-b F32', output = tasmn_file)
 
         logger.info('Computing auxiliary variables\n')
         # emission temperature
@@ -405,7 +408,7 @@ def main(cfg):
         tasvert_file = diagworkdir + '/{}_tvertavg.nc'.format(model_name)
         removeif(tasvert_file)
         cdo.fldmean(input = '-mulc,0.5 -add {} -selvar,tas {}'.format(ts_file,
-                     tas_file), options = '-b F32', output = tasvert_file) 
+                     tasmn_file), options = '-b F32', output = tasvert_file) 
         # evaporation
         if (wat in {'y','yes'} or met in {'2','3'}):
                     evspsbl_file = diagworkdir + '/{}_evspsbl.nc'.format(model_name)
@@ -421,7 +424,7 @@ def main(cfg):
         if entr in {'y','yes'}:
                 if met in {'2','3'}:
                     os.chdir(diagworkdir)
-                    mkthe.mkthe_main(diagworkdir,ts_file,hus_file,tas_file,
+                    mkthe.mkthe_main(diagworkdir,ts_file,hus_file,tasmn_file,
                                       ps_file,uas_file,vas_file,hfss_file,
                                       te_file,model_name)
                     tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
@@ -747,9 +750,16 @@ def main(cfg):
             lecpath   = os.path.join(plotpath2, 'LEC_results')
             if not os.path.exists(lecpath):
                 os.makedirs(lecpath)
+            ta_file_mask = diagworkdir + '/ta_fill.nc'
+            removeif(ta_file_mask)
+            cdo.add(input = '-setmisstoc,0 {} {}'.format(ta_file,tas_file),
+                    options = '-b F32', output = aux_file)
+            cdo.add(input = '-setmisstoc,0 {} -setmisstoc,0 -setrtomiss,350,inf {}'
+                    .format(ta_file,aux_file), options = '-b F32',
+                    output = ta_file_mask)
             energy_file = diagworkdir + '/energy.nc'
             removeif(energy_file)
-            cdo.merge(input = '{} {} {}'.format(ta_file, ua_file, va_file), 
+            cdo.merge(input = '{} {} {}'.format(ta_file_mask, ua_file, va_file), 
                       options = '-b F32', output = energy_file)
             energy2_file = diagworkdir + '/energy_2.nc'
             removeif(energy2_file)
@@ -757,7 +767,7 @@ def main(cfg):
                       options = '-b F32', output = energy2_file)
             energy3_file = diagworkdir + '/energy_short.nc'
             removeif(energy3_file)
-            cdo.setmisstoc('0',input = '-sellevel,10000/85000 {}'
+            cdo.setmisstoc('0',input = '-sellevel,10000/85000 -invertlat {}'
                            .format(energy2_file),options = '-b F32', 
                            output = energy3_file)
             yrs = cdo.showyear(input = energy3_file)
@@ -771,8 +781,8 @@ def main(cfg):
                 enfile_yr = diagworkdir + '/inputen.nc'
                 srvfile  = diagworkdir + '/fourier_coeff.nc'
                 ncfile = diagworkdir + '/fourier_coeff.srv'
-                cdo.selyear(yr,input='-invertlat {}'.format(energy3_file), 
-                            options = '-b F32', output=enfile_yr)
+                cdo.selyear(yr,input = energy3_file, options = '-b F32',
+                            output=enfile_yr)
                 fourc.fourier_coeff(ncfile, enfile_yr)
                 os.remove(enfile_yr)
                 cdo.copy(input = ncfile, options = '-f srv', output = srvfile)
@@ -793,6 +803,7 @@ def main(cfg):
             lec_all[i] = np.nanmean(lect)
             logger.info('Done\n')
             os.chdir(inputpath)
+            os.remove(ta_file_mask)
             os.remove(energy_file)
             os.remove(energy2_file)
             os.remove(energy3_file)
