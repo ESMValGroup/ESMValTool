@@ -40,7 +40,7 @@ def read_config_user_file(config_file, recipe_name):
 
     for key in defaults:
         if key not in cfg:
-            logger.warning(
+            logger.info(
                 "No %s specification in config file, "
                 "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
