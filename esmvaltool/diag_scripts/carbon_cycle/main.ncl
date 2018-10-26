@@ -459,9 +459,9 @@ begin
     ; -------------------------------------------------------------------------
 
     if (diag_script_info@errorbar_plot) then
-      annual_mean = dim_avg_Wrap(all_data_yearly(
+      annual_mean = dim_avg_Wrap(all_data_yearly( \
         :, minyear_ind:maxyear_ind, 0))
-      annual_std = dim_stddev_Wrap(all_data_yearly(
+      annual_std = dim_stddev_Wrap(all_data_yearly( \
         :, minyear_ind:maxyear_ind, 0))
 
       ; Sort dataset in alphabetical order (observations at the beginning)
