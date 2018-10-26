@@ -1498,9 +1498,11 @@ begin
   nrefs = dimsizes(dataset_ref_name)
 
   idx_ref = new(nrefs, integer)
+
+  print(datasets)
   do ii = 0, nrefs - 1
     idx_ref(ii) = \
-      ind(datasets.eq.str_squeeze(dataset_ref_name(ii)))
+      ind(datasets@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")
