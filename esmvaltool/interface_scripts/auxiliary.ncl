@@ -5,6 +5,7 @@
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
+;    function find_input_file_info
 ;    procedure copy_VarCoords_l1
 ;    procedure check_min_max_datasets
 ;    function tstep
@@ -31,6 +32,56 @@
 ;
 ; #############################################################################
 
+undef("find_input_file_info")
+function find_input_file_info(variable[1]:string,
+                              field_type[1]:string)
+;
+; Arguments
+;    variable: name of the variable for which the input_file_info has to be
+;              retrieved
+;    field_type: the field type for which the input_file_info has to be
+;                retrieved
+;
+; Return value
+;    The actual input_file_info logical for the requested variable and field
+;
+; Description
+;    For diagnostics with multiple variables, input_file_info are stored in
+;    a list. This function extract the correct logical for the given variable
+;    and field from the list.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;   20181026_A-righ_ma: written.
+;
+local funcname, scriptname, ii
+begin
+
+  funcname = "find_input_file_info"
+  scriptname = "interface_scripts/data_handling.ncl"
+  enter_msg(scriptname, funcname)
+
+  if (typeof(input_file_info).eq."list") then
+    do ii = 0, ListCount(input_file_info) - 1
+      if (variable_info[ii]@short_name.eq.variable .and. \
+          variable_info[ii]@field.eq.field_type) then
+        leave_msg(scriptname, funcname)
+        return(input_file_info[ii])
+      end if
+    end do
+    error_msg("f", scriptname, funcname, "cannot retrieve metadata " + \
+              "information for variable " + variable + " (" + field_type + ")")
+  else
+    leave_msg(scriptname, funcname)
+    return(input_file_info)
+  end if
+
+end
+
+; #############################################################################
 undef("copy_VarCoords_l1")
 procedure copy_VarCoords_l1(var_from,
                             var_to)
@@ -1449,7 +1500,7 @@ begin
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
     idx_ref(ii) = \
-      ind(input_file_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
+      ind(datasets.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")
