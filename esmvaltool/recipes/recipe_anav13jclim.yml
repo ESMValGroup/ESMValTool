@@ -18,27 +18,6 @@ documentation:
     - embrace
 
 
-datasets:
-
-  - {dataset: BNU-ESM}
-  - {dataset: CanESM2}
-  - {dataset: CESM1-BGC}
-  - {dataset: GFDL-ESM2G}
-  - {dataset: GFDL-ESM2M}
-  - {dataset: HadGEM2-CC}
-  - {dataset: HadGEM2-ES}
-  - {dataset: inmcm4}
-  - {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
-  # Overlapping files for several variables at mistral
-  # - {dataset: IPSL-CM5B-LR}
-  - {dataset: MIROC-ESM}
-  - {dataset: MIROC-ESM-CHEM}
-  - {dataset: MPI-ESM-LR}
-  - {dataset: MPI-ESM-MR}
-  - {dataset: NorESM1-ME}
-
-
 preprocessors:
 
   noop:
@@ -74,7 +53,6 @@ preprocessors:
       threshold_fraction: 0.95
 
 
-
 diagnostics:
 
   diag_mvi_tas: &diag_mvi
@@ -99,6 +77,23 @@ diagnostics:
       - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Overlapping files for several variables at mistral
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
@@ -263,6 +258,23 @@ diagnostics:
           - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
     additional_datasets: &nbp_datasets
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Overlapping files for several variables at mistral
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       main_global:
         <<: *main_global
@@ -306,6 +318,23 @@ diagnostics:
       - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Overlapping files for several variables at mistral
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_global
@@ -358,6 +387,23 @@ diagnostics:
       - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      # Overlapping files for several variables at mistral
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: NorESM1-ME}
     scripts:
       mvi_global:
         <<: *mvi_global
@@ -398,7 +444,7 @@ diagnostics:
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: False
 
-  # FIXME: NCL does not support multiple variables yet (#531)
+  # FIXME: multiple variables not supported yet (#531)
   # diag_two_vars_scatter:
   #   description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
   #   themes:
@@ -418,6 +464,24 @@ diagnostics:
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
+  #   additional_datasets:
+  #     - {dataset: BNU-ESM}
+  #     # - {dataset: CanESM2}
+  #     - {dataset: CESM1-BGC}
+  #     - {dataset: GFDL-ESM2G}
+  #     - {dataset: GFDL-ESM2M}
+  #     - {dataset: HadGEM2-CC}
+  #     - {dataset: HadGEM2-ES}
+  #     # - {dataset: inmcm4}
+  #     - {dataset: IPSL-CM5A-LR}
+  #     - {dataset: IPSL-CM5A-MR}
+  #     # Overlapping files for several variables at mistral
+  #     # - {dataset: IPSL-CM5B-LR}
+  #     - {dataset: MIROC-ESM}
+  #     - {dataset: MIROC-ESM-CHEM}
+  #     - {dataset: MPI-ESM-LR}
+  #     - {dataset: MPI-ESM-MR}
+  #     - {dataset: NorESM1-ME}
   #   scripts:
   #     scat_global: &scat_glob
   #       script: carbon_cycle/two_variables.ncl
@@ -427,10 +491,10 @@ diagnostics:
   #     scat_nh:
   #       <<: *scat_glob
   #       region: Northern Hemisphere
-  #     scat_nh:
+  #     scat_sh:
   #       <<: *scat_glob
   #       region: Southern Hemisphere
-  #     scat_nh:
+  #     scat_trop:
   #       <<: *scat_glob
   #       region: Tropics
 

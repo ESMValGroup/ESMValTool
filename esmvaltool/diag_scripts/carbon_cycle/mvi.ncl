@@ -431,81 +431,84 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  ; Set plot output file
-  outfile = plot_dir + var0 + "_" + region@name
-  wks = gsn_open_wks(file_type, outfile)
-  gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
-  gsn_reverse_colormap(wks)
+  if (config_user_info@write_plots) then
+    ; Set plot output file
+    outfile = plot_dir + var0 + "_" + region@name
+    wks = gsn_open_wks(file_type, outfile)
+    gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
+    gsn_reverse_colormap(wks)
 
-  ; Axis labels
-  if (custom_mean_time_range) then
-    mean_label = mean_time_range(0) + "-" + mean_time_range(1) + " Mean"
-  else
-    mean_label = start_year + "-" + end_year + " Mean"
+    ; Axis labels
+    if (custom_mean_time_range) then
+      mean_label = mean_time_range(0) + "-" + mean_time_range(1) + " Mean"
+    else
+      mean_label = start_year + "-" + end_year + " Mean"
+    end if
+    if (custom_trend_time_range) then
+      trend_label = trend_time_range(0) + "-" + trend_time_range(1) + \
+        " Linear trend"
+    else
+      trend_label = start_year + "-" + end_year + " Linear trend"
+    end if
+    if (custom_mvi_time_range) then
+      mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + "~C~MVI"
+    else
+      mvi_label = start_year + "-" + end_year + "~C~MVI"
+    end if
+
+    ; Pack data
+    data_arr = new((/3, dimsizes(regional_mean)/), float)
+    data_arr(0, :) = (/regional_mean/)
+    data_arr(1, :) = (/regional_trend/)
+    data_arr(2, :) = (/regional_mvi/)
+    data_arr!0 = "statistic"
+    data_arr!1 = "datasets"
+    data_arr&statistic = (/mean_label, trend_label, mvi_label/)
+    data_arr&datasets = input_file_info@dataset
+    data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
+
+    ; Set levels for the color coding
+    tmp = regional_mvi
+    tmp(ref_idx) = tmp@_FillValue
+    nlevs = 11
+    tmp := nice_mnmxintvl(min(tmp) - 0.01, max(tmp) + 0.01, nlevs, True)
+    levs = decimalPlaces(fspan(tmp(0), tmp(1), 11), 2, True)
+    delete(tmp)
+
+    ; Draw a 3D scatterplot
+    data_arr@res_tiMainString = var0 + " - " + diag_script_info@region
+    plot = scatterplot3D(wks, data_arr, var0, levs)
+    log_info("Wrote " + outfile + "." + file_type)
+    draw(plot)
+    frame(wks)
+
+    ; ; Add meta data (TODO)
+    ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
+    ;                  string)
+    ; alltags = array_append_record(tags, region@DM_tag, 0)
+    ; alltags := array_append_record(alltags, \
+    ;                                (/"PT_scatter", "PT_zonal", "ST_mean", \
+    ;                                 "ST_trend", "ST_clim", "ST_var"/), 0)
+    ; caption =  "Scatterplot for multiyear average " + var0 + \
+    ;            " in x axis, its linear trend in y axis, and MVI." + \
+    ;            " Like Anav et al. Fig 1 bottom"
+    ; id = diag_script
+    ; do n_var = 0, DIM_VAR - 1
+    ;    do idat = 0, dimsizes(input_file_info@dataset) - 1
+    ;     climofiles(n_var * dimsizes(input_file_info@dataset) + idat) = \
+    ;       interface_get_inpaths(idat) + "/" + \
+    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
+    ;   end do
+    ; end do
+    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
+
+    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
+    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          contrib_authors)
+
+    ; delete([/alltags, caption, id, climofiles/])
+    delete(data_arr)
   end if
-  if (custom_trend_time_range) then
-    trend_label = trend_time_range(0) + "-" + trend_time_range(1) + \
-      " Linear trend"
-  else
-    trend_label = start_year + "-" + end_year + " Linear trend"
-  end if
-  if (custom_mvi_time_range) then
-    mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + "~C~MVI"
-  else
-    mvi_label = start_year + "-" + end_year + "~C~MVI"
-  end if
-
-  ; Pack data
-  data_arr = new((/3, dimsizes(regional_mean)/), float)
-  data_arr(0, :) = (/regional_mean/)
-  data_arr(1, :) = (/regional_trend/)
-  data_arr(2, :) = (/regional_mvi/)
-  data_arr!0 = "statistic"
-  data_arr!1 = "datasets"
-  data_arr&statistic = (/mean_label, trend_label, mvi_label/)
-  data_arr&datasets = input_file_info@dataset
-  data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
-
-  ; Set levels for the color coding
-  tmp = regional_mvi
-  tmp(ref_idx) = tmp@_FillValue
-  nlevs = 11
-  tmp := nice_mnmxintvl(min(tmp) - 0.01, max(tmp) + 0.01, nlevs, True)
-  levs = decimalPlaces(fspan(tmp(0), tmp(1), 11), 2, True)
-  delete(tmp)
-
-  ; Draw a 3D scatterplot
-  data_arr@res_tiMainString = var0 + " - " + diag_script_info@region
-  plot = scatterplot3D(wks, data_arr, var0, levs)
-  log_info("Wrote " + outfile + "." + file_type)
-  draw(plot)
-  frame(wks)
-
-  ; ; Add meta data (TODO)
-  ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
-  ;                  string)
-  ; alltags = array_append_record(tags, region@DM_tag, 0)
-  ; alltags := array_append_record(alltags, \
-  ;                                (/"PT_scatter", "PT_zonal", "ST_mean", \
-  ;                                 "ST_trend", "ST_clim", "ST_var"/), 0)
-  ; caption =  "Scatterplot for multiyear average " + var0 + \
-  ;            " in x axis, its linear trend in y axis, and MVI." + \
-  ;            " Like Anav et al. Fig 1 bottom"
-  ; id = diag_script
-  ; do n_var = 0, DIM_VAR - 1
-  ;    do idat = 0, dimsizes(input_file_info@dataset) - 1
-  ;     climofiles(n_var * dimsizes(input_file_info@dataset) + idat) = \
-  ;       interface_get_inpaths(idat) + "/" + \
-  ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
-  ;   end do
-  ; end do
-  ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
-
-  ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
-  ;          input_file_info@dataset, climofiles, diag_script, contrib_authors)
-
-  ; delete([/alltags, caption, id, climofiles/])
-  delete(data_arr)
 
   leave_msg(diag_script, "")
 
