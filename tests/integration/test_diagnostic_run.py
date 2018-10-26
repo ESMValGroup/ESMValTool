@@ -22,8 +22,10 @@ def tempdir():
 def write_config_user_file(dirname):
     config_file = os.path.join(dirname, 'config-user.yml')
     cfg = {
-        'output_dir': dirname,
-        'rootpath': {},
+        'output_dir': os.path.join(dirname, 'output_dir'),
+        'rootpath': {
+            'default': os.path.join(dirname, 'input_dir'),
+        },
         'log_level': 'debug',
     }
     with open(config_file, 'w') as file:
