@@ -53,6 +53,7 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
+    - ncurses>5
     # TODO: add R, julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
