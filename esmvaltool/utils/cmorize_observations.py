@@ -1,12 +1,14 @@
-"""Run the CMORization module."""
+"""Run the CMORization module as a utility executable."""
+import argparse
 import logging
 import os
 import sys
+import datetime
 import subprocess
 import shutil
 
-from ._task import write_ncl_settings
-
+from .._task import write_ncl_settings
+from .._config import read_config_user_file
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +83,73 @@ def _run_pyt_script(in_dir, out_dir):
     py_cmor.cmorization(in_dir, out_dir)
 
 
-def cmor_reformat(config, obs_list):
-    """Run the oldskool v1 cmorization scripts."""
+def execute_cmorize():
+    """Run it as executable."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '-o',
+        '--obs-list-cmorize',
+        type=str,
+        help='List of obs datasets to cmorize')
+    parser.add_argument(
+        '-c',
+        '--config-file',
+        default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
+        help='Config file')
+    parser.add_argument(
+        '-l',
+        '--log-level',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'])
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s")
+    logging.getLogger().setLevel(args.log_level.upper())
+
+    # get and read config file
+    config_file = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(args.config_file)))
+
+    # Read user config file
+    if not os.path.exists(config_file):
+        logger.error("Config file %s does not exist", config_file)
+
+    # read the file in
+    config_user = read_config_user_file(config_file, 'DUMMY')
+
+    # run
+    timestamp1 = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+
+    logger.info(
+        "Starting the CMORization Tool at time: %s UTC",
+        timestamp1.strftime(timestamp_format))
+
+    logger.info(70 * "-")
+    logger.info("INPUTDIR  = %s", config_user["rootpath"]["RAWOBS"][0])
+    logger.info("OUTPUTDIR = %s", config_user["output_dir"])
+    logger.info(70 * "-")
+
+    # call the reformat function
+    if args.obs_list_cmorize:
+        obs_list = args.obs_list_cmorize
+    else:
+        obs_list = []
+    _cmor_reformat(config_user, obs_list)
+
+    # End time timing
+    timestamp2 = datetime.datetime.utcnow()
+    logger.info(
+        "Ending the CMORization Tool at time: %s UTC",
+        timestamp2.strftime(timestamp_format))
+    logger.info(
+        "Time for running the CMORization scripts was: %s",
+        timestamp2 - timestamp1)
+
+
+def _cmor_reformat(config, obs_list):
+    """Run the cmorization routine."""
     logger.info("Running the CMORization scripts.")
 
     # master directory
@@ -139,3 +206,6 @@ def cmor_reformat(config, obs_list):
                 _run_pyt_script(in_data_dir, out_data_dir)
             else:
                 logger.info("No need to CMORize, could not find CMOR script.")
+
+if __name__ == '__main__':
+    execute_cmorize()

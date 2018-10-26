@@ -89,27 +89,30 @@ def get_args():
         '--max-years',
         type=int,
         help='Limit the number of years to MAX_YEARS.')
-
-    # for cmorizing obs files
-    parser.add_argument(
-        '-cm',
-        '--cmorize',
-        action='store_true',
-        help='Start the CMORization mode')
-
-    # for cmorizing obs files
-    parser.add_argument(
-        '-ol',
-        '--obs-list-cmorize',
-        type=str,
-        help='List of obs datasets to cmorize')
-
     args = parser.parse_args()
     return args
 
 
-def set_logging(cfg, config_file):
-    """Set logging and create run directory."""
+def main(args):
+    """Define the `esmvaltool` program."""
+    recipe = args.recipe
+    if not os.path.exists(recipe):
+        installed_recipe = os.path.join(
+            os.path.dirname(__file__), 'recipes', recipe)
+        if os.path.exists(installed_recipe):
+            recipe = installed_recipe
+    recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))
+
+    config_file = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(args.config_file)))
+
+    # Read user config file
+    if not os.path.exists(config_file):
+        print("ERROR: config file {} does not exist".format(config_file))
+
+    recipe_name = os.path.splitext(os.path.basename(recipe))[0]
+    cfg = read_config_user_file(config_file, recipe_name)
+
     # Create run dir
     if os.path.exists(cfg['run_dir']):
         print("ERROR: run_dir {} already exists, aborting to "
@@ -126,84 +129,19 @@ def set_logging(cfg, config_file):
     logger.info("Using config file %s", config_file)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
+    cfg['synda_download'] = args.synda_download
+    for limit in ('max_datasets', 'max_years'):
+        value = getattr(args, limit)
+        if value is not None:
+            if value < 1:
+                raise ValueError("--{} should be larger than 0.".format(
+                    limit.replace('_', '-')))
+            cfg[limit] = value
 
-def main(args):
-    """Define the `esmvaltool` program."""
-    config_file = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.config_file)))
-
-    # Read user config file
-    if not os.path.exists(config_file):
-        print("ERROR: config file {} does not exist".format(config_file))
-
-    if args.cmorize:
-        recipe_name = 'CMORization'
-        cfg = read_config_user_file(config_file, recipe_name)
-        set_logging(cfg, config_file)
-        if args.obs_list_cmorize:
-            process_reformat(cfg, args.obs_list_cmorize)
-        else:
-            process_reformat(cfg)
-    else:
-        recipe = args.recipe
-        if not os.path.exists(recipe):
-            installed_recipe = os.path.join(
-                os.path.dirname(__file__), 'recipes', recipe)
-            if os.path.exists(installed_recipe):
-                recipe = installed_recipe
-        recipe = os.path.abspath(
-            os.path.expandvars(os.path.expanduser(recipe)))
-        recipe_name = os.path.splitext(os.path.basename(recipe))[0]
-
-        cfg = read_config_user_file(config_file, recipe_name)
-        set_logging(cfg, config_file)
-
-        cfg['synda_download'] = args.synda_download
-        for limit in ('max_datasets', 'max_years'):
-            value = getattr(args, limit)
-            if value is not None:
-                if value < 1:
-                    raise ValueError("--{} should be larger than 0.".format(
-                        limit.replace('_', '-')))
-                cfg[limit] = value
-
-        resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
-        with resource_usage_logger(pid=os.getpid(), filename=resource_log):
-            process_recipe(recipe_file=recipe, config_user=cfg)
-
+    resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
+    with resource_usage_logger(pid=os.getpid(), filename=resource_log):
+        process_recipe(recipe_file=recipe, config_user=cfg)
     return cfg
-
-
-def process_reformat(config_user, obs_list=None):
-    """Process the reformat request."""
-    timestamp1 = datetime.datetime.utcnow()
-    timestamp_format = "%Y-%m-%d %H:%M:%S"
-
-    logger.info(
-        "Starting the Earth System Model Evaluation Tool v%s at time: %s UTC",
-        __version__, timestamp1.strftime(timestamp_format))
-    logger.info("CMORization Mode for observational data")
-
-    logger.info(70 * "-")
-    logger.info("INPUTDIR  = %s", config_user["rootpath"]["RAWOBS"][0])
-    logger.info("OUTPUTDIR = %s", config_user["output_dir"])
-    logger.info(70 * "-")
-
-    # do the main business
-    # import the reformat module
-    from .reformat import cmor_reformat
-
-    # call the reformat function
-    cmor_reformat(config_user, obs_list)
-
-    # End time timing
-    timestamp2 = datetime.datetime.utcnow()
-    logger.info(
-        "Ending the Earth System Model Evaluation Tool v%s at time: %s UTC",
-        __version__, timestamp2.strftime(timestamp_format))
-    logger.info(
-        "Time for running the CMORization scripts was: %s",
-        timestamp2 - timestamp1)
 
 
 def process_recipe(recipe_file, config_user):
@@ -220,7 +158,7 @@ def process_recipe(recipe_file, config_user):
         __version__, timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
-    logger.info("RECIPE     = %s", recipe_file)
+    logger.info("RECIPE   = %s", recipe_file)
     logger.info("RUNDIR     = %s", config_user['run_dir'])
     logger.info("WORKDIR    = %s", config_user["work_dir"])
     logger.info("PREPROCDIR = %s", config_user["preproc_dir"])
@@ -285,12 +223,9 @@ def run():
             exc_info=True)
         sys.exit(1)
     else:
-        if args.cmorize:
-            logger.info("Finished the reformatting module")
-        else:
-            if conf["remove_preproc_dir"]:
-                logger.info("Removing preproc containing preprocessed data")
-                logger.info("If this data is further needed, then")
-                logger.info("set remove_preproc_dir to false in config")
-                shutil.rmtree(conf["preproc_dir"])
+        if conf["remove_preproc_dir"]:
+            logger.info("Removing preproc containing preprocessed data")
+            logger.info("If this data is further needed, then")
+            logger.info("set remove_preproc_dir to false in config")
+            shutil.rmtree(conf["preproc_dir"])
         logger.info("Run was succesful")
