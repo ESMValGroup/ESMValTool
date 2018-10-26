@@ -20,6 +20,8 @@ import cf_units
 import iris
 import numpy as np
 
+from .. import use_legacy_iris
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,11 +101,10 @@ def _compute_statistic(datas, name):
 
 
 def _put_in_cube(template_cube, cube_data, stat_name, time_bounds, t_axis):
-    """Quick cube building and saving"""
-    # grab coordinates from any cube
-    times = template_cube.coord('time')
-    # or get the FULL time axis
-    if t_axis is not None:
+    """Quick cube building and saving."""
+    if t_axis is None:
+        times = template_cube.coord('time')
+    else:
         times = iris.coords.DimCoord(
             t_axis,
             standard_name='time',
@@ -150,12 +151,14 @@ def _put_in_cube(template_cube, cube_data, stat_name, time_bounds, t_axis):
 
 def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
-    # TODO replace the block when using iris 2.0
-    # time_cells = [cell.point for cell in cube.coord('time').cells()]
-    time_cells = [
-        cube.coord('time').units.num2date(cell.point)
-        for cell in cube.coord('time').cells()
-    ]
+    if use_legacy_iris():
+        time_cells = [
+            cube.coord('time').units.num2date(cell.point)
+            for cell in cube.coord('time').cells()
+        ]
+    else:
+        time_cells = [cell.point for cell in cube.coord('time').cells()]
+
     time_unit = cube.coord('time').units.name
     time_offset = _get_time_offset(time_unit)
 

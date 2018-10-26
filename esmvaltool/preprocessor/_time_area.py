@@ -7,6 +7,8 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 
+from .. import use_legacy_iris
+
 
 def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
                end_day):
@@ -48,11 +50,12 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
-    # TODO replace the block below for when using iris 2.0
-    # my_constraint = iris.Constraint(time=lambda t: (
-    #     t_1 < time_units.date2num(t.point) < t_2))
-    my_constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
-    return cube.extract(my_constraint)
+    if use_legacy_iris():
+        constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
+    else:
+        constraint = iris.Constraint(
+            time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
+    return cube.extract(constraint)
 
 
 def extract_season(cube, season):

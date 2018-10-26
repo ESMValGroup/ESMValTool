@@ -6,8 +6,10 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np
 import yaml
 
+from .. import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
@@ -59,11 +61,11 @@ def load(files, constraints=None, callback=None):
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
 
-    # for cube in cubes:
-    # TODO add block below when using iris 2.0
-    # always set fillvalue to 1e+20
-    # if np.ma.is_masked(cube.data):
-    #     np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
+    for cube in cubes:
+        if not use_legacy_iris():
+            # always set fillvalue to 1e+20
+            if np.ma.is_masked(cube.data):
+                np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -146,8 +148,9 @@ def save(cubes, filename, optimize_access='', compress=False, **kwargs):
             length if index in dims else 1
             for index, length in enumerate(cube.shape))
 
-    # TODO replace block when using iris 2.0
-    # kwargs['fill_value'] = GLOBAL_FILL_VALUE
+    if not use_legacy_iris():
+        kwargs['fill_value'] = GLOBAL_FILL_VALUE
+
     iris.save(cubes, **kwargs)
 
     return filename

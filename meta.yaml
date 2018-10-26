@@ -33,7 +33,6 @@ requirements:
   run:
     # esmvaltool
     - python
-    - basemap
     - graphviz    
     - iris=1.13
     - python-stratify
