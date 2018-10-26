@@ -136,10 +136,10 @@ def write_ncl_settings(settings, filename, mode='wt'):
     def _format_dict(name, dictionary):
         """Format dict as NCL (list of) logical(s) with attributes."""
         if name in ('diag_script_info', 'config_user_info'):
-            str = ['{} = True', '{}@{} = {}']
+            syntax = ['{} = True', '{}@{} = {}']
         else:
-            str = ['{}[i] = True', '{}[i]@{} = {}']
-        lines = [str[0].format(name)]
+            syntax = ['{}[i] = True', '{}[i]@{} = {}']
+        lines = [syntax[0].format(name)]
         for key, value in sorted(dictionary.items()):
             lines.append(str[1].format(name, key, _format(value)))
         txt = '\n'.join(lines)
@@ -151,12 +151,11 @@ def write_ncl_settings(settings, filename, mode='wt'):
             return ('if (isvar("{name}")) then\n'
                     '    delete({name})\n'
                     'end if\n'.format(name=name))
-        else:
-            return('if (.not. isdefined("{name}")) then\n'
-                   '  {name} = NewList("fifo")\n'
-                   'end if\n'
-                   'ListAppend({name}, new(1, logical))\n'
-                   'i = ListCount({name}) - 1\n'.format(name=name))
+        return('if (.not. isdefined("{name}")) then\n'
+               '  {name} = NewList("fifo")\n'
+               'end if\n'
+               'ListAppend({name}, new(1, logical))\n'
+               'i = ListCount({name}) - 1\n'.format(name=name))
 
     lines = []
     for key, value in sorted(settings.items()):
