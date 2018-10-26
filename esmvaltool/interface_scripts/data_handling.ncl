@@ -13,7 +13,7 @@
 undef("read_data")
 function read_data(index[1]:integer,
                    variable[1]:string,
-                   field_type:string)
+                   field_type[1]:string)
 ;
 ; Arguments
 ;    index: index to current input file as defined in the <variable>_info.ncl
@@ -43,12 +43,15 @@ begin
   scriptname = "interface_scripts/data_handling.ncl"
   enter_msg(scriptname, funcname)
 
+  local_input_file_info = find_input_file_info(variable, field_type)
+
   ; Check array boundaries first
-  if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
+  if (index.lt.0 .or. \
+      index.gt.(dimsizes(local_input_file_info@filename) - 1)) then
     error_msg("f", scriptname, funcname, "dataset index out of range")
   end if
 
-  infile = input_file_info@filename(index)
+  infile = local_input_file_info@filename(index)
 
   ; Check existance and supported format
   if (.not.isfilepresent(infile)) then
@@ -57,7 +60,7 @@ begin
   end if
 
   ; Check field type correspondance
-  if (input_file_info@field(index) .ne. field_type) then
+  if (local_input_file_info@field(index) .ne. field_type) then
     error_msg("f", scriptname, funcname, "requested field type " + \
               field_type + " does not match")
   end if
@@ -80,16 +83,20 @@ begin
 
 end
 
-
 ; #############################################################################
 undef("read_fx_data")
 function read_fx_data(index[1]:integer,
-                      variable[1]:string)
+                      variable[1]:string,
+                      field_type[1]:string,
+                      fx_variable[1]:string)
 ;
 ; Arguments
 ;    index: index to current input file as defined in the <variable>_info.ncl
 ;           file in the preproc directory of the current variable
-;    variable: name of the fx variable to read
+;    variable: variable to which the fx variable is associated (e.g., the
+;              variable's dictionary in the racipe where fx_files is given)
+;    field: the variable's field type
+;    fx_variable: name of the fx variable to read
 ;
 ; Return value
 ;    The a list of data array(s) with all metadata or a missing value if the
@@ -106,6 +113,8 @@ function read_fx_data(index[1]:integer,
 ; Caveats
 ;    If auxiliary coordinates are associated to the fx-variables (typically for
 ;    areacello), these are also read and pushed to the return list.
+;    The (standard, non-fx) variable and the corresponding field are required
+;    to identify the correct metadata file in case of multiple variables.
 ;
 ; References
 ;
@@ -119,23 +128,27 @@ begin
   scriptname = "interface_scripts/data_handling.ncl"
   enter_msg(scriptname, funcname)
 
+  local_input_file_info = find_input_file_info(variable, field_type)
+
   ; Check array boundaries first
-  if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
+  if (index.lt.0 .or. \
+      index.gt.(dimsizes(local_input_file_info@filename) - 1)) then
     error_msg("f", scriptname, funcname, "dataset index out of range")
   end if
 
-  if (.not.isatt(input_file_info, variable)) then
-    error_msg("f", scriptname, funcname, "input path for fx variable " + \
-              variable + " not found in the interface file, please add " + \
-              "the required fx variable to the recipe")
+  if (.not.isatt(local_input_file_info, fx_variable)) then
+    error_msg("f", scriptname, funcname, "input path for the fx_variable " + \
+              fx_variable + " not found in the interface file " + variable + \
+              "_info.ncl, please add 'fx_files: [" + fx_variable + "]' to " + \
+              "the " + variable + " dictionary in the recipe")
   end if
 
-  infile = input_file_info@$variable$(index)
+  infile = local_input_file_info@$fx_variable$(index)
 
   ; Return missing if variable not available
   if (infile.eq."None") then
-    error_msg("w", scriptname, funcname, "fx variable " + variable + \
-              " not found for dataset " + input_file_info@dataset(index))
+    error_msg("w", scriptname, funcname, "fx variable " + fx_variable + \
+              " not found for dataset " + local_input_file_info@dataset(index))
     out = new(1, float)
     out = default_fillvalue(typeof(out))
     return(out)
@@ -146,8 +159,8 @@ begin
   fin = addfile(infile, "r")
 
   ; Check that variable is in the file
-  if (.not. isfilevar(fin, variable)) then
-    error_msg("f", scriptname, funcname, "variable " + variable + \
+  if (.not. isfilevar(fin, fx_variable)) then
+    error_msg("f", scriptname, funcname, "variable " + fx_variable + \
               " not found in " + infile)
   end if
 
@@ -155,10 +168,10 @@ begin
   outlist = NewList("lifo")
 
   ; Check if auxiliary coordinates are defined
-  atts = getfilevaratts(fin, variable)
+  atts = getfilevaratts(fin, fx_variable)
   if (any("coordinates".eq.atts)) then
     ; Read auxiliary coordinates in reverse order (for correct order in list)
-    coords = fin->$variable$@coordinates
+    coords = fin->$fx_variable$@coordinates
     ncoords = str_fields_count(coords, " ")
     do ii = 1, ncoords
       curr_coord = str_squeeze(str_get_field(coords, ncoords + 1 - ii, " "))
@@ -172,7 +185,7 @@ begin
   end if
 
   ; Push variable to the list
-  ListPush(outlist, fin->$variable$)
+  ListPush(outlist, fin->$fx_variable$)
 
   leave_msg(scriptname, funcname)
   return(outlist)
