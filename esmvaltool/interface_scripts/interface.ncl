@@ -20,10 +20,12 @@ begin
   tmp = diag_script_info[0]
   delete(diag_script_info)
   diag_script_info = tmp
+  delete(diag_script_info@_FillValue)
 
   tmp = config_user_info[0]
   delete(config_user_info)
   config_user_info = tmp
+  delete(config_user_info@_FillValue)
 end
 
 
