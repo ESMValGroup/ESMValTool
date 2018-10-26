@@ -18,6 +18,7 @@ end
 ; Convert list to scalar (config_user_info and diag_script_info contain
 ; always only 1 element)
 begin
+
   tmp = config_user_info[0]
   delete(config_user_info)
   config_user_info = tmp
@@ -26,23 +27,22 @@ begin
   delete(diag_script_info)
   diag_script_info = tmp
   delete(tmp)
+
 end
 
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
     str_match_ic_regex(diag_script_info@input_files, ".*_info\" + ".ncl")
-
-  print(vardeffiles)
-  do i = 0, dimsizes(vardeffiles) - 1
-    if (.not. ismissing(vardeffiles(i))) then
-      vardeffile = diag_script_info@input_files(i)
+  nvdf = dimsizes(vardeffiles)
+  do i = 0, nvdf - 1
+    if (.not. ismissing(vardeffiles(nvdf - 1 - i))) then
+      vardeffile = diag_script_info@input_files(nvdf - 1 - i)
       print("INFO    Loading input data description from " + vardeffile)
       loadscript(vardeffile)
     end if
   end do
 end
-
 
 begin
 
