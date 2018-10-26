@@ -148,7 +148,6 @@ def write_ncl_settings(settings, filename, mode='wt'):
     def _header(name):
         """Create NCL header either as a logical or as a list of logicals."""
         if name in ('diag_script_info', 'config_user_info'):
-
             return ('if (isvar("{name}")) then\n'
                     '    delete({name})\n'
                     'end if\n'.format(name=name))
