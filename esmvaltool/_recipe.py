@@ -787,8 +787,9 @@ class Recipe(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'), variable_names)
             for key in ('themes', 'realms'):
-                for script in diagnostic['scripts'].values():
-                    script['settings'][key] = raw_diagnostic[key]
+                if key in raw_diagnostic:
+                    for script in diagnostic['scripts'].values():
+                        script['settings'][key] = raw_diagnostic[key]
             diagnostics[name] = diagnostic
 
         return diagnostics

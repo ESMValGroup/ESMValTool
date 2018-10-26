@@ -470,12 +470,14 @@ class DiagnosticTask(BaseTask):
 
     def _collect_provenance(self):
         """Process provenance information provided by the diagnostic script."""
+        self.products = set()
         provenance_file = os.path.join(self.settings['run_dir'],
                                        'diagnostic_provenance.yml')
         if not os.path.exists(provenance_file):
-            raise ValueError(
-                "No provenance information was written to {}".format(
-                    provenance_file))
+            logger.warning("No provenance information was written to %s",
+                           provenance_file)
+            return
+
         with open(provenance_file, 'r') as file:
             table = yaml.safe_load(file)
 
@@ -503,7 +505,6 @@ class DiagnosticTask(BaseTask):
                 attrs[key] = self.settings[key]
 
         ancestor_products = {p for a in self.ancestors for p in a.products}
-        self.products = set()
 
         for filename, attributes in table.items():
             ancestor_files = attributes.pop('ancestors', [])
