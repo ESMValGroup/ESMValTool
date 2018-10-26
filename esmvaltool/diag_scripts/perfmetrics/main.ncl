@@ -294,7 +294,6 @@ begin
   end if
 
   ; Load plot-type-specific script
-  print("diag_scripts/perfmetrics/" + ptype + ".ncl")
   loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
 
 end
