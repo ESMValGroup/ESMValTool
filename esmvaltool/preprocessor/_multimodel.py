@@ -21,7 +21,7 @@ import iris
 import numpy as np
 import yaml
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 from ._io import save
 
 logger = logging.getLogger(__name__)
