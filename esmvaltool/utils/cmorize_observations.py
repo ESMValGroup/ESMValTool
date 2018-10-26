@@ -205,5 +205,6 @@ def _cmor_reformat(config, obs_list):
             else:
                 logger.info("No need to CMORize, could not find CMOR script.")
 
+
 if __name__ == '__main__':
     execute_cmorize()
