@@ -20,11 +20,13 @@ begin
   tmp = diag_script_info[0]
   delete(diag_script_info)
   diag_script_info = tmp
+  delete(tmp)
   delete(diag_script_info@_FillValue)
 
   tmp = config_user_info[0]
   delete(config_user_info)
   config_user_info = tmp
+  delete(tmp)
   delete(config_user_info@_FillValue)
 end
 
@@ -67,6 +69,7 @@ begin
       tmp = variable_info[0]
       delete(variable_info)
       variable_info = tmp
+      delete(tmp)
     end if
   end if
 
@@ -75,6 +78,7 @@ begin
       tmp = dataset_info[0]
       delete(dataset_info)
       dataset_info = tmp
+      delete(tmp)
     end if
   end if
 
@@ -83,6 +87,7 @@ begin
       tmp = input_file_info[0]
       delete(input_file_info)
       input_file_info = tmp
+      delete(tmp)
     end if
   end if
 
