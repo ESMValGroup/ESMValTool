@@ -116,7 +116,7 @@ def execute_cmorize():
         logger.error("Config file %s does not exist", config_file)
 
     # read the file in
-    config_user = read_config_user_file(config_file, 'DUMMY')
+    config_user = read_config_user_file(config_file, 'CMOR')
 
     # run
     timestamp1 = datetime.datetime.utcnow()
@@ -157,7 +157,7 @@ def _cmor_reformat(config, obs_list):
 
     # set the reformat scripts dir
     reformat_scripts = os.path.join(os.path.dirname(__file__),
-                                    'cmor/cmorize_obs')
+                                    '../cmor/cmorize_obs')
 
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
@@ -172,7 +172,6 @@ def _cmor_reformat(config, obs_list):
             project_info[dataset] = {}
             reformat_script_root = os.path.join(reformat_scripts,
                                                 'cmorize_obs_' + dataset)
-
             # in-data dir; build out-dir tree
             in_data_dir = os.path.join(raw_obs, tier, dataset)
             out_data_dir = os.path.join(config['output_dir'], tier, dataset)
@@ -188,8 +187,7 @@ def _cmor_reformat(config, obs_list):
                 logger.info("CMORizing dataset %s using NCL script %s",
                             dataset, reformat_script)
                 # copy over the reformat script
-                shutil.copyfile(reformat_script,
-                                os.path.join(out_data_dir, reformat_script))
+                shutil.copy2(reformat_script, out_data_dir)
                 # call the ncl script
                 _run_ncl_script(in_data_dir,
                                 out_data_dir,
@@ -200,8 +198,8 @@ def _cmor_reformat(config, obs_list):
                 logger.info("CMORizing dataset %s using Python script %s",
                             dataset, py_reformat_script)
                 # copy over the reformat script
-                shutil.copyfile(py_reformat_script,
-                                os.path.join(out_data_dir, 'py_cmor.py'))
+                shutil.copy2(py_reformat_script,
+                             os.path.join(out_data_dir, 'py_cmor.py'))
                 sys.path.append(out_data_dir)
                 _run_pyt_script(in_data_dir, out_data_dir)
             else:
