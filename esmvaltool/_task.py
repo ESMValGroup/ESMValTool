@@ -141,7 +141,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
             syntax = ['{}[i] = True', '{}[i]@{} = {}']
         lines = [syntax[0].format(name)]
         for key, value in sorted(dictionary.items()):
-            lines.append(str[1].format(name, key, _format(value)))
+            lines.append(syntax[1].format(name, key, _format(value)))
         txt = '\n'.join(lines)
         return txt
 
