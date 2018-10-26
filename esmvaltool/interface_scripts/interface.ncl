@@ -15,15 +15,32 @@ begin
   loadscript("$settings")
 end
 
+; Convert list to scalar (config_user_info and diag_script_info contain
+; always only 1 element)
+begin
+  tmp = config_user_info[0]
+  delete(config_user_info)
+  config_user_info = tmp
+  delete(tmp)
+  tmp = diag_script_info[0]
+  delete(diag_script_info)
+  diag_script_info = tmp
+  delete(tmp)
+end
+
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
     str_match_ic_regex(diag_script_info@input_files, ".*_info\" + ".ncl")
-  if (.not. ismissing(vardeffiles)) then
-    vardeffile = diag_script_info@input_files(0)
-    print("INFO    Loading input data description from " + vardeffile)
-    loadscript(vardeffile)
-  end if
+
+  print(vardeffiles)
+  do i = 0, dimsizes(vardeffiles) - 1
+    if (.not. ismissing(vardeffiles(i))) then
+      vardeffile = diag_script_info@input_files(i)
+      print("INFO    Loading input data description from " + vardeffile)
+      loadscript(vardeffile)
+    end if
+  end do
 end
 
 
@@ -36,9 +53,13 @@ begin
 
   ; Copy some info into legacy names
   diag_script = diag_script_info@script
-  if isvar("variable_info") then
-    variables = (/variable_info@short_name/)
-    field_types = (/variable_info@field/)
+  if (isvar("variable_info")) then
+    variables = new(ListCount(variable_info), string)
+    field_types = new(ListCount(variable_info), string)
+    do i = 0, ListCount(variable_info) - 1
+      variables(i) = variable_info[i]@short_name
+      field_types(i) = variable_info[i]@field
+    end do
   end if
 
 end

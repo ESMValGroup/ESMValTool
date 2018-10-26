@@ -135,17 +135,19 @@ def write_ncl_settings(settings, filename, mode='wt'):
 
     def _format_dict(name, dictionary):
         """Format dict as NCL"""
-        lines = ['{} = True'.format(name)]
+        lines = ['{}[i] = True'.format(name)]
         for key, value in sorted(dictionary.items()):
-            lines.append('{}@{} = {}'.format(name, key, _format(value)))
+            lines.append('{}[i]@{} = {}'.format(name, key, _format(value)))
         txt = '\n'.join(lines)
         return txt
 
     def _header(name):
-        """Delete any existing NCL variable known as `name`."""
-        return ('if (isvar("{name}")) then\n'
-                '    delete({name})\n'
-                'end if\n'.format(name=name))
+        """Define a NCL list as `name` if not already defined."""
+        return('if (.not. isdefined("{name}")) then\n'
+               '  {name} = NewList("fifo")\n'
+               'end if\n'
+               'ListAppend({name}, new(1, logical))\n'
+               'i = ListCount({name}) - 1\n'.format(name=name))
 
     lines = []
     for key, value in sorted(settings.items()):
