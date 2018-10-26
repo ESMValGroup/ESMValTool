@@ -15,21 +15,6 @@ begin
   loadscript("$settings")
 end
 
-; Convert list to scalar (config_user_info and diag_script_info contain
-; always only 1 element)
-begin
-
-  tmp = config_user_info[0]
-  delete(config_user_info)
-  config_user_info = tmp
-  delete(tmp)
-  tmp = diag_script_info[0]
-  delete(diag_script_info)
-  diag_script_info = tmp
-  delete(tmp)
-
-end
-
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
@@ -60,6 +45,31 @@ begin
       variables(i) = variable_info[i]@short_name
       field_types(i) = variable_info[i]@field
     end do
+  end if
+
+  ; Convert lists to scalars if they contain only 1 element
+  if (isvar("variable_info")) then
+    if (ListCount(variable_info).eq.1) then
+      tmp = variable_info[0]
+      delete(variable_info)
+      variable_info = tmp
+    end if
+  end if
+
+  if (isvar("dataset_info")) then
+    if (ListCount(dataset_info).eq.1) then
+      tmp = dataset_info[0]
+      delete(dataset_info)
+      dataset_info = tmp
+    end if
+  end if
+
+  if (isvar("input_file_info")) then
+    if (ListCount(input_file_info).eq.1) then
+      tmp = input_file_info[0]
+      delete(input_file_info)
+      input_file_info = tmp
+    end if
   end if
 
 end
