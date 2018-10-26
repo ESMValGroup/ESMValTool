@@ -221,6 +221,7 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
+                'cmorize_observations = esmvaltool.utils.cmorize_observations:_main',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             ],
         },
