@@ -806,7 +806,7 @@ begin
       delete(in_files)
       continue
     end if
-    in_bnames = systemfunc(cstr + " -exec basename {} \;")
+    in_bnames = systemfunc(cstr + " -exec basename {} " + inttochar(92) + ";")
     sy = str_get_cols(str_get_field(in_bnames, 2, "."), 0, 5)
     delete(cstr)
 

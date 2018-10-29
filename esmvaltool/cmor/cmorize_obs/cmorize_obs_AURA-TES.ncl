@@ -70,15 +70,6 @@ end
 
 begin
 
-  print(input_dir_path)
-  print(output_dir_path)
-  tool_stop()
-
-
-  print("HERE")
-  exit
-
-
   diag_script = "reformat_obs_AURA-TES.ncl"
   enter_msg(diag_script, "", 1)
 
