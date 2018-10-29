@@ -769,7 +769,7 @@ def _get_preprocessor_task(variables,
             else:
                 # Process input data needed to derive variable
                 for short_name, field in get_required(
-                    variable['short_name'], variable['field'])['vars']:
+                        variable['short_name'], variable['field'])['vars']:
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
