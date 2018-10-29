@@ -18,39 +18,27 @@ documentation:
 
 
 datasets:
-  # working datasets
-    # - {dataset: CESM1-BGC,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: CMCC-CESM,        project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-     - {dataset: HadGEM2-ES,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-     - {dataset: HadGEM2-CC,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: IPSL-CM5A-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: IPSL-CM5A-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: IPSL-CM5B-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: MPI-ESM-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: MPI-ESM-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: MRI-ESM1,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-    # - {dataset: NorESM1-ME,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # Working:
+    - {dataset: CESM1-BGC,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: CMCC-CESM,        project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: HadGEM2-ES,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: HadGEM2-CC,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: MPI-ESM-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: IPSL-CM5A-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: IPSL-CM5A-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: IPSL-CM5B-LR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: NorESM1-ME,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: GFDL-ESM2M,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: MRI-ESM1,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    - {dataset: MPI-ESM-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
-
-# buggy:
-    # - {dataset: GFDL-ESM2G,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+    # Problems models:
+    #
+    # MemoryError
     # - {dataset: CNRM-CM5,         project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-# o2 range is insanely high: (1-4 mol/m3)
+    #
+    # o2 range is too high: (1-4 mol/m3)
     # - {dataset: BNU-ESM,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-
-# Iregular grid:
-
-
-
-# No oxygen data on jasmin:
-  # - {dataset: CanESM2, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: GISS-E2-H, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadCM3, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CanCM4, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
 preprocessors:
   # --------------------------------------------------
@@ -142,10 +130,10 @@ preprocessors:
 #  Oxygen concentration along 15 N/15 South slices.
 #  Oxygen minimum over z
 #  OMZ volume
-# Apparent oxygen usage - talk to Oli Andrews from Bristol.
 # Zonal average of 10N-10S against WOA data.
 # Vertical profiles of average oxygen region.
 # Colour scale for anoxic/oxic etc
+
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
@@ -194,7 +182,7 @@ diagnostics:
         preprocessor: prep_depth_layers
         field: TO3Y
     additional_datasets:
-      # /data/sthenno1/scratch/ledm/Observations/WOA/Oxygen_All_Periods/obsdata/Tier2/WOA/OBS_WOA_clim_TO3M_o2_000000-000000.nc
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
       - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
     scripts:
       model_vs_obs:
