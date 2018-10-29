@@ -183,7 +183,7 @@ begin
 
   if (config_user_info@write_plots) then
     ; Output array
-    data_arr = new((/DIM_VAR, DIM_DAT/), float)
+    data_arr = new((/DIM_VAR, DIM_DAT(0)/), float)
     data_arr!0 = "statistic"
     data_arr!1 = "dataset"
     data_arr&statistic = (/var0, var1/)

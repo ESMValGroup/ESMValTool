@@ -460,7 +460,7 @@ diagnostics:
   #         - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
   #     cVeg_grid:
   #       <<: *regrid_Lmon_1986_2005_refLAI3g
-  #       reference_dataset: HWSD
+  #       reference_dataset: NDP
   #       plot_units: PgC
   #       additional_datasets:
   #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
