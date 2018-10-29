@@ -106,9 +106,14 @@ def _run_ncl_script(in_dir,
     project[dataset]['outdir'] = out_dir
     settings_file = _write_ncl_settings(project, dataset, run_dir,
                                         reformat_script)
+    esmvaltool_root = os.path.dirname(
+        os.path.dirname(os.path.dirname(reformat_script))
+    )
+
     # put settings in environment
     env = dict(os.environ)
     env['settings'] = settings_file
+    env['esmvaltool_root'] = esmvaltool_root
 
     # call NCL
     ncl_call = ['ncl', os.path.basename(reformat_script)]
