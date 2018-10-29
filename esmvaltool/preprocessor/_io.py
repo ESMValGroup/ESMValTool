@@ -9,7 +9,7 @@ import iris.exceptions
 import numpy as np
 import yaml
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
