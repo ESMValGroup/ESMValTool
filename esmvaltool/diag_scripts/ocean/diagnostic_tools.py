@@ -23,9 +23,13 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-# A list of observations
 def get_obs_projects():
-    """Returns a list of strings with the names of observations projects."""
+    """
+    Returns a list of strings with the names of observations projects.
+
+    Please keep this list up to date, or replace it with something more
+    sensible.
+    """
     obs_projects = ['obs4mips', ]
     return obs_projects
 
@@ -51,7 +55,7 @@ def folder(name):
 
 def get_input_files(cfg, index=0):
     """
-    Load input configuration file.
+    Load input configuration file as a Diction.
 
     Get a dictionary with input files from the metadata.yml files.
     """
@@ -94,7 +98,7 @@ def bgc_units(cube, name):
 
 def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     """
-    Match up the three models and observations dataset from the configs.
+    Match up model or observations dataset dictionairies from config file.
 
     This function checks that the control_model, exper_model and
     observational_dataset dictionairies from the recipe are matched with the
@@ -168,7 +172,7 @@ def add_legend_outside_right(
         'label': label for the legend.
     ax1 is the axis where the plot was drawn.
     """
-    #####
+    # ####
     # Create dummy axes:
     legend_size = len(plot_details.keys()) + 1
     box = ax1.get_position()
