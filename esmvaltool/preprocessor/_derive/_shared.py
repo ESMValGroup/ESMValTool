@@ -1,4 +1,4 @@
-"""Auxiliary derivation functions used by multiple variables."""
+"""Auxiliary derivation functions used for multiple variables."""
 
 
 import iris
