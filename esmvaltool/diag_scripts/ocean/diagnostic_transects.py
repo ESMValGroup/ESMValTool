@@ -238,7 +238,7 @@ def multi_model_contours(
 
     # Make a plot for each layer and each threshold
     for threshold in thresholds:
-        print('\n', thresholds, threshold)
+        logger.info('plotting threshold: \t%s', threshold)
         title = ''
         plot_details = {}
         cmap = plt.cm.get_cmap('jet')

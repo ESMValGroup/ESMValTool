@@ -50,14 +50,13 @@ def regrid_irregulars(cube, scheme='nearest'):
     lats = cube.coord('latitude')
     if lats.ndim == 1:
         return cube
-    print(cube)
+    logger.debug('regrid_irregulars: %s', cube)
     horizontal_schemes = dict(
         linear=iris.analysis.Linear(extrapolation_mode='mask'),
         nearest=iris.analysis.Nearest(extrapolation_mode='mask'),
         area_weighted=iris.analysis.AreaWeighted(),
         unstructured_nearest=iris.analysis.UnstructuredNearest())
     target_grid = _stock_cube('1x1')
-    print(target)
     return cube.regrid(target_grid, horizontal_schemes[scheme])
 
 

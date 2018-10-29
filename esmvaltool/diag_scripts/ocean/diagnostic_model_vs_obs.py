@@ -129,13 +129,13 @@ def make_model_vs_obs_plots(
     filename is the preprocessing model file.
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
-    print('make_model_vs_obs_plots:', filenames)
+    logger.debug('make_model_vs_obs_plots filenames: %s', filenames)
     # ####
     # Load the data for each layer as a separate cube
     layers = {}
     cubes = {}
     for model_type, input_file in filenames.items():
-        print('loading:', model_type, input_file)
+        logger.debug('loading: \t%s, \t%s', model_type, input_file)
         cube = iris.load_cube(input_file)
         cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
@@ -181,7 +181,6 @@ def make_model_vs_obs_plots(
                                 endpoint=True)
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
 
-        print('linspace3:', linspace3)
         # Add the sub plots to the figure.
         add_map_subplot(221, cube221, linspace12, cmap='viridis',
                         title=model)
@@ -272,13 +271,13 @@ def make_scatter(
     filename is the preprocessing model file.
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
-    print('make_model_vs_obs_plots:', filenames)
+    logger.debug('make_model_vs_obs_plots: \t%s', filenames)
     # ####
     # Load the data for each layer as a separate cube
     layers = {}
     cubes = {}
     for model_type, input_file in filenames.items():
-        print('loading:', model_type, input_file)
+        logger.debug('loading: \t%s, \t%s', model_type, input_file)
         cube = iris.load_cube(input_file)
         cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
@@ -314,7 +313,6 @@ def make_scatter(
 
         colours = 'gist_yarg'
         zrange = get_array_range([model_data, obs_data])
-        print(model_data.shape, obs_data.shape)
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
         hexbin = pyplot.hexbin(model_data,
