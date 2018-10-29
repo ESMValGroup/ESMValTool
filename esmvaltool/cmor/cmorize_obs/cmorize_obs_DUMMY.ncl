@@ -1,4 +1,4 @@
-load "./DUMMY_info.ncl"
+loadscript("$settings")
 
 begin
 
