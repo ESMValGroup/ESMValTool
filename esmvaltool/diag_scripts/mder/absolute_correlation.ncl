@@ -463,39 +463,42 @@ begin
     ; Plot
     ; -------------------------------------------------------------------------
 
-    filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
-      p_time(pt) + "-" + (/p_time(pt) + p_step/)
-    wks = gsn_open_wks(file_type, plot_dir + filename)
-    MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + \
-      (/p_time(pt) + p_step/) + " (" + future_exp + ")"
-    YStg = "Absolute Correlation Coefficient"
-    plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), MainStg, \
-                          YStg, wks, "draw")
+    if (config_user_info@write_plots) then
+      filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
+        p_time(pt) + "-" + (/p_time(pt) + p_step/)
+      wks = gsn_open_wks(file_type, plot_dir + filename)
+      MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + \
+        (/p_time(pt) + p_step/) + " (" + future_exp + ")"
+      YStg = "Absolute Correlation Coefficient"
+      plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), \
+                            MainStg, YStg, wks, "draw")
 
-    ; TODO: Add meta data
-    ; climofiles = new(DIM_DAT, string)
-    ; do ii = 0, DIM_DAT - 1
-    ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-    ;     interface_get_infile(var0, field_type0, ii)
-    ; end do
-    ; alltags = array_append_record(tags, \
-    ;                               (/"ST_mder","ST_spectrum", "ST_corr", \
-    ;                                "ST_range", "PT_errorbar", "PT_scatter", \
-    ;                                "DM_et", "DM_global", "DM_polar", \
-    ;                                "DM_sh", "DM_trop"/), \
-    ;                               0)
-    ; alldatasetnames = input_file_info@dataset
-    ; caption = "Absolute values of the correlation coefficient between " + \
-    ;   var0  + " and pressent-day diagnostics, similar to Wenzel et al., " + \
-    ;   "JClim, 2016, fig. 2"
-    ; id = diag_script + "_" + var0
-    ; contrib_authors = (/"A_wenz_sa", "A_schl_ma"/)
-    ;
-    ; ESMValMD(plot_dir + filename + "." + file_type, alltags, caption, id, \
-    ;          var0, alldatasetnames, climofiles, diag_script, contrib_authors)
-    ;
-    ; delete([/alltags, caption, id, climofiles, alldatasetnames, wks, plot, \
-    ;         MainStg, acorr/])
+      ; TODO: Add meta data
+      ; climofiles = new(DIM_DAT, string)
+      ; do ii = 0, DIM_DAT - 1
+      ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+      ;     interface_get_infile(var0, field_type0, ii)
+      ; end do
+      ; alltags = array_append_record(tags, \
+      ;                               (/"ST_mder","ST_spectrum", "ST_corr", \
+      ;                                "ST_range", "PT_errorbar", \
+      ;                                "PT_scatter", "DM_et", "DM_global", \
+      ;                                "DM_polar", "DM_sh", "DM_trop"/), \
+      ;                                0)
+      ; alldatasetnames = input_file_info@dataset
+      ; caption = "Absolute values of the correlation coefficient between " + \
+      ;   var0  + " and pressent-day diagnostics, similar to Wenzel et " + \
+      ;   "al., JClim, 2016, fig. 2"
+      ; id = diag_script + "_" + var0
+      ; contrib_authors = (/"A_wenz_sa", "A_schl_ma"/)
+      ;
+      ; ESMValMD(plot_dir + filename + "." + file_type, alltags, caption, id, \
+      ;          var0, alldatasetnames, climofiles, diag_script, \
+      ;          contrib_authors)
+      ;
+      ; delete([/alltags, caption, id, climofiles, alldatasetnames, wks, \
+      ;         plot, MainStg, acorr/])
+    end if
 
     ; Restore old order
     wdiag = backup_wdiag

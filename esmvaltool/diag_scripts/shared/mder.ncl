@@ -9,6 +9,7 @@
 ; Contents:
 ;     function diag_file_name: filename of calculated diagnostic.
 ;     function integrate_time_units: temporally integrates units.
+;     function mder_output_desired: check if MDER output is desired.
 ;     function reg_multlin_stats_rap: costumized version of NCL's
 ;                                     reg_multlin_stats.
 ;     function regress_stepwise: does stepwise regression on diagnostics.
@@ -225,7 +226,7 @@ undef("mder_output_desired")
 function mder_output_desired()
 ;
 ; Return value:
-;     True of mder output is desired, False if not.
+;     True if mder output is desired, False if not.
 ;
 ; Description:
 ;     Checks if MDER output of diagnostic is desired.

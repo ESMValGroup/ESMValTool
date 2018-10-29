@@ -1027,98 +1027,102 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  ; Line plot showing the time series including MDER weights
-  plot_name_1 = filename + "_FIG1"
-  path_1 = plot_dir + plot_name_1 + "." + file_type
-  wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
-  MainStg = future_exp
-  YStg = var0 + " [" + variable_info@units + "]"
-  plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
-                         YStg, wks, "draw")
-  log_info("Wrote " + path_1)
+  if (config_user_info@write_plots) then
 
-  ; TODO: Add meta data
-  ; climofiles = new(DIM_DAT, string)
-  ; do ii = 0, DIM_DAT - 1
-  ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-  ;                    interface_get_infile(var0, field_type0, ii)
-  ; end do
-  ; alldatasetnames = input_file_info@dataset
-  ; zz = diag_script + "_" + var0
-  ; contrib_authors = (/"A_wenz_sa, A_schl_ma"/)
-  ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", "ST_range", \
-  ;                                      "ST_stddev", "PT_times", "DM_sh"/), 0)
-  ; caption = "Time series of " + var0 + " for " + \
-  ;   input_file_info@ensemble(0) + \
-  ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
-  ; ESMValMD(path_1, alltags, caption, zz, var0, alldatasetnames, climofiles, \
-  ;          diag_script, contrib_authors)
-  ; delete([/alltags, caption, wks, path_1/])
-
-  ; MDER scatter plots for all time periods
-  do ppt = 0, dimsizes(p_time) - 1
-    plot_name_2 = filename + "_FIG2" + plot_num(ppt)
-    path_2 = plot_dir + plot_name_2 + "." + file_type
-    wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
-    MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
-      (p_time(ppt) + p_step) + " (" + future_exp + ")"
-    XStg = terms_str(ppt + 1) + " [" + variable_info@units + "]"
+    ; Line plot showing the time series including MDER weights
+    plot_name_1 = filename + "_FIG1"
+    path_1 = plot_dir + plot_name_1 + "." + file_type
+    wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
+    MainStg = future_exp
     YStg = var0 + " [" + variable_info@units + "]"
-    plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
-                              y_mder_results_std(ppt, :), \
-                              wy(ppt, :), wy_std(ppt, :), \
-                              yfit_reg(ppt, :), \
-                              yfit_std(ppt, :, :), \
-                              MainStg, XStg, YStg, wks, "draw")
-    log_info("Wrote " + path_2)
+    plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
+                           YStg, wks, "draw")
+    log_info("Wrote " + path_1)
 
     ; TODO: Add meta data
+    ; climofiles = new(DIM_DAT, string)
+    ; do ii = 0, DIM_DAT - 1
+    ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+    ;                    interface_get_infile(var0, field_type0, ii)
+    ; end do
+    ; alldatasetnames = input_file_info@dataset
+    ; zz = diag_script + "_" + var0
+    ; contrib_authors = (/"A_wenz_sa, A_schl_ma"/)
     ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
     ;                                      "ST_range", "ST_stddev", \
-    ;                                      "ST_corr", "PT_scatter", \
-    ;                                      "T_EC", "DM_sh"/), 0)
-    ; caption = "Scatterplot showing the correlation between future " + \
-    ;           var0 + " and the quantity resulting from MDER " + \
-    ;           "analysis on the x-axes, similar to Wenzel et al., " + \
-    ;           "JClim, 2016, fig. 3"
-    ; ESMValMD(path_2, alltags, caption, zz, var0, \
-    ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-    ; delete([/alltags, caption, wks, path_2/])
-  end do
+    ;                                      "PT_times", "DM_sh"/), 0)
+    ; caption = "Time series of " + var0 + " for " + \
+    ;   input_file_info@ensemble(0) + \
+    ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
+    ; ESMValMD(path_1, alltags, caption, zz, var0, alldatasetnames, \
+    ;          climofiles, diag_script, contrib_authors)
+    ; delete([/alltags, caption, wks, path_1/])
 
-  ; Boxplot of RMSE of different weigting methods incl pseudoreality check
-  plot_name_3 = filename + "_FIG3"
-  path_3 = plot_dir + plot_name_3 + "." + file_type
-  YStg = "RMSE projection error [" + variable_info@units + "]"
-  XBname = new((dimsizes(times_str) - 1) * 2, string)
-  if (dimsizes(XBname) .eq. 2) then
-    XBname = (/"uMMM", "MDER"/)
-  else if (dimsizes(XBname) .eq. 4) then
-    XBname(0::2) = (/"uMMM~C~" + times_str(1:)/)
-    XBname(1::2) = (/"MDER~C~" + times_str(1:)/)
-  else
-    XBname(0::2) = (/" "/)
-    XBname(1::2) = times_str(1:)
+    ; MDER scatter plots for all time periods
+    do ppt = 0, dimsizes(p_time) - 1
+      plot_name_2 = filename + "_FIG2" + plot_num(ppt)
+      path_2 = plot_dir + plot_name_2 + "." + file_type
+      wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
+      MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
+        (p_time(ppt) + p_step) + " (" + future_exp + ")"
+      XStg = terms_str(ppt + 1) + " [" + variable_info@units + "]"
+      YStg = var0 + " [" + variable_info@units + "]"
+      plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
+                                y_mder_results_std(ppt, :), \
+                                wy(ppt, :), wy_std(ppt, :), \
+                                yfit_reg(ppt, :), \
+                                yfit_std(ppt, :, :), \
+                                MainStg, XStg, YStg, wks, "draw")
+      log_info("Wrote " + path_2)
+
+      ; TODO: Add meta data
+      ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
+      ;                                      "ST_range", "ST_stddev", \
+      ;                                      "ST_corr", "PT_scatter", \
+      ;                                      "T_EC", "DM_sh"/), 0)
+      ; caption = "Scatterplot showing the correlation between future " + \
+      ;           var0 + " and the quantity resulting from MDER " + \
+      ;           "analysis on the x-axes, similar to Wenzel et al., " + \
+      ;           "JClim, 2016, fig. 3"
+      ; ESMValMD(path_2, alltags, caption, zz, var0, \
+      ;          alldatasetnames, climofiles, diag_script, contrib_authors)
+      ; delete([/alltags, caption, wks, path_2/])
+    end do
+
+    ; Boxplot of RMSE of different weigting methods incl pseudoreality check
+    plot_name_3 = filename + "_FIG3"
+    path_3 = plot_dir + plot_name_3 + "." + file_type
+    YStg = "RMSE projection error [" + variable_info@units + "]"
+    XBname = new((dimsizes(times_str) - 1) * 2, string)
+    if (dimsizes(XBname) .eq. 2) then
+      XBname = (/"uMMM", "MDER"/)
+    else if (dimsizes(XBname) .eq. 4) then
+      XBname(0::2) = (/"uMMM~C~" + times_str(1:)/)
+      XBname(1::2) = (/"MDER~C~" + times_str(1:)/)
+    else
+      XBname(0::2) = (/" "/)
+      XBname(1::2) = times_str(1:)
+    end if
+    end if
+
+    wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
+    MainStg = future_exp
+    plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
+                               wks, "draw")
+    log_info("Wrote " + path_3)
+
+    ; TODO: Add meta data
+    ; alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", \
+    ;                                      "ST_stddev", "ST_mean", "PT_bar", \
+    ;                                      "PT_errorbar", "DM_sh"/), 0)
+    ; caption = "RMSE difference between the ensemble mean future " + \
+    ;   "climatological mean " + var0 + "and its equivalent in " + \
+    ;   "pseudoreality under " + input_file_info@ensemble(0) + \
+    ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 4"
+    ; ESMValMD(path_3, alltags, caption, zz, var0, alldatasetnames, \
+    ;          climofiles,  ;          diag_script, contrib_authors)
+    ; delete([/alltags, caption, zz, climofiles, alldatasetnames, path_3/])
   end if
-  end if
-
-  wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
-  MainStg = future_exp
-  plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
-                             wks, "draw")
-  log_info("Wrote " + path_3)
-
-  ; TODO: Add meta data
-  ; alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", \
-  ;                                      "ST_stddev", "ST_mean", "PT_bar", \
-  ;                                      "PT_errorbar", "DM_sh"/), 0)
-  ; caption = "RMSE difference between the ensemble mean future " + \
-  ;   "climatological mean " + var0 + "and its equivalent in " + \
-  ;   "pseudoreality under " + input_file_info@ensemble(0) + " scenario, " + \
-  ;   "similar to Wenzel et al., JClim, 2016, fig. 4"
-  ; ESMValMD(path_3, alltags, caption, zz, var0, alldatasetnames, climofiles, \
-  ;          diag_script, contrib_authors)
-  ; delete([/alltags, caption, zz, climofiles, alldatasetnames, path_3/])
 
   leave_msg(diag_script, "")
 
