@@ -18,6 +18,8 @@ esmvaltool/cmor/cmorize_obs
             all datasets in RAWOBS)
         cmorize_observations -c config-user.yml -o DATASET1,DATASET2...
             (for CMORization of select datasets)
+        cmorize_observations -c config-user.yml -o DATA1,DATA2 -l LOGLEVEL
+            (to set the log level: debug, info, warning, error)
 
 """
 import argparse
@@ -32,6 +34,17 @@ from .._task import write_ncl_settings
 from .._config import read_config_user_file
 
 logger = logging.getLogger(__name__)
+
+HEADER = r"""
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+""" + __doc__
 
 
 def _assemble_datasets(raw_obs, obs_list):
@@ -139,10 +152,6 @@ def execute_cmorize():
         choices=['debug', 'info', 'warning', 'error'])
     args = parser.parse_args()
 
-    logging.basicConfig(
-        format="%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s")
-    logging.getLogger().setLevel(args.log_level.upper())
-
     # get and read config file
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
@@ -153,6 +162,29 @@ def execute_cmorize():
 
     # read the file in
     config_user = read_config_user_file(config_file, 'CMOR')
+
+    # set the run dir to hold the settings and log files
+    run_dir = os.path.join(config_user['output_dir'], 'run')
+    if not os.path.isdir(run_dir):
+        os.makedirs(run_dir)
+
+    # set logging for screen and file output
+    root_logger = logging.getLogger()
+    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
+    logging.basicConfig(
+        filename=os.path.join(run_dir, 'cmorization_log.txt'),
+        filemode='a',
+        format=out_fmt,
+        datefmt='%H:%M:%S',
+        level=logging.DEBUG)
+    root_logger.setLevel(args.log_level.upper())
+    logfmt = logging.Formatter(out_fmt)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logfmt)
+    root_logger.addHandler(console_handler)
+
+    # print header
+    logger.info(HEADER)
 
     # run
     timestamp1 = datetime.datetime.utcnow()
@@ -194,15 +226,10 @@ def _cmor_reformat(config, obs_list):
     # set the reformat scripts dir
     reformat_scripts = os.path.join(os.path.dirname(__file__),
                                     '../cmor/cmorize_obs')
-
+    run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
     logger.info("Processing datasets %s", datasets)
-
-    # set the run dir to hold the settings file
-    run_dir = os.path.join(config['output_dir'], 'run')
-    if not os.path.isdir(run_dir):
-        os.makedirs(run_dir)
 
     # loop through tier/datasets to be cmorized
     for tier, _ in datasets.items():
