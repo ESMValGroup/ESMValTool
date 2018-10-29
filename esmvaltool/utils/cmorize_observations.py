@@ -79,30 +79,19 @@ def _assemble_datasets(raw_obs, obs_list):
     return datasets
 
 
-def _write_ncl_infofiles(project_info, dataset,
-                         output_dir, run_dir, reformat_script):
+def _write_ncl_settings(project_info, dataset, run_dir, reformat_script):
     """Write the information needed by the ncl reformat script."""
-    info = {
-        'input_dir_path': project_info[dataset]['indir'],
-        'output_dir_path': project_info[dataset]['outdir'],
-    }
     settings = {
         'cmorization_script': reformat_script,
         'input_dir_path': project_info[dataset]['indir'],
         'output_dir_path': project_info[dataset]['outdir'],
     }
-
-    filename = os.path.join(output_dir, dataset + '_info.ncl')
     settings_filename = os.path.join(run_dir, dataset, 'settings.ncl')
     if not os.path.isdir(os.path.join(run_dir, dataset)):
         os.makedirs(os.path.join(run_dir, dataset))
-
-    # write the cmorization script
-    if not os.path.isfile(filename):
-        write_ncl_settings(info, filename)
     # write the settings file
     write_ncl_settings(settings, settings_filename)
-    return filename
+    return settings_filename
 
 
 def _run_ncl_script(in_dir,
@@ -115,12 +104,17 @@ def _run_ncl_script(in_dir,
     project[dataset] = {}
     project[dataset]['indir'] = in_dir
     project[dataset]['outdir'] = out_dir
-    _write_ncl_infofiles(project, dataset, out_dir,
-                         run_dir, reformat_script)
+    settings_file = _write_ncl_settings(project, dataset, run_dir,
+                                        reformat_script)
+    # put settings in environment
+    env = dict(os.environ)
+    env['settings'] = settings_file
+
+    # call NCL
     ncl_call = ['ncl', os.path.basename(reformat_script)]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
     process = subprocess.Popen(ncl_call, stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT)
+                               stderr=subprocess.STDOUT, env=env)
     output, _ = process.communicate()
     for oline in str(output).split('\\n'):
         logger.info('[NCL] %s', oline)
