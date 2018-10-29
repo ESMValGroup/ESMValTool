@@ -80,7 +80,9 @@ def _write_ncl_infofiles(project_info, dataset,
     }
 
     filename = os.path.join(output_dir, dataset + '_info.ncl')
-    settings_filename = os.path.join(run_dir, 'settings.ncl')
+    settings_filename = os.path.join(run_dir, dataset, 'settings.ncl')
+    if not os.path.isdir(os.path.join(run_dir, dataset)):
+        os.makedirs(os.path.join(run_dir, dataset))
 
     # write the cmorization script
     if not os.path.isfile(filename):
