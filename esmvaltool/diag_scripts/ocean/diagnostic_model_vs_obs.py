@@ -1,11 +1,18 @@
 """
 Diagnostic Model vs observations maps.
 
-Diagnostic to produce an image showing four maps.
-These plost show latitude vs longitude and the cube value is used as the colour
-scale.
+Diagnostic to produce comparison of model and data.
+The first kind of image shows four maps and the other shows a scatter plot.
+
+The four pane image is a latitude vs longitude figures showing:
         model              obs
         model minus obs    model1 over obs
+
+
+The scatter plots plot the matched model coordinate on the x axis, and the
+observational dataset on the y coordinate, then performs a linear
+regression of those data and plots the line of best fit on the plot.
+The parameters of the fit are also shown on the figure.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
@@ -19,6 +26,9 @@ preprocessors:
       levels:  [100., ]
       scheme: linear_extrap
     time_average:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool,
 and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
