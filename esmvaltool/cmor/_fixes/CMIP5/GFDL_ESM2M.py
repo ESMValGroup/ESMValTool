@@ -4,6 +4,7 @@ from cf_units import Unit
 from ..fix import Fix
 import iris
 
+
 class sftof(Fix):
     """Fixes for sftof"""
 
@@ -52,7 +53,6 @@ class co2(Fix):
         return cube
 
 
-
 class o2(Fix):
     """Fixes for o2"""
 
@@ -89,7 +89,6 @@ class o2(Fix):
                 break
         if not found_o2:
             assert 0
-        print ('fix_file:', cube.name())
         std = 'mole_concentration_of_dissolved_molecular_oxygen_in_sea_water'
         long_name = 'Dissolved Oxygen Concentration'
 

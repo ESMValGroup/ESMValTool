@@ -86,5 +86,5 @@ class o2(Fix):
         depth = cube.coord('ocean depth coordinate')
         depth.standard_name = 'depth'
         depth.long_name = 'depth'
-        depth.attributes['positive'] =  'down'
+        depth.attributes['positive'] = 'down'
         return cube

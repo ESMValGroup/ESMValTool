@@ -63,7 +63,6 @@ class o2(Fix):
                 break
         if not found_o2:
             assert 0
-        print ('fix_file:', cube.name())
         std = 'mole_concentration_of_dissolved_molecular_oxygen_in_sea_water'
         long_name = 'Dissolved Oxygen Concentration'
 
