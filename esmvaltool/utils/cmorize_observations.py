@@ -66,21 +66,33 @@ def _assemble_datasets(raw_obs, obs_list):
     return datasets
 
 
-def _write_ncl_infofile(project_info, dataset, output_dir):
+def _write_ncl_infofiles(project_info, dataset,
+                         output_dir, run_dir, reformat_script):
     """Write the information needed by the ncl reformat script."""
     info = {
         'input_dir_path': project_info[dataset]['indir'],
         'output_dir_path': project_info[dataset]['outdir'],
     }
+    settings = {
+        'cmorization_script': reformat_script,
+        'input_dir_path': project_info[dataset]['indir'],
+        'output_dir_path': project_info[dataset]['outdir'],
+    }
 
     filename = os.path.join(output_dir, dataset + '_info.ncl')
+    settings_filename = os.path.join(run_dir, 'settings.ncl')
+
+    # write the cmorization script
     if not os.path.isfile(filename):
         write_ncl_settings(info, filename)
+    # write the settings file
+    write_ncl_settings(settings, settings_filename)
     return filename
 
 
 def _run_ncl_script(in_dir,
                     out_dir,
+                    run_dir,
                     dataset,
                     reformat_script):
     """Run the NCL cmorization mechanism."""
@@ -88,7 +100,8 @@ def _run_ncl_script(in_dir,
     project[dataset] = {}
     project[dataset]['indir'] = in_dir
     project[dataset]['outdir'] = out_dir
-    _write_ncl_infofile(project, dataset, out_dir)
+    _write_ncl_infofiles(project, dataset, out_dir,
+                         run_dir, reformat_script)
     ncl_call = ['ncl', os.path.basename(reformat_script)]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
     process = subprocess.Popen(ncl_call, stdout=subprocess.PIPE,
@@ -184,13 +197,14 @@ def _cmor_reformat(config, obs_list):
     datasets = _assemble_datasets(raw_obs, obs_list)
     logger.info("Processing datasets %s", datasets)
 
-    # assemble i/o information
-    project_info = {}
+    # set the run dir to hold the settings file
+    run_dir = os.path.join(config['output_dir'], 'run')
+    if not os.path.isdir(run_dir):
+        os.makedirs(run_dir)
 
     # loop through tier/datasets to be cmorized
     for tier, _ in datasets.items():
         for dataset in datasets[tier]:
-            project_info[dataset] = {}
             reformat_script_root = os.path.join(reformat_scripts,
                                                 'cmorize_obs_' + dataset)
             # in-data dir; build out-dir tree
@@ -212,6 +226,7 @@ def _cmor_reformat(config, obs_list):
                 # call the ncl script
                 _run_ncl_script(in_data_dir,
                                 out_data_dir,
+                                run_dir,
                                 dataset,
                                 reformat_script)
             elif os.path.isfile(reformat_script_root + '.py'):
