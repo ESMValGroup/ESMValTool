@@ -26,43 +26,17 @@ DOBSON_UNIT = cf_units.Unit('2.69e20 m^-2')
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
-    def get_required(self, frequency):
-        """Get variable `short_name` and `field` pairs required for derivation.
+    # Required variables
+    _required_variables = {'vars': [('tro3', 'T3{frequency}'),
+                                    ('ps', 'T2{frequency}s')]}
 
-        Parameters
-        ----------
-        frequency : str
-            Frequency of the desired derived variable.
-
-        Returns
-        -------
-        list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
-
-        """
-        return [('tro3', 'T3' + frequency),
-                ('ps', 'T2' + frequency + 's')]
-
-    def calculate(self, cubes, fx_files=None):
+    def calculate(self, cubes):
         """Compute total column ozone.
 
+        Note
+        ----
         The surface pressure is used as a lower integration bound. A fixed
         upper integration bound of 0 Pa is used.
-
-        Parameters
-        ----------
-        cubes : iris.cube.CubeList
-            `CubeList` containing `tro3` (`mole_fraction_of_ozone_in_air`) and
-            `ps` (`surface_air_pressure`).
-        fx_files : dict, optional
-            If required, dictionary containing fx files  with `short_name`
-            (key) and path (value) of the fx variable.
-
-        Returns
-        -------
-        iris.cube.Cube
-            `Cube` containing total column ozone.
 
         """
         tro3_cube = cubes.extract_strict(

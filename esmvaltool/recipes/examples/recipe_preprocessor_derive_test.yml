@@ -45,8 +45,9 @@ diagnostics:
         field: T2Ms
         derive: true
         additional_datasets:
-          - {dataset: CanESM2,    ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+          - {dataset: CanESM2,      ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR,   ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
     scripts: null
 
   diag2:
