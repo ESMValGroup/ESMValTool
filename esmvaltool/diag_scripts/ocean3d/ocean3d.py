@@ -134,7 +134,7 @@ def main(cfg):
                           ncols=ncols, 
                           cmap=cmap, 
                           observations=observations)
-                          
+
     # Create timemean (to be replaced by ESMValTool function)
     if cfg['mean']:
         for hofm_var in cfg['hofm_vars']:
@@ -144,17 +144,6 @@ def main(cfg):
             for model in model_filenames:
                 timmean(model_filenames, model, hofm_var, diagworkdir,
                         observations=observations)
-
-
-        ############## Create time mean #################################
-    # for mmodel in model_filenames_thetao:
-    #     timmean(model_filenames_thetao, mmodel, 'thetao', diagworkdir,
-    #             observations=observations)
-    # for mmodel in model_filenames_so:
-    #     timmean(model_filenames_so, mmodel, 'so', diagworkdir, 
-    #     observations=observations)
-    ############## END Create time mean #############################
-
     
 
     ################# Plot Hofm anomalies ####################
@@ -179,7 +168,21 @@ def main(cfg):
     #           ncols=3, cmap=cmo.balance, observations=observations)
     ################# END Plot Hofm anomalies ####################
 
-
+    if cfg['profiles']:
+        for var_number, hofm_var in enumerate(cfg['hofm_vars']):
+            model_filenames = get_clim_model_filenames(cfg, hofm_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                     key=lambda t: t[0]))
+            for region in cfg['hofm_regions']:
+                plot_profile(model_filenames,
+                             hofm_var,
+                             cfg['hofm_depth'],
+                             region,
+                             diagworkdir,
+                             diagplotdir,
+                             cmap=cm.Set2,
+                             dpi=100,
+                             observations=observations)
     ############# plot vertical profiles ##########################################
     # plot_profile(model_filenames_thetao, 'thetao',
     #              5000, 'EB', diagworkdir, diagplotdir,
