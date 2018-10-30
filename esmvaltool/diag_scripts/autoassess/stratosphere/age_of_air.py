@@ -1,5 +1,6 @@
 """Stratospheric age-of-air assessment code."""
 import os
+import logging
 import warnings
 import datetime
 import numpy as np
@@ -10,6 +11,10 @@ import iris
 import iris.analysis as iai
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from .strat_metrics_1 import weight_lat_ave
+
+
+logger = logging.getLogger(__name__)
+
 
 # Constant for number of seconds in a 360 day calendar year
 # Wrong if gregorian calendar!
@@ -104,9 +109,9 @@ def age_of_air(run):
             agecube = load_run_ss(run, 'monthly', 'age_of_stratospheric_air',
                                   **constraint)  # m01s34i150
     except iris.exceptions.ConstraintMismatchError:
-        print('Age of air fields absent.  Skipping this diagnostic.')
+        logger.warning('Age of air fields absent.  Skipping this diagnostic.')
     except ValueError:
-        print("Run length is less than 12 years: Can't assess age of air")
+        logger.warning("Run length < 12 years: Can't assess age of air")
     else:
         # Create time/zonal means of age data
         agecube = agecube.collapsed(['longitude', 'time'], iris.analysis.MEAN)
@@ -188,7 +193,7 @@ def multi_age_plot(run):
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
-        print('Age of air for control absent. skipping ...')
+        logger.warning('Age of air for control absent. skipping ...')
         return
 
     # Create tropics plot
