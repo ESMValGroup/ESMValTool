@@ -1,0 +1,7 @@
+
+Documentation for the ocean diagnostics toolkit is available in the
+ocean Sphinx directory:
+   - ESMValTool/doc/sphinx/source/ocean
+
+Or relative to this location:
+../../../doc/sphinx/source/ocean
