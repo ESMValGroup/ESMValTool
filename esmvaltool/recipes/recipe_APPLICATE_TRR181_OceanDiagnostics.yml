@@ -47,10 +47,28 @@ diagnostics:
     scripts:
       script1: &Global_Ocean_surface_map
         script: ocean3d/ocean3d.py
+        # Define if we calculate data for Hovmoeller diagrams. 
+        # This data are also needed for mean vertical profiles.
         hofm_data: True
+        # Define regions, as a list. 
+        # 'EB' - Eurasian Basin of the Arctic Ocean
+        # 'AB' - Amerasian Basin of the Arctic Ocean
+        # 'Barents_sea' - Barrents Sea
+        # 'North_sea'   - North Sea
         hofm_regions: ["AB" ,  'EB']
-        hofm_vars: ['thetao', 'salt']
+        # Define variables to use, should also be in "variables" entry of your diagnostic 
+        hofm_vars: ['thetao', 'so']
+        # Maximum depth of Hovmoeller and vertical profiles
         hofm_depth: 1500
+        # Define if Hovmoeller diagrams will be ploted.
+        hofm_plot: True
+        # Define colormap (as a list, same size as list with variables)
+        # Only cmaps from matplotlib and cmocean are supported. 
+        # Additional cmap - 'custom_salinity1'.
+        hofm_cmap: ['Spectral_r', 'custom_salinity1'] 
+        hofm_limits: [[-2, 2.3, 41, 1], [30.5, 35.1, 47, 2]]
+        # Number of columns in the plot
+        hofm_ncol: 3
 
 
   #     script2: &Global_Ocean_surface_map2

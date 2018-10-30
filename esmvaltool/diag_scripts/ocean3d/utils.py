@@ -28,6 +28,7 @@ from netCDF4 import num2date
 from collections import OrderedDict
 from cdo import Cdo
 import cmocean.cm as cmo
+import matplotlib.cm as cm
 from mpl_toolkits.basemap import Basemap
 from mpl_toolkits.basemap import addcyclic
 import pandas as pd
@@ -155,7 +156,7 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
         cdict['alpha'].append((si, a, a))
 
     newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
-    plt.register_cmap(cmap=newcmap)
+    cm.register_cmap(cmap=newcmap)
 
     return newcmap
 
@@ -173,3 +174,32 @@ def dens_back(smin, smax, tmin, tmax):
     si2, ti2 = np.meshgrid(si, ti)
     dens = sw.dens0(si2, ti2)-1000
     return si2, ti2, dens
+
+def get_cmap(cmap_name):
+    '''Return matplotlib colormap object 
+    from matplotlib.cm or cmocean.
+    Additional custom colormap for salinity is provided:
+    - "custom_salinity1"
+    ''' 
+    #hack to support different versions of cmocean
+    try:
+        cmo_names = cmo.cm.cmapnames
+    except:
+        cmo_names = cmo.cmapnames
+
+    if cmap_name in cmo.cmapnames:
+        colormap = cmo.cmap_d[cmap_name]
+    elif cmap_name in cm.datad:
+        colormap = cm.get_cmap(cmap_name)
+    elif cmap_name=="custom_salinity1":
+        colormap = shiftedColorMap(palettable.cubehelix.cubehelix3_16.mpl_colormap, 
+                                   start=0,
+                                   midpoint=0.89, 
+                                   stop=0.9,
+                                   name='shiftedcmap')
+    else:
+        raise ValueError('Get unrecognised name for the colormap `{}`.\
+                            Colormaps should be from standard matplotlib \
+                            set or from cmocean package.'.format(cmap_name))
+    return(colormap)
+    

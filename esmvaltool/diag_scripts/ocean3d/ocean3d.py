@@ -41,7 +41,7 @@ import itertools
 #plt.style.context('seaborn-talk')
 #sns.set_context("paper")
 
-from esmvaltool.diag_scripts.ocean3d.utils import get_clim_model_filenames, get_fx_filenames, find_observations_name, shiftedColorMap, genfilename, timmean 
+from esmvaltool.diag_scripts.ocean3d.utils import get_clim_model_filenames, get_fx_filenames, find_observations_name, get_cmap, genfilename, timmean 
 from esmvaltool.diag_scripts.ocean3d.regions import hofm_regions, transect_points
 from esmvaltool.diag_scripts.ocean3d.getdata import hofm_data, meanminmax_data, transect_data, aw_core, tsplot_data
 from esmvaltool.diag_scripts.ocean3d.plotting import hofm_plot, hofm_plot2, tsplot_plot, plot_profile, meanminmax_plot, plot2d_original_grid, plot2d_bias, plot2d_speed, plot2d_original_grid_AWdepth, plot_aw_core_stat, transect_plot, plot2d_bias2
@@ -49,6 +49,7 @@ from esmvaltool.diag_scripts.ocean3d.plotting import hofm_plot, hofm_plot2, tspl
 
 def main(cfg):
     """Compute the time average for each input model."""
+    
     # print(cfg['testing'])
     joblib.dump(cfg, 'cfg_NK.joblib')
     plotdir = cfg['plot_dir']
@@ -60,13 +61,13 @@ def main(cfg):
 
     logger.info("Starting APPLICATE Arctic Ocean diagnostics")
 
-    model_filenames_thetao = get_clim_model_filenames(cfg, 'thetao')
-    model_filenames_thetao = OrderedDict(sorted(model_filenames_thetao.items(), key=lambda t: t[0]))
-    print(model_filenames_thetao)
+    # model_filenames_thetao = get_clim_model_filenames(cfg, 'thetao')
+    # model_filenames_thetao = OrderedDict(sorted(model_filenames_thetao.items(), key=lambda t: t[0]))
+    # print(model_filenames_thetao)
 
-    model_filenames_so = get_clim_model_filenames(cfg, 'so')
-    model_filenames_so = OrderedDict(sorted(model_filenames_so.items(), key=lambda t: t[0]))
-    print(model_filenames_so)
+    # model_filenames_so = get_clim_model_filenames(cfg, 'so')
+    # model_filenames_so = OrderedDict(sorted(model_filenames_so.items(), key=lambda t: t[0]))
+    # print(model_filenames_so)
 
     observations = find_observations_name(cfg, 'thetao')
     
@@ -81,12 +82,14 @@ def main(cfg):
     areacello_fx = get_fx_filenames(cfg, 'thetao', 'areacello')
     print(areacello_fx)
 
-    # Extract data from Hovmoeller diagram
+    # Extract data for Hovmoeller diagrams
     if cfg['hofm_data']:
         for hofm_var in cfg['hofm_vars']:
+            print(cfg['hofm_vars'])
+            print(hofm_var)
             model_filenames = get_clim_model_filenames(cfg, hofm_var)
             model_filenames = OrderedDict(sorted(model_filenames.items(),
-                                                     key=lambda t: t[0]))
+                                          key=lambda t: t[0]))
             for mmodel, region in itertools.product(model_filenames,
                                                     cfg['hofm_regions']):
                 hofm_data(model_filenames,
@@ -97,34 +100,41 @@ def main(cfg):
                           region,
                           diagworkdir)
 
-                    
+    # Plot Hovmoeller diagrams for each variable
+    if cfg['hofm_plot']:
+        for var_number, hofm_var in enumerate(cfg['hofm_vars']):
+            model_filenames = get_clim_model_filenames(cfg, hofm_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                     key=lambda t: t[0]))
+            if cfg['hofm_cmap']:
+                cmap = get_cmap(cfg['hofm_cmap'][var_number])
+            else:
+                cmap = get_cmap('Spectral_r')
+            
+            if cfg['hofm_ncol']:
+                ncols = cfg['hofm_ncol']
+            else:
+                ncols = 3
 
-    
-        ############# Hofm data extraction #############################
-        # for mmodel in model_filenames_thetao:
-        #     hofm_data(model_filenames_thetao, mmodel, 'thetao', areacello_fx,
-        #             5000, 'EB', diagworkdir)
-        # for mmodel in model_filenames_thetao:
-        #     hofm_data(model_filenames_thetao, mmodel, 'thetao', areacello_fx,
-        #             5000, 'AB', diagworkdir)
-        # for mmodel in model_filenames_so:
-        #     hofm_data(model_filenames_so, mmodel, 'so', areacello_fx,
-        #             5000, 'EB', diagworkdir)
-        # for mmodel in model_filenames_so:
-        #     hofm_data(model_filenames_so, mmodel, 'so', areacello_fx,
-        #             5000, 'AB', diagworkdir)
-        ############# END Hofm data extraction #########################
+            vmin, vmax, sstep, roundlimit = cfg['hofm_limits'][var_number]
 
-        ############## Create time mean #################################
-    # for mmodel in model_filenames_thetao:
-    #     timmean(model_filenames_thetao, mmodel, 'thetao', diagworkdir,
-    #             observations=observations)
-    # for mmodel in model_filenames_so:
-    #     timmean(model_filenames_so, mmodel, 'so', diagworkdir, 
-    #     observations=observations)
-    ############## END Create time mean #############################
-
-    ############# Hofm plot ########################################
+            for mmodel, region in itertools.product(model_filenames,
+                                                    cfg['hofm_regions']):   
+                print(mmodel)
+                print(region)
+                print(hofm_var)                
+                hofm_plot(model_filenames,
+                           hofm_var, 
+                           cfg['hofm_depth'],
+                           region,
+                           diagworkdir,
+                           diagplotdir,
+                           levels=np.round(np.linspace(vmin, vmax, sstep),
+                                           roundlimit),
+                           ncols=ncols, 
+                           cmap=cmap, 
+                           observations=observations)
+############# Hofm plot ########################################
     # hofm_plot(model_filenames_thetao, 'thetao', 5000,
     #           'EB', diagworkdir, diagplotdir,
     #           levels=np.round(np.linspace(-2, 2.3, 41), 1),
@@ -146,7 +156,21 @@ def main(cfg):
     #           'AB', diagworkdir, diagplotdir,
     #           levels=np.round(np.linspace(29, 36.5, 41), 1),
     #           ncols=3, cmap=cm.Spectral_r, observations=observations)
-    ############# END Hofm plot ########################################
+    ############# END Hofm plot ########################################                    
+
+    
+
+
+        ############## Create time mean #################################
+    # for mmodel in model_filenames_thetao:
+    #     timmean(model_filenames_thetao, mmodel, 'thetao', diagworkdir,
+    #             observations=observations)
+    # for mmodel in model_filenames_so:
+    #     timmean(model_filenames_so, mmodel, 'so', diagworkdir, 
+    #     observations=observations)
+    ############## END Create time mean #############################
+
+    
 
     ################# Plot Hofm anomalies ####################
     # hofm_plot2(model_filenames_thetao, 'thetao', 1500,
