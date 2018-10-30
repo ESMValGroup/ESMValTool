@@ -124,41 +124,26 @@ def main(cfg):
                 print(region)
                 print(hofm_var)                
                 hofm_plot(model_filenames,
-                           hofm_var, 
-                           cfg['hofm_depth'],
-                           region,
-                           diagworkdir,
-                           diagplotdir,
-                           levels=np.round(np.linspace(vmin, vmax, sstep),
-                                           roundlimit),
-                           ncols=ncols, 
-                           cmap=cmap, 
-                           observations=observations)
-############# Hofm plot ########################################
-    # hofm_plot(model_filenames_thetao, 'thetao', 5000,
-    #           'EB', diagworkdir, diagplotdir,
-    #           levels=np.round(np.linspace(-2, 2.3, 41), 1),
-    #           ncols=3, cmap=cm.Spectral_r, observations=observations)
-
-    # hofm_plot(model_filenames_thetao, 'thetao', 5000,
-    #           'AB', diagworkdir, diagplotdir,
-    #           levels=np.round(np.linspace(-2, 2.3, 41), 1),
-    #           ncols=3, cmap=cm.Spectral_r, observations=observations)
-
-    # custom_cmap = shiftedColorMap(palettable.cubehelix.cubehelix3_16.mpl_colormap, start=0, midpoint=0.89, stop=0.9, name='shiftedcmap')
-
-    # hofm_plot(model_filenames_so, 'so', 5000,
-    #           'EB', diagworkdir, diagplotdir,
-    #           levels=np.round(np.linspace(30.5, 35.1, 47), 2),
-    #           ncols=3, cmap=custom_cmap, observations=observations)
-
-    # hofm_plot(model_filenames_so, 'so', 5000,
-    #           'AB', diagworkdir, diagplotdir,
-    #           levels=np.round(np.linspace(29, 36.5, 41), 1),
-    #           ncols=3, cmap=cm.Spectral_r, observations=observations)
-    ############# END Hofm plot ########################################                    
-
-    
+                          hofm_var, 
+                          cfg['hofm_depth'],
+                          region,
+                          diagworkdir,
+                          diagplotdir,
+                          levels=np.round(np.linspace(vmin, vmax, sstep),
+                                          roundlimit),
+                          ncols=ncols, 
+                          cmap=cmap, 
+                          observations=observations)
+                          
+    # Create timemean (to be replaced by ESMValTool function)
+    if cfg['mean']:
+        for hofm_var in cfg['hofm_vars']:
+            model_filenames = get_clim_model_filenames(cfg, hofm_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                     key=lambda t: t[0]))
+            for model in model_filenames:
+                timmean(model_filenames, model, hofm_var, diagworkdir,
+                        observations=observations)
 
 
         ############## Create time mean #################################
