@@ -1,4 +1,4 @@
-"""Recipe parser"""
+"""Recipe parser."""
 import copy
 import fnmatch
 import inspect
@@ -13,7 +13,7 @@ import yaml
 from . import __version__, preprocessor
 from ._config import get_institutes
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
-                           get_output_file, get_rootpath, get_start_end_year,
+                           get_output_file, get_start_end_year,
                            get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
@@ -33,13 +33,12 @@ class RecipeError(Exception):
 
 
 def ordered_safe_load(stream):
-    """Load a YAML file using OrderedDict instead of dict"""
-
+    """Load a YAML file using OrderedDict instead of dict."""
     class OrderedSafeLoader(yaml.SafeLoader):
-        """Loader class that uses OrderedDict to load a map"""
+        """Loader class that uses OrderedDict to load a map."""
 
     def construct_mapping(loader, node):
-        """Load a map as an OrderedDict"""
+        """Load a map as an OrderedDict."""
         loader.flatten_mapping(node)
         return OrderedDict(loader.construct_pairs(node))
 
@@ -57,7 +56,7 @@ def read_recipe_file(filename, config_user, initialize_tasks=True):
 
 
 def check_ncl_version():
-    """Check the NCL version"""
+    """Check the NCL version."""
     ncl = which('ncl')
     if not ncl:
         raise RecipeError("Recipe contains NCL scripts, but cannot find "
@@ -105,7 +104,7 @@ def check_recipe(filename):
 
 
 def check_preprocessors(preprocessors):
-    """Check preprocessors in recipe"""
+    """Check preprocessors in recipe."""
     valid_functions = set(preprocessor.DEFAULT_ORDER)
     for name, profile in preprocessors.items():
         invalid_functions = set(profile) - {'custom_order'} - valid_functions
@@ -117,7 +116,7 @@ def check_preprocessors(preprocessors):
 
 
 def check_diagnostics(diagnostics):
-    """Check diagnostics in recipe"""
+    """Check diagnostics in recipe."""
     for name, diagnostic in diagnostics.items():
         if 'scripts' not in diagnostic:
             raise RecipeError("Missing scripts section in diagnostic {}"
@@ -189,7 +188,7 @@ def check_duplicate_datasets(datasets):
 
 
 def check_variable(variable, required_keys):
-    """Check variables as derived from recipe"""
+    """Check variables as derived from recipe."""
     required = set(required_keys)
     missing = required - set(variable)
     if missing:
@@ -200,7 +199,7 @@ def check_variable(variable, required_keys):
 
 
 def check_data_availability(input_files, variable):
-    """Check if the required input data is available"""
+    """Check if the required input data is available."""
     if not input_files:
         raise RecipeError("No input files found for variable {}"
                           .format(variable))
@@ -378,7 +377,7 @@ def _dataset_to_file(variable, config_user):
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
         variable['short_name'], variable['field'] = get_required(
-            variable['short_name'], variable['field'])[0]
+            variable['short_name'], variable['field'])['vars'][0]
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -502,7 +501,21 @@ def _get_default_settings(variable, config_user, derive=False):
 
 
 def _update_fx_settings(settings, variable, config_user):
-    """Find and set the FX mask settings"""
+    """Find and set the FX derive/mask settings."""
+    # update for derive
+    if 'derive' in settings.keys():
+        fx_files = get_required(
+            variable['short_name'], variable['field']).get('fx_files')
+        if fx_files:
+            settings['derive']['fx_files'] = {}
+            variable = dict(variable)
+            variable['fx_files'] = fx_files
+            fx_files_dict = get_input_fx_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            settings['derive']['fx_files'] = fx_files_dict
+
     # update for landsea
     if 'mask_landsea' in settings.keys():
         # Configure ingestion of land/sea masks
@@ -549,7 +562,7 @@ def _update_fx_settings(settings, variable, config_user):
 
 
 def _get_input_files(variable, config_user):
-    """Get the input files for a single dataset"""
+    """Get the input files for a single dataset."""
     # Find input files locally.
     input_files = get_input_filelist(
         variable=variable,
@@ -672,7 +685,7 @@ def _extract_preprocessor_order(profile):
 
 
 def _split_derive_profile(profile):
-    """Split the derive preprocessor profile"""
+    """Split the derive preprocessor profile."""
     order = _extract_preprocessor_order(profile)
     before, after = preprocessor.split_settings(profile, 'derive', order)
     after['derive'] = {}
@@ -755,8 +768,8 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for short_name, field in get_required(variable['short_name'],
-                                                      variable['field']):
+                for short_name, field in get_required(
+                        variable['short_name'], variable['field'])['vars']:
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
@@ -785,7 +798,7 @@ def _get_preprocessor_task(variables,
 
 
 class Recipe(object):
-    """Recipe object"""
+    """Recipe object."""
 
     def __init__(self,
                  raw_recipe,
@@ -818,7 +831,7 @@ class Recipe(object):
         return False
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
-        """Define diagnostics in recipe"""
+        """Define diagnostics in recipe."""
         logger.debug("Retrieving diagnostics from recipe")
 
         diagnostics = {}
@@ -841,7 +854,7 @@ class Recipe(object):
 
     @staticmethod
     def _initialize_datasets(raw_datasets):
-        """Define datasets used by variable"""
+        """Define datasets used by variable."""
         datasets = copy.deepcopy(raw_datasets)
 
         for dataset in datasets:
@@ -899,7 +912,7 @@ class Recipe(object):
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
                                         raw_datasets):
-        """Define variables in diagnostic"""
+        """Define variables in diagnostic."""
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -918,7 +931,7 @@ class Recipe(object):
 
     def _initialize_scripts(self, diagnostic_name, raw_scripts,
                             variable_names):
-        """Define script in diagnostic"""
+        """Define script in diagnostic."""
         if not raw_scripts:
             return {}
 
@@ -958,7 +971,7 @@ class Recipe(object):
         return scripts
 
     def _resolve_diagnostic_ancestors(self, tasks):
-        """Resolve diagnostic ancestors"""
+        """Resolve diagnostic ancestors."""
         for diagnostic_name, diagnostic in self.diagnostics.items():
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
@@ -978,7 +991,7 @@ class Recipe(object):
                     tasks[task_id].ancestors = ancestors
 
     def initialize_tasks(self):
-        """Define tasks in recipe"""
+        """Define tasks in recipe."""
         logger.info("Creating tasks from recipe")
         tasks = {}
 
