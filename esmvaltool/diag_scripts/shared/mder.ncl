@@ -246,14 +246,20 @@ begin
   if (isatt(diag_script_info, "wdiag") .and. \
       .not. any(diag_script_info@wdiag .eq. "")) then
     if (config_user_info@write_netcdf) then
-      log_info("Writing MDER output with the following diagnostics: " + \
-               diag_script_info@wdiag)
-      out = True
-      out@work_dir = config_user_info@work_dir
-      system("mkdir -p " + out@work_dir)
+      if (.not. isatt(diag_script_info, "ref_dataset")) then
+        error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
+                  "attribute 'ref_dataset' not given in recipe")
+        out = False
+      else
+        log_info("Writing MDER output with the following diagnostics: " + \
+                 diag_script_info@wdiag)
+        out@work_dir = config_user_info@work_dir
+        system("mkdir -p " + out@work_dir)
+        out = True
+      end if
     else
-      log_info("Skipping MDER output: 'write_netcdf' is set to False in " + \
-               "user configuration")
+      error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
+                "'write_netcdf' is set to False in user configuration")
       out = False
     end if
   else
