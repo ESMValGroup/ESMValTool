@@ -108,12 +108,12 @@ begin
   field_type0 = field_types(0)
 
   ; Write references  ; FIX-ME to be replaced by new method
-  write_references(diag_script, "A_fran_fr", \
-                   (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
-                   (/"D_righi15gmd", "D_gleckler08jgr"/), \
-                   (/"E_ncep", "E_erainterim", "E_airs", "E_ceresebaf", \
-                     "E_srb"/), \
-                   (/"P_embrace", "P_esmval"/))
+  ; write_references(diag_script, "A_fran_fr", \
+  ;                  (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
+  ;                  (/"D_righi15gmd", "D_gleckler08jgr"/), \
+  ;                  (/"E_ncep", "E_erainterim", "E_airs", "E_ceresebaf", \
+  ;                    "E_srb"/), \
+  ;                  (/"P_embrace", "P_esmval"/))
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"plot_type", "time_avg", "region"/))

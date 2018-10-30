@@ -71,13 +71,13 @@ begin
   var0 = variables(0)
   field_type0 = field_types(0)
 
-  ; References Information
-  write_references(diag_script, \  ; script name
-                   "A_gott_kl", \  ; authors
-                   "A_eval_ma", \  ; contributors
-                   "D_0000",    \  ; diag_references
-                   "",          \  ; obs_references
-                   (/"P_dlrveu", "P_esmval"/))  ; proj_references
+  ; References Information - FIX-ME: to be replaced by new method
+  ; write_references(diag_script, \  ; script name
+  ;                  "A_gott_kl", \  ; authors
+  ;                  "A_eval_ma", \  ; contributors
+  ;                  "D_0000",    \  ; diag_references
+  ;                  "",          \  ; obs_references
+  ;                  (/"P_dlrveu", "P_esmval"/))  ; proj_references
 
 end
 
