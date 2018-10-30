@@ -8,7 +8,7 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 
 
 # slice cube over a restricted time period
