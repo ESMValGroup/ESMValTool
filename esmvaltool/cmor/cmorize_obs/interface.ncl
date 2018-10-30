@@ -8,10 +8,11 @@
 ; #############################################################################
 
 ; Load interface settings
-;loadscript("$settings")
-
-; Load utility functions
-;loadscript(getenv("esmvaltool_root") + "/cmor/cmorize_obs/cmorize_obs_utils.ncl")
+loadscript("$settings")
 
 ; Load logging functions
-;loadscript(getenv("esmvaltool_root") + "/interface_scripts/logging.ncl"
+loadscript(getenv("esmvaltool_root") + "/interface_scripts/logging.ncl")
+
+; Load utility functions
+loadscript(getenv("esmvaltool_root") + "/cmor/cmorize_obs/cmorize_obs_utils.ncl")
+
