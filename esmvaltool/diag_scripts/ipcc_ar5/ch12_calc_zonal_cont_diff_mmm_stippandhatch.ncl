@@ -5,7 +5,7 @@
 ; #############################################################################
 ;
 ; Description
-;    Multi-model annual or seasomal mean zonal mean changes
+;    Multi-model annual or seasonal mean zonal mean changes
 ;    e.g. 2081-2100 relative to base period (1986-2005 in CMIP5)
 ;    for multiple RCPs
 ;
@@ -17,7 +17,6 @@
 ;    time_avg: list with seasons or annual to be included e.g (/"annualclim"/)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    grid: grid for regridding (coarsest, finest, ref, 1x1, 2.5x2.5)
 ;    title: title of whole figure
 ;    label: labels of individual panels
 ;    max_hori: maximum number of panels in horizontal
@@ -31,21 +30,8 @@
 ;    base_cnMinLevel: min value for base contours
 ;    base_cnMaxLevel: max level for base contours
 ;
-; Required variable_info attributes (variable specific)
-;    long_name: long name of variable
-;    units: variable units
-;
-; Optional variable_info attributes (variable specific)
-;    att1: short description
-;    att2: short description
-;
-; Caveats
-;    slow for irregular ocean grids (regridding on each depth level),
-;    regridding only works for models with all relevant information provided
-;    (therefore model name printed in loop, in case of crash know which model
-;    caused crash)
-;
 ; Modification history
+;    20181024-A_lore_ru: ported to v2, regridding in preprocessor
 ;    20170517-A_lore_ru: changed to regrid to common grid first before
 ;                        calculating zonal average and added ability to use
 ;                        irregular grids (e.g. thetao)
@@ -87,14 +73,14 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-;  write_references(diag_script, \  ; script name
-;                   "A_lore_ru", \  ; authors
-;                   "", \  ; contributors
-;                   "D_collins13ipcc",    \  ; diag_references
-;                   "",          \  ; obs_references
-;                   "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
-  req_atts = (/"scenarios", "periods", "time_avg"/)
+  req_atts = (/"scenarios", "periods", "time_avg", "label"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 end
 
@@ -105,9 +91,6 @@ begin
   else
     file_type = "pdf"
   end if
-
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
 
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
@@ -171,6 +154,15 @@ begin
     dim_seas = dimsizes(diag_script_info@seasons)
   else
     dim_seas = 1
+  end if
+
+  ; check if diag_script_info@label has correct size, otherwise error message
+  dim_periods = dimsizes(diag_script_info@periods)
+  dim_scenarios = dimsizes(diag_script_info@scenarios)
+  dim_label = dim_seas * dim_scenarios * dim_periods
+  if (dim_label .ne. dimsizes(diag_script_info@label)) then
+    error_msg("f", diag_script, "", "wrong number of labels, needs to be " + \
+    "seasons * scenarios * periods")
   end if
 
   annots = project_style(diag_script_info, "annots")
