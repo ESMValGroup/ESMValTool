@@ -55,17 +55,12 @@ begin
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"experiment", "time_avg"/))
-
 end
 
 begin
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
-
-  ; Create output plot directory
-  plot_dir = config_user_info@plot_dir
-  system("mkdir -p " + plot_dir)
 end
 
 begin
