@@ -993,35 +993,39 @@ begin
     mcorr_str(pt + 1) = sprintf("%.3f", MCORR(pt))
   end do
 
+  ; ---------------------------------------------------------------------------
   ; Write files
-  table_path = work_dir + filename + ".txt"
-  ascii_path = work_dir + var0 + "_" + \
-    input_file_info@exp(0 + DIM_OBS + DIM_HDAT) + "_" + (p_step + 1) + \
-    "ystep_diagnostics.txt"
-  write_table(table_path, "w", [/times_str, terms_str, mcorr_str/], \
-              "%s    %s    %s")
-  asciiwrite(ascii_path, names_used_diags)
-  log_info("Wrote " + ascii_path)
-  log_info("Wrote " + table_path)
-  delete([/table_path, ascii_path/])
-
-  ; ---------------------------------------------------------------------------
-  ; Write NetCDF files
   ; ---------------------------------------------------------------------------
 
-  dataset_list = input_file_info@dataset(3:)
-  do pt = 0, dimsizes(p_time) - 1
-    weights_out = weights_t(0, :, pt)
-    weights_path = work_dir + filename + "_weights_" + \
-      p_time(pt) + "-" + (p_time(pt) + p_step) + ".nc"
-    weights_out!0 = "dataset"
-    weights_out&dataset = dataset_list
-    weights_out@diag_script = diag_script
-    weights_out@var = "weight"
-    weights_out@description = "Weights from MDER"
-    weights_file = ncdf_write(weights_out, weights_path)
-    delete([/weights_out, weights_path, weights_file/])
-  end do
+  if (config_user_info@write_netcdf) then
+
+    ; Ascii
+    table_path = work_dir + filename + ".txt"
+    ascii_path = work_dir + var0 + "_" + \
+      input_file_info@exp(0 + DIM_OBS + DIM_HDAT) + "_" + (p_step + 1) + \
+      "ystep_diagnostics.txt"
+    write_table(table_path, "w", [/times_str, terms_str, mcorr_str/], \
+                "%s    %s    %s")
+    asciiwrite(ascii_path, names_used_diags)
+    log_info("Wrote " + ascii_path)
+    log_info("Wrote " + table_path)
+    delete([/table_path, ascii_path/])
+
+    ; NetCDF
+    dataset_list = input_file_info@dataset(3:)
+    do pt = 0, dimsizes(p_time) - 1
+      weights_out = weights_t(0, :, pt)
+      weights_path = work_dir + filename + "_weights_" + \
+        p_time(pt) + "-" + (p_time(pt) + p_step) + ".nc"
+      weights_out!0 = "dataset"
+      weights_out&dataset = dataset_list
+      weights_out@diag_script = diag_script
+      weights_out@var = "weight"
+      weights_out@description = "Weights from MDER"
+      weights_file = ncdf_write(weights_out, weights_path)
+      delete([/weights_out, weights_path, weights_file/])
+    end do
+  end if
 
   ; ---------------------------------------------------------------------------
   ; Plots
