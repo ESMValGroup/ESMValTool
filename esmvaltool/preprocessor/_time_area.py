@@ -10,6 +10,10 @@ import numpy as np
 
 from .. import use_legacy_iris
 
+import logging
+import os
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 # slice cube over a restricted time period
 def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
@@ -50,7 +54,7 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
         time_1 = mycube.coord('time')
         time_2 = cube_slice.coord('time')
         if time_1 == time_2:
-            print('No change needed to time.' )
+            logger.info('No change needed to time.')
             return mycube
 
     return cube_slice
