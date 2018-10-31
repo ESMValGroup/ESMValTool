@@ -1,4 +1,4 @@
- .. ocean_diagnostics:
+.. esmvaltool.diag_scripts
 ..
 .. This file is part of the ocean diagnostic toolkit, which is part of
 .. the ESMValTool toolkit.
