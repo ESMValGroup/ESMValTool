@@ -138,6 +138,7 @@ begin
         delete(A0)
 
         ; Average over ensemble members
+        tmpA0!0 = "ensemble_members"
         do iens = 1, dimsizes(ens) - 1
           tmp_data = read_data(idat + iens, var0, field_type0)
             if (rank .eq. 3) then

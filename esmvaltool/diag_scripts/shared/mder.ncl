@@ -253,9 +253,9 @@ begin
       else
         log_info("Writing MDER output with the following diagnostics: " + \
                  diag_script_info@wdiag)
+        out = True
         out@work_dir = config_user_info@work_dir
         system("mkdir -p " + out@work_dir)
-        out = True
       end if
     else
       error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
