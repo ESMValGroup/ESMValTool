@@ -14,8 +14,10 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwp`."""
 
     # Required variables
-    _required_variables = {'vars': [('clwvi', 'T2{frequency}s'),
-                                    ('clivi', 'T2{frequency}s')]}
+    _required_variables = {'vars': [{'short_name': 'clwvi',
+                                     'field': 'T2{frequency}s'},
+                                    {'short_name': 'clivi',
+                                     'field': 'T2{frequency}s'}]}
 
     def calculate(self, cubes):
         """Compute liquid water path.

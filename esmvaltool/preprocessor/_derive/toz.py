@@ -27,8 +27,10 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
     # Required variables
-    _required_variables = {'vars': [('tro3', 'T3{frequency}'),
-                                    ('ps', 'T2{frequency}s')]}
+    _required_variables = {'vars': [{'short_name': 'tro3',
+                                     'field': 'T3{frequency}'},
+                                    {'short_name': 'ps',
+                                     'field': 'T2{frequency}s'}]}
 
     def calculate(self, cubes):
         """Compute total column ozone.

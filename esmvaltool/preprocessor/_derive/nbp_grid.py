@@ -11,7 +11,8 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `nbp_grid`."""
 
     # Required variables
-    _required_variables = {'vars': [('nbp', 'T2{frequency}s')],
+    _required_variables = {'vars': [{'short_name': 'nbp',
+                                     'field': 'T2{frequency}s'}],
                            'fx_files': ['sftlf']}
 
     def calculate(self, cubes):

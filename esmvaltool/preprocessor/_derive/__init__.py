@@ -18,8 +18,8 @@ ALL_DERIVED_VARIABLES = {}
 def get_required(short_name, field=None):
     """Return all required variables for derivation.
 
-    Get variable `short_name` and `field` pairs required for derivation
-    and optionally a list of needed fx files.
+    Get all information (at least `short_name`) required for derivation and
+    optionally a list of needed fx files.
 
     Parameters
     ----------
@@ -31,8 +31,9 @@ def get_required(short_name, field=None):
     Returns
     -------
     dict
-        Dictionary containing a list of tuples `(short_name, field)` with the
-        `vars` key and optionally a list of fx files with the key `fx_files`.
+        Dictionary containing a :obj:`list` of dictionaries (including at least
+        the key `short_name`) with the key `vars` and optionally a :obj:`list`
+        of fx variables with the key `fx_files`.
 
     """
     frequency = field[2] if field else 'M'

@@ -1,6 +1,7 @@
 """Contains the base class for derived variables."""
 
 
+import copy
 import importlib
 import logging
 
@@ -21,8 +22,8 @@ class DerivedVariableBase(object):
     def get_required(self, frequency):
         """Return all required variables for derivation.
 
-        Get variable `short_name` and `field` pairs required for derivation
-        and optionally a list of needed fx files from the static class member
+        Get all information (at least `short_name`) required for derivation and
+        optionally a list of needed fx files from the static class member
         _required_variables (may include '{frequency}' keyword in the `field`
         string for dynamic frequency adaption).
 
@@ -34,9 +35,9 @@ class DerivedVariableBase(object):
         Returns
         -------
         dict
-            Dictionary containing a list of tuples `(short_name, field)` with
-            the `vars` key and optionally a list of fx files with the key
-            `fx_files`.
+            Dictionary containing a :obj:`list` of dictionaries (including at
+            least the key `short_name`) with the key `vars` and optionally a
+            :obj:`list` of fx variables with the key `fx_files`.
 
         Raises
         ------
@@ -45,20 +46,24 @@ class DerivedVariableBase(object):
             required variables are declared.
 
         """
-        required_variables = dict(self.__class__._required_variables)
+        required_variables = copy.deepcopy(self.__class__._required_variables)
         if not required_variables:
             raise NotImplementedError("Don't know how to derive variable "
                                       "'{}'".format(self.short_name))
         if 'vars' not in required_variables:
             raise NotImplementedError(
-                "Don't know how to derive variable '{}', all required "
+                "Don't know how to derive variable '{}': all required "
                 "variables have to be specified in the 'vars' key of the "
                 "_required_variables dictionary (derivation from fx files "
                 "only is not supported yet)".format(self.short_name))
-        new_vars = []
-        for (short_name, field) in required_variables['vars']:
-            new_vars.append((short_name, field.format(frequency=frequency)))
-        required_variables['vars'] = new_vars
+        for (idx, var) in enumerate(required_variables['vars']):
+            if 'short_name' not in var:
+                raise NotImplementedError(
+                    "Don't know how to derive variable '{}': 'short_name' is "
+                    "not given for at least one required variable")
+            if 'field' in var:
+                required_variables['vars'][idx]['field'] = var['field'].format(
+                    frequency=frequency)
 
         return required_variables
 

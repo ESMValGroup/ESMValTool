@@ -376,8 +376,8 @@ def _dataset_to_file(variable, config_user):
         drs=config_user['drs'])
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
-        variable['short_name'], variable['field'] = get_required(
-            variable['short_name'], variable['field'])['vars'][0]
+        required_var = get_required(variable['short_name'], variable['field'])
+        variable.update(required_var['vars'][0])
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -768,13 +768,13 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for short_name, field in get_required(
+                for new_variable in get_required(
                         variable['short_name'], variable['field'])['vars']:
+                    short_name = new_variable['short_name']
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
-                    variable['short_name'] = short_name
-                    variable['field'] = field
+                    variable.update(new_variable)
                     variable['filename'] = get_output_file(
                         variable, config_user['preproc_dir'])
                     _add_cmor_info(variable, override=True)

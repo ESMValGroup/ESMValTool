@@ -11,7 +11,8 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `clltkisccp`."""
 
     # Required variables
-    _required_variables = {'vars': [('clisccp', 'T4{frequency}')]}
+    _required_variables = {'vars': [{'short_name': 'clisccp',
+                                     'field': 'T4{frequency}'}]}
 
     def calculate(self, cubes):
         """Compute ISCCP low level thick cloud area fraction."""

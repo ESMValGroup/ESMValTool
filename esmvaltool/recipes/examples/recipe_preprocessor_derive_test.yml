@@ -2,6 +2,14 @@
 # variables use the same basic variables, which leads to PermissionDenied
 # errors.
 ---
+preprocessors:
+
+  regrid:
+    regrid:
+      target_grid: CanESM2
+      scheme: linear
+
+
 diagnostics:
 
   diag1:
@@ -37,6 +45,7 @@ diagnostics:
         additional_datasets:
           - {dataset: HadGEM2-A}
       nbp_grid:
+        # preprocessor: regrid
         project: CMIP5
         mip: Lmon
         exp: historical

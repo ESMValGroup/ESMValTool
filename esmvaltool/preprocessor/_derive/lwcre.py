@@ -10,8 +10,10 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwcre`."""
 
     # Required variables
-    _required_variables = {'vars': [('rlut', 'T2{frequency}s'),
-                                    ('rlutcs', 'T2{frequency}s')]}
+    _required_variables = {'vars': [{'short_name': 'rlut',
+                                     'field': 'T2{frequency}s'},
+                                    {'short_name': 'rlutcs',
+                                     'field': 'T2{frequency}s'}]}
 
     def calculate(self, cubes):
         """Compute longwave cloud radiative effect."""
