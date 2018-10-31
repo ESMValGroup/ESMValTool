@@ -58,14 +58,11 @@ begin
                    "",          \  ; obs_references
                    "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
-  req_atts = (/"scenarios", "periods", "time_avg"/)
+  req_atts = (/"scenarios", "periods", "time_avg", "label"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 end
 
 begin
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)  ; Needed?
@@ -124,6 +121,15 @@ begin
     dim_seas = 1
   end if
 
+  ; check if diag_script_info@label has correct size, otherwise error message
+  dim_periods = dimsizes(diag_script_info@periods)
+  dim_scenarios = dimsizes(diag_script_info@scenarios)
+  dim_label = dim_seas * dim_scenarios * dim_periods
+  if (dim_label .ne. dimsizes(diag_script_info@label)) then
+    error_msg("f", diag_script, "", "wrong number of labels, needs to be " + \
+    "seasons * scenarios * periods")
+  end if
+
   annots = project_style(diag_script_info, "annots")
   Fill = default_fillvalue(typeof(A0))
   if (isatt(diag_script_info, "iavmode")) then
@@ -150,6 +156,9 @@ begin
                                 diag_script_info@time_avg, True)
       end if
     else
+      if isvar((/"A1"/)) then
+        delete(A1)
+      end if
       A1 = read_data(imod, var0, field_type0)
       dims = getvardims(A1)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
@@ -192,10 +201,10 @@ begin
                            "_" + var0 + "_" + diag_script_info@time_avg + \
                            ".nc", "r")
         if ((dim_seas .eq. 1) .and. \
-          (diag_script_info@time_avg .eq. "annualclim")) then
+            (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_file->iav
         else if ((dim_seas .eq. 1) .and. \
-          (diag_script_info@time_avg .eq. "seasonalclim")) then
+                 (diag_script_info@time_avg .eq. "seasonalclim")) then
           tmp_iav = iav_file->iav
           iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
         else
@@ -211,11 +220,26 @@ begin
       ; calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
       natvar_mmm = dim_avg_n(iav, 0) * sqrt(2.)
+    else if (diag_script_info@iavmode .eq. "mmm") then
+      log_info("Read precalculated natural variability for multi-model")
+      natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
+                            field_type0 + "_" + var0 + "_" + \
+                            diag_script_info@time_avg + ".nc", "r")
+      natvar_mmm = natvar_file->iav
+      if ((dim_seas .ne. 4) .and. \
+          (diag_script_info@time_avg .ne. "annualclim")) then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
+                          dimsizes(A0&lat), dimsizes(A0&lon)/), float)
+        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+      end if
     else
       error_msg("f", diag_script, "", "Error: This iavmode is not know")
     end if
+    end if
   else
-    ; read already calculated mmm iav
+    ; read already calculated mmm iav as default
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
                           field_type0 + "_" + var0 + "_" + \
@@ -261,13 +285,6 @@ begin
   to_plot_not_signif = new((/dim_scen * dim_per * dim_seas, dimsizes(A0&lat), \
                             dimsizes(A0&lon)/), typeof(data1), Fill)
   model_number = new((/dim_scen * dim_per * dim_seas/), integer)
-  ; TO DO move masking to preprocessor?
-  if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-    ; read mask to mask data where not defined (ocean and ice)
-    in = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-    msk_data = in->LSMASK
-    msk = landsea_mask(msk_data, A0&lat, A0&lon)
-  end if
   i = 0
   do seas = 0, dim_seas - 1  ; loop over seasons
     do rcp = 0, dim_scen - 1  ; loop over rcps
@@ -328,19 +345,6 @@ begin
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
                                         sigma_and_sign, 0.)
-        ; TO DO move masking to preprocessor?
-        if (var0 .eq. "mrsos" .or. var0 .eq. "mrro") then
-          to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 0, False)
-          to_plot(i, :, :) = mask(to_plot(i, :, :), msk .eq. 4, False)
-          to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
-                                         msk .eq. 0, False)
-          to_plot_signif(i, :, :) = mask(to_plot_signif(i, :, :), \
-                                         msk .eq. 4, False)
-          to_plot_not_signif(i, :, :) = mask(to_plot_not_signif(i, :, :), \
-                                             msk .eq. 0, False)
-          to_plot_not_signif(i, :, :) = mask(to_plot_not_signif(i, :, :), \
-                                             msk .eq. 4, False)
-        end if
         model_number(i) = dimsizes(idx_rcp)
         i = i + 1
         delete([/idx_hist, idx_rcp, var_diff/])
