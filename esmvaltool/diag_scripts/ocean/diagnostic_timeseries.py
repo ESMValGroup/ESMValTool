@@ -64,11 +64,12 @@ def timeplot(cube, **kwargs):
 
     Needed because iris version 1.13 fails due to the time axis.
     """
-    if iris.__version__ > '2.0':
-        qplt.plot(cube, kwargs)
-    else:
-        times = diagtools.timecoord_to_float(cube.coord('time'))
-        plt.plot(times, cube.data, **kwargs)
+    if len(cube.data.compressed()) == 1:
+        plt.axhline(cube.data.compressed(), **kwargs)
+        return
+
+    times = diagtools.timecoord_to_float(cube.coord('time'))
+    plt.plot(times, cube.data, **kwargs)
 
 
 def moving_average(cube, window):
