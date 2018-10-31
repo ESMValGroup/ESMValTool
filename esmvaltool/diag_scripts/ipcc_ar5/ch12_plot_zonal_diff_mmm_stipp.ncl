@@ -99,9 +99,7 @@ begin
 
   ; climofiles = new(dim_MOD, string)
   ; do ii = 0, dim_MOD - 1
-  ;   climofiles(ii) = \
-  ;     interface_get_inpaths(ii) + "/" \
-  ;     + interface_get_infile(variables(0), field_types(0), ii)
+  ;   climofiles(ii) = input_file_info@filename(ii)
   ; end do
 
   ; ###########################################

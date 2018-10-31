@@ -100,9 +100,7 @@ begin
 
   ; climofiles = new(dim_MOD, string)
   ; do ii = 0, dim_MOD - 1
-  ;   climofiles(ii) = \
-  ;     interface_get_inpaths(ii) + "/" \
-  ;     + interface_get_infile(variables(0), field_types(0), ii)
+  ;   climofiles(ii) = input_file_info@filename(ii)
   ; end do
 
   ; ###########################################
@@ -243,9 +241,9 @@ begin
     annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   end if
   if(isatt(diag_script_info, "model_nr")) then
-    getvalues plot                     
+    getvalues plot
       "tmYLLabelFontHeightF"   : fheight
-      "trYMinF"                : trYMinF 
+      "trYMinF"                : trYMinF
       "trYMaxF"                : trYMaxF
     end getvalues
     text = new(1 + (dims_data - 1) * nperiods, graphic)
@@ -275,11 +273,11 @@ begin
   frame(wks)
   ; alltags = array_append_record(tags,\
   ;   (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
-  ; string1 = "Time series of global annual mean  " + variable_info@long_name +\
+  ; string1 = "Time series of global annual mean " + variable_info@long_name +\
   ;           " anomalies (relative to " + dataset_info@start_year(0) + "-" + \
-  ;           dataset_info@end_year(0) + ") from CMIP5 concentration drive " + \
-  ;           "experiments. Projections are shown for each RCP for the " + \
-  ;           "multi-model mean (solid lines) and the 5 to 95% range " + \
+  ;           dataset_info@end_year(0) + ") from CMIP5 concentration " + \
+  ;           "driven experiments. Projections are shown for each RCP for " + \
+  ;           "the multi-model mean (solid lines) and the 5 to 95% range " + \
   ;           "(+-1.64 standar deviation) across the distribution of " + \
   ;           "individual models (shading). "
   ; if (nperiods .gt. 1) then
@@ -302,7 +300,7 @@ begin
   ;          caption, id, variables(0), dataset_info@dataset, \
   ;          climofiles, diag_script, contrib_authors)
 
-  ;delete([/alltags, caption, id, climofiles/])
+  ; delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
   leave_msg(diag_script, "")

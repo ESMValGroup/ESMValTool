@@ -55,15 +55,15 @@ begin
   ; ###########################################
   ; # References Information                  #
   ; ###########################################
-  ; write_references(diag_script, \  ; script name
-  ;                  "A_lore_ru", \  ; authors
-  ;                  "", \  ; contributors
-  ;                  "D_collins13ipcc",    \  ; diag_references
-  ;                  "",          \  ; obs_references
-  ;                  "P_crescendo")   ; proj_references
+  write_references(diag_script, \  ; script name
+                   "A_lore_ru", \  ; authors
+                   "", \  ; contributors
+                   "D_collins13ipcc",    \  ; diag_references
+                   "",          \  ; obs_references
+                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
-;  req_atts = (/"scenarios", "periods"/)
-;  exit_if_missing_atts(diag_script_info, req_atts)
+  req_atts = (/"scenarios", "periods"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
 end
 
 begin
@@ -73,9 +73,6 @@ begin
   else
     file_type = "pdf"
   end if
-
-  ; Basename of diag_script
-  diag_script_base = basename(diag_script)
 
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
@@ -110,9 +107,7 @@ begin
 
 ;  climofiles = new(dim_MOD, string)
 ;  do ii = 0, dim_MOD - 1
-;    climofiles(ii) = \
-;      interface_get_inpaths(ii) + "/" \
-;      + interface_get_infile(variables(0), field_types(0), ii)
+;    climofiles(ii) = input_file_info@filename(ii)
 ;  end do
 
   ; ###########################################

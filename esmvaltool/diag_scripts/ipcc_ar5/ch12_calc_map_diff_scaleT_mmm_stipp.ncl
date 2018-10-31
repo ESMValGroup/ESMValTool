@@ -6,7 +6,7 @@
 ;
 ; Description
 ;    Pattern scaling. Annual mean or seasonal change scaled by global T
-;    change per model multi-model mean with significance in different 
+;    change per model multi-model mean with significance in different
 ;    periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
 ;
 ; Required diag_script_info attributes (diagnostics specific)
@@ -270,7 +270,7 @@ begin
               (temp_proj(imod) - temp_base(imod))
           else
             var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                              base(imod, :, :)) / \
+                                         base(imod, :, :)) / \
                                         (temp_proj(imod) - temp_base(imod))
           end if
         end do
@@ -307,7 +307,7 @@ begin
       printVarSummary(nvalid)
       print(nvalid)
       perc95(i, :, :) = dim_stddev_n_Wrap(var_diff_scal_all_mod, 0) * 1.96 / \
-                        sqrt(nvalid)  ; standard error
+        sqrt(nvalid)  ; standard error
       ; compare change to perc95
       to_plot_signif(i, :, :) = where(abs(to_plot(i, :, :)) .gt. \
                                       abs(perc95(i, :, :)), 1., 0)

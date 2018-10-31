@@ -6,7 +6,7 @@
 ; Caveats
 ;    Needs lots of memory, in particular if lots of models and scenarios
 ;    are included
-;    Variable number of scenarios? So far hardcoded not more than 4 scenarios 
+;    Variable number of scenarios? So far hardcoded not more than 4 scenarios
 ;    (rcp2.6, rcp4.5, rcp6.0, rcp8.5)
 ;    every model (ensemble) in RCP needs corresponding historical run as
 ;    reference, if no corresponding model found in scenario log_info
@@ -517,8 +517,8 @@ begin
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-     ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
-     ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
+    ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+    ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
   end if
 
   leave_msg(diag_script, "")
