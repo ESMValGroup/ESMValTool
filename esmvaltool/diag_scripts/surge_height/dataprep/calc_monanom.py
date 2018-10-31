@@ -1,5 +1,6 @@
 def calc_monanom(psl, ua, va):
 	import numpy as np
+	import xarray as xr
         # ------------------------------
         # Calculate monthly climatology
         # ------------------------------
@@ -15,20 +16,22 @@ def calc_monanom(psl, ua, va):
 	#anomalies = ds.groupby('time.month') - climatology
 	apsl_array = xr.apply_ufunc(
 			lambda x, m: x - m,
-			psl.groupby('time.day'),climatology_psl)
+			psl.groupby('time.month'),climatology_psl)
 	aua_array  = xr.apply_ufunc(
 			lambda x, m: x - m,
-			ua.groupby('time.day'),climatology_ua)
+			ua.groupby('time.month'),climatology_ua)
 	ava_array = xr.apply_ufunc(
 			lambda x, m: x - m,
-			va.groupby('time.day'),climatology_va)
+			va.groupby('time.month'),climatology_va)
 
         # ----------------------------
 	# Convert into list object
         # ----------------------------
-	apsl = apsl_array.psl.values
-	aua  = aua_array.ua.values
-	ava  = ava_array.va.values
+	##apsl = apsl_array.values
+	##aua  = aua_array.values
+	##ava  = ava_array.values
+	#apsl = np.stack([data_array for data_array in apsl_array.values])
+	#aua = np.stack([data_array for data_array in aua_array.values])
+	#ava = np.stack([data_array for data_array in ava_array.values])
 
-
-        return apsl, aua, ava
+        return apsl_array, aua_array, ava_array

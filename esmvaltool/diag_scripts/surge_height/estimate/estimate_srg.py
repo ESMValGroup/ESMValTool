@@ -5,10 +5,10 @@ def estimate_srg(X,dates,stat):
 	from load import load_betas_intercept as llbi
 	import pandas as pd
 	import numpy as np
-	global srg_est_full, srg_est
 	if not type(stat) == list:
 		stat = [stat]
 	#
+	global srg_est_full, srg_est
 	srg_est = {}
 	srg_est_full = {}
 	for s in stat:
@@ -21,3 +21,4 @@ def estimate_srg(X,dates,stat):
 		for t in range(len(dates)):
 			srg_est_t = srg_est[s][t] + monanom_srg[s][dates[t].month-1]
 			srg_est_full[s].append(srg_est_t)
+

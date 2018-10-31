@@ -33,7 +33,7 @@
 ##;; 
 ##;; Modification history 
 ##;;    YYYYMMDD-A_X4Y4: extended... 
-##;;    YYYYMMDD-A_X3Y3: bug-fixed... 
+##;;    20180927-A_RN: bug-fixed... 
 ##;;    20180522-A_RN: adapted to include module structure 
 ##;;    20180104-A_RN: written. 
 ##;; 
@@ -70,12 +70,13 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	from output.save_netCDF import save_netCDF
 	from output.plot_map import plot_map
 	from output.plot_tseries import plot_tseries
-	from dataprep.cut_NS import cut_NS
+	from dataprep.cut_NS_xarray import cut_NS
+	from dataprep.Xtrms_xarray import Xtrms
+	from dataprep.calc_monanom import calc_monanom
 	import load.load_config as llc
 	import load.load_EOFs   as llE
 	import load.load_betas_intercept as llbi
 	import dataprep.grad_psl as dpgrd
-	import dataprep.cut_NS as cNS
 	import estimate.build_predictX as ebX
 	import estimate.estimate_srg as ees
 	import output.save_netCDF as osn
@@ -98,41 +99,24 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	  "immingha", "meetpost", "os15", "southend", "vidaa", "cromer", "ekofisk", "helgolan", 
 	  "innerdow", "newhaven", "oscarsbo", "stavange", "vlaktevd", "cuxhaven", "esbjerg", "hoekvanh", 
 	  "k13a", "newlyn", "portsmou", "stmarys", "vlissing"]
-	# I.2b coordinates of stations
-	coords = {'aberdeen': [81, 111], 'aukalpha': [114, 102], 'bg2': [126, 46], 'borkums': [150, 68],  
-		   'bremerha': [165, 68],'cadzand': [123, 42], 'cromer': [108, 60], 'cuxhaven': [167, 72],  
-		   'delfzijl': [153, 65], 'denhelde': [138, 65],'denoever': [137, 61], 'devonpor': [64, 29],  
-		   'dover': [108, 39], 'duinkerk': [116, 38], 'ekofisk': [123, 104], 'esbjerg': [163, 91],  
-		   'europlat': [123, 49], 'f3': [134, 83], 'felixsto': [108, 48], 'goeree': [126, 48], 
-		   'harlinge': [140, 64], 'helgeroa': [175, 133], 'helgolan': [160, 75], 'hoekvanh': [130, 49], 
-		   'holyhead': [60, 66], 'huibertg': [148, 68], 'husum': [168, 78], 'ijmuiden': [133, 54], 
-		   'ilfracom': [64, 40], 'immingha': [98, 69], 'innerdow': [101, 65], 'k13a': [123, 64],  
-		   'kornwerd': [138, 61], 'lauwerso': [147, 66], 'leith': [72, 97], 'lerwick': [89, 151],  
-		   'lowestof': [111, 55], 'meetpost': [131, 53], 'newhaven': [96, 34], 'newlyn': [53, 26],  
-		   'northcor': [106, 160], 'northshi': [86, 85], 'offharwi': [109, 47], 'oostende': [120, 40], 
-		   'os11': [125, 45], 'os15': [125, 44], 'oscarsbo': [182, 139], 'portsmou': [88, 35],  
-		   'roompotb': [126, 45], 'scarboro': [94, 77], 'scheveni': [131, 51], 'scillyis': [45, 23],  
-		   'sheernes': [104, 42], 'southend': [103, 43],'stavange': [141, 133], 'stmarys': [47, 24],  
-		   'stornowa': [51, 122], 'terschel': [139, 66], 'texelnoo': [135, 63], 'torsmind': [161, 101], 
-		   'tregde': [158, 121], 'vidaa': [166, 85], 'vlaktevd': [122, 43], 'vlissing': [125, 42], 
-		   'westkape': [124, 43],'westters': [138, 65], 'weymouth': [77, 32], 'wick': [73, 126], 
-		   'zeebrugg': [122, 41]}
 	# WAQUA lon/lat points
 	lons = np.arange(-12.00,-12.00+(0.125*201),0.125).tolist()
 	lats = np.arange(48.00,48.00+(0.08333*173),0.08333).tolist()
 	#
-	if llc.coastal_map:			# defined in config file
-		stat   = allstats
-		dates  = [llc.t0]
-	else:
+	if llc.coastal_map:	
+		stat       = allstats
+		dates_map  = [llc.t0]
+	#
+	if llc.plt_tseries:
 		if llc.SOIname in allstats:
-			stat  = [llc.SOIname] # defined in config file
-			tlen  = (llc.tend - llc.tstart).total_seconds()/60./60./24.
-			dates = pd.date_range(llc.tstart,periods = tlen+1).tolist()
-			dates = list(map(pd.Timestamp.to_pydatetime,dates))
-			#times = pd.date_range(llc.tstart, llc.tend, name='time')
+			stat  = [llc.SOIname]
 		else:
-			exit('Station not available. For a list of available stations refer to config-file.')
+			print('Station not available -> timeseries plot cannot be generated.')
+			llc.plt_tseries = False
+	#
+	tlen  = (llc.tend - llc.tstart).total_seconds()/60./60./24.
+	dates = pd.date_range(llc.tstart,periods = tlen+1).tolist()
+	dates = list(map(pd.Timestamp.to_pydatetime,dates))
 
 	# ----------------------------------------------------------------
 	# II. Test if requested dates for plotting are provided dataset?
@@ -147,7 +131,7 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	for x in dates: 
 		if not x in dates_in:
 			print ('WARNING: Selected time period not in provided data! ' +
-				'Using full time range provided in dataset instead.'
+				'Using full time range provided in dataset instead.')
 			dates = dates_in
 	
 	# -------------------------------------------
@@ -163,9 +147,9 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	#xmin, xmax = [-13.5,13.5]
 	#pslNS = esmvaltool.preprocessor.extract_region(psl_in, xmin, xmax, ymin, ymax)
 	#...
-	pslNS, uaNS, vaNS    = cut_NS_xarray(psl_in, ua_in, va_in)
+	pslNS, uaNS, vaNS    = cut_NS(psl_in, ua_in, va_in)
 
-	xpslNS, xuaNS, xvaNS = Xtrms_xarray(pslNS, uaNS, vaNS)
+	xpslNS, xuaNS, xvaNS = Xtrms(pslNS, uaNS, vaNS)
 
 	psl, ua, va = calc_monanom(xpslNS, xuaNS, xvaNS)
 	
@@ -177,11 +161,11 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# -----------------------------------------
 	# VI. Project fields onto ERA-Interim EOFs 
 	# -----------------------------------------
-	pseudo_pcs_SLP        = llE.SLPsolver.projectField(psl)
+	pseudo_pcs_SLP        = llE.SLPsolver.projectField(psl.values)
 	pseudo_pcs_gradlatSLP = llE.gradlatsolver.projectField(dpgrd.gradlatSLP)
 	pseudo_pcs_gradlonSLP = llE.gradlonsolver.projectField(dpgrd.gradlonSLP)
-	pseudo_pcs_u          = llE.usolver.projectField(ua)
-	pseudo_pcs_v          = llE.vsolver.projectField(va)
+	pseudo_pcs_u          = llE.usolver.projectField(ua.values)
+	pseudo_pcs_v          = llE.vsolver.projectField(va.values)
 
 	# -------------------------------
 	# VII. Generate predictor array
@@ -199,18 +183,21 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# ------------------------
 	# IX. Save surge to file
 	# ------------------------
-	#save_netCDF(dates,stat,coords,lons,lats)
+	#if  write_netcdf:
+	save_netCDF(dates,stat,ees.srg_est_full)
 
 	# -----------
 	# X. Plot
 	# -----------
-	if llc.coastal_map:	
-		plot_map(dates, ees.srg_est_full)
-	else:
+	# if write_plots:
+	if llc.coastal_map: # generate geographical map with surge levels on day specified in config file	
+		plot_map(dates_map, ees.srg_est_full,dates.index(dates_map[0]))
+	#
+	if llc.plt_tseries: # generate timeseries plot
 		for s in ees.srg_est_full.keys():
-			plot_tseries(dates, ees.srg_est_full[s], s)
-
-	plt.show()
+			plot_tseries(dates, ees.srg_est_full[s], stat)
+	#
+	#plt.show()
 
 
 if __name__ == '__main__':

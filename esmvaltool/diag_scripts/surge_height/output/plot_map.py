@@ -1,4 +1,4 @@
-def plot_map(dates, srg):
+def plot_map(dates, srg, tidx):
 	import matplotlib.pyplot as plt
 	#from ..load import load_config as llc
 	from load import load_config as llc
@@ -38,13 +38,13 @@ def plot_map(dates, srg):
 	fig, axes = plt.subplots(nrows=1, ncols=1)
 	ax1   = plt.subplot(1,1,1)
 	coast = m.drawcoastlines(linewidth=1.)
-	bndr  = m.drawmapboundary()
+	#bndr  = m.drawmapboundary()
 	par   = m.drawparallels(np.arange(47.5,67.5,2.5),color='grey',labels=[1,0,0,0],fontsize=12)
 	mer   = m.drawmeridians(np.arange(-16,17.,4.),color='grey',labels=[0,0,0,1],fontsize=12)
 	#
 	for stat in srg.keys():
-		scat = plt.scatter(lons[coords[stat][0]], lats[coords[stat][1]], c = srg[stat], edgecolors='k', 
-				cmap = plt.get_cmap(llc.mapcol,20), vmin=-3, vmax=3,zorder=50)
+		scat = plt.scatter(lons[coords[stat][0]], lats[coords[stat][1]], c = srg[stat][tidx],  
+				edgecolors='k', cmap = plt.get_cmap(llc.mapcol,20), vmin=-3, vmax=3,zorder=50) 
 	#
 	cbar_scat = m.colorbar(scat, location="bottom",size = "5%", pad="7.5%")
 	cbar_scat.set_label('surge height (m)')
