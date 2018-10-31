@@ -143,6 +143,7 @@ def area_average(cube, coord1, coord2):
     iris.cube.Cube
         collapsed cube.
     """
+    #TODO: test this with irregular grids in iris 2.
     # check for bounds just in case
     coords = [coord1, coord2]
     cube = _guess_bounds(cube, coords)

@@ -6,8 +6,8 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  # TODO when switching to iris 2.x, switch straight to 2.1+
-  - iris=2.2.0 #1.13
+  # TODO when switching to iris 2.x, switch straight to 2.2.0
+  - iris=1.13
   - python-stratify
   - esmpy
   # Multi language support:
