@@ -38,7 +38,6 @@
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
-
 load "./diag_scripts/shared/statistics.ncl"
 
 begin
@@ -78,7 +77,7 @@ end
 begin
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
-  system("mkdir -p " + work_dir)  ; Needed?
+  system("mkdir -p " + work_dir)
 end
 
 begin
@@ -152,15 +151,21 @@ begin
   if (rank .eq. 3) then
     data1 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
                  dimsizes(A0&lon)/), typeof(A0), Fill)
-    IAV_mmm = new((/dim_seas, dimsizes(A0&lat), \
-                   dimsizes(A0&lon)/), typeof(A0), Fill)
+    if ((.not. isatt(diag_script_info, "iavmode")) .or. \
+        (diag_script_info@iavmode .ne. "each")) then
+      IAV_mmm = new((/dim_seas, dimsizes(A0&lat), \
+                     dimsizes(A0&lon)/), typeof(A0), Fill)
+    end if
   else if (rank .eq. 4) then
     data1 = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
                  dimsizes(A0&lat), dimsizes(A0&lon)/), \
                 typeof(A0), Fill)
-    IAV_mmm = new((/dim_seas, dimsizes(A0&$lev_name$), \
-                   dimsizes(A0&lat), dimsizes(A0&lon)/), \
-                  typeof(A0), Fill)
+    if ((.not. isatt(diag_script_info, "iavmode")) .or. \
+        (diag_script_info@iavmode .ne. "each")) then
+      IAV_mmm = new((/dim_seas, dimsizes(A0&$lev_name$), \
+                     dimsizes(A0&lat), dimsizes(A0&lon)/), \
+                    typeof(A0), Fill)
+    end if
   end if
   end if
 
@@ -239,7 +244,6 @@ begin
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
           end if
-          ;end if
         else if (rank .eq. 4) then
           if ((dim_seas .eq. 1) .and. \
               (diag_script_info@time_avg .eq. "annualclim")) then
@@ -251,7 +255,6 @@ begin
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
           end if
-          ;end if
         end if
         end if
       end do
