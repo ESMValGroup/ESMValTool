@@ -1,15 +1,18 @@
 ---
 
 datasets:
- - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
-#  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2002}
-#  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-##  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-##  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+ - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1991, end_year: 2000, tier: 3}
+# - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+ - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+# - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+##  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 1991,  end_year: 2000}
 
 preprocessors:
 
-  preprocessor1: {}
+  preprocessor1:
+    regrid:
+      target_grid: CRU
+      scheme: linear
 
 diagnostics:
 
