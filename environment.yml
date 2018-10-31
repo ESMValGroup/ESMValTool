@@ -8,11 +8,12 @@ dependencies:
   # Python packages that cannot be installed from PyPI:
   # TODO when switching to iris 2.x, switch straight to 2.2.0
   - iris=1.13
+  - matplotlib<3
   - python-stratify
   - esmpy
   # Multi language support:
   - ncl
-  - ncurses=6.1=hfc679d8_1
+  - ncurses>5
   # TODO: add R, julia
 
   - pip:
