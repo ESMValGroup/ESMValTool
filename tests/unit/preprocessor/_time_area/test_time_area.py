@@ -28,7 +28,7 @@ def _create_sample_cube():
 
 
 class TestExtractMonth(tests.Test):
-    """Tests for extract_month`."""
+    """Tests for extract_month."""
 
     def setUp(self):
         """Prepare tests"""
@@ -43,21 +43,21 @@ class TestExtractMonth(tests.Test):
 
 
 class TestTimeSlice(tests.Test):
-    """Tests for time_slice`."""
+    """Tests for time_slice."""
 
     def setUp(self):
         """Prepare tests"""
         self.cube = _create_sample_cube()
 
     def test_time_slice(self):
-        """Test time_slice"""
+        """Test time_slice."""
         sliced = time_slice(self.cube, 1950, 1, 1, 1950, 12, 31)
         print(sliced)
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
     def test_time_slice_one_time(self):
-        """Test time_slice with one time step"""
+        """Test time_slice with one time step."""
         cube = _create_sample_cube()
         cube = cube.collapsed('time', iris.analysis.MEAN)
         sliced = time_slice(cube, 1950, 1, 1, 1952, 12, 31)
@@ -65,7 +65,7 @@ class TestTimeSlice(tests.Test):
         self.assertTrue(np.array([360., ]) == sliced.coord('time').points)
 
     def test_time_slice_no_time(self):
-        """Test time_slice with one time step"""
+        """Test time_slice with no time step."""
         cube = _create_sample_cube()[0]
         sliced = time_slice(cube, 1950, 1, 1, 1950, 12, 31)
         print('sliced', sliced, sliced.shape)
