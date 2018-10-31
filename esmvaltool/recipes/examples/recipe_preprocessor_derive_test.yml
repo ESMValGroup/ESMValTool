@@ -45,7 +45,7 @@ diagnostics:
         additional_datasets:
           - {dataset: HadGEM2-A}
       nbp_grid:
-        # preprocessor: regrid
+        preprocessor: regrid
         project: CMIP5
         mip: Lmon
         exp: historical
