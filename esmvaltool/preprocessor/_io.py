@@ -1,4 +1,5 @@
 """Functions for loading and saving cubes"""
+import copy
 import logging
 import os
 import shutil
@@ -223,47 +224,35 @@ def extract_metadata(files, write_ncl=False):
 
 def _write_ncl_metadata(output_dir, metadata):
     """Write NCL metadata files to output_dir."""
-    variables = list(metadata.values())
-    # 'variables' is a list of dicts, but NCL does not support nested
-    # dicts, so convert to dict of lists.
-    keys = sorted({k for v in variables for k in v})
-    input_file_info = {k: [v.get(k) for v in variables] for k in keys}
-    fx_file_list = input_file_info.pop('fx_files', None)
-    if fx_file_list:
-        for fx_files in fx_file_list:
-            for key in fx_files:
-                if key not in input_file_info:
-                    input_file_info[key] = []
-                input_file_info[key].append(fx_files[key])
-    # NCL cannot handle nested arrays so delete for now
-    # TODO: switch to NCL list type
-    input_file_info.pop('institute', None)
-    input_file_info.pop('modeling_realm', None)
-    info = {
-        'input_file_info': input_file_info,
-        'dataset_info': {},
-        'variable_info': {}
-    }
+    variables = copy.deepcopy(list(metadata.values()))
+
+    for variable in variables:
+        fx_files = variable.pop('fx_files', {})
+        for fx_type in fx_files:
+            variable[fx_type] = fx_files[fx_type]
+
+    info = {'input_file_info': variables}
 
     # Split input_file_info into dataset and variable properties
     # dataset keys and keys with non-identical values will be stored
     # in dataset_info, the rest in variable_info
-    for key, values in input_file_info.items():
-        dataset_specific = any(values[0] != v for v in values)
-        if (dataset_specific or key in DATASET_KEYS) and \
-                key not in VARIABLE_KEYS:
-            info['dataset_info'][key] = values
-        else:
-            # Select a value that is filled
-            attribute_value = None
-            for value in values:
-                if value is not None:
-                    attribute_value = value
-                    break
-            info['variable_info'][key] = attribute_value
+    variable_info = {}
+    info['variable_info'] = [variable_info]
+    info['dataset_info'] = []
+    for variable in variables:
+        dataset_info = {}
+        info['dataset_info'].append(dataset_info)
+        for key in variable:
+            dataset_specific = any(
+                variable[key] != var.get(key, object()) for var in variables)
+            if ((dataset_specific or key in DATASET_KEYS)
+                    and key not in VARIABLE_KEYS):
+                dataset_info[key] = variable[key]
+            else:
+                variable_info[key] = variable[key]
 
-    short_name = info['variable_info']['short_name']
-    filename = os.path.join(output_dir, short_name + '_info.ncl')
+    filename = os.path.join(output_dir,
+                            variable_info['short_name'] + '_info.ncl')
     write_ncl_settings(info, filename)
 
     return filename
