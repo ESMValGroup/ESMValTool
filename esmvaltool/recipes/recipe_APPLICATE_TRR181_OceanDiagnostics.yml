@@ -70,8 +70,13 @@ diagnostics:
         # Number of columns in the plot
         hofm_ncol: 3
         mean: True
-        profiles: True
-
+        profiles: False
+        plot2d: True
+        plot2d_depths: [10, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000]
+        plot2d_vars: ['thetao', 'so']
+        plot2d_cmap: ['Spectral_r', 'custom_salinity1'] 
+        plot2d_limits: [[-2, 4, 20, 1], [30.5, 35.1, 47, 2]]
+        plot2d_ncol: 3
 
 
   #     script2: &Global_Ocean_surface_map2

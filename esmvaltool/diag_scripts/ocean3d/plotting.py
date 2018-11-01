@@ -396,7 +396,7 @@ def plot_profile(model_filenames, cmor_var,
     plt.savefig(pltoutname, dpi=dpi, bbox_inches='tight')
 
 def plot2d_original_grid(model_filenames, cmor_var, 
-                         depth, region, diagworkdir, diagplotdir, dpi=100):
+                         depth, levels, region, diagworkdir, diagplotdir, dpi=100):
 
     ncols = 4
     nplots = len(model_filenames)
@@ -452,7 +452,7 @@ def plot2d_original_grid(model_filenames, cmor_var,
         mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
         mm.drawcoastlines(linewidth=0.1)
         image = ax[indx].contourf(xx,yy, data,
-                    levels=np.round(np.linspace(-2,4,20),1),
+                    levels=levels,
                     cmap = cmo.balance, 
                     extend='both',
                   )

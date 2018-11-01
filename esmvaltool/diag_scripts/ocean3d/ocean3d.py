@@ -183,21 +183,36 @@ def main(cfg):
                              cmap=cm.Set2,
                              dpi=100,
                              observations=observations)
-    ############# plot vertical profiles ##########################################
-    # plot_profile(model_filenames_thetao, 'thetao',
-    #              5000, 'EB', diagworkdir, diagplotdir,
-    #              cmap=cm.Set2, dpi=100, observations=observations)
-    # plot_profile(model_filenames_thetao, 'thetao',
-    #              5000, 'AB', diagworkdir, diagplotdir,
-    #              cmap=cm.Set2, dpi=100, observations=observations)
 
-    # plot_profile(model_filenames_so, 'so',
-    #              5000, 'EB', diagworkdir, diagplotdir,
-    #              cmap=cm.Set2, dpi=100, observations=observations)
-    # plot_profile(model_filenames_so, 'so',
-    #              5000, 'AB', diagworkdir, diagplotdir,
-    #              cmap=cm.Set2, dpi=100, observations=observations)
-############# END vertical plot profiles ########################################## 
+    if cfg['plot2d']:
+        for var_number, plot2d_var in enumerate(cfg['plot2d_vars']):
+            model_filenames = get_clim_model_filenames(cfg, plot2d_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                     key=lambda t: t[0]))
+            if cfg['plot2d_cmap']:
+                cmap = get_cmap(cfg['plot2d_cmap'][var_number])
+            else:
+                cmap = get_cmap('Spectral_r')
+            
+            if cfg['plot2d_ncol']:
+                ncols = cfg['plot2d_ncol']
+            else:
+                ncols = 3
+
+            vmin, vmax, sstep, roundlimit = cfg['hofm_limits'][var_number]
+            for depth in cfg['plot2d_depths']:
+                plot2d_original_grid(model_filenames,
+                                     plot2d_var, 
+                                     depth,
+                                     levels = np.round(np.linspace(vmin,
+                                                                   vmax,
+                                                                   sstep),
+                                                       roundlimit),
+                                     region = 'AO',
+                                     diagworkdir = diagworkdir,
+                                     diagplotdir = diagplotdir,
+                                     dpi=100)
+
 
 #    ############# plot 2d original grid ###########################
     # for ddepth in [10, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000 ]:
