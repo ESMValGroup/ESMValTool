@@ -17,6 +17,7 @@ import matplotlib
 matplotlib.use('Agg')  # noqa
 
 import iris
+import numpy as np
 import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared as diag
@@ -109,8 +110,8 @@ def main(cfg):
     """
 
     # Get dataset and variable information
-    datalist = diag.Datasets(cfg)
-    logging.debug("Found datasets in recipe:\n%s", datalist)
+    datasets = diag.Datasets(cfg)
+    logging.debug("Found datasets in recipe:\n%s", datasets)
     varlist  = diag.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", varlist)
 
@@ -122,14 +123,32 @@ def main(cfg):
     # to check: Correct way to read auxillary data using recipes?
     catchment_filepath = cfg.get('catchmentmask')
     catchment_cube     = iris.load_cube(catchment_filepath)
+    if catchment_cube.coord('latitude').bounds  is None: catchment_cube.coord('latitude').guess_bounds()
+    if catchment_cube.coord('longitude').bounds is None: catchment_cube.coord('longitude').guess_bounds()
+    catchment_areas    = iris.analysis.cartography.area_weights(catchment_cube)
+
+    catch_info         = defaults()
 
     # Read data and compute long term means
     # to check: Shouldn't this be part of preprocessing?
     # to check: How to regrid onto catchment_cube grid with preproc recipe statements
     #           instead of using regrid here?
     allcubes = []
-    for dataset_path in datalist:
-        new_cube        = iris.load(dataset_path, varlist.standard_names())[0]
+    plotdata = {}
+    for dataset_path in datasets:
+        # Prepare data dictionary
+        # to check: what is a smart way to do this in python3?
+        datainfo = datasets.get_dataset_info(path=dataset_path)
+        dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['long_name']
+        if dset not in plotdata.keys():                   plotdata[dset]                   = {}
+        if dexp not in plotdata[dset].keys():             plotdata[dset][dexp]             = {}
+        if dens not in plotdata[dset][dexp].keys():       plotdata[dset][dexp][dens]       = {}
+        if dvar in plotdata[dset][dexp][dens].keys():
+            raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
+        else:
+            plotdata[dset][dexp][dens][dvar] = {}
+        # Load data into iris cube
+        new_cube = iris.load(dataset_path, varlist.standard_names())[0]
         # Check for expected unit
         if new_cube.units != 'kg m-2 s-1':
             raise ValueError('Unit [kg m-2 s-1] is expected for ',new_cube.long_name.lower(),' flux')
@@ -141,9 +160,22 @@ def main(cfg):
         mean_cube       = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
         mean_cube.units = "mm a-1"
         # Regrid to catchment data grid --> maybe use area_weighted instead?
+        if mean_cube.coord('latitude').bounds  is None: mean_cube.coord('latitude').guess_bounds()
+        if mean_cube.coord('longitude').bounds is None: mean_cube.coord('longitude').guess_bounds()
+        # mean_cube_regrid = regrid(mean_cube, catchment_cube, 'area_weighted')
         mean_cube_regrid = regrid(mean_cube, catchment_cube, 'linear')
-        # Doing something as yet unclear
-        datalist.set_data(mean_cube_regrid.data, dataset_path)
+        # Get catchment area means
+        for river, rid in catch_info.catchments.items():
+            catch_data      = mean_cube_regrid.copy()
+            catch_data.data = np.ma.masked_array(mean_cube_regrid.data,
+                mask=(catchment_cube.data.astype(np.int) != rid))
+            value = catch_data.collapsed(['longitude', 'latitude'], iris.analysis.MEAN, weights=catchment_areas)
+            plotdata[dset][dexp][dens][dvar][river] = value.data.tolist()
+
+        # Update data for dataset
+        # to check: necessary at all? dataset not used later...
+        datasets.set_data(mean_cube_regrid.data, dataset_path)
+        # Append to cubelist for temporary output
         allcubes.append(mean_cube_regrid)
 
     # Write regridded data files
