@@ -6,7 +6,7 @@ IPCC Chapter 12 selected figures
 Overview
 --------
 
-The goal is to create a standard recipe for creating selected Figures from IPCC AR5 Chapter 12 on "Long-term Climate Change: Projections, Commitments and Irreversibility". These include maps showing the change in a variable between historical and future periods, zonal means for 3D variables, timeseries showing the change in certain variables from historical to future periods for multiple scenarios, and maps visualizing change in variables normalized by global mean temperature change (pattern scaling) as in Collins et al., 2013.
+The goal is to create a standard recipe for creating selected Figures from IPCC AR5 Chapter 12 on "Long-term Climate Change: Projections, Commitments and Irreversibility". These include figures showing the change in a variable between historical and future periods, e.g. maps (2D variables), zonal means (3D variables), timeseries showing the change in certain variables from historical to future periods for multiple scenarios, and maps visualizing change in variables normalized by global mean temperature change (pattern scaling) as in Collins et al., 2013.
 
 
 Available recipes and diagnostics
@@ -18,16 +18,16 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/ipcc_ar5/
 
-* ch12_map_diff_each_model_fig12-9.ncl: 
-* ch12_ts_line_mean_spread.ncl: 
-* ch12_plot_ts_line_mean_spread.ncl: 
-* ch12_calc_IAV_for_stippandhatch.ncl: 
-* ch12_calc_map_diff_mmm_stippandhatch.ncl: 
-* ch12_plot_map_diff_mmm_stipp.ncl:
-* ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: 
-* ch12_plot_zonal_diff_mmm_stipp.ncl:
-* ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
-* ch12_snw_area_change_fig12-32.ncl:
+* ch12_map_diff_each_model_fig12-9.ncl: calculates the difference between future and historical runs for one scenario for each given model individually on their native grid and plots all of them in one Figure. As in Figure 12.9 in AR5.
+* ch12_ts_line_mean_spread.ncl: calculates time series for one variable, change in future relative to base period in historical, multi-model mean as well as spread around it (as standard deviation).
+* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean and spread calculated above. As in Figure 12.5 in AR5.
+* ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability over piControl runs, either over the whole time period or in chunks over some years.
+* ch12_calc_map_diff_mmm_stippandhatch.ncl: calculates the difference between future and historical periods for each given model and then calculates multi-model mean as well as significance. Significant is where the multi-model mean change is greater than two standard deviations of the internal variability and where at least 90% of the models agree on the sign of change. Not significant is where the multi-model mean change is less than one standard deviation of internal variability.
+* ch12_plot_map_diff_mmm_stipp.ncl: plots multi-model mean maps calculated above including stippling where significant and hatching where not significant. As in Figure 12.11 in AR5.
+* ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: calculates zonal means and the difference between future and historical periods for each given model and then calculates multi-model mean as well as significance as above.
+* ch12_plot_zonal_diff_mmm_stipp.ncl: plots the multi-model mean zonal plots calculated above including stippling where significant and hatching where not significant. As in Figure 12.12 in AR5.
+* ch12_calc_map_diff_scaleT_mmm_stipp.ncl: calculates the change in variable between future and historical period normalized by gloabl mean temperature change of each given model and scenario. Then averages over all realizations and calculates significance. Significant is where the mean change averaged over all realizations is larger than the 95% percentile of the distribution of models (assumed to be gaussian). Can be plotted using ch12_plot_map_diff_mmm_stipp.ncl.
+* ch12_snw_area_change_fig12-32.ncl: calculate snow area extent in a region (e.g Northern Hemisphere) and season (e.g. Northern Hemisphere spring March & April) relative to a reference period (e.g 1986-2005) and spread over models as in Fig. 12.32 of IPCC AR5. Can be plotted using  ch12_plot_ts_line_mean_spread.ncl.
 
 User settings
 -------------
@@ -166,9 +166,9 @@ User settings
    * not_sig: plot hatching for uncertainty? (True, False)
    * pltname: alternative name for output plot, default is diagnostic + varname + time_avg
    * units: units written next to colorbar in ncl strings, e.g (m s~S~-1~N~)
-   * if base_cn: True in ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl further settings to control contour lines
-        base_cnLevelSpacing: spacing between contour levels
-        base_cnMinLevel: minimum contour line
+   * if base_cn: True in ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl further settings to control contour lines: \n
+        base_cnLevelSpacing: spacing between contour levels \n
+        base_cnMinLevel: minimum contour line \n
         base_cnMaxLevel: maximum contour line
 
 #. ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
