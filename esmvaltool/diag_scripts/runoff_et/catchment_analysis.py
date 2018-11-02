@@ -21,6 +21,7 @@ import numpy as np
 import calendar
 from itertools import cycle
 import matplotlib.pyplot as plt
+from   matplotlib.backends.backend_pdf import PdfPages
 
 import esmvaltool.diag_scripts.shared as diag
 from esmvaltool.preprocessor._regrid  import regrid
@@ -150,6 +151,13 @@ def make_catchment_plots(cfg, plotdata, catch_info):
     """
 
     for model in plotdata.keys():
+        outtype = cfg.get('output_file_type', 'png')
+        logger.info('Generating plots for filetype: '+outtype)
+        if outtype == 'pdf':
+            filepath = os.path.join(cfg[diag.names.PLOT_DIR],
+                cfg.get('output_name', model.upper()+'_runoff_et')+'.'+outtype)
+            pdf = PdfPages(filepath)
+
         for exp in plotdata[model].keys():
             for member in plotdata[model][exp].keys():
                 refdata, expdata = {}, {}
@@ -157,7 +165,7 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                 # 1. Barplots for single variables
                 for var in plotdata[model][exp][member].keys():
                     filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                            cfg.get('output_name', model.upper()+'_bias-plot_'+var.upper()) + '.png')
+                            cfg.get('output_name', model.upper()+'_bias-plot_'+var.upper()) + '.'+outtype)
                     river, expdata[var], refdata[var] = [], [], []
                     for xlabel, rdata in sorted(getattr(catch_info, var).items()):
                         river.append(xlabel)
@@ -195,13 +203,17 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                     ax.axhline(c='black', lw=2)
 
                     plt.tight_layout()
-                    fig.savefig(filepath)
+                    if outtype == "pdf":
+                        fig.savefig(pdf, dpi=80, format='pdf')
+                        plt.close()
+                    else:
+                        fig.savefig(filepath)
 
                 markerlist = ('s', '+', 'o', '*', 'x', 'D')
                 # 2. Runoff coefficient vs Relative precipitation bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        cfg.get('output_name', model.upper()+'_rocoef-vs-relprbias.png'))
+                        cfg.get('output_name', model.upper()+'_rocoef-vs-relprbias')+'.'+outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
                   ax.scatter((expdata['pr'][i] - refdata['pr'][i]) / refdata['pr'][i] * 100,
@@ -220,12 +232,16 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                 caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
                 caxe.set_axis_off()
 
-                fig.savefig(filepath)
+                if outtype == "pdf":
+                    fig.savefig(pdf, dpi=80, format='pdf')
+                    plt.close()
+                else:
+                    fig.savefig(filepath)
 
                 # 3. Runoff coefficient vs Evaporation coefficient bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        cfg.get('output_name', model.upper()+'_rocoef-vs-etcoef.png'))
+                        cfg.get('output_name', model.upper()+'_rocoef-vs-etcoef')+'.'+outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
                   ax.scatter((expdata['evspsbl'][i] / expdata['pr'][i] * 100) - (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
@@ -244,7 +260,15 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                 caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
                 caxe.set_axis_off()
 
-                fig.savefig(filepath)
+                if outtype == "pdf":
+                    fig.savefig(pdf, dpi=80, format='pdf')
+                    plt.close()
+                else:
+                    fig.savefig(filepath)
+
+        if outtype == "pdf":
+            pdf.close()
+
 
 
 def main(cfg):
