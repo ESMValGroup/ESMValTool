@@ -139,7 +139,7 @@ def format_coef_plot(ax):
     return ax
 
 
-def make_catchment_plots(cfg, plotdata, catch_info):
+def make_catchment_plots(cfg, plotdata, catch_info, reference):
     """ Plot catchment averages for precipitation, evaporation
         runoff and derived quantities.
     Parameters
@@ -150,6 +150,8 @@ def make_catchment_plots(cfg, plotdata, catch_info):
         Dictionary containing the catchment averages
     catch_info : object
         Object containing catchment names, IDs, and reference data
+    reference : str
+        String containing name of the reference dataset
     """
 
     for model in plotdata.keys():
@@ -221,7 +223,7 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                   ax.scatter((expdata['pr'][i] - refdata['pr'][i]) / refdata['pr'][i] * 100,
                           (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
                           marker=next(marker), label=label)
-                ax.set_title(model.upper())
+                ax.set_title(model.upper() + ' vs ' + reference.upper())
                 ax.set_xlabel('Relative bias of precipitation [%]')
                 ax.set_ylabel('Bias of runoff coefficient [%]')
                 ax = format_coef_plot(ax)
@@ -249,7 +251,7 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                   ax.scatter((expdata['evspsbl'][i] / expdata['pr'][i] * 100) - (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
                           (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
                           marker=next(marker), label=label)
-                ax.set_title(model.upper())
+                ax.set_title(model.upper() + ' vs ' + reference.upper())
                 ax.set_xlabel('Bias of ET coefficient [%]')
                 ax.set_ylabel('Bias of runoff coefficient [%]')
                 ax = format_coef_plot(ax)
@@ -304,6 +306,7 @@ def main(cfg):
     catchment_areas    = iris.analysis.cartography.area_weights(catchment_cube)
 
     catch_info         = defaults()
+    reference          = 'default'
 
     # Read data and compute long term means
     # to check: Shouldn't this be part of preprocessing?
@@ -316,13 +319,6 @@ def main(cfg):
         # to check: what is a smart way to do this in python3?
         datainfo = datasets.get_dataset_info(path=dataset_path)
         dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['short_name']
-        if dset not in plotdata.keys():                   plotdata[dset]                   = {}
-        if dexp not in plotdata[dset].keys():             plotdata[dset][dexp]             = {}
-        if dens not in plotdata[dset][dexp].keys():       plotdata[dset][dexp][dens]       = {}
-        if dvar in plotdata[dset][dexp][dens].keys():
-            raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
-        else:
-            plotdata[dset][dexp][dens][dvar] = {}
         # Load data into iris cube
         new_cube = iris.load(dataset_path, varlist.standard_names())[0]
         # Check for expected unit
@@ -346,14 +342,28 @@ def main(cfg):
         if mean_cube.coord('longitude').bounds is None: mean_cube.coord('longitude').guess_bounds()
         mean_cube_regrid = regrid(mean_cube, catchment_cube, 'area_weighted')
         # mean_cube_regrid = regrid(mean_cube, catchment_cube, 'linear')
-        # Get catchment area means if not reference
-        # if dset != reference_exp:
+        # Get catchment area means
+        rivervalues = {}
         for river, rid in catch_info.catchments.items():
             catch_data      = mean_cube_regrid.copy()
             catch_data.data = np.ma.masked_array(mean_cube_regrid.data,
                 mask=(catchment_cube.data.astype(np.int) != rid))
             value = catch_data.collapsed(['longitude', 'latitude'], iris.analysis.MEAN, weights=catchment_areas)
-            plotdata[dset][dexp][dens][dvar][river] = value.data.tolist()
+            rivervalues[river] = value.data.tolist()
+        if dset == datainfo.get('reference_dataset', None):
+            if reference == 'default':
+                reference = datainfo['reference_dataset']
+            elif reference != datainfo['reference_dataset']:
+                raise ValueError('Reference must be the same for all variables!')
+            setattr(catch_info, dvar, rivervalues)
+        else:
+            if dset not in plotdata.keys():                   plotdata[dset]                   = {}
+            if dexp not in plotdata[dset].keys():             plotdata[dset][dexp]             = {}
+            if dens not in plotdata[dset][dexp].keys():       plotdata[dset][dexp][dens]       = {}
+            if dvar in plotdata[dset][dexp][dens].keys():
+                raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
+            else:
+                plotdata[dset][dexp][dens][dvar] = rivervalues
 
         # Update data for dataset
         # to check: necessary at all? dataset not used later...
@@ -370,7 +380,7 @@ def main(cfg):
 
 
     # Plot catchment data
-    make_catchment_plots(cfg, plotdata, catch_info)
+    make_catchment_plots(cfg, plotdata, catch_info, reference)
 
 
 if __name__ == '__main__':

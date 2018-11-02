@@ -21,7 +21,8 @@ documentation:
     - crescendo
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+  - {dataset: MPI-ESM-LR,    project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+  - {dataset: IPSL-CM5B-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
 
 
 # preprocessors:
@@ -38,14 +39,17 @@ diagnostics:
         # preprocessor: prep_grid
         mip: Amon
         field: T2Ms
+        reference_dataset: IPSL-CM5B-LR
       mrro:
         # preprocessor: prep_grid
         mip: Lmon
         field: T2Ms
+        reference_dataset: IPSL-CM5B-LR
       pr:
         # preprocessor: prep_grid
         mip: Amon
         field: T2Ms
+        reference_dataset: IPSL-CM5B-LR
     scripts:
       catchment_analysis:
         script: runoff_et/catchment_analysis.py
