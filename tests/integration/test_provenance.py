@@ -8,7 +8,7 @@ def get_file_record(prov, filename):
     return records[0]
 
 
-def check_preprocessor_provenance(product):
+def check_provenance(product):
     prov = product.provenance
 
     entity = get_file_record(prov, product.filename)

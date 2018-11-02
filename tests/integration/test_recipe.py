@@ -12,7 +12,7 @@ from esmvaltool._task import DiagnosticTask
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
 
 from .test_diagnostic_run import write_config_user_file
-from .test_provenance import check_preprocessor_provenance
+from .test_provenance import check_provenance
 
 MANDATORY_DATASET_KEYS = (
     'cmor_table',
@@ -179,7 +179,7 @@ def test_recipe(tmpdir, config_user, monkeypatch):
             for step in DEFAULT_PREPROCESSOR_STEPS:
                 assert step in product.settings
             assert len(product.files) == 2
-            check_preprocessor_provenance(product)
+            check_provenance(product)
 
     assert len(diagnostic_tasks) == 1
     for task in diagnostic_tasks:
