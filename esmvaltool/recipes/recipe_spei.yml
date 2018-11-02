@@ -1,27 +1,23 @@
 ---
 
 datasets:
-## - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2002}
-  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-#  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+ - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1991, end_year: 2000, tier: 3}
+# - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+ - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+# - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+##  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 1991,  end_year: 2000}
 
 preprocessors:
 
-  preprocessor1: {} # {mean}
-#    regrid:
-#      target_grid: ERA-Interim
-#      scheme: linear
-#    multi_model_statistics:
-#      span: overlap
-#      statistics: [mean]
-#      exclude: [ERA-Interim]
+  preprocessor1:
+    regrid:
+      target_grid: CRU
+      scheme: linear
 
 diagnostics:
 
   diagnostic1:
-    #description: Calculating SPI and SPEI indices
+    #description: Calculating SPEI index
     variables:
       pr:
         preprocessor: preprocessor1

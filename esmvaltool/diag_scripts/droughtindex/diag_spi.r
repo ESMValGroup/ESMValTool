@@ -83,18 +83,4 @@ png("/home/a001850/tmp/tst.png", width=1000, height=500)
          col=cols)
  mtext("Probability", side=2, line=2.1)
 
- #plot(histarr[nref,], pch=8,
- #     font=2, cex=2, axes=FALSE,
- #     xlab="", ylab="")
- #axis(1,labels=histnams, at=1:7)
- #axis(2)
- #box()
- #if(nmods>1){
- #   pch=1
- #   for(n in 1:nmods){
- #     if(n != nref){
- #       points(histarr[n,], pch=pch, col="red")
- #     }
- #   }
- #}
 dev.off()
