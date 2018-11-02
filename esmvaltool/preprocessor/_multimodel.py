@@ -20,7 +20,7 @@ import cf_units
 import iris
 import numpy as np
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 
 logger = logging.getLogger(__name__)
 

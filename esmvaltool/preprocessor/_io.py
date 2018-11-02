@@ -9,7 +9,7 @@ import iris.exceptions
 import numpy as np
 import yaml
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
@@ -60,12 +60,6 @@ def load(files, constraints=None, callback=None):
     iris.util.unify_time_units(cubes)
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
-
-    for cube in cubes:
-        if not use_legacy_iris():
-            # always set fillvalue to 1e+20
-            if np.ma.is_masked(cube.data):
-                np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 

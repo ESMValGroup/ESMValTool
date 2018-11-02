@@ -12,8 +12,7 @@ from . import __version__
 from . import _recipe_checks as check
 from ._config import TAGS, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
-                           get_output_file, get_rootpath,
-                           get_statistic_output_file)
+                           get_output_file, get_statistic_output_file)
 from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks
@@ -227,7 +226,7 @@ def _dataset_to_file(variable, config_user):
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
         variable['short_name'], variable['field'] = get_required(
-            variable['short_name'], variable['field'])[0]
+            variable['short_name'], variable['field'])['vars'][0]
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -349,8 +348,24 @@ def _get_default_settings(variable, config_user, derive=False):
 
 
 def _update_fx_settings(settings, variable, config_user):
-    """Find and set the fx mask settings."""
+    """Find and set the FX derive/mask settings."""
+    # update for derive
+    if 'derive' in settings:
+        fx_files = get_required(
+            variable['short_name'], variable['field']).get('fx_files')
+        if fx_files:
+            settings['derive']['fx_files'] = {}
+            variable = dict(variable)
+            variable['fx_files'] = fx_files
+            fx_files_dict = get_input_fx_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            settings['derive']['fx_files'] = fx_files_dict
+
+    # update for landsea
     if 'mask_landsea' in settings:
+        # Configure ingestion of land/sea masks
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landsea']['fx_files'] = []
@@ -686,8 +701,8 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for short_name, field in get_required(variable['short_name'],
-                                                      variable['field']):
+                for short_name, field in get_required(
+                        variable['short_name'], variable['field'])['vars']:
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)

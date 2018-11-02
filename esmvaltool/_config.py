@@ -4,7 +4,9 @@ import logging
 import logging.config
 import os
 import time
+from distutils.version import LooseVersion
 
+import iris
 import six
 import yaml
 
@@ -13,6 +15,12 @@ from .cmor.table import read_cmor_tables
 logger = logging.getLogger(__name__)
 
 CFG = {}
+CFG_USER = {}
+
+
+def use_legacy_iris():
+    """Return True if legacy iris is used."""
+    return LooseVersion(iris.__version__) < LooseVersion("2.0.0")
 
 
 def read_config_user_file(config_file, recipe_name):
@@ -67,6 +75,11 @@ def read_config_user_file(config_file, recipe_name):
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
+    # Save user configuration in global variable
+    for key, value in six.iteritems(cfg):
+        CFG_USER[key] = value
+
+    # Read developer configuration file
     cfg_developer = read_config_developer_file(cfg['config_developer_file'])
     for key, value in six.iteritems(cfg_developer):
         CFG[key] = value
@@ -75,10 +88,15 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
+def get_config_user_file():
+    """Return user configuration dictionary."""
+    return CFG_USER
+
+
 def _normalize_path(path):
     """Normalize paths.
 
-    Expand ~ character and environment variables and convert path to absolute
+    Expand ~ character and environment variables and convert path to absolute.
 
     Parameters
     ----------
