@@ -10,6 +10,9 @@ from esmvaltool._recipe import read_recipe_file
 from esmvaltool._task import DiagnosticTask
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
 from .test_diagnostic_run import write_config_user_file
+import os
+from prov.model import ProvDerivation
+from prov.constants import PROV_ATTR_GENERATED_ENTITY, PROV_ATTR_USED_ENTITY
 
 MANDATORY_DATASET_KEYS = (
     'cmor_table',
@@ -62,9 +65,14 @@ def config_user(tmpdir):
 
 
 def create_test_file(filename):
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
     attributes = {
         'tracking_id': 'xyz',
     }
+
     with Dataset(filename, 'w') as dataset:
         for key, value in attributes.items():
             setattr(dataset, key, value)
@@ -76,11 +84,23 @@ def test_recipe(tmpdir, config_user, monkeypatch):
         # been replaced when this function is called.
         assert '[' not in filename
 
+        filename = str(tmpdir / 'input' / filename)
+        filenames = []
         if filename.endswith('*'):
-            filename = filename.rstrip('*') + '1950_2010.nc'
-        filename = str(tmpdir / filename)
-        create_test_file(filename)
-        return [filename]
+            filename = filename.rstrip('*')
+            intervals = [
+                '1990_1999',
+                '2000_2009',
+                '2010_2019',
+            ]
+            for interval in intervals:
+                filenames.append(filename + interval + '.nc')
+        else:
+            filenames.append(filename)
+
+        for filename in filenames:
+            create_test_file(filename)
+        return filenames
 
     monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
 
@@ -106,7 +126,7 @@ def test_recipe(tmpdir, config_user, monkeypatch):
                 mip: Amon
                 exp: historical
                 ensemble: r1i1p1
-                start_year: 2000
+                start_year: 1999
                 end_year: 2002
                 additional_datasets:
                   - dataset: MPI-ESM-LR
@@ -120,7 +140,7 @@ def test_recipe(tmpdir, config_user, monkeypatch):
     with open(recipe_file, 'w') as file:
         file.write(content)
 
-    recipe = read_recipe_file(str(recipe_file), config_user)
+    recipe = read_recipe_file(recipe_file, config_user)
     raw = yaml.safe_load(content)
     # Perform some sanity checks on recipe expansion/normalization
     print("Expanded recipe:")
@@ -158,7 +178,8 @@ def test_recipe(tmpdir, config_user, monkeypatch):
             assert product.attributes == variable
             for step in DEFAULT_PREPROCESSOR_STEPS:
                 assert step in product.settings
-            assert product.files
+            assert len(product.files) == 2
+            check_preprocessor_provenance(product)
 
     assert len(diagnostic_tasks) == 1
     for task in diagnostic_tasks:
@@ -168,3 +189,41 @@ def test_recipe(tmpdir, config_user, monkeypatch):
         for key in MANDATORY_SCRIPT_SETTINGS_KEYS:
             assert key in task.settings and task.settings[key]
         assert task.settings['custom_setting'] == 1
+
+
+def get_file_record(prov, filename):
+    records = prov.get_record('file:' + filename)
+    assert records
+    return records[0]
+
+
+def check_preprocessor_provenance(product):
+    prov = product.provenance
+
+    entity = get_file_record(prov, product.filename)
+    assert entity == product.entity
+
+    check_product_wasderivedfrom(product)
+
+
+def check_product_wasderivedfrom(product):
+    """Check that product.filename was derived from product.files."""
+    prov = product.provenance
+
+    def get_identifier(filename):
+        record = get_file_record(prov, filename)
+        return {record.identifier}
+
+    # Check that the input and output file records exist
+    identifier = get_identifier(product.filename)
+
+    relations = {r for r in prov.records if isinstance(r, ProvDerivation)}
+    for filename in product.files:
+        input_identifier = get_identifier(filename)
+        for record in relations:
+            if input_identifier == record.get_attribute(PROV_ATTR_USED_ENTITY):
+                assert identifier == record.get_attribute(
+                    PROV_ATTR_GENERATED_ENTITY)
+                break
+        else:
+            assert False
