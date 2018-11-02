@@ -1,14 +1,6 @@
-.. esmvaltool.diag_scripts
-..
-.. This file is part of the ocean diagnostic toolkit, which is part of
-.. the ESMValTool toolkit.
-..
-.. Author: Lee de Mora (PML)
-..        ledm@pml.ac.uk
-
-=========================
-Ocean Diagnostics README
-=========================
+*****************
+Ocean Diagnostics
+*****************
 
 The Ocean Diagnostics package contains several diagnostics which produce
 figures and statistical information of models of the Ocean. The datasets have
@@ -35,7 +27,12 @@ some of the map plots have the continents coloured in by default.
 ========================
 Diagnostics
 ========================
-Diagnostics are stored in the directory: esmvaltool/diag_scripts/ocean
+
+Diagnostics are stored in the diag_scripts directory: ocean_.
+
+.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/: 
+
+.. esmvaltool/diag_scripts/ocean
 
 The following python modules are included in the ocean diagnostics package.
 Each module is described in more detail both below and inside the module.
@@ -54,6 +51,7 @@ Each module is described in more detail both below and inside the module.
 
 diagnostic_maps.py
 ==================
+
 This diagnostics produces a spatial map from a NetCDF. It requires the input
 netCDF to have the following dimensions. Either:
 
@@ -84,53 +82,66 @@ a multi-dataset contour map is also produced for each value in the thresholds
 list.
 
 Some appropriate preprocessors for this diagnostic would be:
-1. For a  Global 2D field:
-```
-prep_map_1:
-    time_average:
-```
-2. For a  regional 2D field:
-```
-prep_map_2:
-    extract_region:
-      start_longitude: -80.
-      end_longitude: 30.
-      start_latitude: -80.
-      end_latitude: 80.
-    time_average:
-```
-3. For a  Global 3D field at the surface and 10m depth:
-```
-prep_map_3:
-  custom_order: true
-  extract_levels:
-    levels: [0., 10.]
-    scheme: linear_horizontal_extrapolate_vertical
-  time_average:
-```
 
-4. For a multi-model comparison mean of 2D global fields including contour thresholds.
-```
-prep_map_4:
-  custom_order: true
-  time_average:
-  regrid:
-    target_grid: 1x1
-    scheme: linear
-```
+For a  Global 2D field:
+
+  .. code-block:: yaml
+    
+      prep_map_1:
+	time_average:
+
+
+For a  regional 2D field:
+
+  .. code-block:: yaml
+
+	prep_map_2:
+	    extract_region:
+	      start_longitude: -80.
+	      end_longitude: 30.
+	      start_latitude: -80.
+	      end_latitude: 80.
+	    time_average:
+
+For a  Global 3D field at the surface and 10m depth:
+
+  .. code-block:: yaml
+
+	prep_map_3:
+	  custom_order: true
+	  extract_levels:
+	    levels: [0., 10.]
+	    scheme: linear_horizontal_extrapolate_vertical
+	  time_average:
+
+
+For a multi-model comparison mean of 2D global fields including contour thresholds.
+
+  .. code-block:: yaml
+
+	prep_map_4:
+	  custom_order: true
+	  time_average:
+	  regrid:
+	    target_grid: 1x1
+	    scheme: linear
+
 And this also requires the threshold key in the diagnostic:
-```
-diagnostic_map:
-  variables:
-    tos: # Temperature ocean surface
-      preprocessor: prep_map_4
-      field: TO2M
-  scripts:
-    Ocean_regrid_map:
-      script: ocean/diagnostic_maps.py
-      thresholds: [5, 10, 15, 20]
-```
+
+  .. code-block:: yaml
+  
+	diagnostic_map:
+	  variables:
+	    tos: # Temperature ocean surface
+	      preprocessor: prep_map_4
+	      field: TO2M
+	  scripts:
+	    Ocean_regrid_map:
+	      script: ocean/diagnostic_maps.py
+	      thresholds: [5, 10, 15, 20]
+
 The following recipes use this script:
+
 - recipe_OceanPhysics.yml
 - recipe_OxygenMinimumZones.yml
 - recipe_OceanBGC.yml
@@ -142,8 +153,12 @@ diagnostic_maps_quad.py
 Diagnostic to produce an image showing four maps. Each of these four maps
 show latitude vs longitude and the cube value is used as the colourscale.
 The four plots are:
+
+``
         model1              model 1 minus model2
         model2 minus obs    model1 minus obs
+``        
+
 These figurtes are also known as Model vs Model vs Obs plots.
 
 This diagnostic assumes that the preprocessors do the bulk of the
@@ -152,34 +167,39 @@ and metadata.yml files) have no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
 An approproate preprocessor for a 2D field would be:
-```
-prep_quad_map:
-    time_average:
-```
+
+  .. code-block:: yaml
+  
+	prep_quad_map:
+	    time_average:
+
 and an example of an appropriate diagnostic section of the recipe would be:
-```
-diag_map_1:
-  variables:
-    tos: # Temperature ocean surface
-      preprocessor: prep_quad_map
-      field: TO2Ms
-      mip: Omon
-  additional_datasets:
-#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
-#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-    - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
-  scripts:
-    Global_Ocean_map: &Global_Ocean_map
-      script: ocean/diagnostic_maps_quad.py
-      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-      observational_dataset: {dataset: ATSR, project: obs4mips,}
-```
+
+  .. code-block:: yaml
+
+	diag_map_1:
+	  variables:
+	    tos: # Temperature ocean surface
+	      preprocessor: prep_quad_map
+	      field: TO2Ms
+	      mip: Omon
+	  additional_datasets:
+	#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
+	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
+	    - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+	  scripts:
+	    Global_Ocean_map: 
+	      script: ocean/diagnostic_maps_quad.py
+	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+	      observational_dataset: {dataset: ATSR, project: obs4mips,}
+
 Note that the details about the control model, the experiment models
 and the observational dataset are all provided in the script section of the
 recipe.
 
 The following recipes use this script:
+
 - recipe_OceanQuadMap.yml
 
 
@@ -188,9 +208,10 @@ diagnostic_model_vs_obs.py
 
 This diagnositc makes model vs observations maps and scatter plots.
 The map plots shows four latitude vs longitude maps:
+``
         model              obs
         model minus obs    model1 over obs
-
+``
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
@@ -202,17 +223,19 @@ regression of those data and plots the line of best fit on the plot.
 The parameters of the fit are also shown on the figure.
 
 An approproate preprocessor for a 3D+time field would be:
-```
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
-    regrid:
-      target_grid: 1x1
-      scheme: linear
-```
+
+  .. code-block:: yaml
+  
+	preprocessors:
+	  prep_map:
+	    extract_levels:
+	      levels:  [100., ]
+	      scheme: linear_extrap
+	    time_average:
+	    regrid:
+	      target_grid: 1x1
+	      scheme: linear
+
 
 
 diagnostic_profiles.py
@@ -228,24 +251,27 @@ and metadata.yml files) has a time component, and depth component, but no
 latitude or longitude coordinates.
 
 An approproate preprocessor for a 3D+time field would be:
-```
-preprocessors:
-  prep_profile:
-    extract_volume:
-      long1: 0.
-      long2:  20.
-      lat1:  -30.
-      lat2:  30.
-      z_min: 0.
-      z_max: 3000.
-    average_region:
-      coord1: longitude
-      coord2: latitude
-```
+
+  .. code-block:: yaml
+
+	preprocessors:
+	  prep_profile:
+	    extract_volume:
+	      long1: 0.
+	      long2:  20.
+	      lat1:  -30.
+	      lat2:  30.
+	      z_min: 0.
+	      z_max: 3000.
+	    average_region:
+	      coord1: longitude
+	      coord2: latitude
+
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
 
 The following recipes use this script:
+
 - recipe_OceanPhysics.yml
 
 
@@ -274,30 +300,38 @@ netcdf has a time component, no depth component, and no latitude or longitude
 coordinates.
 
 Some approproate preprocessors would be :
-1. For a  Global area-weighted average 2D field:
-```
-average_area:
-  coord1: longitude
-  coord2: latitude
-```
-2. For a  Global  volume-weighted average 3D field:
-```
-average_volume:
-  coord1: longitude
-  coord2: latitude
-  coordz: depth
-```
-3. For a  Global area-weighted surface of a 3D field:
-```
-extract_levels:
-  levels: [0., ]
-  scheme: linear_horizontal_extrapolate_vertical
-average_area:
-  coord1: longitude
-  coord2: latitude
-```
+
+For a  Global area-weighted average 2D field:
+
+  .. code-block:: yaml
+
+	average_area:
+	  coord1: longitude
+	  coord2: latitude
+
+For a  Global  volume-weighted average 3D field:
+
+  .. code-block:: yaml
+  
+	average_volume:
+	  coord1: longitude
+	  coord2: latitude
+	  coordz: depth
+
+For a  Global area-weighted surface of a 3D field:
+
+  .. code-block:: yaml
+
+	extract_levels:
+	  levels: [0., ]
+	  scheme: linear_horizontal_extrapolate_vertical
+	average_area:
+	  coord1: longitude
+	  coord2: latitude
+
 
 The following recipes use this script:
+
 - recipe_OceanPhysics.yml
 - recipe_OxygenMinimumZones.yml
 - recipe_OceanBGC.yml
@@ -322,14 +356,16 @@ longitude coordinates has been reduced to a single value.
 
 An approproate preprocessor for a 3D+time field would be:
 
-```
+  .. code-block:: yaml
+
     time_average:
     extract_slice:
       latitude: [-50.,50.]
       longitude: 332.
-```
+
 
 The following recipes use this script:
+
 - recipe_OceanPhysics.yml
 - recipe_OxygenMinimumZones.yml
 
@@ -340,11 +376,11 @@ diagnostic_tools.py
 This module contains several python tools used by the ocean diagnostics tools.
 
 These tools are:
+
 - folder: produces a directory at the path provided and returns a string.
 - get_input_files: loads a dictionary from the input files in the metadata.yml.
 - bgc_units: converts to sensible units where appropriate (ie Celcius, mmol/m3)
-- timecoord_to_float: Converts time series to decimal time
-ie: Midnight on Januaryy 1st 1970 is 1970.0
+- timecoord_to_float: Converts time series to decimal time ie: Midnight on Januaryy 1st 1970 is 1970.0
 - add_legend_outside_right: a plotting tool, which adds a legend outside the axes.
 - get_image_format: loads the image format, as defined in the global user config.yml.
 - get_image_path: creates a path for an image output.
@@ -378,24 +414,26 @@ and they also extract either the North or South hemisphere. The four
 preprocessors are combinations of DJF or JJA and North or South hemisphere.
 
 One of the four preprocessors is North Hemisphere Winter ice extent:
-```
-timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
-  custom_order: true
-  extract_time: &time_anchor # declare time here.
-      start_year: 1960
-      start_month: 12
-      start_day: 1
-      end_year: 2005
-      end_month: 9
-      end_day: 31
-  extract_season:
-    season: DJF
-  extract_region:
-    start_longitude: -180.
-    end_longitude: 180.
-    start_latitude: 0.
-    end_latitude: 90.
-```
+
+.. code-block:: yaml
+
+	timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
+	  custom_order: true
+	  extract_time: &time_anchor # declare time here.
+	      start_year: 1960
+	      start_month: 12
+	      start_day: 1
+	      end_year: 2005
+	      end_month: 9
+	      end_day: 31
+	  extract_season:
+	    season: DJF
+	  extract_region:
+	    start_longitude: -180.
+	    end_longitude: 180.
+	    start_latitude: 0.
+	    end_latitude: 90.
+
 Note that the default settings for ESMValTool assume that the year starts on the
 first of January. This causes a problem for this preprocessor, as the first
 DJF season would not include the first Month, December, and the final would not
@@ -406,24 +444,27 @@ This preprocessor group produces a 2D field with a time component, allowing
 the diagnostic to investigate the time development of the sea ice extend.
 
 The diagnostic section of the recipe should look like this:
-```
-diag_ice_NHW:
-  description: North Hemisphere Winter Sea Ice diagnostics
-  variables:
-    sic: # surface ice cover
-      preprocessor: timeseries_NHW_ice_extent
-      field: TO2M
-      mip: OImon
-  scripts:
-    Global_seaice_timeseries:
-      script: ocean/diagnostic_seaice.py
-      threshold: 15.
-```
+
+.. code-block:: yaml
+
+	diag_ice_NHW:
+	  description: North Hemisphere Winter Sea Ice diagnostics
+	  variables:
+	    sic: # surface ice cover
+	      preprocessor: timeseries_NHW_ice_extent
+	      field: TO2M
+	      mip: OImon
+	  scripts:
+	    Global_seaice_timeseries:
+	      script: ocean/diagnostic_seaice.py
+	      threshold: 15.
+
 Note the the threshold here is 15%, which is the standard cut of for the
 ice extent.
 
 The sea ice diagnositc script produces three kinds of plots, using the
 methods:
+
 - `make_map_extent_plots`: extent maps plots of individual models using a Polar Stereographic project.
 - `make_map_plots`: maps plots of individual models using a Polar Stereographic project.
 - `make_ts_plots`: time series plots of individual models
@@ -431,25 +472,18 @@ methods:
 There are no multi model comparisons included here (yet).
 
 The following recipe use this module:
+
 - recipe_SeaIceExtent.yml
 
 
 
-ocean_diagnostics_README.rst
-============================
-This is the README file that you are currently reading!
 
 
-
-
-
-
-
-==================
 Associated recipes
-==================
+******************
 
 The following recipes are known to use these diagnostics:
+
 - recipe_OceanBGC.yml
 - recipe_OxygenMinimumZones.yml
 - recipe_OceanPhysics.yml
@@ -462,6 +496,7 @@ These recipes are stored in `esmvaltool/recipes` directory.
 
 recipe_OceanPhysics.yml
 =======================
+
 This is an example recipe which shows several examples of how to
 manipulate marine model data. All example calculations are performed using the
 ocean temperature in a three dimensional field (thetao), or at the
@@ -474,12 +509,14 @@ diagnostics (no observational component is included.)
 
 recipe_OceanBGC.yml
 ===================
+
 This is an example recipe which shows a several simple examples of how to
 manipulate marine biogeochemical model data.
 
 
 recipe_OxygenMinimumZones.yml
 =============================
+
 This recipe produces an analysis of Marine oxygen. The diagnositcs are based on
 figure 1 of the following work:
 Cabré, A., Marinov, I., Bernardello, R., and Bianchi, D.: Oxygen minimum zones
@@ -490,6 +527,7 @@ https://doi.org/10.5194/bg-12-5429-2015, 2015.
 
 recipe_OceanQuadMap.yml
 =======================
+
 This is an example recipe showing the diagnostic_maps_quad.py diagnostic
 comparing two versions of the HadGEM2 model against ATSR sea surface temperature.
 
@@ -499,14 +537,13 @@ recipe_SeaIceExtent.yml
 
 
 
-=================================
 Associated Observational datasets
 =================================
 
 The following observations datasets are used by these recipes:
 
 World Ocean ATLAS
-=================
+-----------------
 These data can be downloaded from:
 https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
 (last access 10/25/2018)
@@ -518,3 +555,10 @@ The following WOA datasets are used by the ocean diagnostics:
 
 These files need to be reformatted using the `reformat_obs_woa_o2.py` script
 in the `reformat_scripts/obs/` directory.
+
+
+.. This file is part of the ocean diagnostic toolkit, which is part of
+.. the ESMValTool toolkit.
+..
+.. Author: Lee de Mora (PML)
+..        ledm@pml.ac.uk

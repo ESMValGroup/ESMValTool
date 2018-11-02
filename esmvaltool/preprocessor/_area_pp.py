@@ -124,7 +124,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2, fx_files):
+def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     """
     Determine the area average.
 
@@ -139,38 +139,51 @@ def area_average(cube, coord1, coord2, fx_files):
         coord1, coord2: str, str
             coords to use
 
+        use_fx_files: bool
+            boolean to switch in fx files.
+
+        fx_files: dictionary
+            dictionary of field:filename for the fx_files
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
     """
-    # lat = cube.coord('latitude')
-    # if lat.points.ndim
-    # check for bounds just in case
-    coords = [coord1, coord2]
-    # Try to guess the area from r0i0p0
-    grid_areas = load_area_from_file(cube, fx_files)
-    if not grid_areas:
-        cube = _guess_bounds(cube, coords)
+    grid_areas_found = False
+    grid_areas = None
+    if use_fx_files:
+        for key, fx_file in fx_files.items():
+            if fx_file == None:
+                continue
+            logger.info('Attempting to load %s from file: %s', key, fx_file)
+            fx_cube = iris.load_cube(fx_file)
+
+            grid_areas = fx_cube.data
+            grid_areas_found = True
+            cube_shape = cube.data.shape
+            if cube.data.ndim == 4 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], cube_shape[1], 1, 1])
+            elif cube.data.ndim == 4 and grid_areas.ndim == 3:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], 1, 1, 1])
+            elif cube.data.ndim == 3 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                         [cube_shape[0], 1, 1])
+
+    if cube.coord('latitude').points.ndim == 2:
+            logger.error('area_average ERROR: fx_file needed to calculate grid'
+                        + ' cell area for irregular grids.')
+            raise iris.exceptions.CoordinateMultiDimError(
+               cube.coord('latitude'))
+
+    if not grid_areas_found:
+        cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
-    result = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
+        logger.info('Calculated grid area...',grid_areas.shape)
+
+    result = cube.collapsed([coord1, coord2],
+                            iris.analysis.MEAN,
+                            weights=grid_areas)
     return result
-
-from esmvaltool._data_finder import get_input_fx_filelist
-
-
-def load_area_from_file(cube, fx_files):
-    """Load the area field of a model from a file"""
-    print('load_area_from_file',cube)
-    print('fx_files:', fx_files)
-    #variable = {'fx_files': {'mip':'cmip5', 'cmor_table': 'cmip5' }}
-    fn = get_input_fx_filelist(fx_files, '../KIT_data/', 'CMIP5')
-    filename = ''
-
-    assert 0
-
-    if not os.path.exists(filename):
-        return 0
-
-    area_cube = iris.load_cube(filename)
-    return area_cube.data
