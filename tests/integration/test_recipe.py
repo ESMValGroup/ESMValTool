@@ -207,7 +207,7 @@ def check_preprocessor_provenance(product):
 
 
 def check_product_wasderivedfrom(product):
-    """Check that product.filename was derived from product.files."""
+    """Check that product.filename was derived from product._ancestors."""
     prov = product.provenance
 
     def get_identifier(filename):
@@ -218,8 +218,8 @@ def check_product_wasderivedfrom(product):
     identifier = get_identifier(product.filename)
 
     relations = {r for r in prov.records if isinstance(r, ProvDerivation)}
-    for filename in product.files:
-        input_identifier = get_identifier(filename)
+    for ancestor in product._ancestors:
+        input_identifier = get_identifier(ancestor.filename)
         for record in relations:
             if input_identifier == record.get_attribute(PROV_ATTR_USED_ENTITY):
                 assert identifier == record.get_attribute(
