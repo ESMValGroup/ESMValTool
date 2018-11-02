@@ -112,7 +112,6 @@ begin
 
   ; Check dimensions
   dims = getvardims(A0)
-  rank = dimsizes(dims)
 
   if (dimsizes(dims) .lt. 3) then
     error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
@@ -124,11 +123,13 @@ begin
   end if
   lat_name = dims(idx)
 
-  idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
-  if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+  if (field_type0 .eq. "T2Ms") then
+    idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
+    if (ismissing(idx)) then
+      error_msg("f", diag_script, "", "no lon dimension")
+    end if
+    lon_name = dims(idx)
   end if
-  lon_name = dims(idx)
 
   index = ispan(0, dim_MOD - 1, 1)
   if diag_script_info@time_avg .eq. "seasonalclim" then
@@ -139,7 +140,7 @@ begin
     diag_script_info@seasons = (/0/)
   end if
 
-  if (rank .eq. 4) then
+  if (field_type0 .eq. "T3Ms") then
     idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
     if (ismissing(idx)) then
       error_msg("f", diag_script, "", "no level dimension")
@@ -148,7 +149,7 @@ begin
   end if
 
   Fill = default_fillvalue(typeof(A0))
-  if (rank .eq. 3) then
+  if (field_type0 .eq. "T2Ms") then
     data1 = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
                  dimsizes(A0&lon)/), typeof(A0), Fill)
     if ((.not. isatt(diag_script_info, "iavmode")) .or. \
@@ -156,14 +157,14 @@ begin
       IAV_mmm = new((/dim_seas, dimsizes(A0&lat), \
                      dimsizes(A0&lon)/), typeof(A0), Fill)
     end if
-  else if (rank .eq. 4) then
+  else if (field_type0 .eq. "T3Ms") then
     data1 = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
-                 dimsizes(A0&lat), dimsizes(A0&lon)/), \
+                 dimsizes(A0&lat)/), \
                 typeof(A0), Fill)
     if ((.not. isatt(diag_script_info, "iavmode")) .or. \
         (diag_script_info@iavmode .ne. "each")) then
       IAV_mmm = new((/dim_seas, dimsizes(A0&$lev_name$), \
-                     dimsizes(A0&lat), dimsizes(A0&lon)/), \
+                     dimsizes(A0&lat)/), \
                     typeof(A0), Fill)
     end if
   end if
@@ -179,11 +180,20 @@ begin
         error_msg("f", diag_script, "", "no lat dimension")
       end if
       lat_name = dims(idx)
-      idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
-      if (ismissing(idx)) then
-        error_msg("f", diag_script, "", "no lon dimension")
+      if (field_type0 .eq. "T2Ms") then
+        idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
+        if (ismissing(idx)) then
+          error_msg("f", diag_script, "", "no lon dimension")
+        end if
+        lon_name = dims(idx)
       end if
-      lon_name = dims(idx)
+      if (field_type0 .eq. "T3Ms") then
+        idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
+        if (ismissing(idx)) then
+          error_msg("f", diag_script, "", "no level dimension")
+        end if
+        lev_name = dims(idx)
+      end if
     end if
 
     ; Calculate IAV (function in ./diag_scripts/lib/ncl/statistics.ncl)
@@ -210,12 +220,12 @@ begin
       yr_possible = (dimsizes(time) - 12 * 100) / (length_of_period * 12.)
       rest = yr_possible - nr_periods
       start_yrs = ispan(new_start_yr, end_yr_int, length_of_period)
-      if (rank .eq. 3) then
+      if (field_type0 .eq. "T2Ms") then
         data_tmp = new((/nr_periods, dim_seas, dimsizes(A0&$lat_name$), \
                         dimsizes(A0&$lon_name$)/), typeof(A0), Fill)
-      else if (rank .eq. 4) then
+      else if (field_type0 .eq. "T3Ms") then
         data_tmp = new((/nr_periods, dim_seas, dimsizes(A0&$lev_name$), \
-                        dimsizes(A0&$lat_name$), dimsizes(A0&$lon_name$)/), \
+                        dimsizes(A0&$lat_name$)/), \
                        typeof(A0), Fill)
       end if
       end if
@@ -233,38 +243,20 @@ begin
           new_end_yr = toint(start_yrs(per) + length_of_period - 1.0)
         end if
         ;  calculate seasonal/annual averages over periods
-        if (rank .eq. 3) then
-          if ((dim_seas .eq. 1) .and. \
-              (diag_script_info@time_avg .eq. "annualclim")) then
-            data_tmp(per, 0, :, :) = \
-              time_operations(A0, start_yrs(per), new_end_yr, "average", \
-                              diag_script_info@time_avg, True)
-          else
-            data_tmp(per, :, :, :) = \
-              time_operations(A0, start_yrs(per), new_end_yr, "average", \
-                              diag_script_info@time_avg, True)
-          end if
-        else if (rank .eq. 4) then
-          if ((dim_seas .eq. 1) .and. \
-              (diag_script_info@time_avg .eq. "annualclim")) then
-            data_tmp(per, 0, :, :, :) = \
-              time_operations(A0, start_yrs(per), new_end_yr, "average", \
-                              diag_script_info@time_avg, True)
-          else
-            data_tmp(per, :, :, :, :) = \
-              time_operations(A0, start_yrs(per), new_end_yr, "average", \
-                              diag_script_info@time_avg, True)
-          end if
-        end if
+        if ((dim_seas .eq. 1) .and. \
+            (diag_script_info@time_avg .eq. "annualclim")) then
+          data_tmp(per, 0, :, :) = \
+            time_operations(A0, start_yrs(per), new_end_yr, "average", \
+                            diag_script_info@time_avg, True)
+        else
+          data_tmp(per, :, :, :) = \
+            time_operations(A0, start_yrs(per), new_end_yr, "average", \
+                            diag_script_info@time_avg, True)
         end if
       end do
       data_dtr = dtrend_quadratic_msg_n(data_tmp, False, False, 0)
-      if (rank .eq. 3) then
-        data1(imod, :, :, :) = dim_stddev_n(data_dtr, 0)
-      else if (rank .eq. 4) then
-        data1(imod, :, :, :, :) = dim_stddev_n(data_dtr, 0)
-      end if
-      end if
+
+      data1(imod, :, :, :) = dim_stddev_n(data_dtr, 0)
       delete(start_yrs)
       delete(data_tmp)
       delete(data_dtr)
@@ -275,12 +267,7 @@ begin
       data1_tmp = interannual_variability(A0, new_start_yr, end_yr_int, \
                                           diag_script_info@time_avg, \
                                           "quadratic")
-      if (rank .eq. 3) then
-        data1(imod, :, :, :) = data1_tmp
-      else if (rank .eq. 4) then
-        data1(imod, :, :, :, :) = data1_tmp
-      end if
-      end if
+      data1(imod, :, :, :) = data1_tmp
     end if
     delete(start_yr)
     delete(end_yr)
@@ -297,18 +284,18 @@ begin
         continue
       end if
       if (imod .eq.0) then
-        if (rank .eq. 3) then
+        if (field_type0 .eq. "T2Ms") then
           data1!0 = "models"
           data1!1 = "season"
           data1!2 = "lat"
           data1!3 = "lon"
-        else if (rank .eq. 4) then
+          data1&lon = A0&lon
+        else if (field_type0 .eq. "T3Ms") then
           data1!0 = "models"
           data1!1 = "season"
           data1!2 = lev_name
           data1&$lev_name$ = A0&$lev_name$
           data1!3 = "lat"
-          data1!4 = "lon"
         end if
         end if
         if (diag_script_info@time_avg .eq. "seasonalclim") then
@@ -317,8 +304,6 @@ begin
           data1&season = (/0/)
         end if
         data1&lat = A0&lat
-        data1&lon = A0&lon
-
         data1@diag_script = (/diag_script/)
         data1@var = "iav"
         if (isatt(variable_info, "long_name")) then
@@ -331,19 +316,10 @@ begin
       ; ###########################################
       ; # Output to netCDF                        #
       ; ###########################################
-      if (rank .eq. 3) then
-        if (dim_seas .eq. 1) then
-          write_data = data1(imod, 0, :, :)
-        else
-          write_data = data1(imod, :, :, :)
-        end if
-      else if (rank .eq. 4) then
-        if (dim_seas .eq. 1) then
-          write_data = data1(imod, :, 0, :, :)
-        else
-          write_data = data1(imod, :, :, :, :)
-        end if
-      end if
+      if (dim_seas .eq. 1) then
+        write_data = data1(imod, 0, :, :)
+      else
+        write_data = data1(imod, :, :, :)
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
       ncdf_outfile = ncdf_write(write_data, work_dir + outfile)
@@ -356,26 +332,20 @@ begin
     ; # Calculate multi-model mean of IAV       #
     ; ###########################################
     do s = 0, dim_seas - 1
-      if (rank .eq. 3) then
-        IAV_mmm(s, :, :) = \
-          rm_single_dims(dim_avg_n(data1(:, s, :, :), 0) * sqrt(2.))
-      else if (rank .eq. 4) then
-        IAV_mmm(s, :, :, :) = \
-          rm_single_dims(dim_avg_n(data1(:, s, :, :, :), 0) * sqrt(2.))
-      end if
-      end if
+      IAV_mmm(s, :, :) = \
+        rm_single_dims(dim_avg_n(data1(:, s, :, :), 0) * sqrt(2.))
     end do
 
-    if (rank .eq. 3) then
+    if (field_type0 .eq. "T2Ms") then
       IAV_mmm!0 = "season"
       IAV_mmm!1 = "lat"
       IAV_mmm!2 = "lon"
-    else if (rank .eq. 4) then
+      IAV_mmm&lon = A0&lon
+    else if (field_type0 .eq. "T3Ms") then
       IAV_mmm!0 = "season"
       IAV_mmm!1 = lev_name
       IAV_mmm&$lev_name$ = A0&$lev_name$
       IAV_mmm!2 = "lat"
-      IAV_mmm!3 = "lon"
     end if
     end if
     if (isatt(diag_script_info, "seasons")) then
@@ -384,7 +354,6 @@ begin
       IAV_mmm&season = (/0/)
     end if
     IAV_mmm&lat = A0&lat
-    IAV_mmm&lon = A0&lon
 
     ; ###########################################
     ; # Output to netCDF                        #

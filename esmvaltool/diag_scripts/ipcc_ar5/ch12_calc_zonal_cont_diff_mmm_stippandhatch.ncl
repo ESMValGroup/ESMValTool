@@ -31,7 +31,7 @@
 ;    base_cnMaxLevel: max level for base contours
 ;
 ; Modification history
-;    20181024-A_lore_ru: ported to v2, regridding in preprocessor
+;    20181024-A_lore_ru: ported to v2, regridding, zonal means in preprocessor
 ;    20170517-A_lore_ru: changed to regrid to common grid first before
 ;                        calculating zonal average and added ability to use
 ;                        irregular grids (e.g. thetao)
@@ -138,11 +138,11 @@ begin
     error_msg("f", diag_script, "", "no lat dimension")
   end if
   lat_name = dims(idx)
-  idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
-  if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
-  end if
-  lon_name = dims(idx)
+  ; idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
+  ; if (ismissing(idx)) then
+  ;   error_msg("f", diag_script, "", "no lon dimension")
+  ; end if
+  ; lon_name = dims(idx)
 
   idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
   if (ismissing(idx)) then
@@ -185,8 +185,8 @@ begin
   var_reg&lat = A0&lat
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
-      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lat), \
-                 dimsizes(A0&lon)/), typeof(A0), Fill)
+      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lev), \
+                 dimsizes(A0&lat)/), typeof(A0), Fill)
       copy_VarMeta(var_reg, iav)
     end if
   end if
@@ -204,11 +204,11 @@ begin
         error_msg("f", diag_script, "", "no lat dimension")
       end if
       lat_name = dims(idx)
-      idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
-      if (ismissing(idx)) then
-        error_msg("f", diag_script, "", "no lon dimension")
-      end if
-      lon_name = dims(idx)
+      ; idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
+      ; if (ismissing(idx)) then
+      ;   error_msg("f", diag_script, "", "no lon dimension")
+      ; end if
+      ; lon_name = dims(idx)
       idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
       if (ismissing(idx)) then
         error_msg("f", diag_script, "", "no level dimension")
@@ -217,10 +217,15 @@ begin
     end if
 
     ; Average over longitudes for zonal mean
+    ; if (dim_seas .eq. 1) then
+    ;   var_reg(imod, 0, :, :) = dim_avg_n_Wrap(data1, 2)
+    ; else
+    ;   var_reg(imod, :, :, :) = dim_avg_n_Wrap(data1, 2)
+    ; end if
     if (dim_seas .eq. 1) then
-      var_reg(imod, 0, :, :) = dim_avg_n_Wrap(data1, 2)
+      var_reg(imod, 0, :, :) = data1
     else
-      var_reg(imod, :, :, :) = dim_avg_n_Wrap(data1, 2)
+      var_reg(imod, :, :, :) = data1
     end if
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
@@ -235,7 +240,8 @@ begin
                            diag_script_info@time_avg + ".nc", "r")
         iav_native = iav_file->iav
         ; Average over longitudes for zonal mean
-        iav_zon = dim_avg_n_Wrap(iav_native, 2)
+        ;iav_zon = dim_avg_n_Wrap(iav_native, 2)
+        iav_zon = iav_native
         if (dim_seas .eq. 1) then
           iav(imod, 0, :, :) = iav_zon
         else
@@ -260,9 +266,9 @@ begin
                           "IAV_mmm_piControl_" + field_type0 + \
                           "_" + var0 + "_" + diag_script_info@time_avg + \
                           ".nc", "r")
-    natvar = natvar_file->iav
+    natvar_mmm = natvar_file->iav
     ; Average over longitudes for zonal mean
-    natvar_mmm = dim_avg_n_Wrap(natvar, 3)
+    ;natvar_mmm = dim_avg_n_Wrap(natvar, 3)
   end if
 
   ; ##############################################
