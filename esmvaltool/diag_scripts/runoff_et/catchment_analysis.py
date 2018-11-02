@@ -32,7 +32,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 class defaults(object):
     """Class containing default dictionaries for predefined catchments
 
-    The properties are used in the routine analysecatchments.
+    The properties are used in the routine analysecatchments. Catchments and
+    reference values are specific for the default catchment mask. All reference
+    values are given in mm a-1.
     Properties are
         catchments
         runoffrefdata
@@ -57,48 +59,48 @@ class defaults(object):
         }
 
     mrro = {
-        'Amazon': {'data': 1195.4477, 'unit': 'mm a-1'},
-        'Congo': {'data': 365.6980, 'unit': 'mm a-1'},
-        'Danube': {'data': 250.9211, 'unit': 'mm a-1'},
-        'Ganges-Brahmaputra': {'data': 672.5738, 'unit': 'mm a-1'},
-        'Lena': {'data': 197.3081, 'unit': 'mm a-1'},
-        'Mackenzie': {'data': 173.9881, 'unit': 'mm a-1'},
-        'Mississippi': {'data': 182.2420, 'unit': 'mm a-1'},
-        'Murray': {'data': 8.2041, 'unit': 'mm a-1'},
-        'Niger': {'data': 31.5160, 'unit': 'mm a-1'},
-        'Nile': {'data': 48.7528, 'unit': 'mm a-1'},
-        'Parana': {'data': 203.0060, 'unit': 'mm a-1'},
-        'Yangtze-Kiang': {'data': 531.6936, 'unit': 'mm a-1'}
+        'Amazon': 1195.4477,
+        'Congo': 365.6980,
+        'Danube': 250.9211,
+        'Ganges-Brahmaputra': 672.5738,
+        'Lena': 197.3081,
+        'Mackenzie': 173.9881,
+        'Mississippi': 182.2420,
+        'Murray': 8.2041,
+        'Niger': 31.5160,
+        'Nile': 48.7528,
+        'Parana': 203.0060,
+        'Yangtze-Kiang': 531.6936,
         }
 
     pr = {
-        'Amazon': {'data': 2253.61, 'unit': 'mm a-1'},
-        'Congo': {'data': 1539.98, 'unit': 'mm a-1'},
-        'Danube': {'data': 809.11, 'unit': 'mm a-1'},
-        'Ganges-Brahmaputra': {'data': 1387.95, 'unit': 'mm a-1'},
-        'Lena': {'data': 399.146, 'unit': 'mm a-1'},
-        'Mackenzie': {'data': 445.342, 'unit': 'mm a-1'},
-        'Mississippi': {'data': 890.034, 'unit': 'mm a-1'},
-        'Murray': {'data': 530.441, 'unit': 'mm a-1'},
-        'Niger': {'data': 436.907, 'unit': 'mm a-1'},
-        'Nile': {'data': 673.565, 'unit': 'mm a-1'},
-        'Parana': {'data': 1311.22, 'unit': 'mm a-1'},
-        'Yangtze-Kiang': {'data': 1032.84, 'unit': 'mm a-1'}
+        'Amazon': 2253.61,
+        'Congo': 1539.98,
+        'Danube': 809.11,
+        'Ganges-Brahmaputra':1387.95,
+        'Lena': 399.146,
+        'Mackenzie': 445.342,
+        'Mississippi': 890.034,
+        'Murray': 530.441,
+        'Niger': 436.907,
+        'Nile': 673.565,
+        'Parana': 1311.22,
+        'Yangtze-Kiang': 1032.84
         }
 
     evspsbl = {
-        'Amazon': {'data': 1014.4023, 'unit': 'mm a-1'},
-        'Congo': {'data': 1203.182, 'unit': 'mm a-1'},
-        'Danube': {'data': 554.5999, 'unit': 'mm a-1'},
-        'Ganges-Brahmaputra': {'data': 722.5962, 'unit': 'mm a-1'},
-        'Lena': {'data': 187.4469, 'unit': 'mm a-1'},
-        'Mackenzie': {'data': 269.2429, 'unit': 'mm a-1'},
-        'Mississippi': {'data': 712.192, 'unit': 'mm a-1'},
-        'Murray': {'data': 465.1909, 'unit': 'mm a-1'},
-        'Niger': {'data': 402.23, 'unit': 'mm a-1'},
-        'Nile': {'data': 602.1752, 'unit': 'mm a-1'},
-        'Parana': {'data': 1085.554, 'unit': 'mm a-1'},
-        'Yangtze-Kiang': {'data': 538.0664, 'unit': 'mm a-1'}
+        'Amazon': 1014.4023,
+        'Congo': 1203.182,
+        'Danube': 554.5999,
+        'Ganges-Brahmaputra': 722.5962,
+        'Lena': 187.4469,
+        'Mackenzie': 269.2429,
+        'Mississippi': 712.192,
+        'Murray': 465.1909,
+        'Niger': 402.23,
+        'Nile': 602.1752,
+        'Parana': 1085.554,
+        'Yangtze-Kiang': 538.0664
         }
 
 def format_coef_plot(ax):
@@ -169,7 +171,7 @@ def make_catchment_plots(cfg, plotdata, catch_info):
                     river, expdata[var], refdata[var] = [], [], []
                     for xlabel, rdata in sorted(getattr(catch_info, var).items()):
                         river.append(xlabel)
-                        refdata[var].append(rdata['data'])
+                        refdata[var].append(rdata)
                         expdata[var].append(plotdata[model][exp][member][var][xlabel])
                     logger.info(var+" Reference:", refdata[var])
                     logger.info(var+" Experiment:", expdata[var])
@@ -268,7 +270,6 @@ def make_catchment_plots(cfg, plotdata, catch_info):
 
         if outtype == "pdf":
             pdf.close()
-
 
 
 def main(cfg):
