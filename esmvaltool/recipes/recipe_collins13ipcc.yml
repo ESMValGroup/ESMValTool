@@ -1811,6 +1811,94 @@ diagnostics:
         base_cnMinLevel: -40
         base_cnMaxLevel: 40
 
+  ###  Mean ocean temperature change in RCPs for multi model mean ###
+  IAV_calc_thetao:
+    description: Calculate 3D ocean temperature (thetao) IAV for stippling significance in zonal plot
+    themes:
+      - varmodes
+    realms:
+      - ocean
+    variables:
+      thetao:
+        preprocessor: preproc_zonal_ocean
+        project: CMIP5
+        mip: Omon
+        field: T3Ms
+        exp: piControl
+        ensemble: r1i1p1
+    additional_datasets:
+      - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
+      - {dataset: CSIRO-Mk3-6-0,  start_year: 1,    end_year: 500}
+      - {dataset: HadGEM2-CC,     start_year: 1860, end_year: 2099}
+
+    scripts:
+      ch12_calc_IAV_for_stippandhatch_thetao:
+        script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
+        # Required attributes:
+        styleset: CMIP5
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # Optional attributes:
+        periodlength: 20.
+
+  ###  Mean air temperature change in one RCP for multi model mean ###
+  thetao_change_mmm:
+    description: Air temperature change for RCPs, periods, significance as zonal plots.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        preprocessor: preproc_zonal_ocean
+        reference_dataset: CanESM2
+        project: CMIP5
+        mip: Omon
+        field: T3Ms
+        ensemble: r1i1p1
+    additional_datasets:
+      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: HadGEM2-CC,     exp: historical, start_year: 1986, end_year: 2004}
+
+      - {dataset: CanESM2,        exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0,  exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: HadGEM2-CC,     exp: rcp85, start_year: 2081, end_year: 2100}
+
+    scripts:
+      ch12_calc_zonal_diff_mmm_thetao: &thetao_settings
+        script: ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
+        # Required attributes:
+        ancestors: ['thetao', 'IAV_calc_thetao/ch12_calc_IAV_for_stippandhatch_thetao']
+        # list with scenarios to be included
+        scenarios: [rcp85]
+        # list with start years of periods to be included
+        periods: [2081]
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # labels on top of each panel, loop to plot is seasons, scenarios, periods, needed to write
+        label: ["RCP8.5 2081-2100"]   
+        # Optional attributes:
+        units: (~F35~J~F~C)
+        # list with seasons index to be included if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
+        #seasons:
+        # use IAV data from multi-model mean or include identical models to the ones plotted?
+        # default if not given is mmm, otherwise set iavmode = "each"  
+        #iavmode:
+        #percent: #0 or 1, difference in percent = 1, default = 0
+      ch12_plot_zonal_diff_mmm_thetao:
+        <<: *thetao_settings
+        script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
+        ancestors: ['thetao', 'thetao_change_mmm/ch12_calc_zonal_diff_mmm_thetao']
+        title: "Annual mean ocean temperature change (2081-2100)"
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        diff_levs: [-0.5, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
+        sig: True
+        not_sig: True
+        max_hori: 3
+        # boolean, true if want number of models included in mmm to be printet in top right
+        model_nr: True
+
   ###  Mean Soil Moisture change in RCPs for multi model mean ###
   IAV_calc_mrsos:
     description: Calculate soil moisture IAV for stippling significance
