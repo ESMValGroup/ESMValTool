@@ -4,6 +4,7 @@ Area operations on data cubes.
 Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
+import os
 import logging
 
 import iris
@@ -123,7 +124,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2):
+def area_average(cube, coord1, coord2, fx_files):
     """
     Determine the area average.
 
@@ -143,10 +144,33 @@ def area_average(cube, coord1, coord2):
     iris.cube.Cube
         collapsed cube.
     """
-    #TODO: test this with irregular grids in iris 2.
+    # lat = cube.coord('latitude')
+    # if lat.points.ndim
     # check for bounds just in case
     coords = [coord1, coord2]
-    cube = _guess_bounds(cube, coords)
-    grid_areas = iris.analysis.cartography.area_weights(cube)
+    # Try to guess the area from r0i0p0
+    grid_areas = load_area_from_file(cube, fx_files)
+    if not grid_areas:
+        cube = _guess_bounds(cube, coords)
+        grid_areas = iris.analysis.cartography.area_weights(cube)
     result = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
     return result
+
+from esmvaltool._data_finder import get_input_fx_filelist
+
+
+def load_area_from_file(cube, fx_files):
+    """Load the area field of a model from a file"""
+    print('load_area_from_file',cube)
+    print('fx_files:', fx_files)
+    #variable = {'fx_files': {'mip':'cmip5', 'cmor_table': 'cmip5' }}
+    fn = get_input_fx_filelist(fx_files, '../KIT_data/', 'CMIP5')
+    filename = ''
+
+    assert 0
+
+    if not os.path.exists(filename):
+        return 0
+
+    area_cube = iris.load_cube(filename)
+    return area_cube.data
