@@ -7,3 +7,4 @@ Recipes
    recipe_clouds
    recipe_crem
    recipe_perfmetrics
+   recipe_collins13ipcc

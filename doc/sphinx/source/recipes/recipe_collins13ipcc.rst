@@ -1,4 +1,4 @@
-.. _nml_perfmetrics:
+.. _nml_collins:
 
 IPCC Chapter 12 selected figures
 ====================================================
@@ -6,7 +6,14 @@ IPCC Chapter 12 selected figures
 Overview
 --------
 
-The goal is to create a standard recipe for creating selected Figures from IPCC AR5 Chapter 12 on "Long-term Climate Change: Projections, Commitments and Irreversibility". These include figures showing the change in a variable between historical and future periods, e.g. maps (2D variables), zonal means (3D variables), timeseries showing the change in certain variables from historical to future periods for multiple scenarios, and maps visualizing change in variables normalized by global mean temperature change (pattern scaling) as in Collins et al., 2013.
+The goal is to create a standard recipe for creating selected Figures from
+IPCC AR5 Chapter 12 on "Long-term Climate Change: Projections, Commitments
+and Irreversibility". These include figures showing the change in a variable
+between historical and future periods, e.g. maps (2D variables), zonal means
+(3D variables), timeseries showing the change in certain variables from
+historical to future periods for multiple scenarios, and maps visualizing
+change in variables normalized by global mean temperature change (pattern
+scaling) as in Collins et al., 2013.
 
 
 Available recipes and diagnostics
@@ -18,16 +25,46 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/ipcc_ar5/
 
-* ch12_map_diff_each_model_fig12-9.ncl: calculates the difference between future and historical runs for one scenario for each given model individually on their native grid and plots all of them in one Figure. As in Figure 12.9 in AR5.
-* ch12_ts_line_mean_spread.ncl: calculates time series for one variable, change in future relative to base period in historical, multi-model mean as well as spread around it (as standard deviation).
-* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean and spread calculated above. As in Figure 12.5 in AR5.
-* ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability over piControl runs, either over the whole time period or in chunks over some years.
-* ch12_calc_map_diff_mmm_stippandhatch.ncl: calculates the difference between future and historical periods for each given model and then calculates multi-model mean as well as significance. Significant is where the multi-model mean change is greater than two standard deviations of the internal variability and where at least 90% of the models agree on the sign of change. Not significant is where the multi-model mean change is less than one standard deviation of internal variability.
-* ch12_plot_map_diff_mmm_stipp.ncl: plots multi-model mean maps calculated above including stippling where significant and hatching where not significant. As in Figure 12.11 in AR5.
-* ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: calculates zonal means and the difference between future and historical periods for each given model and then calculates multi-model mean as well as significance as above.
-* ch12_plot_zonal_diff_mmm_stipp.ncl: plots the multi-model mean zonal plots calculated above including stippling where significant and hatching where not significant. As in Figure 12.12 in AR5.
-* ch12_calc_map_diff_scaleT_mmm_stipp.ncl: calculates the change in variable between future and historical period normalized by gloabl mean temperature change of each given model and scenario. Then averages over all realizations and calculates significance. Significant is where the mean change averaged over all realizations is larger than the 95% percentile of the distribution of models (assumed to be gaussian). Can be plotted using ch12_plot_map_diff_mmm_stipp.ncl.
-* ch12_snw_area_change_fig12-32.ncl: calculate snow area extent in a region (e.g Northern Hemisphere) and season (e.g. Northern Hemisphere spring March & April) relative to a reference period (e.g 1986-2005) and spread over models as in Fig. 12.32 of IPCC AR5. Can be plotted using  ch12_plot_ts_line_mean_spread.ncl.
+* ch12_map_diff_each_model_fig12-9.ncl: calculates the difference between
+  future and historical runs for one scenario for each given model
+  individually on their native grid and plots all of them in one Figure.
+  As in Figure 12.9 in AR5.
+* ch12_ts_line_mean_spread.ncl: calculates time series for one variable,
+  change in future relative to base period in historical, multi-model mean as
+  well as spread around it (as standard deviation).
+* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean 
+  and spread calculated above. As in Figure 12.5 in AR5.
+* ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability
+  over piControl runs, either over the whole time period or in chunks over
+  some years.
+* ch12_calc_map_diff_mmm_stippandhatch.ncl: calculates the difference between
+  future and historical periods for each given model and then calculates
+  multi-model mean as well as significance. Significant is where the
+  multi-model mean change is greater than two standard deviations of the
+  internal variability and where at least 90% of the models agree on the
+  sign of change. Not significant is where the multi-model mean change is
+  less than one standard deviation of internal variability.
+* ch12_plot_map_diff_mmm_stipp.ncl: plots multi-model mean maps calculated
+  above including stippling where significant and hatching where not
+  significant. As in Figure 12.11 in AR5.
+* ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: calculates zonal means
+  and the difference between future and historical periods for each given
+  model and then calculates multi-model mean as well as significance as above.
+* ch12_plot_zonal_diff_mmm_stipp.ncl: plots the multi-model mean zonal plots
+  calculated above including stippling where significant and hatching where
+  not significant. As in Figure 12.12 in AR5.
+* ch12_calc_map_diff_scaleT_mmm_stipp.ncl: calculates the change in variable
+  between future and historical period normalized by gloabl mean temperature
+  change of each given model and scenario. Then averages over all realizations
+  and calculates significance. Significant is where the mean change averaged
+  over all realizations is larger than the 95% percentile of the distribution
+  of models (assumed to be gaussian). Can be plotted using
+  ch12_plot_map_diff_mmm_stipp.ncl.
+* ch12_snw_area_change_fig12-32.ncl: calculate snow area extent in a region
+  (e.g Northern Hemisphere) and season (e.g. Northern Hemisphere spring March
+  & April) relative to a reference period (e.g 1986-2005) and spread over
+  models as in Fig. 12.32 of IPCC AR5. Can be plotted using
+  ch12_plot_ts_line_mean_spread.ncl.
 
 User settings
 -------------
@@ -37,7 +74,8 @@ User settings
    *Required attributes*
 
    * time_avg: time averaging ("annualclim", "seasonalclim")
-   * experiment: IPCC Scenario, used to pair historical and rcp runs from same model
+   * experiment: IPCC Scenario, used to pair historical and rcp runs from
+     same model
 
    *Optional attributes*
 
@@ -54,16 +92,20 @@ User settings
    *Required attributes*
 
    * scenarios: list with scenarios included in figure
-   * syears: list with start years in time periods (e.g. start of historical period and rcps)
-   * eyears: list with end years in time periods (end year of historical runs and rcps)
+   * syears: list with start years in time periods (e.g. start of historical
+     period and rcps)
+   * eyears: list with end years in time periods (end year of historical runs
+     and rcps)
    * begin_ref_year: start year of reference period (e.g. 1986)
    * end_ref_year: end year of reference period (e.g 2005)
    * label: list with labels to use in legend depending on scenarios
 
    *Optional attributes*
 
-   * spread: how many standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64
-   * model_nr: save number of model runs per period and scenario in netcdf to print in plot? (True, False, default = False)
+   * spread: how many standard deviations to calculate the spread with?
+     default is 1., ipcc tas used 1.64
+   * model_nr: save number of model runs per period and scenario in netcdf
+     to print in plot? (True, False, default = False)
    * ts_minlat: minimum latitude if not global
    * ts_maxlat: maximum latitude if not global
    * ts_minlon: minimum longitude if not global
@@ -87,18 +129,23 @@ User settings
 
    *Required attributes*
 
-   * time_avg: time averaging ("annualclim", "seasonalclim"), needs to be consistent with calculation in ch12_calc_map_diff_mmm_stippandhatch.ncl
+   * time_avg: time averaging ("annualclim", "seasonalclim"), needs to be
+     consistent with calculation in ch12_calc_map_diff_mmm_stippandhatch.ncl
 
    *Optional attributes*
 
-   * periodlength: length of period in years to calculate variability over, default is total time period
-   * iavmode: calculate IAV from multi-model mean or save individual models ("each": save individual models, "mmm": multi-model mean, default), needs to be consistent with ch12_calc_map_diff_mmm_stippandhatch.ncl
+   * periodlength: length of period in years to calculate variability over,
+     default is total time period
+   * iavmode: calculate IAV from multi-model mean or save individual models
+     ("each": save individual models, "mmm": multi-model mean, default),
+     needs to be consistent with ch12_calc_map_diff_mmm_stippandhatch.ncl
 
 #. ch12_calc_map_diff_mmm_stippandhatch.ncl:
 
    *Required attributes*
 
-   * ancestors: variable and diagnostics that calculated interannual variability for stippling and hatching
+   * ancestors: variable and diagnostics that calculated interannual
+     variability for stippling and hatching
    * time_avg: time averaging ("annualclim", "seasonalclim")
    * scenarios: list with scenarios to be included
    * periods: list with start years of periods to be included
@@ -106,8 +153,11 @@ User settings
 
    *Optional attributes*
 
-   * seasons: list with seasons index if time_avg "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
-   * iavmode: calculate IAV from multi-model mean or save individual models ("each": save individual models, "mmm": multi-model mean, default), needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
+   * seasons: list with seasons index if time_avg "seasonalclim" (then
+     required),  DJF:0, MAM:1, JJA:2, SON:3
+   * iavmode: calculate IAV from multi-model mean or save individual models
+     ("each": save individual models, "mmm": multi-model mean, default),
+     needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
 #. ch12_plot_map_diff_mmm_stipp.ncl:
@@ -122,12 +172,14 @@ User settings
    * diff_levs: list with explicit levels for all contour plots
    * max_vert: maximum number of plots in vertical
    * max_hori: maximum number of plots in horizontal
-   * model_nr: save number of model runs per period and scenario in netcdf to print in plot? (True, False, default = False)
+   * model_nr: save number of model runs per period and scenario in netcdf to
+     print in plot? (True, False, default = False)
    * colormap: alternative colormap, path to rgb file or ncl name
    * span: span whole colormap? (True, False, default = True)
    * sig: plot stippling for significance? (True, False)
    * not_sig: plot hatching for uncertainty? (True, False)
-   * pltname: alternative name for output plot, default is diagnostic + varname + time_avg
+   * pltname: alternative name for output plot, default is diagnostic +
+     varname + time_avg
    * plotmask: apply a mask when plotting? ("None" (default), "ocean", "land")
    * units: units written next to colorbar, e.g (~F35~J~F~C)
 
@@ -135,7 +187,8 @@ User settings
 
    *Required attributes*
 
-   * ancestors: variable and diagnostics that calculated interannual variability for stippling and hatching
+   * ancestors: variable and diagnostics that calculated interannual
+     variability for stippling and hatching
    * time_avg: time averaging ("annualclim", "seasonalclim")
    * scenarios: list with scenarios to be included
    * periods: list with start years of periods to be included
@@ -143,9 +196,13 @@ User settings
 
    *Optional attributes*
 
-   * base_cn: if want contours of base period as contour lines, need to save base period field (True, False)
-   * seasons: list with seasons index if time_avg "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
-   * iavmode: calculate IAV from multi-model mean or save individual models ("each": save individual models, "mmm": multi-model mean, default), needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
+   * base_cn: if want contours of base period as contour lines, need to save
+     base period field (True, False)
+   * seasons: list with seasons index if time_avg "seasonalclim" (then
+     required),  DJF:0, MAM:1, JJA:2, SON:3
+   * iavmode: calculate IAV from multi-model mean or save individual models
+     ("each": save individual models, "mmm": multi-model mean, default),
+     needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
 #. ch12_plot_zonal_diff_mmm_stipp.ncl:
@@ -159,17 +216,21 @@ User settings
    * diff_levs: list with explicit levels for all contour plots
    * max_vert: maximum number of plots in vertical
    * max_hori: maximum number of plots in horizontal
-   * model_nr: save number of model runs per period and scenario in netcdf to print in plot? (True, False, default = False)
+   * model_nr: save number of model runs per period and scenario in netcdf to
+     print in plot? (True, False, default = False)
    * colormap: alternative colormap, path to rgb file or ncl name
    * span: span whole colormap? (True, False, default = True)
    * sig: plot stippling for significance? (True, False)
    * not_sig: plot hatching for uncertainty? (True, False)
-   * pltname: alternative name for output plot, default is diagnostic + varname + time_avg
+   * pltname: alternative name for output plot, default is diagnostic +
+     varname + time_avg
    * units: units written next to colorbar in ncl strings, e.g (m s~S~-1~N~)
-   * if base_cn: True in ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl further settings to control contour lines: \n
-        base_cnLevelSpacing: spacing between contour levels \n
-        base_cnMinLevel: minimum contour line \n
-        base_cnMaxLevel: maximum contour line
+   * if base_cn: True in ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
+     further settings to control contour lines:
+
+     * base_cnLevelSpacing: spacing between contour levels
+     * base_cnMinLevel: minimum contour line
+     * base_cnMaxLevel: maximum contour line
 
 #. ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
 
@@ -182,7 +243,8 @@ User settings
 
    *Optional attributes*
 
-   * seasons: list with seasons index if time_avg "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
+   * seasons: list with seasons index if time_avg "seasonalclim"
+     (then required),  DJF:0, MAM:1, JJA:2, SON:3
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
 #. ch12_snw_area_change_fig12-32.ncl:
@@ -190,17 +252,22 @@ User settings
    *Required attributes*
 
    * scenarios: list with scenarios included in figure
-   * syears: list with start years in time periods (e.g. start of historical period and rcps)
-   * eyears: list with end years in time periods (end year of historical runs and rcps)
+   * syears: list with start years in time periods (e.g. start of historical
+     period and rcps)
+   * eyears: list with end years in time periods (end year of historical runs
+     and rcps)
    * begin_ref_year: start year of reference period (e.g. 1986)
    * end_ref_year: end year of reference period (e.g 2005)
-   * months: first letters of  months included in analysis? e.g. for MA (March + April) for Northern Hemisphere
+   * months: first letters of  months included in analysis? e.g. for MA
+     (March + April) for Northern Hemisphere
    * label: list with labels to use in legend depending on scenarios
 
    *Optional attributes*
 
-   * spread: how many standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64
-   * model_nr: save number of model runs per period and scenario in netcdf to print in plot? (True, False, default = False)
+   * spread: how many standard deviations to calculate the spread with?
+     default is 1., ipcc tas used 1.64
+   * model_nr: save number of model runs per period and scenario in netcdf
+     to print in plot? (True, False, default = False)
    * colormap: alternative colormap, path to rgb file or ncl name
    * ts_minlat: minimum latitude if not global
    * ts_maxlat: maximum latitude if not global
@@ -232,32 +299,41 @@ Observations and reformat scripts
 
 *Note: No observations are used since the comparison is between historical and scenario runs.*
 
-References
-----------
+Reference
+---------
 
-* Collins, M., R. Knutti, J. Arblaster, J.-L. Dufresne, T. Fichefet, P. Friedlingstein, X. Gao, W.J. Gutowski, T. Johns, G. Krinner, M. Shongwe, C. Tebaldi, A.J. Weaver and M. Wehner, 2013: Long-term Climate Change: Projections, Commitments and Irreversibility. In: Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change [Stocker, T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom and New York, NY, USA.
+* Collins, M., R. Knutti, J. Arblaster, J.-L. Dufresne, T. Fichefet, P.
+  Friedlingstein, X. Gao, W.J. Gutowski, T. Johns, G. Krinner, M. Shongwe, C.
+  Tebaldi, A.J. Weaver and M. Wehner, 2013: Long-term Climate Change:
+  Projections, Commitments and Irreversibility. In: Climate Change 2013: The
+  Physical Science Basis. Contribution of Working Group I to the Fifth
+  Assessment Report of the Intergovernmental Panel on Climate Change [Stocker,
+  T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels,
+  \Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press,
+  Cambridge, United Kingdom and New York, NY, USA.
 
 
 Example plots
 -------------
 
-.. centered:: |pic_collins1| |pic_collins2|
-
-.. |pic_collins1| image:: /recipes/figures/collins13ipcc/collins13ipcc_fig_1.png
-   :width: 50%
-
-.. |pic_collins2| image:: /recipes/figures/collins13ipcc/collins13ipcc_fig_2.png
-   :width: 30%
-
-.. centered:: |pic_collins3| |pic_collins4|
-
-.. |pic_collins3| image:: /recipes/figures/collins13ipcc/collins13ipcc_fig_3.png
-   :width: 30%
-
-.. |pic_collins4| image:: /recipes/figures/collins13ipcc/collins13ipcc_fig_4.png
-   :width: 52%
-
-.. figure:: /recipes/figures/collins13ipcc/collins13ipcc_fig_5.png
-   :width: 75%
+.. figure:: /recipes/figures/collins13ipcc/collins_fig_1.png
+   :width: 85%
    :align: center
 
+   Surface air temperature change in 2081–2100 displayed as anomalies with
+   respect to 1986–2005 for RCP4.5 from individual CMIP5 models.
+
+
+.. figure:: /recipes/figures/collins13ipcc/collins_fig_2.png
+   :width: 50%
+   :align: center
+
+   Time series of global annual mean surface air temperature anomalie
+   (relative to 1986–2005) from CMIP5 concentration-driven experiments.
+
+.. figure:: /recipes/figures/collins13ipcc/collins_fig_3.png
+   :width: 70%
+   :align: center
+
+   Temperature change patterns scaled to 1°C of global mean surface
+   temperature change.
