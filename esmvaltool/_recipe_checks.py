@@ -16,7 +16,7 @@ class RecipeError(Exception):
 
 
 def ncl_version():
-    """Check the NCL version"""
+    """Check the NCL version."""
     ncl = which('ncl')
     if not ncl:
         raise RecipeError("Recipe contains NCL scripts, but cannot find "
@@ -48,7 +48,7 @@ def recipe_with_schema(filename):
 
 
 def diagnostics(diags):
-    """Check diagnostics in recipe"""
+    """Check diagnostics in recipe."""
     for name, diagnostic in diags.items():
         if 'scripts' not in diagnostic:
             raise RecipeError("Missing scripts section in diagnostic {}"
@@ -80,7 +80,7 @@ def duplicate_datasets(datasets):
 
 
 def variable(var, required_keys):
-    """Check variables as derived from recipe"""
+    """Check variables as derived from recipe."""
     required = set(required_keys)
     missing = required - set(var)
     if missing:
@@ -90,7 +90,7 @@ def variable(var, required_keys):
 
 
 def data_availability(input_files, var):
-    """Check if the required input data is available"""
+    """Check if the required input data is available."""
     if not input_files:
         raise RecipeError("No input files found for variable {}".format(var))
 

@@ -72,8 +72,8 @@ class TestSave(unittest.TestCase):
         handler.close()
 
     def test_fail_without_filename(self):
-        """Test save fails if _filename is not added"""
-        cube, filename = self._create_sample_cube()
+        """Test save fails if filename is not provided."""
+        cube, _ = self._create_sample_cube()
         with self.assertRaises(TypeError):
             save([cube])
 

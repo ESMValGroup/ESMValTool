@@ -6,7 +6,6 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
-import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -23,10 +22,6 @@ VARIABLE_KEYS = {
     'reference_dataset',
     'alternative_dataset',
 }
-
-
-class ConcatenationError(Exception):
-    """Exception class for concatenation errors"""
 
 
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -71,11 +66,10 @@ def concatenate(cubes):
         return cube
     except iris.exceptions.ConcatenateError as ex:
         logger.error('Can not concatenate cubes: %s', ex)
-        logger.error('Differences: %s', ex.differences)
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
-        raise ConcatenationError('Can not concatenate cubes {}'.format(cubes))
+        raise ex
 
 
 def save(cubes, filename, optimize_access='', compress=False, **kwargs):

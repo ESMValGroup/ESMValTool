@@ -55,14 +55,14 @@ def _plev_fix(dataset, pl_idx):
     return statj
 
 
-def _compute_statistic(datas, name):
+def _compute_statistic(datas, statistic_name):
     """Compute multimodel statistic"""
     datas = np.ma.array(datas)
     statistic = datas[0]
 
-    if name == 'median':
+    if statistic_name == 'median':
         statistic_function = np.ma.median
-    elif name == 'mean':
+    elif statistic_name == 'mean':
         statistic_function = np.ma.mean
     else:
         raise NotImplementedError
@@ -100,7 +100,7 @@ def _compute_statistic(datas, name):
     return statistic
 
 
-def _put_in_cube(template_cube, cube_data, stat_name, time_bounds, t_axis):
+def _put_in_cube(template_cube, cube_data, statistic, t_axis):
     """Quick cube building and saving."""
     if t_axis is None:
         times = template_cube.coord('time')
@@ -136,7 +136,7 @@ def _put_in_cube(template_cube, cube_data, stat_name, time_bounds, t_axis):
     fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
     # put in cube
     stats_cube = iris.cube.Cube(
-        fixed_dspec, dim_coords_and_dims=cspec, long_name=stat_name)
+        fixed_dspec, dim_coords_and_dims=cspec, long_name=statistic)
     coord_names = [coord.name() for coord in template_cube.coords()]
     if 'air_pressure' in coord_names:
         if len(template_cube.shape) == 3:
@@ -239,9 +239,9 @@ def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     return ndatarr
 
 
-def _assemble_overlap_data(cubes, ovlp, stat_type, time_bounds):
-    """Get statistical data in iris cubes for OVERLAP"""
-    start, stop = ovlp
+def _assemble_overlap_data(cubes, interval, statistic):
+    """Get statistical data in iris cubes for OVERLAP."""
+    start, stop = interval
     sl_1, sl_2 = _slice_cube(cubes[0], start, stop)
     stats_dats = np.ma.zeros(cubes[0].data[sl_1:sl_2 + 1].shape)
 
@@ -251,18 +251,14 @@ def _assemble_overlap_data(cubes, ovlp, stat_type, time_bounds):
             cube.data[indx[0]:indx[1] + 1][i]
             for cube, indx in zip(cubes, indices)
         ]
-        stats_dats[i] = _compute_statistic(time_data, stat_type)
+        stats_dats[i] = _compute_statistic(time_data, statistic)
     stats_cube = _put_in_cube(
-        cubes[0][sl_1:sl_2 + 1],
-        stats_dats,
-        stat_type,
-        time_bounds,
-        t_axis=None)
+        cubes[0][sl_1:sl_2 + 1], stats_dats, statistic, t_axis=None)
     return stats_cube
 
 
-def _assemble_full_data(cubes, stat_type, time_bounds):
-    """Get statistical data in iris cubes for FULL"""
+def _assemble_full_data(cubes, statistic):
+    """Get statistical data in iris cubes for FULL."""
     # all times, new MONTHLY data time axis
     time_axis = [float(fl) for fl in _monthly_t(cubes)]
 
@@ -295,18 +291,9 @@ def _assemble_full_data(cubes, stat_type, time_bounds):
         time_data = []
         for j in range(len(cubes)):
             time_data.append(new_datas_array[j])
-        stats_dats[i] = _compute_statistic(time_data, stat_type)
-    stats_cube = _put_in_cube(cubes[0], stats_dats, stat_type, time_bounds,
-                              time_axis)
+        stats_dats[i] = _compute_statistic(time_data, statistic)
+    stats_cube = _put_in_cube(cubes[0], stats_dats, statistic, time_axis)
     return stats_cube
-
-
-def _update_filename(filename, interval, time_unit):
-    """Update netCDF file names based on time properties"""
-    start, stop = [(_get_time_offset(time_unit) + timedelta(int(ts))).year
-                   for ts in interval]
-    filename = "{}_{}-{}.nc".format(filename.rpartition('_')[0], start, stop)
-    return filename, start, stop
 
 
 def multi_model_statistics(products, span, output_products, statistics):
@@ -337,24 +324,18 @@ def multi_model_statistics(products, span, output_products, statistics):
             "Unexpected value for span {}, choose from 'overlap', 'full'"
             .format(span))
 
-    time_unit = cubes[0].coord('time').units.name
-
     statistic_products = set()
-    for stat_name in statistics:
-        statistic_product = output_products[stat_name]
-        filename, start, stop = _update_filename(statistic_product.filename,
-                                                 interval, time_unit)
+    for statistic in statistics:
         # Compute statistic
-        time_bounds = [start, stop]
         if span == 'overlap':
-            statistic_cube = _assemble_overlap_data(cubes, interval, stat_name,
-                                                    time_bounds)
+            statistic_cube = _assemble_overlap_data(cubes, interval, statistic)
         elif span == 'full':
-            statistic_cube = _assemble_full_data(cubes, stat_name, time_bounds)
+            statistic_cube = _assemble_full_data(cubes, statistic)
         statistic_cube.data = np.ma.array(
             statistic_cube.data, dtype=np.dtype('float32'))
 
         # Add to output product and log provenance
+        statistic_product = output_products[statistic]
         statistic_product.cubes = [statistic_cube]
         logger.info("Generated %s", statistic_product)
         statistic_products.add(statistic_product)

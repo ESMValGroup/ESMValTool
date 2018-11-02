@@ -108,7 +108,7 @@ class TrackedFile(object):
     """File with provenance tracking."""
 
     def __init__(self, filename, attributes, ancestors=None):
-
+        """Create an instance of a file with provenance tracking."""
         self._filename = filename
         self.attributes = copy.deepcopy(attributes)
 

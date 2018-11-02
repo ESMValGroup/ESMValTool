@@ -40,12 +40,12 @@ class TestLoad(unittest.TestCase):
 
     def test_load_multiple(self):
         """Test loading multiple files"""
-        for num in range(2):
+        for _ in range(2):
             cube = self._create_sample_cube()
             self._save_cube(cube)
 
-        list = load(self.temp_files, None)
-        cube = list[0]
+        cubes = load(self.temp_files, None)
+        cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())
@@ -53,7 +53,7 @@ class TestLoad(unittest.TestCase):
     def test_callback_remove_attributtes(self):
         """Test callback remove unwanted attributes"""
         attributtes = ('history', 'creation_date', 'tracking_id')
-        for x in range(2):
+        for _ in range(2):
             cube = self._create_sample_cube()
             for attr in attributtes:
                 cube.attributes[attr] = attr
@@ -72,8 +72,8 @@ class TestLoad(unittest.TestCase):
         cube = self._create_sample_cube()
         self._save_cube(cube)
 
-        list = load(self.temp_files, None, callback=concatenate_callback)
-        cube = list[0]
+        cubes = load(self.temp_files, None, callback=concatenate_callback)
+        cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())
