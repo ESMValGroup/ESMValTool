@@ -38,13 +38,29 @@ preprocessors:
       scheme: linear
     multi_model_statistics: false
 
-  preproc_zo:
+  preproc_zonal_atm:
     regrid:
       target_grid: 1x1
       scheme: linear
     extract_levels:
       levels: reference_dataset
       scheme: linear
+    zonal_means:
+      coordinate: longitude
+      mean_type: mean
+    mask_landsea: false
+    multi_model_statistics: false
+
+  preproc_zonal_ocean:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: [5., 15., 25., 35., 45., 56., 66., 77., 88., 100, 112., 125., 140., 155., 170., 190., 215., 245., 275., 315., 370., 430., 510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010., 2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
+      scheme: linear_horizontal_extrapolate_vertical
+    zonal_means:
+      coordinate: longitude
+      mean_type: mean
     mask_landsea: false
     multi_model_statistics: false
 
@@ -606,7 +622,7 @@ diagnostics:
         ## Required attributes:
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
-        time_avg: seasonalclim
+        time_avg: annualclim
         ## Optional attributes:
         # Length of period in years to calculate variability over, default is total time period
         periodlength: 20.
@@ -645,12 +661,12 @@ diagnostics:
         #list with start years of periods to be included
         periods: [2081]
         # seasonal or annual means? seasonalclim, annualclim
-        time_avg: seasonalclim
+        time_avg: annualclim
         # labels on top of each panel, loop is seasons, scenarios, periods
-        label: ["JJA RCP4.5 2081-2100", "JJA RCP8.5 2081-2100"]   
+        label: ["RCP4.5 2081-2100", "RCP8.5 2081-2100"]   
         # Optional attributes:
         # list with seasons index if time_avg "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
-        seasons: [2]
+        #seasons: [2]
         # use IAV data from multi-model mean or include identical models to the ones plotted?
         # default is mmm, otherwise set iavmode = "each" and make sure to have these models in IAV_calc_tas
         # and set iavmode to "each" there too
@@ -663,6 +679,7 @@ diagnostics:
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Annual mean temperature change"
         # explicit levels for all contour plots
         diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 9]
         max_vert: 2  # maximum number of plots in vertical
@@ -705,10 +722,10 @@ diagnostics:
         # Required attributes:
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
-        time_avg: annualclim
+        time_avg: seasonalclim
         ## Optional attributes:
         # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
-        iavmode: each
+        iavmode: mmm
         periodlength: 20.
 
   pr_change_mmm:
@@ -728,11 +745,11 @@ diagnostics:
       - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
       - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
-
       - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+
+      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2181, end_year: 2200}
 
     scripts:
       ch12_calc_map_diff_mmm_pr: &pr_map_settings
@@ -740,19 +757,19 @@ diagnostics:
         ## Required attributes:
         ancestors: ['pr', 'IAV_calc_pr/ch12_calc_IAV_for_stippandhatch_pr']
         # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
-        scenarios: [rcp45, rcp85]
+        scenarios: [rcp85]
         # Start years of periods to be included as list
-        periods: [2081]
+        periods: [2081, 2181]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
-        time_avg: annualclim
+        time_avg: seasonalclim
         # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
-        label: ["RCP4.5 2081-2100", "RCP8.5 2081-2100"]
+        label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2081-2100 MAM", "RCP8.5 2081-2100 JJA", "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 DJF", "RCP8.5 2181-2200 MAM", "RCP8.5 2181-2200 JJA", "RCP8.5 2181-2200 SON"]
         ## Optional attributes:
         # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
+        seasons: [0, 1, 2, 3]
         # use IAV data from multi-model mean or include identical models to above?
         # (mmm, each), if "each" calculate them in IAV_calc_pr
-        iavmode: each 
+        iavmode: mmm
         # Difference in percent? (0, 1) default = 0
         percent: 1
       ch12_plot_map_diff_mmm_stipp_pr:
@@ -762,10 +779,11 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Seasonal mean percentage precipitation change"
         # Contour levels for all difference plots
         diff_levs: [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
         # Maximum number of plots in vertical
-        max_vert: 2
+        max_vert: 4
         # Maximum number of plots in horizontal
         max_hori: 2
         # Specify alternative colormap
@@ -878,6 +896,7 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Annual mean TOA net radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
@@ -994,6 +1013,7 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Annual mean long wave TOA radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
@@ -1110,6 +1130,7 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Annual mean short wave TOA radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
@@ -1220,6 +1241,7 @@ diagnostics:
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson  
         #projection: Robinson
+        title: "Annula mean cloud fraction change"
         # explicit levels for all contour plots
         diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         max_vert: 2  # maximum number of plots in vertical
@@ -1329,6 +1351,7 @@ diagnostics:
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson  
         #projection: Robinson
+        title: "Seasonal mean sea level pressure change"
         # explicit levels for all contour plots
         diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4] 
         max_vert: 3  # maximum number of plots in vertical
@@ -1441,6 +1464,8 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        # title above plot
+        title: "Mean relative humidity change"
         # Contour levels for all difference plots
         diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         # Maximum number of plots in vertical
@@ -1565,6 +1590,7 @@ diagnostics:
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
+        title: "Annual mean surface salinity change"
         # Contour levels for all difference plots
         diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1., 1.5, 2.]
         # Maximum number of plots in vertical
@@ -1595,7 +1621,7 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: preproc_zo
+        preprocessor: preproc_zonal_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
@@ -1625,7 +1651,7 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: preproc_zo
+        preprocessor: preproc_zonal_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
@@ -1690,7 +1716,7 @@ diagnostics:
       - atmos
     variables:
       ua:
-        preprocessor: preproc_zo
+        preprocessor: preproc_zonal_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
@@ -1721,7 +1747,7 @@ diagnostics:
       - atmos
     variables:
       ua:
-        preprocessor: preproc_zo
+        preprocessor: preproc_zonal_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
