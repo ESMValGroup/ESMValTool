@@ -111,7 +111,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2):
+def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     """
     Determine the area average.
 
@@ -136,4 +136,8 @@ def area_average(cube, coord1, coord2):
     cube = _guess_bounds(cube, coords)
     grid_areas = iris.analysis.cartography.area_weights(cube)
     result = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
+    if use_fx_files:
+        # we ingest the fx_files dictionary
+        logger.info('Here are my FX files for area computation: %s', fx_files)
+        logger.info('Now what should I do with them? -- quote by Lee de Mora')
     return result
