@@ -742,14 +742,19 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G,    exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR,  exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,    exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp85, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,    exp: rcp85, start_year: 2181, end_year: 2200}
 
     scripts:
       ch12_calc_map_diff_mmm_pr: &pr_map_settings
