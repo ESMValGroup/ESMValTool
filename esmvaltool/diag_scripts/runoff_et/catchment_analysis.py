@@ -18,6 +18,7 @@ matplotlib.use('Agg')  # noqa
 
 import iris
 import numpy as np
+import calendar
 import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared as diag
@@ -139,7 +140,7 @@ def main(cfg):
         # Prepare data dictionary
         # to check: what is a smart way to do this in python3?
         datainfo = datasets.get_dataset_info(path=dataset_path)
-        dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['long_name']
+        dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['short_name']
         if dset not in plotdata.keys():                   plotdata[dset]                   = {}
         if dexp not in plotdata[dset].keys():             plotdata[dset][dexp]             = {}
         if dens not in plotdata[dset][dexp].keys():       plotdata[dset][dexp][dens]       = {}
@@ -152,19 +153,26 @@ def main(cfg):
         # Check for expected unit
         if new_cube.units != 'kg m-2 s-1':
             raise ValueError('Unit [kg m-2 s-1] is expected for ',new_cube.long_name.lower(),' flux')
-        # Convert to unit mm/d
-        new_cube.data *=  86400.0
-        # Aggregate over year
+        # Convert to unit mm per month
+        timelist=new_cube.coord('time')
+        daypermonth=[]
+        for mydate in timelist.units.num2date(timelist.points):
+            daypermonth.append(calendar.monthrange(mydate.year, mydate.month)[1])
+        new_cube.data *= 86400.0
+        for i, days in enumerate(daypermonth):
+            new_cube.data[i] *= days
+        # Aggregate over year --> unit mm per year
         year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
+        year_cube.units = "mm a-1"
         # Compute long term mean
         mean_cube       = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
-        mean_cube.units = "mm a-1"
         # Regrid to catchment data grid --> maybe use area_weighted instead?
         if mean_cube.coord('latitude').bounds  is None: mean_cube.coord('latitude').guess_bounds()
         if mean_cube.coord('longitude').bounds is None: mean_cube.coord('longitude').guess_bounds()
-        # mean_cube_regrid = regrid(mean_cube, catchment_cube, 'area_weighted')
-        mean_cube_regrid = regrid(mean_cube, catchment_cube, 'linear')
-        # Get catchment area means
+        mean_cube_regrid = regrid(mean_cube, catchment_cube, 'area_weighted')
+        # mean_cube_regrid = regrid(mean_cube, catchment_cube, 'linear')
+        # Get catchment area means if not reference
+        # if dset != reference_exp:
         for river, rid in catch_info.catchments.items():
             catch_data      = mean_cube_regrid.copy()
             catch_data.data = np.ma.masked_array(mean_cube_regrid.data,
