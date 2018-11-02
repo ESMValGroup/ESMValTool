@@ -559,14 +559,16 @@ def _update_fx_settings(settings, variable, config_user):
         if fx_files_dict['sftgif']:
             settings['mask_landseaice']['fx_files'].append(
                 fx_files_dict['sftgif'])
-    if 'average_region' in settings.keys():
-        if settings['average_region']['use_fx_files']:
-            variable = dict(variable)
-            fx_files_dict = get_input_fx_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'])
-            settings['average_region']['fx_files'] = fx_files_dict
+
+    for key in ['average_region', 'area_average', 'volume_average', 'average_volume']:
+        if key in settings.keys():
+            if settings[key]['use_fx_files']:
+                variable = dict(variable)
+                fx_files_dict = get_input_fx_filelist(
+                    variable=variable,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs'])
+                settings[key]['fx_files'] = fx_files_dict
 
 
 def _get_input_files(variable, config_user):
