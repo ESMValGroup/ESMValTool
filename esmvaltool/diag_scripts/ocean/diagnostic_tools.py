@@ -1,5 +1,6 @@
 """
 Diagnostic tools:
+-----------------
 
 This module contains several python tools used elsewhere by the ocean
 diagnostics package.

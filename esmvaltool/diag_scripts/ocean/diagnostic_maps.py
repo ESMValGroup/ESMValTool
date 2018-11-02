@@ -1,5 +1,6 @@
 """
 Diagnostic Maps:
+----------------
 
 Diagnostic to produce images of a map with coastlines from a cube.
 These plost show latitude vs longitude and the cube value is used as the colour
