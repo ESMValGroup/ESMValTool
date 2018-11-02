@@ -1,3 +1,4 @@
+import os
 from pprint import pformat
 from textwrap import dedent
 
@@ -9,10 +10,9 @@ import esmvaltool
 from esmvaltool._recipe import read_recipe_file
 from esmvaltool._task import DiagnosticTask
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
+
 from .test_diagnostic_run import write_config_user_file
-import os
-from prov.model import ProvDerivation
-from prov.constants import PROV_ATTR_GENERATED_ENTITY, PROV_ATTR_USED_ENTITY
+from .test_provenance import check_preprocessor_provenance
 
 MANDATORY_DATASET_KEYS = (
     'cmor_table',
@@ -189,41 +189,3 @@ def test_recipe(tmpdir, config_user, monkeypatch):
         for key in MANDATORY_SCRIPT_SETTINGS_KEYS:
             assert key in task.settings and task.settings[key]
         assert task.settings['custom_setting'] == 1
-
-
-def get_file_record(prov, filename):
-    records = prov.get_record('file:' + filename)
-    assert records
-    return records[0]
-
-
-def check_preprocessor_provenance(product):
-    prov = product.provenance
-
-    entity = get_file_record(prov, product.filename)
-    assert entity == product.entity
-
-    check_product_wasderivedfrom(product)
-
-
-def check_product_wasderivedfrom(product):
-    """Check that product.filename was derived from product._ancestors."""
-    prov = product.provenance
-
-    def get_identifier(filename):
-        record = get_file_record(prov, filename)
-        return {record.identifier}
-
-    # Check that the input and output file records exist
-    identifier = get_identifier(product.filename)
-
-    relations = {r for r in prov.records if isinstance(r, ProvDerivation)}
-    for ancestor in product._ancestors:
-        input_identifier = get_identifier(ancestor.filename)
-        for record in relations:
-            if input_identifier == record.get_attribute(PROV_ATTR_USED_ENTITY):
-                assert identifier == record.get_attribute(
-                    PROV_ATTR_GENERATED_ENTITY)
-                break
-        else:
-            assert False
