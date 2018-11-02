@@ -26,6 +26,9 @@ def write_config_user_file(dirname):
         'rootpath': {
             'default': os.path.join(dirname, 'input_dir'),
         },
+        'drs': {
+            'CMIP5': 'BADC',
+        },
         'log_level': 'debug',
     }
     with open(config_file, 'w') as file:
