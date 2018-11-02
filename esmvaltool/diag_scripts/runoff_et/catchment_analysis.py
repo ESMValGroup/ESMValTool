@@ -19,6 +19,7 @@ matplotlib.use('Agg')  # noqa
 import iris
 import numpy as np
 import calendar
+from itertools import cycle
 import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared as diag
@@ -54,7 +55,7 @@ class defaults(object):
         "Murray": 100
         }
 
-    runoffrefdata = {
+    mrro = {
         'Amazon': {'data': 1195.4477, 'unit': 'mm a-1'},
         'Congo': {'data': 365.6980, 'unit': 'mm a-1'},
         'Danube': {'data': 250.9211, 'unit': 'mm a-1'},
@@ -69,7 +70,7 @@ class defaults(object):
         'Yangtze-Kiang': {'data': 531.6936, 'unit': 'mm a-1'}
         }
 
-    preciprefdata = {
+    pr = {
         'Amazon': {'data': 2253.61, 'unit': 'mm a-1'},
         'Congo': {'data': 1539.98, 'unit': 'mm a-1'},
         'Danube': {'data': 809.11, 'unit': 'mm a-1'},
@@ -84,7 +85,7 @@ class defaults(object):
         'Yangtze-Kiang': {'data': 1032.84, 'unit': 'mm a-1'}
         }
 
-    ETrefdata = {
+    evspsbl = {
         'Amazon': {'data': 1014.4023, 'unit': 'mm a-1'},
         'Congo': {'data': 1203.182, 'unit': 'mm a-1'},
         'Danube': {'data': 554.5999, 'unit': 'mm a-1'},
@@ -99,6 +100,152 @@ class defaults(object):
         'Yangtze-Kiang': {'data': 538.0664, 'unit': 'mm a-1'}
         }
 
+def format_coef_plot(ax):
+    """ Moves axis from border to center and adapts ticks and labels accordingly
+    Parameters
+    ----------
+    ax : object
+        plot axis object
+    """
+    # Add infos to axis
+    ax.xaxis.set_label_coords(0.5, -0.025)
+    ax.yaxis.set_label_coords(-0.025, 0.5)
+    # Adapt axis range to center zero
+    xmax = np.ceil((np.absolute(np.array(ax.get_xlim())).max() + 5) / 10.0) * 10.0 - 5.0
+    ax.set_xlim(xmax * -1, xmax)
+    ymax = np.ceil((np.absolute(np.array(ax.get_ylim())).max() + 5) / 10.0) * 10.0 - 5.0
+    ax.set_ylim(ymax * -1, ymax)
+    # remove 0 from y and x axis
+    for key in ['x', 'y']:
+        ticks = list(getattr(ax, 'get_%sticks' % key)())
+        try:
+            ticks.remove(0)
+        except ValueError:
+            pass
+        getattr(ax, 'set_%sticks' % key)(ticks)
+
+    # Move left y-axis and bottim x-axis to centre, passing through (0,0)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('center')
+    # Eliminate upper and right axes
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    # Show ticks in the left and lower axes only
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+    return ax
+
+
+def make_catchment_plots(cfg, plotdata, catch_info):
+    """ Plot catchment averages for precipitation, evaporation
+        runoff and derived quantities.
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    plotdata : dict
+        Dictionary containing the catchment averages
+    catch_info : object
+        Object containing catchment names, IDs, and reference data
+    """
+
+    for model in plotdata.keys():
+        for exp in plotdata[model].keys():
+            for member in plotdata[model][exp].keys():
+                refdata, expdata = {}, {}
+
+                # 1. Barplots for single variables
+                for var in plotdata[model][exp][member].keys():
+                    filepath = os.path.join(cfg[diag.names.PLOT_DIR],
+                            cfg.get('output_name', model.upper()+'_bias-plot_'+var.upper()) + '.png')
+                    river, expdata[var], refdata[var] = [], [], []
+                    for xlabel, rdata in sorted(getattr(catch_info, var).items()):
+                        river.append(xlabel)
+                        refdata[var].append(rdata['data'])
+                        expdata[var].append(plotdata[model][exp][member][var][xlabel])
+                    logger.info(var+" Reference:", refdata[var])
+                    logger.info(var+" Experiment:", expdata[var])
+
+                    refdata[var], expdata[var] = np.array(refdata[var]), np.array(expdata[var])
+                    fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
+                    fig.subplots_adjust(bottom=0.35)
+
+                    # 1a. Plot absolut bias for every catchment
+                    ax = axs[0]
+                    ax.set_title('Bias of '+var.upper()+'\nfor '+model.upper())
+                    ax.set_xlabel('Catchment')
+                    ax.set_ylabel(var.upper()+' [mm a-1]')
+                    ax.set_xticks(range(len(river)))
+                    ax.set_xticklabels((river), fontsize='small')
+                    for tick in ax.get_xticklabels():
+                        tick.set_rotation(90)
+                    ax.bar(range(len(river)), expdata[var] - refdata[var], color='SkyBlue')
+                    ax.axhline(c='black', lw=2)
+
+                    # 1b. Plot relative bias for every catchment
+                    ax = axs[1]
+                    ax.set_title('Relative bias of '+var.upper()+'\nfor '+model.upper())
+                    ax.set_xlabel('Catchment')
+                    ax.set_ylabel('Relative bias [%]')
+                    ax.set_xticks(range(len(river)))
+                    ax.set_xticklabels((river), fontsize='small')
+                    for tick in ax.get_xticklabels():
+                        tick.set_rotation(90)
+                    ax.bar(range(len(river)), (expdata[var] - refdata[var]) / refdata[var] * 100, color='IndianRed')
+                    ax.axhline(c='black', lw=2)
+
+                    plt.tight_layout()
+                    fig.savefig(filepath)
+
+                markerlist = ('s', '+', 'o', '*', 'x', 'D')
+                # 2. Runoff coefficient vs Relative precipitation bias
+                marker = cycle(markerlist)
+                filepath = os.path.join(cfg[diag.names.PLOT_DIR],
+                        cfg.get('output_name', model.upper()+'_rocoef-vs-relprbias.png'))
+                fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
+                for i, label in enumerate(river):
+                  ax.scatter((expdata['pr'][i] - refdata['pr'][i]) / refdata['pr'][i] * 100,
+                          (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
+                          marker=next(marker), label=label)
+                ax.set_title(model.upper())
+                ax.set_xlabel('Relative bias of precipitation [%]')
+                ax.set_ylabel('Bias of runoff coefficient [%]')
+                ax = format_coef_plot(ax)
+
+                fig.subplots_adjust(bottom=0.30)
+                caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
+                marker = cycle(markerlist)
+                for i, label in enumerate(river):
+                    caxe.scatter([],[], marker=next(marker), label=label)
+                caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
+                caxe.set_axis_off()
+
+                fig.savefig(filepath)
+
+                # 3. Runoff coefficient vs Evaporation coefficient bias
+                marker = cycle(markerlist)
+                filepath = os.path.join(cfg[diag.names.PLOT_DIR],
+                        cfg.get('output_name', model.upper()+'_rocoef-vs-etcoef.png'))
+                fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
+                for i, label in enumerate(river):
+                  ax.scatter((expdata['evspsbl'][i] / expdata['pr'][i] * 100) - (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
+                          (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
+                          marker=next(marker), label=label)
+                ax.set_title(model.upper())
+                ax.set_xlabel('Bias of ET coefficient [%]')
+                ax.set_ylabel('Bias of runoff coefficient [%]')
+                ax = format_coef_plot(ax)
+
+                fig.subplots_adjust(bottom=0.30)
+                marker = cycle(markerlist)
+                caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
+                for i, label in enumerate(river):
+                    caxe.scatter([],[], marker=next(marker), label=label)
+                caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
+                caxe.set_axis_off()
+
+                fig.savefig(filepath)
+
 
 def main(cfg):
     """Run the diagnostic.
@@ -108,6 +255,9 @@ def main(cfg):
     cfg : dict
     Configuration dictionary of the recipe.
 
+    ToDo:
+    - Support using one experiment as reference
+    - Support user build catchment file with different catchments
     """
 
     # Get dataset and variable information
@@ -195,6 +345,7 @@ def main(cfg):
 
 
     # Plot catchment data
+    make_catchment_plots(cfg, plotdata, catch_info)
 
 
 if __name__ == '__main__':
