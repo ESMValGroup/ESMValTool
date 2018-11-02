@@ -40,15 +40,15 @@ MANDATORY_SCRIPT_SETTINGS_KEYS = (
 )
 
 DEFAULT_PREPROCESSOR_STEPS = (
-    'load',
-    'concatenate',
-    'fix_file',
-    'fix_data',
-    'fix_metadata',
-    'extract_time',
-    'cmor_check_metadata',
-    'cmor_check_data',
     'cleanup',
+    'cmor_check_data',
+    'cmor_check_metadata',
+    'concatenate',
+    'extract_time',
+    'fix_data',
+    'fix_file',
+    'fix_metadata',
+    'load',
     'save',
 )
 
