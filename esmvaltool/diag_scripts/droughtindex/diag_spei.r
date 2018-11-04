@@ -80,7 +80,6 @@ dothornthwaite <- function(v, lat){
 }
 
 args <- commandArgs(trailingOnly = TRUE)
-args <- "/home/a001850/WORK/git/ESMValTool/esmvaltool_output/recipe_spei_20181102_071158/run/diagnostic1/script1/settings.yml"
 params <- read_yaml(args[1])
 wdir <- params$work_dir
 dir.create(wdir, recursive = TRUE)
