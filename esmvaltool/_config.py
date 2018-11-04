@@ -4,14 +4,23 @@ import logging
 import logging.config
 import os
 import time
-import six
+from distutils.version import LooseVersion
 
+import iris
+import six
 import yaml
+
 from .cmor.table import read_cmor_tables
 
 logger = logging.getLogger(__name__)
 
 CFG = {}
+CFG_USER = {}
+
+
+def use_legacy_iris():
+    """Return True if legacy iris is used."""
+    return LooseVersion(iris.__version__) < LooseVersion("2.0.0")
 
 
 def read_config_user_file(config_file, recipe_name):
@@ -32,14 +41,16 @@ def read_config_user_file(config_file, recipe_name):
         'remove_preproc_dir': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
+        'profile_diagnostic': False,
         'config_developer_file': None,
         'drs': {},
     }
 
     for key in defaults:
         if key not in cfg:
-            logger.warning("No %s specification in config file, "
-                           "defaulting to %s", key, defaults[key])
+            logger.warning(
+                "No %s specification in config file, "
+                "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
     cfg['output_dir'] = _normalize_path(cfg['output_dir'])
@@ -47,7 +58,11 @@ def read_config_user_file(config_file, recipe_name):
         cfg['config_developer_file'])
 
     for key in cfg['rootpath']:
-        cfg['rootpath'][key] = _normalize_path(cfg['rootpath'][key])
+        root = cfg['rootpath'][key]
+        if isinstance(root, six.string_types):
+            cfg['rootpath'][key] = [_normalize_path(root)]
+        else:
+            cfg['rootpath'][key] = [_normalize_path(path) for path in root]
 
     # insert a directory date_time_recipe_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -60,6 +75,11 @@ def read_config_user_file(config_file, recipe_name):
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
+    # Save user configuration in global variable
+    for key, value in six.iteritems(cfg):
+        CFG_USER[key] = value
+
+    # Read developer configuration file
     cfg_developer = read_config_developer_file(cfg['config_developer_file'])
     for key, value in six.iteritems(cfg_developer):
         CFG[key] = value
@@ -68,9 +88,14 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
+def get_config_user_file():
+    """Return user configuration dictionary."""
+    return CFG_USER
+
+
 def _normalize_path(path):
     """
-    Normalize paths
+    Normalize paths.
 
     Expand ~ character and environment variables and convert path to absolute
 
@@ -105,7 +130,7 @@ def read_config_developer_file(cfg_file=None):
 
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
-    """Set up logging"""
+    """Set up logging."""
     if cfg_file is None:
         cfg_file = os.path.join(
             os.path.dirname(__file__), 'config-logging.yml')
@@ -139,25 +164,21 @@ def get_project_config(project):
     return CFG[project]
 
 
-def cmip5_dataset2inst(dataset):
-    """Return the institute given the dataset name in CMIP5."""
-    logger.debug("Retrieving institute for CMIP5 dataset %s", dataset)
-    return CFG['CMIP5']['institute'][dataset]
-
-
-def cmip5_mip2realm_freq(mip):
-    """Return realm and frequency given the mip in CMIP5."""
-    logger.debug("Retrieving realm and frequency for CMIP5 mip %s", mip)
-    return CFG['CMIP5']['realm_frequency'][mip]
+def get_institutes(variable):
+    """Return the institutes given the dataset name in CMIP5."""
+    dataset = variable['dataset']
+    project = variable['project']
+    logger.debug("Retrieving institutes for dataset %s", dataset)
+    return CFG.get(project, {}).get('institutes', {}).get(dataset, [])
 
 
 def replace_mip_fx(fx_file):
     """Replace MIP so to retrieve correct fx files."""
     default_mip = 'Amon'
     if fx_file not in CFG['CMIP5']['fx_mip_change']:
-        logger.warning('mip for fx variable %s is not specified in '
-                       'config_developer.yml, using default (%s)',
-                       fx_file, default_mip)
+        logger.warning(
+            'mip for fx variable %s is not specified in '
+            'config_developer.yml, using default (%s)', fx_file, default_mip)
     new_mip = CFG['CMIP5']['fx_mip_change'].get(fx_file, default_mip)
     logger.debug("Switching mip for fx file finding to %s", new_mip)
     return new_mip

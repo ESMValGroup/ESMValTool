@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import os
 import sys
+import tempfile
 import time
 
 import numpy as np
@@ -10,8 +11,14 @@ from dummydata.model2 import Model2
 from dummydata.model3 import Model3
 
 from esmvaltool._config import read_config_user_file
-from esmvaltool._data_finder import get_input_filename
 from esmvaltool._recipe import read_recipe_file
+
+
+def get_input_filename(variable, rootpath, drs):
+    """Get a valid input filename."""
+    # TODO: implement this according to esmvaltool._data_finder.py
+    # or patch get_input_filelist there.
+    return tempfile.NamedTemporaryFile().name + '.nc'
 
 
 def write_data_file(short_name, filename, field, start_year, end_year):
@@ -61,8 +68,7 @@ def simulate_input_data(recipe_file, config_user_file=None):
             'drs': {},
         }
 
-    recipe = read_recipe_file(
-        recipe_file, user_config, initialize_tasks=False)
+    recipe = read_recipe_file(recipe_file, user_config, initialize_tasks=False)
 
     start_time = time.time()
 
