@@ -46,7 +46,7 @@ class DerivedVariableBase(object):
             required variables are declared.
 
         """
-        required_variables = copy.deepcopy(self.__class__._required_variables)
+        required_variables = copy.deepcopy(self._required_variables)
         if not required_variables:
             raise NotImplementedError("Don't know how to derive variable "
                                       "'{}'".format(self.short_name))
@@ -56,14 +56,13 @@ class DerivedVariableBase(object):
                 "variables have to be specified in the 'vars' key of the "
                 "_required_variables dictionary (derivation from fx files "
                 "only is not supported yet)".format(self.short_name))
-        for (idx, var) in enumerate(required_variables['vars']):
+        for var in required_variables['vars']:
             if 'short_name' not in var:
                 raise NotImplementedError(
                     "Don't know how to derive variable '{}': 'short_name' is "
                     "not given for at least one required variable")
             if 'field' in var:
-                required_variables['vars'][idx]['field'] = var['field'].format(
-                    frequency=frequency)
+                var['field'] = var['field'].format(frequency=frequency)
 
         return required_variables
 
