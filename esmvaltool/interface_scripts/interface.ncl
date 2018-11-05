@@ -95,7 +95,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ninfo = ListCount(info)
-  out = NewList("fifo")
+  item = NewList("fifo")
   do ii = 0, ninfo - 1
     if (.not.isatt(info[ii], "short_name")) then
       error_msg("f", scriptname, funcname, "missing short_name attribute")
@@ -104,12 +104,12 @@ begin
       error_msg("f", scriptname, funcname, "missing field attribute")
     end if
     if (info[ii]@short_name.eq.variable .and. info[ii]@field.eq.field) then
-      ListAppend(out, info[ii])
+      ListAppend(item, info[ii])
     end if
   end do
 
   leave_msg(scriptname, funcname)
-  return(out)
+  return(item)
 
 end
 
@@ -152,9 +152,9 @@ begin
   end if
 
   var = variable_info[idx]
-  out = select_metadata_by_var_name(info, var@short_name, var@field)
+  item = select_metadata_by_var_name(info, var@short_name, var@field)
 
   leave_msg(scriptname, funcname)
-  return(out)
+  return(item)
 
 end
