@@ -65,7 +65,7 @@ end
 begin
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
-  system("mkdir -p " + work_dir)  ; Needed?
+  system("mkdir -p " + work_dir)
 
   input_dir = diag_script_info@input_files(1)
 end
@@ -127,7 +127,7 @@ begin
   dim_label = dim_seas * dim_scenarios * dim_periods
   if (dim_label .ne. dimsizes(diag_script_info@label)) then
     error_msg("f", diag_script, "", "wrong number of labels, needs to be " + \
-    "seasons * scenarios * periods")
+              "seasons * scenarios * periods")
   end if
 
   annots = project_style(diag_script_info, "annots")
