@@ -331,6 +331,19 @@ Example plots
    Time series of global annual mean surface air temperature anomalie
    (relative to 1986–2005) from CMIP5 concentration-driven experiments.
 
+.. figure:: /recipes/figures/collins13ipcc/collins_fig_4.png
+   :width: 70%
+   :align: center
+
+   Multi-model CMIP5 average percentage change in seasonal mean precipitation
+   relative to the reference period 1986–2005 averaged over the periods
+   2081–2100 and 2181–2200 under the RCP8.5 forcing scenario. Hatching
+   indicates regions where the multi-model mean change is less than one
+   standard deviation of internal variability. Stippling indicates regions
+   where the multi-model mean change is greater than two standard deviations
+   of internal variability and where at least 90% of models agree on the sign
+   of change
+
 .. figure:: /recipes/figures/collins13ipcc/collins_fig_3.png
    :width: 70%
    :align: center
