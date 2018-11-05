@@ -1,6 +1,5 @@
 """Derivation of variable `netcre`."""
 
-
 from ._derived_variable_base import DerivedVariableBase
 from .lwcre import DerivedVariable as Lwcre
 from .swcre import DerivedVariable as Swcre
@@ -9,48 +8,30 @@ from .swcre import DerivedVariable as Swcre
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `netcre`."""
 
-    def get_required(self, frequency):
-        """Get variable `short_name` and `field` pairs required for derivation.
+    # Required variables
+    _required_variables = {
+        'vars': [{
+            'short_name': 'rlut',
+            'field': 'T2{frequency}s'
+        }, {
+            'short_name': 'rlutcs',
+            'field': 'T2{frequency}s'
+        }, {
+            'short_name': 'rsut',
+            'field': 'T2{frequency}s'
+        }, {
+            'short_name': 'rsutcs',
+            'field': 'T2{frequency}s'
+        }]
+    }
 
-        Parameters
-        ----------
-        frequency : str
-            Frequency of the desired derived variable.
-
-        Returns
-        -------
-        list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
-
-        """
-        return [('rlut', 'T2' + frequency + 's'),
-                ('rlutcs', 'T2' + frequency + 's'),
-                ('rsut', 'T2' + frequency + 's'),
-                ('rsutcs', 'T2' + frequency + 's')]
-
-    def calculate(self, cubes, fx_files=None):
+    def calculate(self, cubes):
         """Compute net cloud radiative effect.
 
+        Note
+        ----
         Calculate net cloud radiative effect as sum of longwave and shortwave
         cloud radiative effects.
-
-        Parameters
-        ----------
-        cubes : iris.cube.CubeList
-            `CubeList` containing `rlut` (`toa_outgoing_longwave_flux`),
-            `rlutcs` (`toa_outgoing_longwave_flux_assuming_clear_sky`),
-            `rsut` (`toa_outgoing_shortwave_flux`) and `rsutcs`
-            (`toa_outgoing_shortwave_flux_assuming_clear_sky`).
-        fx_files : dict, optional
-            If required, dictionary containing fx files  with `short_name`
-            (key) and path (value) of the fx variable.
-
-        Returns
-        -------
-        iris.cube.Cube
-            `Cube` containing net cloud radiative effect.
-
         """
         lwcre_var = Lwcre()
         swcre_var = Swcre()
