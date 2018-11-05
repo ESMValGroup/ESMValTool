@@ -15,6 +15,8 @@ begin
   loadscript("$settings")
 end
 
+; #############################################################################
+
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = diag_script_info@input_files
@@ -28,6 +30,8 @@ begin
   end do
 end
 
+; #############################################################################
+
 begin
 
   ; Add trailing slash to paths
@@ -35,48 +39,122 @@ begin
   config_user_info@run_dir = config_user_info@run_dir + "/"
   config_user_info@work_dir = config_user_info@work_dir + "/"
 
-  ; Copy some info into legacy names (for backward compatibility with v1.0)
-  diag_script = diag_script_info@script
+  ; Define current script name as global variables (following Python syntax)
+  _DIAG_SCRIPT = diag_script_info@script
+  _NVARIABLES = ListCount(variable_info)
   if (isvar("variable_info")) then
-    variables = new(ListCount(variable_info), string)
-    field_types = new(ListCount(variable_info), string)
-    do i = 0, ListCount(variable_info) - 1
-      variables(i) = variable_info[i]@short_name
-      field_types(i) = variable_info[i]@field
+    _VARIABLES = new(_NVARIABLES, string)
+    _FIELD_TYPES = new(_NVARIABLES, string)
+    do i = 0, _NVARIABLES - 1
+      _VARIABLES(i) = variable_info[i]@short_name
+      _FIELD_TYPES(i) = variable_info[i]@field
     end do
-  end if
-
-  ; Convert lists to scalars if they contain only 1 element
-  if (isvar("variable_info")) then
-    if (ListCount(variable_info).eq.1) then
-      tmp = variable_info[0]
-      delete(variable_info)
-      variable_info = tmp
-      delete(tmp)
-    end if
-  end if
-
-  if (isvar("dataset_info")) then
-    if (ListCount(dataset_info).eq.1) then
-      tmp = dataset_info[0]
-      delete(dataset_info)
-      dataset_info = tmp
-      delete(tmp)
-    end if
-  end if
-
-  if (isvar("input_file_info")) then
-    if (ListCount(input_file_info).eq.1) then
-      tmp = input_file_info[0]
-      delete(input_file_info)
-      input_file_info = tmp
-      delete(tmp)
-    end if
   end if
 
 end
 
-; Load other standard interface scripts
+; #############################################################################
+; Load standard interface scripts
 load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
+
+; #############################################################################
+; Convenience functions for selecting input_file_info
+
+undef("select_metadata_by_var_name")
+function select_metadata_by_var_name(info:list,
+                                     variable:string,
+                                     field:string)
+;
+; Arguments
+;    info: the input_file_info logical containing all metadata
+;    variable: variable's short name (according to CMOR standard)
+;    field: variable's field type
+;
+; Return value
+;    A list of logicals containing only the metadata matching the variable's
+;    name and field.
+;
+; Description
+;    Metadata information are stored in a list of input_file_info logicals.
+;    This functions allows to extract the list elements matching the given
+;    variable's short name and field type.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;   20181105_A-righ_ma: written.
+;
+begin
+
+  funcname = "select_metadata_by_var_name"
+  scriptname = "interface_scripts/interface.ncl"
+  enter_msg(scriptname, funcname)
+
+  ninfo = ListCount(info)
+  out = NewList("fifo")
+  do ii = 0, ninfo - 1
+    if (.not.isatt(info[ii], "short_name")) then
+      error_msg("f", scriptname, funcname, "missing short_name attribute")
+    end if
+    if (.not.isatt(info[ii], "field")) then
+      error_msg("f", scriptname, funcname, "missing field attribute")
+    end if
+    if (info[ii]@short_name.eq.variable .and. info[ii]@field.eq.field) then
+      ListAppend(out, info[ii])
+    end if
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(out)
+
+end
+
+; #############################################################################
+undef("select_metadata_by_var_index")
+function select_metadata_by_var_index(info:list,
+                                      idx:integer)
+;
+; Arguments
+;    info: the input_file_info logical containing all metadata
+;    idx: the variable index as in the variable_info list (e.g, 0 for the
+;         first variable, 1 for the second, etc.)
+;
+; Return value
+;    A list of logicals containing only the metadata matching the variable's
+;    index
+;
+; Description
+;    Metadata information are stored in a list of input_file_info logicals.
+;    This functions allows to extract the list elements matching the given
+;    variable's index
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;   20181105_A-righ_ma: written.
+;
+begin
+
+  funcname = "select_metadata_by_var_index"
+  scriptname = "interface_scripts/interface.ncl"
+  enter_msg(scriptname, funcname)
+
+  if (idx.gt.ListCount(variable_info) - 1) then
+    error_msg("f", funcname, scriptname, "variable's index out of range: " + \
+              idx + " selected, only " + ListCount(variable_info) + \
+              " available")
+  end if
+
+  var = variable_info[idx]
+  out = select_metadata_by_var_name(info, var@short_name, var@field)
+
+  leave_msg(scriptname, funcname)
+  return(out)
+
+end
