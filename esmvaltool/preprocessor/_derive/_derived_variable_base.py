@@ -1,6 +1,5 @@
 """Contains the base class for derived variables."""
 
-
 import copy
 import importlib
 import logging
@@ -119,12 +118,12 @@ class DerivedVariableBase(object):
                 derived_var = getattr(derived_var_module,
                                       'DerivedVariable')(short_name)
             except AttributeError:
-                logger.warning("File ESMValTool/esmvaltool/preprocessor/"
-                               "_derive/%s.py for variable derivation does "
-                               "not contain required class 'DerivedVariable'",
-                               short_name)
+                logger.warning(
+                    "File ESMValTool/esmvaltool/preprocessor/"
+                    "_derive/%s.py for variable derivation does "
+                    "not contain required class 'DerivedVariable'", short_name)
         except ImportError:
-            logger.warning("No module named '%s' in ESMValTool/esmvaltool/"
-                           "preprocessor/_derive/ for variable derivation",
-                           short_name)
+            logger.warning(
+                "No module named '%s' in ESMValTool/esmvaltool/"
+                "preprocessor/_derive/ for variable derivation", short_name)
         return derived_var

@@ -1,6 +1,5 @@
 """Derivation of variable `nbp_grid`."""
 
-
 import iris
 from iris import Constraint
 
@@ -11,9 +10,13 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `nbp_grid`."""
 
     # Required variables
-    _required_variables = {'vars': [{'short_name': 'nbp',
-                                     'field': 'T2{frequency}s'}],
-                           'fx_files': ['sftlf']}
+    _required_variables = {
+        'vars': [{
+            'short_name': 'nbp',
+            'field': 'T2{frequency}s'
+        }],
+        'fx_files': ['sftlf']
+    }
 
     def calculate(self, cubes):
         """Compute net biome production relative to grid cell area.
@@ -28,7 +31,7 @@ class DerivedVariable(DerivedVariableBase):
         """
         nbp_cube = cubes.extract_strict(
             Constraint(name='surface_net_downward_mass_flux_of_carbon_dioxide_'
-                            'expressed_as_carbon_due_to_all_land_processes'))
+                       'expressed_as_carbon_due_to_all_land_processes'))
         try:
             sftlf_cube = cubes.extract_strict(
                 Constraint(name='land_area_fraction'))

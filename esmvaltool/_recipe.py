@@ -34,6 +34,7 @@ class RecipeError(Exception):
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict."""
+
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map."""
 
@@ -337,8 +338,8 @@ def _update_target_levels(variable, variables, settings, config_user):
                 _dataset_to_file(variable_data, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
-                filename,
-                variable_data['project'], dataset, variable_data['short_name'],
+                filename, variable_data['project'], dataset,
+                variable_data['short_name'],
                 os.path.splitext(variable_data['filename'])[0] + '_fixed',
                 coordinate)
 
@@ -362,10 +363,8 @@ def _get_dataset_info(dataset, variables):
     for var in variables:
         if var['dataset'] == dataset:
             return var
-    raise RecipeError(
-        "Unable to find matching file for dataset"
-        "{}".format(dataset)
-    )
+    raise RecipeError("Unable to find matching file for dataset"
+                      "{}".format(dataset))
 
 
 def _dataset_to_file(variable, config_user):
@@ -504,8 +503,8 @@ def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings.keys():
-        fx_files = get_required(
-            variable['short_name'], variable['field']).get('fx_files')
+        fx_files = get_required(variable['short_name'],
+                                variable['field']).get('fx_files')
         if fx_files:
             settings['derive']['fx_files'] = {}
             variable = dict(variable)
@@ -768,8 +767,8 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for new_variable in get_required(
-                        variable['short_name'], variable['field'])['vars']:
+                for new_variable in get_required(variable['short_name'],
+                                                 variable['field'])['vars']:
                     short_name = new_variable['short_name']
                     if short_name not in derive_input:
                         derive_input[short_name] = []

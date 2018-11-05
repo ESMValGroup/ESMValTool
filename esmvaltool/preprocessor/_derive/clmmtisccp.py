@@ -1,6 +1,5 @@
 """Derivation of variable `clmmtisccp`."""
 
-
 from iris import Constraint
 
 from ._shared import cloud_area_fraction
@@ -11,8 +10,12 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `clmmtisccp`."""
 
     # Required variables
-    _required_variables = {'vars': [{'short_name': 'clisccp',
-                                     'field': 'T4{frequency}'}]}
+    _required_variables = {
+        'vars': [{
+            'short_name': 'clisccp',
+            'field': 'T4{frequency}'
+        }]
+    }
 
     def calculate(self, cubes):
         """Compute ISCCP middle level medium-thickness cloud area fraction."""

@@ -1,6 +1,5 @@
 """Automatically derive variables."""
 
-
 import importlib
 import logging
 import os
@@ -74,8 +73,9 @@ def derive(cubes, variable, fx_files=None):
             if fx_path is not None:
                 cubes.append(iris.load_cube(fx_path))
             else:
-                logger.debug("Requested fx variable '%s' for derivation of "
-                             "'%s' not found", fx_var, short_name)
+                logger.debug(
+                    "Requested fx variable '%s' for derivation of "
+                    "'%s' not found", fx_var, short_name)
 
     # Derive correct variable
     derived_var = DerivedVariableBase.get_derived_variable(short_name)
@@ -116,8 +116,7 @@ def get_all_derived_variables():
             var_module = importlib.import_module(
                 'esmvaltool.preprocessor._derive.{}'.format(var_name))
             try:
-                derived_var = getattr(var_module,
-                                      'DerivedVariable')(var_name)
+                derived_var = getattr(var_module, 'DerivedVariable')(var_name)
                 ALL_DERIVED_VARIABLES[var_name] = derived_var
             except AttributeError:
                 pass
