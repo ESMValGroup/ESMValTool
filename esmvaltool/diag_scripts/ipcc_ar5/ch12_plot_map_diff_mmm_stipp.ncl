@@ -310,16 +310,6 @@ begin
     end if
 
     to_plot@res_mpPerimOn         = False
-    if (isatt(diag_script_info, "plotmask")) then
-      ; turn on lat/lon lines
-      to_plot@mpGridAndLimbOn   = True
-      ; change latitude line spacing
-      to_plot@res_mpGridLatSpacingF = 90.
-      ; change longitude line spacing
-      to_plot@res_mpGridLonSpacingF = 180.
-      ; trick ncl into drawing perimeter
-      to_plot@res_mpGridLineColor = "transparent"
-    end if
 
     maps(i) = contour_map(wks, to_plot(i, :, :), var0)
 

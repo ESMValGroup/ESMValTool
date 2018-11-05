@@ -31,8 +31,8 @@ preprocessors:
   preproc_map_land:
     mask_landsea:
       mask_out: sea
-#    mask_landseaice:
-#      mask_out: ice
+    mask_landseaice:
+      mask_out: ice
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -694,7 +694,6 @@ diagnostics:
         #pltname:
         # boolean, true if want number of models included in mmm printet in top right of figure
         model_nr: True
-        #plotmask: apply a mask when plotting? either "None" (default), "ocean", "land"
 
   ###  Mean Precipitation change in RCPs for multi model mean ###
   IAV_calc_pr:
@@ -803,8 +802,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean Total Radiation change in RCPs for multi model mean ###
   IAV_calc_rtmt:
@@ -920,8 +917,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean Long Wave Radiation change in RCPs for multi model mean ###
   IAV_calc_rlut:
@@ -1037,8 +1032,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean Short Wave Radiation change in RCPs for multi model mean ###
   IAV_calc_rsut:
@@ -1154,8 +1147,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
 ###  Mean cloud cover change in RCPs for multi model mean ###
   IAV_calc_clt:
@@ -1263,7 +1254,6 @@ diagnostics:
         #pltname:
         # boolean, true if want number of models included in mmm to be printet in top right
         model_nr: True
-        #plotmask: apply a mask when plotting? either "None" (default), "ocean", "land"
 
 ###  Mean sea level pressure change in RCPs for multi model mean ###
   IAV_calc_psl:
@@ -1373,8 +1363,6 @@ diagnostics:
         #pltname:
         # boolean, true if want number of models included in mmm to be printet in top right of figure 
         model_nr: True
-        # apply a mask when plotting? either "None" (default), "ocean", "land"
-        #plotmask:
 
   ###  Mean humidity change in RCPs for multi model mean ###
   IAV_calc_hurs:
@@ -1489,8 +1477,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printed in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean Salinity change in RCPs for multi model mean ###
   IAV_calc_sos:
@@ -1614,8 +1600,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean zonal variable change in one RCP for multi model mean ###
   IAV_calc_ta:
@@ -2024,8 +2008,6 @@ diagnostics:
         #pltname:
         # boolean, true if want number of models included in mmm to be printet in top right
         model_nr: True
-        # apply a mask when plotting? either "None" (default), "ocean", "land"
-        #plotmask: ocean
 
   ###  Mean runoff change in RCPs for multi model mean ###
   IAV_calc_mrro:
@@ -2160,8 +2142,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Mean Evaporation change in RCPs for multi model mean ###
   IAV_calc_evspsbl:
@@ -2296,8 +2276,6 @@ diagnostics:
         #pltname:
         # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
         model_nr: True
-        # Apply a mask when plotting? (None (default), ocean, land)
-        #plotmask:
 
   ###  Change scaled by global average temperature change ##
   tas_change_scaleT:
