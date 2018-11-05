@@ -1,0 +1,4 @@
+To execute the tests do:
+```
+pytest
+```

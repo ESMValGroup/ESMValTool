@@ -1,0 +1,36 @@
+###############################################################################
+# recipe_C3S_51_SPQB.yml
+#
+# Description
+# Independent assessment of single products for the C3S_511 quality brief
+#
+# Author
+# Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+# Birgit Hassler (DLR, Germany - birgit.hassler@dlr.de)
+#
+# Project
+# C3S_511
+#
+# Reference
+
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+datasets:
+#  - {model: CDS-XCO2, project: OBS,    tier: L3,    type: sat,       start_year: 2003,  end_year: 2016}
+  - {dataset: MRI-ESM1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  noop: {}
+
+diagnostics:
+  diagnostic0:
+    description: Single product quality brief.
+    variables:
+      ts:
+        preprocessor: noop
+        field: T2Ms
+    scripts:
+      script0:
+        script: qualassess/DUMMY_C3S_511.py

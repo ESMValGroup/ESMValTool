@@ -1,0 +1,105 @@
+ECV;Product;CMOR variable name;Frequency;Resolution;Required Measurement uncertainty;Stability (per decade unless otherwise specified);Standards/References;Entity (Satellite);Entity (in situ)
+Surface Wind Speed and direction;Surface wind speed and direction;uas, vas, sfcWind;3 hr;10km/NA;0.5m/s and mean quadratic statistics to 10% of the locally prevailing mean wind speed, for speed >20m/s;0.05m/s/decade;For stability: International Vector Winds Science Team Meeting (M.Bourassa);WGClimate;WIGOS
+Precipitation;Estimates of liquid and solid precipitation;pr;Monthly\\(statistics of 3 hr values);25km/NA;0.5 mm/h;0.02mm/decade;CMSAF requirements related to the HOAPS release 4.0 (CM-12611);WGClimate;WIGOS
+Temperature (surface);Temperature ;tas, ts;Hourly;Site;0.1K;0.02K/decade;P.Jones;;WIGOS
+Temperature (surface);Daily maximum temperature;tasmax;Daily Tx/Tn;Site;0.1K;0.02K/decade;P.Jones;;WIGOS
+Temperature (surface);Daily minimum temperature;tasmin;Hourly;Site;0.1K;0.02K/decade;P.Jones;;WIGOS
+Water Vapour (surface);Water vapour;rhs;Monthly\n(resolv. diurnal cycle);Site;RH 1%, DP 0.1K;0.5%/decade,\n0.02hPA/decade;Kate Willet;;WIGOS
+Surface Radiation Budget;Surface ERB longwave;rlds, rlus, rldscs, rluscs ;Monthly\n(resolv. diurnal cycle);100km/NA;1W/m2\n(global mean) ;0.2W/m2 /decade;;WGClimate;WIGOS
+Surface Radiation Budget;Surface ERB shortwave;rsds, rsus, rsdscs, rsuscs;Monthly\n(resolv. diurnal cycle);100km/NA;1W/m2\n(global mean) ;0.2W/m2 /decade;;WGClimate;WIGOS
+Earth Radiation Budget;Top-of-atmosphere ERB longwave;rlut;Monthly\n(resolv. diurnal cycle);100km/NA;1W/m2\n(global mean) ;0.2 W/m2/decade;NOAA Tech Rep. NESDIS 134;WGClimate;
+Earth Radiation Budget;Top-of-atmosphere ERB shortwave (reflected);rsut, rsdt;1hr;100km/NA;1W/m2\n(global mean) ;0.3W/m2 /decade;NOAA Tech Rep. NESDIS 134;WGClimate;
+Wind speed and direction (upper air) ;Upper-air wind retrievals;ua, va ;4hr;10km/0.5km;2m/s, 20deg;0.5m/s, 5deg;;WGClimate;WIGOS
+Temperature(upper air);Tropospheric Temperature profile;ta;4hr;25km/1km;0.5K;0.05K;;WGClimate;WIGOS
+Temperature(upper air);Stratospheric Temperature profile;ta;Monthly ;100km/2km;0.5K;0.05K;;WGClimate;WIGOS
+Temperature(upper air);Temperature of deep atmospheric layers;ta;4hr;100km/5km;0.2K;0.02K;;WGClimate;WIGOS
+Water Vapour(upper air);Total column-water vapour;hur;4hr\n(troposphere);25km/NA;2%;0.3%;;WGClimate;
+Water Vapour(upper air);Tropospheric profiles of water vapour;hur;daily\n(stratosphere);25km/2km;5%;0.3%;;WGClimate;
+Water Vapour(upper air);Lower-stratospheric profiles of water vapour;hur;1hr;100-200km/2km;5%;0.3%;;WGClimate;
+Water Vapour(upper air);Upper tropospheric humidity;hur;3hr;25km/NA;5%;0.3%;;WGClimate;
+Cloud Properties ;Cloud amount;clt;3hr;50km/NA;0.01-0.05;0.01/decade;ESA CCI CMUG tables (http://www.esa-cmug-cci.org/);WGClimate;
+Cloud Properties;Cloud Top Pressure;cct, pctisccp;3hr;50km/NA;15-50hPa;3-15hPa;;WGClimate;
+Cloud Properties;Cloud Top Temperature;;3hr;50km/NA;1-5K;0.25K/decade;;WGClimate;
+Cloud Properties;Cloud Optical Depth;cod;3hr;50km/NA;10%;2%;;WGClimate;
+Cloud Properties;Cloud Water Path (liquid and ice);lwp, ;3hr;50km/NA;25%;5%;;;
+Cloud Properties;C, effective particle radius (liquid and ice);reffclwtop;4hr;50km/NA;1um;1um/decade;;;
+Aerosols properties;Aerosol optical depth;od550aer;4hr;5-10km/NA/;Max(0.03, 10%);0.02/decade;ESA CCI CMUG tables (http://www.esa-cmug-cci.org/);WGClimate;
+Aerosols properties;Single-scattering albedo;albisccp;4hr;5-10km/NA/;0.03;0.01;;;
+Aerosols properties;Aerosol-layer height;;weekly;5-10km/NA/;1km;0.5km;;WGClimate;
+Aerosols properties;Aerosol-extinction coeff. profile near tropopause;;weekly;200-500 km/ 1km;10%;20%;;WGClimate;
+Aerosols properties;Aerosol-extinction coeff. profile mid stratosphere;;4hr;2km;10%;20%;;WGClimate;
+Carbon Dioxide, Methane and other Greenhouse gases;Tropospheric CO2 column;xco2;4hr;5-10km/NA;1ppm;1.5ppm/decade;ESA CCI CMUG tables (http://www.esa-cmug-cci.org/);WGClimate;
+Carbon Dioxide, Methane and other Greenhouse gases;Tropospheric CO2;vmrco2;4hr;5-10km/5km;1ppm;1.5ppm;;;GAW
+Carbon Dioxide, Methane and other Greenhouse gases;Tropospheric CH4 column;xch4;4hr;5-10km/NA;10ppb;7ppb;;WGClimate;
+Carbon Dioxide, Methane and other Greenhouse gases;Tropospheric CH4;vmrch4;daily;5-10km/5km;0.5ppb;0.7ppb;;;GAW
+Carbon Dioxide, Methane and other Greenhouse gases;Stratospheric CH4;vmrch4;4hr;100-200km/2km;5%;0.3%;;;GAW
+Ozone;Total column ozone;toz;4hr;20-50km/NA;Max(2%, 5DU);1%;;WGClimate;
+Ozone;Troposphere Ozone;vmro3;4hr;20-50km/5km;10-15%;2%;;WGClimate;GAW
+Ozone;Ozone profile in upper and lower stratosphere;vmrstrato3;daily;100-200km/1-2km;10%;2%;;WGClimate;
+Ozone;Ozone profile in upper strato-and mesosphere;vmrstrato3;Hourly to weekly;100-200km/3km/;5-20%;2%;;WGClimate;
+Sea Surface Temperature;Sea Surface Temperature;tos;Hourly to monthly ;1-100 km;0.1 K over\n100 km scales;< 0.03 K over\n100 km scales;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;JCOMM
+Subsurface Salinity;Interior Salinity;so;Hourly to weekly  ;1-10km;0.01psu;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Subsurface Curents;Interior Currents;;hourly to monthly ;1-10km;0.02m/s;Not specified;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Surface Stress;Surface Stress;tauvo, tauuo;hourly to monthly;10-100km ;0.001-4Nm2 ;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Ocean Surface Heat Flux;Latent Heat Flux;hfds;hourly to monthly;1-25km ;10-15Wm-2 ;1-2Wm-2;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Ocean Surface Heat Flux;Sensible Heat Flux;hfds;Weekly to monthly;1-25km ;10-15Wm-2 ;1-2Wm-2;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Sea Level;Global Mean Sea Level;zos;Hourly to weekly;10-100 km;2-4 mm\n(global mean),\n1 cm (grid mesh);< 0.3 mm/yr\n(global mean);See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;JCOMM
+Sea Level;Regional Sea Level;zos;3 hourly;10 km;1 cm\n(grid mesh\nof 50-100 km);< 1 mm/yr\n(grid mesh\nof 50-100 km);See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;JCOMM
+Sea State;Wave Height;;Hourly to monthly;25 km;10 cm;5 cm;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;JCOMM
+Subsurface Temperature;Interior Temperature;;Hourly to monthly ;1-10km ; 0.01K  ;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Subsurface Currents;Interior Currents;;Weekly; 1-10km; 0.02m/s;Not specified;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;;JCOMM
+Sea Ice;Sea Ice Concentration;sic;Weekly;10 km to 15 km;5%\nice area fraction;5%;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;
+Sea Ice;Sea Ice Extent/Edge;siextentn, siextents;Monthly;1 km to 5 km;5 km;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;
+Sea Ice;Sea Ice Thickness;sit;Weekly;25km ;0.1 m;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;
+Sea Ice;Sea Ice Drift;sidivvel, sispeed;Annual to decadal ;5 km;1 km/day;Not specified ;See EOV specification sheets at www.ioc-goos-oopc/obs/ecv.php;WGClimate;
+Transient Tracers;Interior ocean CFC-12;cfc12;Annual to decadal ;Every 20 degree;+/- 1%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean CFC-11;cfc11;Annual to decadal ;Every 20 degree;+/- 1%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean SF6;sf6;Annual to decadal ;Every 20 degree;+/- 1%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean tritium ;;Annual to decadal ;Every 20 degree;+/- 0.5%, 0.005 TU;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean 3He;;Annual to decadal ;Every 20 degree;3He +/- 0.15%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean 14C;;Annual to decadal ;Every 20 degree;14C +/- 0.4%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Transient Tracers;Interior ocean 39Ar;;decadal ;Every 20 degree;14C +/- 0.4%;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Inorganic Carbon;Interior ocean carbon storage. Dissolved Inorganic Carbon (DIC), Total Alkalinity (TA) ;talknat, intdic;Weekly to decadal;Every 20 degree;TA/DIC +/- 2 ?M;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Inorganic Carbon;Interior ocean carbon storage. pH;phnat ;Weekly to decadal;Every 20 degree;pH +/- 0.005;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Inorganic Carbon;pCO2 (to provide Air-sea flux of CO2);spco2;Daily;Every 10 degree\n(Denser in coastal\ndomain, surface);+/- 2 atm;;See http://www.ioccp.org/index.php/foo ;;GOOS
+Ocean Colour;Water Leaving Radiance;;Weekly averages;4 km;5%\n(blue & green\nwavelengths);0,50%;See http://www.ioccp.org/index.php/foo ;WGClimate;
+Ocean Colour;Chlorophyll-a Concentration;;Daily;4 km;30%;3%;See http://www.ioccp.org/index.php/foo ;WGClimate;
+Soil Moisture;Surface soil moisture;mrsos;Daily;1-25 km;0.04 m3/m3;0.01 m3/m3/year;WMO (2008b);WGClimate;ISMN
+Soil Moisture;Volumetric soil moisture;sm;;;;;;;
+Soil Moisture;Freeze/thaw;;Daily;1-25 km;90%;tbd;;WGClimate;ISMN
+Soil Moisture;Surface inundation;;Daily;1-25 km;90%;tbd;;;ISMN
+Soil Moisture;Root-zone soil moisture;;;1-25 km;0.04 m3/m3;0.01 m3/m3/year;;;ISMN
+Soil Moisture;Deeper Layer;;Daily;;;;;;
+Lakes;Lake water level;;Daily;100 m;3 cm (large lakes),\n10 cm (remainder);1 cm/decade;WMO (2006, 2008a);WGClimate;HYDROLARE
+Lakes;Water Extent;;Weekly;20 m;10 % (relative),\n5% (70 largest lakes);5%/%/decade;WMO (2006, 2008a);WGClimate;HYDROLARE
+Lakes;Lake surface water temperature;;Monthly;300 m;1 K;0.1 K/decade;WMO (2006, 2008a);WGClimate;HYDROLARE
+Lakes;Lake ice thickness;;Daily;100m;1-2 cm;;;WGClimate;HYDROLARE
+Lakes;Lake Ice Cover;;Weekly;300 m;10%;1 %/decade;;WGClimate;HYDROLARE
+Lakes;Lake Colour (Lake Water Leaving Reflectance);;Daily;300 m;30%;1 %/decade;;WGClimate;HYDROLARE
+Snow;Area covered by snow;snc;Daily;1km\n(100m in complex\nterrain);5% (maximum error of omission and commission in snow area). location accuracy better than 1/3 IFOV with target IFOV 100 m in areas of complex terrain, 1 km elsewhere;4% (maximum error of omission and commission in snow area). location accuracy better than 1/3 IFOV with target IFOV 100 m in areas of complex terrain, 1 km elsewhere;WMO (2008c) IGOS (2007), IACS/UNESCO, 2009;;WIGOS, GCW
+Snow;snow depth;snd;Daily;1km\n(100m in complex\nterrain);10mm;10mm;WMO (2008c) IGOS (2007), IACS/UNESCO, 2009;;WIGOS, GCW
+Snow;snow water equivalent;swe;Annual\n(at end of\nablation season);1km;10mm;10mm;;;WIGOS, GCW
+Glaciers;Glacier area;sftgif;Decadal;Horizontal 15-30m,\nVertical 1m;5%;;"IGOS (2009); Paul et al. (2009)";WGClimate;GCW
+Glaciers;Glacier elevation change;;seasonal to annual\n(latter at end of\nablation period);Horizontal\n30m-100m,\nVertical 1m;2m/decade ;1m/decade;Zemp et al. (2013);WGClimate;GCW
+Glaciers;Glacier mass change;;30 days;Vertical: 0.01m or 10kg/m2 (at point location);>200kg/m2/year\n(glacier-wide);;;WGClimate;GCW
+Ice Sheets and ice shelves;Surface Elevation Change;;30 days;Horizontal 100m;0.1m/year;0.1m/year;;WGClimate;GCW
+Ice Sheets and ice shelves;Ice velocity;siv, siu;30 days;Horizontal 100m;0.1m/year;0.1m/year;;WGClimate;GCW
+Ice Sheets and ice shelves;Ice mass change;sidmassth, sidmassdyn;Yearly;Horizontal 50km;10km^3/year;10km^3/year;;WGClimate;GCW
+Ice Sheets and ice shelves;Grounding line location and thickness;;Daily to weekly;Horizontal 100 m,\nVertical 10 m;1 m;10 m;;WGClimate;GCW
+Permafrost;Thermal State of Permafrost;;;Sufficient sites\nto characterise each\nbio-climate zone;0.1K;;;;GCW
+Permafrost;Active Layer Thickness;tpf;Daily;;2cm;;;;GCW
+Albedo;Maps of DHR albedo for adaptation;albdirbnd, albdiffbnd ;;50m;max(5%, 0.0025);max(1%, 0.001);;WGClimate;BSRN
+Albedo;Maps of BHR albedo for adaptation;albdirbnd, albdiffbnd ;Daily;50m;max(5%, 0.0025);max(1%, 0.001);;WGClimate;BSRN
+Albedo;Maps of DHR albedo for modelling;albdirbnd, albdiffbnd ;;200/500m;max(5%, 0.0025);max(1%, 0.001);;WGClimate;
+Albedo;Maps of BHR albedo for modelling;albdirbnd, albdiffbnd ;Annual;200/500m;max(5%, 0.0025);max(1%, 0.001);;WGClimate;
+Land cover;Maps of land cover;;5 year;250m;15% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV 250 m;15% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV 250 m;No agreed standards but see GLCN (2014) and GOFC-GOLD (2015a);WGClimate;GOFC-GOLD
+Land cover;Maps of high resolution land cover;;1-10 years;10 - 30m;5% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV 10-30 m;5% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV 10-30 m;;WGClimate;GOFC-GOLD
+Land cover;Maps of key IPCC land use, related changes and land management types;;Daily;10-1000 m\n(depending on\ntime period);20% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV;20% (maximum error of omission and commission in mapping individual classes), location accuracy better than 1/3 IFOV with target IFOV;IPCC (2006);;GOFC-GOLD
+Fraction of Absorbed Photosynthetically Active Radiation (FAPAR);maps of FAPAR for modelling;;;200/500 m;max(10%, 0.05);max(3%, 0.02);;WGClimate;
+Fraction of Absorbed Photosynthetically Active Radiation (FAPAR);maps of FAPAR for adaptation;;Daily;50m;max(10%, 0.05);max(3%, 0.02);;WGClimate;
+Leaf Area Index (LAI);maps of LAI for modelling;lai;;250m;max(15%);max(10%, 0.25);;WGClimate;
+Leaf Area Index (LAI);maps of LAI for adaptation;lai;24 hours;50m;;;;WGClimate;
+Fire;Burnt Areas;burntArea;6 hours (Polar-Orbiting)\n1 hour (Geostationary);30m;15% (error of omission and commission), compared to 30 m observations;; None;WGClimate;
+Fire;Active fire maps ;;6 hours (Polar-Orbiting)\n1 hour (Geostationary);0.25-1 km (Polar), 1-3 km (Geo);5% error of commission. 10% error of omission. Based on per-fire comparisons for fires above target threshold of 5 MW/km^2 equivalent integrated FRP per pixel (i.e. for a 0.5 km^2 pixel the target threshold would be 2.5 MW, for a 9 km^2 pixel it would be 45 MW).;; None;WGClimate;
+Fire;Fire radiative power;;;0.25-1 km (Polar), 1-3 km (Geo);10% integrated over pixel. Based on target detection threshold of 5 MW/km^2 equivalent integrated FRP per pixel (i.e. for a 0.5 km^2 pixel the target threshold would be 2.5 MW, for a 9 km^2 pixel it would be 45 MW). and with the same detection accuracy as the Active Fire Maps.;; None;WGClimate;
+Ice Caps;;;;;;;;;
