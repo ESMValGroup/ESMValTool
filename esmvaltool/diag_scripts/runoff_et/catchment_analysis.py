@@ -180,11 +180,12 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
                     refdata[var], expdata[var] = np.array(refdata[var]), np.array(expdata[var])
                     fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
+                    fig.suptitle(model.upper() + ' vs ' + reference.upper())
                     fig.subplots_adjust(bottom=0.35)
 
                     # 1a. Plot absolut bias for every catchment
                     ax = axs[0]
-                    ax.set_title('Bias of '+var.upper()+'\nfor '+model.upper())
+                    ax.set_title('\nBias for '+var.upper())
                     ax.set_xlabel('Catchment')
                     ax.set_ylabel(var.upper()+' [mm a-1]')
                     ax.set_xticks(range(len(river)))
@@ -196,7 +197,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
                     # 1b. Plot relative bias for every catchment
                     ax = axs[1]
-                    ax.set_title('Relative bias of '+var.upper()+'\nfor '+model.upper())
+                    ax.set_title('\nRelative bias for '+var.upper())
                     ax.set_xlabel('Catchment')
                     ax.set_ylabel('Relative bias [%]')
                     ax.set_xticks(range(len(river)))
@@ -340,16 +341,14 @@ def main(cfg):
         # Regrid to catchment data grid --> maybe use area_weighted instead?
         if mean_cube.coord('latitude').bounds  is None: mean_cube.coord('latitude').guess_bounds()
         if mean_cube.coord('longitude').bounds is None: mean_cube.coord('longitude').guess_bounds()
-        mean_cube_regrid = regrid(mean_cube, catchment_cube, 'area_weighted')
-        # mean_cube_regrid = regrid(mean_cube, catchment_cube, 'linear')
+        mean_cube_regrid = mean_cube.regrid(catchment_cube, iris.analysis.Linear())
+        # mean_cube_regrid = mean_cube.regrid(catchment_cube, iris.analysis.AreaWeighted())
         # Get catchment area means
         rivervalues = {}
         for river, rid in catch_info.catchments.items():
-            catch_data      = mean_cube_regrid.copy()
-            catch_data.data = np.ma.masked_array(mean_cube_regrid.data,
-                mask=(catchment_cube.data.astype(np.int) != rid))
-            value = catch_data.collapsed(['longitude', 'latitude'], iris.analysis.MEAN, weights=catchment_areas)
-            rivervalues[river] = value.data.tolist()
+            data_catch = np.ma.masked_where(catchment_cube.data.astype(np.int) != rid, mean_cube_regrid.data)
+            area_catch = np.ma.masked_where(catchment_cube.data.astype(np.int) != rid, catchment_areas.data)
+            rivervalues[river] = (data_catch * (area_catch / area_catch.sum())).sum()
         if dset == datainfo.get('reference_dataset', None):
             if reference == 'default':
                 reference = datainfo['reference_dataset']
@@ -364,6 +363,11 @@ def main(cfg):
                 raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
             else:
                 plotdata[dset][dexp][dens][dvar] = rivervalues
+        filepath = os.path.join(cfg[diag.names.WORK_DIR], cfg.get('output_name', '_'.join(['catchdata',dset,dvar,])) + '.txt')
+        with open(filepath, 'w') as f:
+            f.write(dset.upper() + ' catchment averages [mm a-1]\n\n')
+            for river, value in sorted(rivervalues.items()):
+                f.write('{:25} : {:8.2f}\n'.format(river, value))
 
         # Update data for dataset
         # to check: necessary at all? dataset not used later...
@@ -374,7 +378,7 @@ def main(cfg):
     # Write regridded data files
     # to do: update attributes
     filepath = os.path.join(cfg[diag.names.WORK_DIR], cfg.get('output_name', 'pp_runoff_et') + '.nc')
-    if cfg[diag.names.WRITE_PLOTS]:
+    if cfg[diag.names.WRITE_NETCDF]:
         iris.save(allcubes, filepath)
         logger.info("Writing %s", filepath)
 
