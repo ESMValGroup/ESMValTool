@@ -15,30 +15,13 @@ begin
   loadscript("$settings")
 end
 
-; Convert diag_script_info and config_user_info to scalar
-begin
-  tmp = diag_script_info[0]
-  delete(diag_script_info)
-  diag_script_info = tmp
-  delete(tmp)
-  delete(diag_script_info@_FillValue)
-
-  tmp = config_user_info[0]
-  delete(config_user_info)
-  config_user_info = tmp
-  delete(tmp)
-  delete(config_user_info@_FillValue)
-end
-
-
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
-  vardeffiles = \
-    str_match_ic_regex(diag_script_info@input_files, ".*_info\" + ".ncl")
-  nvdf = dimsizes(vardeffiles)
+  vardeffiles = diag_script_info@input_files
+  nvdf = ListCount(vardeffiles)
   do i = 0, nvdf - 1
-    if (.not. ismissing(vardeffiles(nvdf - 1 - i))) then
-      vardeffile = diag_script_info@input_files(nvdf - 1 - i)
+    if (.not. ismissing(vardeffiles[nvdf - 1 - i])) then
+      vardeffile = vardeffiles[nvdf - 1 - i]
       print("INFO    Loading input data description from " + vardeffile)
       loadscript(vardeffile)
     end if
