@@ -180,7 +180,6 @@ User settings
    * not_sig: plot hatching for uncertainty? (True, False)
    * pltname: alternative name for output plot, default is diagnostic +
      varname + time_avg
-   * plotmask: apply a mask when plotting? ("None" (default), "ocean", "land")
    * units: units written next to colorbar, e.g (~F35~J~F~C)
 
 #. ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl:
