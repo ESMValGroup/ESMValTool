@@ -98,11 +98,6 @@ begin
               "'long_name'")
   end if
 
-  ; climofiles = new(dim_MOD, string)
-  ; do ii = 0, dim_MOD - 1
-  ;   climofiles(ii) = input_file_info@filename(ii)
-  ; end do
-
   ; ###########################################
   ; # Get data                                #
   ; ###########################################
@@ -271,36 +266,6 @@ begin
   end if
   draw(wks)
   frame(wks)
-  ; alltags = array_append_record(tags,\
-  ;   (/"DM_glob", "PT_times", "ST_mean", "ST_stddev", "ST_anomaly"/), 0)
-  ; string1 = "Time series of global annual mean " + variable_info@long_name +\
-  ;           " anomalies (relative to " + dataset_info@start_year(0) + "-" + \
-  ;           dataset_info@end_year(0) + ") from CMIP5 concentration " + \
-  ;           "driven experiments. Projections are shown for each RCP for " + \
-  ;           "the multi-model mean (solid lines) and the 5 to 95% range " + \
-  ;           "(+-1.64 standar deviation) across the distribution of " + \
-  ;           "individual models (shading). "
-  ; if (nperiods .gt. 1) then
-  ;   string2 = "Discontinuities at 2100 are due to different numbers of" + \
-  ;     "models performing the extension runs beyond the 21st " + \
-  ;     "century and have no physical meaning. Only one ensemble " + \
-  ;     "member is used from each model and numbers in the " + \
-  ;     "figure indicate the number of different models " + \
-  ;     "contributing to the different time periods. No ranges " + \
-  ;     "are given for the RCP6.0 projections beyond 2100 as only" + \
-  ;     " 2 models are available."
-  ; else
-  ;   string2 = ""
-  ; end if
-  ; caption = string1 + string2
-  ; id = diag_script + "_" + variables(0)
-
-  ; contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-  ; ESMValMD(wks@fullname, alltags, \
-  ;          caption, id, variables(0), dataset_info@dataset, \
-  ;          climofiles, diag_script, contrib_authors)
-
-  ; delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
   leave_msg(diag_script, "")

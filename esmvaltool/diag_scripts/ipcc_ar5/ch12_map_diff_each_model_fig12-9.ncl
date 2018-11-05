@@ -135,8 +135,6 @@ begin
     data3 = time_operations(A1, -1, -1, "average", \
                             diag_script_info@time_avg, True)
 
-    climofiles = input_file_info@filename(idx_rcp)
-
     ; ##############################################
     ; # Calculate change from period 1 to period 2 #
     ; ##############################################
@@ -290,24 +288,6 @@ begin
   pres@pmLabelBarParallelPosF = 0.06
 
   outfile = panelling(wks, maps, nvert, nhori, pres)
-
-; add tags
-;  alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_clim"/), 0)
-;  caption = "Surface change in " + variable_info@long_name + " in " + \
-;    dataset_info@start_year(idx_rcp) + "-" + \
-;    dataset_info@end_year(idx_rcp) + " displayed as anomalies with " + \
-;    "respect to " + dataset_info@start_year(0) + "-" + \
-;    dataset_info@end_year(0) + " for " + dataset_info@exp(idx_rcp) + \
-;    " from one ensemble member of each of the " + \
-;    "concentration driven models available in the CMIP5 archive. " + \
-;    "Similar to Figure 12.9 of Collins et al. (2013)."
-;  id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
-;  contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-
-;  ESMValMD(outfile, alltags, caption, id, variables(0), \
-;           dataset_info@dataset, climofiles, diag_script, contrib_authors)
-
-;  delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + outfile)
   leave_msg(diag_script, "")

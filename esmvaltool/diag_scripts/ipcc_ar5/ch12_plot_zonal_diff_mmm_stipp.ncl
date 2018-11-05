@@ -13,6 +13,7 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
+;    20181105-A_lore_ru: ported to v2
 ;    20171002-A_lore_ru: Added tags for searching
 ;    20170523-A_lore_ru: written for ESMValTool
 ;                        based on IPCC AR5 scripts.
@@ -96,11 +97,6 @@ begin
     error_msg("f", diag_script, "", "missing variable attribute " + \
               "'long_name'")
   end if
-
-  ; climofiles = new(dim_MOD, string)
-  ; do ii = 0, dim_MOD - 1
-  ;   climofiles(ii) = input_file_info@filename(ii)
-  ; end do
 
   ; ###########################################
   ; # Get data                                #
@@ -381,30 +377,6 @@ begin
   psles@pmLabelBarOrthogonalPosF = -0.01
 
   outfile = panelling(wks, maps, nvert, nhori, psles)
-
-; # add tags
-  ; alltags = array_append_record(tags, (/"DM_glob", "PT_zonal", \
-  ;                                       "ST_clim"/), 0)
-  ; caption = "CMIP5 multi-model changes in annual mean zonal mean " + \
-  ;            variable_info@long_name + " relative to " + \
-  ;            dataset_info@start_year(0) + "-" + dataset_info@end_year(0) \
-  ;            + " for 20 year periods starting in " \
-  ;            + str_join(diag_script_info@periods, ", ") + " under the " + \
-  ;            str_join(diag_script_info@scenarios, ", ") + \
-  ;            " forcing scenarios. Hatching indicates regions where the " + \
-  ;            "multi-model mean change is less than one standard " + \
-  ;            "deviation of internal variability. Stippling indicates " + \
-  ;            "regions where the multi-model chnage mean is greater than " + \
-  ;            "two standard deviations of internal variability and where " + \
-  ;            "at least 90% of the models agree on the sign of change. " + \
-  ;            "Similar to Figure 12.12 of Collins et al. (2013)."
-  ; id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
-  ; contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-
-  ; ESMValMD(outfile, alltags, caption, id, variables(0), dataset_info@name, \
-  ;          climofiles, diag_script, contrib_authors)
-
-  ; delete([/alltags, caption, id, climofiles/])
 
   log_info(" Wrote " + outfile)
 

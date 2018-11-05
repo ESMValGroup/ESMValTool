@@ -105,11 +105,6 @@ begin
               "'long_name'")
   end if
 
-;  climofiles = new(dim_MOD, string)
-;  do ii = 0, dim_MOD - 1
-;    climofiles(ii) = input_file_info@filename(ii)
-;  end do
-
   ; ###########################################
   ; # Get data                                #
   ; ###########################################
@@ -228,7 +223,6 @@ begin
     ress@cnFillMode = "AreaFill"
     ress@cnMonoFillPattern = False
     ress@cnFillPatterns = (/-1, 17, 17/)
-;    ress@cnFillColor = 50
     ress@cnMonoFillColor = True
     ress@lbLabelBarOn = False
     ress@gsnLeftString = ""
@@ -254,7 +248,6 @@ begin
     resb@cnRasterSmoothingOn = False
     resb@cnMonoFillPattern = False
     resb@cnFillPatterns = (/-1, 10, 10/)
-;    resb@cnFillColor = 50
     resb@cnMonoFillColor = True
     resb@lbLabelBarOn = False
     resb@gsnLeftString = ""
@@ -376,7 +369,6 @@ begin
   a4_width = 23.0   ; reference is correct
   cm_per_inch = 2.54
 
-;    pres@gsnMaximize = True
   pres@gsnPaperWidth = a4_width / cm_per_inch
   pres@gsnPaperHeight = a4_height / cm_per_inch
   pres@gsnPaperOrientation = "portrait"
@@ -409,63 +401,8 @@ begin
   end if
   pres@pmLabelBarParallelPosF = 0.06
   pres@pmLabelBarWidthF = .6
-;  pres@pmLabelBarOrthogonalPosF = -0.01
 
   outfile = panelling(wks, maps, nvert, nhori, pres)
-
-; add tags
-    ; alltags = array_append_record(tags, \
-    ;        (/"DM_glob", "PT_geo", "ST_clim"/), 0)
-    ; if (tf) then
-    ;     string1 = variable_info@long_name + \
-    ;               " change patterns derived from transient simulations " + \
-    ;               "from the CMIP5 ensemble, scaled to 1C of global mean " + \
-    ;               "surface temperature change. The patterns have been " + \
-    ;               "calculated by computing 20-year averages starting" + \
-    ;               " in " + str_join(diag_script_info@periods, ", ") + \
-    ;               " and over the period " + dataset_info@start_year(0)+ \
-    ;               "-" + dataset_info@end_year(0) + \
-    ;               " for the available simulations" + \
-    ;               "under all RCP's, taking their difference "
-    ;     if (variables(0) .eq. "pr") then
-    ;         string2 = "(percentage difference in the case of precipitation) "
-    ;     else
-    ;         string2 = ""
-    ;     end if
-    ;     string3 = "and normalizing it, grid-point by grid-point, by the " + \
-    ;               "corresponding value of global average temperature " + \
-    ;               "change for each model and scenario. The normalized " + \
-    ;               "patterns have then been averaged across models and " + \
-    ;               "scenarios. Stippling indicates where the mean change " + \
-    ;               "averaged over all realizations is larger than the 95%" + \
-    ;               " percentile of the distribution of models. " + \
-    ;               "Similar to Figure 12.10 of Collins et al. (2013)."
-    ;     caption = string1 + string2 + string3
-    ; else
-    ;     caption = "Multi-model ensemble average of " + \
-    ;               variable_info@long_name + " change (compared to " + \
-    ;               dataset_info@start_year(0)+ "-" + dataset_info@end_year(0)\
-    ;               + " base period) for 20 year periods " + "starting in " \
-    ;               + str_join(diag_script_info@periods, ", ")  + " for " \
-    ;               + str_join(diag_script_info@scenarios, ", ") + \
-    ;               ". Hatching indicates regions where the multi-model " + \
-    ;               "mean change is less than one standard deviation of " + \
-    ;               "internal variability. Stippling indicates regions where" \
-    ;               + " the multi-model change is greater than two " + \
-    ;               "standard deviations of internal variability and where" + \
-    ;               " at least 90% of the models agree on the sign of " +\
-    ;               "change. The number of CMIP5 models used is indicated " + \
-    ;               "in the upper right corner of each plot. " + \
-    ;               "Similar to Figure 12.9 of Collins et al. (2013)."
-    ; end if
-
-;    id = diag_script + "_" + variables(0) + "_" + diag_script_info@time_avg
-;    contrib_authors = (/"A_lore_ru", "A_sedl_ja"/)
-;
-;    ESMValMD(outfile, alltags, caption, id, variables(0), \
-;             dataset_info@dataset, climofiles, diag_script, contrib_authors)
-
-;    delete([/alltags, caption, id, climofiles/])
 
   log_info("Wrote " + outfile)
 end
