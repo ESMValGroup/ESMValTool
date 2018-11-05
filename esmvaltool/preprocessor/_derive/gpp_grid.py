@@ -1,6 +1,5 @@
 """Derivation of variable `gpp_grid`."""
 
-
 import logging
 
 import iris
@@ -14,52 +13,33 @@ logger = logging.getLogger(__name__)
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `gpp_grid`."""
 
-    def get_required(self, frequency):
-        """Get variable `short_name` and `field` pairs required for derivation.
+    # Required variables
+    _required_variables = {
+        'vars': [{
+            'short_name': 'gpp',
+            'field': 'T2{frequency}s'
+        }],
+        'fx_files': ['sftlf']
+    }
 
-        Parameters
-        ----------
-        frequency : str
-            Frequency of the desired derived variable.
-
-        Returns
-        -------
-        list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
-
-        """
-        return [('gpp', 'T2' + frequency + 's'),
-                ('fx_files', ['sftlf'])]
-
-    def calculate(self, cubes, fx_files=None):
+    def calculate(self, cubes):
         """Compute gross primary production relative to grid cell area.
 
+        Note
+        ----
         By default, `gpp` is defined relative to land area. For easy spatial
         integration, the original quantity is multiplied by the land area
         fraction (`sftlf`), so that the resuting derived variable is defined
         relative to the grid cell area. This correction is only relevant for
         coastal regions.
 
-        Parameters
-        ----------
-        cubes : iris.cube.CubeList
-            `CubeList` containing `gpp`
-            (`gross_primary_productivity_of_carbon`).
-        fx_files : dict, optional
-            If required, dictionary containing fx files  with `short_name`
-            (key) and path (value) of the fx variable.
-
-        Returns
-        -------
-        iris.cube.Cube
-            `Cube` containing gross primary production relative to grid cell
-            area.
-
         """
         gpp_cube = cubes.extract_strict(
             Constraint(name='gross_primary_productivity_of_carbon'))
-        if fx_files.get('sftlf'):
-            sftlf_cube = iris.load_cube(fx_files['sftlf'])
-            gpp_cube.data = gpp_cube.data * sftlf_cube.data / 100.0
+        try:
+            sftlf_cube = cubes.extract_strict(
+                Constraint(name='land_area_fraction'))
+            gpp_cube.data *= sftlf_cube.data / 100.0
+        except iris.exceptions.ConstraintMismatchError:
+            pass
         return gpp_cube

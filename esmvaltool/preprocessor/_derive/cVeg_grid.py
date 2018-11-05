@@ -1,6 +1,5 @@
 """Derivation of variable `cVeg_grid`."""
 
-
 import logging
 
 import iris
@@ -14,51 +13,33 @@ logger = logging.getLogger(__name__)
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `cVeg_grid`."""
 
-    def get_required(self, frequency):
-        """Get variable `short_name` and `field` pairs required for derivation.
+    # Required variables
+    _required_variables = {
+        'vars': [{
+            'short_name': 'cVeg',
+            'field': 'T2{frequency}s'
+        }],
+        'fx_files': ['sftlf']
+    }
 
-        Parameters
-        ----------
-        frequency : str
-            Frequency of the desired derived variable.
-
-        Returns
-        -------
-        list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
-
-        """
-        return [('cVeg', 'T2' + frequency + 's'),
-                ('fx_files', ['sftlf'])]
-
-    def calculate(self, cubes, fx_files=None):
+    def calculate(self, cubes):
         """Compute carbon mass in vegetation relative to grid cell area.
 
+        Note
+        ----
         By default, `cVeg` is defined relative to land area. For easy spatial
         integration, the original quantity is multiplied by the land area
         fraction (`sftlf`), so that the resuting derived variable is defined
         relative to the grid cell area. This correction is only relevant for
         coastal regions.
 
-        Parameters
-        ----------
-        cubes : iris.cube.CubeList
-            `CubeList` containing `cVeg` (`vegetation_carbon_content`).
-        fx_files : dict, optional
-            If required, dictionary containing fx files  with `short_name`
-            (key) and path (value) of the fx variable.
-
-        Returns
-        -------
-        iris.cube.Cube
-            `Cube` containing carbon mass in vegetation relative to grid cell
-            area.
-
         """
         cveg_cube = cubes.extract_strict(
             Constraint(name='vegetation_carbon_content'))
-        if fx_files.get('sftlf'):
-            sftlf_cube = iris.load_cube(fx_files['sftlf'])
-            cveg_cube.data = cveg_cube.data * sftlf_cube.data / 100.0
+        try:
+            sftlf_cube = cubes.extract_strict(
+                Constraint(name='land_area_fraction'))
+            cveg_cube.data *= sftlf_cube.data / 100.0
+        except iris.exceptions.ConstraintMismatchError:
+            pass
         return cveg_cube

@@ -28,6 +28,7 @@ class DerivedVariable(DerivedVariableBase):
         fraction (`sftlf`), so that the resuting derived variable is defined
         relative to the grid cell area. This correction is only relevant for
         coastal regions.
+
         """
         nbp_cube = cubes.extract_strict(
             Constraint(name='surface_net_downward_mass_flux_of_carbon_dioxide_'
