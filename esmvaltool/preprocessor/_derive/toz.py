@@ -1,6 +1,5 @@
 """Derivation of variable `toz`."""
 
-
 import cf_units
 import iris
 from iris import Constraint
@@ -9,7 +8,6 @@ import numpy as np
 from scipy import constants
 
 from ._derived_variable_base import DerivedVariableBase
-
 
 # Constants
 AVOGADRO_CONST = constants.value('Avogadro constant')
@@ -26,55 +24,34 @@ DOBSON_UNIT = cf_units.Unit('2.69e20 m^-2')
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
-    def get_required(self, frequency):
-        """Get variable `short_name` and `field` pairs required for derivation.
+    # Required variables
+    _required_variables = {
+        'vars': [{
+            'short_name': 'tro3',
+            'field': 'T3{frequency}'
+        }, {
+            'short_name': 'ps',
+            'field': 'T2{frequency}s'
+        }]
+    }
 
-        Parameters
-        ----------
-        frequency : str
-            Frequency of the desired derived variable.
-
-        Returns
-        -------
-        list of tuples
-            List of tuples (`short_name`, `field`) of all variables required
-            for derivation.
-
-        """
-        return [('tro3', 'T3' + frequency),
-                ('ps', 'T2' + frequency + 's')]
-
-    def calculate(self, cubes, fx_files=None):
+    def calculate(self, cubes):
         """Compute total column ozone.
 
+        Note
+        ----
         The surface pressure is used as a lower integration bound. A fixed
         upper integration bound of 0 Pa is used.
-
-        Parameters
-        ----------
-        cubes : iris.cube.CubeList
-            `CubeList` containing `tro3` (`mole_fraction_of_ozone_in_air`) and
-            `ps` (`surface_air_pressure`).
-        fx_files : dict, optional
-            If required, dictionary containing fx files  with `short_name`
-            (key) and path (value) of the fx variable.
-
-        Returns
-        -------
-        iris.cube.Cube
-            `Cube` containing total column ozone.
 
         """
         tro3_cube = cubes.extract_strict(
             Constraint(name='mole_fraction_of_ozone_in_air'))
-        ps_cube = cubes.extract_strict(
-            Constraint(name='surface_air_pressure'))
+        ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
-        p_layer_widths = _pressure_level_widths(tro3_cube,
-                                                ps_cube,
-                                                top_limit=0.0)
-        toz_cube = (tro3_cube * p_layer_widths / STANDARD_GRAVITY * MW_O3 /
-                    MW_AIR)
+        p_layer_widths = _pressure_level_widths(
+            tro3_cube, ps_cube, top_limit=0.0)
+        toz_cube = (
+            tro3_cube * p_layer_widths / STANDARD_GRAVITY * MW_O3 / MW_AIR)
         toz_cube = toz_cube.collapsed('air_pressure', iris.analysis.SUM)
         toz_cube.units = (tro3_cube.units * p_layer_widths.units /
                           STANDARD_GRAVITY_UNIT * MW_O3_UNIT / MW_AIR_UNIT)
@@ -129,20 +106,14 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     """
     # Create 4D array filled with pressure level values
     p_levels = tro3_cube.coord('air_pressure').points
-    p_4d_array = iris.util.broadcast_to_shape(p_levels,
-                                              tro3_cube.shape,
-                                              [1])
+    p_4d_array = iris.util.broadcast_to_shape(p_levels, tro3_cube.shape, [1])
 
     # Create 4d array filled with surface pressure values
     shape = tro3_cube.shape
-    ps_4d_array = iris.util.broadcast_to_shape(ps_cube.data,
-                                               shape,
-                                               [0, 2, 3])
+    ps_4d_array = iris.util.broadcast_to_shape(ps_cube.data, shape, [0, 2, 3])
 
     # Set pressure levels below the surface pressure to NaN
-    pressure_4d = np.where((ps_4d_array - p_4d_array) < 0,
-                           np.NaN,
-                           p_4d_array)
+    pressure_4d = np.where((ps_4d_array - p_4d_array) < 0, np.NaN, p_4d_array)
 
     # Make top_limit last pressure level
     top_limit_array = np.ones(ps_cube.shape) * top_limit

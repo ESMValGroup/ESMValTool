@@ -1,6 +1,5 @@
 """Automatically derive variables."""
 
-
 import importlib
 import logging
 import os
@@ -16,10 +15,10 @@ ALL_DERIVED_VARIABLES = {}
 
 
 def get_required(short_name, field=None):
-    """Get variable short_name and field pairs required to derive variable.
+    """Return all required variables for derivation.
 
-    It is also possible to process fx variables using the tuple ('fx_files',
-    [...]), e.g. ('fx_files', ['sftlf, 'orog']).
+    Get all information (at least `short_name`) required for derivation and
+    optionally a list of needed fx files.
 
     Parameters
     ----------
@@ -30,10 +29,10 @@ def get_required(short_name, field=None):
 
     Returns
     -------
-    list of tuples
-        List of tuples `(short_name, field)` of all variables required for
-        derivation, in case of fx variables also the tuple `('fx_files',
-        [...]).
+    dict
+        Dictionary containing a :obj:`list` of dictionaries (including at least
+        the key `short_name`) with the key `vars` and optionally a :obj:`list`
+        of fx variables with the key `fx_files`.
 
     """
     frequency = field[2] if field else 'M'
@@ -53,7 +52,7 @@ def derive(cubes, variable, fx_files=None):
         All information of the derived variable.
     fx_files : dict, optional
         If required, dictionary containing fx files  with `short_name`
-        (key) and path (value) of the fx variable.
+        (keys) and path (values) of the fx variable.
 
     Returns
     -------
@@ -67,10 +66,20 @@ def derive(cubes, variable, fx_files=None):
     if short_name == cubes[0].var_name:
         return cubes[0]
 
-    # Preprare input cubes and derive correct variable
+    # Preprare input cubes and add fx files if necessary
     cubes = iris.cube.CubeList(cubes)
+    if fx_files:
+        for (fx_var, fx_path) in fx_files.items():
+            if fx_path is not None:
+                cubes.append(iris.load_cube(fx_path))
+            else:
+                logger.debug(
+                    "Requested fx variable '%s' for derivation of "
+                    "'%s' not found", fx_var, short_name)
+
+    # Derive correct variable
     derived_var = DerivedVariableBase.get_derived_variable(short_name)
-    cube = derived_var.calculate(cubes, fx_files)
+    cube = derived_var.calculate(cubes)
 
     # Set standard attributes
     cube.var_name = short_name
@@ -107,8 +116,7 @@ def get_all_derived_variables():
             var_module = importlib.import_module(
                 'esmvaltool.preprocessor._derive.{}'.format(var_name))
             try:
-                derived_var = getattr(var_module,
-                                      'DerivedVariable')(var_name)
+                derived_var = getattr(var_module, 'DerivedVariable')(var_name)
                 ALL_DERIVED_VARIABLES[var_name] = derived_var
             except AttributeError:
                 pass
