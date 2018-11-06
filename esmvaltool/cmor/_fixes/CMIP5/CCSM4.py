@@ -69,6 +69,7 @@ class so(Fix):
 
         return cube
 
+
 class tas(Fix):
     """Fixes for tas"""
 
@@ -87,7 +88,8 @@ class tas(Fix):
         iris.cube.Cube
 
         """
-        for attr in ['table_id', 'processing_code_information', 'cmor_version']:
+        for attr in ['table_id', 'processing_code_information',
+                     'cmor_version']:
             if attr in cube.attributes:
                 del cube.attributes[attr]
 
