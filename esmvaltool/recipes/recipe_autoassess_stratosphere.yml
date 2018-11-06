@@ -18,7 +18,7 @@
 # - The original autoassess diagnostic needs MERRA obs data as well;
 #   add MERRA file request in this namelist when running.
 #################
-# RECIPE IS FULLY WORKING
+# RECIPE IS FULLY WORKING BUT ADD MERRA FOR OBS !!!
 ###########################################################################################################
 ---
 
