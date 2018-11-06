@@ -139,6 +139,41 @@ def format_coef_plot(ax):
     return ax
 
 
+def write_plotdata(cfg, plotdata, catch_info, reference):
+    """ Output catchment averaged values for all datasets.
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    plotdata : dict
+        Dictionary containing the catchment averages
+    catch_info : object
+        Object containing catchment names, IDs, and reference data
+    reference : str
+        String containing name of the reference dataset
+    """
+
+    ref_vars = []
+    for model in plotdata.keys():
+        for exp in plotdata[model].keys():
+            for ens in plotdata[model][exp].keys():
+                for var in plotdata[model][exp][ens].keys():
+                    # Write experiment data
+                    filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join([var,model,exp,ens]) + '.txt')
+                    with open(filepath, 'w') as f:
+                        f.write(" ".join([model.upper(),exp,ens,var,'catchment averages','[mm a-1]'])+'\n\n')
+                        for river, value in sorted(plotdata[model][exp][ens][var].items()):
+                            f.write('{:25} : {:8.2f}\n'.format(river, value))
+                    # Write reference data
+                    if var not in ref_vars:
+                        filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join([var,'reference']) + '.txt')
+                        with open(filepath, 'w') as f:
+                            f.write(" ".join(['Reference','catchment averages','[mm a-1]'])+'\n\n')
+                            for river, value in sorted(getattr(catch_info, var).items()):
+                                f.write('{:25} : {:8.2f}\n'.format(river, value))
+                        ref_vars.append(var)
+
+
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
     """ Plot catchment averages for precipitation, evaporation
         runoff and derived quantities.
@@ -364,11 +399,6 @@ def main(cfg):
                 raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
             else:
                 plotdata[dset][dexp][dens][dvar] = rivervalues
-        filepath = os.path.join(cfg[diag.names.WORK_DIR], cfg.get('output_name', '_'.join(['catchdata',dset,dvar,])) + '.txt')
-        with open(filepath, 'w') as f:
-            f.write(dset.upper() + ' catchment averages [mm a-1]\n\n')
-            for river, value in sorted(rivervalues.items()):
-                f.write('{:25} : {:8.2f}\n'.format(river, value))
 
         # Update data for dataset
         # to check: necessary at all? dataset not used later...
@@ -383,6 +413,9 @@ def main(cfg):
         if cfg[diag.names.WRITE_NETCDF]:
             iris.save(allcubes[model], filepath)
             logger.info("Writing %s", filepath)
+
+    # Write plotdata as ascii files for user information
+    write_plotdata(cfg, plotdata, catch_info, reference)
 
     # Plot catchment data
     make_catchment_plots(cfg, plotdata, catch_info, reference)
