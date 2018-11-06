@@ -312,13 +312,15 @@ def main(cfg):
     # to check: Shouldn't this be part of preprocessing?
     # to check: How to regrid onto catchment_cube grid with preproc recipe statements
     #           instead of using regrid here?
-    allcubes = []
+    allcubes = {}
     plotdata = {}
     for dataset_path in datasets:
         # Prepare data dictionary
         # to check: what is a smart way to do this in python3?
         datainfo = datasets.get_dataset_info(path=dataset_path)
         dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['short_name']
+        if dset not in allcubes.keys():
+            allcubes[dset] = []
         # Load data into iris cube
         new_cube = iris.load(dataset_path, varlist.standard_names())[0]
         # Check for expected unit
@@ -372,15 +374,15 @@ def main(cfg):
         # to check: necessary at all? dataset not used later...
         datasets.set_data(mean_cube_regrid.data, dataset_path)
         # Append to cubelist for temporary output
-        allcubes.append(mean_cube_regrid)
+        allcubes[dset].append(mean_cube_regrid)
 
-    # Write regridded data files
+    # Write regridded and temporal aggregated netCDF data files (one per model)
     # to do: update attributes
-    filepath = os.path.join(cfg[diag.names.WORK_DIR], cfg.get('output_name', 'pp_runoff_et') + '.nc')
-    if cfg[diag.names.WRITE_NETCDF]:
-        iris.save(allcubes, filepath)
-        logger.info("Writing %s", filepath)
-
+    for model in allcubes.keys():
+        filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join(['postproc',model]) + '.nc')
+        if cfg[diag.names.WRITE_NETCDF]:
+            iris.save(allcubes[model], filepath)
+            logger.info("Writing %s", filepath)
 
     # Plot catchment data
     make_catchment_plots(cfg, plotdata, catch_info, reference)
