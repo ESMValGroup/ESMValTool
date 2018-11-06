@@ -27,6 +27,21 @@ ESMF_REGRID_METHODS = {
 # }
 
 
+def cf_2d_bounds_to_esmpy_corners(bounds, circular):
+    no_lat_points, no_lon_points, no_vertices = bounds.shape
+    no_lat_bounds = no_lat_points + 1
+    if circular:
+        no_lon_bounds = no_lon_points
+    else:
+        no_lon_bounds = no_lon_points + 1
+    esmpy_corners = np.empty((no_lon_bounds, no_lat_bounds))
+    esmpy_corners[:no_lon_points, :no_lat_points] = bounds[:, :, 0].T
+    esmpy_corners[:no_lon_points, no_lat_points:] = bounds[-1:, :, 3].T
+    esmpy_corners[no_lon_points:, :no_lat_points] = bounds[:, -1:, 1].T
+    esmpy_corners[no_lon_points:, no_lat_points:] = bounds[-1:, -1:, 2].T
+    return esmpy_corners
+
+
 def coords_iris_to_esmpy(lat, lon, circular):
     """Build ESMF compatible coordinate information from iris coords"""
     dim = len(lat.shape)
@@ -45,15 +60,11 @@ def coords_iris_to_esmpy(lat, lon, circular):
                                                            lon_corners)
     elif dim == 2:
         esmpy_lat, esmpy_lon = lat.points.T.copy(), lon.points.T.copy()
-        lat_corners = np.concatenate([lat.bounds[:, :, 0],
-                                      lat.bounds[-1:, :, 1]])
-        lon_corners = np.concatenate([lon.bounds[:, :, 0],
-                                      lon.bounds[-1:, :, 1]])
-        esmpy_lat_corners = lat_corners.T
-        esmpy_lon_corners = lon_corners.T
+        esmpy_lat_corners = cf_2d_bounds_to_esmpy_corners(lat.bounds, circular)
+        esmpy_lon_corners = cf_2d_bounds_to_esmpy_corners(lon.bounds, circular)
     else:
-        raise RuntimeError('Coord dimension is {}. Expected 1 or 2.'
-                           ''.format(dim))
+        raise NotImplementedError('Coord dimension is {}. Expected 1 or 2.'
+                                  ''.format(dim))
     return esmpy_lat, esmpy_lon, esmpy_lat_corners, esmpy_lon_corners
 
 
