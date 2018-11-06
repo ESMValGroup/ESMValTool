@@ -91,7 +91,7 @@ begin
   A0 = read_data(imod, var0, field_type0)
 
   ; Get fx variable (land/sea mask, not used, just an example)
-  AM = read_fx_data(imod, "sftlf")
+  AM = read_fx_data(imod, var0, field_type0, "sftlf")
 
   ; Check dimensions
   dims = getvardims(A0)

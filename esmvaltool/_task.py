@@ -112,51 +112,68 @@ def resource_usage_logger(pid, filename, interval=1, children=True):
         thread.join()
 
 
+def _py2ncl(value, var_name=''):
+    """Format a structure of Python list/dict/etc items as NCL."""
+    txt = var_name + ' = ' if var_name else ''
+    if value is None:
+        txt += '_Missing'
+    elif isinstance(value, str):
+        txt += '"{}"'.format(value)
+    elif isinstance(value, (list, tuple)):
+        if not value:
+            txt += 'NewList("fifo")'
+        else:
+            txt += '[/{}/]'.format(', '.join(_py2ncl(v) for v in value))
+    elif isinstance(value, dict):
+        if not var_name:
+            raise ValueError("NCL does not support nested dicts.")
+        txt += 'True\n'
+        for key in value:
+            txt += '{}@{} = {}\n'.format(var_name, key, _py2ncl(value[key]))
+    else:
+        txt += str(value)
+    return txt
+
+
 def write_ncl_settings(settings, filename, mode='wt'):
-    """Write settings to NCL file."""
+    """Write a dictionary with generic settings to NCL file."""
     logger.debug("Writing NCL configuration file %s", filename)
 
-    def _format(value):
-        """Format string or list as NCL"""
-        if value is None or isinstance(value, str):
-            txt = '"{}"'.format(value)
-        elif isinstance(value, (list, tuple)):
-            # TODO: convert None to fill value?
-            # If an array contains a str, make all items str
-            if any(isinstance(v, str) or v is None for v in value):
-                value = [(str(v)) for v in value]
-            if not value:
-                txt = 'NewList("fifo")'
-            else:
-                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
-        else:
-            txt = str(value)
-        return txt
-
-    def _format_dict(name, dictionary):
-        """Format dict as NCL"""
-        lines = ['{} = True'.format(name)]
-        for key, value in sorted(dictionary.items()):
-            lines.append('{}@{} = {}'.format(name, key, _format(value)))
-        txt = '\n'.join(lines)
-        return txt
-
-    def _header(name):
-        """Delete any existing NCL variable known as `name`."""
-        return ('if (isvar("{name}")) then\n'
-                '    delete({name})\n'
-                'end if\n'.format(name=name))
+    def _ncl_type(value):
+        """Convert some Python types to NCL types."""
+        typemap = {
+            bool: 'logical',
+            str: 'string',
+            float: 'double',
+            int: 'int64',
+            dict: 'logical',
+        }
+        for type_ in typemap:
+            if isinstance(value, type_):
+                return typemap[type_]
+        raise ValueError("Unable to map {} to an NCL type".format(type(value)))
 
     lines = []
-    for key, value in sorted(settings.items()):
-        txt = _header(name=key)
-        if isinstance(value, dict):
-            txt += _format_dict(name=key, dictionary=value)
+    for var_name, value in sorted(settings.items()):
+        if isinstance(value, (list, tuple)):
+            # Create an NCL list that can span multiple files
+            lines.append('if (.not. isdefined("{var_name}")) then\n'
+                         '  {var_name} = NewList("fifo")\n'
+                         'end if\n'.format(var_name=var_name))
+            for item in value:
+                lines.append('ListAppend({var_name}, new(1, {type}))\n'
+                             'i = ListCount({var_name}) - 1'.format(
+                                 var_name=var_name, type=_ncl_type(item)))
+                lines.append(_py2ncl(item, var_name + '[i]'))
         else:
-            txt += '{} = {}'.format(key, _format(value))
-        lines.append(txt)
+            # Create an NCL variable that overwrites previous variables
+            lines.append('if (isvar("{var_name}")) then\n'
+                         '  delete({var_name})\n'
+                         'end if\n'.format(var_name=var_name))
+            lines.append(_py2ncl(value, var_name))
+
     with open(filename, mode) as file:
-        file.write('\n\n'.join(lines))
+        file.write('\n'.join(lines))
         file.write('\n')
 
 
