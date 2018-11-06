@@ -1230,7 +1230,7 @@ begin
     else if (dtr.eq."linear") then
       field_dtr = dtrend_n(field_avg, False, 0)
       tmp = dim_avg_n_Wrap(field_avg, 0)
-      tmp_conf = conform(field_dtr, tmp, (/1,2/))
+      tmp_conf = conform(field_dtr, tmp, (/1, 2/))
       field_dtr = field_dtr + tmp_conf
       copy_VarCoords(field_avg, field_dtr)
       out = dim_stddev_n_Wrap(field_dtr, 0)
@@ -1289,13 +1289,13 @@ begin
       delete([/tmp, tmp_conf/])
     else if (dtr.eq."quadratic") then
       field_avg_djf_dtr = dtrend_quadratic_msg_n(field_avg_djf, False, \
-					         False, 0)
+                                                 False, 0)
       field_avg_mam_dtr = dtrend_quadratic_msg_n(field_avg_mam, False, \
-					         False, 0)
+                                                 False, 0)
       field_avg_jja_dtr = dtrend_quadratic_msg_n(field_avg_jja, False, \
-					         False, 0)
+                                                 False, 0)
       field_avg_son_dtr = dtrend_quadratic_msg_n(field_avg_son, False, \
-						 False, 0)
+                                                 False, 0)
     end if
     end if
     end if
@@ -1346,7 +1346,7 @@ begin
     if (dtr.eq."None") then
       field_avg_dtr = field_avg
     else if (dtr.eq."linear") then
-      field_avg_dtr = dtrend_n(field_avg , False, 0)
+      field_avg_dtr = dtrend_n(field_avg, False, 0)
       tmp = dim_avg_n_Wrap(field_avg, 0)
       tmp_conf = conform(field_avg_dtr, tmp, (/1, 2/))
       field_avg_dtr = field_avg_dtr + tmp_conf
