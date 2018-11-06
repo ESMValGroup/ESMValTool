@@ -187,9 +187,7 @@ begin
   enter_msg(scriptname, funcname)
 
   if (idx.gt.ListCount(variable_info) - 1) then
-    error_msg("f", funcname, scriptname, "variable's index out of range: " + \
-              idx + " selected, only " + ListCount(variable_info) + \
-              " available")
+    error_msg("f", funcname, scriptname, "variable's index out of range")
   end if
 
   item = select_metadata_by_name(info, variable_info[idx]@short_name)
