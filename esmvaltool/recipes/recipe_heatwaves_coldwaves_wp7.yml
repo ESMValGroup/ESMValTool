@@ -54,5 +54,5 @@ diagnostics:
         quantile: 0.9    # quantile defining the exceedance/non-exceedance threshold
         min_duration: 5  # Min duration of a heatwave/coldwave event
         operator: '>' #or lessthan
-        season: 'autumn' # or 'winter
+        season: 'summer' # or 'winter
 
