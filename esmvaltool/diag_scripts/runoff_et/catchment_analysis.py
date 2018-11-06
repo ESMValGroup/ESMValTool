@@ -159,7 +159,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
         logger.info('Generating plots for filetype: '+outtype)
         if outtype == 'pdf':
             filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                cfg.get('output_name', model.upper()+'_runoff_et')+'.'+outtype)
+                model.upper()+'_runoff_et'+'.'+outtype)
             pdf = PdfPages(filepath)
 
         for exp in plotdata[model].keys():
@@ -169,7 +169,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 # 1. Barplots for single variables
                 for var in plotdata[model][exp][member].keys():
                     filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                            cfg.get('output_name', model.upper()+'_bias-plot_'+var.upper()) + '.'+outtype)
+                            '_'.join([model.upper(),exp,member,'bias-plot_'+var]) + '.'+outtype)
                     river, expdata[var], refdata[var] = [], [], []
                     for xlabel, rdata in sorted(getattr(catch_info, var).items()):
                         river.append(xlabel)
@@ -218,7 +218,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 # 2. Runoff coefficient vs Relative precipitation bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        cfg.get('output_name', model.upper()+'_rocoef-vs-relprbias')+'.'+outtype)
+                        '_'.join([model.upper(),exp,member,'rocoef-vs-relprbias']) + '.'+outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
                   ax.scatter((expdata['pr'][i] - refdata['pr'][i]) / refdata['pr'][i] * 100,
@@ -246,7 +246,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 # 3. Runoff coefficient vs Evaporation coefficient bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        cfg.get('output_name', model.upper()+'_rocoef-vs-etcoef')+'.'+outtype)
+                        '_'.join([model.upper(),exp,member,'rocoef-vs-etcoef']) + '.'+outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
                   ax.scatter((expdata['evspsbl'][i] / expdata['pr'][i] * 100) - (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
@@ -284,8 +284,7 @@ def main(cfg):
     Configuration dictionary of the recipe.
 
     ToDo:
-    - Support using one experiment as reference
-    - Support user build catchment file with different catchments
+    - Support user build catchment file with different catchments --> anyone interested in that..?
     """
 
     # Get dataset and variable information
