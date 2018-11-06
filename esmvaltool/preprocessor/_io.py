@@ -9,7 +9,7 @@ import iris.exceptions
 import numpy as np
 import yaml
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
@@ -60,10 +60,6 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
-        if use_legacy_iris():
-            # always set fillvalue to 1e+20
-            if np.ma.is_masked(cube.data):
-                np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
