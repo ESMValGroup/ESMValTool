@@ -79,8 +79,8 @@ begin
   else
     dim_seas = 1
   end if
- 
- ; Check required diag_script_info attributes
+
+  ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 
