@@ -72,9 +72,9 @@ class __Diagnostic_skeleton__(object):
                         "A_broe_bj", "A_mass_fr", "A_nico_nd",
                         "A_schl_mn", "A_bock_ls"]  # TODO fill in
         self.diagname = "Diagnostic_skeleton"
-        self.CDS_ID = "XXX_XX_01"
+        self.CDS_ID = "CDS_ID_needed"
         
-        self.colormaps=dict({"default":"binary"})
+        self.colormaps=dict({"default":"jet"})#"binary"})
         self.__latex_output__ = False
         self.levels = None
 
@@ -82,9 +82,10 @@ class __Diagnostic_skeleton__(object):
         self.mp_data = None
         self.var3D = None
         self.__basic_filename__ = "someFile"
-        self.__dimensions__=[]
+        self.__dimensions__ = []
         self.level_dim = None
         self.__time_read__ = []
+        self.__avg_timestep__ = None
     
     def set_info(self, **kwargs):
         self.__logger__ = kwargs.get('logger', None)
@@ -103,20 +104,6 @@ class __Diagnostic_skeleton__(object):
     def run_diagnostic(self):
         self.__logger__.debug("There is nothing to run! This is the empty skeleton.")
         warnings.warn("Implementation Warning", UserWarning)
-        
-        #######################################################################
-        #TODO delete after debugging
-#        self.__logger__.info("Object content post:")
-        li4 = [method_name for method_name in dir(self) if callable(getattr(self, method_name))]
-#        self.__logger__.info(np.sort(li4))
-        li2 =self.__dict__.keys()
-#        self.__logger__.info(np.sort([*li2]))
-
-        self.__logger__.info("Object content diff:")        
-#        self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']]))
-        self.__logger__.info({y:self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
-        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3]))
-        #######################################################################
         pass
     
     def __do_overview__(self):
@@ -212,21 +199,29 @@ class __Diagnostic_skeleton__(object):
                latex_opts=self.__latex_output__)
         return
     
-#    def __do_report__(self,**kwargs):
-#
-#        # TODO specify sphinx structure
-#        content = kwargs.get('content', [])
-#        if not isinstance(content, (list, dict)):
-#            raise TypeError("content", "Element is not a list, nor a dict.")
-#
-#        rand_str = lambda n: ''.join([random.choice(string.ascii_lowercase) for _ in range(n)])
-#
-#        filename = kwargs.get('filename', rand_str(10))
-#        if not isinstance(filename, str):
-#            raise TypeError("filename", "Element is not a string.")
-#
-#        report(content,filename,self.__work_dir__, signature = self.CDS_ID)
-#        return
+    def __file_anouncement__(self,subdir="input",expfile="end.txt",protofile="none.txt",function="no_fun"):
+        
+        expected_input = self.__work_dir__ + os.sep + subdir + os.sep + ("_".join(self.__basic_filename__) if type(self.__basic_filename__) is list else self.__basic_filename__) + expfile
+        if not os.path.isfile(expected_input):
+            try:
+                os.makedirs(os.path.dirname(expected_input))
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+            shutil.copy2(os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/" + protofile, expected_input)
+            #TODO Improve formatting? Was nicer in V1
+            self.__logger__.info("************************************** WARNING **************************************")
+            self.__logger__.info("Expected " + function + " input file " + expected_input + " not found!")
+            self.__logger__.info("Created dummy file instead. Please fill in appropriate information and rerun!")
+            self.__logger__.info("(This won't fail if you do not do so and produce an empty output!!!!)")
+            self.__logger__.info("************************************** WARNING **************************************")
+
+            found = False
+        else:
+            self.__logger__("Processing " + function + " input file: " + expected_input) 
+            found = True
+            
+        return expected_input, found
 
 class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     """
@@ -294,7 +289,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #        # for metadata
 #        self.__basetags__ = [self.__varname__] + []# TODO transport tags from namelist
 #
-#        self.__time_period__ = "-".join([str(fileinfo['start_year']),str(fileinfo['end_year'])])
+        self.__time_period__ = "-".join([str(fileinfo['start_year']),str(fileinfo['end_year'])])
+        
         try:
             # model
             self.__dataset_id__ = [fileinfo["cmor_table"], fileinfo["dataset"], fileinfo["mip"], fileinfo["exp"], fileinfo["ensemble"], fileinfo["short_name"]]
@@ -308,8 +304,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #
 #        # TODO: for testing purpose (should come from CDS)
 #        self.CDS_ID = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-#        self.__output_type__ = self.CDS_ID + "." + self.__output_type__
-#
+        self.__output_type__ = self.CDS_ID + "." + self.__output_type__
 
     def read_data(self):
 
@@ -367,7 +362,213 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #        self.__do_gcos_requirements__()
 #        self.__do_esm_evaluation__()
 #        self.__do_app_perf_matrix__()
+        
+        
+        #######################################################################
+        #TODO delete after debugging
+#        self.__logger__.info("Object content post:")
+        li4 = [method_name for method_name in dir(self) if callable(getattr(self, method_name))]
+#        self.__logger__.info(np.sort(li4))
+        li2 =self.__dict__.keys()
+#        self.__logger__.info(np.sort([*li2]))
+
+        self.__logger__.info("Object content diff:")        
+#        self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']]))
+        self.__logger__.info({y:self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
+        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3]))
+        #######################################################################
         pass
+
+    def __do_overview__(self):
+        
+        this_function = "overview"
+        
+        if not self.var3D:
+            list_of_plots=self.__overview_procedures_2D__(cube=self.sp_data)
+        else: 
+            list_of_plots=[]
+            for lev in self.levels:
+                loc_cube=self.sp_data.extract(iris.Constraint(coord_values={str(self.level_dim):lambda cell: cell==lev}))
+                if loc_cube is None:
+                    raise ValueError("Invalid input: at least one of " + 
+                                     "the requested levels seem " + 
+                                     "not to be available in the analyzed " + 
+                                     "cube.")
+                lop=self.__overview_procedures_2D__(loc_cube,level=lev)
+                list_of_plots = list_of_plots + lop
+        
+        # dimension information
+        lon_range = self.sp_data.coord("longitude").points
+        lat_range = self.sp_data.coord("latitude").points
+        tim_range = self.sp_data.coord("time").points
+        t_info = str(self.sp_data.coord("time").units)
+        
+        lon_range_spec = utils.__minmeanmax__(lon_range)
+        lat_range_spec = utils.__minmeanmax__(lat_range)
+        tim_range_spec = utils.__minmeanmax__(tim_range)
+        
+        tim_range_spec_read = unit.num2date(tim_range_spec,self.sp_data.coord("time").units.name,self.sp_data.coord("time").units.calendar)
+
+        lon_freq = np.diff(lon_range)
+        lat_freq = np.diff(lat_range)
+        tim_freq = np.diff(tim_range)
+        
+        lon_freq_spec = utils.__minmeanmax__(lon_freq)
+        lat_freq_spec = utils.__minmeanmax__(lat_freq)
+        tim_freq_spec = utils.__minmeanmax__(tim_freq)
+        
+        overview_dict=collections.OrderedDict()
+        
+        overview_dict.update({'longitude range [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict([("min",str(lon_range_spec[0])), ("max",str(lon_range_spec[2]))])})
+        overview_dict.update({'longitude frequency [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict([("min",str(lon_freq_spec[0])), ("average",str(lon_freq_spec[1])), ("max",str(lon_freq_spec[2]))])})
+        overview_dict.update({'latitude range [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict([("min",str(lat_range_spec[0])), ("max",str(lat_range_spec[2]))])})
+        overview_dict.update({'latitude frequency [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict([("min",str(lat_freq_spec[0])), ("average",str(lat_freq_spec[1])), ("max",str(lat_freq_spec[2]))])})
+        overview_dict.update({'temporal range': collections.OrderedDict([("min",str(tim_range_spec_read[0])), ("max",str(tim_range_spec_read[2]))])})
+        overview_dict.update({'temporal frequency [' + t_info.split(" ")[0] + ']': collections.OrderedDict([("min",str(tim_freq_spec[0])), ("average",str(round(tim_freq_spec[1],2))), ("max",str(tim_freq_spec[2]))])})
+        
+        try:
+            lev_range = self.sp_data.coord(self.level_dim).points
+            lev_range_spec = utils.__minmeanmax__(lev_range)
+            lev_freq_spec = utils.__minmeanmax__(np.diff(lev_range))
+            overview_dict.update({'level range [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict([("min",str(lev_range_spec[0])), ("max",str(lev_range_spec[2]))])})
+            overview_dict.update({'level frequency [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict([("min",str(lev_freq_spec[0])), ("average",str(lev_freq_spec[1])), ("max",str(lev_freq_spec[2]))])})
+        except:
+            pass    
+        
+        # save GCOS requirements
+        self.__gcos_dict__.update({"Frequency":{"value":round(tim_freq_spec[1],2), "unit":t_info.split(" ")[0]}})
+        self.__gcos_dict__.update({"Resolution":{"value":round(np.mean([lon_freq_spec[1],lat_freq_spec[1]]),2), "unit":str(self.sp_data.coord("longitude").units)}})
+        
+        # save values for other diagnostics
+        self.__avg_timestep__ = tim_freq_spec[1]
+        
+        # produce report
+        expected_input, found = \
+            self.__file_anouncement__(subdir="c3s_511/single_overview_input",
+                                      expfile="_overview.txt",
+                                      protofile="empty.txt",
+                                      function=this_function)
+            
+        if found:    
+            self.__do_report__(content={"listtext":overview_dict,"plots":list_of_plots,"freetext":expected_input}, filename=this_function.upper())
+        else:
+            self.__do_report__(content={"listtext":overview_dict,"plots":list_of_plots}, filename=this_function.upper())
+
+        return
+    
+    def __overview_procedures_2D__(self,cube=None,level=None):
+        
+        if cube is None:
+            cube=self.sp_data
+            
+        if level is not None:
+            basic_filename = self.__basic_filename__ + "_lev" + str(level)
+            dataset_id = [self.__dataset_id__[0],"at","level",str(level),str(self.sp_data.coord(self.level_dim).units)]
+        else:
+            basic_filename = self.__basic_filename__
+            dataset_id = [self.__dataset_id__[0]]
+        
+        list_of_plots=[]
+        
+        reg_dimensions =  [item for item in self.__dimensions__ if item not in set([self.level_dim])]
+        maxnumtemp = float(len(cube.coord("time").points))
+
+        try:
+            sp_masked_vals = cube.collapsed("time",iris.analysis.COUNT,function=lambda values: values.mask)
+            sp_masked_vals.data.mask = sp_masked_vals.data==maxnumtemp
+            sp_masked_vals.data = sp_masked_vals.data*0.+1.
+        except:
+            sp_masked_vals = cube.collapsed("time",iris.analysis.MEAN) *0.+1. #errors when data is not correctly masked!
+
+        for d in reg_dimensions:
+            
+            long_left_over = [rd for rd in reg_dimensions if rd!=d]
+            short_left_over = np.array([sl[0:3] for sl in long_left_over])
+                        
+            num_available_vals = cube.collapsed(d,iris.analysis.COUNT,function=lambda values: values>=cube.collapsed(reg_dimensions,iris.analysis.MIN).data)
+            if d in ["time"]:
+                frac_available_vals = iris.analysis.maths.divide(num_available_vals,maxnumtemp)
+            else:
+                sp_agg_array=sp_masked_vals.collapsed(d,iris.analysis.SUM)   
+                frac_available_vals = iris.analysis.maths.divide(num_available_vals,sp_agg_array.data)
+            
+            try:
+                # plotting routine
+                filename = self.__plot_dir__ + os.sep + basic_filename + "_frac_avail_" + "_".join(short_left_over) + "." + self.__output_type__
+                list_of_plots.append(filename)
+                frac_available_vals.rename("availability as a fraction")
+                x=Plot2D(frac_available_vals)
+                
+                fig = plt.figure()
+                (fig,ax,_) = plot_setup(d=d,fig=fig)
+                x.plot(ax=ax, vminmax=[0.,1.], color=self.colormaps, color_type="Sequential", title=" ".join([self.__dataset_id__[idx] for idx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
+                fig.savefig(filename)
+                plt.close(fig.number)
+                
+                ESMValMD("meta",
+                         filename,
+                         self.__basetags__ + ['DM_global', 'C3S_overview'],
+                         str('Overview on ' + "/".join(long_left_over) + ' availablility of ' + ecv_lookup(self.__varname__) + ' for the data set ' + " ".join(dataset_id) + ' (' + self.__time_period__ + '). NA-values are shown in grey.'),
+                         '#C3S' + 'frav' + "".join(short_left_over) + self.__varname__,
+                         self.__infile__,
+                         self.diagname,
+                         self.authors)
+                
+            except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
+                    self.__logger__.error("Availability in " + d)
+                    self.__logger__.error('Warning: blank figure!')
+                    
+                    x=Plot2D_blank(frac_available_vals)
+                        
+                    fig = plt.figure()
+                    
+                    (fig,ax,_) = plot_setup(d=d,fig=fig)
+                    x.plot(ax=ax, color=self.colormaps, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
+                    fig.savefig(filename)
+                    plt.close(fig.number)
+                    
+                    ESMValMD("meta",
+                             filename,
+                             self.__basetags__ + ['DM_global', 'C3S_mean_var'],
+                             str('Availability plot for the data set "' + "_".join(dataset_id) + '" (' + self.__time_period__ + '); Data can not be displayed due to cartopy error!'),
+                             '#C3S' + 'frav' + "".join(short_left_over) + self.__varname__,
+                             self.__infile__,
+                             self.diagname,
+                             self.authors)
+            
+        del sp_masked_vals
+        del num_available_vals
+        del frac_available_vals
+        
+        # histogram plot of available measurements
+        all_data = cube.copy()
+         
+        try:
+            # plotting routine
+            filename = self.__plot_dir__ + os.sep + basic_filename + "_hist_all_vals" + "." + self.__output_type__
+            list_of_plots.append(filename)
+            x=PlotHist(all_data)
+            fig = x.plot(title=" ".join([self.__dataset_id__[idx] for idx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
+            fig.savefig(filename)
+            plt.close(fig)
+            
+            ESMValMD("meta",
+                     filename,
+                     self.__basetags__ + ['DM_global', 'C3S_overview'],
+                     str('Full spatio-temporal histogram of ' + self.__varname__ + ' for the data set ' + " ".join(dataset_id) + ' (' + self.__time_period__ + ').'),
+                     '#C3S' + 'histall' + self.__varname__,
+                     self.__infile__,
+                     self.diagname,
+                     self.authors)
+        except:
+            self.__logger__.error('Something is probably wrong with the plotting routines/modules!')
+        
+        del all_data
+        
+        return list_of_plots    
 
 #    def __do_overview__(self):
 #

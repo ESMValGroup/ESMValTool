@@ -52,16 +52,16 @@ def do_smm_table(csv_expert, csv_definitions):
                                "Security", , "Formal description\nof operations\nconcept", "Automated quality\nmonitoring", "Updates to record" ,
 
 
-    Output: a .rst file including the System Maturity Matrix
+    Output: a .png file including the System Maturity Matrix
 
     """
 
-    max_grade = 6  # Maximum possible grade. 
-    # Grades are integers to be given between 
+    max_grade = 6  # Maximum possible grade.
+    # Grades are integers to be given between
     # 1 and max_grade (1, ..., max_grade)
 
-    # Create a list. Each item of the list will be itself a list of strings, 
-    # corresponding to each word to appear in the System Maturity Matrix 
+    # Create a list. Each item of the list will be itself a list of strings,
+    # corresponding to each word to appear in the System Maturity Matrix
     # (header and words in the matrix itsef)
     definitions = list()
     with open(csv_definitions, 'rt') as csvfile:
@@ -70,19 +70,19 @@ def do_smm_table(csv_expert, csv_definitions):
             definitions.append(row)
 
     # Get the dimensions of the System Maturity Matrix, including header.
-    # The x-dimension goes horizontally (along columns) while the y-dimension 
+    # The x-dimension goes horizontally (along columns) while the y-dimension
     # goes vertically (along rows)
 
     ny = len(definitions)
     nx = len(definitions[0])
 
-    # Check if, possibly, one of the rows of the CSV has not the same 
+    # Check if, possibly, one of the rows of the CSV has not the same
     # number of items
     if sum([1.0 * (len(definitions[i]) == nx)
             for i in range(len(definitions))]) != ny:
-        logger.error("do_smm_report: unfitting number of columns in " + 
+        logger.error("do_smm_table: unfitting number of columns in " +
                      "definition file")
-        raise ValueError("Invalid input: unfitting number of columns in " + 
+        raise ValueError("Invalid input: unfitting number of columns in " +
                          "smm definition file: " + csv_definitions)
 
     # The grades to be used as color in the System maturity matrix
@@ -102,10 +102,14 @@ def do_smm_table(csv_expert, csv_definitions):
                         try:
                             grades[counter_y, counter_x] = int(item)
                         except IndexError:
-                            sys.exit(
-                                "(do_smm_table) number of columns of input " +
-                                " csv file for system maturity matrix differs" +
-                                " from definition file")
+                            logger.error("do_smm_table: " +
+                                         "unfitting number of columns in " +
+                                         "definition and expert file")
+                            raise ValueError("Invalid input: " +
+                                             "unfitting number of columns " +
+                                             "in smm definition file: " +
+                                             csv_definitions +
+                                             " and expert file: " + csv_expert)
                     counter_x += 1
             counter_y += 1
 
@@ -145,8 +149,12 @@ def do_smm_table(csv_expert, csv_definitions):
     cb.ax.zorder = -1
 
     # Write legend inside colorbar
-    [plt.text(0.5 * nx / max_grade + 1.0 * (i - 1) * nx / max_grade, -0.65, str(i), fontsize=14,
-              fontweight="bold", ha="center", va="center") for i in np.arange(1, max_grade + 1)]
+    [plt.text(0.5 * nx / max_grade + 1.0 * (i - 1) * nx / max_grade,
+              -0.65, str(i),
+              fontsize=14,
+              fontweight="bold",
+              ha="center",
+              va="center") for i in np.arange(1, max_grade + 1)]
 
     # Finish polishing the figure
     plt.title("System Maturity Matrix", fontsize=18)
@@ -162,7 +170,8 @@ def do_smm_table(csv_expert, csv_definitions):
             fontweight = "normal"
             fontsize = 10
         for x in range(nx):
-            # Read in the "go to line" in the csv and convert it to "go to line" instruction
+            # Read in the "go to line" in the csv and convert it to
+            # "go to line" instruction
             # When \n stands in a CSV, python reads \\n
             instring = "\n".join(
                 definitions[ny - y - 1][x].split("\\n")).strip()
@@ -226,8 +235,8 @@ def do_gcos_table(varname, gcos_expert, gcos_reference):
         - how about frequency? reported as "hourly", "decadal", not numbers
     """
 
-    # Create a list. Each item of the list will be itself a list of strings, corresponding either to the
-    # headers or to the GCOS reference values
+    # Create a list. Each item of the list will be itself a list of strings,
+    # corresponding either to the headers or to the GCOS reference values
     contents = list()
     with open(gcos_reference, 'rt') as csvfile:
         s = csv.reader(csvfile, delimiter=",", skipinitialspace=True)
@@ -237,19 +246,6 @@ def do_gcos_table(varname, gcos_expert, gcos_reference):
     # Get the horizontal dimension of the GCOS table
     nx = len(contents[0])
 
-#    # Read in the product table and store the data. ignore the header!
-#    counter_y = 0 # Counter along rows of the CSV file
-#    with open(gcos_expert, 'rb') as csvfile:
-#        # Check the match up between headers
-#        s = csv.reader(csvfile, delimiter = ",", skipinitialspace = True)
-#        for row in s:
-#            if counter_y == 0:
-#                if not [l.strip().lower() for l in row] == [l.strip().lower() for l in contents[0]]:
-#                    sys.exit("(do_gcos_report) NO MATCH-UP BETWEEN HEADER NAMES IN REFERENCE AND PRODUCT CSV FILES. MAKE SURE NAMES AND ORDER MATCH UP.")
-#            else:
-#                contents.append(row)
-#            counter_y += 1
-
     if not isinstance(gcos_expert, dict):
         assert False, "wrong input type in gcos"
     elif not np.all(np.sort(list(gcos_expert.keys())) == np.sort(contents[0])):
@@ -258,6 +254,8 @@ def do_gcos_table(varname, gcos_expert, gcos_reference):
         data_contents = []
         for key in contents[0]:
             if gcos_expert[key]["unit"] is None:
+                # Read in the product table and store the data.
+                # Ignore the header!
                 this_unit = ""
             elif gcos_expert[key]["unit"] in ["1", "unkown", "no-unit"]:
                 this_unit = ""
@@ -268,11 +266,14 @@ def do_gcos_table(varname, gcos_expert, gcos_reference):
 
     ny = len(contents)
 
-    # Check if, possibly, one of the rows of the CSV has not the same number of items
-    # TO BE IMPROVED WITH NEW BACK END
+    # Check if, possibly, one of the rows of the CSV has not the same number
+    # of items
     if sum([1.0 * (len(contents[i]) == nx)
             for i in range(len(contents))]) != ny:
-        sys.exit("(do_gcos_report) STOP: uneven number of columns in reference file")
+        logger.error("do_gcos_table: unfitting number of columns in " +
+                     "reference file")
+        raise ValueError("Invalid input: unfitting number of columns in " +
+                         "gcos reference file: " + gcos_reference)
 
     # Create the figure
     fig = plt.figure(figsize=(10, 4))
@@ -294,7 +295,8 @@ def do_gcos_table(varname, gcos_expert, gcos_reference):
             fontweight = "normal"
             fontsize = 20
         for x in range(nx):
-            # Read in the "go to line" in the csv and convert it to "go to line" instruction
+            # Read in the "go to line" in the csv and convert it to
+            # "go to line" instruction
             # When \n stands in a CSV, python reads \\n
             instring = "\n".join(contents[ny - y - 1][x].split("\\n")).strip()
             plt.text(x + 0.5, y + 0.5, instring, ha='center', va='center',

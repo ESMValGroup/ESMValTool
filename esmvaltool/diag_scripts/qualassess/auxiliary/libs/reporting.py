@@ -47,11 +47,6 @@ def do_report(report_data, report_title, work_dir, logger,
     output_file = src_dir + os.sep + "report.rst"
     outfile = open(output_file, "w")
 
-    # title (headline)
-    my_title = report_title
-    outfile.write(my_title + "\n")
-    outfile.write("=" * len(my_title) + "\n\n")
-
     # search for text and plots instances in report_data
 
     if isinstance(report_data, dict):
@@ -74,7 +69,7 @@ def do_report(report_data, report_title, work_dir, logger,
                 for key in report_data["listtext"]:
                     if isinstance(report_data["listtext"][key], dict):
                         outfile.write("* " + key + "\n\n")
-                        for key2 in report_data["text"][key]:
+                        for key2 in report_data["listtext"][key]:
                             if isinstance(
                                     report_data["listtext"][key][key2], dict):
                                 outfile.write("  * " + key2 + "\n\n")
@@ -147,38 +142,41 @@ def do_report(report_data, report_title, work_dir, logger,
 
         if "plots" in list(report_data.keys()):
 
-            this_title = "Figure(s)"
-            outfile.write(this_title + "\n")
-            outfile.write("=" * len(this_title) + "\n\n")
-
             if isinstance(report_data["plots"], list):
-                MD = METAdata()
 
-                # add all plots in plot_list to Sphinx source code file;
-                # the figure captions are extracted from the exif file headers
-                # of the .png files (if present)
+                if len(report_data["plots"]) > 0:
 
-                for f in report_data["plots"]:
+                    this_title = "Figure(s)"
+                    outfile.write(this_title + "\n")
+                    outfile.write("=" * len(this_title) + "\n\n")
 
-                    filename = f.rpartition(os.sep)[-1]
-#                    filepath = f.rpartition(os.sep)[0]
+                    MD = METAdata()
 
-                    shutil.copy(f, src_dir)
+                    # add all plots in plot_list to Sphinx source code file;
+                    # the figure captions are extracted from the exif file
+                    # headers of the .png files (if present)
 
-                    try:
-                        caption = MD.read(f).get_dict()[
-                            'ESMValTool']['caption']
-                    except BaseException:
-                        caption = ["Error: empty caption in " + filename]
+                    for f in report_data["plots"]:
 
-                    outfile.write(".. figure:: " + filename + "\n"
-                                  "   :align:   center" + "\n"
-                                  "   :width:   95%" + "\n\n"
-                                  "   " + caption[0] + "\n"
-                                  )
-                    outfile.write(".. raw:: latex \n\n")
-                    # does not react on this
-                    outfile.write("   \FloatBarrier \n")
+                        filename = f.rpartition(os.sep)[-1]
+                        # filepath = f.rpartition(os.sep)[0]
+
+                        shutil.copy(f, src_dir)
+
+                        try:
+                            caption = MD.read(f).get_dict()[
+                                'ESMValTool']['caption']
+                        except BaseException:
+                            caption = ["Error: empty caption in " + filename]
+
+                        outfile.write(".. figure:: " + filename + "\n"
+                                      "   :align:   center" + "\n"
+                                      "   :width:   95%" + "\n\n"
+                                      "   " + caption[0] + "\n"
+                                      )
+                        outfile.write(".. raw:: latex \n\n")
+                        # does not react on this
+                        outfile.write("   \FloatBarrier \n")
 
             else:
                 # TODO?: ERROR function

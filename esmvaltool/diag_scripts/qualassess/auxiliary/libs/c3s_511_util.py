@@ -13,6 +13,7 @@ from scipy import stats
 import cf_units
 import matplotlib.pyplot as plt
 import time
+import iris
 
 #sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
@@ -365,3 +366,12 @@ def __TS_of_cube__(cube,**kwargs):
     version.units = cf_units.Unit("1")
     
     return({"slope": min_trend, "number_breakpts":num_bp, "version":version, "homogenized":homogenized})
+    
+def weighted_STD_DEV(cube,dim,weights = None):
+    
+    if weights is None:
+        return (cube.collapsed(dim,iris.analysis.RMS)**2 - 
+                cube.collapsed(dim,iris.analysis.MEAN)**2)**0.5
+    else:
+        return (cube.collapsed(dim,iris.analysis.RMS,weights=weights)**2 - 
+                cube.collapsed(dim,iris.analysis.MEAN,weights=weights)**2)**0.5

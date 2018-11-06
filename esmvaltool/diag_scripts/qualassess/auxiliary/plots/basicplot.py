@@ -513,7 +513,6 @@ class Plot2D(object):
                 vmin, vmax = [vmax, vmin]
 
             rounder = int(np.ceil(-np.log10(vmax - vmin) + 1))
-#            vmin, vmax = np.round([vmin, vmax], rounder)
             vmin = np.floor(vmin * 10**rounder) / 10**rounder
             vmax = np.ceil(vmax * 10**rounder) / 10**rounder
             levels = np.round(np.linspace(vmin, vmax, num=11), rounder)
@@ -667,7 +666,8 @@ class Plot2D(object):
                                     linestyle=':')
                 plt.gca().text(-180, -112,
                                r'mean: {0} $\pm$ {1} '.format(
-                                   str(round(mean, 2)), str(round(std, 2))))
+                                   str(np.round(mean, 2)),
+                                   str(np.round(std, 2))))
 
             # Label plots (supports at most 26 figures at the moment)
             if self.n_cubes > 1:
