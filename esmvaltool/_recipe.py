@@ -14,7 +14,7 @@ from . import __version__, preprocessor
 from ._config import get_institutes
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_output_file, get_start_end_year,
-                           get_statistic_output_file)
+                           get_statistic_output_file, list_input_dirs)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
@@ -424,13 +424,16 @@ def _get_default_settings(variable, config_user, derive=False):
     # Set up downloading using synda if requested.
     if config_user['synda_download']:
         # TODO: make this respect drs
-        download_folder = os.path.join(config_user['preproc_dir'], 'downloads')
+        if config_user['download_to_repository']:
+            download_folder = list_input_dirs(
+                variable, config_user['rootpath'], config_user['drs'],
+                skip_non_existent=False)[0]
+        else:
+            download_folder = \
+                os.path.join(config_user['preproc_dir'], 'downloads')
+
         settings['download'] = {
             'dest_folder': download_folder,
-            'variable': variable,
-            'rootpath': config_user['rootpath'],
-            'drs': config_user['drs'],
-            'to_repository': config_user['download_to_repository'],
             'compress_downloads': config_user['compress_downloads'],
         }
 

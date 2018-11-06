@@ -4,7 +4,7 @@ import os
 import subprocess
 import shutil
 
-from .._data_finder import get_start_end_year, select_files, list_input_dirs
+from .._data_finder import get_start_end_year, select_files
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def synda_search(variable):
     return files
 
 
-def synda_download(synda_name, dest_folder, variable, rootpath, drs):
+def synda_download(synda_name, dest_folder):
     """Download file using synda."""
     filename = '.'.join(synda_name.split('.')[-2:])
     local_file = os.path.join(dest_folder, filename)
@@ -67,14 +67,8 @@ def synda_download(synda_name, dest_folder, variable, rootpath, drs):
     return local_file
 
 
-def download(files, dest_folder, variable, rootpath, drs,
-             to_repository, compress_downloads):
+def download(files, dest_folder, compress_downloads):
     """Download files that are not available locally"""
-    if to_repository:
-        dest_folder = list_input_dirs(
-            variable, rootpath, drs, skip_non_existent=False
-        )[0]
-
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
 
@@ -82,10 +76,7 @@ def download(files, dest_folder, variable, rootpath, drs,
     for name in files:
         local_file = synda_download(
             synda_name=name,
-            dest_folder=dest_folder,
-            variable=variable,
-            rootpath=rootpath,
-            drs=drs
+            dest_folder=dest_folder
         )
         if compress_downloads:
             cmd = [
