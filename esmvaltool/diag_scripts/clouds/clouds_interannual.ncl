@@ -71,13 +71,13 @@ begin
   ; ###########################################
   ; # references                              #
   ; ###########################################
-
-  write_references(diag_script,      \  ; script name
-                   "A_laue_ax",      \  ; authors
-                   "",               \  ; contributors
-                   "D_lauer13jclim", \  ; diag_references
-                   "",               \  ; obs_references
-                   (/"P_embrace"/))     ; proj_references
+  ; FIX-ME: to be replaced by new method
+  ; write_references(diag_script,      \  ; script name
+  ;                  "A_laue_ax",      \  ; authors
+  ;                  "",               \  ; contributors
+  ;                  "D_lauer13jclim", \  ; diag_references
+  ;                  "",               \  ; obs_references
+  ;                  (/"P_embrace"/))     ; proj_references
 
   dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
