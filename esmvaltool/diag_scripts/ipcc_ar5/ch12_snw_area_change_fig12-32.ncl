@@ -42,15 +42,6 @@ begin
   var0 = variables(0)
   field_type0 = field_types(0)
 
-  ; ###########################################
-  ; # References Information                  #
-  ; ###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "syears", "eyears", "begin_ref_year", \
                "end_ref_year", "months"/)

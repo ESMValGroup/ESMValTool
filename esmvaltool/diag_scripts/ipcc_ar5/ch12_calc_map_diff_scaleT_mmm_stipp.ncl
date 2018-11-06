@@ -79,16 +79,8 @@ begin
   else
     dim_seas = 1
   end if
-  ; ###########################################
-  ; # References Information                  #
-  ; ###########################################
-  write_references(diag_script, \  ; script name
-                   "A_lore_ru", \  ; authors
-                   "", \  ; contributors
-                   "D_collins13ipcc",    \  ; diag_references
-                   "",          \  ; obs_references
-                   "P_crescendo")   ; proj_references
-  ; Check required diag_script_info attributes
+ 
+ ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 
