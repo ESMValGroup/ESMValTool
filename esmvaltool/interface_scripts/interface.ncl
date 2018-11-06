@@ -62,50 +62,51 @@ load "./interface_scripts/data_handling.ncl"
 ; #############################################################################
 ; Convenience functions for selecting input_file_info
 
-undef("select_metadata_by_var_name")
-function select_metadata_by_var_name(info:list,
-                                     variable:string,
-                                     field:string)
+undef("select_metadata_by_atts")
+function select_metadata_by_atts(info:list,
+                                 atts:list)
 ;
 ; Arguments
-;    info: the input_file_info logical containing all metadata
-;    variable: variable's short name (according to CMOR standard)
-;    field: variable's field type
+;    info: a list of input_file_info logicals containing all metadata
+;    atts: a list of arrays of two elements containing attribute=value pairs
 ;
 ; Return value
-;    A list of logicals containing only the metadata matching the variable's
-;    name and field.
+;    A list of logicals containing only the metadata matching the given
+;    attribute value pairs
 ;
 ; Description
 ;    Metadata information are stored in a list of input_file_info logicals.
-;    This functions allows to extract the list elements matching the given
-;    variable's short name and field type.
+;    This functions allows to extract the list elements matching the attributes
+;    value given as list in the second argument.
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
-;   20181105_A-righ_ma: written.
+;   20181106_A-righ_ma: written.
 ;
+local funcname, scriptname, ninfo, natts, ii, jj, ca
 begin
 
-  funcname = "select_metadata_by_var_name"
+  funcname = "select_metadata_by_atts"
   scriptname = "interface_scripts/interface.ncl"
   enter_msg(scriptname, funcname)
 
   ninfo = ListCount(info)
+  natts = ListCount(atts)
   item = NewList("fifo")
-  do ii = 0, ninfo - 1
-    if (.not.isatt(info[ii], "short_name")) then
-      error_msg("f", scriptname, funcname, "missing short_name attribute")
-    end if
-    if (.not.isatt(info[ii], "field")) then
-      error_msg("f", scriptname, funcname, "missing field attribute")
-    end if
-    if (info[ii]@short_name.eq.variable .and. info[ii]@field.eq.field) then
-      ListAppend(item, info[ii])
-    end if
+  do ii = 0, ninfo - 1  ; loop over input_file_info elements
+    do jj = 0, natts - 1  ; loop over requested attribute=value pairs
+      ca = atts[jj]
+      if (.not.isatt(info[ii], ca[0])) then
+        error_msg("f", scriptname, funcname, "missing " + ca[0] + " attribute")
+      end if
+      print(info[ii]@$ca[0]$ + " = " + ca[1])
+      if (info[ii]@$ca[0]$.eq.ca[1]) then
+        ListAppend(item, info[ii])
+      end if
+    end do
   end do
 
   leave_msg(scriptname, funcname)
@@ -114,23 +115,23 @@ begin
 end
 
 ; #############################################################################
-undef("select_metadata_by_var_index")
-function select_metadata_by_var_index(info:list,
-                                      idx:integer)
+undef("select_metadata_by_name")
+function select_metadata_by_name(info:list,
+                                 variable:string)
+
 ;
 ; Arguments
 ;    info: the input_file_info logical containing all metadata
-;    idx: the variable index as in the variable_info list (e.g, 0 for the
-;         first variable, 1 for the second, etc.)
+;    variable: variable's short name (according to CMOR standard)
 ;
 ; Return value
 ;    A list of logicals containing only the metadata matching the variable's
-;    index
+;    short name
 ;
 ; Description
 ;    Metadata information are stored in a list of input_file_info logicals.
 ;    This functions allows to extract the list elements matching the given
-;    variable's index
+;    variable's short name.
 ;
 ; Caveats
 ;
@@ -139,9 +140,49 @@ function select_metadata_by_var_index(info:list,
 ; Modification history
 ;   20181105_A-righ_ma: written.
 ;
+local funcname, scriptname
 begin
 
-  funcname = "select_metadata_by_var_index"
+  funcname = "select_metadata_by_name"
+  scriptname = "interface_scripts/interface.ncl"
+  enter_msg(scriptname, funcname)
+
+  item = select_metadata_by_atts(info, [/[/"short_name", variable/]/])
+
+  leave_msg(scriptname, funcname)
+  return(item)
+
+end
+
+; #############################################################################
+undef("select_metadata_by_index")
+function select_metadata_by_index(info:list,
+                                  idx:integer)
+;
+; Arguments
+;    info: the input_file_info logical containing all metadata
+;    idx: the variable index as in the variable_info list
+;
+; Return value
+;    A list of logicals containing only the metadata matching the short name
+;    of variable_info[idx]
+;
+; Description
+;    Metadata information are stored in a list of input_file_info logicals.
+;    This functions allows to extract the list elements matching the short name
+;    of the variable with the given index
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;   20181105_A-righ_ma: written.
+;
+local funcname, scriptname
+begin
+
+  funcname = "select_metadata_by_index"
   scriptname = "interface_scripts/interface.ncl"
   enter_msg(scriptname, funcname)
 
@@ -151,8 +192,7 @@ begin
               " available")
   end if
 
-  var = variable_info[idx]
-  item = select_metadata_by_var_name(info, var@short_name, var@field)
+  item = select_metadata_by_name(info, variable_info[idx]@short_name)
 
   leave_msg(scriptname, funcname)
   return(item)
