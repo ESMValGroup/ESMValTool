@@ -43,7 +43,6 @@ begin
   var0 = variables(0)
   field_type0 = field_types(0)
 
-
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"experiment", "time_avg"/))
 end
