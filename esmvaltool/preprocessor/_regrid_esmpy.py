@@ -44,7 +44,10 @@ def cf_2d_bounds_to_esmpy_corners(bounds, circular):
 
 def coords_iris_to_esmpy(lat, lon, circular):
     """Build ESMF compatible coordinate information from iris coords"""
-    dim = len(lat.shape)
+    dim = lat.ndim
+    if lon.ndim != dim:
+        msg = 'Different dimensions in latitude({}) and longitude({}) coords.'
+        raise ValueError(msg.format(lat.ndim, lon.ndim))
     if dim == 1:
         for coord in [lat, lon]:
             if not coord.has_bounds():
@@ -87,8 +90,7 @@ def get_grid(esmpy_lat, esmpy_lon,
                                        staggerloc=ESMF.StaggerLoc.CORNER)
     grid_lon_corners[...] = esmpy_lon_corners
     grid_lat_corners[...] = esmpy_lat_corners
-    if grid.mask[0] is None:
-        grid.add_item(ESMF.GridItem.MASK, ESMF.StaggerLoc.CENTER)
+    grid.add_item(ESMF.GridItem.MASK, ESMF.StaggerLoc.CENTER)
     return grid
 
 
