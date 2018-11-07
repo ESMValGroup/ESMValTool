@@ -3,11 +3,10 @@ library(ggplot2)
 library(multiApply)
 library(ncdf4)
 library(startR)
-library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
+library(gridExtra)
+library(ClimProjDiags)
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/WeatherRegime.R')
 source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/RegimesAssign.R')
-#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Magic_WP6/R/WeightedMean.R')
-#source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-debug-plot-ts/R/PlotTimeSeries.R')
 
 ## Regimes namelist
 args <- commandArgs(trailingOnly = TRUE)
@@ -22,11 +21,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
-var_names <- names(input_files_per_var)
 
-
-#input_files <- lapply(var_names, function(x) names(input_files_per_var[[x]]))
-#names(input_files) <- var_names
 
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unique(unlist(unname(model_names)))
@@ -46,9 +41,9 @@ projection_files <- which(unname(experiment) != "historical")
 #Region considered
 region <- params$region
 if (region == 'North-Atlantic') {
-    lon.min <-  -60
-    lon.max <-  40
-    lat.min <- 30
+    lon.min <- -80
+    lon.max <- 50
+    lat.min <- 20
     lat.max <- 80
 } else if (region == 'Polar')  {
     lat.max <- 90
@@ -77,14 +72,9 @@ detrend_order <- params$detrend_order
 reference_data <- Start(model = fullpath_filenames[reference_files],
               var = var0,
               var_var = 'var_names',
-              #  sdate = paste0(seq(1970, 2000, by = 1), "0101"),
-             # time = values(list(as.POSIXct(start_historical),
-              #                   as.POSIXct(end_historical))),
               time ='all',
-              #time_tolerance = as.difftime(15, units = 'days'),
               lat = values(list(lat.min, lat.max)),
               lon = values(list(lon.min, lon.max)),
-    #lat = 'all', lon = 'all',
               lon_var = 'lon',
               lon_reorder = CircularSort(0, 360),
               return_vars = list(time = 'model', lon = 'model', lat = 'model'),
@@ -96,11 +86,14 @@ reference_data <- Start(model = fullpath_filenames[reference_files],
  lat <- attr(reference_data, "Variables")$dat1$lat
  time <- attr(reference_data, "Variables")$dat1$time
  calendario <- attributes(time)$variables$time$calendar
- dates_historical <- seq(start_historical, end_historical, "month")
+ dates_historical <- seq(start_historical, end_historical, "day")
 if (length(dates_historical) != length(time)) {
    if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
 	dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
     }
+}
+if (length(dates_historical) != length(time)) {
+print("Time problems 1")
 }
     reference_data <- as.vector(reference_data)
     dim(reference_data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
@@ -134,7 +127,6 @@ if (!is.na(mes)) {
  names(dim(reference_data))[c(1, 2)] <- c("model", "var")
 dims <- dim(reference_data)
 dims <- append(dims, c(length(time)/length(years), length(years)), after = time_dim)
-
 }
 dims <- dims[-time_dim]
 
@@ -153,7 +145,8 @@ names(dim(reference_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 ## Computing the WR_obs
 # -------------------------------
 clim_obs <- array(apply(reference_data, c(1, 2, 3, 5, 6), mean), dim = dim(reference_data)[-4])
-clim_obs <- aperm(apply(clim_obs, c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == 'sdate')], Loess, loess_span = 1), c(2, 3, 1, 4, 5))
+clim_obs <- aperm(apply(clim_obs, c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == 'sdate')], Loess,
+                        loess_span = 1), c(2, 3, 1, 4, 5))
 
 anom_obs <- Ano(reference_data, clim_obs)
 
@@ -237,6 +230,9 @@ if (length(dates_projection) != length(time)) {
         dates_projection <- dates_projection[-which(substr(dates_projection, 6, 10) == "02-29")]
     }
 }
+if (length(dates_projection) != length(time)) {
+print("Time problems 2")
+}
  data <- as.vector(projection_data)
     dim(projection_data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
     projection_data <- aperm(projection_data, c(1,2,5,4,3))
@@ -246,6 +242,7 @@ if (length(dates_projection) != length(time)) {
 # Selecting the period
 # ---------------------------
 time_dim <- which(names(dim(projection_data)) == "time")
+
 if (!is.na(mes)) {
     print("MONTHLY")
     dims <- dim(projection_data)
@@ -255,7 +252,8 @@ if (!is.na(mes)) {
     dims <- append(dims, c(length(ind)/length(years), length(years)), after = time_dim)
 } else if (!is.na(sea)) {
     print("Seasonal")
-    projection_data <- SeasonSelect(projection_data, season = frequency, dates = dates_projection, calendar = calendario)
+    projection_data <- SeasonSelect(projection_data, season = frequency, dates = dates_projection,
+                                    calendar = calendario)
     time <- projection_data$dates
     years = unique(as.numeric(substr(time, 1, 4)))
     projection_data <- projection_data$data
@@ -271,7 +269,8 @@ names(dim(projection_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 
 clim_ref <- array(apply(projection_data, c(1, 2, 3, 5, 6), mean), dim = dim(projection_data)[-4])
 
-clim_ref <- aperm(apply(clim_ref, c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')], Loess, loess_span = 1), c(2, 3, 1, 4, 5))
+clim_ref <- aperm(apply(clim_ref, c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')], Loess,
+                        loess_span = 1), c(2, 3, 1, 4, 5))
 
 anom_exp <- Ano(projection_data, clim_ref)
 
@@ -343,8 +342,21 @@ for (i in 1 : ncenters) {
 }
 dim(rmse) <- c(ncenters, ncenters)
 print(rmse)
-ArrayToNetCDF(list(rmse),
-              paste0(plot_dir, "/", var0, "_", frequency, "_RMSE_", model_names, "_",
-              start_projection, "_", end_projection,"_", start_historical, "_", end_historical,
-              ".nc"))
-print(plot_dir)
+
+dimpattern <- ncdim_def(name = "pattern", units = "undim", vals = 1:ncenters, longname = "Pattern" )
+
+defrmse <- ncvar_def(name = "rmse", units = "undim", dim = list(observed = dimpattern, experiment = dimpattern), longname = "Root Mean Squared Error between observed and future projected patterns")
+
+file <- nc_create(paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
+              model_names,"_", start_projection, "_", end_projection,"_", start_historical, "_", end_historical, ".nc"), list(defrmse))
+ncvar_put(file, defrmse, rmse)
+#ncatt_put(file, 0, "Conventions", "CF-1.5")
+nc_close(file)
+
+colnames(rmse) <- paste('Obs', 1 : ncenters)
+rownames(rmse) <- paste('Pre', 1 : ncenters)
+
+png(paste0(plot_dir, "/Table", var0, "_", frequency, "_rmse_",
+              model_names,"_", start_projection, "_", end_projection,"_", start_historical, "_", end_historical, ".png"), height = 6, width = 18, units = "cm", res = 100)
+grid.table(round(rmse, 2))
+dev.off()

@@ -1,4 +1,5 @@
 library(yaml)
+
 library(s2dverification)
 library(startR)
 library(multiApply)
@@ -7,8 +8,9 @@ library(climdex.pcic)
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R')
 library(parallel)
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R')
-library('magic.bsc', lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
 
+#library('magic.bsc', lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
+library('ClimProjDiags')
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -175,18 +177,12 @@ nc_close(file)
                   "th quantile for ",substr(start_reference, 1, 4), "-", substr(end_reference, 1, 4),
                   " (",rcp_scenario[i], ")")
 
-  PlotEquiMap(Mean1Dim(data, 1), lat = lat, lon = lon, fill = FALSE,
+
+  PlotEquiMap(Mean1Dim(data, 1), lat = lat, lon = lon, filled.continents = FALSE,
               brks = brks, color_fun = clim.palette("yellowred"),
-              units = paste0("Days" ), toptitle = title,
+              units = "Days", toptitle = title,
               fileout = paste0(plot_dir,"/", var0, "_extreme_spell_duration", season, "_", model_names, "_", rcp_scenario[i],
                                "_", start_projection, "_", end_projection, ".png"),
               title_scale = 0.5)
 
 }
-
-
-
-
-
-
-

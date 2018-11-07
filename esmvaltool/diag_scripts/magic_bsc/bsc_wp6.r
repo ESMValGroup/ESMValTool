@@ -10,6 +10,7 @@ library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/
 library(multiApply)
 library(ggplot2)
 library(yaml)
+library(ncdf4)
 
 ##Until integrated into current version of s2dverification
 library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
@@ -78,6 +79,8 @@ data <- Start(model = fullpath_filenames,
 
 lat <- attr(data, "Variables")$dat1$lat
 lon <- attr(data, "Variables")$dat1$lon
+long_names <- attr(data, "Variables")$common$tas$long_name
+projection <- attr(data, "Variables")$common$tas$coordinates
 region <- c(min(lon), max(lon), min(lat), max(lat))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
@@ -182,7 +185,7 @@ if (!is.null(weights)) {
 }
 
 
-
+print(region)
 if (!is.null(region)) {
   data <- data[1,1, ]
   attributes(data) <- NULL
@@ -192,8 +195,22 @@ if (!is.null(region)) {
   attr(data, 'variables') <- metadata
   variable_list <- list(variable = data, time = time)
   names(variable_list)[1] <- var0
-  ArrayToNetCDF(variable_list,
-                paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
+  #ArrayToNetCDF(variable_list,
+  #              paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
+  print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
+
+dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
+dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
+dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time" )
+defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime, lat = dimlat, lon = dimlon), longname = paste('Combination',long_names))
+
+file <- nc_create(paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"),
+                         "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
+                         "_", ".nc"))
+ncvar_put(file, defdata, data)
+ncvar_put(file, defagreement, agreement)
+#ncatt_put(file, 0, "Conventions", "CF-1.5")
+nc_close(file)
 } else {
   data <- data[1,1, , ,]
   data <- aperm(data, c(3,2,1))
@@ -205,9 +222,19 @@ if (!is.null(region)) {
   names(variable_list)[1] <- var0
   ArrayToNetCDF(variable_list,
                 paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
+
+   print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
+
+dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
+dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
+dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time" )
+defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime, lat = dimlat, lon = dimlon), longname = paste('Combination',long_names))
+
+file <- nc_create(paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"),
+                         "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
+                         "_", ".nc"))
+ncvar_put(file, defdata, data)
+ncvar_put(file, defagreement, agreement)
+#ncatt_put(file, 0, "Conventions", "CF-1.5")
+nc_close(file)
 }
-
-
-
-
-
