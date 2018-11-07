@@ -39,17 +39,8 @@ begin
   config_user_info@run_dir = config_user_info@run_dir + "/"
   config_user_info@work_dir = config_user_info@work_dir + "/"
 
-  ; Define current script name as global variables (following Python syntax)
+  ; Define current script name as global variable (following Python syntax)
   _DIAG_SCRIPT = diag_script_info@script
-  _NVARIABLES = ListCount(variable_info)
-  if (isvar("variable_info")) then
-    _VARIABLES = new(_NVARIABLES, string)
-    _FIELD_TYPES = new(_NVARIABLES, string)
-    do i = 0, _NVARIABLES - 1
-      _VARIABLES(i) = variable_info[i]@short_name
-      _FIELD_TYPES(i) = variable_info[i]@field
-    end do
-  end if
 
 end
 
@@ -86,7 +77,7 @@ function select_metadata_by_atts(info:list,
 ; Modification history
 ;   20181106_A-righ_ma: written.
 ;
-local funcname, scriptname, ninfo, natts, ii, jj, ca
+local funcname, scriptname, ninfo, natts, l_flag, ii, jj, ca
 begin
 
   funcname = "select_metadata_by_atts"
@@ -97,16 +88,19 @@ begin
   natts = ListCount(atts)
   item = NewList("fifo")
   do ii = 0, ninfo - 1  ; loop over input_file_info elements
+    l_flag = True
     do jj = 0, natts - 1  ; loop over requested attribute=value pairs
       ca = atts[jj]
       if (.not.isatt(info[ii], ca[0])) then
         error_msg("f", scriptname, funcname, "missing " + ca[0] + " attribute")
       end if
-      print(info[ii]@$ca[0]$ + " = " + ca[1])
-      if (info[ii]@$ca[0]$.eq.ca[1]) then
-        ListAppend(item, info[ii])
+      if (info[ii]@$ca[0]$.ne.ca[1]) then
+        l_flag = False
       end if
     end do
+    if (l_flag) then
+      ListAppend(item, info[ii])
+    end if
   end do
 
   leave_msg(scriptname, funcname)
