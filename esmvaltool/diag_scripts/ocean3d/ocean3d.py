@@ -199,7 +199,7 @@ def main(cfg):
             else:
                 ncols = 3
 
-            vmin, vmax, sstep, roundlimit = cfg['hofm_limits'][var_number]
+            vmin, vmax, sstep, roundlimit = cfg['plot2d_limits'][var_number]
             for depth in cfg['plot2d_depths']:
                 plot2d_original_grid(model_filenames,
                                      plot2d_var, 
@@ -213,6 +213,35 @@ def main(cfg):
                                      diagplotdir = diagplotdir,
                                      dpi=100)
 
+    if cfg['plot2d_bias']:
+        for var_number, plot2d_bias_var in enumerate(cfg['plot2d_bias_vars']):
+            model_filenames = get_clim_model_filenames(cfg, plot2d_bias_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                     key=lambda t: t[0]))
+            if cfg['plot2d_bias_cmap']:
+                cmap = get_cmap(cfg['plot2d_bias_cmap'][var_number])
+            else:
+                cmap = get_cmap('Spectral_r')
+            
+            if cfg['plot2d_bias_ncol']:
+                ncols = cfg['plot2d_bias_ncol']
+            else:
+                ncols = 3
+
+            vmin, vmax, sstep, roundlimit = cfg['plot2d_bias_limits'][var_number]
+            for depth in cfg['plot2d_bias_depths']:
+                plot2d_bias(model_filenames,
+                            plot2d_bias_var, 
+                            depth,
+                            'AO',
+                            diagworkdir,
+                            diagplotdir,
+                            contours=np.round(np.linspace(vmin,
+                                                          vmax,
+                                                          sstep),
+                                                          roundlimit),
+                            dpi=100,
+                            observations = observations)
 
 #    ############# plot 2d original grid ###########################
     # for ddepth in [10, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000 ]:

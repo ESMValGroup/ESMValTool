@@ -689,7 +689,9 @@ def plot2d_speed(model_filenames,
 #######################################
 
 def plot2d_bias(model_filenames, cmor_var, 
-                         depth, region, diagworkdir, diagplotdir, contours=[-3, 3, 21], dpi=100, observations = 'PHC'):
+                         depth, region, diagworkdir, 
+                         diagplotdir, contours,
+                         dpi=100, observations = 'PHC'):
 
     ncols = 4
     nplots = len(model_filenames)+1
@@ -729,9 +731,10 @@ def plot2d_bias(model_filenames, cmor_var,
         mm.drawmapboundary(fill_color='0.9')
         mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
         mm.drawcoastlines(linewidth=0.1)
-        print(np.linspace(contours[0], contours[1], contours[2]))
+        print(contours)
+        # print(np.linspace(contours[0], contours[1], contours[2]))
         mm.contourf(xx,yy, interpolated - data_onlev_obs_cyc,
-                    levels=np.round(np.linspace(contours[0], contours[1], contours[2]),2),
+                    levels=contours,
                     cmap = cmo.balance, 
                     extend='both',
                   )

@@ -5,7 +5,8 @@ import pyresample
 from netCDF4 import Dataset, num2date
 from scipy.interpolate import interp1d
 import os
-from mpl_toolkits.basemap import addcyclic
+# from mpl_toolkits.basemap import addcyclic
+from cartopy.util import add_cyclic_point
 import numpy as np
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
@@ -208,10 +209,12 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     data_interpolated = distfield.data[:].T
     interpolated = np.ma.masked_equal(data_interpolated, 0)
 
-    data_onlev_obs_cyc, lon_obs_cyc = addcyclic(data_onlev_obs, lon_obs[0, :])
+    data_onlev_obs_cyc, lon_obs_cyc = add_cyclic_point(data_onlev_obs,
+                                                       coord=lon_obs[0, :])
     lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
 
-    interpolated_cyc, lon_obs_cyc = addcyclic(interpolated, lon_obs[0, :])
+    interpolated_cyc, lon_obs_cyc = add_cyclic_point(interpolated, 
+                                                     coord=lon_obs[0, :])
     # lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
 
     return lonc, latc, target_depth, data_onlev_obs_cyc, interpolated_cyc
