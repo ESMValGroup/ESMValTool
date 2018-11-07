@@ -35,12 +35,12 @@
 undef("listatts2array")
 ;
 ; Arguments
-;    inlist: a list 
+;    inlist: a list
 ;    att: a string with the attribute to be searched for
 ;
 ; Description
 ;    This function retrieves the values of the attribute att from each element
-;    of the list and returns them as an array. 
+;    of the list and returns them as an array.
 ;
 ; Caveats
 ;
