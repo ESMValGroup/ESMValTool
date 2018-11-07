@@ -80,7 +80,7 @@ begin
       [/"field", field_type0/] \
       /])
 
-  ; Simple version using only variable's short name (work for most cases)
+  ; Simple version using only the variable's short name (works for most cases)
   info_simple = select_metadata_by_name(input_file_info, var0)
 
   ; Read data for the first dataset in the list
