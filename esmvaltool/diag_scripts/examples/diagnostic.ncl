@@ -76,7 +76,7 @@ begin
   ; For multiple variables, use different indices of variable_info
   info = select_metadata_by_atts(\
     input_file_info, \
-    [/[/"short_name", variable_info[0]@short_name/], \
+    [/[/"short_name", var0/], \
       [/"field", variable_info[0]@field/] \
       /])
 
