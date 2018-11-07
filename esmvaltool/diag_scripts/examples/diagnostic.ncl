@@ -25,6 +25,7 @@
 ;
 ; Required diag_script_info attributes
 ;    projection: map projection to use
+;    colormap: color table to use
 ;    ncdf: full path and name for *.nc output
 ;
 ; Optional diag_script_info attributes
@@ -80,7 +81,7 @@ begin
       /])
 
   ; Simple version using only variable's short name (work for most cases)
-  ; info = select_metadata_by_name(input_file_info, var0)
+  info_simple = select_metadata_by_name(input_file_info, var0)
 
   ; Read data for the first dataset in the list
   ; Loop over all ListCount(info) items to read all datasets in a loop
@@ -110,9 +111,74 @@ begin
   ; A function in esmaltool/diag_scripts/shared/statistics.ncl is used
   timeavg = time_operations(reference, -1, -1, "average", "annualclim", True)
 
-  ; Set style dependent annotations
-  annots = project_style(info, diag_script_info, "annots")
+  ; Set annotations
+  annots = project_style(info_ref, diag_script_info, "annots")
 
-  print(annots)
+  ; Plot resources
+  ; Add to timeavg, as attributes with prefix "res_".
+  ; Provide attributes only that differ from the defaults given at
+  ; http://www.ncl.ucar.edu/Document/Graphics/Resources/list_alpha_res.shtml
+  timeavg@res_gsnMaximize       = True   ; Use full page for the plot
+  timeavg@res_cnFillOn          = True   ; Color plot desired
+  timeavg@res_cnLineLabelsOn    = False  ; Contour lines
+  timeavg@res_cnLinesOn         = False
+  ; Colors
+  ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
+  timeavg@res_cnFillPalette     = diag_script_info@colormap  ; Set colormap
+  ; Annotation
+  timeavg@res_tiMainString      = "NCL example diagnostic"
+  timeavg@res_gsnLeftString     = annots
+  timeavg@res_gsnRightString    = variable_info[0]@long_name + " in " + \
+    variable_info[0]@units
+  ; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
+  timeavg@res_mpProjection      = diag_script_info@projection
+  ; Set explicit contour levels
+  if(isatt(diag_script_info, "explicit_cn_levels")) then
+    timeavg@res_cnLevelSelectionMode = "ExplicitLevels"
+    timeavg@res_cnLevels = diag_script_info@explicit_cn_levels
+  end if
+
+  ; Other Metadata: diag_script, var
+  ; Add to timeavg, as attributes without prefix
+  if(isatt(timeavg, "diag_script")) then  ; Add to existing entries
+    temp = timeavg@diag_script
+    delete(timeavg@diag_script)
+    timeavg@diag_script = array_append_record(temp, (/diag_script/), 0)
+    delete(temp)
+  else  ; Add as new attribute
+    timeavg@diag_script = (/_DIAG_SCRIPT/)
+  end if
+  timeavg@var = var0  ; Overwrite existing entry
+  if(isatt(variable_info, "long_name")) then
+    timeavg@var_long_name = variable_info[0]@long_name
+  end if
+  if(isatt(variable_info, "units")) then
+    timeavg@var_units = variable_info[0]@units
+  end if
+
+  ; Optional output to netCDF
+  ; (controlled by diag_script_info)
+  if(isatt(diag_script_info, "ncdf")) then
+    timeavg@ncdf = diag_script_info@ncdf
+    ; Function in ~/interface_scripts/auxiliary.ncl
+    ncdf_outfile = ncdf_write(timeavg, diag_script_info@ncdf)
+  end if
+
+  ; Create the plot
+  ; There are two options to pass data to the plotting routine: directly
+  ; or via a netCDF file. All information needed to create a graphics file
+  ; are passed with the data. It is possible to provide "dummy_for_wks" and
+  ; "dummy_for_var" as arguments in the call.
+  ; You may invoke a wks here, and/or provide the variable name (see example
+  ; in next section). The routine "contour_map" is a function in
+  ; ~/diag_scripts/shared/plot/aux_plotting.ncl
+  ;
+  ; Option 1: pass data directly
+  ; -> may only work with NCL (i.e. ok here)
+  ; Dummies trigger defaults
+  map = contour_map("dummy_for_wks", timeavg, "dummy_for_var")
+  ; Option 2: pass data via netCDF file
+  ; -> useful for non-NCL routines & metrics
+  ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
 
 end

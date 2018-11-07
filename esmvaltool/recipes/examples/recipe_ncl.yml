@@ -16,33 +16,19 @@ preprocessors:
     multi_model_statistics: false
 
 diagnostics:
-  ta_diagnostics:
-    description: Air temperature tutorial diagnostics.
+  example:
+    description: Example diagnostic
     variables:
       ta:
         preprocessor: preprocessor_1
         field: T3M
+        reference_dataset: ERA-Interim
         fx_files: [sftlf]
     additional_datasets:
       - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     scripts:
       test_ta: &settings
-        script: examples/diagnostic_ta.ncl
+        script: examples/diagnostic.ncl
         projection: Mollweide
-        styleset: CMIP5
         colormap: WhiteBlueGreenYellowRed
         ncdf: default
-      test_ta_no2:
-        <<: *settings
-        script: examples/diagnostic_ta.ncl
-
-  pr_diagnostic:
-    description: Precipitation tutorial diagnostic.
-    variables:
-      pr:
-        field: T2Ms
-    additional_datasets: []
-    scripts:
-      test_pr:
-        <<: *settings
-        script: examples/diagnostic_pr.ncl
