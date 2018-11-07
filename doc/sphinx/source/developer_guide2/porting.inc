@@ -128,12 +128,13 @@ The following changes may also have to be considered:
 - namelists are now called recipes and collected in ``esmvaltool/recipes``;
 - models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` logical and its attributes;
+- `input_file_info`` is now a list of a list of logicals, where each element describes one dataset and one variable. Convenience functions to extract the required elements (e.g., all datasets of a given variable) are provided in ``esmvaltool/interface_scripts/interface.ncl``;
+- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` and the convenience functions in ``esmvaltool/interface_scripts/interface.ncl`` to access the required attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics are to be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they go in ``shared/``);
 - upper case characters have to be avoided in script names, if possible.
 
-As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
+As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics/main.ncl`` can be followed as working example.
 
 Move preprocessing from the diagnostic script to the backend
 ============================================================
