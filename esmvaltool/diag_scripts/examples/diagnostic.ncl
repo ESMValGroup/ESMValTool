@@ -63,6 +63,9 @@ begin
   var0 = variable_info[0]@short_name
   field_type0 = variable_info[0]@field
 
+  ; The number of variables is the size of the variable_info list
+  n_variables = ListCount(variable_info)
+
 end
 
 
@@ -83,8 +86,11 @@ begin
   ; Simple version using only the variable's short name (works for most cases)
   info_simple = select_metadata_by_name(input_file_info, var0)
 
+  ; The number of datasets for var0 is the size of the returned list
+  n_datasets = ListCount(info)
+
   ; Read data for the first dataset in the list
-  ; Loop over all ListCount(info) items to read all datasets in a loop
+  ; Loop over all n_datasets info items to read all datasets in a loop
   dataset = read_data(info[0])
   printVarSummary(dataset)
 
