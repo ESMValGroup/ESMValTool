@@ -77,7 +77,7 @@ begin
   info = select_metadata_by_atts(\
     input_file_info, \
     [/[/"short_name", var0/], \
-      [/"field", variable_info[0]@field/] \
+      [/"field", field_type0/] \
       /])
 
   ; Simple version using only variable's short name (work for most cases)
