@@ -21,13 +21,14 @@ import numpy as np
 import calendar
 from itertools import cycle
 import matplotlib.pyplot as plt
-from   matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages
 
 import esmvaltool.diag_scripts.shared as diag
-from esmvaltool.preprocessor._regrid  import regrid
+from esmvaltool.preprocessor._regrid import regrid
 from esmvaltool.preprocessor._area_pp import area_average
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 class defaults(object):
     """Class containing default dictionaries for predefined catchments
@@ -56,7 +57,7 @@ class defaults(object):
         "Yangtze-Kiang": 52,
         "Ganges-Brahmaputra": 54,
         "Murray": 100
-        }
+    }
 
     mrro = {
         'Amazon': 1195.4477,
@@ -71,13 +72,13 @@ class defaults(object):
         'Nile': 48.7528,
         'Parana': 203.0060,
         'Yangtze-Kiang': 531.6936,
-        }
+    }
 
     pr = {
         'Amazon': 2253.61,
         'Congo': 1539.98,
         'Danube': 809.11,
-        'Ganges-Brahmaputra':1387.95,
+        'Ganges-Brahmaputra': 1387.95,
         'Lena': 399.146,
         'Mackenzie': 445.342,
         'Mississippi': 890.034,
@@ -86,7 +87,7 @@ class defaults(object):
         'Nile': 673.565,
         'Parana': 1311.22,
         'Yangtze-Kiang': 1032.84
-        }
+    }
 
     evspsbl = {
         'Amazon': 1014.4023,
@@ -101,10 +102,11 @@ class defaults(object):
         'Nile': 602.1752,
         'Parana': 1085.554,
         'Yangtze-Kiang': 538.0664
-        }
+    }
+
 
 def format_coef_plot(ax):
-    """ Moves axis from border to center and adapts ticks and labels accordingly
+    """ Moves axis from border to center, adapts ticks and labels accordingly
     Parameters
     ----------
     ax : object
@@ -114,9 +116,11 @@ def format_coef_plot(ax):
     ax.xaxis.set_label_coords(0.5, -0.025)
     ax.yaxis.set_label_coords(-0.025, 0.5)
     # Adapt axis range to center zero
-    xmax = np.ceil((np.absolute(np.array(ax.get_xlim())).max() + 5) / 10.0) * 10.0 - 5.0
+    xmax = np.ceil(
+        (np.absolute(np.array(ax.get_xlim())).max() + 5) / 10.0) * 10.0 - 5.0
     ax.set_xlim(xmax * -1, xmax)
-    ymax = np.ceil((np.absolute(np.array(ax.get_ylim())).max() + 5) / 10.0) * 10.0 - 5.0
+    ymax = np.ceil(
+        (np.absolute(np.array(ax.get_ylim())).max() + 5) / 10.0) * 10.0 - 5.0
     ax.set_ylim(ymax * -1, ymax)
     # remove 0 from y and x axis
     for key in ['x', 'y']:
@@ -159,18 +163,30 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
             for ens in plotdata[model][exp].keys():
                 for var in plotdata[model][exp][ens].keys():
                     # Write experiment data
-                    filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join([var,model,exp,ens]) + '.txt')
+                    filepath = os.path.join(
+                        cfg[diag.names.WORK_DIR],
+                        '_'.join([var, model, exp, ens]) + '.txt')
                     with open(filepath, 'w') as f:
-                        f.write(" ".join([model.upper(),exp,ens,var,'catchment averages','[mm a-1]'])+'\n\n')
-                        for river, value in sorted(plotdata[model][exp][ens][var].items()):
+                        f.write(" ".join([
+                            model.upper(), exp, ens, var, 'catchment averages',
+                            '[mm a-1]'
+                        ]) + '\n\n')
+                        for river, value in sorted(
+                                plotdata[model][exp][ens][var].items()):
                             f.write('{:25} : {:8.2f}\n'.format(river, value))
                     # Write reference data
                     if var not in ref_vars:
-                        filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join([var,'reference']) + '.txt')
+                        filepath = os.path.join(
+                            cfg[diag.names.WORK_DIR],
+                            '_'.join([var, 'reference']) + '.txt')
                         with open(filepath, 'w') as f:
-                            f.write(" ".join(['Reference','catchment averages','[mm a-1]'])+'\n\n')
-                            for river, value in sorted(getattr(catch_info, var).items()):
-                                f.write('{:25} : {:8.2f}\n'.format(river, value))
+                            f.write(" ".join([
+                                'Reference', 'catchment averages', '[mm a-1]'
+                            ]) + '\n\n')
+                            for river, value in sorted(
+                                    getattr(catch_info, var).items()):
+                                f.write('{:25} : {:8.2f}\n'.format(
+                                    river, value))
                         ref_vars.append(var)
 
 
@@ -191,10 +207,11 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
     for model in plotdata.keys():
         outtype = cfg.get('output_file_type', 'png')
-        logger.info('Generating plots for filetype: '+outtype)
+        logger.info('Generating plots for filetype: ' + outtype)
         if outtype == 'pdf':
-            filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                model.upper()+'_runoff_et'+'.'+outtype)
+            filepath = os.path.join(
+                cfg[diag.names.PLOT_DIR],
+                model.upper() + '_runoff_et' + '.' + outtype)
             pdf = PdfPages(filepath)
 
         for exp in plotdata[model].keys():
@@ -203,43 +220,54 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
                 # 1. Barplots for single variables
                 for var in plotdata[model][exp][member].keys():
-                    filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                            '_'.join([model.upper(),exp,member,'bias-plot_'+var]) + '.'+outtype)
+                    filepath = os.path.join(
+                        cfg[diag.names.PLOT_DIR], '_'.join([
+                            model.upper(), exp, member, 'bias-plot_' + var
+                        ]) + '.' + outtype)
                     river, expdata[var], refdata[var] = [], [], []
-                    for xlabel, rdata in sorted(getattr(catch_info, var).items()):
+                    for xlabel, rdata in sorted(
+                            getattr(catch_info, var).items()):
                         river.append(xlabel)
                         refdata[var].append(rdata)
-                        expdata[var].append(plotdata[model][exp][member][var][xlabel])
-                    logger.info(var+" Reference:", refdata[var])
-                    logger.info(var+" Experiment:", expdata[var])
+                        expdata[var].append(
+                            plotdata[model][exp][member][var][xlabel])
+                    logger.info(var + " Reference:", refdata[var])
+                    logger.info(var + " Experiment:", expdata[var])
 
-                    refdata[var], expdata[var] = np.array(refdata[var]), np.array(expdata[var])
+                    refdata[var], expdata[var] = np.array(
+                        refdata[var]), np.array(expdata[var])
                     fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
                     fig.suptitle(model.upper() + ' vs ' + reference.upper())
                     fig.subplots_adjust(bottom=0.35)
 
                     # 1a. Plot absolut bias for every catchment
                     ax = axs[0]
-                    ax.set_title('\nBias for '+var.upper())
+                    ax.set_title('\nBias for ' + var.upper())
                     ax.set_xlabel('Catchment')
-                    ax.set_ylabel(var.upper()+' [mm a-1]')
+                    ax.set_ylabel(var.upper() + ' [mm a-1]')
                     ax.set_xticks(range(len(river)))
                     ax.set_xticklabels((river), fontsize='small')
                     for tick in ax.get_xticklabels():
                         tick.set_rotation(90)
-                    ax.bar(range(len(river)), expdata[var] - refdata[var], color='SkyBlue')
+                    ax.bar(
+                        range(len(river)),
+                        expdata[var] - refdata[var],
+                        color='SkyBlue')
                     ax.axhline(c='black', lw=2)
 
                     # 1b. Plot relative bias for every catchment
                     ax = axs[1]
-                    ax.set_title('\nRelative bias for '+var.upper())
+                    ax.set_title('\nRelative bias for ' + var.upper())
                     ax.set_xlabel('Catchment')
                     ax.set_ylabel('Relative bias [%]')
                     ax.set_xticks(range(len(river)))
                     ax.set_xticklabels((river), fontsize='small')
                     for tick in ax.get_xticklabels():
                         tick.set_rotation(90)
-                    ax.bar(range(len(river)), (expdata[var] - refdata[var]) / refdata[var] * 100, color='IndianRed')
+                    ax.bar(
+                        range(len(river)),
+                        (expdata[var] - refdata[var]) / refdata[var] * 100,
+                        color='IndianRed')
                     ax.axhline(c='black', lw=2)
 
                     plt.tight_layout()
@@ -252,13 +280,19 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 markerlist = ('s', '+', 'o', '*', 'x', 'D')
                 # 2. Runoff coefficient vs Relative precipitation bias
                 marker = cycle(markerlist)
-                filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        '_'.join([model.upper(),exp,member,'rocoef-vs-relprbias']) + '.'+outtype)
+                filepath = os.path.join(
+                    cfg[diag.names.PLOT_DIR], '_'.join([
+                        model.upper(), exp, member, 'rocoef-vs-relprbias'
+                    ]) + '.' + outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
-                  ax.scatter((expdata['pr'][i] - refdata['pr'][i]) / refdata['pr'][i] * 100,
-                          (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
-                          marker=next(marker), label=label)
+                    ax.scatter(
+                        (expdata['pr'][i] - refdata['pr'][i]) /
+                        refdata['pr'][i] * 100,
+                        (expdata['mrro'][i] / expdata['pr'][i] * 100) -
+                        (refdata['mrro'][i] / refdata['pr'][i] * 100),
+                        marker=next(marker),
+                        label=label)
                 ax.set_title(model.upper() + ' vs ' + reference.upper())
                 ax.set_xlabel('Relative bias of precipitation [%]')
                 ax.set_ylabel('Bias of runoff coefficient [%]')
@@ -268,8 +302,9 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
                 marker = cycle(markerlist)
                 for i, label in enumerate(river):
-                    caxe.scatter([],[], marker=next(marker), label=label)
-                caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
+                    caxe.scatter([], [], marker=next(marker), label=label)
+                caxe.legend(
+                    ncol=3, numpoints=1, loc="lower center", mode="expand")
                 caxe.set_axis_off()
 
                 if outtype == "pdf":
@@ -280,13 +315,19 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
                 # 3. Runoff coefficient vs Evaporation coefficient bias
                 marker = cycle(markerlist)
-                filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                        '_'.join([model.upper(),exp,member,'rocoef-vs-etcoef']) + '.'+outtype)
+                filepath = os.path.join(
+                    cfg[diag.names.PLOT_DIR],
+                    '_'.join([model.upper(), exp, member, 'rocoef-vs-etcoef'
+                              ]) + '.' + outtype)
                 fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
                 for i, label in enumerate(river):
-                  ax.scatter((expdata['evspsbl'][i] / expdata['pr'][i] * 100) - (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
-                          (expdata['mrro'][i] / expdata['pr'][i] * 100) - (refdata['mrro'][i] / refdata['pr'][i] * 100),
-                          marker=next(marker), label=label)
+                    ax.scatter(
+                        (expdata['evspsbl'][i] / expdata['pr'][i] * 100) -
+                        (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
+                        (expdata['mrro'][i] / expdata['pr'][i] * 100) -
+                        (refdata['mrro'][i] / refdata['pr'][i] * 100),
+                        marker=next(marker),
+                        label=label)
                 ax.set_title(model.upper() + ' vs ' + reference.upper())
                 ax.set_xlabel('Bias of ET coefficient [%]')
                 ax.set_ylabel('Bias of runoff coefficient [%]')
@@ -296,8 +337,9 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 marker = cycle(markerlist)
                 caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
                 for i, label in enumerate(river):
-                    caxe.scatter([],[], marker=next(marker), label=label)
-                caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
+                    caxe.scatter([], [], marker=next(marker), label=label)
+                caxe.legend(
+                    ncol=3, numpoints=1, loc="lower center", mode="expand")
                 caxe.set_axis_off()
 
                 if outtype == "pdf":
@@ -317,35 +359,37 @@ def main(cfg):
     ----------
     cfg : dict
     Configuration dictionary of the recipe.
-
-    ToDo:
-    - Support user build catchment file with different catchments --> anyone interested in that..?
     """
 
     # Get dataset and variable information
     datasets = diag.Datasets(cfg)
     logging.debug("Found datasets in recipe:\n%s", datasets)
-    varlist  = diag.Variables(cfg)
+    varlist = diag.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", varlist)
 
     # Check for correct variables
-    if not varlist.vars_available('pr','mrro','evspsbl'):
-        raise ValueError("This diagnostic requires input of precipitation, surface runoff and evaporation")
+    if not varlist.vars_available('pr', 'mrro', 'evspsbl'):
+        raise ValueError(
+            "Diagnostic requires precipitation, runoff and evaporation data"
+        )
 
     # Read catchmentmask
     # to check: Correct way to read auxillary data using recipes?
     catchment_filepath = cfg.get('catchmentmask')
-    catchment_cube     = iris.load_cube(catchment_filepath)
-    if catchment_cube.coord('latitude').bounds  is None: catchment_cube.coord('latitude').guess_bounds()
-    if catchment_cube.coord('longitude').bounds is None: catchment_cube.coord('longitude').guess_bounds()
-    catchment_areas    = iris.analysis.cartography.area_weights(catchment_cube)
+    catchment_cube = iris.load_cube(catchment_filepath)
+    if catchment_cube.coord('latitude').bounds is None:
+        catchment_cube.coord('latitude').guess_bounds()
+    if catchment_cube.coord('longitude').bounds is None:
+        catchment_cube.coord('longitude').guess_bounds()
+    catchment_areas = iris.analysis.cartography.area_weights(catchment_cube)
 
-    catch_info         = defaults()
-    reference          = 'default'
+    catch_info = defaults()
+    reference = 'default'
 
     # Read data and compute long term means
     # to check: Shouldn't this be part of preprocessing?
-    # to check: How to regrid onto catchment_cube grid with preproc recipe statements
+    # to check: How to regrid onto catchment_cube grid
+    #           with preproc recipe statements
     #           instead of using regrid here?
     allcubes = {}
     plotdata = {}
@@ -353,19 +397,22 @@ def main(cfg):
         # Prepare data dictionary
         # to check: what is a smart way to do this in python3?
         datainfo = datasets.get_dataset_info(path=dataset_path)
-        dset, dexp, dens, dvar = datainfo['dataset'], datainfo['exp'], datainfo['ensemble'], datainfo['short_name']
+        dset, dexp, dens, dvar = datainfo['dataset'], datainfo[
+            'exp'], datainfo['ensemble'], datainfo['short_name']
         if dset not in allcubes.keys():
             allcubes[dset] = []
         # Load data into iris cube
         new_cube = iris.load(dataset_path, varlist.standard_names())[0]
         # Check for expected unit
         if new_cube.units != 'kg m-2 s-1':
-            raise ValueError('Unit [kg m-2 s-1] is expected for ',new_cube.long_name.lower(),' flux')
+            raise ValueError('Unit [kg m-2 s-1] is expected for ',
+                             new_cube.long_name.lower(), ' flux')
         # Convert to unit mm per month
-        timelist=new_cube.coord('time')
-        daypermonth=[]
+        timelist = new_cube.coord('time')
+        daypermonth = []
         for mydate in timelist.units.num2date(timelist.points):
-            daypermonth.append(calendar.monthrange(mydate.year, mydate.month)[1])
+            daypermonth.append(
+                calendar.monthrange(mydate.year, mydate.month)[1])
         new_cube.data *= 86400.0
         for i, days in enumerate(daypermonth):
             new_cube.data[i] *= days
@@ -373,30 +420,45 @@ def main(cfg):
         year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
         year_cube.units = "mm a-1"
         # Compute long term mean
-        mean_cube       = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
+        mean_cube = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
         # Regrid to catchment data grid --> maybe use area_weighted instead?
-        if mean_cube.coord('latitude').bounds  is None: mean_cube.coord('latitude').guess_bounds()
-        if mean_cube.coord('longitude').bounds is None: mean_cube.coord('longitude').guess_bounds()
-        mean_cube_regrid = mean_cube.regrid(catchment_cube, iris.analysis.Linear())
-        # mean_cube_regrid = mean_cube.regrid(catchment_cube, iris.analysis.AreaWeighted())
+        if mean_cube.coord('latitude').bounds is None:
+            mean_cube.coord('latitude').guess_bounds()
+        if mean_cube.coord('longitude').bounds is None:
+            mean_cube.coord('longitude').guess_bounds()
+        mean_cube_regrid = mean_cube.regrid(catchment_cube,
+                                            iris.analysis.Linear())
+        # mean_cube_regrid = mean_cube.regrid(catchment_cube,
+        #                                     iris.analysis.AreaWeighted())
         # Get catchment area means
         rivervalues = {}
         for river, rid in catch_info.catchments.items():
-            data_catch = np.ma.masked_where(catchment_cube.data.astype(np.int) != rid, mean_cube_regrid.data)
-            area_catch = np.ma.masked_where(catchment_cube.data.astype(np.int) != rid, catchment_areas.data)
-            rivervalues[river] = (data_catch * (area_catch / area_catch.sum())).sum()
+            data_catch = np.ma.masked_where(
+                catchment_cube.data.astype(np.int) != rid,
+                mean_cube_regrid.data)
+            area_catch = np.ma.masked_where(
+                catchment_cube.data.astype(np.int) != rid,
+                catchment_areas.data)
+            rivervalues[river] = (
+                data_catch * (area_catch / area_catch.sum())).sum()
         if dset == datainfo.get('reference_dataset', None):
             if reference == 'default':
                 reference = datainfo['reference_dataset']
             elif reference != datainfo['reference_dataset']:
-                raise ValueError('Reference must be the same for all variables!')
+                raise ValueError(
+                    'Reference must be the same for all variables!')
             setattr(catch_info, dvar, rivervalues)
         else:
-            if dset not in plotdata.keys():                   plotdata[dset]                   = {}
-            if dexp not in plotdata[dset].keys():             plotdata[dset][dexp]             = {}
-            if dens not in plotdata[dset][dexp].keys():       plotdata[dset][dexp][dens]       = {}
+            if dset not in plotdata.keys():
+                plotdata[dset] = {}
+            if dexp not in plotdata[dset].keys():
+                plotdata[dset][dexp] = {}
+            if dens not in plotdata[dset][dexp].keys():
+                plotdata[dset][dexp][dens] = {}
             if dvar in plotdata[dset][dexp][dens].keys():
-                raise StandardError('Variable',dvar,'already exists in plot dictionary --> check script')
+                raise StandardError(
+                    'Variable', dvar,
+                    'already exists in plot dictionary --> check script')
             else:
                 plotdata[dset][dexp][dens][dvar] = rivervalues
 
@@ -409,7 +471,8 @@ def main(cfg):
     # Write regridded and temporal aggregated netCDF data files (one per model)
     # to do: update attributes
     for model in allcubes.keys():
-        filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join(['postproc',model]) + '.nc')
+        filepath = os.path.join(cfg[diag.names.WORK_DIR],
+                                '_'.join(['postproc', model]) + '.nc')
         if cfg[diag.names.WRITE_NETCDF]:
             iris.save(allcubes[model], filepath)
             logger.info("Writing %s", filepath)
