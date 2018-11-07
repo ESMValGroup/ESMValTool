@@ -33,14 +33,13 @@ requirements:
   run:
     # esmvaltool
     - python
-    - basemap
     - iris=1.13
     - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf_units
     - cython
-    - matplotlib
+    - matplotlib<3
     - netCDF4
     - numba
     - numpy
@@ -50,10 +49,11 @@ requirements:
     - pyyaml
     - shapely
     - six
+    - vmprof
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - ncurses=6.1=hfc679d8_1
+    - ncurses>5
     # TODO: add R, julia
 test:
   # TODO: add unit tests? This seems to require installing the tests

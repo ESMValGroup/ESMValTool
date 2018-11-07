@@ -6,7 +6,6 @@
 # - ncl
 # - iris
 # - python-stratify
-# - basemap
 
 import os
 import re
@@ -28,13 +27,12 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'basemap',
         'cartopy',
         'cdo',
         'cf_units',
         'cython',
         # 'scitools-iris',  # Only iris 2 is on PyPI
-        'matplotlib',
+        'matplotlib<3',
         'netCDF4',
         'numba',
         'numpy',
@@ -69,6 +67,7 @@ REQUIREMENTS = {
         'pydocstyle',
         'pylint',
         'sphinx',
+        'sphinx_rtd_theme',
         'yamllint',
         'yapf',
     ],
