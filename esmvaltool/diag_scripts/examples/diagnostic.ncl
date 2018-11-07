@@ -94,7 +94,7 @@ begin
   ; If no fx-variable is found a missing value is returned
   fx_var = read_fx_data(info[1], "sftlf")
   printVarSummary(fx_var[0])
-  
+
   ; Retrieve metadata item for the reference dataset
   info_ref = select_metadata_by_atts( \
     input_file_info, \

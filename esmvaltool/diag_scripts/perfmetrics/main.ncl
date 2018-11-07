@@ -3,6 +3,7 @@
 ; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
+;
 ; Description
 ;    Calculates and (optionally) plots annual/seasonal cycles, zonal means,
 ;    lat-lon fields and time-lat-lon fields from input T3M or T2Ms data.
