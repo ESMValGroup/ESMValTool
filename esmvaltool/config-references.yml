@@ -91,6 +91,10 @@ authors:
     name: Gettelman, Andrew
     institute: NCAR, USA
     email: andrew 'at' ucar.edu
+  gier_be:
+    name: Gier, Bettina
+    institute: Univ. of Bremen, Germany
+    email: gier 'at' uni-bremen.de
   gott_kl:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
