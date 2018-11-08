@@ -170,12 +170,12 @@ def calculate_volume(cube, coordz):
 
 
 def volume_average(
-    cube,
-    coordz,
-    coord1,
-    coord2,
-    use_fx_files=False,
-    fx_files=None):
+        cube,
+        coordz,
+        coord1,
+        coord2,
+        use_fx_files=False,
+        fx_files=None):
     """
     Determine the volume average.
 
@@ -218,7 +218,7 @@ def volume_average(
     grid_volume = None
     if use_fx_files:
         for key, fx_file in fx_files.items():
-            if fx_file == None:
+            if fx_file is None:
                 continue
             logger.info('Attempting to load %s from file: %s', key, fx_file)
             fx_cube = iris.load_cube(fx_file)
@@ -226,7 +226,6 @@ def volume_average(
             grid_volume = fx_cube.data
             grid_volume_found = True
             cube_shape = cube.data.shape
-
 
     if not grid_volume_found:
         grid_volume = calculate_volume(cube, coordz)
@@ -261,14 +260,18 @@ def volume_average(
         for z_itr in range(cube.shape[1]):
             # ####
             # Calculate weighted mean for this time and layer
-            total = cube[time_itr, z_itr].collapsed([coordz, coord1, coord2],
-                                                    iris.analysis.MEAN,
-                                                    weights=grid_volume[time_itr, z_itr]).data
+            total = cube[time_itr, z_itr].collapsed(
+                [coordz, coord1,  coord2], iris.analysis.MEAN,
+                weights=grid_volume[time_itr, z_itr]
+                ).data
             column.append(total)
 
             try:
-                layer_vol = np.ma.masked_where(cube[time_itr, z_itr].data.mask,
-                                               grid_volume[time_itr, z_itr]).sum()
+                layer_vol = np.ma.masked_where(
+                    cube[time_itr, z_itr].data.mask,
+                    grid_volume[time_itr, z_itr]
+                    ).sum()
+
             except AttributeError:
                 # ####
                 # No mask in the cube data.

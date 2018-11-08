@@ -154,7 +154,7 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     grid_areas = None
     if use_fx_files:
         for key, fx_file in fx_files.items():
-            if fx_file == None:
+            if fx_file is None:
                 continue
             logger.info('Attempting to load %s from file: %s', key, fx_file)
             fx_cube = iris.load_cube(fx_file)
@@ -170,19 +170,18 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
                                      [cube_shape[0], 1, 1, 1])
             elif cube.data.ndim == 3 and grid_areas.ndim == 2:
                 grid_areas = np.tile(grid_areas,
-                                         [cube_shape[0], 1, 1])
+                                     [cube_shape[0], 1, 1])
 
     if not use_fx_files and cube.coord('latitude').points.ndim == 2:
             logger.error('area_average ERROR: fx_file needed to calculate grid'
-                        + ' cell area for irregular grids.')
+                         + ' cell area for irregular grids.')
             raise iris.exceptions.CoordinateMultiDimError(
                cube.coord('latitude'))
 
     if not grid_areas_found:
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
-        logger.info('Calculated grid area...',grid_areas.shape)
-
+        logger.info('Calculated grid area...', grid_areas.shape)
 
     if cube.data.shape != grid_areas.shape:
         logger.error('Cube shape (%s) doesn`t match grid area (%s)',
