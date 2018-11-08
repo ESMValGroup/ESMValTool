@@ -22,7 +22,9 @@ import iris
 #                                os.pardir))) 
 
 from .TempStab.TempStab import TempStab as TS
+import logging
 
+logger = logging.getLogger(os.path.basename(__file__))
 
 class HiddenPrints:
     def __enter__(self):
@@ -82,10 +84,10 @@ def __temporal_trend__(cube, pthres=1.01):
     if S.units in [None,'no_unit','1','unknown']:
         S.units = cf_units.Unit('0.1 year-1')
     else:
-        S.units += cf_units.Unit(str(S.units) + ' 0.1 year-1')
+        S.units = cf_units.Unit(str(S.units) + ' 0.1 year-1')
     R.units = '-'
     I.units = cube.units
-    P.units = '-'
+    P.units = 1
     return R, S, I, P
     
 
@@ -127,7 +129,7 @@ def __corr_single__(cube, x, pthres=1.01):
     # get data with at least one valid value
     dat, msk = __get_valid_data__(cube, mode='thres', thres=3)
     xx, n = dat.shape
-    print(('   Number of grid points: ', n))
+    logger.info(('   Number of grid points: ' + str(n)))
 
     R = np.ones((ny, nx)) * np.nan  # output matrix for correlation
     P = np.ones((ny, nx)) * np.nan  # output matrix for p-value
@@ -141,7 +143,7 @@ def __corr_single__(cube, x, pthres=1.01):
     I.shape = (-1)
     CO.shape = (-1)
 
-    print('Calculating correlation ...')
+    logger.info('   Calculating correlation ...')
     res = [stats.mstats.linregress(x, dat[:, i]) for i in range(n)]
 
     res = np.asarray(res)
@@ -181,7 +183,7 @@ def __corr_single__(cube, x, pthres=1.01):
     Pout = cube[0,:,:].copy()  # copy object to get coordinates
     Pout.long_name = 'p-value'
     Pout.data = np.ma.array(P, mask=msk).copy()
-    Pout.units = None
+    Pout.units = 1
 
     Cout = cube[0,:,:].copy()  # copy object to get coordinates
     Cout.long_name = 'covariance'
@@ -222,6 +224,9 @@ def __get_valid_data__(cube, mode='all', thres=-99):
         # vectorize the data
 
         data = cube.data.reshape(n, -1)
+        
+        if not np.ma.is_masked(data):
+            data=np.ma.masked_array(data, np.full_like(data,False))
         # set pixels with NaN to invalid
         data.mask[np.isnan(data.data)] = True
 

@@ -20,8 +20,6 @@ import string
 from matplotlib.ticker import FuncFormatter
 import logging
 
-logger = logging.getLogger()
-
 def label_in_perc_multiple(x, pos=0):
     return '%1.1f%%' % (x)
 
@@ -56,7 +54,7 @@ class PlotHist(object):
         Modification history
             20180209-A_schl_ma: written
         """
-
+        self.logger = logging.getLogger(os.path.basename(__file__))
         # Check arguments
         if isinstance(data, iris.cube.Cube):
             try:
@@ -225,7 +223,7 @@ class PlotScatter(object):
         Modification history:
             20180209-A_schl_ma: written
         """
-
+        self.logging.getLogger(os.path.basename(__file__))
         # Check arguments
         if (not isinstance(data1, iris.cube.Cube)):
             raise TypeError("Invalid input: expected iris cube")
@@ -326,7 +324,7 @@ class Plot2D(object):
         Modification history
             20180207-A_muel_bn: copied Plot2D and adjusted
         """
-
+        self.logger = logging.getLogger(os.path.basename(__file__))
         # Check arguments
         try:
             self.n_cubes = len(cubes)
@@ -640,10 +638,10 @@ class Plot2D(object):
                         plt.xticks(locs, labels, rotation=25)
                         plt.xlabel(self.__class__.TIME_LABEL)
             except Exception as e:
-                logger.exception(e)
+                self.logger.exception(e)
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                logger.debug(exc_type, fname, exc_tb.tb_lineno)
+                self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
                 qplt.pcolormesh(cube, cmap=brewer_cmap, vmin=vmin, vmax=vmax)
                 plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
                          'to cartopy issues with the data cube!',
@@ -770,7 +768,7 @@ class Plot1D(object):
         Modification history
             20180527-A_muel_bn: copied Plot2D and adjusted
         """
-
+        self.logger = logging.getLogger(os.path.basename(__file__))
         # Check arguments
         if (not (isinstance(cube, iris.cube.Cube) or
                  isinstance(cube, iris.cube.CubeList))):
@@ -883,9 +881,9 @@ class Plot1D(object):
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logger.debug(exc_type, fname, exc_tb.tb_lineno)
-            logger.exception(e)
-            logger.debug('We did not expect this to fail!')
+            self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
+            self.logger.exception(e)
+            self.logger.debug('We did not expect this to fail!')
             plt.plot()
 
         if 'time' == self.plot_type:

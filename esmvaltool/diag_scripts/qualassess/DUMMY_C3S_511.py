@@ -48,7 +48,7 @@ def main(cfg):
                         attributes['standard_name'], attributes['dataset'])
             logger.debug("Preparing diagnostic")
             Diag = Basic_Diagnostic_SP()
-            Diag.set_info(cfg=cfg,logger=logger)
+            Diag.set_info(cfg=cfg)
             logger.debug("Loading %s", filename)
             Diag.read_data()
             logger.debug("Running computation")

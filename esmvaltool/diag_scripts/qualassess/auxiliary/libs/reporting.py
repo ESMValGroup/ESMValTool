@@ -1,11 +1,12 @@
 import os
 import shutil
 import subprocess
+import logging
 
 from .MD_old.METAdata import METAdata
 
 
-def do_report(report_data, report_title, work_dir, logger,
+def do_report(report_data, report_title, work_dir,
               signature="SIG", ecv="ECV", dataset="DATASET", latex_opts=False):
     """
     - report_data  a dictionary of a list of plot file names  (.png, ...)
@@ -20,6 +21,8 @@ def do_report(report_data, report_title, work_dir, logger,
     # define output and temporary directories for Sphinx (source, build);
     # add process id to temporary directory names to allow for
     # execution of multiple instances in parallel
+
+    logger = logging.getLogger(os.path.basename(__file__))
 
     pid = str(os.getpgid(0))
 
@@ -109,7 +112,7 @@ def do_report(report_data, report_title, work_dir, logger,
                 if os.path.isfile(report_data["freetext"]):
                     with open(report_data["freetext"], "r") as freetext:
                         with open(os.path.dirname(os.path.abspath(__file__)) +
-                                  os.sep + "libs/predef/empty.txt", "r") \
+                                  os.sep + "predef/empty.txt", "r") \
                                 as empty:
                             text = freetext.read()
                             if len(set(text) - set(empty.read())):
