@@ -158,28 +158,13 @@ def calculate_volume(cube, coordz):
     # Load z direction thickness
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
-    if cube.shape[t_dim] < 2:
-        # ####
-        # Very small cube and should be able to do it in one.
-        # Too small to make a dummy cube.
-        area = iris.analysis.cartography.area_weights(cube)
-
-        # ####
-        # Calculate grid volume:
-        if thickness.ndim == 1 and z_dim == 1:
-            grid_volume = area * thickness[None, :, None, None]
-        if thickness.ndim == 4:
-            grid_volume = area * thickness
-
-        return grid_volume
-
     # ####
     # Calculate grid volume:
     area = iris.analysis.cartography.area_weights(cube)
     if thickness.ndim == 1 and z_dim == 1:
-        grid_volume = area * thickness[None, :2, None, None]
+        grid_volume = area * thickness[None, :, None, None]
     if thickness.ndim == 4 and z_dim == 1:
-        grid_volume = area * thickness[:, :2]
+        grid_volume = area * thickness[:, :]
 
     return grid_volume
 
