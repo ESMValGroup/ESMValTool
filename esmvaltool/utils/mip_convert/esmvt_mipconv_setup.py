@@ -7,7 +7,7 @@ on different UM suite data.
 import argparse
 import os
 import shutil
-import ConfigParser
+import configparser as ConfigParser
 import yaml
 
 
@@ -108,15 +108,16 @@ def write_rose_conf(rose_config_template, recipe_file, config_file):
         Config.set('jinja2:suite.rc', 'INPUT_DIR',
                    '"' + conf_file['INPUT_DIR'] + '"')
         Config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + rose_output + '"')
-        Config.set('jinja2:suite.rc', 'ACTIVE_STREAMS', active_streams)
+        Config.set('jinja2:suite.rc', 'ACTIVE_STREAMS', str(active_streams))
         Config.set('jinja2:suite.rc', 'STREAM_TIME_OVERRIDES',
-                   stream_overrides)
-        Config.set('jinja2:suite.rc', 'FIRST_YEAR', dataset['start_year'])
-        Config.set('jinja2:suite.rc', 'REF_YEAR', dataset['start_year'])
-        Config.set('jinja2:suite.rc', 'FINAL_YEAR', dataset['end_year'])
-        Config.set('jinja2:suite.rc', 'STREAM_COMPONENTS', stream_components)
+                   str(stream_overrides))
+        Config.set('jinja2:suite.rc', 'FIRST_YEAR', str(dataset['start_year']))
+        Config.set('jinja2:suite.rc', 'REF_YEAR', str(dataset['start_year']))
+        Config.set('jinja2:suite.rc', 'FINAL_YEAR', str(dataset['end_year']))
+        Config.set('jinja2:suite.rc', 'STREAM_COMPONENTS',
+                   str(stream_components))
         Config.set('jinja2:suite.rc', 'CYCLING_FREQUENCIES',
-                   cycling_frequencies)
+                   str(cycling_frequencies))
         Config.set(
             'jinja2:suite.rc', 'TARGET_SUITE_NAME',
             '"' + conf_file['DATASET_TO_SUITE'][dataset['dataset']] + '"'
