@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'stratify',
         'vmprof',
         'yamale',
+        'fiona',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
