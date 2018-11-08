@@ -40,7 +40,7 @@ begin
   config_user_info@work_dir = config_user_info@work_dir + "/"
 
   ; Define current script name as global variable (following Python syntax)
-  _DIAG_SCRIPT = diag_script_info@script
+  DIAG_SCRIPT = diag_script_info@script
 
 end
 
