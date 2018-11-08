@@ -94,23 +94,6 @@ def get_grid(esmpy_lat, esmpy_lon,
     return grid
 
 
-def get_empty_field(cube, grid, remove_mask=False):
-    """Build empty ESMF field from cube with given grid"""
-    field = ESMF.Field(grid,
-                       name=cube.long_name,
-                       staggerloc=ESMF.StaggerLoc.CENTER)
-    center_mask = grid.get_item(ESMF.GridItem.MASK, ESMF.StaggerLoc.CENTER)
-    if np.ma.isMaskedArray(cube.data):
-        field.data[...] = cube.data.data.T
-        if remove_mask:
-            center_mask[...] = 0
-        else:
-            center_mask[...] = cube.data.mask.T
-    else:
-        field.data[...] = cube.data.T
-        center_mask[...] = 0
-    return field
-
 
 def is_lon_circular(lat, lon):
     """Determine if longitudes are circular"""
@@ -137,17 +120,16 @@ def is_lon_circular(lat, lon):
     return circular
 
 
-def cube_to_empty_field(cube, circular_lon=None, remove_mask=False):
+def cube_to_empty_field(cube):
     """Build an empty ESMF field from a cube"""
     lat = cube.coord('latitude')
     lon = cube.coord('longitude')
-    if circular_lon is None:
-        circular = is_lon_circular(lat, lon)
-    else:
-        circular = circular_lon
+    circular = is_lon_circular(lon)
     esmpy_coords = coords_iris_to_esmpy(lat, lon, circular)
     grid = get_grid(*esmpy_coords, circular=circular)
-    field = get_empty_field(cube, grid, remove_mask)
+    field = ESMF.Field(grid,
+                       name=cube.long_name,
+                       staggerloc=ESMF.StaggerLoc.CENTER)
     return field
 
 
@@ -206,7 +188,7 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
     # pylint: disable=too-many-locals
     # The necessary refactoring will be done for the full 3d regridding.
     """Build regridder for 2.5d regridding"""
-    dst_field = cube_to_empty_field(dst_rep[0], remove_mask=True)
+    dst_field = cube_to_empty_field(dst_rep[0])
     src_fields = []
     esmf_regridders = []
     dst_masks = []
