@@ -56,8 +56,8 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
 begin
 
-  ; _DIAG_SCRIPT is a global variables defined in interface.ncl
-  enter_msg(_DIAG_SCRIPT, "")
+  ; DIAG_SCRIPT is a global variables defined in interface.ncl
+  enter_msg(DIAG_SCRIPT, "")
 
   ; Shortcuts to current variable and field
   var0 = variable_info[0]@short_name
@@ -152,7 +152,7 @@ begin
     timeavg@diag_script = array_append_record(temp, (/diag_script/), 0)
     delete(temp)
   else  ; Add as new attribute
-    timeavg@diag_script = (/_DIAG_SCRIPT/)
+    timeavg@diag_script = (/DIAG_SCRIPT/)
   end if
   timeavg@var = var0  ; Overwrite existing entry
   if(isatt(variable_info, "long_name")) then
