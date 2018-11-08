@@ -3,18 +3,35 @@ Runoff_ET
 
 Overview
 --------
-A set of diagnostics to produce basin-scale comparisons of runoff (mrro), evapotranspiration
-(evspsbl) and precipitation (pr) have been compiled in the runoff_et recipe. The recipe
-calculates biases in the long-term annual means of the three variables for 12 large-scale
-catchments areas on different continents and for different climates. For total runoff,
-catchment averaged model values are compared to long-term averages of GRDC observations.
-Due to the incompleteness of these station data, a year-to-year correspondence of data
-cannot be achieved so only climatological data are considered, as in Hagemann et al. (2013).
-Simulated precipitation is compared to catchment-averaged WATCH forcing data based on ERA-Interim
-(WFDEI) data (Weedon et al., 2014) for the period 1979-2010. Here, the GPCC-corrected WFDEI
-precipitation data are taken. Evapotranspiration observations are estimated using the
-difference of the catchment-averaged WFDEI precipitation minus the climatological GRDC
-river runoff.
+This diagnostic calculates biases of long-term climatological annual means of total runoff R,
+precipitation P and evapotranspiration E for 12 large-scale catchments on different continents
+and climates. For total runoff, catchment averaged model values are compared to climatological
+GRDC station observations of river runoff (Duemenil Gates et al., 2000). Due to the incompleteness
+of these station data, a year-to-year correspondence of data cannot be achieved in a generalized way,
+so that only climatological data are considered, such it has been done in Hagemann, et al. (2013).
+For precipitation, catchment-averaged WFDEI precipitation data (Weedon et al., 2014) from 1979-2010
+is used as reference. For evapotranspiration, observations are estimated using the difference of the
+above mentioned precipitation reference minus the climatological GRDC river runoff.
+
+The catchments are Amazon, Congo, Danube, Ganges-Brahmaputra, Lena, Mackenzie, Mississippi, Murray,
+Niger, Nile, Parana and Yangtze-Kiang. Variable names are expected to follow CMOR standard, e.g.
+precipitation as pr, total runoff as mrro and evapotranspiration as evspsbl with all fluxes given in
+kg m-2 s-1 . Evapotranspiration furthermore has to be defined positive upwards.
+
+The diagnostic produces text files with absolute and relative bias to the observations, as well as the
+respective absolute values. Furthermore it creates a bar plot for relative and absolute bias,
+calculates and plots biases in runoff coefficient (R/P) and evapotranspiration coefficient (E/P) and
+saves everything as one pdf file per model or one png file per model and analysis.
+
+The bias of the runoff coefficient is calculated via:
+:math:`C_R = \frac{R_{model}}{P_{model}} - \frac{R_{GRDC}}{P_{WFDEI}}` and similar for the
+evapotranspiration coefficient. In a very first approximation, evapotranspiration
+and runoff are determined only by precipitation. In other words :math:`R = P - E`. Hence, the runoff coefficient
+(and similar the evapotranspiration coefficient) tells you how important runoff (or evapotranspiration)
+is in this region. By plotting the bias of the runoff coefficient against the evapotranspiration coefficient
+we can immediately see whether there is a shift from runoff to evapotranspiration. On the other hand, by
+plotting the bias of the runoff coefficient against the relative bias of precipitation we can see whether
+an error in runoff is due to an error in precipitation.
 
 
 Available recipes and diagnostics
@@ -85,6 +102,13 @@ Example plots
 -------------
 
 .. _fig_runoff_et_1:
+.. figure::  /recipes/figures/runoff_et/catchments.png
+   :align:   center
+   :width:   14cm
+
+   Catchment definitions used in the diagnostics.
+
+.. _fig_runoff_et_2:
 .. figure::  /recipes/figures/runoff_et/MPI-ESM-LR_historical_r1i1p1_bias-plot_mrro.png
    :align:   center
    :width:   14cm
@@ -92,7 +116,7 @@ Example plots
    Barplot indicating the absolute and relative bias in annual runoff between MPI-ESM-LR (1970-2000)
    and long term GRDC data for specific catchments.
 
-.. _fig_runoff_et_2:
+.. _fig_runoff_et_3:
 .. figure::  /recipes/figures/runoff_et/MPI-ESM-LR_historical_r1i1p1_rocoef-vs-relprbias.png
    :align:   center
    :width:   14cm
