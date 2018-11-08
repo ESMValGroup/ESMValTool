@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-"""ESMValTool installation script"""
+"""ESMValTool installation script."""
 # This script only installs dependencies available on PyPI
 #
 # Dependencies that need to be installed some other way (e.g. conda):
 # - ncl
 # - iris
 # - python-stratify
-# - basemap
 
 import os
 import re
@@ -14,14 +13,69 @@ import sys
 
 from setuptools import Command, setup
 
+from esmvaltool._version import __version__
+
 PACKAGES = [
     'esmvaltool',
-    'doc', # install doc/MASTER_authors-refs-acknow.txt
 ]
+
+REQUIREMENTS = {
+    # Installation script (this file) dependencies
+    'setup': [
+        'setuptools_scm',
+    ],
+    # Installation dependencies
+    # Use with pip install . to install from source
+    'install': [
+        'cartopy',
+        'cdo',
+        'cf_units',
+        'cython',
+        # 'scitools-iris',  # Only iris 2 is on PyPI
+        'matplotlib',
+        'netCDF4',
+        'numba',
+        'numpy',
+        'pillow',
+        'psutil',
+        'pyyaml',
+        'shapely',
+        'six',
+        'stratify',
+        'vmprof',
+        'yamale',
+    ],
+    # Test dependencies
+    # Execute 'python setup.py test' to run tests
+    'test': [
+        'easytest',
+        # TODO: add dummydata package, see environment.yml
+        'mock',
+        'nose',
+        'pycodestyle',
+        'pytest',
+        'pytest-cov',
+        'pytest-html',
+        'pytest-metadata>=1.5.1',
+    ],
+    # Development dependencies
+    # Use pip install -e .[develop] to install in development mode
+    'develop': [
+        'isort',
+        'prospector[with_pyroma]',
+        'pycodestyle',
+        'pydocstyle',
+        'pylint',
+        'sphinx',
+        'yamllint',
+        'yapf',
+    ],
+}
 
 
 def discover_python_files(paths, ignore):
-    """Discover Python files"""
+    """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -38,7 +92,7 @@ def discover_python_files(paths, ignore):
 
 
 class CustomCommand(Command):
-    """Custom Command class"""
+    """Custom Command class."""
 
     def install_deps_temp(self):
         """Try to temporarily install packages needed to run the command."""
@@ -52,13 +106,15 @@ class CustomCommand(Command):
 class RunTests(CustomCommand):
     """Class to run tests and generate reports."""
 
-    user_options = []
+    user_options = [('installation', None,
+                     'Run tests that require installation.')]
 
     def initialize_options(self):
-        """Do nothing"""
+        """Initialize custom options."""
+        self.installation = False
 
     def finalize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def run(self):
         """Run tests and generate a coverage report."""
@@ -68,18 +124,20 @@ class RunTests(CustomCommand):
 
         version = sys.version_info[0]
         report_dir = 'test-reports/python{}'.format(version)
-        errno = pytest.main([
+        args = [
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
-            '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
-        ])
+        ]
+        if self.installation:
+            args.append('--installation')
+        errno = pytest.main(args)
 
         sys.exit(errno)
 
@@ -90,10 +148,10 @@ class RunLinter(CustomCommand):
     user_options = []
 
     def initialize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def finalize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def run(self):
         """Run prospector and generate a report."""
@@ -136,7 +194,7 @@ class RunLinter(CustomCommand):
 with open('README.md') as readme:
     setup(
         name='ESMValTool',
-        version='2.0.0',
+        version=__version__,
         description='Earth System Models eValuation Tool',
         long_description=readme.read(),
         url='https://www.esmvaltool.org',
@@ -147,40 +205,21 @@ with open('README.md') as readme:
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.6',
         ],
         packages=PACKAGES,
         # Include all version controlled files
         include_package_data=True,
-        use_scm_version=True,
-        setup_requires=[
-            'setuptools_scm',
-        ],
-        install_requires=[
-            'cdo',
-            'cf_units',
-            'coverage',
-            'esgf-pyclient',
-            'numpy',
-            'netCDF4',
-            'matplotlib',
-            'pyyaml',
-            'shapely',
-            'pillow',
-        ],
-        tests_require=[
-            # TODO: add dummydata package once up to date PyPI version
-            'easytest',
-            'mock',
-            'nose',
-            'pycodestyle',
-            'pytest',
-            'pytest-cov',
-            'pytest-html',
-            'pytest-metadata>=1.5.1',
-        ],
+        setup_requires=REQUIREMENTS['setup'],
+        install_requires=REQUIREMENTS['install'],
+        tests_require=REQUIREMENTS['test'],
+        extras_require={
+            'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
+        },
         entry_points={
             'console_scripts': [
-                'esmvaltool = esmvaltool.main:run',
+                'esmvaltool = esmvaltool._main:run',
+                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             ],
         },
         cmdclass={

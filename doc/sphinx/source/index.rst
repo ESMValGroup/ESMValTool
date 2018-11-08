@@ -7,21 +7,17 @@ Welcome to ESMValTool's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    preface
    known_issues
-   user_guide
-   developer_guide
 
-   codedoc/main
-   autodoc/modules
+   recipes/index
 
-   esmvaltool_next/index
+   user_guide2/index
+   developer_guide2/index
 
-   diag_scripts/index
-   plot_scripts/index
-   technical_routines
+   codedoc2/esmvaltool
 
 Indices and tables
 ==================

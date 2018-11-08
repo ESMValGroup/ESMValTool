@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from ..interface_scripts.data_finder import get_start_end_year, select_files
+from .._data_finder import get_start_end_year, select_files
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def synda_search(variable):
     """Search files using synda."""
     query = {
-        'model': variable.get('model'),
+        'model': variable.get('dataset'),
         'project': variable.get('project'),
         'cmor_table': variable.get('mip'),
         'ensemble': variable.get('ensemble'),

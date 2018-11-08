@@ -1,0 +1,64 @@
+#### summary 
+#### recipe that runs the Autoassess Land-surface assessment area diagnostic
+#### Version: 23 August 2018 
+#### Author: V. Predoi UREAD (valeriu.predoi@ncas.ac.uk)
+#################
+#### Description:
+#################
+#it runs:
+#  - snow
+#################
+#### CAVEATS
+# climatological files are stored externally to avoid
+# overloading the ESMValTool source; on eg. JASMIN they need to be
+# moved at a permanent widely-available location
+#################
+# RECIPE IS FULLY WORKING
+###########################################################################################################
+---
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    regrid:  # NOT USED
+      target_grid: 0.15x0.15
+      scheme: linear
+
+diagnostics:
+  aa_landsurf_snow:
+    description: Autoassess test diag for Land-Surface Snow.
+    variables:
+      prsn: # snow flux
+        mip: Amon
+        field: T2Ms
+        fx_files: [sftlf]
+    scripts:
+      autoassess_landsurf_snow: &autoassess_landsurf_snow_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Land-Surface Snow Diagnostic"
+        area: land_surface_snow
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: []
+        fx: sftlf
+        start: 1997/12/01
+        end: 2002/12/01
+        climfiles_root: '/home/users/valeriu'  # needs to be a widely-available path; needs GlobSnow
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_landsurf_snow: &plot_landsurf_snow_settings
+        <<: *autoassess_landsurf_snow_settings
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_landsurf_snow']
+        title: "Plot Land-Surface Snow Metrics"
+        plot_name: "Snow_Metrics"
+        diag_tag: aa_landsurf_snow
+        diag_name: autoassess_landsurf_snow

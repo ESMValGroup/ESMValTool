@@ -15,10 +15,10 @@ test:
   run: false
   # Simulate input data using the dummydata module [true]/false
   simulate_input: true
-  # Limit testing/generating reference data to the following namelists
-  # An empty list means any namelist in esmvaltool/nml
-  namelists: [
-    namelist_MyVar.yml,
+  # Limit testing/generating reference data to the following recipes
+  # An empty list means any recipe in esmvaltool/nml
+  recipes: [
+    recipe_MyVar.yml,
   ]
 
 # Reference data configuration

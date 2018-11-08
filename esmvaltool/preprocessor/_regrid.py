@@ -1,22 +1,28 @@
 """
-A package for performing horizontal regridding, and vertical level extraction
+_regrid.py
+
+A package for performing horizontal regridding,
+and vertical level extraction
 or vertical level interpolation.
 
 """
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 from copy import deepcopy
-from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
+import iris.exceptions
 import numpy as np
 import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
-import os
+
+from ..cmor.table import CMOR_TABLES
+from ..cmor.fix import fix_file, fix_metadata
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -48,11 +54,15 @@ horizontal_schemes = dict(
     unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest']
+vertical_schemes = ['linear', 'nearest',
+                    'linear_horizontal_extrapolate_vertical',
+                    'nearest_horizontal_extrapolate_vertical']
 
 
 def _stock_cube(spec):
     """
+    Create a stock cube
+
     Create a global cube with M degree-east by N degree-north regular grid
     cells.
 
@@ -95,13 +105,13 @@ def _stock_cube(spec):
     # Construct the latitude coordinate, with bounds.
     ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
     lats = iris.coords.DimCoord(
-        ydata, standard_name='latitude', units='degrees_north')
+        ydata, standard_name='latitude', units='degrees_north', var_name='lat')
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
     xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
     lons = iris.coords.DimCoord(
-        xdata, standard_name='longitude', units='degrees_east')
+        xdata, standard_name='longitude', units='degrees_east', var_name='lon')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.
@@ -276,7 +286,7 @@ def vinterp(src_cube, levels, scheme):
     """
     Perform vertical interpolation.
 
-    Paramaters
+    Parameters
     ----------
     src_cube : cube
         The source cube to be vertically interpolated.
@@ -313,11 +323,19 @@ def vinterp(src_cube, levels, scheme):
         raise ValueError(emsg)
 
     if scheme not in vertical_schemes:
-        emsg = 'Unknown vertical interpolation scheme, got {!r}.'
-        raise ValueError(emsg.format(scheme))
+        emsg = 'Unknown vertical interpolation scheme, got {!r}. '
+        emsg += 'Possible schemes: {!r}'
+        raise ValueError(emsg.format(scheme, list(vertical_schemes)))
 
-    if isinstance(levels, six.string_types):
-        levels = get_cmor_levels(levels)
+    # This allows us to put level 0. to load the ocean surface.
+    extrap_scheme = 'nan'
+    if scheme == 'nearest_horizontal_extrapolate_vertical':
+        scheme = 'nearest'
+        extrap_scheme = 'nearest'
+
+    if scheme == 'linear_horizontal_extrapolate_vertical':
+        scheme = 'linear'
+        extrap_scheme = 'nearest'
 
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
@@ -356,6 +374,10 @@ def vinterp(src_cube, levels, scheme):
             src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
                                                    broadcast_shape)
 
+            # force mask onto data as nan's
+            if np.ma.is_masked(src_cube.data):
+                src_cube.data[src_cube.data.mask] = np.nan
+
             # Now perform the actual vertical interpolation.
             new_data = stratify.interpolate(
                 levels,
@@ -363,52 +385,91 @@ def vinterp(src_cube, levels, scheme):
                 src_cube.data,
                 axis=z_axis,
                 interpolation=scheme,
-                extrapolation='nan')
+                extrapolation=extrap_scheme)
 
-            # Determine if we need to fill any extrapolated NaN values.
+            # Calculate the mask based on the any
+            # NaN values in the interpolated data.
             mask = np.isnan(new_data)
 
             if np.any(mask):
-                # Replace the NaN values with the fill-value.
-                new_data[mask] = _MDI
-
-            # Ensure that any spatial mask is re-applied.
-            if ma.isMaskedArray(src_cube.data):
-                slicer = tuple([0] * (z_axis + 1))
-                # Assume that the spatial mask is invariant.
-                mask = src_cube.data.mask[slicer]
-                mask = np.broadcast_to(mask, new_data.shape)
-                new_data = ma.array(new_data, mask=mask)
+                # Ensure that the data is masked appropriately.
+                new_data = ma.array(new_data, mask=mask, fill_value=_MDI)
 
             # Construct the resulting cube with the interpolated data.
-            result = _create_cube(src_cube, new_data, levels)
+            result = _create_cube(src_cube, new_data, levels.astype(float))
 
     return result
 
 
-def get_cmor_levels(levels):
-    level_definition = levels.split('_')
-    cmor_type = level_definition[0]
+def get_cmor_levels(cmor_table, coordinate):
+    """Get level definition from a CMOR coordinate.
 
-    if cmor_type not in CMOR_TABLES:
-        raise ValueError('Level definition {} not available'
-                         .format(levels))
+    Parameters
+    ----------
+    cmor_table: str
+        CMOR table name
+    coordinate: str
+        CMOR coordinate name
 
-    if len(level_definition) != 2:
-        raise ValueError('Bad level definition {}. Correct format: '
-                         '$(CMOR_TABLE)_$(COORDINATE_NAME)')
+    Returns
+    -------
+    list[int]
 
-    coord = level_definition[1]
-    if coord not in CMOR_TABLES[cmor_type].coords:
-        raise ValueError('Coordinate {} not availabale for {}'
-                         .format(coord, cmor_type))
+    Raises
+    ------
+    ValueError:
+        If the CMOR table is not defined, the coordinate does not specify any
+        levels or the string is badly formatted.
 
-    cmor = CMOR_TABLES[cmor_type].coords[coord]
+    """
+    if cmor_table not in CMOR_TABLES:
+        raise ValueError("Level definition cmor_table '{}' not available"
+                         .format(cmor_table))
 
-    if len(cmor.requested) > 0:
+    if coordinate not in CMOR_TABLES[cmor_table].coords:
+        raise ValueError('Coordinate {} not available for {}'.format(
+            coordinate, cmor_table))
+
+    cmor = CMOR_TABLES[cmor_table].coords[coordinate]
+
+    if cmor.requested:
         return [float(level) for level in cmor.requested]
     elif cmor.value:
         return [float(cmor.value)]
     else:
         raise ValueError('Coordinate {} in {} does not have requested values'
-                         .format(coord, cmor_type))
+                         .format(coordinate, cmor_table))
+
+
+def get_reference_levels(filename, project, dataset, short_name, fix_dir,
+                         coordinate='air_pressure'):
+    """Get level definition from a CMOR coordinate.
+
+    Parameters
+    ----------
+    filename: str
+        Path to the reference file
+    coordinate: str
+        Coordinate name
+
+    Returns
+    -------
+    list[float]
+
+    Raises
+    ------
+    ValueError:
+        If the dataset is not defined, the coordinate does not specify any
+        levels or the string is badly formatted.
+
+    """
+    try:
+        filename = fix_file(filename, short_name, project, dataset, fix_dir)
+        cube = iris.load_cube(filename)
+        cube = fix_metadata(cube, short_name, project, dataset)
+        coord = cube.coord(coordinate)
+
+    except iris.exceptions.CoordinateNotFoundError:
+        raise ValueError('Coordinate {} not available in {}'.format(
+            coordinate, filename))
+    return coord.points.tolist()
