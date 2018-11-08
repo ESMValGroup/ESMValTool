@@ -94,29 +94,23 @@ def get_grid(esmpy_lat, esmpy_lon,
     return grid
 
 
-
-def is_lon_circular(lat, lon):
+def is_lon_circular(lon):
     """Determine if longitudes are circular"""
     if isinstance(lon, iris.coords.DimCoord):
         circular = lon.circular
     elif isinstance(lon, iris.coords.AuxCoord):
-        if len(lon.shape) == 1:
+        if lon.ndim == 1:
             seam = lon.bounds[-1, 1] - lon.bounds[0, 0]
-        elif len(lon.shape) == 2:
-            n_to_s = lat.points[0, 0] > lat.points[-1, 0]
-            if n_to_s:
-                seam = (lon.bounds[1:-1, -1, (0, 1)]
-                        - lon.bounds[1:-1, 0, (3, 2)])
-            else:
-                seam = (lon.bounds[1:-1, -1, (1, 2)]
-                        - lon.bounds[1:-1, 0, (0, 3)])
+        elif lon.ndim == 2:
+            seam = (lon.bounds[1:-1, -1, (1, 2)]
+                    - lon.bounds[1:-1, 0, (0, 3)])
         else:
-            raise RuntimeError('AuxCoord longitude is higher dimensional'
-                               'than 2d. Giving up.')
+            raise NotImplementedError('AuxCoord longitude is higher '
+                                      'dimensional than 2d. Giving up.')
         circular = np.alltrue(abs(seam) % 360. < 1.e-3)
     else:
-        raise RuntimeError('longitude is neither DimCoord nor AuxCoord.'
-                           'Giving up.')
+        raise ValueError('longitude is neither DimCoord nor AuxCoord. '
+                         'Giving up.')
     return circular
 
 
