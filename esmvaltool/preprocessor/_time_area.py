@@ -4,11 +4,16 @@ Time operations on cubes
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+import os
+import logging
+
 import iris
 import iris.coord_categorisation
 import numpy as np
 
 from .._config import use_legacy_iris
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 # slice cube over a restricted time period
@@ -50,7 +55,7 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
         time_1 = mycube.coord('time')
         time_2 = cube_slice.coord('time')
         if time_1 == time_2:
-            # print('No change needed to time.')
+            logger.info('No change needed to time.')
             return mycube
 
     return cube_slice
