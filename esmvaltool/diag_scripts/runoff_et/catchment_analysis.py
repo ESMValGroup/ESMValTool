@@ -27,25 +27,18 @@ Description
 ###############################################################
 
 """
-import os
-import logging
-import pdb
-
-import matplotlib
-# use this everytime you import matplotlib
-# modules; some machines dont have graphical interface (X)
-matplotlib.use('Agg')  # noqa
-
 import iris
 import numpy as np
 import calendar
-from itertools import cycle
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-
+import os
+import logging
+import pdb
 import esmvaltool.diag_scripts.shared as diag
+from itertools import cycle
 from esmvaltool.preprocessor._regrid import regrid
 from esmvaltool.preprocessor._area_pp import area_average
+import matplotlib
+matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -225,6 +218,8 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
     reference : str
         String containing name of the reference dataset
     """
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_pdf import PdfPages
 
     for model in plotdata.keys():
         outtype = cfg.get('output_file_type', 'png')
