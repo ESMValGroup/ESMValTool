@@ -58,17 +58,17 @@ diagnostics:
         script: magic_bsc/weather_regime.r #(in diag_scripts)
 
         #Region considered
-        region: North-Atlantic # North-Atlantic or Polar
+        region: Polar # North-Atlantic or Polar
 
 
         #Start and end periods for the historical and projection periods
         start_historical: "1961-01-01"
         end_historical: "1990-12-31"
-        start_projection: "2020-01-01"
-        end_projection: "2040-12-31"
+        start_projection: "2006-01-01"
+        end_projection: "2026-12-31"
 
         #Regime parameters
-        ncenters: 4
+        ncenters: 3
         detrend_order: 2
         cluster_method: "kmeans" # If NULL it computes hcluster else specify kmeans
         EOFS: TRUE
