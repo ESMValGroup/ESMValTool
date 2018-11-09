@@ -235,7 +235,7 @@ def _dataset_to_file(variable, config_user):
     return files[0]
 
 
-def _limit_datasets(variables, profile, max_datasets=None):
+def _limit_datasets(variables, profile, max_datasets=0):
     """Try to limit the number of datasets to max_datasets."""
     if not max_datasets:
         return variables
@@ -250,7 +250,7 @@ def _limit_datasets(variables, profile, max_datasets=None):
     )
 
     limited = [v for v in variables if v['dataset'] in required_datasets]
-    limited.extend(variables[-max_datasets + len(limited):])
+    limited.extend(variables[len(limited) - max_datasets:])
     logger.info("Only considering %s",
                 ', '.join(v['dataset'] for v in limited))
 
@@ -655,6 +655,43 @@ def _split_derive_profile(profile):
     return before, after
 
 
+def _get_derive_input_variables(variables, config_user):
+    """Determine the input sets of `variables` needed for deriving."""
+    derive_input = {}
+
+    def append(group_prefix, var):
+        group = group_prefix + var['short_name']
+        var['variable_group'] = group
+        if group not in derive_input:
+            derive_input[group] = []
+        derive_input[group].append(var)
+
+    for variable in variables:
+        _update_cmor_table(
+            table=variable['cmor_table'],
+            mip=variable['mip'],
+            short_name=variable['short_name'])
+        _add_cmor_info(variable)
+        group_prefix = variable['variable_group'] + '_derive_input_'
+        if not variable.get('force_derivation') and get_input_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs']):
+            # No need to derive, just process normally up to derive step
+            var = copy.deepcopy(variable)
+            append(group_prefix, var)
+        else:
+            # Process input data needed to derive variable
+            for new_variable in get_required(variable['short_name'],
+                                             variable['field'])['vars']:
+                var = copy.deepcopy(variable)
+                var.update(new_variable)
+                _add_cmor_info(var, override=True)
+                append(group_prefix, var)
+
+    return derive_input
+
+
 def _get_preprocessor_task(variables, profiles, config_user, task_name):
     """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
@@ -676,36 +713,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = _split_derive_profile(profile)
 
-        derive_input = {}
-        for variable in variables:
-            _update_cmor_table(
-                table=variable['cmor_table'],
-                mip=variable['mip'],
-                short_name=variable['short_name'])
-            _add_cmor_info(variable)
-            if not variable.get('force_derivation') and get_input_filelist(
-                    variable=variable,
-                    rootpath=config_user['rootpath'],
-                    drs=config_user['drs']):
-                # No need to derive, just process normally up to derive step
-                short_name = variable['short_name']
-                if short_name not in derive_input:
-                    derive_input[short_name] = []
-                derive_input[short_name].append(variable)
-            else:
-                # Process input data needed to derive variable
-                variable_group = variable['variable_group'] + '_derive_input_'
-                for new_variable in get_required(variable['short_name'],
-                                                 variable['field'])['vars']:
-                    short_name = new_variable['short_name']
-                    if short_name not in derive_input:
-                        derive_input[short_name] = []
-                    variable = copy.deepcopy(variable)
-                    variable.update(new_variable)
-                    variable['variable_group'] = (
-                        variable_group + variable['short_name'])
-                    _add_cmor_info(variable, override=True)
-                    derive_input[short_name].append(variable)
+        derive_input = _get_derive_input_variables(variables, config_user)
 
         for derive_variables in derive_input.values():
             derive_name = task_name.split(
@@ -949,11 +957,12 @@ class Recipe(object):
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            for variable_name in diagnostic['preprocessor_output']:
-                task_name = diagnostic_name + TASKSEP + variable_name
+            for variable_group in diagnostic['preprocessor_output']:
+                task_name = diagnostic_name + TASKSEP + variable_group
                 logger.info("Creating preprocessor task %s", task_name)
                 task = _get_preprocessor_task(
-                    variables=diagnostic['preprocessor_output'][variable_name],
+                    variables=diagnostic['preprocessor_output']
+                    [variable_group],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)

@@ -78,10 +78,11 @@ def create_test_file(filename):
             setattr(dataset, key, value)
 
 
-def test_recipe(tmpdir, config_user, monkeypatch):
+@pytest.fixture
+def patched_datafinder(tmpdir, monkeypatch):
     def find_files(_, filename):
         # Any occurrence of [something] in filename should have
-        # been replaced when this function is called.
+        # been replaced before this function is called.
         assert '[' not in filename
 
         filename = str(tmpdir / 'input' / filename)
@@ -98,11 +99,14 @@ def test_recipe(tmpdir, config_user, monkeypatch):
         else:
             filenames.append(filename)
 
-        for filename in filenames:
-            create_test_file(filename)
+        for file in filenames:
+            create_test_file(file)
         return filenames
 
     monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
+
+
+def test_simple_recipe(tmpdir, patched_datafinder, config_user):
 
     content = dedent("""
         datasets:
@@ -189,3 +193,121 @@ def test_recipe(tmpdir, config_user, monkeypatch):
         for key in MANDATORY_SCRIPT_SETTINGS_KEYS:
             assert key in task.settings and task.settings[key]
         assert task.settings['custom_setting'] == 1
+
+
+def test_reference_dataset(tmpdir, patched_datafinder, config_user):
+    pass
+
+
+def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
+    pass
+
+
+def test_derive(tmpdir, patched_datafinder, config_user):
+
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            variables:
+              toz:
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: T2Ms
+                derive: true
+                force_derivation: true
+                additional_datasets:
+                  - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+            scripts: null
+        """)
+
+    recipe_file = str(tmpdir / 'recipe_test.yml')
+    with open(recipe_file, 'w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(recipe_file, config_user)
+
+    # Check generated tasks
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    print(task)
+    assert task.name == 'diagnostic_name/toz'
+    assert len(task.ancestors) == 2
+    assert 'diagnostic_name/toz_derive_input_ps' in [
+        t.name for t in task.ancestors
+    ]
+    assert 'diagnostic_name/toz_derive_input_tro3' in [
+        t.name for t in task.ancestors
+    ]
+
+    # Check product content of tasks
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert 'derive' in product.settings
+    assert product.attributes['short_name'] == 'toz'
+    check_provenance(product)
+    assert product.files
+
+    ps_product = [
+        p for a in task.ancestors for p in a.products
+        if p.attributes['short_name'] == 'ps'
+    ][0]
+    tro3_product = [
+        p for a in task.ancestors for p in a.products
+        if p.attributes['short_name'] == 'tro3'
+    ][0]
+    assert ps_product.filename in product.files
+    assert tro3_product.filename in product.files
+    check_provenance(ps_product)
+    check_provenance(tro3_product)
+
+
+def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
+
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            variables:
+              toz:
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: T2Ms
+                derive: true
+                force_derivation: false
+                additional_datasets:
+                  - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+            scripts: null
+        """)
+
+    recipe_file = str(tmpdir / 'recipe_test.yml')
+    with open(recipe_file, 'w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(recipe_file, config_user)
+
+    # Check generated tasks
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    print(task)
+    assert task.name == 'diagnostic_name/toz'
+    assert len(task.ancestors) == 1
+    ancestor = [t for t in task.ancestors][0]
+    assert ancestor.name == 'diagnostic_name/toz_derive_input_toz'
+
+    # Check product content of tasks
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert 'derive' in product.settings
+    assert product.attributes['short_name'] == 'toz'
+    check_provenance(product)
+
+    assert len(ancestor.products) == 1
+    ancestor_product = ancestor.products.pop()
+    assert ancestor_product.filename in product.files
+    assert ancestor_product.attributes['short_name'] == 'toz'
+    check_provenance(ancestor_product)
