@@ -393,7 +393,7 @@ def _read_attributes(filename):
     """Read the attributes from a netcdf file."""
     attributes = {}
     if not (os.path.exists(filename)
-            or os.path.splitext(filename)[1].lower() == '.nc'):
+            and os.path.splitext(filename)[1].lower() == '.nc'):
         return attributes
 
     with Dataset(filename, 'r') as dataset:
