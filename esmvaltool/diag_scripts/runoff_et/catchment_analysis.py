@@ -1,10 +1,30 @@
-"""
-Look at this module for guidance how to write your own.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" Catchment specific water flux plots
 
-Module for personal diagnostics (example).
-Internal imports from exmvaltool work e.g.:
+###############################################################
+runoff_et/catchment_analysis.py
+Authors ESMValToolV1 Version
+    Philipp Sommer (philipp.sommer@mpimet.mpg.de)
+    Stefan Hagemann (stefan.hagemann@hzg.de)
+    Alexander Loew
+Port to ESMValTool Version 2
+    Tobias Stacke (tobias.stacke@mpimet.mpg.de)
+###############################################################
 
-from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+Description
+-----------
+    Plots temporal and spatial averages of precipitation, runoff and
+    evaporation for specific land surface catchments. Additionally,
+    relations of runoff coefficient to relative precipitation bias
+    and runoff coefficient to evaporation coefficient are computed.
+
+    Default reference data are included in this routine (default class)
+    but can be replaced with other datasets. In case a custom catchment
+    mask is used, the default class (catchment names, IDs, reference data)
+    has to be adapted.
+
+###############################################################
 
 """
 import os
@@ -35,16 +55,17 @@ class defaults(object):
 
     The properties are used in the routine analysecatchments. Catchments and
     reference values are specific for the default catchment mask. All reference
-    values are given in mm a-1.
+    values are given in mm a-1. Precip data is based on WFDEI, runoff is based
+    on GRDC, ET is derived from both.
     Properties are
         catchments
-        runoffrefdata
-        preciprefdata
-        ETrefdata
+        mrro
+        pr
+        evspsbl
     """
     catchments = {
-        # Catchments with name as used in REFFILE as key and the
-        # catchment number as used in pcatchment as value
+        # Catchments with name as used in make_catchment_plots and
+        # associated ID used in the catchment mask netCDF file
         "Amazon": 94,
         "Parana": 98,
         "Mackenzie": 76,
@@ -192,7 +213,7 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
 
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
     """ Plot catchment averages for precipitation, evaporation
-        runoff and derived quantities.
+        runoff as bar plots and relation of derived quantities.
     Parameters
     ----------
     cfg : dict
@@ -278,7 +299,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                         fig.savefig(filepath)
 
                 markerlist = ('s', '+', 'o', '*', 'x', 'D')
-                # 2. Runoff coefficient vs Relative precipitation bias
+                # 2. Runoff coefficient vs relative precipitation bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(
                     cfg[diag.names.PLOT_DIR], '_'.join([
@@ -313,7 +334,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
                 else:
                     fig.savefig(filepath)
 
-                # 3. Runoff coefficient vs Evaporation coefficient bias
+                # 3. Runoff coefficient vs evaporation coefficient bias
                 marker = cycle(markerlist)
                 filepath = os.path.join(
                     cfg[diag.names.PLOT_DIR],
@@ -370,8 +391,7 @@ def main(cfg):
     # Check for correct variables
     if not varlist.vars_available('pr', 'mrro', 'evspsbl'):
         raise ValueError(
-            "Diagnostic requires precipitation, runoff and evaporation data"
-        )
+            "Diagnostic requires precipitation, runoff and evaporation data")
 
     # Read catchmentmask
     # to check: Correct way to read auxillary data using recipes?
@@ -426,10 +446,10 @@ def main(cfg):
             mean_cube.coord('latitude').guess_bounds()
         if mean_cube.coord('longitude').bounds is None:
             mean_cube.coord('longitude').guess_bounds()
-        mean_cube_regrid = mean_cube.regrid(catchment_cube,
-                                            iris.analysis.Linear())
         # mean_cube_regrid = mean_cube.regrid(catchment_cube,
-        #                                     iris.analysis.AreaWeighted())
+        #                                     iris.analysis.Linear())
+        mean_cube_regrid = mean_cube.regrid(catchment_cube,
+                                            iris.analysis.AreaWeighted())
         # Get catchment area means
         rivervalues = {}
         for river, rid in catch_info.catchments.items():

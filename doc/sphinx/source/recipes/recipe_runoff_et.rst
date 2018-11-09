@@ -50,7 +50,7 @@ Diagnostics are stored in diag_scripts/runoff_et/
 User settings
 -------------
 
-#. runoff_et.yml
+runoff_et.yml
 
    *Required settings for script*
 
