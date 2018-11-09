@@ -3,11 +3,15 @@
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+import logging
+
 import iris
 import iris.coord_categorisation
 import numpy as np
 
 from .._config import use_legacy_iris
+
+logger = logging.getLogger(__name__)
 
 
 def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
@@ -55,7 +59,18 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
     else:
         constraint = iris.Constraint(
             time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
-    return cube.extract(constraint)
+
+    cube_slice = cube.extract(constraint)
+
+    # Issue when time dimension was removed when only one point as selected.
+    if cube_slice.ndim != cube.ndim:
+        time_1 = cube.coord('time')
+        time_2 = cube_slice.coord('time')
+        if time_1 == time_2:
+            logger.debug('No change needed to time.')
+            return cube
+
+    return cube_slice
 
 
 def extract_season(cube, season):

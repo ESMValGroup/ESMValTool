@@ -68,6 +68,7 @@ REQUIREMENTS = {
         'pydocstyle',
         'pylint',
         'sphinx',
+        'sphinx_rtd_theme',
         'yamllint',
         'yapf',
     ],

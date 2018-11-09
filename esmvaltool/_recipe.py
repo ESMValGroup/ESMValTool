@@ -225,8 +225,8 @@ def _dataset_to_file(variable, config_user):
         drs=config_user['drs'])
     if not files and variable.get('derive'):
         variable = copy.deepcopy(variable)
-        variable['short_name'], variable['field'] = get_required(
-            variable['short_name'], variable['field'])['vars'][0]
+        required_var = get_required(variable['short_name'], variable['field'])
+        variable.update(required_var['vars'][0])
         files = get_input_filelist(
             variable=variable,
             rootpath=config_user['rootpath'],
@@ -351,17 +351,15 @@ def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings:
-        fx_files = get_required(
-            variable['short_name'], variable['field']).get('fx_files')
+        fx_files = get_required(variable['short_name'],
+                                variable['field']).get('fx_files')
         if fx_files:
-            settings['derive']['fx_files'] = {}
             variable = dict(variable)
             variable['fx_files'] = fx_files
-            fx_files_dict = get_input_fx_filelist(
+            settings['derive']['fx_files'] = get_input_fx_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
-            settings['derive']['fx_files'] = fx_files_dict
 
     # update for landsea
     if 'mask_landsea' in settings:
@@ -701,13 +699,13 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                for short_name, field in get_required(
-                        variable['short_name'], variable['field'])['vars']:
+                for new_variable in get_required(variable['short_name'],
+                                                 variable['field'])['vars']:
+                    short_name = new_variable['short_name']
                     if short_name not in derive_input:
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
-                    variable['short_name'] = short_name
-                    variable['field'] = field
+                    variable.update(new_variable)
                     variable['filename'] = get_output_file(
                         variable, config_user['preproc_dir'])
                     _add_cmor_info(variable, override=True)
