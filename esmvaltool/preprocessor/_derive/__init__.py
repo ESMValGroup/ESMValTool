@@ -49,7 +49,8 @@ def derive(cubes, variable, fx_files=None):
         Includes all the needed variables for derivation defined in
         :func:`get_required`.
     variable : dict
-        All information of the derived variable.
+        All information of the derived variable. Required keys are
+        `short_name`, `standard_name`, `long_name`, and `units`.
     fx_files : dict, optional
         If required, dictionary containing fx files  with `short_name`
         (keys) and path (values) of the fx variable.
@@ -89,10 +90,6 @@ def derive(cubes, variable, fx_files=None):
         }
     for attribute in ('standard_name', 'long_name', 'units'):
         setattr(cube, attribute, variable[attribute])
-
-    # Set attributes required by preprocessor
-    cube.attributes['_filename'] = variable['filename']
-    cube.attributes['metadata'] = yaml.safe_dump(variable)
 
     return cube
 
