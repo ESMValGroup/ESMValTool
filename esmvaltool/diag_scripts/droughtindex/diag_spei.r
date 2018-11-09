@@ -134,7 +134,8 @@ for(mod in 1:nmods){
    print(summary(as.numeric(pme_spei)))
    pme_spei[pme_spei > 10000] = NA
    print(summary(as.numeric(pme_spei)))
-
+   pme_spei[is.infinite(pme_spei)] = NA
+   pme_spei[pme_spei > 10000] = NA
    ncwrite(var1_input, mod, pme_spei, wdir)
    for(t in 1:d[3]){
       tmp <- pme_spei[,,t]
@@ -143,11 +144,12 @@ for(mod in 1:nmods){
    }#t
    pme_spei[is.infinite(pme_spei)] = NA
    pme_spei[pme_spei > 10000] = NA
-   # Should weight against latitude!
-   print(summary(as.numeric(pme_spei)))
-   print(histbrks)
-   h <- hist(pme_spei, breaks=histbrks,
-                         plot=FALSE)$density
+   # Weight against latitude
+   h <- c(1:length(histnams))*0
+   for(j in 1:d[2]){
+     h <- h + hist(pme_spei[j,,], breaks=histbrks,
+                   plot=FALSE)$counts * cos(lat[j]*pi/180.)
+   }#j
    histarr[mod,] <- h/sum(h)
 }#mod
 save(histarr, file=paste0(params$work_dir,
@@ -178,7 +180,7 @@ png(paste0(params$plot_dir,"/histplot.png"),
  box()
  mtext("Probability", side=2, line=2.1)
  barplot(bhistarr, beside=1, names.arg=histnams,
-         col=cols[2:17], xaxs="i")
+         col=cols[2:nmods], xaxs="i")
  box()
  mtext("Absolute difference", side=2, line=2.1)
  mtext("Standardized precipitation-evapotranspiration index",

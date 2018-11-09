@@ -1,11 +1,23 @@
 ---
 
 datasets:
- - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1991, end_year: 2000, tier: 3}
-# - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
- - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
-# - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
-##  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 1991,  end_year: 2000}
+ - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1990, end_year: 1999, tier: 3}
+ - {dataset: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: ACCESS1-3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: BNU-ESM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: CNRM-CM5,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: EC-EARTH,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r12i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: GFDL-CM3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: GISS-E2-H,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r6i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: HadGEM2-CC,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: inmcm4,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: IPSL-CM5B-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
+ - {dataset: NorESM1-M,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 1999}
 
 preprocessors:
 

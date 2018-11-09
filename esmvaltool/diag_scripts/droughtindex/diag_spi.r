@@ -3,9 +3,13 @@ library(ncdf4)
 library(SPEI)
 library(RColorBrewer)
 
-getnc <- function(yml, m) {
+getnc <- function(yml, m, lat=FALSE) {
   id <- nc_open(yml[m][[1]]$filename, readunlim=FALSE)
-  v <- ncvar_get(id, yml[m][[1]]$short_name)
+  if(lat){
+    v <- ncvar_get(id, 'lat')
+  }else{
+    v <- ncvar_get(id, yml[m][[1]]$short_name)
+  }
   nc_close(id)
   return(v)
 }
@@ -37,7 +41,13 @@ histnams <- c("Extremely dry", "Moderately dry", "Dry",
 print(names(var1_input))
 for(n in 1:nmods){
    if(var1_input[n][[1]]$cmor_table == "OBS"){
-      ref <- getnc(var1_input, n)
+      lat <- getnc(var1_input, n, lat=TRUE)
+      if(max(lat)>90){
+        print(paste0("Latitude must be [-90,90]: min=",
+              min(lat), " max=", max(lat)))
+        stop("Aborting!")
+      }
+      ref <- getnc(var1_input, n, lat=FALSE)
       refmsk <- apply(ref,c(1,2),FUN=mean)
       refmsk[refmsk > 10000] = NA
       refmsk[!is.na(refmsk)]=1
@@ -56,12 +66,9 @@ for(mod in 1:nmods){
     v1_spi[i,,] <- t(spi(t(tmp), 1, na.rm=TRUE,
                      distribution='PearsonIII')$fitted)
    }
-   print(summary(as.numeric(v1_spi)))
    v1_spi[is.infinite(v1_spi)] = NA
-   print(summary(as.numeric(v1_spi)))
    v1_spi[v1_spi > 10000] = NA
    print(summary(as.numeric(v1_spi)))
-
    ncwrite(var1_input, mod, v1_spi, wdir)
    for(t in 1:d[3]){
       tmp <- v1_spi[,,t]
@@ -70,11 +77,16 @@ for(mod in 1:nmods){
    }#t
    v1_spi[is.infinite(v1_spi)] = NA
    v1_spi[v1_spi > 10000] = NA
-   # Should weight against latitude!
-   print(summary(as.numeric(v1_spi)))
-   print(histbrks)
-   h <- hist(v1_spi, breaks=histbrks,
-                         plot=FALSE)$density
+   # Weight against latitude
+   h <- c(1:length(histnams))*0
+   for(j in 1:d[2]){
+     h <- h + hist(v1_spi[j,,], breaks=histbrks,
+                   plot=FALSE)$counts * cos(lat[j]*pi/180.)
+   }#j
+   #print(summary(as.numeric(v1_spi)))
+   #print(histbrks)
+   #h <- hist(v1_spi, breaks=histbrks,
+   #                      plot=FALSE)$density
    histarr[mod,] <- h/sum(h)
 }#mod
 save(histarr, file=paste0(params$work_dir,
@@ -105,7 +117,7 @@ png(paste0(params$plot_dir,"/histplot.png"),
  box()
  mtext("Probability", side=2, line=2.1)
  barplot(bhistarr, beside=1, names.arg=histnams,
-         col=cols[2:17], xaxs="i")
+         col=cols[2:nmods], xaxs="i")
  box()
  mtext("Absolute difference", side=2, line=2.1)
  mtext("Standardized precipitation index", outer=TRUE, cex=2, font=2)
