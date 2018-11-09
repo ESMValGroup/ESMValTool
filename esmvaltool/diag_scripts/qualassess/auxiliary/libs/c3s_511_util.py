@@ -264,7 +264,8 @@ def __loc_TSA_fun__(array,**kwargs):
     minimum_available_data_points = kwargs.get('min_avail_pts',1)
     
     if minimum_available_data_points < 2:
-        assert False, "No trend calculation possible for less than 2 data points"
+        assert False, "No trend calculation possible for " + \
+        "less than 2 data points"
 
     RES = None
     done = -2
@@ -370,7 +371,8 @@ def __TS_of_cube__(cube,**kwargs):
     version.data = np.ma.array(data=res[2,:,:], mask=mask)
     version.units = cf_units.Unit("1")
     
-    return({"slope": min_trend, "number_breakpts":num_bp, "version":version, "homogenized":homogenized})
+    return({"slope": min_trend, "number_breakpts":num_bp,
+            "version":version, "homogenized":homogenized})
     
 def weighted_STD_DEV(cube,dim,weights = None):
     

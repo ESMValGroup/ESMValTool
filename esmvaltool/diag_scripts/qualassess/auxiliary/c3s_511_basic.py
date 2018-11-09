@@ -15,11 +15,11 @@ import errno
 import numpy as np
 import random, string
 import collections
+import csv
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from scipy import stats
+#from scipy import stats
 import datetime
 from .libs import c3s_511_util as utils
 from .libs.customErrors import ImplementationError, ConfigurationError, PathError, EmptyContentError
@@ -27,6 +27,7 @@ import warnings
 from .libs.reporting import do_report as report
 from .plots.matrices import do_smm_table
 from .plots.matrices import do_gcos_table
+from .plots.matrices import do_eval_table
 from .plots.basicplot import Plot2D, PlotHist, Plot2D_blank, Plot1D, PlotScales, plot_setup
 from .libs.MD_old.ESMValMD import ESMValMD
 import logging
@@ -34,6 +35,9 @@ from pprint import pprint
 from .libs.predef.ecv_lookup_table import ecv_lookup
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+# For warning suppression. Comment for development.
+warnings.simplefilter("ignore")
 
 class __Diagnostic_skeleton__(object):
     """
@@ -211,11 +215,7 @@ class __Diagnostic_skeleton__(object):
                     raise
             shutil.copy2(os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/" + protofile, expected_input)
             #TODO Improve formatting? Was nicer in V1
-            self.__logger__.info("************************************** WARNING **************************************")
-            self.__logger__.info("Expected " + function + " input file " + expected_input + " not found!")
-            self.__logger__.info("Created dummy file instead. Please fill in appropriate information and rerun!")
-            self.__logger__.info("(This won't fail if you do not do so and produce an empty output!!!!)")
-            self.__logger__.info("************************************** WARNING **************************************")
+            self.__logger__.info("\n************************************** WARNING **************************************\nExpected " + function + " input file " + expected_input + " not found!\nCreated dummy file instead. Please fill in appropriate information and rerun!\n(This won't fail if you do not do so and produce an empty output!!!!)\n************************************** WARNING **************************************\n")
 
             found = False
         else:
@@ -223,6 +223,53 @@ class __Diagnostic_skeleton__(object):
             found = True
             
         return expected_input, found
+    
+    def __spatiotemp_subsets__(self,cube,dict_of_regions=None):
+        """
+        produces spatial subset data sets for further calculation
+        """
+        
+        if dict_of_regions is None:
+            dict_of_regions = self.__regions__
+        
+        subset_cubes={}
+        
+        for R in dict_of_regions.keys():
+            if all([k_dim in self.__dimensions__ for k_dim in dict_of_regions[R].keys()]):
+                loc_subset=cube.copy()
+                for dim in dict_of_regions[R].keys():
+                    if dim=='latitude':
+                        r_min,r_max=np.sort(dict_of_regions[R]['latitude'])
+                        try: #iris v2
+                            loc_subset=loc_subset.extract(iris.Constraint(latitude=lambda cell: r_min <= cell.point  <= r_max))
+                        except: #iris v1
+                            loc_subset=loc_subset.extract(iris.Constraint(latitude=lambda point: r_min <= point <= r_max))
+                    if dim=='longitude':
+                        r_min,r_max=np.sort(dict_of_regions[R]['longitude'])
+                        loc_subset=loc_subset.intersection(longitude=(r_min,r_max))
+                        loc_subset=loc_subset.intersection(longitude=(-180,180))
+                    if dim=='time':
+                        r_min,r_max=np.sort(dict_of_regions[R]['time'])
+                        try: #iris v2
+                            loc_subset=loc_subset.extract(iris.Constraint(time=lambda cell: r_min <= cell.point  <= r_max))
+                        except: #iris v1
+                            tu=loc_subset.coord("time").units.origin.split(" ")
+                            tu_origin=datetime.datetime.strptime(tu[-2],"%Y-%m-%d") # we assume 00:00:00 as a starttime
+                            tu_inc=tu[0]
+                            if tu_inc in ["day","days"]:
+                                loc_subset=loc_subset.extract(iris.Constraint(time=lambda point: (r_min-tu_origin).days <= point <= (r_max-tu_origin).days))
+                            elif tu_inc in ["second","seconds"]:
+                                loc_subset=loc_subset.extract(iris.Constraint(time=lambda point: (r_min-tu_origin).total_seconds() <= point <= (r_max-tu_origin).total_seconds()))
+                            else:
+                                raise ValueError("Time coordinate has a time increment that was not expected: " + tu_inc)
+                subset_cubes.update({R:loc_subset})
+            else:
+                logger.error("Region " + R + " specifications not specified correctly: " + str(dict_of_regions[R]) + "!")
+        
+        if any([subset_cubes[sc] is None for sc in subset_cubes]):
+            raise ValueError("Could not calculate all subsets. Some are none overlapping! " + str(subset_cubes))
+        
+        return subset_cubes
 
 class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     """
@@ -284,7 +331,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #        self.__output_type__ = self.__cfg__['output_file_type']  # default ouput file type for the basic diagnostics
 #        if not self.__output_type__ == 'png':
 #            raise ConfigurationError("self.__output_type__", "Only png is currently supported.")
-#        self.__regions__ = {'Germany_2001-2005':{'latitude':(47,56),'longitude':(5,16),'time':(datetime.datetime(2001,1,1),datetime.datetime(2005,12,31))}}  # default regions
+        self.__regions__ = {'Germany_2001-2005':{'latitude':(47,56),'longitude':(5,16),'time':(datetime.datetime(2001,1,1),datetime.datetime(2005,12,31))}}  # default regions
 #
 #        # for metadata
 #        self.__basetags__ = [self.__varname__] + []# TODO transport tags from namelist
@@ -298,7 +345,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             # obs
             self.__dataset_id__ = [fileinfo] # TODO adjust to OBS
 #
-#        self.__basic_filename__ = "_".join(self.__dataset_id__ + [self.__time_period__])
+        self.__basic_filename__ = "_".join(self.__dataset_id__ + [self.__time_period__])
 #
         self.__dimensions__ = np.array(["time", "latitude", "longitude"]) # TODO: get from cube
 #
@@ -356,12 +403,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         self.__do_overview__()
         self.__do_mean_var__()
         self.__do_trends__()
-#        self.__do_extremes__()
-#        self.__do_sectors__()
-#        self.__do_maturity_matrix__()
-#        self.__do_gcos_requirements__()
-#        self.__do_esm_evaluation__()
-#        self.__do_app_perf_matrix__()
+        self.__do_extremes__()
+        self.__do_sectors__()
+        self.__do_maturity_matrix__()
+        self.__do_gcos_requirements__()
+        self.__do_esm_evaluation__()
+        self.__do_app_perf_matrix__()
         
         
         #######################################################################
@@ -1018,304 +1065,180 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         return list_of_plots
 
-#    def __do_trends__(self):
-#
-#        this_function = "trends & stability"
-#
-#        list_of_plots = []
-#
-#        # simple linear trend (slope) and p-values
-#        _,S,_,P = utils.__temporal_trend__(self.sp_data, pthres=1.01)
-#
-#        try:
-#            # plotting routines
-#            x=Plot2D(S)
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_trend." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' slope values of ' + self.__varname__ + ' temporal trends per decade for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#
-#            x=Plot2D(P)
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_pvals." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' p-values for slopes of ' + self.__varname__ + ' temporal trends per decade for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#
-#        except:
-#            print('no figure done #004')
-#
-#        del P
-#
-#        # linear trend (slope),breakpoints, and actual data after homogenization
-#        TempStab = utils.__TS_of_cube__(self.sp_data,
-#                                        dates=self.__tim_read__,
-#                                        breakpoint_method="CUMSUMADJ",
-#                                        max_num_periods=3,
-#                                        periods_method="autocorr",
-#                                        temporal_resolution=self.__avg_timestep__,
-#                                        min_avail_pts=2)
-#
-#        # plotting routines
-#        try:
-#            # plotting the slope after break point correction
-#            x=Plot2D(TempStab["slope"])
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_min_slope." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' slope values of ' + self.__varname__ + ' temporal trends per decade after breakpoint detection for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#
-#            # plotting number of breakpoints
-#            x=Plot2D(TempStab["number_breakpts"])
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_num_bps." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' number of breakpoints of ' + self.__varname__ + ' for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#        except:
-#            print('no figure done #005')
-#
-#        # plotting the version (2=deseason, 1=detrend, 0=neither, -1=not enough data available, -2=something went wrong)
-##        x=Plot2D(TempStab["version"])
-##        figS = x.plot(summary_plot=True, title=" ".join([self.__dataset_id__[idx] for idx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-##
-##        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_ver_trend." + self.__output_type__
-##        list_of_plots.append(filename)
-##        figS.savefig(filename)
-##        plt.close(figS)
-##
-##        ESMValMD("meta",
-##                 filename,
-##                 self.__basetags__ + ['DM_global', 'C3S_trend'],
-##                 str("Latitude/Longitude" + ' versions of trend estimation of ' + self.__varname__ + ' temporal trends per decade after breakpoint detection for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-##                 '#C3S' + 'temptrend' + self.__varname__,
-##                 self.__infile__,
-##                 self.diagname,
-##                 self.authors)
-#        try:
-#            x=Plot2D(TempStab["slope"]-S)
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_hom_mean_diff." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' slope difference after breakpoint reduction for ' + self.__varname__ + ' for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#
-#            x=Plot2D(cubestats.pearsonr(TempStab["homogenized"], self.sp_data, corr_coords="time"))
-#
-#            filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_hom_corr." + self.__output_type__
-#            list_of_plots.append(filename)
-#
-#            fig = plt.figure()
-#            ax = [plt.subplot(1,1,1)]
-#            fig.set_figheight(1.2*fig.get_figheight())
-#            x.plot(ax=ax, title=" ".join([self.__dataset_id__[indx] for indx in [0,2,1,3]]) + " (" + self.__time_period__ + ")")
-#            fig.savefig(filename)
-#            plt.close(fig.number)
-#
-#            ESMValMD("meta",
-#                     filename,
-#                     self.__basetags__ + ['DM_global', 'C3S_trend'],
-#                     str("Latitude/Longitude" + ' correlation after breakpoint reduction for ' + self.__varname__ + ' for the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')'),
-#                     '#C3S' + 'temptrend' + self.__varname__,
-#                     self.__infile__,
-#                     self.diagname,
-#                     self.authors)
-#        except:
-#            print('no figure done #006')
-#
-#        del TempStab
-#
-#        # produce report
-#        self.__do_report__(content={"plots":list_of_plots}, filename=this_function.upper())
-#
-#        # update gcos
-#        self.__gcos_dict__.update({"Accuracy":{"value":None, "unit":None}})
-#        self.__gcos_dict__.update({"Stability":{"value":None, "unit":None}})
-#
-#        return
-#
-#
-#    def __do_maturity_matrix__(self):
-#
-#        this_function = "System maturity matrix"
-#
-#        expected_input = self.__work_dir__ + os.sep + "smm_input" + os.sep + self.__basic_filename__ + "_smm_expert.csv"
-#        if not os.path.isfile(expected_input):
-#            try:
-#                os.makedirs(os.path.dirname(expected_input))
-#            except OSError as exc: # Guard against race condition
-#                if exc.errno != errno.EEXIST:
-#                    raise
-#            shutil.copy2(os.path.dirname(os.path.realpath(__file__)) + "/libs3/predef/empty_smm_expert.csv", expected_input)
-#            print("************************************** WARNING **************************************")
-#            print(("Expected " + this_function + " input file " + expected_input + " not found!"))
-#            print("Created dummy file instead. Please fill in appropriate values and rerun!")
-#            print("(This won't fail if you do not do so and produce a white matrix!!!!)")
-#            print("************************************** WARNING **************************************")
-#            captionerror = True
-#        else:
-#            print(("Processing " + this_function + " input file: " + expected_input))
-#            captionerror = False
-#
-#        # plotting routines
-#        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_" + "".join(this_function.split()) + "." + self.__output_type__
-#        fig = do_smm_table(expected_input, os.path.dirname(os.path.realpath(__file__)) + "/libs3/predef/smm_definitions.csv")
-#        fig.savefig(filename)
-#        plt.close(fig)
-#
-#        if captionerror:
-#            caption = "The expected input file: " + expected_input + " was not found and an empty dummy file created, therefore this plot is blank. Please edit the expected file!"
-#        else:
-#            caption = str(this_function + ' for the variable ' + self.__varname__ + ' in the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')')
-#
-#
-#        ESMValMD("meta",
-#                 filename,
-#                 self.__basetags__ + ['C3S_SMM'],
-#                 caption,
-#                 '#C3S' + 'SMM' + self.__varname__,
-#                 self.__infile__,
-#                 self.diagname,
-#                 self.authors)
-#
-#        # produce report
-#        self.__do_report__(content={"plots":[filename]}, filename="".join(this_function.upper().split()))
-#
-#        return
-#
-#
-#    def __do_gcos_requirements__(self):
-#
-#        this_function = "GCOS requirements"
-#
-#        # plotting routines
-#        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_" + "".join(this_function.split()) + "." + self.__output_type__
-#        fig = do_gcos_table(self.__varname__, self.__gcos_dict__, os.path.dirname(os.path.realpath(__file__)) + "/example_csvs/example_gcos_reference.csv")
-#        fig.savefig(filename)
-#        plt.close(fig)
-#
-#        caption = str(this_function + ' for the variable ' + self.__varname__ + ' in the data set "' + "_".join(self.__dataset_id__) + '" (' + self.__time_period__ + ')')
-#
-#        ESMValMD("meta",
-#                 filename,
-#                 self.__basetags__ + ['C3S_GCOS'],
-#                 caption,
-#                 '#C3S' + 'GCOS' + self.__varname__,
-#                 self.__infile__,
-#                 self.diagname,
-#                 self.authors)
-#
-#        # produce report
-#        self.__do_report__(content={"plots":[filename]}, filename="".join(this_function.upper().split()))
-#
-#        return
-#
-#
-#    def __spatiotemp_subsets__(self,dict_of_regions=None):
-#        """
-#        produces spatial subset data sets for further calculation
-#        """
-#
-#        if dict_of_regions is None:
-#            dict_of_regions = self.__regions__
-#            print(dict_of_regions)
-#
-#        subset_cubes={}
-#
-#        for R in list(dict_of_regions.keys()):
-#            if all([k_dim in self.__dimensions__ for k_dim in list(dict_of_regions[R].keys())]):
-#                loc_subset=self.sp_data
-#                for dim in list(dict_of_regions[R].keys()):
-#                    if dim=='latitude':
-#                        r_min,r_max=np.sort(dict_of_regions[R]['latitude'])
-#                        loc_subset=loc_subset.extract(iris.Constraint(latitude=lambda point: r_min <= point <= r_max))
-#                    if dim=='longitude':
-#                        r_min,r_max=np.sort(dict_of_regions[R]['longitude'])
-#                        if r_min<0:
-#                            if r_max<0:
-#                                r_min+=360
-#                                r_max+=360
-#                            else:
-#                                r_min+=360
-#                                if r_min>r_max:
-#                                    raise ImplementationError("__spatial_subsets__","This method is not yet implemented for regions crossing the 0 degrees longitude.")
-#                        loc_subset=loc_subset.extract(iris.Constraint(longitude=lambda point: r_min <= point <= r_max))
-#                    if dim=='time':
-#                        r_min,r_max=np.sort(dict_of_regions[R]['time'])
-#                        loc_subset=loc_subset.extract(iris.Constraint(time=lambda cell: r_min <= cell.point  <= r_max))
-#                subset_cubes.update({R:loc_subset})
-#            else:
-#                print("Region " + R + " specifications not specified correctly: " + str(dict_of_regions[R]) + "!")
-#        return subset_cubes
+
+    def __do_maturity_matrix__(self):
+        
+        this_function = "System maturity matrix"
+
+        self.__file_anouncement__(subdir="c3s_511/single_smm_input",
+                                  expfile="_SMM_CORE_CLIMAX_c3s511_Adapted_v5_0.xlsx",
+                                  protofile="SMM_CORE_CLIMAX_c3s511_Adapted_v5_0.xlsx",
+                                  function=this_function)
+        
+        self.__file_anouncement__(subdir="c3s_511/single_smm_input",
+                                  expfile="_SMM_Guide_for_USERS_C3S_511_v1.pdf",
+                                  protofile="SMM_Guide_for_USERS_C3S_511_v1.pdf",
+                                  function=this_function)
+
+
+        expected_input, found = \
+            self.__file_anouncement__(subdir="c3s_511/single_smm_input",
+                                      expfile="_smm_expert.csv",
+                                      protofile="empty_smm_expert.csv",
+                                      function=this_function)
+        
+        
+        if not found:
+            suggestion = "Please make use of " + "SMM_Guide_for_USERS_C3S_511_v1.pdf" + " and " + "SMM_CORE_CLIMAX_c3s511_Adapted_v5_0.xlsx" + " for producing the requested file!"
+            caption = "The expected input file: " + expected_input + " was not found and an empty dummy file created, therefore this plot is blank. Please edit the expected file!"
+            self.__logger__.info(suggestion)
+        else:
+            with open(expected_input,"r") as file_read: 
+                if not any([lit.isdigit() for lit in list(file_read.read())]):
+                    caption = "The expected input file: " + expected_input + " was found but empty, therefore this plot is blank. Please edit the requested file!"
+                else:
+                    caption = str(this_function + ' for the variable ' + ecv_lookup(self.__varname__) + ' in the data set "' + self.__dataset_id__[0] + '" (' + self.__time_period__ + ')')
+    
+        # plotting routines
+        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_" + "".join(this_function.split()) + "." + self.__output_type__
+        fig = do_smm_table(expected_input, os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/smm_definitions.csv")
+        fig.savefig(filename)
+        plt.close(fig)
+
+        ESMValMD("meta",
+                 filename,
+                 self.__basetags__ + ['C3S_SMM'],
+                 caption,
+                 '#C3S' + 'SMM' + self.__varname__,
+                 self.__infile__,
+                 self.diagname,
+                 self.authors)
+        
+        # produce report
+        expected_input, found = \
+            self.__file_anouncement__(subdir="c3s_511/single_smm_input",
+                                      expfile="_smm_add.csv",
+                                      protofile="empty.txt",
+                                      function=this_function)
+            
+        if found:    
+            self.__do_report__(content={"plots":[filename],"freetext":expected_input}, filename=this_function.upper())
+        else:
+            self.__do_report__(content={"plots":[filename]}, filename=this_function.upper())
+        
+        return
+
+
+    def __do_gcos_requirements__(self):
+        
+        this_function = "GCOS requirements"
+        
+        # plotting routines
+        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_" + "".join(this_function.split()) + "." + self.__output_type__
+        subdir = "c3s_511/single_gcos_input"
+        if not os.path.isdir(self.__work_dir__ + os.sep + subdir):
+            os.mkdir(self.__work_dir__ + os.sep + subdir)
+        fig = do_gcos_table(self.__varname__, self.__gcos_dict__, os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/GCOS_specific_info.csv",self.__work_dir__ + os.sep + subdir + os.sep + self.__basic_filename__ + "_gcos_values_editable.csv")
+        fig.savefig(filename)
+        plt.close(fig)
+        
+        caption = str(this_function + ' for the variable ' + ecv_lookup(self.__varname__) + ' in the data set "' + self.__dataset_id__[0] + '" (' + self.__time_period__ + ').')
+        
+        ESMValMD("meta",
+                 filename,
+                 self.__basetags__ + ['C3S_GCOS'],
+                 caption,
+                 '#C3S' + 'GCOS' + self.__varname__,
+                 self.__infile__,
+                 self.diagname,
+                 self.authors)
+        
+        # produce report
+        expected_input, found = \
+            self.__file_anouncement__(subdir=subdir,
+                                      expfile="_gcos.txt",
+                                      protofile="empty.txt",
+                                      function=this_function)
+            
+        if found:    
+            self.__do_report__(content={"plots":[filename],"freetext":expected_input}, filename=this_function.upper())
+        else:
+            self.__do_report__(content={"plots":[filename]}, filename=this_function.upper())
+        
+        return
+
+    def __do_esm_evaluation__(self):
+        
+        this_function = "ESM evaluation"
+        
+        expected_input, found = \
+            self.__file_anouncement__(subdir="c3s_511/single_esmeval_input",
+                                      expfile="_esmeval_expert.csv",
+                                      protofile="empty_esmeval_expert.csv",
+                                      function=this_function)
+                                      
+        # PART 1 of ESM evaluation: table
+        # read in the ESM evaluation grading csv file
+        esm_eval_input = os.path.dirname(os.path.realpath(__file__)) + "/lib/predef/example_eval_expert.csv"    
+
+        # calculate the length of the dataset
+        ecv_length = int(self.__time_period__[5:10]) - int(self.__time_period__[0:4]) + 1
+        
+        # plotting routines
+        filename = self.__plot_dir__ + os.sep + self.__basic_filename__ + "_" + "".join(this_function.split()) + "." + self.__output_type__
+        fig = do_eval_table(self.__varname__, expected_input, os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/example_eval_data.csv", ecv_length)
+        fig.savefig(filename)
+        plt.close(fig)
+
+        caption = str(this_function + ' for the variable ' + ecv_lookup(self.__varname__) + ' in the data set "' + self.__dataset_id__[0] + '" (' + self.__time_period__ + ')' + 
+        ' (Green: data set is recommended for this application; Red: data set is not recommended for this application; Yellow: no decision about applicability of ' + 
+        'the data set can be made (e.g. uncertainty too high)).')
+        
+
+        # PART 2 of ESM evaluation: bullet point list		
+        # read in the ESM evaluation csv file
+        esm_eval_input = os.path.dirname(os.path.realpath(__file__)) + "/libs/predef/esmeval_expert.csv"
+		
+        # Create a list. Each item of the list will be itself a list of strings, corresponding either to the 
+        # headers or to the ESM evaluation entries for the different ECVs
+        contents = list()
+        with open(esm_eval_input, 'r') as csvfile:
+            s = csv.reader(csvfile, delimiter = ";", skipinitialspace = True)
+            for row in s:
+                contents.append(row)
+		
+        # convert the list into an array
+        esmeval_data = np.asarray(contents)
+		
+        # check the number of entries for the ECV in question, and write all of the available entries in an ordered dictionary
+        # for easy output in the reports
+        esmeval_dict=collections.OrderedDict()
+		
+        for num_entries in range(0, len(np.nonzero(esmeval_data == self.__varname__)[0])):
+            insert_dict=collections.OrderedDict()
+            for column in range(1, len(esmeval_data[0,:])): 
+                insert_dict.update({esmeval_data[0, column]: esmeval_data[np.nonzero(esmeval_data == self.__varname__)[0][num_entries], column]}) 
+            esmeval_dict.update({'R' + str(num_entries + 1):insert_dict})
+
+        ESMValMD("meta",
+                 filename,
+                 self.__basetags__ + ['C3S_ESMeval'],
+                 caption,
+                 '#C3S' + 'ESMeval' + self.__varname__,
+                 self.__infile__,
+                 self.diagname,
+                 self.authors)
+        
+        # produce report
+        expected_input, found = \
+            self.__file_anouncement__(subdir="c3s_511/single_esmeval_input",
+                                      expfile="_esmeval.txt",
+                                      protofile="empty.txt",
+                                      function=this_function)
+
+        if found:    
+            self.__do_report__(content={"listtext":esmeval_dict,"plots":[filename],"freetext":expected_input}, filename=this_function.upper())
+        else:
+            self.__do_report__(content={"listtext":esmeval_dict,"plots":[filename]}, filename=this_function.upper())
+
+        return

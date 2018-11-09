@@ -44,7 +44,7 @@ def main(cfg):
     logger.info('>>>>>>>> DUMMY_C3S_511.py is running! <<<<<<<<<<<<')
 
     for filename, attributes in cfg['input_data'].items():
-            logger.info("Processing variable %s from model %s",
+            logger.info("Processing variable %s from data set %s",
                         attributes['standard_name'], attributes['dataset'])
             logger.debug("Preparing diagnostic")
             Diag = Basic_Diagnostic_SP()
