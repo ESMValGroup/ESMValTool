@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 HEADER = r"""
 ______________________________________________________________________
 
-     ESMValTool and mip_convert: setting up rose suites.
+     ESMValTool + mip_convert: linking mip_convert to ESMValTool
 ______________________________________________________________________
 
 """ + __doc__
@@ -47,7 +47,14 @@ def get_args():
         '-r',
         '--recipe-files',
         type=str,
+        nargs='+',
         help='Recipe files (list or single file)')
+    parser.add_argument(
+        '-m',
+        '--mode',
+        choices=['setup', 'postproc'],
+        help='How to run the executable: setup: sets up mipconvert suites\n' +
+        'or postproc: grab the output from mip_convert and use it.')
     parser.add_argument(
         '-l',
         '--log-level',
@@ -57,12 +64,12 @@ def get_args():
     return args
 
 
-def _set_logger(logging, out_dir, log_level):
+def _set_logger(logging, out_dir, log_file, log_level):
     # set logging for screen and file output
     root_logger = logging.getLogger()
     out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
     logging.basicConfig(
-        filename=os.path.join(out_dir, 'esmvaltool_mip_convert_log.txt'),
+        filename=os.path.join(out_dir, log_file),
         filemode='a',
         format=out_fmt,
         datefmt='%H:%M:%S',
@@ -76,8 +83,8 @@ def _set_logger(logging, out_dir, log_level):
 
 def read_yaml_file(yaml_file):
     """Read recipe into a dictionary."""
-    with open(yaml_file, 'r') as file:
-        loaded_file = yaml.safe_load(file)
+    with open(yaml_file, 'r') as yfile:
+        loaded_file = yaml.safe_load(yfile)
     return loaded_file
 
 
@@ -117,7 +124,8 @@ def write_rose_conf(rose_config_template, recipe_file,
         cycling_frequencies[stream] = 'P1Y'
 
     # set the logger to start outputting
-    _set_logger(logging, conf_file['ROSES_OUTPUT'], log_level)
+    _set_logger(logging, conf_file['ROSES_OUTPUT'],
+                'rose_suites_setup.log', log_level)
     logger.info(HEADER)
 
     # loop through datasets (different suites for different datasets)
@@ -170,6 +178,53 @@ def write_rose_conf(rose_config_template, recipe_file,
             Config.write(r_c)
 
 
+def symlink_data(recipe_file, config_file, log_level):
+    """Grab the mip_converted output and manage it for ESMValTool."""
+    # get configuration and recipe
+    recipe_object = read_yaml_file(recipe_file)
+    conf_file = read_yaml_file(config_file)
+    datasets = recipe_object['datasets']
+
+    # create directory that stores all the output netCDF files
+    sym_output_dir = os.path.join(conf_file['ROSES_OUTPUT'],
+                                  'symlinks', recipe_file.strip('.yml'))
+    if os.path.exists(sym_output_dir):
+        shutil.rmtree(sym_output_dir)
+    os.makedirs(sym_output_dir)
+
+    # set the logger to start outputting
+    _set_logger(logging, conf_file['ROSES_OUTPUT'],
+                'file_simlink.log', log_level)
+    logger.info(HEADER)
+
+    # loop through all datasets to symlink output
+    for dataset in datasets:
+        rose_output = os.path.join(
+            conf_file['ROSES_OUTPUT'],
+            conf_file['DATASET_TO_SUITE'][dataset['dataset']]
+        )
+        logger.info("Working on dataset: %s", dataset)
+        logger.info("Output and logs written to: %s", rose_output)
+
+        # loop through files
+        for root, _, files in os.walk(rose_output):
+            for xfile in files:
+                real_file = os.path.join(root, xfile)
+                imag_file = os.path.join(sym_output_dir, xfile)
+
+                # symlink it if nc file
+                if real_file.endswith('nc') and \
+                        real_file.split('_')[2] == dataset['dataset']:
+                    if not os.path.islink(imag_file):
+                        logger.info("File to symlink: %s", real_file)
+                        logger.info("Symlinked file: %s", imag_file)
+                        os.symlink(real_file, imag_file)
+                    else:
+                        logger.info("Symlinked file exists...")
+                        logger.info("Original file: %s", real_file)
+                        logger.info("Symlinked file: %s", imag_file)
+
+
 def main():
     """Run the the meat of the code."""
     args = get_args()
@@ -178,10 +233,12 @@ def main():
     recipe_files = args.recipe_files
     config_file = args.config_file
     log_level = args.log_level
-    for recipe_file in recipe_files.split(','):
-        write_rose_conf(rose_config_template, recipe_file,
-                        config_file, log_level)
-
+    for recipe_file in recipe_files:
+        if args.mode == 'setup':
+            write_rose_conf(rose_config_template, recipe_file,
+                            config_file, log_level)
+        elif args.mode == 'postproc':
+            symlink_data(recipe_file, config_file, log_level)
 
 if __name__ == '__main__':
     main()
