@@ -547,6 +547,11 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
                                config_user):
     """Get preprocessor product definitions for a set of datasets."""
     products = set()
+
+    for variable in variables:
+        variable['filename'] = get_output_file(variable,
+                                               config_user['preproc_dir'])
+
     if ancestor_products:
         grouped_ancestors = _match_products(ancestor_products, variables)
     else:
@@ -689,6 +694,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
+                variable_group = variable['variable_group'] + '_derive_input_'
                 for new_variable in get_required(variable['short_name'],
                                                  variable['field'])['vars']:
                     short_name = new_variable['short_name']
@@ -696,14 +702,14 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                         derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
                     variable.update(new_variable)
-                    variable['filename'] = get_output_file(
-                        variable, config_user['preproc_dir'])
+                    variable['variable_group'] = (
+                        variable_group + variable['short_name'])
                     _add_cmor_info(variable, override=True)
                     derive_input[short_name].append(variable)
 
         for derive_variables in derive_input.values():
-            derive_name = (task_name + '_prepare_derive_input_' +
-                           derive_variables[0]['short_name'])
+            derive_name = task_name.split(
+                TASKSEP)[0] + TASKSEP + derive_variables[0]['variable_group']
             task = _get_single_preprocessor_task(
                 derive_variables,
                 derive_profile,
@@ -839,8 +845,6 @@ class Recipe(object):
             if institute:
                 variable['institute'] = institute
             check.variable(variable, required_keys)
-            variable['filename'] = get_output_file(variable,
-                                                   self._cfg['preproc_dir'])
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
@@ -863,13 +867,14 @@ class Recipe(object):
 
         preprocessor_output = {}
 
-        for variable_name, raw_variable in raw_variables.items():
+        for variable_group, raw_variable in raw_variables.items():
+            raw_variable['variable_group'] = variable_group
             if 'short_name' not in raw_variable:
-                raw_variable['short_name'] = variable_name
+                raw_variable['short_name'] = variable_group
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(
                 raw_variable.get('preprocessor', 'default'))
-            preprocessor_output[variable_name] = \
+            preprocessor_output[variable_group] = \
                 self._initialize_variables(raw_variable, raw_datasets)
 
         return preprocessor_output

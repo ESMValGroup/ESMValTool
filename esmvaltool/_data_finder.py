@@ -271,7 +271,7 @@ def get_output_file(variable, preproc_dir):
 
     outfile = os.path.join(
         preproc_dir,
-        '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
+        '{diagnostic}_{preprocessor}_{variable_group}'.format(**variable),
         _replace_tags(cfg['output_file'], variable)[0] + '.nc')
 
     return outfile
