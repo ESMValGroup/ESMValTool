@@ -240,5 +240,6 @@ def main():
         elif args.mode == 'postproc':
             symlink_data(recipe_file, config_file, log_level)
 
+
 if __name__ == '__main__':
     main()
