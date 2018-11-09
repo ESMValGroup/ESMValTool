@@ -47,9 +47,9 @@ if (region == 'North-Atlantic') {
     lat.max <- 80
 } else if (region == 'Polar')  {
     lat.max <- 90
-    lat.min <- 60
-    lon.max <- 0
-    lon.min <- 360
+    lat.min <- 61
+    lon.max <- 359
+    lon.min <- 0
 }
 
 #Start and end periods for the historical and projection periods
@@ -86,7 +86,9 @@ reference_data <- Start(model = fullpath_filenames[reference_files],
  lat <- attr(reference_data, "Variables")$dat1$lat
  time <- attr(reference_data, "Variables")$dat1$time
  calendario <- attributes(time)$variables$time$calendar
- dates_historical <- seq(start_historical, end_historical, "day")
+
+data_type <- ifelse(grepl("Amon", fullpath_filenames[1]), "Amon", "day")
+ dates_historical <- seq(start_historical, end_historical, data_type)
 if (length(dates_historical) != length(time)) {
    if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
 	dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
@@ -140,7 +142,6 @@ names(dim(reference_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
                 output <- predict(loess_filt)
                 return(output)
                 }
-
 # -------------------------------
 ## Computing the WR_obs
 # -------------------------------
@@ -169,14 +170,21 @@ if(lim < 1) {
 } else {
     lim <- ceiling(lim)
 }
-PlotLayout(PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
+
+if (region == "Polar") {
+    PlotLayout(PlotStereoMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
+               titles = paste0(paste0('Cluster ', 1:4),' (', clim_frequencies, ' )'),
+               filled.continents = FALSE,
+               axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
+		       brks = seq(-1 *lim, lim, by = lim / 10),
+               fileout = paste0(plot_dir, '/', frequency, '-',var0,'_observed_regimes.png'))
+} else {
+    PlotLayout(PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
                     titles = paste0(paste0('Cluster ', 1:4),' (',clim_frequencies,' )'), filled.continents = FALSE,
                     axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
 		            brks = seq(-1 *lim, lim, by = lim / 10),
-                    #bar_extra_labels = c(2, 0, 0, 0),
-	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_observed_regimes.png'))
-
-
+	                fileout = paste0(plot_dir, '/', frequency, '-',var0,'_observed_regimes.png'))
+}
 # -------------------------------
 ## Save the WR_obs output to ncdf
 # -------------------------------
@@ -223,7 +231,7 @@ projection_data <- Start(model = fullpath_filenames[projection_files],
               retrieve = TRUE)
 # Provisional solution to error in dimension order:
  time <- attr(projection_data, "Variables")$dat1$time
- dates_projection <- seq(start_projection, end_projection, "day")
+ dates_projection <- seq(start_projection, end_projection, data_type)
  calendario <- attributes(time)$variables$time$calendar
 if (length(dates_projection) != length(time)) {
    if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
@@ -272,6 +280,8 @@ clim_ref <- array(apply(projection_data, c(1, 2, 3, 5, 6), mean), dim = dim(proj
 clim_ref <- aperm(apply(clim_ref, c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')], Loess,
                         loess_span = 1), c(2, 3, 1, 4, 5))
 
+print(dim(clim_ref))
+print(dim(projection_data))
 anom_exp <- Ano(projection_data, clim_ref)
 
 
@@ -293,13 +303,23 @@ if(lim < 1) {
 } else {
     lim <- ceiling(lim)
 }
-PlotLayout(PlotEquiMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
+if (region == "Polar") {
+    PlotLayout(PlotStereoMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
           titles = paste0(paste0('Cluster ', 1 : dim(cosa)[1], ' (', paste0('freq = ', round(WR_exp$frequency, 1), '%'),
 	' )')),
-           filled.continents = F,
-           axelab = F, draw_separators = T, subsampleg = 1,
+           filled.continents = FALSE,
+           draw_separators = T, subsampleg = 1,
 	       brks = seq(-1 * lim, lim, by = lim / 10),
 	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'))
+} else {
+    PlotLayout(PlotEquiMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
+          titles = paste0(paste0('Cluster ', 1 : dim(cosa)[1], ' (', paste0('freq = ', round(WR_exp$frequency, 1), '%'),
+	' )')),
+           filled.continents = FALSE,
+           axelab = FALSE, draw_separators = T, subsampleg = 1,
+	       brks = seq(-1 * lim, lim, by = lim / 10),
+	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'))
+}
 
 # -------------------------------
 ## Save the WR_exp output to ncdf
@@ -344,11 +364,15 @@ dim(rmse) <- c(ncenters, ncenters)
 print(rmse)
 
 dimpattern <- ncdim_def(name = "pattern", units = "undim", vals = 1:ncenters, longname = "Pattern" )
-
-defrmse <- ncvar_def(name = "rmse", units = "undim", dim = list(observed = dimpattern, experiment = dimpattern), longname = "Root Mean Squared Error between observed and future projected patterns")
+defrmse <- ncvar_def(name = "rmse", units = "undim",
+                    dim = list(observed = dimpattern, experiment = dimpattern),
+                    longname = "Root Mean Squared Error between observed and
+                                future projected patterns")
 
 file <- nc_create(paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
-              model_names,"_", start_projection, "_", end_projection,"_", start_historical, "_", end_historical, ".nc"), list(defrmse))
+                         model_names, "_", start_projection, "_",
+                         end_projection, "_", start_historical, "_",
+                         end_historical, ".nc"), list(defrmse))
 ncvar_put(file, defrmse, rmse)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
@@ -356,7 +380,10 @@ nc_close(file)
 colnames(rmse) <- paste('Obs', 1 : ncenters)
 rownames(rmse) <- paste('Pre', 1 : ncenters)
 
-png(paste0(plot_dir, "/Table", var0, "_", frequency, "_rmse_",
-              model_names,"_", start_projection, "_", end_projection,"_", start_historical, "_", end_historical, ".png"), height = 6, width = 18, units = "cm", res = 100)
+png(paste0(plot_dir, "/Table_", var0, "_", frequency, "_rmse_", model_names,
+           "_", start_projection, "_", end_projection, "_", start_historical,
+           "_", end_historical, ".png"),
+    height = 6, width = 18, units = "cm", res = 100)
 grid.table(round(rmse, 2))
 dev.off()
+
