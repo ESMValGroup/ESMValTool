@@ -25,7 +25,7 @@ library(yaml)
 library(s2dverification)
 #library(lubridate)
 #source("~/PycharmProjects/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
-source("/home/Earth/nperez/git/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
+#source("/home/Earth/nperez/git/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
 library(climdex.pcic)
 
 
@@ -35,6 +35,8 @@ params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
+rdir  <- sub("\\/recipes/.*", "", params$work_dir)
+source(paste0(rdir,"/diag_scripts/magic_bsc/PC.r"))
 ## Create working dirs if they do not exist
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
