@@ -58,9 +58,9 @@ class ImplementationError(Error):
         self.expression = expression
         self.message = message
         print(("ImplementationError: " + expression + " / " + message))
-        
-        
-class EmptyContentError(Error): 
+
+
+class EmptyContentError(Error):
     """ Exception raised for empty content
 
     Attributes:
@@ -72,5 +72,3 @@ class EmptyContentError(Error):
         self.expression = expression
         self.message = message
         print(("contentError: " + expression + " / " + message))
-
-

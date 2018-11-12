@@ -15,16 +15,17 @@ import matplotlib.pyplot as plt
 import time
 import iris
 
-#sys.path.insert(0,
+# sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
 #                        os.path.dirname(os.path.abspath(
 #                                __file__)), os.pardir),
-#                                os.pardir))) 
+#                                os.pardir)))
 
 from .TempStab.TempStab import TempStab as TS
 import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 class HiddenPrints:
     def __enter__(self):
@@ -45,11 +46,11 @@ def __getInfoFromFile__(filename):
     return __config__
 
 
-def  __minmeanmax__(array):
+def __minmeanmax__(array):
     """
     calculate minimum, maximum and average of array
     """
-    return (np.min(array),np.mean(array),np.max(array))
+    return (np.min(array), np.mean(array), np.max(array))
 
 
 def __temporal_trend__(cube, pthres=1.01):
@@ -70,7 +71,7 @@ def __temporal_trend__(cube, pthres=1.01):
     """
     # time difference in days
     dt = np.asarray(cube.coord('time').points - cube.coord('time').points[0]
-                    ).astype('float')/365.2425/10
+                    ).astype('float') / 365.2425 / 10
     # ensure that a masked array is used
     x = np.ma.array(dt, mask=dt != dt)
 
@@ -81,7 +82,7 @@ def __temporal_trend__(cube, pthres=1.01):
     I.long_name = cube.long_name + ' (offset)'
     P.long_name = cube.long_name + ' (p-value)'
 
-    if S.units in [None,'no_unit','1','unknown']:
+    if S.units in [None, 'no_unit', '1', 'unknown']:
         S.units = cf_units.Unit('0.1 year-1')
     else:
         S.units = cf_units.Unit(str(S.units) + ' 0.1 year-1')
@@ -89,7 +90,7 @@ def __temporal_trend__(cube, pthres=1.01):
     I.units = cube.units
     P.units = 1
     return R, S, I, P
-    
+
 
 def __corr_single__(cube, x, pthres=1.01):
     """
@@ -97,7 +98,7 @@ def __corr_single__(cube, x, pthres=1.01):
     current object. It returns several correlation measures
     Parameters
     ----------
-    cube : 
+    cube :
     x : ndarray
         the data vector correlations should be calculated with,
         numpy array [time]
@@ -163,36 +164,36 @@ def __corr_single__(cube, x, pthres=1.01):
     S.shape = (ny, nx)
 
     #--- prepare output data objects
-    Rout = cube[0,:,:].copy()  # copy object to get coordinates
+    Rout = cube[0, :, :].copy()  # copy object to get coordinates
     Rout.long_name = 'correlation'
     msk = (P > pthres) | (np.isnan(R))
     #msk = np.zeros_like(R).astype('bool')
     Rout.data = np.ma.array(R, mask=msk).copy()
     Rout.units = None
 
-    Sout = cube[0,:,:].copy()  # copy object to get coordinates
+    Sout = cube[0, :, :].copy()  # copy object to get coordinates
     Sout.long_name = 'slope'
     Sout.data = np.ma.array(S, mask=msk).copy()
     Sout.units = cube.units
 
-    Iout = cube[0,:,:].copy()  # copy object to get coordinates
+    Iout = cube[0, :, :].copy()  # copy object to get coordinates
     Iout.long_name = 'intercept'
     Iout.data = np.ma.array(I, mask=msk).copy()
     Iout.units = cube.units
 
-    Pout = cube[0,:,:].copy()  # copy object to get coordinates
+    Pout = cube[0, :, :].copy()  # copy object to get coordinates
     Pout.long_name = 'p-value'
     Pout.data = np.ma.array(P, mask=msk).copy()
     Pout.units = 1
 
-    Cout = cube[0,:,:].copy()  # copy object to get coordinates
+    Cout = cube[0, :, :].copy()  # copy object to get coordinates
     Cout.long_name = 'covariance'
     # currently not supported: covariance!
     Cout.data = np.ma.array(np.ones(P.shape) * np.nan, mask=msk).copy()
     Cout.units = None
 
     return Rout, Sout, Iout, Pout, Cout
-    
+
 
 def __get_valid_data__(cube, mode='all', thres=-99):
     """
@@ -224,9 +225,9 @@ def __get_valid_data__(cube, mode='all', thres=-99):
         # vectorize the data
 
         data = cube.data.reshape(n, -1)
-        
+
         if not np.ma.is_masked(data):
-            data=np.ma.masked_array(data, np.full_like(data,False))
+            data = np.ma.masked_array(data, np.full_like(data, False))
         # set pixels with NaN to invalid
         data.mask[np.isnan(data.data)] = True
 
@@ -255,38 +256,38 @@ def __get_valid_data__(cube, mode='all', thres=-99):
     return data, msk
 
 
-def __loc_TSA_fun__(array,**kwargs):
-    
+def __loc_TSA_fun__(array, **kwargs):
+
     breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
     max_num_period = kwargs.get('max_num_periods', 3)
     periods_method = kwargs.get('periods_method', 'autocorr')
     temporal_resolution = kwargs.get('temporal_resolution', 1.)
-    minimum_available_data_points = kwargs.get('min_avail_pts',1)
-    
+    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
+
     if minimum_available_data_points < 2:
         assert False, "No trend calculation possible for " + \
-        "less than 2 data points"
+            "less than 2 data points"
 
     RES = None
     done = -2
-    
+
     timearray = kwargs.get('dates', None)
-    
+
     if timearray is not None:
-        if array.mask.sum()<len(array.mask)-(minimum_available_data_points-1):
+        if array.mask.sum() < len(array.mask) - (minimum_available_data_points - 1):
             try:
                 with HiddenPrints():
-#                    print array
+                    #                    print array
                     TSA = TS(timearray, array,
                              breakpoint_method=breakpoint_method,
                              detrend=True,
                              deseason=True,
                              max_num_periods=max_num_period,
                              periods_method=periods_method,
-                             temporal_resolution = temporal_resolution)
+                             temporal_resolution=temporal_resolution)
                     RES = TSA.analysis(homogenize=True)
                     done = 2
-            except:
+            except BaseException:
                 try:
                     with HiddenPrints():
                         TSA = TS(timearray, array,
@@ -295,10 +296,10 @@ def __loc_TSA_fun__(array,**kwargs):
                                  deseason=False,
                                  max_num_periods=max_num_period,
                                  periods_method=periods_method,
-                                 temporal_resolution = temporal_resolution)
+                                 temporal_resolution=temporal_resolution)
                         RES = TSA.analysis(homogenize=True)
                         done = 1
-                except:
+                except BaseException:
                     try:
                         with HiddenPrints():
                             TSA = TS(timearray, array,
@@ -307,78 +308,87 @@ def __loc_TSA_fun__(array,**kwargs):
                                      deseason=False,
                                      max_num_periods=max_num_period,
                                      periods_method=periods_method,
-                                     temporal_resolution = temporal_resolution)
+                                     temporal_resolution=temporal_resolution)
                             RES = TSA.analysis(homogenize=True)
                             done = 0
-                    except:
+                    except BaseException:
                         done = -9
         else:
-             done = -1      
+            done = -1
     else:
         "Error in timearray."
-        
+
     if RES is not None:
         slope_diff = RES["homogenized_trend"]["slope"]
         fin_res = np.atleast_1d(np.append(np.array([slope_diff,
-                                       len(RES["breakpoints"]),
-                                       done]),TSA.homogenized))
-        
+                                                    len(RES["breakpoints"]),
+                                                    done]), TSA.homogenized))
+
     else:
         fin_res = np.atleast_1d(np.append(np.array([np.nan, np.nan, done]),
-                                          np.ones(array.shape)*np.nan))
+                                          np.ones(array.shape) * np.nan))
 
     return fin_res
 
 
-def __TS_of_cube__(cube,**kwargs):
-    
+def __TS_of_cube__(cube, **kwargs):
+
     breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
     max_num_period = kwargs.get('max_num_periods', 3)
     periods_method = kwargs.get('periods_method', 'autocorr')
     temporal_resolution = kwargs.get('temporal_resolution', 1.)
-    minimum_available_data_points = kwargs.get('min_avail_pts',1)
-    
-    min_trend = cube[0,:,:].copy()
-    num_bp = cube[0,:,:].copy()
-    version = cube[0,:,:].copy()
-    homogenized= cube.copy()
-    
+    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
+
+    min_trend = cube[0, :, :].copy()
+    num_bp = cube[0, :, :].copy()
+    version = cube[0, :, :].copy()
+    homogenized = cube.copy()
+
     timearray = kwargs.get('dates', None)
-     
+
     if timearray is None:
         timearray = cube.coord("time").points
-    
+
     res = np.apply_along_axis(__loc_TSA_fun__, 0, cube.data,
-                                  dates=timearray,
-                                  breakpoint_method=breakpoint_method,
-                                  max_num_period=max_num_period,
-                                  periods_method=periods_method,
-                                  min_avail_pts=minimum_available_data_points,
-                                  temporal_resoution=temporal_resolution)
-    
-    mask = np.isnan(res[0,:,:]) + min_trend.data.mask
-    min_trend.data = np.ma.array(data=res[0,:,:]*365.2425*10, mask=mask)
-    if min_trend.units in [None,'no_unit','1','unknown']:
+                              dates=timearray,
+                              breakpoint_method=breakpoint_method,
+                              max_num_period=max_num_period,
+                              periods_method=periods_method,
+                              min_avail_pts=minimum_available_data_points,
+                              temporal_resoution=temporal_resolution)
+
+    mask = np.isnan(res[0, :, :]) + min_trend.data.mask
+    min_trend.data = np.ma.array(data=res[0, :, :] * 365.2425 * 10, mask=mask)
+    if min_trend.units in [None, 'no_unit', '1', 'unknown']:
         min_trend.units = cf_units.Unit('0.1 year-1')
     else:
         min_trend.units += cf_units.Unit(str(min_trend.units) + ' 0.1 year-1')
-    
-    num_bp.data = np.ma.array(data=res[1,:,:], mask=mask)
+
+    num_bp.data = np.ma.array(data=res[1, :, :], mask=mask)
     num_bp.units = cf_units.Unit("1")
-    
-    homogenized.data = np.ma.array(data=res[3:,:,:], mask=np.isnan(res[3:,:,:]))
-    
-    version.data = np.ma.array(data=res[2,:,:], mask=mask)
+
+    homogenized.data = np.ma.array(
+        data=res[3:, :, :], mask=np.isnan(res[3:, :, :]))
+
+    version.data = np.ma.array(data=res[2, :, :], mask=mask)
     version.units = cf_units.Unit("1")
-    
-    return({"slope": min_trend, "number_breakpts":num_bp,
-            "version":version, "homogenized":homogenized})
-    
-def weighted_STD_DEV(cube,dim,weights = None):
-    
+
+    return({"slope": min_trend, "number_breakpts": num_bp,
+            "version": version, "homogenized": homogenized})
+
+
+def weighted_STD_DEV(cube, dim, weights=None):
+
     if weights is None:
-        return (cube.collapsed(dim,iris.analysis.RMS)**2 - 
-                cube.collapsed(dim,iris.analysis.MEAN)**2)**0.5
+        return (cube.collapsed(dim, iris.analysis.RMS)**2 -
+                cube.collapsed(dim, iris.analysis.MEAN)**2)**0.5
     else:
-        return (cube.collapsed(dim,iris.analysis.RMS,weights=weights)**2 - 
-                cube.collapsed(dim,iris.analysis.MEAN,weights=weights)**2)**0.5
+        return (
+            cube.collapsed(
+                dim,
+                iris.analysis.RMS,
+                weights=weights)**2 -
+            cube.collapsed(
+                dim,
+                iris.analysis.MEAN,
+                weights=weights)**2)**0.5

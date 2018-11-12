@@ -13,6 +13,7 @@ import sys
 import os
 from .watermark import make_watermark
 
+
 class ESMValMD(METAdata):
 
     def __init__(self, dtype="xml", modfile=None, tags=['tag'],
@@ -36,7 +37,7 @@ class ESMValMD(METAdata):
         if '0_ESMValTool_watermark' in list(os.environ.keys()):
             self.watermark = os.environ['0_ESMValTool_watermark']
 
-        if (self.watermark!="None"):
+        if (self.watermark != "None"):
             make_watermark(modfile)
 
         if directwrite:
@@ -49,7 +50,7 @@ class ESMValMD(METAdata):
             d['Software_versions']['ESMValTool'] = os.environ['0_ESMValTool_version']
         d['Software_versions']['Python'] = sys.version
         #de = {}
-        #for t in dict(os.environ).iteritems():
+        # for t in dict(os.environ).iteritems():
         #    de[str(t[0])] = str(t[1])
         #d['Environment'] = de
         d['Diag_name'] = self.diag_name
@@ -62,8 +63,8 @@ class ESMValMD(METAdata):
             'tags': tags,
             'caption': caption,
             'block': blockID,
-            'DataIDs': DataIDs , 'Provenance': self.provenance
-            }}
+            'DataIDs': DataIDs, 'Provenance': self.provenance
+        }}
         self.set_dict(DICT)
 
 
@@ -76,38 +77,38 @@ class nclFileMD(ESMValMD):
             file_lines = [l.strip() for l in file_lines]
             try:
                 file_name = file_lines[0]
-            except:
+            except BaseException:
                 file_name = None
             try:
                 dtype = file_lines[1]
-            except:
+            except BaseException:
                 dtype = "both"
             try:
                 tags = file_lines[2].split(",")
-            except:
+            except BaseException:
                 tags = None
             try:
                 caption = file_lines[3]
-            except:
+            except BaseException:
                 caption = "No caption found for file: " + file_name + "!"
             try:
                 blockID = file_lines[4]
-            except:
+            except BaseException:
                 blockID = "#IDrand_" + ''.join(random.SystemRandom().
                                                choice(string.ascii_uppercase +
                                                       string.digits) for
                                                _ in range(8))
             try:
                 DataIDs = file_lines[5]
-            except:
+            except BaseException:
                 DataIDs = "No IDs found!"
             try:
                 diag_name = file_lines[6]
-            except:
+            except BaseException:
                 diag_name = "No diagnostic name found!"
             try:
                 contrib_authors = file_lines[7]
-            except:
+            except BaseException:
                 contrib_authors = "No contributing authors found!"
 
         super(nclFileMD, self).__init__(

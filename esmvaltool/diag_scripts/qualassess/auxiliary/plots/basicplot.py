@@ -20,6 +20,7 @@ import string
 from matplotlib.ticker import FuncFormatter
 import logging
 
+
 def label_in_perc_multiple(x, pos=0):
     return '%1.1f%%' % (x)
 
@@ -29,8 +30,9 @@ def label_in_perc_single(x, pos=0):
 
 
 MPLSTYLE = os.path.dirname(
-        os.path.realpath(__file__)
-        ) + os.sep + 'default.mplstyle'
+    os.path.realpath(__file__)
+) + os.sep + 'default.mplstyle'
+
 
 class PlotHist(object):
     """
@@ -126,8 +128,8 @@ class PlotHist(object):
 #        print self.ax.__dict__.keys()
         if isinstance(self.data, list):
             x_label = (" [").join(list(set(self.name)) +
-                                  list(set([su.split("[")[1] 
-                                  for su in self.units]))) + "]"
+                                  list(set([su.split("[")[1]
+                                            for su in self.units]))) + "]"
             cols = mpl_cm.gist_rainbow(np.linspace(0, 1, len(self.data)))
             labels = title
             vmin = np.inf
@@ -149,7 +151,7 @@ class PlotHist(object):
                                                     bins=levels,
                                                     density=True,
                                                     facecolor=cols[ind],
-                                                    alpha=alpha / \
+                                                    alpha=alpha /
                                                     len(self.data),
                                                     label=labels[ind])
                 except BaseException:
@@ -157,7 +159,7 @@ class PlotHist(object):
                                                     bins=levels,
                                                     density=True,
                                                     facecolor=cols[ind],
-                                                    alpha=alpha / \
+                                                    alpha=alpha /
                                                     len(self.data),
                                                     label=labels[ind])
         else:
@@ -177,7 +179,7 @@ class PlotHist(object):
                 n, bins, patches = self.ax.hist(
                     self.data.data,
                     bins=levels, density=True, facecolor=color, alpha=alpha)
-                
+
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
         if isinstance(self.data, list):
@@ -345,7 +347,8 @@ class Plot2D(object):
                             "an empty list")
 
         elif self.n_cubes > 21:
-            self.cubes = cubes[-21:] #TODO break images instead of just plotting the last 21
+            # TODO break images instead of just plotting the last 21
+            self.cubes = cubes[-21:]
             self.n_cubes = 21
 
         # Get properties of the cubes
@@ -449,7 +452,7 @@ class Plot2D(object):
 
         Modification history
             20180515-A_muel_bn: copied Plot2D and adjusted
-        """    
+        """
         # Preprocessing cube information
         if self.n_cubes == 1:
             self.cubes[0].rename(title)
@@ -603,9 +606,9 @@ class Plot2D(object):
             row = idx // self.__class__.MAX_COLUMNS
             if self.n_cubes > 1:
                 curplot = gs[
-                        (rel_plots_cbar * row):(rel_plots_cbar * (row + 1)),
-                        column
-                        ]
+                    (rel_plots_cbar * row):(rel_plots_cbar * (row + 1)),
+                    column
+                ]
                 plt.sca(plt.subplot(curplot, transform='robinson'))
             else:
                 plt.sca(ax[0])
@@ -650,15 +653,15 @@ class Plot2D(object):
                          transform=plt.gca().transAxes)
             if self.plot_type == 'latlon':
                 mean = cube.collapsed(
-                        [coord.name() for coord in cube.coords()],
-                        iris.analysis.MEAN,
-                        weights=iris.analysis.cartography.area_weights(cube)
-                        ).data
+                    [coord.name() for coord in cube.coords()],
+                    iris.analysis.MEAN,
+                    weights=iris.analysis.cartography.area_weights(cube)
+                ).data
                 std = utils.weighted_STD_DEV(
-                        cube,
-                        [coord.name() for coord in cube.coords()],
-                        weights=iris.analysis.cartography.area_weights(cube)
-                        ).data
+                    cube,
+                    [coord.name() for coord in cube.coords()],
+                    weights=iris.analysis.cartography.area_weights(cube)
+                ).data
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')
@@ -788,8 +791,8 @@ class Plot1D(object):
 
         # Get dimension names
         dim_names = [list(
-                set(dim.standard_name for dim in c.dim_coords)
-                )[0] for c in cube]
+            set(dim.standard_name for dim in c.dim_coords)
+        )[0] for c in cube]
         for dim in dim_names:
             if (dim in self.__class__.LATS):
                 self.lat_var = dim
@@ -875,7 +878,7 @@ class Plot1D(object):
                     color=cols[ind],
                     label=title[ind])
             plt.gca().set_ylabel(self.name + " " + str(self.units),
-                    rotation=90)
+                                 rotation=90)
             plt.grid()
 
         except Exception as e:
@@ -1009,7 +1012,7 @@ class PlotScales(object):
 
         if not isinstance(data, dict):
             raise ValueError(
-                "Wrong data format for input, should be dict: " + \
+                "Wrong data format for input, should be dict: " +
                 str(type(data)))
 
         if "names" not in data.keys():

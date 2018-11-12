@@ -20,7 +20,7 @@ class METAdata(object):
         self.__avail__ = ["xml", "meta", "both"]
         # http://www.sno.phy.queensu.ca/~phil/exiftool/exiftool_pod.html;
         # relevant r/w formats
-        #self.__meta_formats__ = ["jpg", "jpeg", "png", "eps", "mp4",
+        # self.__meta_formats__ = ["jpg", "jpeg", "png", "eps", "mp4",
         #                         "tiff", "pdf", "ps"]
         self.__meta_formats__ = ["png"]
         self.__exif_maintag__ = "Exif.Image.ImageDescription"
@@ -48,7 +48,7 @@ class METAdata(object):
         # check if exif is available
         try:
             from PIL import Image, PngImagePlugin
-        except:
+        except BaseException:
             self.__dtype__ = 'xml'
 
     def get_avail(self):
@@ -98,9 +98,9 @@ class METAdata(object):
 
         if not self.__modfile__.split(".")[-1] in self.__meta_formats__:
             print(("Warning! ." + self.__modfile__.split(".")[-1] +
-                  " is not an acceptable " +
-                  "meta data file format! Instead, XML-file for meta data " +
-                  "will be produced!"))
+                   " is not an acceptable " +
+                   "meta data file format! Instead, XML-file for meta data " +
+                   "will be produced!"))
             self.__dtype__ = "xml"
             self.write()
             return
@@ -123,7 +123,7 @@ class METAdata(object):
 
         else:
             assert False, "The meta data dictionary" + \
-                  " has too many entries on level 0!"
+                " has too many entries on level 0!"
 
         return
 
@@ -143,7 +143,7 @@ class METAdata(object):
 
         else:
             assert False, "The meta data dictionary has too many entries" + \
-                  " on level 0!"
+                " on level 0!"
 
         return
 
@@ -178,7 +178,7 @@ class METAdata(object):
 
         root = XMLT.Element(list(self.__data_dict__.keys())[0])
         self.__build_xml_tree__(root, self.__data_dict__[
-                list(self.__data_dict__.keys())[0]])
+            list(self.__data_dict__.keys())[0]])
 
         if pretty:
             root = prettify(root)
@@ -227,7 +227,7 @@ class METAdata(object):
         elif self.__dtype__ == "meta":
             try:
                 self.__read_meta__()
-            except:
+            except BaseException:
                 self.__adjust_xml_file__()
                 self.__read_xml__()
         else:
@@ -291,8 +291,9 @@ class METAdata(object):
                             new_list.append(getattr(DataInfo, ti))
 
                         elif "infile_0000" in list(DataInfo.__dict__.keys()):
-                            infiles = [t for t in list(DataInfo.__dict__.keys()) if
-                                       t.split("_")[0] == "infile"]
+                            infiles = [
+                                t for t in list(
+                                    DataInfo.__dict__.keys()) if t.split("_")[0] == "infile"]
                             infiles = [getattr(DataInfo, i_f) for
                                        i_f in infiles]
                             new_list.extend(__ID_hunter__(infiles))
@@ -301,7 +302,7 @@ class METAdata(object):
                             assert False, \
                                 "There is header information missing!" + \
                                 "Either tracking_id or infile_**** needed."
-                    except:
+                    except BaseException:
                         new_list.append("NO ID found in file " + f + "!")
                 else:
                     new_list.append(f)
@@ -310,7 +311,7 @@ class METAdata(object):
 
         self.__data_dict__['ESMValTool']['DataIDs'] = \
             __ID_hunter__(
-                    self.__data_dict__['ESMValTool']['DataIDs'].split(","))
+            self.__data_dict__['ESMValTool']['DataIDs'].split(","))
 
 # USAGE
 

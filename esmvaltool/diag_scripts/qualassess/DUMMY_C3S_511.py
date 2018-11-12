@@ -40,21 +40,23 @@ from auxiliary.c3s_511_basic import Basic_Diagnostic_SP
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main(cfg):
     logger.info('>>>>>>>> DUMMY_C3S_511.py is running! <<<<<<<<<<<<')
 
     for filename, attributes in cfg['input_data'].items():
-            logger.info("Processing variable %s from data set %s",
-                        attributes['standard_name'], attributes['dataset'])
-            logger.debug("Preparing diagnostic")
-            Diag = Basic_Diagnostic_SP()
-            Diag.set_info(cfg=cfg)
-            logger.debug("Loading %s", filename)
-            Diag.read_data()
-            logger.debug("Running computation")
-            Diag.run_diagnostic()
+        logger.info("Processing variable %s from data set %s",
+                    attributes['standard_name'], attributes['dataset'])
+        logger.debug("Preparing diagnostic")
+        Diag = Basic_Diagnostic_SP()
+        Diag.set_info(cfg=cfg)
+        logger.debug("Loading %s", filename)
+        Diag.read_data()
+        logger.debug("Running computation")
+        Diag.run_diagnostic()
 
     logger.info('>>>>>>>> ENDED SUCESSFULLY!! <<<<<<<<<<<<')
+
 
 if __name__ == '__main__':
 
