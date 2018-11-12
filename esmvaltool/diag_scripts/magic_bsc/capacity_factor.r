@@ -32,11 +32,16 @@ library(climdex.pcic)
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
+initial.options <- commandArgs(trailingOnly = FALSE)
+file.arg.name <- "--file="
+script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
+script.dirname <- dirname(script.name)
+source(paste0(script.dirname,"/PC.r"))
+
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
-rdir  <- sub("\\/recipes/.*", "", params$work_dir)
-source(paste0(rdir,"/diag_scripts/magic_bsc/PC.r"))
+
 ## Create working dirs if they do not exist
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
