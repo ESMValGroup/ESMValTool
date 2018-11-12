@@ -1,0 +1,53 @@
+# 
+# ###############################################################################
+# namelist_sm_ESACCI.xml
+# 
+# Description
+# 
+# Authors
+# Stefan Hagemann (MPI-M, Germany, stefan.hagemann@mpimet.mpg.de)
+# Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
+# Benjamin Müller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+# 
+# Project
+# CRESCENDO
+# 
+# References
+# 
+# This namelist is part of the ESMValTool
+# ###############################################################################
+# 
+
+---
+datasets:
+preprocessors:
+  prep0: {}
+
+diagnostics:
+  landcover:
+    description: Doing ESACCI land cover analysis.
+    variables:
+      baresoilFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: #missing
+        field: T2Ms
+      grassFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: #missing
+        field: T2Ms
+      shrubFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: #missing
+        field: T2Ms
+      treeFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: #missing
+        field: T2Ms
+    scripts:
+      landcover:
+        script: landcover.py
+
