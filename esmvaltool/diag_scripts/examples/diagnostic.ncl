@@ -60,6 +60,7 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   ; Shortcuts to current variable and field
+  ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
   field_type0 = variable_info[0]@field
 
@@ -76,12 +77,11 @@ begin
   ; function to extract the metadata for a specific variable or dataset
 
   ; Retrieve metadata items by attribute (short_name and field)
-  ; For multiple variables, use different indices of variable_info
-  info = select_metadata_by_atts(\
-    input_file_info, \
-    [/[/"short_name", var0/], \
-      [/"field", field_type0/] \
-      /])
+  atts = True
+  atts@short_name = var0
+  atts@field = field_type0
+  info = select_metadata_by_atts(input_file_info, atts)
+  delete(atts)
 
   ; Simple version using only the variable's short name (works for most cases)
   info_simple = select_metadata_by_name(input_file_info, var0)
@@ -102,12 +102,12 @@ begin
   printVarSummary(fx_var[0])
 
   ; Retrieve metadata item for the reference dataset
-  info_ref = select_metadata_by_atts( \
-    input_file_info, \
-    [/[/"short_name", variable_info[0]@short_name/], \
-      [/"field", variable_info[0]@field/], \
-      [/"dataset", variable_info[0]@reference_dataset/] \
-      /])
+  atts = True
+  atts@short_name = var0
+  atts@field = field_type0
+  atts@dataset = variable_info[0]@reference_dataset
+  info_ref = select_metadata_by_atts(input_file_info, atts)
+  delete(atts)
 
   ; Read data for the reference dataset
   reference = read_data(info_ref[0])

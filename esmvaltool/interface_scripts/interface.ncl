@@ -55,11 +55,11 @@ load "./interface_scripts/data_handling.ncl"
 
 undef("select_metadata_by_atts")
 function select_metadata_by_atts(info:list,
-                                 atts:list)
+                                 att[1]:logical)
 ;
 ; Arguments
 ;    info: a list of input_file_info logicals containing all metadata
-;    atts: a list of arrays of two elements containing attribute=value pairs
+;    atts: a scalar logical with the attributes to be matched in the input list
 ;
 ; Return value
 ;    A list of logicals containing only the metadata matching the given
@@ -67,8 +67,8 @@ function select_metadata_by_atts(info:list,
 ;
 ; Description
 ;    Metadata information are stored in a list of input_file_info logicals.
-;    This functions allows to extract the list elements matching the attributes
-;    value given as list in the second argument.
+;    This functions allows to extract the list elements whose attributes
+;    match the requested ones.
 ;
 ; Caveats
 ;
@@ -85,16 +85,17 @@ begin
   enter_msg(scriptname, funcname)
 
   ninfo = ListCount(info)
-  natts = ListCount(atts)
+  atts = getvaratts(att)
+  natts = dimsizes(atts)
   item = NewList("fifo")
   do ii = 0, ninfo - 1  ; loop over input_file_info elements
     l_flag = True
-    do jj = 0, natts - 1  ; loop over requested attribute=value pairs
-      ca = atts[jj]
-      if (.not.isatt(info[ii], ca[0])) then
-        error_msg("f", scriptname, funcname, "missing " + ca[0] + " attribute")
+    do jj = 0, natts - 1  ; loop over requested attributes
+      if (.not.isatt(info[ii], atts(jj))) then
+        error_msg("f", scriptname, funcname, \
+                  "missing " + atts(jj) + " attribute")
       end if
-      if (info[ii]@$ca[0]$.ne.ca[1]) then
+      if (info[ii]@$atts(jj)$.ne.att@$atts(jj)$) then
         l_flag = False
       end if
     end do
@@ -141,7 +142,9 @@ begin
   scriptname = "interface_scripts/interface.ncl"
   enter_msg(scriptname, funcname)
 
-  item = select_metadata_by_atts(info, [/[/"short_name", variable/]/])
+  atts = True
+  atts@short_name = variable
+  item = select_metadata_by_atts(info, atts)
 
   leave_msg(scriptname, funcname)
   return(item)
