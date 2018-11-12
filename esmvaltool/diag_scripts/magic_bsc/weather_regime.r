@@ -5,8 +5,14 @@ library(ncdf4)
 library(startR)
 library(gridExtra)
 library(ClimProjDiags)
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/WeatherRegime.R')
-source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Regimes/R/RegimesAssign.R')
+
+
+initial.options <- commandArgs(trailingOnly = FALSE)
+file.arg.name <- "--file="
+script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
+script.dirname <- dirname(script.name)
+source(paste0(script.dirname,"/WeatherRegime.r"))
+source(paste0(script.dirname,"/RegimesAssign.r"))
 
 ## Regimes namelist
 args <- commandArgs(trailingOnly = TRUE)
