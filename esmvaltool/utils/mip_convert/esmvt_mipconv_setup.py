@@ -1,8 +1,25 @@
 """
 Run the first communication between esmvaltool's recipe and mip_convert.
 
+Description:
+------------
+
 This script sets up the correct rose suite directories to run mip_convert
-on different UM suite data.
+on different UM suite data. You can run this tool in three different ways:
+ - (with -m --mode option) setup-only: will set up the mip convert rose
+   directories only; it will use the -c configuration file for user options;
+ - (with -m --mode option) setup-run-suites: will set up the mip convert rose
+   suites and will go ahead and submit them to cylc via rose suite-run;
+ - (with -m --mode option) postproc: will symlink newly created netCDF data
+   into a directory per esmvaltool recipe; note that for now, there is no
+   DRS-like path set up in that directory;
+
+Usage:
+------
+-c --config-file:  user specific configuration file;
+-r --recipe-file:  single or multiple (space-separated) recipe files;
+-m --mode:         running mode (setup-only, setup-run-suites, postproc);
+- --log-level:     log level [OPTIONAL]
 """
 import argparse
 import logging
