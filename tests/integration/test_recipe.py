@@ -1,15 +1,17 @@
 import os
 from pprint import pformat
 from textwrap import dedent
+from unittest.mock import create_autospec
 
 import pytest
 import yaml
 from netCDF4 import Dataset
 
 import esmvaltool
-from esmvaltool._recipe import read_recipe_file
+from esmvaltool._recipe import TASKSEP, read_recipe_file
 from esmvaltool._task import DiagnosticTask
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
+from esmvaltool.preprocessor._io import concatenate_callback
 
 from .test_diagnostic_run import write_config_user_file
 from .test_provenance import check_provenance
@@ -195,8 +197,194 @@ def test_simple_recipe(tmpdir, patched_datafinder, config_user):
         assert task.settings['custom_setting'] == 1
 
 
+def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
+
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            variables:
+              chl:
+                project: CMIP5
+                mip: Oyr
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: TO3Y
+                ensemble: r1i1p1
+                additional_datasets:
+                  - {dataset: CanESM2}
+            scripts: null
+        """)
+
+    recipe_file = str(tmpdir / 'recipe_test.yml')
+    with open(recipe_file, 'w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(recipe_file, config_user)
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    assert len(task.products) == 1
+    product = task.products.pop()
+    preproc_dir = os.path.dirname(product.filename)
+    assert preproc_dir.startswith(str(tmpdir))
+
+    fix_dir = os.path.join(
+        preproc_dir,
+        'CMIP5_CanESM2_Oyr_historical_r1i1p1_TO3Y_chl_2000-2005_fixed')
+    defaults = {
+        'load': {
+            'callback':
+            concatenate_callback,
+            'constraints': ('mass_concentration_of_phytoplankton_expressed_'
+                            'as_chlorophyll_in_sea_water'),
+        },
+        'concatenate': {},
+        'fix_file': {
+            'project': 'CMIP5',
+            'dataset': 'CanESM2',
+            'short_name': 'chl',
+            'output_dir': fix_dir,
+        },
+        'fix_data': {
+            'project': 'CMIP5',
+            'dataset': 'CanESM2',
+            'short_name': 'chl',
+            'cmor_table': 'CMIP5',
+            'mip': 'Oyr',
+        },
+        'fix_metadata': {
+            'project': 'CMIP5',
+            'dataset': 'CanESM2',
+            'short_name': 'chl',
+            'cmor_table': 'CMIP5',
+            'mip': 'Oyr',
+        },
+        'extract_time': {
+            'start_year': 2000,
+            'end_year': 2006,
+            'start_month': 1,
+            'end_month': 1,
+            'start_day': 1,
+            'end_day': 1,
+        },
+        'cmor_check_metadata': {
+            'cmor_table': 'CMIP5',
+            'mip': 'Oyr',
+            'short_name': 'chl',
+        },
+        'cmor_check_data': {
+            'cmor_table': 'CMIP5',
+            'mip': 'Oyr',
+            'short_name': 'chl',
+        },
+        'cleanup': {
+            'remove': [fix_dir]
+        },
+        'save': {
+            'compress': False,
+            'filename': product.filename,
+        }
+    }
+    assert product.settings == defaults
+
+
 def test_reference_dataset(tmpdir, patched_datafinder, config_user):
-    pass
+
+    levels = create_autospec(
+        esmvaltool._recipe.get_reference_levels, return_value=[100])
+    esmvaltool._recipe.get_reference_levels = levels
+
+    content = dedent("""
+        preprocessors:
+          test_from_reference:
+            regrid:
+              target_grid: reference_dataset
+              scheme: linear
+            extract_levels:
+              levels: reference_dataset
+              scheme: linear
+          test_from_cmor_table:
+            extract_levels:
+              levels:
+                cmor_table: CMIP6
+                coordinate: alt16
+              scheme: nearest
+        
+        diagnostics:
+          diagnostic_name:
+            variables:
+              ta: &var
+                preprocessor: test_from_reference
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: T3M
+                ensemble: r1i1p1
+                additional_datasets:
+                  - {dataset: GFDL-CM3}
+                  - {dataset: MPI-ESM-LR}
+                reference_dataset: MPI-ESM-LR
+              ch4:
+                <<: *var
+                preprocessor: test_from_cmor_table
+                additional_datasets:
+                  - {dataset: GFDL-CM3}
+                
+            scripts: null
+        """)
+
+    recipe_file = str(tmpdir / 'recipe_test.yml')
+    with open(recipe_file, 'w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(recipe_file, config_user)
+
+    assert len(recipe.tasks) == 2
+
+    # Check that the reference dataset has been used
+    task = next(t for t in recipe.tasks
+                if t.name == 'diagnostic_name' + TASKSEP + 'ta')
+    assert len(task.products) == 2
+    product = next(
+        p for p in task.products if p.attributes['dataset'] == 'GFDL-CM3')
+    reference = next(
+        p for p in task.products if p.attributes['dataset'] == 'MPI-ESM-LR')
+
+    assert product.settings['regrid']['target_grid'] == reference.files[0]
+    assert product.settings['extract_levels']['levels'] == levels.return_value
+
+    fix_dir = os.path.splitext(reference.filename)[0] + '_fixed'
+    levels.assert_called_once_with(reference.files[0], 'CMIP5', 'MPI-ESM-LR',
+                                   'ta', fix_dir, 'air_pressure')
+
+    assert 'regrid' not in reference.settings
+    assert 'extract_levels' not in reference.settings
+
+    # Check that levels have been read from CMOR table
+    task = next(t for t in recipe.tasks
+                if t.name == 'diagnostic_name' + TASKSEP + 'ch4')
+    assert len(task.products) == 1
+    product = next(iter(task.products))
+    assert product.settings['extract_levels']['levels'] == [
+        0,
+        250,
+        750,
+        1250,
+        1750,
+        2250,
+        2750,
+        3500,
+        4500,
+        6000,
+        8000,
+        10000,
+        12000,
+        14500,
+        16000,
+        18000,
+    ]
 
 
 def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
@@ -232,13 +420,13 @@ def test_derive(tmpdir, patched_datafinder, config_user):
     # Check generated tasks
     assert len(recipe.tasks) == 1
     task = recipe.tasks.pop()
-    print(task)
-    assert task.name == 'diagnostic_name/toz'
+
+    assert task.name == 'diagnostic_name' + TASKSEP + 'toz'
     assert len(task.ancestors) == 2
-    assert 'diagnostic_name/toz_derive_input_ps' in [
+    assert 'diagnostic_name' + TASKSEP + 'toz_derive_input_ps' in [
         t.name for t in task.ancestors
     ]
-    assert 'diagnostic_name/toz_derive_input_tro3' in [
+    assert 'diagnostic_name' + TASKSEP + 'toz_derive_input_tro3' in [
         t.name for t in task.ancestors
     ]
 
@@ -250,14 +438,10 @@ def test_derive(tmpdir, patched_datafinder, config_user):
     check_provenance(product)
     assert product.files
 
-    ps_product = [
-        p for a in task.ancestors for p in a.products
-        if p.attributes['short_name'] == 'ps'
-    ][0]
-    tro3_product = [
-        p for a in task.ancestors for p in a.products
-        if p.attributes['short_name'] == 'tro3'
-    ][0]
+    ps_product = next(p for a in task.ancestors for p in a.products
+                      if p.attributes['short_name'] == 'ps')
+    tro3_product = next(p for a in task.ancestors for p in a.products
+                        if p.attributes['short_name'] == 'tro3')
     assert ps_product.filename in product.files
     assert tro3_product.filename in product.files
     check_provenance(ps_product)
@@ -293,7 +477,7 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
     # Check generated tasks
     assert len(recipe.tasks) == 1
     task = recipe.tasks.pop()
-    print(task)
+
     assert task.name == 'diagnostic_name/toz'
     assert len(task.ancestors) == 1
     ancestor = [t for t in task.ancestors][0]
