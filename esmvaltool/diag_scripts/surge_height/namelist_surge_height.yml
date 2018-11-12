@@ -19,11 +19,25 @@
 # 
 # This namelist is part of the ESMValTool
 ###############################################################################
+GLOBAL:
+  write_netcdf:      True
+  write_plots:       True
+  coastal_map:       True
+  t0:                2012-01-04
+  plt_tseries:       False
+  SOIname:           hoekvanh
+  tstart:            2012-01-02
+  tend:              2012-01-07
+  colormap:          RdYlBu_r 
+  projection:        cyl
+  resolution:        i
+
+
 models:					       #?
-  - {model: bcc-csm1-1,  project: CMIP5,  mip: 3h,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+#  - {model: bcc-csm1-1,  project: CMIP5,  mip: 3h,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2012,  end_year: 2013}
 
 preprocessors:
 
@@ -32,14 +46,14 @@ preprocessors:
 #      levels: 85000
 #      scheme: nearest
     regrid:
-      target_grid: ERA-Interim
+      target_grid: ERA-Interim #0.75x0.75
       scheme: linear
 
 
 diagnostics:
 
   diagnostic1:
-    description: Storm surge estimator using SLP and u10 components.
+    description: Storm surge estimator using sea level pressure and components of 10m wind.
     variables:
       msl:
         preprocessor: preprocessor1
@@ -52,6 +66,6 @@ diagnostics:
         field: T2Ms	#[???]
     scripts:
       script1:
-        script: examples/diagnostic.py
+        script: diag_scripts/surge_height/surge_estimator.py
         quickplot:
           plot_type: scatter

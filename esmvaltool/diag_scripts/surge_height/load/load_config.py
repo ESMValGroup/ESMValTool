@@ -3,7 +3,6 @@ def load_config():
 	from datetime import datetime
 	global config
 	config = ConfigParser.ConfigParser()
-	#config.read('/usr/people/ridder/Documents/0_models/ESMValTool_backup/nml/cfg_surge_height/cfg_srg_estim.conf')
 	config.read('/usr/people/ridder/Documents/0_models/ESMValTool/esmvaltool/diag_scripts/surge_height/config/cfg_srg_estim.conf')
 
 	global coastal_map, plt_tseries, SOIname, t0, tstart, tend, lat_min, lat_max, lon_min, lon_max 

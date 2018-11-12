@@ -55,6 +55,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
+#import logging
 
 config = ConfigParser.ConfigParser()
 config.read('/usr/people/ridder/Documents/0_models/ESMValTool/nml/cfg_srg_estim/cfg_srg_estim.conf')
@@ -111,7 +112,9 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 		if llc.SOIname in allstats:
 			stat  = [llc.SOIname]
 		else:
-			print('Station not available -> timeseries plot cannot be generated.')
+			#logger.info(
+			print ('Station ' + llc.plt_tseries + 
+					' is not available -> timeseries plot cannot be generated.')
 			llc.plt_tseries = False
 	#
 	tlen  = (llc.tend - llc.tstart).total_seconds()/60./60./24.
@@ -130,6 +133,7 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 
 	for x in dates: 
 		if not x in dates_in:
+			#logger.info(
 			print ('WARNING: Selected time period not in provided data! ' +
 				'Using full time range provided in dataset instead.')
 			dates = dates_in
@@ -137,6 +141,7 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# -------------------------------------------
 	# III. Load solver & regression coefficients
 	# -------------------------------------------
+        #logger.debug("Loading EOFs and regression coefficients")
 	load_EOFs()
 	load_betas_intercept(stat)
 	
@@ -147,6 +152,8 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	#xmin, xmax = [-13.5,13.5]
 	#pslNS = esmvaltool.preprocessor.extract_region(psl_in, xmin, xmax, ymin, ymax)
 	#...
+        #logger.debug("Preprocessing input data")
+
 	pslNS, uaNS, vaNS    = cut_NS(psl_in, ua_in, va_in)
 
 	xpslNS, xuaNS, xvaNS = Xtrms(pslNS, uaNS, vaNS)
@@ -156,11 +163,13 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# -----------------------------
 	# V. Calculate SLP gradients 
 	# -----------------------------
+        #logger.debug("Calculating gradient of psl")
 	grad_psl(psl)
 
 	# -----------------------------------------
 	# VI. Project fields onto ERA-Interim EOFs 
 	# -----------------------------------------
+        #logger.debug("Generating PCs")
 	pseudo_pcs_SLP        = llE.SLPsolver.projectField(psl.values)
 	pseudo_pcs_gradlatSLP = llE.gradlatsolver.projectField(dpgrd.gradlatSLP)
 	pseudo_pcs_gradlonSLP = llE.gradlonsolver.projectField(dpgrd.gradlonSLP)
@@ -170,6 +179,7 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# -------------------------------
 	# VII. Generate predictor array
 	# -------------------------------
+        #logger.debug("Generating predictor array")
 	X = {}
 	for s in stat:
 		X[s] = build_predictX(dates,pseudo_pcs_SLP, pseudo_pcs_gradlatSLP, #...
@@ -178,22 +188,26 @@ def surge_estimator_main(psl_in, ua_in, va_in):#???
 	# ----------------------------
 	# VIII. Apply regression model
 	# ----------------------------
+        #logger.debug("Estimating surge heights")
 	estimate_srg(X,dates,stat)
 
 	# ------------------------
 	# IX. Save surge to file
 	# ------------------------
 	#if  write_netcdf:
+	#	logger.debug('saving data to netCDF file ')
 	save_netCDF(dates,stat,ees.srg_est_full)
 
 	# -----------
 	# X. Plot
 	# -----------
 	# if write_plots:
-	if llc.coastal_map: # generate geographical map with surge levels on day specified in config file	
+	if llc.coastal_map: # generate geographical map with surge levels on day specified in config file
+        	#logger.debug("Plotting and saving geographical map with surge heights")	
 		plot_map(dates_map, ees.srg_est_full,dates.index(dates_map[0]))
 	#
 	if llc.plt_tseries: # generate timeseries plot
+        	#logger.debug("Plotting and saving surge timeseries")
 		for s in ees.srg_est_full.keys():
 			plot_tseries(dates, ees.srg_est_full[s], stat)
 	#

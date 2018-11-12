@@ -35,7 +35,6 @@ def save_netCDF(dates,stat,srg_est_full):
 			srg.append(srg_est_full[s])
 			stats_lat.append(coord[s][0])
 			stats_lon.append(coord[s][1])
-	
 	#
 	now = datetime.datetime.utcnow().strftime("%a %Y-%m-%d %H:%M")
 	srg_out = xr.DataArray(srg, coords=[np.asarray(stat).astype('<U8'),dates], dims=['station','time'])
@@ -48,6 +47,11 @@ def save_netCDF(dates,stat,srg_est_full):
 		attrs={'description':'Estimate of surge height along the North Sea coast.',
 		'history':'created '+now,'featureType':'timeSeries'})
 	#
-	out.to_netcdf('surgeFile_v3.nc')
+	path = os.path.join(
+                llc.savepath,
+		llc.plot_name + '_' + dates[0].strftime("%Y-%m-%d") + '-' + dates[-1].strftime("%Y-%m-%d") + '.nc',
+            	)
+
+	out.to_netcdf(path)
 
 

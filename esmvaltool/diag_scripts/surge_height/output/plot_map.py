@@ -49,7 +49,7 @@ def plot_map(dates, srg, tidx):
 	cbar_scat = m.colorbar(scat, location="bottom",size = "5%", pad="7.5%")
 	cbar_scat.set_label('surge height (m)')
 	plt.title('North Sea coastal surge ' + datetime.strftime(dates[0],'(%d-%m-%Y)'))
-	#plt.show()
-	fdates = datetime.strftime(dates[0],'%Y-%m-%d')
+	#
+	fdates = datetime.strftime(dates[tidx],'%Y-%m-%d')
 	plt.savefig(llc.savepath + llc.plot_name + '_map_' + fdates + '.pdf', dpi=100, format = 'pdf')
 

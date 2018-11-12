@@ -3,6 +3,7 @@ import load
 import dataprep
 import estimate
 import output
+import load.read_input
 import load.load_config as llc
 import load.load_EOFs   as llE
 import load.load_betas_intercept as llbi
@@ -17,6 +18,7 @@ import output.plot_tseries as opt
 from load.load_config import load_config
 from load.load_EOFs import load_EOFs
 from load.load_betas_intercept import load_betas_intercept
+from load.read_input import read_input
 from dataprep.grad_psl import grad_psl
 from estimate.build_predictX import build_predictX 
 from estimate.estimate_srg import estimate_srg
