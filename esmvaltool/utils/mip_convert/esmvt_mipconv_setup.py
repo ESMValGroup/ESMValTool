@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 import shutil
+import subprocess
 from distutils.version import LooseVersion
 # configparser has changed names in python 3.x
 if LooseVersion(sys.version) < LooseVersion("3.0"):
@@ -52,8 +53,9 @@ def get_args():
     parser.add_argument(
         '-m',
         '--mode',
-        choices=['setup', 'postproc'],
-        help='How to run the executable: setup: sets up mipconvert suites\n' +
+        choices=['setup-only', 'setup-run-suites', 'postproc'],
+        help='How to run: setup: sets up mipconvert suites only;\n' +
+        'or setup-run-suites: sets up suites and runs them as well;\n' +
         'or postproc: grab the output from mip_convert and use it.')
     parser.add_argument(
         '-l',
@@ -128,6 +130,9 @@ def write_rose_conf(rose_config_template, recipe_file,
                 'rose_suites_setup.log', log_level)
     logger.info(HEADER)
 
+    # store the rose suite locations
+    rose_suite_locations = []
+
     # loop through datasets (different suites for different datasets)
     for dataset in datasets:
 
@@ -136,6 +141,7 @@ def write_rose_conf(rose_config_template, recipe_file,
             conf_file['ROSES_ROOT'],
             conf_file['DATASET_TO_SUITE'][dataset['dataset']]
         )
+        rose_suite_locations.append(rose_suite)
         rose_output = os.path.join(
             conf_file['ROSES_OUTPUT'],
             conf_file['DATASET_TO_SUITE'][dataset['dataset']]
@@ -176,6 +182,61 @@ def write_rose_conf(rose_config_template, recipe_file,
             logger.info("Writing rose-suite.conf file %s",
                         os.path.join(rose_suite, 'rose-suite.conf'))
             Config.write(r_c)
+
+    return rose_suite_locations
+
+
+def _put_in_env(env_script):
+    """Put new system vars in environment."""
+    logger.info("Setting environment for suite submission...")
+
+    # First make it executable.
+    chmod_command = ["chmod", "+x", env_script]
+    proc = subprocess.Popen(chmod_command, stdout=subprocess.PIPE)
+    proc.communicate()
+    logger.info("Script %s is now executable.", env_script)
+
+    # set the environment
+    for line in open(env_script, 'r'):
+        if line.split("=")[0] == 'export PATH':
+            logger.info("Appending %s to path...",
+                        line.split("=")[1].strip("\n"))
+            add_path = line.split("=")[1].strip("\n").strip(":$PATH")
+            os.environ["PATH"] += os.pathsep + add_path
+        elif line.split("=")[0] == 'export PYTHONPATH':
+            logger.info("Exporting %s as PYTHONPATH...",
+                        line.split("=")[1].strip("\n"))
+            os.environ["PYTHONPATH"] = line.split("=")[1].strip("\n")
+
+    # print and check
+    logger.info("New path: %s", str(os.environ["PATH"]))
+    logger.info("mip_convert PYTHONPATH: %s", str(os.environ["PYTHONPATH"]))
+    proc = subprocess.Popen(["which", "rose"], stdout=subprocess.PIPE)
+    out, err = proc.communicate()
+    logger.info("rose: %s %s", out, err)
+    proc = subprocess.Popen(["which", "mip_convert"], stdout=subprocess.PIPE)
+    out, err = proc.communicate()
+    logger.info("mip_convert: %s %s", out, err)
+
+
+def _source_envs(suite):
+    """Source relevant environments."""
+    # source the Met Office rose/cylc environment
+    # and the suite specific environment
+    suite_env = os.path.join(suite,
+                             'env_setup_command_line.sh')  # suite env
+    env_file_mo = os.path.join(suite, 'sourcepaths.sh')   # metomi env
+    _put_in_env(suite_env)
+    _put_in_env(env_file_mo)
+
+
+def _run_suite(suite):
+    """Run the mip_convert suite."""
+    os.chdir(suite)
+    logger.info("Submitting suite from %s", suite)
+    proc = subprocess.Popen(["rose", "suite-run"], stdout=subprocess.PIPE)
+    out, err = proc.communicate()
+    logger.info("Rose communications: %s %s", str(out), str(err))
 
 
 def symlink_data(recipe_file, config_file, log_level):
@@ -234,9 +295,18 @@ def main():
     config_file = args.config_file
     log_level = args.log_level
     for recipe_file in recipe_files:
-        if args.mode == 'setup':
+        if args.mode == 'setup-only':
+            # set up the rose suites
             write_rose_conf(rose_config_template, recipe_file,
                             config_file, log_level)
+        elif args.mode == 'setup-run-suites':
+            # setup roses
+            roses = write_rose_conf(rose_config_template, recipe_file,
+                                    config_file, log_level)
+            # set up the environment and submit
+            for rose in roses:
+                _source_envs(rose)
+                _run_suite(rose)
         elif args.mode == 'postproc':
             symlink_data(recipe_file, config_file, log_level)
 
