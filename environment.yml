@@ -8,6 +8,7 @@ dependencies:
   # Python packages that cannot be installed from PyPI:
   # TODO when switching to iris 2.x, switch straight to 2.2.0
   - iris=1.13
+#  - iris=2.2.0
   - matplotlib<3
   - python-stratify
   - esmpy
