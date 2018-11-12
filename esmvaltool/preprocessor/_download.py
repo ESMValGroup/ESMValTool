@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def synda_search(variable):
     """Search files using synda."""
     query = {
-        'model': variable.get('model'),
+        'model': variable.get('dataset'),
         'project': variable.get('project'),
         'cmor_table': variable.get('mip'),
         'ensemble': variable.get('ensemble'),

@@ -29,10 +29,6 @@ sys.path.insert(0, os.path.abspath('.'))
 import process_ncl_docs2 as process_ncl_docs
 
 
-# not the best way to set the pathes, but working for autodoc ...
-
-
-
 # add custom extensions directory to python path
 #sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'extensions'))
 
@@ -53,8 +49,17 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
 ]
 process_ncl_docs.create_doc_files_from_ncl()
+
+autodoc_default_flags = [
+    'members',
+    'undoc-members',
+    'inherited-members',
+    'show-inheritance',
+]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -123,7 +128,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -202,7 +207,6 @@ html_static_path = ['_static']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ESMValTooldoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 

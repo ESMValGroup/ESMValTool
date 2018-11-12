@@ -1,6 +1,7 @@
 """ESMValtool task definition"""
 import contextlib
 import datetime
+import errno
 import logging
 import os
 import pprint
@@ -14,7 +15,7 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-MODEL_KEYS = {
+DATASET_KEYS = {
     'mip',
 }
 
@@ -124,7 +125,10 @@ def write_ncl_settings(settings, filename, mode='wt'):
             # If an array contains a str, make all items str
             if any(isinstance(v, str) or v is None for v in value):
                 value = [(str(v)) for v in value]
-            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+            if not value:
+                txt = 'NewList("fifo")'
+            else:
+                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
         else:
             txt = str(value)
         return txt
@@ -220,8 +224,7 @@ class DiagnosticTask(AbstractTask):
         self.resource_log = os.path.join(settings['run_dir'],
                                          'resource_usage.txt')
 
-    @staticmethod
-    def _initialize_cmd(script):
+    def _initialize_cmd(self, script):
         """Create a an executable command from script."""
         diagnostics_root = os.path.join(
             os.path.dirname(__file__), 'diag_scripts')
@@ -235,11 +238,22 @@ class DiagnosticTask(AbstractTask):
         cmd = []
         if not os.access(script_file, os.X_OK):  # if not executable
             extension = os.path.splitext(script)[1].lower()[1:]
-            executables = {
-                'py': [which('python')],
-                'ncl': [which('ncl'), '-n', '-p'],
-                'r': [which('Rscript'), '--slave', '--quiet'],
-            }
+            if not self.settings['profile_diagnostic']:
+                executables = {
+                    'py': [which('python')],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+            else:
+                profile_file = os.path.join(self.settings['run_dir'],
+                                            'profile.bin')
+                executables = {
+                    'py': [which('python'), '-m', 'vmprof', '--lines',
+                           '-o', profile_file],
+                    'ncl': [which('ncl'), '-n', '-p'],
+                    'r': [which('Rscript'), '--slave', '--quiet'],
+                }
+
             if extension not in executables:
                 raise DiagnosticError(
                     "Cannot execute script {} ({}): non-executable file "
@@ -338,6 +352,40 @@ class DiagnosticTask(AbstractTask):
                 "There were warnings during the execution of NCL script %s, "
                 "for details, see the log %s", self.script, self.log)
 
+    def _start_diagnostic_script(self, cmd, env, cwd):
+        """Start the diagnostic script."""
+        logger.info("Running command %s", cmd)
+        logger.debug("in environment\n%s", pprint.pformat(env))
+        logger.debug("in current working directory: %s", cwd)
+        logger.info("Writing output to %s", self.output_dir)
+        logger.info("Writing plots to %s", self.settings['plot_dir'])
+        logger.info("Writing log to %s", self.log)
+
+        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        if env:
+            rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
+                                  if k not in os.environ)
+        rerun_msg += ' ' + ' '.join(cmd)
+        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
+
+        try:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=cwd,
+                env=env)
+        except OSError as exc:
+            if exc.errno == errno.ENOEXEC:
+                logger.error(
+                    "Diagnostic script has its executable bit set, but is "
+                    "not executable. To fix this run:\nchmod -x %s", cmd[0])
+                logger.error(
+                    "You may also need to fix this in the git repository.")
+            raise
+
+        return process
+
     def _run(self, input_files):
         """Run the diagnostic script."""
         if self.script is None:  # Run only preprocessor
@@ -360,39 +408,22 @@ class DiagnosticTask(AbstractTask):
 
         cmd = list(self.cmd)
         cwd = None
-        env = self.settings.pop('env', None)
-        if env:
-            env = {str(k): str(v) for k, v in env.items()}
+        env = None
 
         settings_file = self.write_settings()
 
+        if not self.script.lower().endswith('.py'):
+            env = dict(os.environ)
+            env['diag_scripts'] = os.path.join(
+                os.path.dirname(__file__), 'diag_scripts')
+
         if is_ncl_script:
             cwd = os.path.dirname(__file__)
-            env = dict(os.environ)
             env['settings'] = settings_file
         else:
             cmd.append(settings_file)
 
-        logger.info("Running command %s", cmd)
-        logger.debug("in environment\n%s", pprint.pformat(env))
-        logger.debug("in current working directory: %s", cwd)
-        logger.info("Writing output to %s", self.output_dir)
-        logger.info("Writing plots to %s", self.settings['plot_dir'])
-        logger.info("Writing log to %s", self.log)
-
-        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
-        if env:
-            rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
-                                  if k not in os.environ)
-        rerun_msg += ' ' + ' '.join(cmd)
-        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
-
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            cwd=cwd,
-            env=env)
+        process = self._start_diagnostic_script(cmd, env, cwd)
 
         returncode = None
         last_line = ['']
@@ -422,7 +453,7 @@ class DiagnosticTask(AbstractTask):
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
-            "in {}.".format(self.script, returncode, self.log))
+            "in {}".format(self.script, returncode, self.log))
 
     def __str__(self):
         """Get human readable description."""

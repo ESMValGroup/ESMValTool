@@ -7,8 +7,8 @@ cubes have (TIME-LAT-LON) or (TIME-PLEV-LAT-LON)
 dimensions; and obviously consistent units.
 
 It operates on different (time) spans:
-- full: computes stats on full model time;
-- overlap: computes common time overlap between models;
+- full: computes stats on full dataset time;
+- overlap: computes common time overlap between datasets;
 
 """
 
@@ -21,7 +21,8 @@ import iris
 import numpy as np
 import yaml
 
-from ._io import save_cubes
+from .._config import use_legacy_iris
+from ._io import save
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +74,10 @@ def _compute_statistic(datas, name):
         # get all NOT fully masked data - u_data
         # datas is per time point
         # so we can safely NOT compute stats for single points
-        u_datas = [data for data in datas if not np.all(data.mask)]
+        if datas.ndim == 1:
+            u_datas = [data for data in datas]
+        else:
+            u_datas = [data for data in datas if not np.all(data.mask)]
         if len(u_datas) > 1:
             statistic = statistic_function(datas, axis=0)
         else:
@@ -88,7 +92,7 @@ def _compute_statistic(datas, name):
             if fixed_data is not None:
                 plev_check.append(fixed_data)
 
-        # check for nr models
+        # check for nr datasets
         if len(plev_check) > 1:
             plev_check = np.ma.array(plev_check)
             statistic[j] = statistic_function(plev_check, axis=0)
@@ -98,9 +102,9 @@ def _compute_statistic(datas, name):
     return statistic
 
 
-def _put_in_cube(template_cube, cube_data, stat_name,
-                 file_name, time_bounds, t_axis):
-    """Quick cube building and saving"""
+def _put_in_cube(template_cube, cube_data, stat_name, file_name, time_bounds,
+                 t_axis):
+    """Quick cube building and saving."""
     # grab coordinates from any cube
     times = template_cube.coord('time')
     # or get the FULL time axis
@@ -119,6 +123,18 @@ def _put_in_cube(template_cube, cube_data, stat_name,
     elif len(template_cube.shape) == 4:
         plev = template_cube.coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
+    elif len(template_cube.shape) == 1:
+        cspec = [
+            (times, 0),
+        ]
+    elif len(template_cube.shape) == 2:
+        # If you're going to hardwire air_pressure into this,
+        # might as well have depth here too.
+        plev = template_cube.coord('depth')
+        cspec = [
+            (times, 0),
+            (plev, 1),
+        ]
 
     # correct dspec if necessary
     fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
@@ -131,8 +147,10 @@ def _put_in_cube(template_cube, cube_data, stat_name,
             stats_cube.add_aux_coord(template_cube.coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
 
-    metadata = {'model': 'MultiModel' + stat_name.title(),
-                'filename': file_name}
+    metadata = {
+        'dataset': 'MultiModel' + stat_name.title(),
+        'filename': file_name
+    }
     metadata_template = yaml.safe_load(template_cube.attributes['metadata'])
     for attr in ('short_name', 'standard_name', 'long_name', 'units', 'field',
                  'start_year', 'end_year', 'diagnostic', 'preprocessor'):
@@ -151,10 +169,13 @@ def _put_in_cube(template_cube, cube_data, stat_name,
 
 def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
-    # TODO replace the block when using iris 2.0
-    # time_cells = [cell.point for cell in cube.coord('time').cells()]
-    time_cells = [cube.coord('time').units.num2date(cell.point)
-                  for cell in cube.coord('time').cells()]
+    if use_legacy_iris():
+        time_cells = [
+            cube.coord('time').units.num2date(cell.point)
+            for cell in cube.coord('time').cells()
+        ]
+    else:
+        time_cells = [cell.point for cell in cube.coord('time').cells()]
     time_unit = cube.coord('time').units.name
     time_offset = _get_time_offset(time_unit)
 
@@ -225,7 +246,10 @@ def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
         # reset mask
         ndat.mask = True
         ndat[indices[idx_cube]] = cube.data
-        ndat.mask[indices[idx_cube]] = cube.data.mask
+        if np.ma.is_masked(cube.data):
+            ndat.mask[indices[idx_cube]] = cube.data.mask
+        else:
+            ndat.mask[indices[idx_cube]] = False
         ndatarr[idx_cube] = ndat[t_idx]
 
     # return time slice
@@ -246,8 +270,12 @@ def _assemble_overlap_data(cubes, ovlp, stat_type, filename, time_bounds):
         ]
         stats_dats[i] = _compute_statistic(time_data, stat_type)
     stats_cube = _put_in_cube(
-        cubes[0][sl_1:sl_2 + 1], stats_dats, stat_type, filename,
-        time_bounds, t_axis=None)
+        cubes[0][sl_1:sl_2 + 1],
+        stats_dats,
+        stat_type,
+        filename,
+        time_bounds,
+        t_axis=None)
     return stats_cube
 
 
@@ -310,7 +338,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     ]
 
     if len(selection) < 2:
-        logger.info("Single model in list: will not compute statistics.")
+        logger.info("Single dataset in list: will not compute statistics.")
         return cubes
 
     # unify units
@@ -320,7 +348,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     interval = _get_overlap(selection)
     if interval is None:
         logger.info("Time overlap between cubes is none or a single point.")
-        logger.info("check models: will not compute statistics.")
+        logger.info("check datasets: will not compute statistics.")
         return cubes
 
     time_unit = selection[0].coord('time').units.name
@@ -329,20 +357,18 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     files = []
     if span == 'overlap':
         logger.debug("Using common time overlap between "
-                     "models to compute statistics.")
+                     "datasets to compute statistics.")
 
         # assemble data
         for stat_name in statistics:
             filename, startT, stopT = _update_filename(filenames[stat_name],
-                                                       interval,
-                                                       time_unit)
+                                                       interval, time_unit)
             time_bounds = [startT, stopT]
-            cube_of_stats = _assemble_overlap_data(selection, interval,
-                                                   stat_name, filename,
-                                                   time_bounds)
-            cube_of_stats.data = np.ma.array(cube_of_stats.data,
-                                             dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            cube_of_stats = _assemble_overlap_data(
+                selection, interval, stat_name, filename, time_bounds)
+            cube_of_stats.data = np.ma.array(
+                cube_of_stats.data, dtype=np.dtype('float32'))
+            save([cube_of_stats])
             files.append(filename)
 
     elif span == 'full':
@@ -352,14 +378,13 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
         interval = [min(time_points), max(time_points)]
         for stat_name in statistics:
             filename, startT, stopT = _update_filename(filenames[stat_name],
-                                                       interval,
-                                                       time_unit)
+                                                       interval, time_unit)
             time_bounds = [startT, stopT]
             cube_of_stats = _assemble_full_data(selection, stat_name, filename,
                                                 time_bounds)
-            cube_of_stats.data = np.ma.array(cube_of_stats.data,
-                                             dtype=np.dtype('float32'))
-            save_cubes([cube_of_stats])
+            cube_of_stats.data = np.ma.array(
+                cube_of_stats.data, dtype=np.dtype('float32'))
+            save([cube_of_stats])
             files.append(filename)
 
     cubes.extend(files)
