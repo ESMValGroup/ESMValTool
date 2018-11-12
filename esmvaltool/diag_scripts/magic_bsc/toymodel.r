@@ -12,7 +12,7 @@
 #install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
-library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(startR)
 library(multiApply)
 library(yaml)
 library(abind)
