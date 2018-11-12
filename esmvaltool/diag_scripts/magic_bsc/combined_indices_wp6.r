@@ -6,14 +6,12 @@
 # conda install -c conda-forge r-ncdf4
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
-library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(startR)
 library(multiApply)
 library(ggplot2)
 library(yaml)
 library(ncdf4)
-
-##Until integrated into current version of s2dverification
-library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck/')
+library(ClimProjDiags)
 
 
 #Parsing input file paths and creating output dirs
@@ -29,7 +27,6 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
-var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unname(model_names)
 
@@ -76,7 +73,7 @@ data <- Start(model = fullpath_filenames,
                         lon_var = 'lon',
                         return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                         retrieve = TRUE)
-
+units <- (attr(data,"Variables")$common)[[2]]$units
 lat <- attr(data, "Variables")$dat1$lat
 lon <- attr(data, "Variables")$dat1$lon
 long_names <- attr(data, "Variables")$common$tas$long_name
@@ -89,13 +86,12 @@ dim(lat) <- c(lat = length(lat))
 time_dim <- which(names(dim(data)) == "time")
 timestamp <- ""
    # ------------------------------
-jpeg(paste0(plot_dir, "/plot1.jpg"))
-PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot1.jpg"))
+#PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
+#dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
  time <- attr(data, "Variables")$dat1$time
-print(head(time))
  #if ((end_projection-start_projection + 1) * 12 == length(time)) {
  #    time <-  seq(as.Date(paste(start_projection, '01', '01', sep = "-"), format = "%Y-%m-%d"),
  #               as.Date(paste(end_projection, '12', '01', sep = "-"), format = "%Y-%m-%d"), "day")
@@ -105,9 +101,9 @@ print(head(time))
     data <- aperm(data, c(1,2,5,3,4))
      attr(data, "Variables")$dat1$time <- time
 # ------------------------------
-jpeg(paste0(plot_dir, "/plot2.jpg"))
-PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
-dev.off()
+#jpeg(paste0(plot_dir, "/plot2.jpg"))
+#PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
+#dev.off()
 
 if (is.null(moninf)) {
   time <- attributes(data)$Variables$dat1$time
@@ -198,19 +194,18 @@ if (!is.null(region)) {
   #ArrayToNetCDF(variable_list,
   #              paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
   print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
-
 dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
 dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
-dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time" )
-defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime, lat = dimlat, lon = dimlon), longname = paste('Combination',long_names))
+dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time")
+defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime), longname = paste('Combination',long_names))
 
-file <- nc_create(paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"),
+file <- nc_create(paste0(plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
                          "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
-                         "_", ".nc"))
+                         "_", ".nc"), list(defdata))
 ncvar_put(file, defdata, data)
-ncvar_put(file, defagreement, agreement)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
+
 } else {
   data <- data[1,1, , ,]
   data <- aperm(data, c(3,2,1))
@@ -220,21 +215,20 @@ nc_close(file)
   attr(data, 'variables') <- metadata
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
-  ArrayToNetCDF(variable_list,
-                paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
+ # ArrayToNetCDF(variable_list,
+  #              paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"), "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_", ".nc"))
 
    print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
 
 dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
 dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
-dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time" )
-defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime, lat = dimlat, lon = dimlon), longname = paste('Combination',long_names))
+dimtime <- ncdim_def(name = "time", units = 'days since 1970-01-01 00:00:00', vals = as.vector(time), longname = "time")
+defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime), longname = paste('Combination',long_names))
 
-file <- nc_create(paste0(plot_dir, "/", var0, "_",paste(model_names, sep="", collapse="_"),
+file <- nc_create(paste0(plot_dir, "/", var0, "_",paste0(model_names, collapse = "_"),
                          "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
-                         "_", ".nc"))
+                         "_", ".nc"), list(defdata))
 ncvar_put(file, defdata, data)
-ncvar_put(file, defagreement, agreement)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
 }

@@ -38,7 +38,7 @@ diagnostics:
         field: T2M
     scripts:
       main:
-        script: magic_bsc/bsc_wp6.r #(in diag_scripts)
+        script: magic_bsc/combined_indices_wp6.r #(in diag_scripts)
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
         weights: "equal"
 
