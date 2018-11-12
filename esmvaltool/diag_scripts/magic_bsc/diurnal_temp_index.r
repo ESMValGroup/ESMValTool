@@ -3,7 +3,7 @@ library(s2dverification)
 library(startR)
 library(multiApply)
 library(climdex.pcic)
-library(magic.bsc, lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
+library(ClimProjDiags)
 library(parallel)
 library(ncdf4)
 
