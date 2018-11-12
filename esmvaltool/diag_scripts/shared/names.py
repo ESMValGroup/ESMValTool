@@ -26,6 +26,7 @@ VAR_NAME = 'var_name'
 
 INPUT_DATA = 'input_data'
 INPUT_FILES = 'input_files'
+FX_FILES = 'fx_files'
 METADATA_YAML_FILE = 'metadata.yml'
 OUTPUT_FILE_TYPE = 'output_file_type'
 PLOT_DIR = 'plot_dir'
