@@ -7,7 +7,9 @@
 
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
+#library(startR)
 library(startR)
+
 library(multiApply)
 library(ggplot2)
 library(yaml)
@@ -15,8 +17,8 @@ library(ncdf4)
 library(parallel)
 
 ##Until integrated into current version of s2dverification
-library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
-
+#library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
+library(ClimProjDiags,)
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -27,7 +29,6 @@ work_dir <- params$work_dir
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
-
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$model)
@@ -80,8 +81,7 @@ lat <- attr(historical_data, "Variables")$dat1$lat
 lon  <- attr(historical_data, "Variables")$dat1$lon
 long_names <- attr(historical_data, "Variables")$common$tas$long_name
 projection <- attr(historical_data, "Variables")$common$tas$coordinates
-
-
+hist_names <- names(dim(historical_data))
 #jpeg(paste0(plot_dir, "/plot1.jpg"))
 #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
@@ -127,7 +127,7 @@ if (var0 == "tasmin") {
   historical_data <- historical_data * 60 * 60 * 24
 
 }
-
+names(dim(historical_data)) <- hist_names
 base_sd <- base_sd_historical <- base_mean <- list()
 for (m in 1 : length(metric)) {
   if (var0 != "pr") {
@@ -167,6 +167,7 @@ for (i in 1 : length(projection_filenames)) {
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
      units <- (attr(projection_data,"Variables")$common)[[2]]$units
+     proj_names <- names(dim(projection_data))
     # ------------------------------
 #jpeg(paste0(plot_dir, "/plot3.jpg"))
 #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
@@ -193,7 +194,7 @@ for (i in 1 : length(projection_filenames)) {
     } else if (var0 == "sfcWind") {
       projection_data <- 0.5 * 1.23 * (projection_data ** 3)
     }
-
+  names(dim(projection_data)) <- proj_names
   for (m in 1 : length(metric)) {
 
     if (var0 != "pr") {
@@ -208,7 +209,7 @@ for (i in 1 : length(projection_filenames)) {
 
     base_sd_proj <- InsertDim(base_sd[[m]], 1, dim(projection_index$result)[1])
     projection_index_standardized <- (projection_index$result - projection_mean) / base_sd_proj
-
+    model_dim <- which(proj_names == "model")
     for (mod in 1 : dim(projection_data)[model_dim]) {
 
         data <- drop(Mean1Dim(projection_index_standardized, 1))
