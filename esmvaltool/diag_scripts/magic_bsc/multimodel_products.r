@@ -17,7 +17,7 @@
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
 library(startR)
-library(ClimProjDiag, lib.loc = '/home/Earth/nperez/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(ClimProjDiags)
 library(abind)
 library(ggplot2)
 library(yaml)
