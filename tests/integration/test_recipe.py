@@ -1,7 +1,7 @@
 import os
 from pprint import pformat
 from textwrap import dedent
-from unittest.mock import create_autospec
+from mock import create_autospec
 
 import pytest
 import yaml
