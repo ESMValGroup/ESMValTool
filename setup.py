@@ -45,6 +45,7 @@ REQUIREMENTS = {
         'vmprof',
         'yamale',
         'fiona',
+        'xlsxwriter',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests

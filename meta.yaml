@@ -51,10 +51,14 @@ requirements:
     - six
     - vmprof
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
     # Multi language support:
     - ncl
     - ncurses>5
     # TODO: add R, julia
+    # R - RColorBrewer
+    # R - SPEI
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
