@@ -24,3 +24,24 @@ class co2(Fix):
         cube *= 1e6
         cube.metadata = metadata
         return cube
+
+class usi(Fix):
+    """Fixes for usi"""
+
+    def fix_metadata(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.standard_name = 'sea_ice_x_velocity'
+        return cube

@@ -1,0 +1,46 @@
+---
+
+datasets:
+ - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+ - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: EC-EARTH,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  extract:
+    extract_levels: False
+    multi_model_statistics: False
+
+diagnostics:
+  seaice_drift:
+    description: Sea-ice drift
+    variables:
+      sic:
+        mip: SIday
+        field: T2MO
+        preprocessor: extract
+        reference_dataset: EC-EARTH
+        # additional_datasets:
+        #   - {dataset: osisaf, institute: eumetsat, project: OBS, type: obs, version: 1,
+        #      freq_folder: daily_mean, mip: OImon, short_name: sic, tier: 2,
+        #      start_year: 1950,  end_year: 1950}
+
+      sit:
+        mip: SIday
+        field: T2MO
+        preprocessor: extract
+        reference_dataset: EC-EARTH
+        # additional_datasets:
+        #   - {dataset: piomas, institute: psc, project: OBS, type: recon, version: 1,
+        #      freq_folder: monthly_mean, mip: OImon, short_name: siv, tier: 2,
+        #      start_year: 1979,  end_year: 1979}
+      sispeed:
+        mip: SIday
+        field: T2MO
+        preprocessor: extract
+        derive: true
+        force_derivation: false
+    scripts:
+      sea_ice_drift:
+        script: seaice_drift/seaice_drift.py
+        title: "Python example diagnostic"
+        latitude_treshold: 50

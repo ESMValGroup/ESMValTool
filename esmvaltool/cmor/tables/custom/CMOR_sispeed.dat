@@ -1,0 +1,23 @@
+SOURCE: CCMI1
+!============
+variable_entry:    sispeed
+!============
+modeling_realm:    seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_ice_speed
+units:             m s-1
+cell_methods:      area: time: mean where sea_ice (comment: mask=siconc)
+cell_measures:     area: areacella
+long_name:         Sea-ice speed
+comment:           Speed of ice (i.e. mean absolute velocity) to account for back-and-forth movement of the ice
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+valid_min:
+valid_max:
+!----------------------------------
+!
