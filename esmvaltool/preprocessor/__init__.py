@@ -103,7 +103,6 @@ assert MULTI_MODEL_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 # Preprocessor functions that take a list instead of a file/Cube as input.
 _LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
-    'load_cubes',
     'concatenate',
     'derive',
     'save',
@@ -114,7 +113,6 @@ assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 # Preprocessor functions that return a list instead of a file/Cube.
 _LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
-    'load_cubes',
     'save',
     'cleanup',
 }

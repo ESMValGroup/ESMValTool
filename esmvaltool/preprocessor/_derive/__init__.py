@@ -61,13 +61,24 @@ def derive(cubes, variable, fx_files=None):
 
     """
     short_name = variable['short_name']
+    cube_list = iris.cube.CubeList()
+    for lst_cubes in cubes:
+        for cube in lst_cubes:
+            cube_list.append(cube)
+    cubes = cube_list
 
     # Do nothing if variable is already available
-    if short_name == cubes[0].var_name:
-        return cubes[0]
+    try:
+        cube = cube_list.extract_strict(
+            iris.Constraint(
+                cube_func=lambda cube: cube.var_name == short_name
+            )
+        )
+        return cube_list
+    except iris.exceptions.ConstraintMismatchError:
+        pass
 
     # Preprare input cubes and add fx files if necessary
-    cubes = iris.cube.CubeList(cubes)
     if fx_files:
         for (fx_var, fx_path) in fx_files.items():
             if fx_path is not None:
@@ -94,7 +105,7 @@ def derive(cubes, variable, fx_files=None):
     cube.attributes['_filename'] = variable['filename']
     cube.attributes['metadata'] = yaml.safe_dump(variable)
 
-    return cube
+    return  iris.cube.CubeList((cube,))
 
 
 def get_all_derived_variables():

@@ -33,25 +33,7 @@ class Fix(object):
         """
         return filepath
 
-    def fix_raw_cubes(self, cubes):
-        """
-        Apply fixes to the raw cubes before applying constraints.
-
-        Should be used only to fix errors that may discard info
-
-        Parameters
-        ----------
-        cubes: iris.cube.CubeList
-            cubes to fix
-
-        Returns
-        -------
-        iris.cube.CubeList
-            Fixed cubes
-        """
-        return cubes
-
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Apply fixes to the metadata of the cube.
 
@@ -61,16 +43,16 @@ class Fix(object):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
-            Cube to fix
+        cubes: iris.cube.CubeList
+            Cubes to fix
 
         Returns
         -------
-        iris.cube.Cube
-            Fixed cube. It can be a difference instance.
+        iris.cube.CubeList
+            Fixed cubes. They can be different instances.
 
         """
-        return cube
+        return cubes
 
     def fix_data(self, cube):
         """
