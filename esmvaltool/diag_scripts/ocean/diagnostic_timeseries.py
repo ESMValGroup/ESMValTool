@@ -64,12 +64,13 @@ def timeplot(cube, **kwargs):
 
     Needed because iris version 1.13 fails due to the time axis.
     """
-    if len(cube.data.compressed()) == 1:
-        plt.axhline(cube.data.compressed(), **kwargs)
+    cubedata = np.ma.array(cube.data)
+    if len(cubedata.compressed()) == 1:
+        plt.axhline(cubedata.compressed(), **kwargs)
         return
 
     times = diagtools.timecoord_to_float(cube.coord('time'))
-    plt.plot(times, cube.data, **kwargs)
+    plt.plot(times, cubedata, **kwargs)
 
 
 def moving_average(cube, window):

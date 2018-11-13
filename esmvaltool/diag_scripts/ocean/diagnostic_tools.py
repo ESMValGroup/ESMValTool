@@ -14,6 +14,7 @@ import logging
 import os
 import sys
 import yaml
+import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
 
@@ -143,6 +144,7 @@ def guess_calendar_datetime(cube):
     time_coord = cube.coord('time')
     times = time_coord.units.num2date(time_coord.points)
 
+    print(time_coord)
     if time_coord.units.calendar in ['360_day', ]:
         dt = cftime.Datetime360Day
     elif time_coord.units.calendar in ['365_day', 'noleap']:
