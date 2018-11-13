@@ -208,6 +208,8 @@ def get_image_path(cfg,
     if path.find(image_extention) == -1:
         path += image_extention
 
+    path = path.replace(' ', '_')
+
     logger.info("Image path will be: %s", path)
     return path
 
@@ -261,7 +263,7 @@ def make_cube_layer_dict(cube):
         for layer_index, layer in enumerate(layer_dim.points):
             slices = [slice(None) for index in cube.shape]
             slices[coord_dim] = layer_index
+            layer = layer.replace('_',' ').title()
             cubes[layer] = cube[tuple(slices)]
-            print (layer_index, layer)
     print (cubes)
     return cubes
