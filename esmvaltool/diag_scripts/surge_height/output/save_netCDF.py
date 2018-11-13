@@ -1,7 +1,8 @@
-def save_netCDF(dates,stat,srg_est_full):
-	import xarray as xr
-	import numpy as np
-	import datetime
+import xarray as xr
+import numpy as np
+import datetime
+import os
+def save_netCDF(dates,stat,srg_est_full,cfg,dataset):
 	# define coordinates, i.e. time and stations
 	coord={'northcor':[1.25,61.3328], 'f3':[4.75,54.91639], 'lauwerso':[6.375,53.49978], 
 		'helgolan':[8.0,54.24975], 'helgeroa':[9.875,59.08289], 'immingha':[0.25,53.74977],  
@@ -48,8 +49,8 @@ def save_netCDF(dates,stat,srg_est_full):
 		'history':'created '+now,'featureType':'timeSeries'})
 	#
 	path = os.path.join(
-                llc.savepath,
-		llc.plot_name + '_' + dates[0].strftime("%Y-%m-%d") + '-' + dates[-1].strftime("%Y-%m-%d") + '.nc',
+                cfg["work_dir"],
+		dataset + '_' + cfg['fout_name'] + '_' + dates[0].strftime("%Y-%m-%d") + '-' + dates[-1].strftime("%Y-%m-%d") + '.nc',
             	)
 
 	out.to_netcdf(path)

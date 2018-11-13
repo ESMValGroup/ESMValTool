@@ -1,6 +1,6 @@
 def load_EOFs():
 	import pickle
-	EOFinPATH = '/usr/people/ridder/Documents/0_models/ESMValTool/esmvaltool/diag_scripts/surge_height/data/'
+	EOFinPATH = './esmvaltool/diag_scripts/surge_height/data/'
 	global SLPsolver, gradlonsolver, gradlatsolver, usolver, vsolver
 	#
 	with open(EOFinPATH + 'monthly_anom_EOF_SLPsolver_075x075_19790101-20000101.pkl','rb') as input:

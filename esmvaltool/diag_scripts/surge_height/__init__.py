@@ -13,7 +13,7 @@ import estimate.estimate_srg as ees
 import output.save_netCDF as osn
 import output.plot_map as opm
 import output.plot_tseries as opt
-
+import output.plot_map_cartopy 
 
 from load.load_config import load_config
 from load.load_EOFs import load_EOFs
@@ -25,3 +25,4 @@ from estimate.estimate_srg import estimate_srg
 from output.save_netCDF import save_netCDF
 from output.plot_map import plot_map
 from output.plot_tseries import plot_tseries
+from output.plot_map_cartopy import plot_map_cartopy

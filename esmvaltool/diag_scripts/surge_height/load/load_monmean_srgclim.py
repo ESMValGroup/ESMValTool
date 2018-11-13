@@ -1,6 +1,6 @@
 def load_monmean_srgclim(stat):
 	from netCDF4 import Dataset
-	PATHin = 'data/srgclim/'
+	PATHin = './esmvaltool/diag_scripts/surge_height/data/srgclim/'
 	filename = 'monanom_ERAintWAQUA_surge_1979-2016_speed_'
 	if not type(stat) == list:
 		stat = [stat]

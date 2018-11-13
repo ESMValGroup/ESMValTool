@@ -1,0 +1,57 @@
+---
+
+datasets:
+  - {dataset: CanESM2,  project: CMIP5,  mip: 6hrPlev, exp: historical,  ensemble: r4i1p1, start_year: 2003,  end_year: 2003}
+
+preprocessors:
+
+  preprocessor1:
+    extract_time:
+      start_month: 4
+      start_day:   1
+      end_month:   1
+      end_day:     7
+#      end_year:    2003
+#    regrid:
+#      target_grid: 0.75x0.75
+#      scheme: linear
+
+  preprocessor2:
+    extract_time:
+      start_month: 4
+      start_day:   1
+      end_month:   1
+      end_day:     7
+#      end_year:    2003
+    extract_levels:
+      levels: 85000
+      scheme: nearest
+#    regrid:
+#      target_grid: 0.75x0.75
+#      scheme: linear
+
+diagnostics:
+
+  surge_estimator:
+    description: Storm surge estimator using sea level pressure and components of 10m wind.
+    variables:
+      psl:
+        preprocessor: preprocessor1
+        field: T2D
+      va:
+        preprocessor: preprocessor2
+        field: T3D
+      ua:
+        preprocessor: preprocessor2
+        field: T3D
+    scripts:
+      surge_height:
+        script: surge_height/diagnostic.py
+        coastal_map:       true
+        t0:                2003-01-04
+        plt_tseries:       false
+        SOIname:           hoekvanh
+        colormap:          RdYlBu_r 
+        map_projection:    Plate.Carree()
+        resolution:        intermediate
+        fout_name:         surge_height_

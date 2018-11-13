@@ -1,10 +1,11 @@
-def plot_map(dates, srg, tidx):
-	import matplotlib.pyplot as plt
-	#from ..load import load_config as llc
-	from load import load_config as llc
-	from mpl_toolkits.basemap import Basemap
-	import numpy as np
-	from datetime import datetime
+import matplotlib.pyplot as plt
+import cartopy
+import cartopy.crs as ccrs
+import numpy as np
+from datetime import datetime
+import os
+
+def plot_map_cartopy(date, srg, tidx, cfg, dataset):
 	# coordinates of stations
 	coords = {'aberdeen': [81, 111], 'aukalpha': [114, 102], 'bg2': [126, 46], 'borkums': [150, 68], 
 		   'bremerha': [165, 68], 'cadzand': [123, 42], 'cromer': [108, 60], 'cuxhaven': [167, 72], 
@@ -25,31 +26,30 @@ def plot_map(dates, srg, tidx):
 		   'westkape': [124, 43],'westters': [138, 65], 'weymouth': [77, 32], 'wick': [73, 126],  
 		   'zeebrugg': [122, 41]}	
 	# create map
-	m = Basemap(projection=llc.project, llcrnrlon=-7,
-		urcrnrlon=11.5, 
-		llcrnrlat=49.4,
-		urcrnrlat=61.75,
-		resolution=llc.res)
+	fig = plt.figure()
+	#ax  = plt.axes(projection=ccrs.cfg['map_projection'])
+	ax1 = plt.subplot(1, 1, 1, projection=ccrs.PlateCarree())
+	ax1.coastlines('50m')
+	ax1.set_extent([-7, 11.5, 49.4, 61.75], ccrs.PlateCarree())
+	ax1.add_feature(cartopy.feature.OCEAN, zorder=0)
+	ax1.add_feature(cartopy.feature.LAND, zorder=0, edgecolor='black')
+	ax1.gridlines()
 	lons = np.arange(-12.00,-12.00+(0.125*201),0.125).tolist()
 	lats = np.arange(48.00,48.00+(0.08333*173),0.08333).tolist()
-	x, y = m(lons,lats)
+	
 	X, Y = np.meshgrid(lons,lats)
 
-	fig, axes = plt.subplots(nrows=1, ncols=1)
-	ax1   = plt.subplot(1,1,1)
-	coast = m.drawcoastlines(linewidth=1.)
-	#bndr  = m.drawmapboundary()
-	par   = m.drawparallels(np.arange(47.5,67.5,2.5),color='grey',labels=[1,0,0,0],fontsize=12)
-	mer   = m.drawmeridians(np.arange(-16,17.,4.),color='grey',labels=[0,0,0,1],fontsize=12)
 	#
 	for stat in srg.keys():
 		scat = plt.scatter(lons[coords[stat][0]], lats[coords[stat][1]], c = srg[stat][tidx],  
-				edgecolors='k', cmap = plt.get_cmap(llc.mapcol,20), vmin=-3, vmax=3,zorder=50) 
+				edgecolors='k', cmap = plt.get_cmap(cfg["colormap"],20), vmin=-3, vmax=3,zorder=50) 
 	#
-	cbar_scat = m.colorbar(scat, location="bottom",size = "5%", pad="7.5%")
+	cbar_scat = plt.colorbar(scat)
 	cbar_scat.set_label('surge height (m)')
-	plt.title('North Sea coastal surge ' + datetime.strftime(dates[0],'(%d-%m-%Y)'))
+	plt.title('North Sea coastal surge ' + datetime.strftime(date,'(%d-%m-%Y)'))
 	#
-	fdates = datetime.strftime(dates[tidx],'%Y-%m-%d')
-	plt.savefig(llc.savepath + llc.plot_name + '_map_' + fdates + '.pdf', dpi=100, format = 'pdf')
+	fdates = datetime.strftime(date,'%Y-%m-%d')
+	fsave = os.path.join(cfg["plot_dir"],
+                    dataset + '_' + cfg["fout_name"] + '_map_' + fdates + '.pdf')
+	plt.savefig(fsave, dpi=100, format = 'pdf')
 
