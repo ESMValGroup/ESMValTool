@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build esmvaltool -c conda-forge -c birdhouse
+# conda build . -c conda-forge -c birdhouse
 
 # Package version number
 {% set version = "2.0a1" %}
@@ -13,16 +13,25 @@ package:
 
 source:
   # Use these two lines to build a release:
-  # git_rev: v{{ version }}
-  # git_url: https://github.com/ESMValGroup/ESMValTool.git
+  git_rev: v{{ version }}
+  git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  path: .
+  # path: .
 
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
   number: 1
-  script: python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+  script: |
+      python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+      ls
+      pwd
+      ls
+      POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
+      cp -v ${RECIPE_DIR}/language_support.sh ${POST_LINK};
+      chmod +x ${POST_LINK};
+      ls -asl ${PREFIX}/bin
+
 
 requirements:
   build:
