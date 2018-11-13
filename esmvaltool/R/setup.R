@@ -37,8 +37,8 @@ if (length(packageList)==0) {
 
 for (packageName in packageList) {
     print(paste("    Installing package --> ", packageName))
-    install.packages(packageName, repos=pkgMirror)
+    install.packages(packageName, repos=pkgMirror, dependencies = c("Depends", "Imports"))
 }
 
-print("List of installed packages:")
-installed.packages()
+# print("List of installed packages:")
+# installed.packages()
