@@ -5,23 +5,17 @@ import sys
 from copy import deepcopy
 
 import fiona
-# import matplotlib.pyplot as plt
-# from mpl_toolkits.basemap import Basemap
 import iris
-# import shapefile
 import numpy as np
 import xlsxwriter
 from matplotlib import pyplot as p
-from netCDF4 import Dataset, num2date, stringtochar
-# from shapely.geometry import shape, mapping, Point, Polygon, MultiPolygon
+from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
-
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
+# from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
-
 
 def main(cfg):
     """Select grid points within shapefiles."""
@@ -43,6 +37,7 @@ def main(cfg):
 
 
 def write_keyvalue_toxlsx(worksheet, row, key, value):
+    """Write a dictionary to excel sheet."""
     if type(value).__name__ == 'dict':
         worksheet.write(row, 0, key)
         row += 1
@@ -63,7 +58,7 @@ def write_keyvalue_toxlsx(worksheet, row, key, value):
 
 
 def writexls(cfg, filename, ncts, nclon, nclat):
-    """Write the content of a netcdffile as .xls"""
+    """Write the content of a netcdffile as .xlsx."""
     name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
     ncfile = Dataset(filename, 'r')
     nclon = ncfile.variables['lon']
@@ -74,7 +69,6 @@ def writexls(cfg, filename, ncts, nclon, nclat):
     for tim in range(len(dtime)):
         wtime.append(str(dtime[tim]))
     pathx = os.path.join(cfg['work_dir'], name + '.xlsx')
-    pathc = os.path.join(cfg['work_dir'], name + '.csv')
     workbook = xlsxwriter.Workbook(pathx)
     worksheet = workbook.add_worksheet('Data')
     worksheet.write(0, 0, 'Date')
@@ -101,15 +95,8 @@ def writexls(cfg, filename, ncts, nclon, nclat):
         row = write_keyvalue_toxlsx(worksheet, row, key, value)
     workbook.close()
 
-
-def dates(otime):
-    """ Converts iris time to human readable format """
-    calendar = otime.units.calendar
-    origin = otime.units.origin
-
-
 def shapeselect(cfg, cube, filename):
-    """ New solution with fiona! """
+    """Select data inside a shapefile."""
     shppath = cfg['shppath']
     wgtmet = cfg['wgtmet']
     if ((cube.coord('latitude').ndim == 1
@@ -135,16 +122,11 @@ def shapeselect(cfg, cube, filename):
                 alons.append(lon)
                 alats.append(lat)
         cnt = 0
-        # rngx = np.arange(np.min(alons), np.max(alons), 1)
-        # rngy = np.arange(np.min(alats), np.max(alats), 1)
         p.gcf().clear()
-        # ax.set_xticks(rngx)
-        # ax.set_yticks(rngy)
-        # for shapp in shap.shapeRecords(): #shape.next()
         for shapp in shap:
-            xm = [i[0] for i in shapp['geometry']['coordinates'][0][:]]
-            ym = [i[1] for i in shapp['geometry']['coordinates'][0][:]]
-            p.plot(xm, ym)
+            xxm = [i[0] for i in shapp['geometry']['coordinates'][0][:]]
+            yym = [i[1] for i in shapp['geometry']['coordinates'][0][:]]
+            p.plot(xxm, yym)
             p.plot(alons, alats, 'ro', markersize=2)
             cnt += 1
         p.xlabel('Longitude')
@@ -160,15 +142,14 @@ def shapeselect(cfg, cube, filename):
             cnt += 1
             multi = shape(multipol['geometry'])
             if wgtmet == 'mean_inside':
-                gpx, gpy = mean_inside(gpx, gpy, points, multi, cube, cfg)
+                gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
                 if len(gpx) == 0:
-                    gpx, gpy = representative(gpx, gpy, points, multi, cube,
-                                              cfg)
+                    gpx, gpy = representative(gpx, gpy, points, multi, cube)
                     pth = 'g+'
                 else:
                     pth = 'b+'
             elif wgtmet == 'representative':
-                gpx, gpy = representative(gpx, gpy, points, multi, cube, cfg)
+                gpx, gpy = representative(gpx, gpy, points, multi, cube)
             if cfg['evalplot']:
                 p.plot(
                     cube.coord('longitude').points[gpx],
@@ -180,9 +161,9 @@ def shapeselect(cfg, cube, filename):
                                            (cube.data.shape[0], ))
             else:
                 ncts[:, ishp] = np.mean(cube.data[:, gpy, gpx], axis=1)
-            gx, gy = representative([], [], points, multi, cube, cfg)
-            nclon[ishp] = cube.coord('longitude').points[gx]
-            nclat[ishp] = cube.coord('latitude').points[gy]
+            gxx, gyy = representative([], [], points, multi, cube)
+            nclon[ishp] = cube.coord('longitude').points[gxx]
+            nclat[ishp] = cube.coord('latitude').points[gyy]
     if cfg['evalplot']:
         name = os.path.splitext(os.path.basename(filename))[0]
         path = os.path.join(cfg['plot_dir'], name + '.png')
@@ -190,51 +171,53 @@ def shapeselect(cfg, cube, filename):
     return ncts, nclon, nclat
 
 
-def mean_inside(gpx, gpy, points, multi, cube, cfg):
+def mean_inside(gpx, gpy, points, multi, cube):
+    """Find points inside shape."""
     for point in points:
         if point.within(multi):
             if point.x < 0 and np.min(cube.coord('longitude').points) >= 0:
                 addx = 360.
             else:
                 addx = 0.
-            x, y = best_match(
+            xxx, yyy = best_match(
                 cube.coord('longitude').points,
                 cube.coord('latitude').points, point.x + addx, point.y)
-            gpx.append(x)
-            gpy.append(y)
+            gpx.append(xxx)
+            gpy.append(yyy)
     return gpx, gpy
 
 
-def representative(gpx, gpy, points, multi, cube, cfg):
+def representative(gpx, gpy, points, multi, cube):
+    """Find representative point in shape."""
     reprpoint = multi.representative_point()
     nearest = nearest_points(reprpoint, points)
     npx = nearest[1].coords[0][0]
     npy = nearest[1].coords[0][1]
     if npx < 0 and np.min(cube.coord('longitude').points) >= 0:
         npx = npx + 360.
-    x, y = best_match(
+    xxx, yyy = best_match(
         cube.coord('longitude').points,
         cube.coord('latitude').points, npx, npy)
-    gpx.append(x)
-    gpy.append(y)
+    gpx.append(xxx)
+    gpy.append(yyy)
     return gpx, gpy
 
 
-def best_match(i, j, px, py):
-    """ Identifies the grid points in 2-d with minimum distance. """
-    if i.shape != 2 or j.shape != 2:
-        x = deepcopy(i)
-        y = deepcopy(j)
-        xx = np.zeros((len(x), len(y)))
-        yy = np.zeros((len(x), len(y)))
-        for i in range(0, len(y)):
-            xx[:, i] = x
-        for j in range(0, len(x)):
-            yy[j, :] = y
+def best_match(iin, jin, pex, pey):
+    """Identify the grid points in 2-d with minimum distance."""
+    if iin.shape != 2 or jin.shape != 2:
+        gpx = deepcopy(iin)
+        gpy = deepcopy(jin)
+        gpxx = np.zeros((len(gpx), len(gpy)))
+        gpyy = np.zeros((len(gpx), len(gpy)))
+        for gpi in range(0, len(gpy)):
+            gpxx[:, gpi] = gpx
+        for gpj in range(0, len(gpx)):
+            gpyy[gpj, :] = gpy
     else:
-        xx = deepcopy(i)
-        yy = deepcopy(j)
-    distance = ((xx - px)**2 + (yy - py)**2)**0.5
+        gpxx = deepcopy(iin)
+        gpyy = deepcopy(jin)
+    distance = ((gpxx - pex)**2 + (gpyy - pey)**2)**0.5
     ind = np.unravel_index(np.argmin(distance, axis=None), distance.shape)
     return ind[0], ind[1]
 
