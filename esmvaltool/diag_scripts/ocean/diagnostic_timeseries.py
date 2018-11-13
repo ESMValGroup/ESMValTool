@@ -159,14 +159,17 @@ def make_time_series_plots(
         else:
             timeplot(cube_layer, label=metadata['dataset'])
 
+
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
+        if layer != '':
+            try:
+                    z_units = model_cubes[filename][layer].coords('depth')[0].units
+            except: z_units= ''
+            title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(cube_layer.units))
 
         # Determine image filename:
         if multi_model:
@@ -278,13 +281,15 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                z_units = model_cubes[filename][layer].coords('depth')[0].units
-
+                try:
+                        z_units = model_cubes[filename][layer].coords('depth')[0].units
+                except: pass
         # Add title, legend to plots
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
         if cfg['write_plots']:

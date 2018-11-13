@@ -21,9 +21,11 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        lat = cube.coord('latitude')
-        lat.points = np.clip(lat.points, -90., 90.)
-        lat.bounds = np.clip(lat.bounds, -90., 90.)
+        lats = cube.coords('latitude')
+        if len(lats):
+            lat = cube.coord('latitude')
+            lat.points = np.clip(lat.points, -90., 90.)
+            lat.bounds = np.clip(lat.bounds, -90., 90.)
 
         return cube
 
@@ -62,3 +64,28 @@ class o2(Fix):
 
         iris.save(cube, new_path)
         return new_path
+
+
+
+class mfo(Fix):
+    """Fixes for mfo"""
+
+    def fix_metadata(self, cube):
+        """
+        Fixes latitude
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        #line = cube.coord('line')
+        #print(line)
+        # line.name = 'oline'
+        # print(line)
+        # assert 0
+        return cube
