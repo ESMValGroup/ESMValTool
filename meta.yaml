@@ -24,14 +24,9 @@ build:
   number: 1
   script: |
       python setup.py install --single-version-externally-managed --record=/tmp/record.txt
-      ls
-      pwd
-      ls
       POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
       cp -v ${RECIPE_DIR}/language_support.sh ${POST_LINK};
       chmod +x ${POST_LINK};
-      ls -asl ${PREFIX}/bin
-
 
 requirements:
   build:
