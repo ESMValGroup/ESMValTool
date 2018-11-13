@@ -60,7 +60,7 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - ncurses>5
+    - ncurses>=6.1
     - r-base
     - r-rcpp
     - libgfortran-ng
