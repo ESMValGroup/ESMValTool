@@ -9,6 +9,7 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main(cfg):
     """Calculate drought indices."""
     for filename, attributes in cfg['input_data'].items():
@@ -65,7 +66,6 @@ def droughtindex(cube, cfg):
         cube.data[whth] = 1
         fqthcube = cube.collapsed('time', iris.analysis.SUM)
     return drymaxcube, fqthcube
-
 
 
 if __name__ == '__main__':
