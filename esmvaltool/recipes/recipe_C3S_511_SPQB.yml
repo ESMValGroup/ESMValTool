@@ -19,7 +19,7 @@
 
 datasets:
 #  - {model: CDS-XCO2, project: OBS,    tier: L3,    type: sat,       start_year: 2003,  end_year: 2016}
-  - {dataset: MRI-ESM1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
 
 preprocessors:
   noop: {}
@@ -28,9 +28,9 @@ diagnostics:
   diagnostic0:
     description: Single product quality brief.
     variables:
-      ts:
+      ta:
         preprocessor: noop
-        field: T2Ms
+        field: T3Ms
     scripts:
       script0:
         script: qualassess/DUMMY_C3S_511.py

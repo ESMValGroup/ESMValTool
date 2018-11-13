@@ -977,14 +977,14 @@ def __my_string_ascii_lc__(n):
         raise ValueError(
             "You are trying to get more than 702 plots into one multiple plot."
             "This is not possible due to limited plot numbering.")
-    numlet = n / 26
+    numlet = int(n / 26)
     numrest = n % 26
 
     if n < 26:
         return string.ascii_lowercase[n]
     else:
-        return string.ascii_lowercase[numlet -
-                                      1] + string.ascii_lowercase[numrest]
+        return string.ascii_lowercase[numlet - 1] + \
+    string.ascii_lowercase[numrest]
 
 
 class PlotScales(object):
