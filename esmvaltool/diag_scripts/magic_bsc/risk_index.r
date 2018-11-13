@@ -15,7 +15,6 @@ library(ggplot2)
 library(yaml)
 library(ncdf4)
 library(parallel)
-
 ##Until integrated into current version of s2dverification
 #library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
 library(ClimProjDiags)
@@ -87,6 +86,7 @@ projection <- attr(historical_data, "Variables")$common$tas$coordinates
 #dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
+ historical_names <- names(dim(historical_data))
  time <- attr(historical_data, "Variables")$dat1$time
  calendar <- attributes(time)$variables$time$calendar
  if ((end_reference-start_reference + 1) * 12 == length(time)) {
@@ -101,7 +101,8 @@ historical_data <- aperm(historical_data, c(1,2,5,3,4))
 #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
 
-
+print(str(historical_data))
+names(dim(historical_data)) <- historical_names
 time_dimension <- which(names(dim(historical_data)) == "time")
 
 attributes(lon) <- NULL
@@ -174,6 +175,7 @@ for (i in 1 : length(projection_filenames)) {
 #dev.off()
     # ------------------------------
 # Provisional solution to error in dimension order:
+ projection_names <- names(dim(projection_data))
  lon <- attr(projection_data, "Variables")$dat1$lon
  lat <- attr(projection_data, "Variables")$dat1$lat
  time <- attr(projection_data, "Variables")$dat1$time
@@ -184,6 +186,7 @@ for (i in 1 : length(projection_filenames)) {
     dim(projection_data) <- c(model = 1, var = 1,  lon = length(lon), lat = length(lat), time = length(time))
     projection_data <- aperm(projection_data, c(1,2,5,3,4))
      attr(projection_data, "Variables")$dat1$time <- time
+ names(dim(projection_data)) <- projection_names
 # ------------------------------
 #jpeg(paste0(plot_dir, "/plot4.jpg"))
 #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
