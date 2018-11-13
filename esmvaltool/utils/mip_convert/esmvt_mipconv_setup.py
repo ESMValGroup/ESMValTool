@@ -19,7 +19,20 @@ Usage:
 -c --config-file:  user specific configuration file;
 -r --recipe-file:  single or multiple (space-separated) recipe files;
 -m --mode:         running mode (setup-only, setup-run-suites, postproc);
-- --log-level:     log level [OPTIONAL]
+-l --log-level:    log level [OPTIONAL]
+
+Environment
+-----------
+current JASMIN rose/cyclc need python2.7; esmvaltool needs python3.x
+So it is impossible at the moment to run this script as executable from an
+esmvaltool environment. Instead, you can run it as a stand-alone tool in a
+python 2.7 environment, intwo stages:
+
+[set up mip_convert suites and run them]
+python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m setup-run-suites
+[check succesful completion of mip_convert suites]
+[run the symlinking]
+python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m postproc
 """
 import argparse
 import logging
@@ -266,9 +279,8 @@ def symlink_data(recipe_file, config_file, log_level):
     # create directory that stores all the output netCDF files
     sym_output_dir = os.path.join(conf_file['ROSES_OUTPUT'],
                                   'symlinks', recipe_file.strip('.yml'))
-    if os.path.exists(sym_output_dir):
-        shutil.rmtree(sym_output_dir)
-    os.makedirs(sym_output_dir)
+    if not os.path.exists(sym_output_dir):
+        os.makedirs(sym_output_dir)
 
     # set the logger to start outputting
     _set_logger(logging, conf_file['ROSES_OUTPUT'],
@@ -284,15 +296,21 @@ def symlink_data(recipe_file, config_file, log_level):
         logger.info("Working on dataset: %s", dataset)
         logger.info("Output and logs written to: %s", rose_output)
 
+        # create the dataset dir
+        dataset_output = os.path.join(sym_output_dir, dataset['dataset'])
+        if os.path.exists(dataset_output):
+            shutil.rmtree(dataset_output)
+        os.makedirs(dataset_output)
+
         # loop through files
         for root, _, files in os.walk(rose_output):
             for xfile in files:
                 real_file = os.path.join(root, xfile)
-                imag_file = os.path.join(sym_output_dir, xfile)
+                imag_file = os.path.join(dataset_output, xfile)
 
                 # symlink it if nc file
-                if real_file.endswith('nc') and \
-                        real_file.split('_')[2] == dataset['dataset']:
+                if real_file.endswith('.nc') and \
+                        xfile.split('_')[2] == dataset['dataset']:
                     if not os.path.islink(imag_file):
                         logger.info("File to symlink: %s", real_file)
                         logger.info("Symlinked file: %s", imag_file)
