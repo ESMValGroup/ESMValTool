@@ -38,6 +38,17 @@ preprocessors:
       coord1: latitude
       coord2: longitude
 
+  clim_ref:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: [reference_dataset] 
+
 diagnostics:
 
   # **********************************************************************
@@ -51,7 +62,7 @@ diagnostics:
     description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
     variables:
       tas:
-        preprocessor: clim
+        preprocessor: clim_ref   
         reference_dataset: HadCRUT4   
         mip: Amon
         field: T2Ms
@@ -112,7 +123,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
-         start_year: 1870, end_year: 2004, tier: 2}
+         start_year: 1870, end_year: 2017, tier: 2}
     scripts:
       fig09-8: 
         script: ipcc_ar5/tsline.ncl
@@ -120,4 +131,7 @@ diagnostics:
         ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
         ref_start: 1961       #start year of reference period for anomalies
         ref_end: 1990         #end year of reference period for anomalies
+        plot_units: "degC"
+        # Plot style
+        styleset: CMIP5
 
