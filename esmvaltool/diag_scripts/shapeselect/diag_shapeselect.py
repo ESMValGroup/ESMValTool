@@ -17,6 +17,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main(cfg):
     """Select grid points within shapefiles."""
     for filename, attributes in cfg['input_data'].items():
@@ -94,6 +95,7 @@ def writexls(cfg, filename, ncts, nclon, nclat):
         print(key, value)
         row = write_keyvalue_toxlsx(worksheet, row, key, value)
     workbook.close()
+
 
 def shapeselect(cfg, cube, filename):
     """Select data inside a shapefile."""
