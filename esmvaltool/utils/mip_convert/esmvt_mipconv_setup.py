@@ -35,6 +35,7 @@ python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m setup-run-suites
 python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m postproc
 """
 import argparse
+import datetime
 import logging
 import os
 import sys
@@ -277,8 +278,10 @@ def symlink_data(recipe_file, config_file, log_level):
     datasets = recipe_object['datasets']
 
     # create directory that stores all the output netCDF files
+    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    new_subdir = '_'.join((recipe_file.strip('.yml'), now))
     sym_output_dir = os.path.join(conf_file['ROSES_OUTPUT'],
-                                  'symlinks', recipe_file.strip('.yml'))
+                                  'mip_convert_symlinks', new_subdir)
     if not os.path.exists(sym_output_dir):
         os.makedirs(sym_output_dir)
 
