@@ -39,6 +39,7 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
+    - r-base
   run:
     # esmvaltool
     - python
