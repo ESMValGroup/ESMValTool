@@ -34,3 +34,6 @@ diagnostics:
     scripts:
       script0:
         script: qualassess/DUMMY_C3S_511.py
+        data_colors: RdYlGn
+        levels: [30000.]
+        show_latex: False

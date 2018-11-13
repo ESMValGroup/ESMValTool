@@ -86,7 +86,7 @@ class __Diagnostic_skeleton__(object):
         self.diagname = "Diagnostic_skeleton"
         self.CDS_ID = "CDS_ID_needed"
 
-        self.colormaps = dict({"default": "jet"})  # "binary"})
+        self.colormaps = dict({"default": "binary"})
         self.__latex_output__ = False
         self.levels = [None]
 
@@ -370,6 +370,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         """
 
         self.__cfg__ = kwargs.get('cfg', None)
+        
+        print(self.__cfg__)
 
         #######################################################################
         # TODO delete after debugging
@@ -385,14 +387,22 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             raise EmptyContentError("__cfg__", "Element is empty.")
 
         try:
-            self.__latex_output__ = self.__cfg__.show_latex
+            self.__latex_output__ = self.__cfg__['show_latex']
         except BaseException:
             pass
 
         try:
-            self.levels = [4.00e+01,3.00e+02,3.00e+03,3.00e+04,1.00e+05] #self.__cfg__.levels # TODO get from cfg
+            self.levels = self.__cfg__['levels']
         except BaseException:
             pass
+        
+        try:
+            matplotlib.cm.get_cmap(self.__cfg__['data_colors'])
+            self.colormaps.update({"Data": self.__cfg__['data_colors']})
+        except:
+            print("There is no usable specification of data colors. Falling back to default.")
+        self.colormaps.update({"Sequential":"YlGn"})
+        self.colormaps.update({"Diverging":"BrBG"})
 
         self.__plot_dir__ = self.__cfg__['plot_dir']
         self.__work_dir__ = self.__cfg__['work_dir']
@@ -436,12 +446,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         except BaseException:
             # obs
             self.__dataset_id__ = [fileinfo]  # TODO adjust to OBS
-#
+
         self.__basic_filename__ = "_".join(
             self.__dataset_id__ + [self.__time_period__])
-#
-        self.__dimensions__ = np.array(
-            ["time", "latitude", "longitude"])  # TODO: get from cube
+
+        self.__dimensions__ = np.array(["time", "latitude", "longitude"])  
 #
 #        # TODO: for testing purpose (should come from CDS)
 #        self.CDS_ID = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
