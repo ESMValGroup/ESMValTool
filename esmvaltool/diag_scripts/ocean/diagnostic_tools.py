@@ -66,15 +66,15 @@ def bgc_units(cube, name):
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
-    if name in [
-            'no3',
-    ]:
+    if name in ['no3', ]:
         new_units = 'mmol m-3'
 
-    if name in [
-            'chl',
-    ]:
+    if name in ['chl', ]:
         new_units = 'mg m-3'
+
+    if name in ['mfo', ]:
+#       sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
+        new_units = 'Tg s-1'
 
     if new_units != '':
         logger.info(' '.join(
@@ -225,22 +225,43 @@ def make_cube_layer_dict(cube):
     """
     #####
     # Check layering:
-    depth = cube.coords('depth')
+    coords = cube.coords()
+    layers = []
+    for coord in coords:
+        if coord.standard_name in ['depth', 'region']:
+            layers.append(coord)
+
+    #layers = cube.coords('depth')
     cubes = {}
 
-    if depth == []:
+    if layers == []:
         cubes[''] = cube
-    else:
-        # iris stores coords as a list with one entry:
-        depth = depth[0]
-        if len(depth.points) in [
-                1,
-        ]:
-            cubes[''] = cube
-        else:
-            coord_dim = cube.coord_dims('depth')[0]
-            for layer_index, layer in enumerate(depth.points):
-                slices = [slice(None) for index in cube.shape]
-                slices[coord_dim] = layer_index
-                cubes[layer] = cube[tuple(slices)]
+        return cubes
+
+    if len(layers) > 1:
+        # This field has a strange number of layer dimensuions.
+        # depth and regions?
+        assert 0
+
+    # iris stores coords as a list with one entry:
+    layer_dim = layers[0]
+    if len(layer_dim.points) in [1, ]:
+        cubes[''] = cube
+        return cubes
+
+    if layer_dim.standard_name == 'depth':
+        coord_dim = cube.coord_dims('depth')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            cubes[layer] = cube[tuple(slices)]
+
+    if layer_dim.standard_name == 'region':
+        coord_dim = cube.coord_dims('region')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            cubes[layer] = cube[tuple(slices)]
+            print (layer_index, layer)
+    print (cubes)
     return cubes
