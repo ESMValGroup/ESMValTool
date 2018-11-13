@@ -21,7 +21,7 @@ source:
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
-  number: 2
+  number: 4
   script: |
       python setup.py install --single-version-externally-managed --record=/tmp/record.txt
       POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
@@ -62,7 +62,9 @@ requirements:
     - ncl
     - ncurses>5
     - r-base
-    # TODO: add R, julia
+    - r-rcpp
+    - libgfortran-ng
+    # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
