@@ -15,7 +15,7 @@ datasets:
 # Note that there is no way to extract specific months here, need to add times twice in extract_time
   - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
-  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
+  # - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
 
 diagnostics:
   NegativeSeaIceFeedback:
@@ -29,15 +29,15 @@ diagnostics:
       negative_seaice_feedback:
         script: seaice_feedback/negative_seaice_feedback.py
 
-  # SeaIceEdge:
-  #   description: Plots the sea-ice edge
-  #   variables:
-  #     sic:
-  #       field: TO2M
-  #       mip: OImon
-  #   scripts:
-  #     sea_ice_edge:
-  #       script: seaice_edge/sea_ice_edge.r
-  #       concentration_treshold: 15
-  #       plot_all_years: True
-  #       plot_climatology: True
+  SeaIceEdge:
+    description: Plots the sea-ice edge
+    variables:
+      sic:
+        field: TO2M
+        mip: OImon
+    scripts:
+      sea_ice_edge:
+        script: seaice_edge/sea_ice_edge.r
+        concentration_treshold: 15
+        plot_all_years: True
+        plot_climatology: True
