@@ -309,7 +309,7 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user):
                 cmor_table: CMIP6
                 coordinate: alt16
               scheme: nearest
-        
+
         diagnostics:
           diagnostic_name:
             variables:
@@ -331,7 +331,7 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user):
                 preprocessor: test_from_cmor_table
                 additional_datasets:
                   - {dataset: GFDL-CM3}
-                
+
             scripts: null
         """)
 
