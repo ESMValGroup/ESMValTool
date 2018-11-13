@@ -1,35 +1,31 @@
 ---
 
 datasets:
-   - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1998,  end_year: 1999}
- #  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-  #- {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-  #- {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-  #- {dataset: ERA-Interim, project: OBS, mip: Amon,    tier: 3,    type: reanaly,    version: 1,   start_year: 2000,  end_year: 2000}
+   - {dataset: bcc-csm1-1-m, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1998, end_year: 1999}
+
 
 preprocessors:
 
-  preprocessor1:
-    regrid:
-      target_grid: ERA-Interim
-      scheme: linear
+   preprocessor1:
+      regrid:
+         target_grid: ERA-Interim
+         scheme: linear
 
-  preprocessor_2: {}
+   preprocessor_2: {}
 
 diagnostics:
-
-  diagnostic1:
-    description: Extracting data for user defined shapefile.
-    variables:
-      pr:
-        preprocessor: preprocessor_2
-        field: T2Ms
-    scripts:
-      script1:
-        script: shapeselect/diag_shapeselect.py
-        #shppath: '/home/a001850/WORK/git/esmvaltool_input/MotalaStrom.shp'
-        shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/multicatchment.shp'
-        wgtmet: 'mean_inside'
-        write_xlsx: True
-        write_netcdf: True
-        evalplot: True #False #True
+   diagnostic1:
+      description: Extracting data for user defined shapefile.
+      variables:
+         pr:
+            preprocessor: preprocessor_2
+            field: T2Ms
+      scripts:
+         script1:
+           script: shapeselect/diag_shapeselect.py
+           # shppath: '/home/a001850/WORK/git/esmvaltool_input/MotalaStrom.shp'
+           shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/multicatchment.shp'
+           wgtmet: 'mean_inside'
+           write_xlsx: true
+           write_netcdf: true
+           evalplot: true
