@@ -43,7 +43,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     return filename
 
 
-def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
+def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                  mip=None):
     """
     Fix cube metadata if fixes are required and check it anyway
@@ -82,7 +82,13 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
     """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
-        cube = fix.fix_metadata(cube)
+        cubes = fix.fix_metadata(cubes)
+    if len(cubes) != 1:
+        raise ValueError(
+            'Cubes were not reduced to one after fixing: %s' % cubes
+        )
+
+    cube = cubes[0]
     if cmor_table and mip:
         checker = _get_cmor_checker(
             table=cmor_table,

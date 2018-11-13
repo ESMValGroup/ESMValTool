@@ -6,7 +6,6 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
-import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -49,33 +48,33 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, filename, metadata, constraints=None,
-               callback=None, fixes=None):
+def load_cubes(datafile, filename, metadata, callback=None):
     """Load iris cubes from files."""
-    logger.debug("Loading:\n%s", "\n".join(files))
-    cubes = iris.cube.CubeList()
-    for datafile in files:
-        raw_cubes = iris.load_raw(datafile, callback=callback)
-        if fixes:
-            for fix in fixes:
-                raw_cubes = fix.fix_raw_cubes(raw_cubes)
-        for raw_cube in raw_cubes:
-            cubes.append(raw_cube)
+    logger.debug("Loading:\n%s", datafile)
+    raw_cubes = iris.load_raw(datafile, callback=callback)
+    try:
+        constraint = iris.Constraint(
+            cube_func=lambda cube: cube.var_name == metadata['short_name']
+        )
+        data_cube = raw_cubes.extract_strict(constraint)
+        data_cube.standard_name = metadata['standard_name']
+        data_cube.long_name = metadata['long_name']
+    except iris.exceptions.ConstraintMismatchError:
+        pass
 
-    cubes = cubes.extract(constraints=constraints)
-    if not cubes:
-        raise Exception('Can not load cubes from {0}'.format(files))
-    iris.util.unify_time_units(cubes)
-    for cube in cubes:
+    if not raw_cubes:
+        raise Exception('Can not load cubes from {0}'.format(datafile))
+    iris.util.unify_time_units(raw_cubes)
+    for cube in raw_cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
-
-    return cubes
+    return raw_cubes
 
 
 def concatenate(cubes):
     """Concatenate all cubes after fixing metadata."""
     try:
+        iris.util.unify_time_units(cubes)
         cube = iris.cube.CubeList(cubes).concatenate_cube()
         return cube
     except iris.exceptions.ConcatenateError as ex:
