@@ -42,6 +42,8 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
+import cftime
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
@@ -62,11 +64,62 @@ def timeplot(cube, **kwargs):
 
     Needed because iris version 1.13 fails due to the time axis.
     """
-    if iris.__version__ > '2.0':
-        qplt.plot(cube, kwargs)
-    else:
-        times = diagtools.timecoord_to_float(cube.coord('time'))
-        plt.plot(times, cube.data, **kwargs)
+    cubedata = np.ma.array(cube.data)
+    if len(cubedata.compressed()) == 1:
+        plt.axhline(cubedata.compressed(), **kwargs)
+        return
+
+    times = diagtools.timecoord_to_float(cube.coord('time'))
+    plt.plot(times, cubedata, **kwargs)
+
+
+def moving_average(cube, window):
+    """
+    Make a moving average plot
+
+    the window is a string which isa number and a measuremet of time.
+    """
+    window = window.split()
+    window_len = int(window[0]) / 2.
+    window_units = str(window[1])
+
+    if window_units not in ['days', 'day', 'dy',
+                            'months', 'month', 'mn',
+                            'years', 'yrs', 'year', 'yr']:
+        raise ValueError("Window_units not recognised %s",
+                         str(window_units))
+
+    data = cube.data
+    time_coord = cube.coord('time')
+    times = time_coord.units.num2date(time_coord.points)
+
+    datetime = diagtools.guess_calendar_datetime(cube)
+
+    output = []
+    times = np.array([datetime(t.year, t.month, t.day, t.hour, t.minute) for t in (times)])
+    for i, t in enumerate(times):
+        if window_units in ['years', 'yrs', 'year', 'yr']:
+            tmin = datetime(t.year - window_len, t.month, t.day,
+                            t.hour, t.minute)
+            tmax = datetime(t.year + window_len, t.month, t.day,
+                            t.hour, t.minute)
+
+        if window_units in ['months', 'month', 'mn']:
+            tmin = datetime(t.year, t.month - window_len, t.day,
+                            t.hour, t.minute)
+            tmax = datetime(t.year, t.month + window_len, t.day,
+                            t.hour, t.minute)
+
+        if window_units in ['days', 'day', 'dy']:
+            tmin = datetime(t.year, t.month, t.day - window_len,
+                            t.hour, t.minute)
+            tmax = datetime(t.year, t.month, t.day + window_len,
+                            t.hour, t.minute)
+
+        arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
+        output.append(arr.mean())
+    cube.data = np.array(output)
+    return cube
 
 
 def make_time_series_plots(
@@ -187,9 +240,16 @@ def multi_model_time_series(
             else:
                 color = 'blue'
 
+            # Take a moving average, if needed.
+            if 'moving_average' in cfg.keys():
+                cube = moving_average(model_cubes[filename][layer],
+                                      cfg['moving_average'])
+            else:
+                cube = model_cubes[filename][layer]
+
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
                     ls=':',
@@ -203,7 +263,7 @@ def multi_model_time_series(
                 }
             else:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'])
                     ls='-',
