@@ -1,5 +1,6 @@
 """
 Diagnostic tools:
+-----------------
 
 This module contains several python tools used elsewhere by the ocean
 diagnostics package.
@@ -13,6 +14,7 @@ import logging
 import os
 import sys
 import yaml
+import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
 
@@ -21,6 +23,17 @@ import matplotlib.pyplot as plt
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+
+def get_obs_projects():
+    """
+    Returns a list of strings with the names of observations projects.
+
+    Please keep this list up to date, or replace it with something more
+    sensible.
+    """
+    obs_projects = ['obs4mips', ]
+    return obs_projects
 
 
 def folder(name):
@@ -44,7 +57,7 @@ def folder(name):
 
 def get_input_files(cfg, index=0):
     """
-    Load input configuration file.
+    Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
     """
@@ -85,6 +98,27 @@ def bgc_units(cube, name):
     return cube
 
 
+def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+    """
+    Match up model or observations dataset dictionairies from config file.
+
+    This function checks that the control_model, exper_model and
+    observational_dataset dictionairies from the recipe are matched with the
+    input file dictionairy in the cfg metadata.
+    """
+    for input_file, intput_dict in input_files_dict.items():
+        intersect_keys = intput_dict.keys() & cfg_dict.keys()
+        match = True
+        for key in intersect_keys:
+            if intput_dict[key] == cfg_dict[key]:
+                continue
+            match = False
+        if match:
+            return input_file
+    logger.warning("Unable to match model: %s", model_type)
+    return ''
+
+
 def timecoord_to_float(times):
     """
     Convert from time coordinate into decimal time.
@@ -105,7 +139,30 @@ def timecoord_to_float(times):
     return floattimes
 
 
-def add_legend_outside_right(plot_details, ax1, column_width=0.1):
+def guess_calendar_datetime(cube):
+    """Guess the cftime.datetime form to create datetimes."""
+    time_coord = cube.coord('time')
+    times = time_coord.units.num2date(time_coord.points)
+
+    if time_coord.units.calendar in ['360_day', ]:
+        dt = cftime.Datetime360Day
+    elif time_coord.units.calendar in ['365_day', 'noleap']:
+        dt = cftime.DatetimeNoLeap
+    elif time_coord.units.calendar in ['julian', ]:
+        dt = cftime.DatetimeJulian
+    else:
+        logger.warning('Calendar set to Gregorian, instead of %s',
+                       time_coord.units.calendar)
+        dt = cftime.DatetimeGregorian
+    return dt
+
+
+def add_legend_outside_right(
+        plot_details,
+        ax1,
+        column_width=0.1,
+        loc='right'
+):
     """
     Add a legend outside the plot, to the right.
 
@@ -117,29 +174,67 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
         'label': label for the legend.
     ax1 is the axis where the plot was drawn.
     """
-    #####
+    # ####
     # Create dummy axes:
     legend_size = len(plot_details.keys()) + 1
-    ncols = int(legend_size / 25) + 1
     box = ax1.get_position()
-    ax1.set_position(
-        [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
+    if loc.lower() == 'right':
+        nrows = 25
+        ncols = int(legend_size / nrows) + 1
+        ax1.set_position([box.x0,
+                          box.y0,
+                          box.width * (1. - column_width * ncols),
+                          box.height])
+
+    if loc.lower() == 'below':
+        ncols = 4
+        nrows = int(legend_size / ncols) + 1
+        ax1.set_position([box.x0,
+                          box.y0 + (nrows * column_width),
+                          box.width,
+                          box.height - (nrows * column_width)])
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
+        try:
+            colour = plot_details[index]['c']
+        except AttributeError:
+            colour = plot_details[index]['colour']
+
+        try:
+            linewidth = plot_details[index]['lw']
+        except AttributeError:
+            linewidth = 1.
+
+        try:
+            linestyle = plot_details[index]['ls']
+        except AttributeError:
+            linestyle = '-'
+
+        try:
+            label = plot_details[index]['label']
+        except AttributeError:
+            label = str(index)
 
         plt.plot(
             [], [],
-            c=plot_details[index]['c'],
-            lw=plot_details[index]['lw'],
-            ls=plot_details[index]['ls'],
-            label=plot_details[index]['label'])
+            c=colour,
+            lw=linewidth,
+            ls=linestyle,
+            label=label)
 
-    legd = ax1.legend(
-        loc='center left',
-        ncol=ncols,
-        prop={'size': 10},
-        bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'right':
+        legd = ax1.legend(
+            loc='center left',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'below':
+        legd = ax1.legend(
+            loc='upper center',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(0.5, -2. * column_width))
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
 
@@ -265,5 +360,4 @@ def make_cube_layer_dict(cube):
             slices[coord_dim] = layer_index
             layer = layer.replace('_',' ').title()
             cubes[layer] = cube[tuple(slices)]
-    print (cubes)
     return cubes
