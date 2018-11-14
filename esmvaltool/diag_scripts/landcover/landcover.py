@@ -58,6 +58,32 @@ def main(cfg):
             iris.save(allcubes[var], filepath)
             logger.info("Writing %s", filepath)
 
+    # Compute land cover fraction areas
+    regdef = {'Global': None, 'Tropics': [-30,30], 'North. Hem.': [30,90], 'South. Hem.': [-90,-30]}
+    regnam  = regdef.keys()
+    for var in allcubes.keys():
+        values = []
+        modnam = []
+        cellarea = iris.analysis.cartography.area_weights(allcubes[var][0], normalize=False)
+        for sub_cube in allcubes[var]:
+            modnam.append('_'.join(sub_cube._var_name.split('_')[1:]))
+            coverarea = sub_cube.copy()
+            row = []
+            # Compute land cover area in million km2:
+            # area = Percentage * 0.01 * area [m2]
+            #      / 1.0e+6 [km2]
+            #      / 1.0e+6 [1.0e+6 km2]
+            coverarea.data *= (0.01 * cellarea / 1.0E+6 / 1.0e+6)
+            # Sum over area for different regions
+            for reg in regnam:
+                if regdef[reg] is not None:
+                    zone = iris.Constraint(latitude=lambda v: regdef[reg][0] <= v <= regdef[reg][1])
+                    row.append(coverarea.extract(zone).collapsed(['longitude', 'latitude'], iris.analysis.SUM).data.tolist())
+
+                else:
+                    row.append(coverarea.collapsed(['longitude', 'latitude'], iris.analysis.SUM).data.tolist())
+            values.append(row)
+
 
 if __name__ == '__main__':
 
