@@ -174,9 +174,13 @@ def save_iris_cube(cube, path, cfg):
         Diagnostic script configuration.
 
     """
-    attr = {'created_by': 'ESMValTool version {}'.format(cfg['version']) +
-                          ', diagnostic {}'.format(cfg['script']),
-            'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
+    attr = {
+        'created_by':
+        'ESMValTool version {}'.format(cfg['version']) +
+        ', diagnostic {}'.format(cfg['script']),
+        'creation_date':
+        datetime.utcnow().isoformat(' ') + 'UTC'
+    }
     cube.attributes.update(attr)
     iris.save(cube, path)
     logger.info("Wrote %s", path)
