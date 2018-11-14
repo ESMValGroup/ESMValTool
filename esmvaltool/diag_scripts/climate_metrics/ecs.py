@@ -144,11 +144,11 @@ def main(cfg):
         }
         cubes = {}
         for (key, path) in paths.items():
-            cubes[key] = iris.load_cube(path[0]['filename'])
+            cube = iris.load_cube(path[0]['filename'])
+            cube = cube.aggregated_by('year', iris.analysis.MEAN)
+            cubes[key] = cube
 
         # Substract piControl run from abrupt4xCO2 experiment
-        for cube in cubes.values():
-            cube = cube.aggregated_by('year', iris.analysis.MEAN)
         cubes['tas_4x'].data -= cubes['tas_pi'].data
         cubes['rtmt_4x'].data -= cubes['rtmt_pi'].data
 
