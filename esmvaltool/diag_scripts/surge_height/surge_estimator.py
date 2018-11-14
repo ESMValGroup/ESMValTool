@@ -112,7 +112,7 @@ def surge_estimator_main(psl_in, ua_in, va_in, cfg, dataset):
     #
     if cfg["plt_tseries"]:
         if cfg["SOIname"] in allstats:
-            stat = [cfg["SOIname"]]
+            stat_tseries = [cfg["SOIname"]]
         else:
             #logger.info(
             print('Station ' + str(cfg["plt_tseries"]) +
@@ -221,10 +221,8 @@ def surge_estimator_main(psl_in, ua_in, va_in, cfg, dataset):
     #
     if cfg["plt_tseries"]:  # generate timeseries plot
         #logger.info("Plotting and saving surge timeseries")
-        for s in srg_estim.keys():
-            plot_tseries(dates, srg_estim[s], stat, cfg, dataset)
-    #
-    #plt.show()
+        for s in stat_tseries:
+            plot_tseries(dates, srg_estim[s], s, cfg, dataset)
 
 
 if __name__ == '__main__':

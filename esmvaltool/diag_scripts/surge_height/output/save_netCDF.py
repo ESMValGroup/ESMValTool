@@ -78,7 +78,7 @@ def save_netCDF(dates, stat, srg_est_full, cfg, dataset):
         'scillyis': [-6.375, 49.91659],
         'dover': [1.5, 51.24987]
     }
-
+    dates.sort()
     srg = []
     stats_lon = []
     stats_lat = []
