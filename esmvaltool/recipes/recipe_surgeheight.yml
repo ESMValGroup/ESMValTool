@@ -48,10 +48,12 @@ diagnostics:
       surge_height:
         script: surge_height/diagnostic.py
         coastal_map:       true
-        t0:                2003-01-04
+        t0:                2003-04-01
         plt_tseries:       false
         SOIname:           hoekvanh
         colormap:          RdYlBu_r 
         map_projection:    Plate.Carree()
         resolution:        intermediate
         fout_name:         surge_height_
+        perf_regres:       False
+        path2eraint:       /usr/people/ridder/nobackup/ECMWF/ERAintWAQUA/speed/1979-2016/
