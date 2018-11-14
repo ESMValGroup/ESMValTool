@@ -27,7 +27,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def get_obs_projects():
     """
-    Returns a list of strings with the names of observations projects.
+    Return a list of strings with the names of observations projects.
 
     Please keep this list up to date, or replace it with something more
     sensible.
@@ -155,23 +155,22 @@ def cube_time_to_float(cube):
 def guess_calendar_datetime(cube):
     """Guess the cftime.datetime form to create datetimes."""
     time_coord = cube.coord('time')
-    times = time_coord.units.num2date(time_coord.points)
 
     if time_coord.units.calendar in ['360_day', ]:
-        dt = cftime.Datetime360Day
+        datetime = cftime.Datetime360Day
     elif time_coord.units.calendar in ['365_day', 'noleap']:
-        dt = cftime.DatetimeNoLeap
+        datetime = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
-        dt = cftime.DatetimeJulian
+        datetime = cftime.DatetimeJulian
     elif time_coord.units.calendar in ['gregorian', ]:
-        dt = cftime.DatetimeGregorian
+        datetime = cftime.DatetimeGregorian
     elif time_coord.units.calendar in ['proleptic_gregorian', ]:
-        dt = cftime.DatetimeProlepticGregorian
+        datetime = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
                        time_coord.units.calendar)
-        dt = cftime.DatetimeGregorian
-    return dt
+        datetime = cftime.DatetimeGregorian
+    return datetime
 
 
 def add_legend_outside_right(

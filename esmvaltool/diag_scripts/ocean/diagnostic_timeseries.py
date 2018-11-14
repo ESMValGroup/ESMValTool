@@ -42,7 +42,6 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-import cftime
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
@@ -75,7 +74,7 @@ def timeplot(cube, **kwargs):
 
 def moving_average(cube, window):
     """
-    Make a moving average plot
+    Make a moving average plot.
 
     the window is a string which isa number and a measuremet of time.
     """
@@ -86,7 +85,7 @@ def moving_average(cube, window):
     if window_units not in ['days', 'day', 'dy',
                             'months', 'month', 'mn',
                             'years', 'yrs', 'year', 'yr']:
-        raise ValueError("Window_units not recognised %s",
+        raise ValueError("Window_units not recognised: %s",
                          str(window_units))
 
     data = cube.data
@@ -97,7 +96,7 @@ def moving_average(cube, window):
 
     output = []
     times = [datetime(time.year, time.month, time.day, time.hour, time.minute)
-             for time in (times)]
+             for time in times]
     times = np.array(times)
 
     for time in times:
@@ -162,7 +161,7 @@ def make_time_series_plots(
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer != '':
-            if len(cube_layer.coords('depth')) > 0:
+            if len(cube_layer.coords('depth')):
                 z_units = cube_layer.coord('depth').units
             else:
                 z_units = ''
@@ -280,7 +279,7 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                if len(model_cubes[filename][layer].coords('depth')) > 0:
+                if len(model_cubes[filename][layer].coords('depth')):
                     z_units = model_cubes[filename][layer].coord('depth').units
                 else:
                     z_units = ''
