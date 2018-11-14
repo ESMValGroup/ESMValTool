@@ -21,10 +21,15 @@ documentation:
 
 datasets:
   # working datasets
+
+    - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
     - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
     - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
     - {dataset: HadGEM2-ES,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2004}
     - {dataset: HadGEM2-CC,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2004}
+    - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MRI-ESM1, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
     - {dataset: NorESM1-M,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2004}
     - {dataset: NorESM1-ME,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2004}
 
