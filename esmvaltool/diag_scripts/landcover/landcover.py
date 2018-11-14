@@ -10,6 +10,36 @@ import esmvaltool.diag_scripts.shared as diag
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def write_plotdata(cfg, regnam, modnam, values, datacont):
+    """ Output region sums for all datasets of one variable.
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    regname : list
+        list containing the region names
+    modnam : list
+        list containing the dataset names
+    value : list
+        nested list containing the region sums in 1.0e+6 km2
+    datacont : str
+        str containing a data identifier used for the file name
+    """
+
+    # Write experiment data
+    filepath = os.path.join(cfg[diag.names.WORK_DIR], datacont + '.txt')
+    ncol = len(regnam)
+    with open(filepath, 'w') as f:
+        header = '{:25} ' + ncol * ' {:>12}' + '\n'
+        body = '{:25} ' + ncol * ' {:12.4f}' + '\n'
+        line = [' ',] + [*regnam]
+        f.write('Accumulated land coverage for different regions [1.0e+6 km2]\n\n')
+        f.write(header.format(*line))
+        for ir, row in enumerate(values):
+            line = [modnam[ir]] + row
+            f.write(body.format(*line))
+
+
 def main(cfg):
     """Run the diagnostic.
 
@@ -83,6 +113,9 @@ def main(cfg):
                 else:
                     row.append(coverarea.collapsed(['longitude', 'latitude'], iris.analysis.SUM).data.tolist())
             values.append(row)
+
+        # Write plotdata as ascii files for user information
+        write_plotdata(cfg, regnam, modnam, values, '_'.join(['area',var]))
 
 
 if __name__ == '__main__':
