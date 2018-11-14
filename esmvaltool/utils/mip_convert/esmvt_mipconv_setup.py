@@ -304,6 +304,7 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     # set the correct variables
     base_date = str(dataset['start_year']) + '-01-01-00-00-00'
     suite_id = conf_file['DATASET_TO_SUITE'][dataset['dataset']]
+    cdds_dir = os.path.join(DEFAULT_SUITE_LOCATION, 'mip_convert_aux')
 
     # Build the ConfigParser object
     Config = ConfigParser.ConfigParser()
@@ -311,6 +312,7 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     Config.read(mipconv_config)
 
     # set the correct fields
+    Config.set('COMMON', 'cdds_dir', cdds_dir)
     Config.set('request', 'base_date', base_date)
     Config.set('request', 'suite_id', suite_id)
     stream_section = '_'.join(['stream', stream])
