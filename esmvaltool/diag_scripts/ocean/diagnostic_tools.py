@@ -119,20 +119,33 @@ def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     return ''
 
 
-def timecoord_to_float(times):
+def cube_time_to_float(cube):
     """
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
     """
+    times = cube.coord('time')
+    datetime = guess_calendar_datetime(cube)
+
     dtimes = times.units.num2date(times.points)
     floattimes = []
     for dtime in dtimes:
         # TODO: it would be better to have a calendar dependent value
         # for daysperyear, as this is not accurate for 360 day calendars.
         daysperyear = 365.25
-        floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
+
+        try:
+            dayofyr = dtime.dayofyr
+        except AttributeError:
+            time = datetime(dtime.year, dtime.month, dtime.day)
+            time0 = datetime(dtime.year, 1, 1, 0, 0)
+            dayofyr = (time - time0).days
+
+        floattime = dtime.year + dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
+        if dtime.hour:
+            floattime += dtime.hour / (24. * daysperyear)
         if dtime.minute:
             floattime += dtime.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
@@ -150,6 +163,10 @@ def guess_calendar_datetime(cube):
         dt = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
         dt = cftime.DatetimeJulian
+    elif time_coord.units.calendar in ['gregorian', ]:
+        dt = cftime.DatetimeGregorian
+    elif time_coord.units.calendar in ['proleptic_gregorian', ]:
+        dt = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
                        time_coord.units.calendar)

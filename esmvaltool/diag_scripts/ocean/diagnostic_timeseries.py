@@ -69,7 +69,7 @@ def timeplot(cube, **kwargs):
         plt.axhline(cubedata.compressed(), **kwargs)
         return
 
-    times = diagtools.timecoord_to_float(cube.coord('time'))
+    times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
 
 
