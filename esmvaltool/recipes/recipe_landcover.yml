@@ -1,27 +1,34 @@
-# 
-# ###############################################################################
-# namelist_sm_ESACCI.xml
-# 
-# Description
-# 
-# Authors
-# Stefan Hagemann (MPI-M, Germany, stefan.hagemann@mpimet.mpg.de)
-# Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
-# Benjamin Müller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
-# 
-# Project
-# CRESCENDO
-# 
-# References
-# 
-# This namelist is part of the ESMValTool
-# ###############################################################################
-# 
-
+# namelist_landcover.yml
 ---
+documentation:
+  description:
+    Recipe for plotting the area, bias and fraction of landcover classes in
+    comparison to ESA_CCI_LC data.
+
+  authors:
+    - hage_st
+    - loew_al
+    - muel_bn
+    - stac_to
+
+  references:
+    - esacci-landcover
+
+  projects:
+    - crescendo
+
 datasets:
+  - {dataset: MPI-ESM-LR,       project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
+  - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
+  - {dataset: HadGEM2-ES,       project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
+  - {dataset: ESACCI-LANDCOVER, project: OBS,   type: sat,   version: 1, tier: 1, start_year: 2008,  end_year: 2012}
+
 preprocessors:
-  prep0: {}
+  prep0:
+    regrid:
+      target_grid: MPI-ESM-LR
+      scheme: area_weighted
+
 
 diagnostics:
   landcover:
@@ -30,24 +37,19 @@ diagnostics:
       baresoilFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
-        mip: #missing
+        mip: Lmon
         field: T2Ms
       grassFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
-        mip: #missing
-        field: T2Ms
-      shrubFrac:
-        preprocessor: prep0
-        reference_dataset: ESACCI-LANDCOVER
-        mip: #missing
+        mip: Lmon
         field: T2Ms
       treeFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
-        mip: #missing
+        mip: Lmon
         field: T2Ms
     scripts:
       landcover:
-        script: landcover.py
+        script: landcover/landcover.py
 
