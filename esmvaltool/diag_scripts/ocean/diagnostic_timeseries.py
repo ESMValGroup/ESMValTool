@@ -96,25 +96,28 @@ def moving_average(cube, window):
     datetime = diagtools.guess_calendar_datetime(cube)
 
     output = []
-    times = np.array([datetime(t.year, t.month, t.day, t.hour, t.minute) for t in (times)])
-    for i, t in enumerate(times):
+    times = [datetime(time.year, time.month, time.day, time.hour, time.minute)
+             for time in (times)]
+    times = np.array(times)
+
+    for time in times:
         if window_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(t.year - window_len, t.month, t.day,
-                            t.hour, t.minute)
-            tmax = datetime(t.year + window_len, t.month, t.day,
-                            t.hour, t.minute)
+            tmin = datetime(time.year - window_len, time.month, time.day,
+                            time.hour, time.minute)
+            tmax = datetime(time.year + window_len, time.month, time.day,
+                            time.hour, time.minute)
 
         if window_units in ['months', 'month', 'mn']:
-            tmin = datetime(t.year, t.month - window_len, t.day,
-                            t.hour, t.minute)
-            tmax = datetime(t.year, t.month + window_len, t.day,
-                            t.hour, t.minute)
+            tmin = datetime(time.year, time.month - window_len, time.day,
+                            time.hour, time.minute)
+            tmax = datetime(time.year, time.month + window_len, time.day,
+                            time.hour, time.minute)
 
         if window_units in ['days', 'day', 'dy']:
-            tmin = datetime(t.year, t.month, t.day - window_len,
-                            t.hour, t.minute)
-            tmax = datetime(t.year, t.month, t.day + window_len,
-                            t.hour, t.minute)
+            tmin = datetime(time.year, time.month, time.day - window_len,
+                            time.hour, time.minute)
+            tmax = datetime(time.year, time.month, time.day + window_len,
+                            time.hour, time.minute)
 
         arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
         output.append(arr.mean())
@@ -156,13 +159,13 @@ def make_time_series_plots(
         else:
             timeplot(cube_layer, label=metadata['dataset'])
 
-
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer != '':
-            try:
-                    z_units = model_cubes[filename][layer].coords('depth')[0].units
-            except: z_units= ''
+            if len(cube_layer.coords('depth')) > 0:
+                z_units = cube_layer.coord('depth').units
+            else:
+                z_units = ''
             title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
@@ -170,7 +173,6 @@ def make_time_series_plots(
 
         # Determine image filename:
         if multi_model:
-
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
@@ -278,9 +280,10 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                try:
-                        z_units = model_cubes[filename][layer].coords('depth')[0].units
-                except: pass
+                if len(model_cubes[filename][layer].coords('depth')) > 0:
+                    z_units = model_cubes[filename][layer].coord('depth').units
+                else:
+                    z_units = ''
         # Add title, legend to plots
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])

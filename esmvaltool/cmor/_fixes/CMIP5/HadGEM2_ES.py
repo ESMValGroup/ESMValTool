@@ -64,28 +64,3 @@ class o2(Fix):
 
         iris.save(cube, new_path)
         return new_path
-
-
-
-class mfo(Fix):
-    """Fixes for mfo"""
-
-    def fix_metadata(self, cube):
-        """
-        Fixes latitude
-
-        Parameters
-        ----------
-        cube: iris.cube.Cube
-
-        Returns
-        -------
-        iris.cube.Cube
-
-        """
-        #line = cube.coord('line')
-        #print(line)
-        # line.name = 'oline'
-        # print(line)
-        # assert 0
-        return cube

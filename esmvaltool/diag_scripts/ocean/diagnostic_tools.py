@@ -86,7 +86,7 @@ def bgc_units(cube, name):
         new_units = 'mg m-3'
 
     if name in ['mfo', ]:
-#       sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
+        # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
 
     if new_units != '':
@@ -328,9 +328,7 @@ def make_cube_layer_dict(cube):
         if coord.standard_name in ['depth', 'region']:
             layers.append(coord)
 
-    #layers = cube.coords('depth')
     cubes = {}
-
     if layers == []:
         cubes[''] = cube
         return cubes
@@ -358,6 +356,6 @@ def make_cube_layer_dict(cube):
         for layer_index, layer in enumerate(layer_dim.points):
             slices = [slice(None) for index in cube.shape]
             slices[coord_dim] = layer_index
-            layer = layer.replace('_',' ').title()
+            layer = layer.replace('_', ' ').title()
             cubes[layer] = cube[tuple(slices)]
     return cubes
