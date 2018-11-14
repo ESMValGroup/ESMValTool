@@ -7,14 +7,11 @@ ROSES_ROOT: "/home/users/valeriu/roses"
 # root to directory where rose suites will write output
 ROSES_OUTPUT: "/home/users/valeriu/roses_output"
 # map dataset name to relevant UM suite
-DATASET_TO_SUITE: {"UKESM1-0-LL": "u-ar766a", "UKESM1-0-LL2": "u-ar777a"}
+DATASET_TO_SUITE: {"UKESM1-0-LL": "u-ar766a"}
 # map variable standard name to stream definition
 STREAM_MAP: {"ps": "ap4"}
 # root directory where PP data lives
+# this directory is in Jasmin/Archer structure
 INPUT_DIR: "/group_workspaces/jasmin4/ncas_cms/valeriu/MASS_DATA"
 # map streams to realm components
 STREAM_COMPONENTS: {"ap4": ["atmos-physics"]}
-# initialize MASS download
-MASS_DOWNLOAD: false
-# root to where the mip_convert u-ak283 suite lives
-AK283: '/home/users/valeriu/roses/u-ak283'
