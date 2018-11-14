@@ -103,14 +103,14 @@ def get_dataset_style(dataset, style_file=None):
 
     # Check if dataset is available
     if not style.get(dataset):
-        logger.warning("Dataset '%s' not found in style file, using default " +
+        logger.warning("Dataset '%s' not found in style file, using default "
                        "entry", dataset)
         return style[default_dataset]
 
     # Get compulsory information
     for option in options:
         if option not in style[dataset]:
-            logger.warning("No style information '%s' found for dataset " +
+            logger.warning("No style information '%s' found for dataset "
                            "'%s', using default value for unknown datasets",
                            option, dataset)
             style[dataset].update({option: style[default_dataset][option]})
@@ -213,7 +213,7 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     # Save plot
     fig.savefig(filepath, additional_artists=[legend],
                 **kwargs.get('save_kwargs', {}))
-    logger.info("Writing %s", filepath)
+    logger.info("Wrote %s", filepath)
     plt.close()
 
 
@@ -292,5 +292,5 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     # Save plot
     fig.savefig(filepath, additional_artists=[legend],
                 **kwargs.get('save_kwargs', {}))
-    logger.info("Writing %s", filepath)
+    logger.info("Wrote %s", filepath)
     plt.close()

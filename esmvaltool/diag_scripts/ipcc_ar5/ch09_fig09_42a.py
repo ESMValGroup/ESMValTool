@@ -2,26 +2,32 @@
 # -*- coding: utf-8 -*-
 
 
-"""Plot figure 9.42a of IPCC AR5 chapter 9.
-
-###############################################################################
-ipcc_ar5/ch09_fig09-42a.py
-Author: Manuel Schlund (DLR, Germany)
-CRESCENDO project
-###############################################################################
+"""Diagnostic script to plot figure 9.42a of IPCC AR5 chapter 9.
 
 Description
 -----------
-    Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
-    mean surface temperature (GMSAT) for several CMIP5 models (see IPCC AR5 WG1
-    ch. 9, fig. 9.42a).
+Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
+mean surface temperature (GMSAT) for several CMIP5 models (see IPCC AR5 WG1 ch.
+9, fig. 9.42a).
 
-Configuration options
----------------------
-    ecs_filename        : Name of the netcdf in which the ECS data is saved.
-    output_name         : Name of the output files.
-    save                : Keyword arguments for the fig.saveplot() function.
-    axes_functions      : Plot appearance functions.
+Author
+------
+Manuel Schlund (DLR, Germany)
+
+Project
+-------
+CRESCENDO
+
+Configuration options in recips
+-------------------------------
+ecs_filename : str, optional
+    Name of the netcdf in which the ECS data is saved (default: ecs.nc).
+output_name : str, optional
+    Name of the output netcdf file (default: fig09-42a.*.
+save : dict, optional
+    Keyword arguments for the fig.saveplot() function.
+axes_functions : dict, optional
+    Keyword arguments for the plot appearance functions.
 
 ###############################################################################
 
@@ -30,49 +36,49 @@ Configuration options
 
 import logging
 import os
-from datetime import datetime
 
-import cf_units
 import iris
+from iris import Constraint
 
-import esmvaltool.diag_scripts.shared as e
-import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared import (plot,
+                                            run_diagnostic,
+                                            save_iris_cube,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_data(cfg, datasets):
+def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
-    if not cfg[n.WRITE_PLOTS]:
+    if not cfg['write_plots']:
         return
-    filepath = os.path.join(cfg[n.PLOT_DIR],
-                            cfg.get('output_name', 'fig09-42a') + '.' +
-                            cfg[n.OUTPUT_FILE_TYPE])
     x_data = []
     y_data = []
     dataset_names = []
     plot_kwargs = []
-    names = datasets.get_info_list(n.DATASET, short_name='ecs')
-    ecs_data = datasets.get_data_list(short_name='ecs')
 
-    # Historical
-    x_data.extend(ecs_data)
-    y_data.extend(datasets.get_data_list(short_name='tas', exp=HISTORICAL))
-    dataset_names.extend(names)
-    for name in names:
-        plot_kwargs.append({'label': name, 'linestyle': 'none',
+    # Collect data
+    for dataset in hist_cubes:
+
+        # Historical data
+        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        y_data.append(hist_cubes[dataset].data)
+        dataset_names.append(dataset)
+        plot_kwargs.append({'label': dataset, 'linestyle': 'none',
                             'markersize': 10})
 
-    # piControl
-    x_data.extend(ecs_data)
-    y_data.extend(datasets.get_data_list(short_name='tas', exp=PICONTROL))
-    dataset_names.extend(names)
-    for name in names:
-        plot_kwargs.append({'label': '_' + name, 'linestyle': 'none',
+        # PiControl data
+        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        y_data.append(pi_cubes[dataset].data)
+        dataset_names.append(dataset)
+        plot_kwargs.append({'label': '_' + dataset, 'linestyle': 'none',
                             'markersize': 6})
 
     # Plot data
-    e.plot.multi_dataset_scatterplot(
+    filepath = os.path.join(cfg['plot_dir'],
+                            cfg.get('output_name', 'fig09-42a') + '.' +
+                            cfg['output_file_type'])
+    plot.multi_dataset_scatterplot(
         x_data,
         y_data,
         dataset_names,
@@ -83,125 +89,96 @@ def plot_data(cfg, datasets):
     return
 
 
-def write_data(cfg, datasets, variables):
+def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Write netcdf file."""
-    if cfg[n.WRITE_PLOTS]:
-        data_ecs = datasets.get_data_list(short_name='ecs')
-        data_tas_hist = datasets.get_data_list(short_name='tas',
-                                               exp=HISTORICAL)
-        data_tas_picontrol = datasets.get_data_list(short_name='tas',
-                                                    exp=PICONTROL)
-        models = datasets.get_info_list(n.DATASET, short_name='ecs')
-        dataset_coord = iris.coords.AuxCoord(models, long_name='models')
+    if cfg['write_plots']:
+        datasets = list(hist_cubes)
+
+        # Collect data
+        data_ecs = []
+        data_hist = []
+        data_pi = []
+        for dataset in datasets:
+            data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+            data_hist.append(hist_cubes[dataset].data)
+            data_pi.append(pi_cubes[dataset].data)
+
+        # Create cube
+        dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
         tas_hist_coord = iris.coords.AuxCoord(
-            data_tas_hist,
-            attributes={'experiment': HISTORICAL},
-            **variables.iris_dict('tas'))
+            data_hist,
+            attributes={'exp': 'historical'},
+            var_name=hist_cubes[datasets[0]].var_name,
+            standard_name=hist_cubes[datasets[0]].standard_name,
+            long_name=hist_cubes[datasets[0]].long_name,
+            units=hist_cubes[datasets[0]].units)
         tas_picontrol_coord = iris.coords.AuxCoord(
-            data_tas_picontrol,
-            attributes={'experiment': PICONTROL},
-            **variables.iris_dict('tas'))
-        attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
-                              ', diagnostic {}'.format(cfg[n.SCRIPT]),
-                'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
-        cube = iris.cube.Cube(data_ecs, long_name=variables.long_name('ecs'),
-                              var_name='ecs', units=variables.units('ecs'),
+            data_pi,
+            attributes={'exp': 'piControl'},
+            var_name=pi_cubes[datasets[0]].var_name,
+            standard_name=pi_cubes[datasets[0]].standard_name,
+            long_name=pi_cubes[datasets[0]].long_name,
+            units=pi_cubes[datasets[0]].units)
+        cube = iris.cube.Cube(data_ecs,
+                              var_name='ecs',
+                              long_name='equilibrium_climate_sensitivity',
                               aux_coords_and_dims=[(dataset_coord, 0),
                                                    (tas_hist_coord, 0),
-                                                   (tas_picontrol_coord, 0)],
-                              attributes=attr)
+                                                   (tas_picontrol_coord, 0)])
 
         # Save file
-        filepath = os.path.join(cfg[n.WORK_DIR],
+        filepath = os.path.join(cfg['work_dir'],
                                 cfg.get('output_name', 'fig09_42a') + '.nc')
-        iris.save(cube, filepath)
-        logger.info("Writing %s", filepath)
-
-
-###############################################################################
-# Setup diagnostic
-###############################################################################
-
-# Experiments
-PICONTROL = 'piControl'
-HISTORICAL = 'historical'
-ABRUPT4XCO2 = 'abrupt4xCO2'
-DIFF = 'difference of abrupt4xCO2 and piControl'
-
-# Default settings
-DEFAULT_TAS_UNITS = 'celsius'
+        save_iris_cube(cube, filepath, cfg)
 
 
 def main(cfg):
-    """Run the diagnostic.
+    """Run the diagnostic."""
+    input_data = cfg['input_data'].values()
 
-    Parameters
-    ----------
-    cfg : dict
-        Configuration dictionary of the recipe.
-
-    """
-    ###########################################################################
-    # Read recipe data
-    ###########################################################################
-
-    # Dataset data containers
-    data = e.Datasets(cfg)
-    logging.debug("Found datasets in recipe:\n%s", data)
-
-    # Variables
-    var = e.Variables(cfg)
-    var.modify_var('tas', units=cfg.get('tas_units', DEFAULT_TAS_UNITS))
-    logging.debug("Found variables in recipe:\n%s", var)
+    # Check if tas is available
+    if not variables_available(cfg, ['tas']):
+        raise ValueError("This diagnostic needs 'tas' variable")
 
     # Get ECS data (ignore metadata.yml files)
-    input_dirs = [d for d in cfg[n.INPUT_FILES]
-                  if not d.endswith(n.METADATA_YAML_FILE)]
+    input_dirs = [d for d in cfg['input_files']
+                  if not d.endswith('metadata.yml')]
     if len(input_dirs) != 1:
         logging.error("Input files directory from ancestors should contain "
                       "exactly one directory (ECS directory)")
     ecs_filepath = os.path.join(input_dirs[0],
                                 cfg.get('ecs_filename', 'ecs') + '.nc')
 
-    ###########################################################################
-    # Read data
-    ###########################################################################
+    # Create iris cubes for each dataset
+    hist_cubes = {}
+    pi_cubes = {}
+    for data in input_data:
+        name = data['dataset']
+        logger.info("Processing %s", name)
+        cube = iris.load_cube(data['filename'])
 
-    # Create iris cube for each dataset
-    for dataset_path in data:
-        cube = iris.load(dataset_path, var.standard_names())[0]
+        # Preprocess cubes
+        cube.convert_units(cfg.get('tas_units', 'celsius'))
+        cube = cube.collapsed(['time'], iris.analysis.MEAN)
 
-        # Convert units if desired
-        cube.convert_units(cfg.get('tas_units', DEFAULT_TAS_UNITS))
-
-        # Total temporal means
-        cube = cube.collapsed([n.TIME], iris.analysis.MEAN)
-        data.set_data(cube.data, dataset_path)
+        # Save cubes
+        if data.get('exp') == 'historical':
+            hist_cubes[name] = cube
+        elif data.get('exp') == 'piControl':
+            pi_cubes[name] = cube
+        else:
+            pass
 
     # Create iris cube for ECS data
-    cube = iris.load_cube(ecs_filepath)
-    var.add_vars(ecs={n.SHORT_NAME: cube.var_name,
-                      n.LONG_NAME: cube.long_name,
-                      n.UNITS: cube.units.format(cf_units.UT_DEFINITION)})
-    for (idx, model) in enumerate(cube.coord('datasets').points):
-        data.add_dataset('ecs_' + model,
-                         data=cube.data[idx],
-                         dataset=model,
-                         short_name='ecs')
+    ecs_cube = iris.load_cube(ecs_filepath)
 
-    ###########################################################################
     # Plot data
-    ###########################################################################
+    plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)
 
-    plot_data(cfg, data)
-
-    ###########################################################################
-    # Write nc file
-    ###########################################################################
-
-    write_data(cfg, data, var)
+    # Write netcdf file
+    write_data(cfg, hist_cubes, pi_cubes, ecs_cube)
 
 
 if __name__ == '__main__':
-    with e.run_diagnostic() as config:
+    with run_diagnostic() as config:
         main(config)

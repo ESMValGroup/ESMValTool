@@ -2,51 +2,56 @@
 # -*- coding: utf-8 -*-
 
 
-"""Calculate ECS following Andrews et al. (2012).
-
-###############################################################################
-climate_metrics/ecs.py
-Author: Manuel Schlund (DLR, Germany)
-CRESCENDO project
-###############################################################################
+"""Diagnostic script to calculate ECS following Andrews et al. (2012).
 
 Description
 -----------
-    Calculate the equilibrium climate sensitivity (ECS) using the regression
-    method proposed by Andrews et al. (2012).
+Calculate the equilibrium climate sensitivity (ECS) using the regression method
+proposed by Andrews et al. (2012).
 
-Configuration options
----------------------
-    plot_regression : Switch to plot the linear regression.
-    output_name     : Name of the output files.
+Author
+------
+Manuel Schlund (DLR, Germany)
 
-###############################################################################
+Project
+-------
+CRESCENDO
+
+Configuration options in recips
+-------------------------------
+plot_ecs_regression : bool, optional
+    Plot the linear regression graph (default: False).
+output_name : str, optional
+    Name of the output netcdf file (default: ecs.nc).
 
 """
 
 
 import logging
 import os
-from collections import OrderedDict
-from datetime import datetime
 
 import iris
 import numpy as np
 from scipy import stats
 
-import esmvaltool.diag_scripts.shared as e
-import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared import (group_metadata,
+                                            plot,
+                                            run_diagnostic,
+                                            save_iris_cube,
+                                            select_metadata,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_ecs_regression(cfg, dataset_name, data, variables, regression_stats):
+def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
+                        regression_stats):
     """Plot linear regression used to calculate ECS."""
-    if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
+    if not (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
         return
     ecs = -regression_stats.intercept / (2 * regression_stats.slope)
-    filepath = os.path.join(cfg[n.PLOT_DIR],
-                            dataset_name + '.' + cfg[n.OUTPUT_FILE_TYPE])
+    filepath = os.path.join(cfg['plot_dir'],
+                            dataset_name + '.' + cfg['output_file_type'])
 
     # Regression line
     x_reg = np.linspace(-1.0, 8.0, 2)
@@ -57,9 +62,9 @@ def plot_ecs_regression(cfg, dataset_name, data, variables, regression_stats):
            r'$\alpha$ = {:.2f}, '.format(-regression_stats.slope) + \
            'F = {:.2f}, '.format(regression_stats.intercept) + \
            'ECS = {:.2f}'.format(ecs)
-    e.plot.scatterplot(
-        [data[0], x_reg],
-        [data[1], y_reg],
+    plot.scatterplot(
+        [tas_cube.data, x_reg],
+        [rtmt_cube.data, y_reg],
         filepath,
         plot_kwargs=[{'linestyle': 'none',
                       'markeredgecolor': 'b',
@@ -72,138 +77,99 @@ def plot_ecs_regression(cfg, dataset_name, data, variables, regression_stats):
             'orientation': 'landscape'},
         axes_functions={
             'set_title': dataset_name,
-            'set_xlabel': 'tas / ' + variables.units('tas'),
-            'set_ylabel': 'rtmt / ' + variables.units('rtmt'),
+            'set_xlabel': 'tas / ' + tas_cube.units.name,
+            'set_ylabel': 'rtmt / ' + rtmt_cube.units.name,
             'set_xlim': [0.0, 7.0],
             'set_ylim': [-2.0, 10.0],
             'text': {'args': [0.05, 0.9, text],
                      'kwargs': {'transform': 'transAxes'}}})
 
     # Write netcdf file for every plot
-    if not cfg[n.WRITE_NETCDF]:
+    if not cfg['write_netcdf']:
         return
-    tas_coord = iris.coords.AuxCoord(data[0], **variables.iris_dict('tas'))
+    tas_coord = iris.coords.AuxCoord(tas_cube.data,
+                                     var_name=tas_cube.var_name,
+                                     standard_name=tas_cube.standard_name,
+                                     long_name=tas_cube.long_name,
+                                     units=tas_cube.units)
     attr = {'model': dataset_name,
             'regression_r_value': regression_stats.rvalue,
             'regression_slope': regression_stats.slope,
             'regression_interception': regression_stats.intercept,
             'climate_sensitivity': -regression_stats.slope,
-            'ECS': ecs,
-            'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
-                          ', diagnostic {}'.format(cfg[n.SCRIPT]),
-            'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
-    cube = iris.cube.Cube(data[1],
+            'ECS': ecs}
+    cube = iris.cube.Cube(rtmt_cube.data,
                           attributes=attr,
                           aux_coords_and_dims=[(tas_coord, 0)],
-                          **variables.iris_dict('rtmt'))
-    filepath = os.path.join(cfg[n.WORK_DIR],
+                          var_name=rtmt_cube.var_name,
+                          standard_name=rtmt_cube.standard_name,
+                          long_name=rtmt_cube.long_name,
+                          units=rtmt_cube.units)
+    filepath = os.path.join(cfg['work_dir'],
                             'ecs_regression_' + dataset_name + '.nc')
-    iris.save(cube, filepath)
-    logger.info("Writing %s", filepath)
+    save_iris_cube(cube, filepath, cfg)
     return
 
 
-###############################################################################
-# Setup diagnostic
-###############################################################################
-
-# Variables
-ECS = e.Variable('ecs',
-                 'equilibrium_climate_sensitivity',
-                 'Change in global mean surface temperature at equilibrium '
-                 'caused by a doubling of the atmospheric CO2 concentration',
-                 'K')
-
-# Experiments
-PICONTROL = 'piControl'
-ABRUPT4XCO2 = 'abrupt4xCO2'
-
-
 def main(cfg):
-    """Run the diagnostic.
+    """Run the diagnostic."""
+    input_data = cfg['input_data'].values()
 
-    Parameters
-    ----------
-    cfg : dict
-        Configuration dictionary of the recipe.
-
-    """
-    ###########################################################################
-    # Read recipe data
-    ###########################################################################
-
-    # Dataset data containers
-    data = e.Datasets(cfg)
-    logging.debug("Found datasets in recipe:\n%s", data)
-
-    # Variables
-    var = e.Variables(cfg)
-    logging.debug("Found variables in recipe:\n%s", var)
-    var.add_vars(ecs=ECS)
-
-    # Check for tas and rtmt
-    if not var.vars_available('tas', 'rtmt'):
+    # Check if tas and rtmt are available
+    if not variables_available(cfg, ['tas', 'rtmt']):
         raise ValueError("This diagnostic needs 'tas' and 'rtmt' variables")
 
-    ###########################################################################
     # Read data
-    ###########################################################################
+    tas_data = select_metadata(input_data, short_name='tas')
+    rtmt_data = select_metadata(input_data, short_name='rtmt')
 
-    # Create iris cube for each dataset and save annual means
-    for dataset_path in data:
-        cube = iris.load(dataset_path, var.standard_names())[0]
-        cube = cube.aggregated_by(n.YEAR, iris.analysis.MEAN)
-        data.set_data(cube.data, dataset_path)
+    # Iterate over all datasets and save ECS
+    ecs = {}
+    for (dataset, data) in group_metadata(tas_data, 'dataset').items():
+        logger.info("Processing %s", dataset)
+        paths = {'tas_4x': select_metadata(data, exp='abrupt4xCO2'),
+                 'tas_pi': select_metadata(data, exp='piControl'),
+                 'rtmt_4x': select_metadata(rtmt_data, dataset=dataset,
+                                            exp='abrupt4xCO2'),
+                 'rtmt_pi': select_metadata(rtmt_data, dataset=dataset,
+                                            exp='piControl')}
+        cubes = {}
+        for (key, path) in paths.items():
+            cubes[key] = iris.load_cube(path[0]['filename'])
 
-    ###########################################################################
-    # Process data
-    ###########################################################################
-    data_ecs = OrderedDict()
-
-    for dataset_path in \
-            data.get_path_list(short_name='tas', exp=PICONTROL):
-
-        # Substract piControl experiment from abrupt4xCO2 experiment
-        dataset = data.get_info(n.DATASET, dataset_path)
-        data_rtmt_pic = data.get_data(short_name='rtmt', exp=PICONTROL,
-                                      dataset=dataset)
-        data_tas = data.get_data(short_name='tas', exp=ABRUPT4XCO2,
-                                 dataset=dataset) - data.get_data(dataset_path)
-        data_rtmt = data.get_data(short_name='rtmt', exp=ABRUPT4XCO2,
-                                  dataset=dataset) - data_rtmt_pic
+        # Substract piControl run from abrupt4xCO2 experiment
+        for cube in cubes.values():
+            cube = cube.aggregated_by('year', iris.analysis.MEAN)
+        cubes['tas_4x'].data -= cubes['tas_pi'].data
+        cubes['rtmt_4x'].data -= cubes['rtmt_pi'].data
 
         # Perform linear regression
-        reg = stats.linregress(data_tas, data_rtmt)
+        reg = stats.linregress(cubes['tas_4x'].data,
+                               cubes['rtmt_4x'].data)
 
         # Plot ECS regression if desired
-        plot_ecs_regression(cfg, dataset, [data_tas, data_rtmt], var, reg)
+        plot_ecs_regression(cfg, dataset, cubes['tas_4x'], cubes['rtmt_4x'],
+                            reg)
 
         # Save data
-        data_ecs[dataset] = -reg.intercept / (2 * reg.slope)
+        ecs[dataset] = -reg.intercept / (2 * reg.slope)
 
-    ###########################################################################
-    # Write data
-    ###########################################################################
-    if cfg[n.WRITE_NETCDF]:
-        dataset_coord = iris.coords.AuxCoord(list(data_ecs),
-                                             long_name='datasets')
-        attr = {'created_by': 'ESMValTool version {}'.format(cfg[n.VERSION]) +
-                              ', diagnostic {}'.format(cfg[n.SCRIPT]),
-                'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
-        cube = iris.cube.Cube(list(data_ecs.values()),
-                              long_name=var.long_name('ecs'),
+    # Write data if desired
+    if cfg['write_netcdf']:
+        dataset_coord = iris.coords.AuxCoord(list(ecs),
+                                             long_name='dataset')
+        cube = iris.cube.Cube(list(ecs.values()),
                               var_name='ecs',
-                              units=var.units('ecs'),
-                              aux_coords_and_dims=[(dataset_coord, 0)],
-                              attributes=attr)
+                              long_name='equilibrium_climate_sensitivity',
+                              units=cubes['tas_4x'].units,
+                              aux_coords_and_dims=[(dataset_coord, 0)])
 
         # Save file
-        filepath = os.path.join(cfg[n.WORK_DIR],
+        filepath = os.path.join(cfg['work_dir'],
                                 cfg.get('output_name', 'ecs') + '.nc')
-        iris.save(cube, filepath)
-        logger.info("Writing %s", filepath)
+        save_iris_cube(cube, filepath, cfg)
 
 
 if __name__ == '__main__':
-    with e.run_diagnostic() as config:
+    with run_diagnostic() as config:
         main(config)

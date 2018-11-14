@@ -8,7 +8,9 @@ import shutil
 import sys
 import time
 from collections import OrderedDict
+from datetime import datetime
 
+import iris
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -133,6 +135,51 @@ def sorted_group_metadata(metadata_groups, sort):
         groups[key] = sorted_metadata(metadata_groups[key], sort)
 
     return groups
+
+
+def variables_available(cfg, short_names):
+    """Check if data from certain variables is available.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    short_names : list of str
+        Variable `short_names` which should be checked.
+
+    Returns
+    -------
+    bool
+        `True` if all variables available, `False` if not.
+
+    """
+    input_data = cfg['input_data'].values()
+    available_short_names = list(group_metadata(input_data, 'short_name'))
+    for var in short_names:
+        if var not in available_short_names:
+            return False
+    return True
+
+
+def save_iris_cube(cube, path, cfg):
+    """Save iris cube and append ESMValTool information.
+
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        Cube to be saved.
+    path : str
+        Desired path.
+    cfg : dict
+        Diagnostic script configuration.
+
+    """
+    attr = {'created_by': 'ESMValTool version {}'.format(cfg['version']) +
+                          ', diagnostic {}'.format(cfg['script']),
+            'creation_date': datetime.utcnow().isoformat(' ') + 'UTC'}
+    cube.attributes.update(attr)
+    iris.save(cube, path)
+    logger.info("Wrote %s", path)
 
 
 def get_cfg(filename=None):
