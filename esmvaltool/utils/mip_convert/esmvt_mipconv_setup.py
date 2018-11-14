@@ -49,10 +49,76 @@ else:
     import configparser as ConfigParser
 import yaml  # noqa
 
+# some global variables
+# default location for mip_convert suite on JASMIN
+DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
+
+# stream mapping; taken from hadsdk.streams
+# these are not used just yet; they could be useful in the future
+STREAM_MAP = {
+    'CMIP5': {
+        '3hr': 'apk',
+        '6hrPlev': 'apc',
+        '6hrlev': 'apg',
+        'Amon': 'apm',
+        'Lmon': 'apm',
+        'LImon': 'apm',
+        'Oday': 'opa',
+        'Omon': 'opm',
+        'Oyr': 'opy',
+        'CF3hr': 'apk',
+        'CFday': 'apa',
+        'CFmon': 'apm',
+        'CFsubhr': 'ape',
+        'day': 'apa'
+    },
+    'CMIP6': {
+        '3hr': 'ap8',
+        '6hrLev': 'ap7',
+        '6hrPlev': 'ap7',
+        '6hrPlevPt': 'ap7',
+        'AERday': 'ap6',
+        'AERhr': 'ap9',
+        'AERmon': 'ap4',
+        'AERmonZ': 'ap4',
+        'Amon': 'ap5',
+        'CF3hr': 'ap8',
+        'CFday': 'ap6',
+        'CFmon': 'ap5',
+        'E1hr': 'ap9',
+        'E1hrClimMon': 'ap9',
+        'E3hr': 'ap8',
+        'E3hrPt': 'ap8',
+        'E6hrZ': 'ap7',
+        'Eday': 'ap6',
+        'EdayZ': 'ap6',
+        'Efx': 'ancil',
+        'Emon': 'ap5',
+        'EmonZ': 'ap5',
+        'Esubhr': 'ap8',
+        'Eyr': 'ap5',
+        'LImon': 'ap5',
+        'Lmon': 'ap5',
+        'Oday': 'ond',
+        'Ofx': 'ancil',
+        'Omon': 'onm',
+        'SIday': 'ind',
+        'SImon': 'inm',
+        'day': 'ap6',
+        'fx': 'ancil',
+        'prim1hrpt': 'ap9',
+        'prim3hr': 'ap8',
+        'prim3hrpt': 'ap8',
+        'prim6hr': 'ap7',
+        'prim6hrpt': 'ap7',
+        'primDay': 'ap6',
+        'primMon': 'ap5',
+        'primSIday': 'ap6'
+    }
+}
 
 # set up logging
 logger = logging.getLogger(__name__)
-
 
 # print the header
 HEADER = r"""
@@ -132,8 +198,7 @@ def map_var_to_stream(diagnostics, stream_map):
     return stream_list
 
 
-def write_rose_conf(rose_config_template, recipe_file,
-                    config_file, log_level):
+def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
     Config = ConfigParser.ConfigParser()
@@ -143,8 +208,7 @@ def write_rose_conf(rose_config_template, recipe_file,
     conf_file = read_yaml_file(config_file)
     datasets = recipe_object['datasets']
     diagnostics = recipe_object['diagnostics']
-    active_streams = map_var_to_stream(diagnostics,
-                                       conf_file['STREAM_MAP'])
+    active_streams = map_var_to_stream(diagnostics, conf_file['STREAM_MAP'])
 
     # set stream overrides to None and set components
     # also set CYCLING_FREQUENCIES to P1Y overall
@@ -157,8 +221,10 @@ def write_rose_conf(rose_config_template, recipe_file,
         cycling_frequencies[stream] = 'P1Y'
 
     # set the logger to start outputting
-    _set_logger(logging, conf_file['ROSES_OUTPUT'],
-                'rose_suites_setup.log', log_level)
+    if not os.path.exists(conf_file['ROSES_OUTPUT']):
+        os.makedirs(conf_file['ROSES_OUTPUT'])
+    _set_logger(logging, conf_file['ROSES_OUTPUT'], 'rose_suites_setup.log',
+                log_level)
     logger.info(HEADER)
 
     # store the rose suite locations
@@ -170,18 +236,22 @@ def write_rose_conf(rose_config_template, recipe_file,
         # set correct paths
         rose_suite = os.path.join(
             conf_file['ROSES_ROOT'],
-            conf_file['DATASET_TO_SUITE'][dataset['dataset']]
-        )
+            conf_file['DATASET_TO_SUITE'][dataset['dataset']])
         rose_suite_locations.append(rose_suite)
         rose_output = os.path.join(
             conf_file['ROSES_OUTPUT'],
-            conf_file['DATASET_TO_SUITE'][dataset['dataset']]
-        )
+            conf_file['DATASET_TO_SUITE'][dataset['dataset']])
         if os.path.exists(rose_suite):
             shutil.rmtree(rose_suite)
-        shutil.copytree(conf_file['AK283'], rose_suite)
+        if os.path.exists(DEFAULT_SUITE_LOCATION):
+            shutil.copytree(DEFAULT_SUITE_LOCATION, rose_suite)
+        else:
+            logger.error("Default Suite Location not found: %s",
+                         DEFAULT_SUITE_LOCATION)
+            break
         if not os.path.exists(rose_output):
             os.makedirs(rose_output)
+        new_mipconv_config = os.path.join(rose_suite, 'mip_convert_config')
 
         # start logging
         logger.info("Working on dataset: %s", dataset)
@@ -195,6 +265,10 @@ def write_rose_conf(rose_config_template, recipe_file,
         Config.set('jinja2:suite.rc', 'INPUT_DIR',
                    '"' + conf_file['INPUT_DIR'] + '"')
         Config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + rose_output + '"')
+        Config.set('jinja2:suite.rc', 'CDDS_DIR',
+                   '"' + DEFAULT_SUITE_LOCATION + '"')
+        Config.set('jinja2:suite.rc', 'MIP_CONVERT_CONFIG_DIR',
+                   '"' + new_mipconv_config + '"')
         Config.set('jinja2:suite.rc', 'ACTIVE_STREAMS', str(active_streams))
         Config.set('jinja2:suite.rc', 'STREAM_TIME_OVERRIDES',
                    str(stream_overrides))
@@ -207,14 +281,54 @@ def write_rose_conf(rose_config_template, recipe_file,
                    str(cycling_frequencies))
         Config.set(
             'jinja2:suite.rc', 'TARGET_SUITE_NAME',
-            '"' + conf_file['DATASET_TO_SUITE'][dataset['dataset']] + '"'
-        )
+            '"' + conf_file['DATASET_TO_SUITE'][dataset['dataset']] + '"')
         with open(os.path.join(rose_suite, 'rose-suite.conf'), 'w') as r_c:
             logger.info("Writing rose-suite.conf file %s",
                         os.path.join(rose_suite, 'rose-suite.conf'))
             Config.write(r_c)
 
+        # now that we have to conf file set up we need to
+        # edit the mip_convert configuration file with the correct data
+        for key, values in conf_file['STREAM_COMPONENTS'].items():
+            for comp in values:
+                mipconv_config = os.path.join(new_mipconv_config,
+                                              'mip_convert.cfg.' + comp)
+                _edit_mip_convert_config(mipconv_config, conf_file, dataset,
+                                         key)
+
     return rose_suite_locations
+
+
+def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
+    """Edit the mip_convert file for correct runs."""
+    # set the correct variables
+    base_date = str(dataset['start_year']) + '-01-01-00-00-00'
+    suite_id = conf_file['DATASET_TO_SUITE'][dataset['dataset']]
+
+    # Build the ConfigParser object
+    Config = ConfigParser.ConfigParser()
+    Config.optionxform = str
+    Config.read(mipconv_config)
+
+    # set the correct fields
+    Config.set('request', 'base_date', base_date)
+    Config.set('request', 'suite_id', suite_id)
+    stream_section = '_'.join(['stream', stream])
+    Config.add_section(stream_section)
+    if 'mip' not in dataset:
+        logger.error("You need to provide mip: in the dataset section")
+        logger.error("No mip: in datasets[dataset] in recipe!")
+    else:
+        cmip_type = '_'.join(['CMIP6', dataset['mip']])
+        all_vars = conf_file['STREAM_MAP'].keys()
+        variables = ' '.join(
+            [v for v in all_vars if conf_file['STREAM_MAP'][v] == stream])
+        Config.set(stream_section, cmip_type, variables)
+
+    # write to file
+    with open(mipconv_config, 'w') as r_c:
+        logger.info("Writing mip_convert config file %s", mipconv_config)
+        Config.write(r_c)
 
 
 def _put_in_env(env_script):
@@ -254,9 +368,8 @@ def _source_envs(suite):
     """Source relevant environments."""
     # source the Met Office rose/cylc environment
     # and the suite specific environment
-    suite_env = os.path.join(suite,
-                             'env_setup_command_line.sh')  # suite env
-    env_file_mo = os.path.join(suite, 'sourcepaths.sh')   # metomi env
+    suite_env = os.path.join(suite, 'env_setup_command_line.sh')  # suite env
+    env_file_mo = os.path.join(suite, 'sourcepaths.sh')  # metomi env
     _put_in_env(suite_env)
     _put_in_env(env_file_mo)
 
@@ -286,16 +399,15 @@ def symlink_data(recipe_file, config_file, log_level):
         os.makedirs(sym_output_dir)
 
     # set the logger to start outputting
-    _set_logger(logging, conf_file['ROSES_OUTPUT'],
-                'file_simlink.log', log_level)
+    _set_logger(logging, conf_file['ROSES_OUTPUT'], 'file_simlink.log',
+                log_level)
     logger.info(HEADER)
 
     # loop through all datasets to symlink output
     for dataset in datasets:
         rose_output = os.path.join(
             conf_file['ROSES_OUTPUT'],
-            conf_file['DATASET_TO_SUITE'][dataset['dataset']]
-        )
+            conf_file['DATASET_TO_SUITE'][dataset['dataset']])
         logger.info("Working on dataset: %s", dataset)
         logger.info("Output and logs written to: %s", rose_output)
 
@@ -327,16 +439,16 @@ def symlink_data(recipe_file, config_file, log_level):
 def main():
     """Run the the meat of the code."""
     args = get_args()
-    rose_config_template = os.path.join(os.path.dirname(__file__),
-                                        "rose-suite-template.conf")
+    rose_config_template = os.path.join(
+        os.path.dirname(__file__), "rose-suite-template.conf")
     recipe_files = args.recipe_files
     config_file = args.config_file
     log_level = args.log_level
     for recipe_file in recipe_files:
         if args.mode == 'setup-only':
             # set up the rose suites
-            write_rose_conf(rose_config_template, recipe_file,
-                            config_file, log_level)
+            write_rose_conf(rose_config_template, recipe_file, config_file,
+                            log_level)
         elif args.mode == 'setup-run-suites':
             # setup roses
             roses = write_rose_conf(rose_config_template, recipe_file,
