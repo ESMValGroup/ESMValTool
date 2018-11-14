@@ -1,10 +1,13 @@
 """Python example diagnostic."""
 import logging
 import os
+import numpy as np
 import pdb
 
 import iris
 import esmvaltool.diag_scripts.shared as diag
+import matplotlib
+matplotlib.use('Agg')
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -38,6 +41,64 @@ def write_plotdata(cfg, regnam, modnam, values, datacont):
         for ir, row in enumerate(values):
             line = [modnam[ir]] + row
             f.write(body.format(*line))
+
+
+def make_landcover_bars(cfg, regnam, modnam, values, var):
+    """ makes bar plots for the accumulated land cover area
+        for the different regions and datasets
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    regname : list
+        list containing the region names
+    modnam : list
+        list containing the dataset names
+    value : list
+        nested list containing the region sums in 1.0e+6 km2
+    var : str
+        variable short name
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    outtype = cfg.get('output_file_type', 'png')
+    logger.info('Generating plots for filetype: ' + outtype)
+    nicename = {'baresoilFrac': 'bare soil covered', 'treeFrac': 'tree covered', 'grassFrac': 'grass covered'}
+
+    # Create pdf in case of pdf output
+    if outtype == 'pdf':
+        filepath = os.path.join(cfg[diag.names.PLOT_DIR],'coversum_' + var + '.' + outtype)
+        pdf = PdfPages(filepath)
+
+    # Loop over metrices
+    filepath = os.path.join(cfg[diag.names.PLOT_DIR],'metric_' + var + '.' + outtype)
+    fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
+    ax.set_title(' '.join(['Accumulated',nicename.get(var,var),'area']))
+    ax.set_ylabel(r'Area [$10^6$ km$^2$]')
+    nbar, ncat = np.array(values).shape
+    index = np.arange(0, (nbar+1)*ncat, nbar+1)
+    xticks = np.linspace((nbar+1) / 2.0, (nbar+1)*ncat - (nbar+1) / 2.0, ncat) - 1.0
+    ax.set_xticklabels([*regnam])
+    ax.set_xticks(xticks)
+    for ir, row in enumerate(values):
+        ax.bar(index+ir, row)
+
+    fig.subplots_adjust(bottom=0.30)
+    caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
+    for i, label in enumerate(modnam):
+        caxe.plot([], [], lw=4, label=label)
+    caxe.legend(ncol=2, loc="lower center", mode="expand")
+    caxe.set_axis_off()
+
+    if outtype == "pdf":
+        fig.savefig(pdf, dpi=80, format='pdf')
+        plt.close()
+    else:
+        fig.savefig(filepath)
+
+    if outtype == "pdf":
+        pdf.close()
 
 
 def main(cfg):
@@ -116,6 +177,9 @@ def main(cfg):
 
         # Write plotdata as ascii files for user information
         write_plotdata(cfg, regnam, modnam, values, '_'.join(['area',var]))
+
+        # Plot area values
+        make_landcover_bars(cfg, regnam, modnam, values, var)
 
 
 if __name__ == '__main__':
