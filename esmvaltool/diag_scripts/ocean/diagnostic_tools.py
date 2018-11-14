@@ -151,6 +151,8 @@ def guess_calendar_datetime(cube):
         dt = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
         dt = cftime.DatetimeJulian
+    elif time_coord.units.calendar in ['proleptic_gregorian', ]:
+        dt = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
                        time_coord.units.calendar)
