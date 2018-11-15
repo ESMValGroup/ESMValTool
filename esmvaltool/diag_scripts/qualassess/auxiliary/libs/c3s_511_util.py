@@ -11,8 +11,8 @@ import sys
 import numpy as np
 from scipy import stats
 import cf_units
-import matplotlib.pyplot as plt
-import time
+#import matplotlib.pyplot as plt
+#import time
 import iris
 
 # sys.path.insert(0,
@@ -21,7 +21,7 @@ import iris
 #                                __file__)), os.pardir),
 #                                os.pardir)))
 
-from .TempStab.TempStab import TempStab as TS
+#from .TempStab.TempStab import TempStab as TS
 import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -256,125 +256,125 @@ def __get_valid_data__(cube, mode='all', thres=-99):
     return data, msk
 
 
-def __loc_TSA_fun__(array, **kwargs):
+#def __loc_TSA_fun__(array, **kwargs):
+#
+#    breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
+#    max_num_period = kwargs.get('max_num_periods', 3)
+#    periods_method = kwargs.get('periods_method', 'autocorr')
+#    temporal_resolution = kwargs.get('temporal_resolution', 1.)
+#    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
+#
+#    if minimum_available_data_points < 2:
+#        assert False, "No trend calculation possible for " + \
+#            "less than 2 data points"
+#
+#    RES = None
+#    done = -2
+#
+#    timearray = kwargs.get('dates', None)
+#
+#    if timearray is not None:
+#        if array.mask.sum() < len(array.mask) - (minimum_available_data_points - 1):
+#            try:
+#                with HiddenPrints():
+#                    #                    print array
+#                    TSA = TS(timearray, array,
+#                             breakpoint_method=breakpoint_method,
+#                             detrend=True,
+#                             deseason=True,
+#                             max_num_periods=max_num_period,
+#                             periods_method=periods_method,
+#                             temporal_resolution=temporal_resolution)
+#                    RES = TSA.analysis(homogenize=True)
+#                    done = 2
+#            except BaseException:
+#                try:
+#                    with HiddenPrints():
+#                        TSA = TS(timearray, array,
+#                                 breakpoint_method=breakpoint_method,
+#                                 detrend=True,
+#                                 deseason=False,
+#                                 max_num_periods=max_num_period,
+#                                 periods_method=periods_method,
+#                                 temporal_resolution=temporal_resolution)
+#                        RES = TSA.analysis(homogenize=True)
+#                        done = 1
+#                except BaseException:
+#                    try:
+#                        with HiddenPrints():
+#                            TSA = TS(timearray, array,
+#                                     breakpoint_method=breakpoint_method,
+#                                     detrend=False,
+#                                     deseason=False,
+#                                     max_num_periods=max_num_period,
+#                                     periods_method=periods_method,
+#                                     temporal_resolution=temporal_resolution)
+#                            RES = TSA.analysis(homogenize=True)
+#                            done = 0
+#                    except BaseException:
+#                        done = -9
+#        else:
+#            done = -1
+#    else:
+#        "Error in timearray."
+#
+#    if RES is not None:
+#        slope_diff = RES["homogenized_trend"]["slope"]
+#        fin_res = np.atleast_1d(np.append(np.array([slope_diff,
+#                                                    len(RES["breakpoints"]),
+#                                                    done]), TSA.homogenized))
+#
+#    else:
+#        fin_res = np.atleast_1d(np.append(np.array([np.nan, np.nan, done]),
+#                                          np.ones(array.shape) * np.nan))
+#
+#    return fin_res
 
-    breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
-    max_num_period = kwargs.get('max_num_periods', 3)
-    periods_method = kwargs.get('periods_method', 'autocorr')
-    temporal_resolution = kwargs.get('temporal_resolution', 1.)
-    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
 
-    if minimum_available_data_points < 2:
-        assert False, "No trend calculation possible for " + \
-            "less than 2 data points"
-
-    RES = None
-    done = -2
-
-    timearray = kwargs.get('dates', None)
-
-    if timearray is not None:
-        if array.mask.sum() < len(array.mask) - (minimum_available_data_points - 1):
-            try:
-                with HiddenPrints():
-                    #                    print array
-                    TSA = TS(timearray, array,
-                             breakpoint_method=breakpoint_method,
-                             detrend=True,
-                             deseason=True,
-                             max_num_periods=max_num_period,
-                             periods_method=periods_method,
-                             temporal_resolution=temporal_resolution)
-                    RES = TSA.analysis(homogenize=True)
-                    done = 2
-            except BaseException:
-                try:
-                    with HiddenPrints():
-                        TSA = TS(timearray, array,
-                                 breakpoint_method=breakpoint_method,
-                                 detrend=True,
-                                 deseason=False,
-                                 max_num_periods=max_num_period,
-                                 periods_method=periods_method,
-                                 temporal_resolution=temporal_resolution)
-                        RES = TSA.analysis(homogenize=True)
-                        done = 1
-                except BaseException:
-                    try:
-                        with HiddenPrints():
-                            TSA = TS(timearray, array,
-                                     breakpoint_method=breakpoint_method,
-                                     detrend=False,
-                                     deseason=False,
-                                     max_num_periods=max_num_period,
-                                     periods_method=periods_method,
-                                     temporal_resolution=temporal_resolution)
-                            RES = TSA.analysis(homogenize=True)
-                            done = 0
-                    except BaseException:
-                        done = -9
-        else:
-            done = -1
-    else:
-        "Error in timearray."
-
-    if RES is not None:
-        slope_diff = RES["homogenized_trend"]["slope"]
-        fin_res = np.atleast_1d(np.append(np.array([slope_diff,
-                                                    len(RES["breakpoints"]),
-                                                    done]), TSA.homogenized))
-
-    else:
-        fin_res = np.atleast_1d(np.append(np.array([np.nan, np.nan, done]),
-                                          np.ones(array.shape) * np.nan))
-
-    return fin_res
-
-
-def __TS_of_cube__(cube, **kwargs):
-
-    breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
-    max_num_period = kwargs.get('max_num_periods', 3)
-    periods_method = kwargs.get('periods_method', 'autocorr')
-    temporal_resolution = kwargs.get('temporal_resolution', 1.)
-    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
-
-    min_trend = cube[0, :, :].copy()
-    num_bp = cube[0, :, :].copy()
-    version = cube[0, :, :].copy()
-    homogenized = cube.copy()
-
-    timearray = kwargs.get('dates', None)
-
-    if timearray is None:
-        timearray = cube.coord("time").points
-
-    res = np.apply_along_axis(__loc_TSA_fun__, 0, cube.data,
-                              dates=timearray,
-                              breakpoint_method=breakpoint_method,
-                              max_num_period=max_num_period,
-                              periods_method=periods_method,
-                              min_avail_pts=minimum_available_data_points,
-                              temporal_resoution=temporal_resolution)
-
-    mask = np.isnan(res[0, :, :]) + min_trend.data.mask
-    min_trend.data = np.ma.array(data=res[0, :, :] * 365.2425 * 10, mask=mask)
-    if min_trend.units in [None, 'no_unit', '1', 'unknown']:
-        min_trend.units = cf_units.Unit('0.1 year-1')
-    else:
-        min_trend.units += cf_units.Unit(str(min_trend.units) + ' 0.1 year-1')
-
-    num_bp.data = np.ma.array(data=res[1, :, :], mask=mask)
-    num_bp.units = cf_units.Unit("1")
-
-    homogenized.data = np.ma.array(
-        data=res[3:, :, :], mask=np.isnan(res[3:, :, :]))
-
-    version.data = np.ma.array(data=res[2, :, :], mask=mask)
-    version.units = cf_units.Unit("1")
-
-    return({"slope": min_trend, "number_breakpts": num_bp,
-            "version": version, "homogenized": homogenized})
+#def __TS_of_cube__(cube, **kwargs):
+#
+#    breakpoint_method = kwargs.get('breakpoint_method', 'CUMSUMADJ')
+#    max_num_period = kwargs.get('max_num_periods', 3)
+#    periods_method = kwargs.get('periods_method', 'autocorr')
+#    temporal_resolution = kwargs.get('temporal_resolution', 1.)
+#    minimum_available_data_points = kwargs.get('min_avail_pts', 1)
+#
+#    min_trend = cube[0, :, :].copy()
+#    num_bp = cube[0, :, :].copy()
+#    version = cube[0, :, :].copy()
+#    homogenized = cube.copy()
+#
+#    timearray = kwargs.get('dates', None)
+#
+#    if timearray is None:
+#        timearray = cube.coord("time").points
+#
+#    res = np.apply_along_axis(__loc_TSA_fun__, 0, cube.data,
+#                              dates=timearray,
+#                              breakpoint_method=breakpoint_method,
+#                              max_num_period=max_num_period,
+#                              periods_method=periods_method,
+#                              min_avail_pts=minimum_available_data_points,
+#                              temporal_resoution=temporal_resolution)
+#
+#    mask = np.isnan(res[0, :, :]) + min_trend.data.mask
+#    min_trend.data = np.ma.array(data=res[0, :, :] * 365.2425 * 10, mask=mask)
+#    if min_trend.units in [None, 'no_unit', '1', 'unknown']:
+#        min_trend.units = cf_units.Unit('0.1 year-1')
+#    else:
+#        min_trend.units += cf_units.Unit(str(min_trend.units) + ' 0.1 year-1')
+#
+#    num_bp.data = np.ma.array(data=res[1, :, :], mask=mask)
+#    num_bp.units = cf_units.Unit("1")
+#
+#    homogenized.data = np.ma.array(
+#        data=res[3:, :, :], mask=np.isnan(res[3:, :, :]))
+#
+#    version.data = np.ma.array(data=res[2, :, :], mask=mask)
+#    version.units = cf_units.Unit("1")
+#
+#    return({"slope": min_trend, "number_breakpts": num_bp,
+#            "version": version, "homogenized": homogenized})
 
 
 def weighted_STD_DEV(cube, dim, weights=None):
