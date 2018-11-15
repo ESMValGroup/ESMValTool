@@ -33,7 +33,7 @@ from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata, plot, run_diagnostic, save_iris_cube, select_metadata,
-    variables_available)
+    variables_available, extract_variables)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -93,10 +93,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
         return
     tas_coord = iris.coords.AuxCoord(
         tas_cube.data,
-        var_name=tas_cube.var_name,
-        standard_name=tas_cube.standard_name,
-        long_name=tas_cube.long_name,
-        units=tas_cube.units)
+        **extract_variables(cfg, as_iris=True)['tas'])
     attr = {
         'model': dataset_name,
         'regression_r_value': regression_stats.rvalue,
@@ -109,10 +106,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
         rtmt_cube.data,
         attributes=attr,
         aux_coords_and_dims=[(tas_coord, 0)],
-        var_name=rtmt_cube.var_name,
-        standard_name=rtmt_cube.standard_name,
-        long_name=rtmt_cube.long_name,
-        units=rtmt_cube.units)
+        **extract_variables(cfg, as_iris=True)['rtmt'])
     filepath = os.path.join(cfg['work_dir'],
                             'ecs_regression_' + dataset_name + '.nc')
     save_iris_cube(cube, filepath, cfg)
@@ -122,6 +116,9 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
 def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
+
+    print(extract_variables(cfg))
+    print(extract_variables(cfg, as_iris=True))
 
     # Check if tas and rtmt are available
     if not variables_available(cfg, ['tas', 'rtmt']):

@@ -38,7 +38,8 @@ import iris
 from iris import Constraint
 
 from esmvaltool.diag_scripts.shared import (
-    plot, run_diagnostic, save_iris_cube, variables_available)
+    plot, run_diagnostic, save_iris_cube, variables_available,
+    extract_variables)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -109,17 +110,11 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         tas_hist_coord = iris.coords.AuxCoord(
             data_hist,
             attributes={'exp': 'historical'},
-            var_name=hist_cubes[datasets[0]].var_name,
-            standard_name=hist_cubes[datasets[0]].standard_name,
-            long_name=hist_cubes[datasets[0]].long_name,
-            units=hist_cubes[datasets[0]].units)
+            **extract_variables(cfg, as_iris=True)['tas'])
         tas_picontrol_coord = iris.coords.AuxCoord(
             data_pi,
             attributes={'exp': 'piControl'},
-            var_name=pi_cubes[datasets[0]].var_name,
-            standard_name=pi_cubes[datasets[0]].standard_name,
-            long_name=pi_cubes[datasets[0]].long_name,
-            units=pi_cubes[datasets[0]].units)
+            **extract_variables(cfg, as_iris=True)['tas'])
         cube = iris.cube.Cube(
             data_ecs,
             var_name='ecs',

@@ -137,6 +137,52 @@ def sorted_group_metadata(metadata_groups, sort):
     return groups
 
 
+def extract_variables(cfg, as_iris=False):
+    """Extract basic variable information from configuration dictionary.
+
+    Returns `short_name`, `standard_name`, `long_name` and `units` keys for
+    each variable.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    as_iris : bool, optional
+        Replace `short_name` by `var_name`, this can be used directly in
+        :mod:`iris` classes.
+
+    Returns
+    -------
+    dict
+        Variable information in :obj:`dict`s (values) for each `short_name`
+        (key).
+
+    """
+    keys_to_extract = [
+        'short_name',
+        'standard_name',
+        'long_name',
+        'units',
+    ]
+
+    # Extract variables
+    input_data = cfg['input_data'].values()
+    variable_data = group_metadata(input_data, 'short_name')
+    variables = {}
+    for (short_name, data) in variable_data.items():
+        data = data[0]
+        variables[short_name] = {}
+        info = variables[short_name]
+        for key in keys_to_extract:
+            info[key] = data[key]
+
+        # Replace short_name by var_name if desired
+        if as_iris:
+            info['var_name'] = info.pop('short_name')
+
+    return variables
+
+
 def variables_available(cfg, short_names):
     """Check if data from certain variables is available.
 
