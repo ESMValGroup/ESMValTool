@@ -54,7 +54,7 @@ import yaml  # noqa
 DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
 
 # stream mapping; taken from hadsdk.streams
-# these are not used just yet; they could be useful in the future
+# these are used to set defaults if not overrides
 STREAM_MAP = {
     'CMIP5': {
         '3hr': 'apk',
@@ -207,6 +207,16 @@ def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
     recipe_object = read_yaml_file(recipe_file)
     conf_file = read_yaml_file(config_file)
     datasets = recipe_object['datasets']
+
+    # check if dataset needs analysis
+    datasets_to_analyze = []
+    for dataset in datasets:
+        if dataset['dataset'] not in conf_file['DATASET_TO_SUITE']:
+            logger.warning("Dataset %s has no mapping to suite",
+                           dataset['dataset'])
+            logger.warning("Assuming data retrival from elsewhere.")
+        else:
+            datasets_to_analyze.append(dataset)
     diagnostics = recipe_object['diagnostics']
     active_streams = map_var_to_stream(diagnostics, conf_file['STREAM_MAP'])
 
@@ -231,7 +241,7 @@ def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
     rose_suite_locations = []
 
     # loop through datasets (different suites for different datasets)
-    for dataset in datasets:
+    for dataset in datasets_to_analyze:
 
         # set correct paths
         rose_suite = os.path.join(
@@ -318,14 +328,29 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     stream_section = '_'.join(['stream', stream])
     Config.add_section(stream_section)
     if 'mip' not in dataset:
-        logger.error("You need to provide mip: in the dataset section")
-        logger.error("No mip: in datasets[dataset] in recipe!")
+        # can work without any mip in dataset
+        # will not take it from diagnostic (will assemble
+        # all possible mappings instead)
+        logger.warning("No mip in the recipe dataset section.")
+        logger.warning("Assigning mapping from default dictionary.")
+        stream_map_default = STREAM_MAP[dataset['project']]
+        variables = []
+        cmip_types = []
+        for key, val in conf_file['STREAM_MAP'].items():
+            for key_def, val_def in stream_map_default.items():
+                if val == val_def:
+                    cmip_types.append('_'.join([dataset['project'], key_def]))
+                    variables.append(key)
+        str_variables = ' '.join(list(set([v for v in variables])))
+        if variables:
+            for cmip_type in cmip_types:
+                Config.set(stream_section, cmip_type, str_variables)
     else:
-        cmip_type = '_'.join(['CMIP6', dataset['mip']])
+        cmip_type = '_'.join([dataset['project'], dataset['mip']])
         all_vars = conf_file['STREAM_MAP'].keys()
-        variables = ' '.join(
+        str_variables = ' '.join(
             [v for v in all_vars if conf_file['STREAM_MAP'][v] == stream])
-        Config.set(stream_section, cmip_type, variables)
+        Config.set(stream_section, cmip_type, str_variables)
 
     # write to file
     with open(mipconv_config, 'w') as r_c:
@@ -440,9 +465,18 @@ def symlink_data(recipe_file, config_file, log_level):
 
 def main():
     """Run the the meat of the code."""
+    logger.info("Running main function...")
     args = get_args()
     rose_config_template = os.path.join(
         os.path.dirname(__file__), "rose-suite-template.conf")
+
+    # make sure the file is retrieved nonetheless
+    if not os.path.isfile(rose_config_template):
+        logger.info("Fetching rose template config from suite %s",
+                    DEFAULT_SUITE_LOCATION)
+        rose_config_template = os.path.join(DEFAULT_SUITE_LOCATION,
+                                            "rose-suite-template.conf")
+
     recipe_files = args.recipe_files
     config_file = args.config_file
     log_level = args.log_level
