@@ -60,7 +60,6 @@ diagnostics:
       main:
         script: magic_bsc/toymodel.r #(in diag_scripts)
         beta: 0.3
-        gamma: 1
         number_of_members: 5
 
 

@@ -39,7 +39,7 @@ fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 a <- 1
 b <- params$beta
-g <- params$gamma
+g <- 0
 nm <- params$number_of_members
 nstartd <- 1
 nleadt = params$no_of_lead_times
