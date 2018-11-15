@@ -56,34 +56,37 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
            r'$\alpha$ = {:.2f}, '.format(-regression_stats.slope) + \
            'F = {:.2f}, '.format(regression_stats.intercept) + \
            'ECS = {:.2f}'.format(ecs)
-    plot.scatterplot([tas_cube.data, x_reg], [rtmt_cube.data, y_reg],
-                     filepath,
-                     plot_kwargs=[{
-                         'linestyle': 'none',
-                         'markeredgecolor': 'b',
-                         'markerfacecolor': 'none',
-                         'marker': 's'
-                     }, {
-                         'color': 'k',
-                         'linestyle': '-'
-                     }],
-                     save_kwargs={
-                         'bbox_inches': 'tight',
-                         'orientation': 'landscape'
-                     },
-                     axes_functions={
-                         'set_title': dataset_name,
-                         'set_xlabel': 'tas / ' + tas_cube.units.name,
-                         'set_ylabel': 'rtmt / ' + rtmt_cube.units.name,
-                         'set_xlim': [0.0, 7.0],
-                         'set_ylim': [-2.0, 10.0],
-                         'text': {
-                             'args': [0.05, 0.9, text],
-                             'kwargs': {
-                                 'transform': 'transAxes'
-                             }
-                         }
-                     })
+    plot.scatterplot(
+        [tas_cube.data, x_reg],
+        [rtmt_cube.data, y_reg],
+        filepath,
+        plot_kwargs=[{
+            'linestyle': 'none',
+            'markeredgecolor': 'b',
+            'markerfacecolor': 'none',
+            'marker': 's',
+        }, {
+            'color': 'k',
+            'linestyle': '-',
+        }],
+        save_kwargs={
+            'bbox_inches': 'tight',
+            'orientation': 'landscape',
+        },
+        axes_functions={
+            'set_title': dataset_name,
+            'set_xlabel': 'tas / ' + tas_cube.units.name,
+            'set_ylabel': 'rtmt / ' + rtmt_cube.units.name,
+            'set_xlim': [0.0, 7.0],
+            'set_ylim': [-2.0, 10.0],
+            'text': {
+                'args': [0.05, 0.9, text],
+                'kwargs': {
+                    'transform': 'transAxes'
+                },
+            },
+        },
+    )
 
     # Write netcdf file for every plot
     if not cfg['write_netcdf']:
@@ -100,7 +103,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
         'regression_slope': regression_stats.slope,
         'regression_interception': regression_stats.intercept,
         'climate_sensitivity': -regression_stats.slope,
-        'ECS': ecs
+        'ECS': ecs,
     }
     cube = iris.cube.Cube(
         rtmt_cube.data,
@@ -140,7 +143,7 @@ def main(cfg):
             'rtmt_4x':
             select_metadata(rtmt_data, dataset=dataset, exp='abrupt4xCO2'),
             'rtmt_pi':
-            select_metadata(rtmt_data, dataset=dataset, exp='piControl')
+            select_metadata(rtmt_data, dataset=dataset, exp='piControl'),
         }
         cubes = {}
         for (key, path) in paths.items():

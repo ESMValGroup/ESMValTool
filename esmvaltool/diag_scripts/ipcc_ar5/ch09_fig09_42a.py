@@ -62,7 +62,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         plot_kwargs.append({
             'label': dataset,
             'linestyle': 'none',
-            'markersize': 10
+            'markersize': 10,
         })
 
         # PiControl data
@@ -72,7 +72,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         plot_kwargs.append({
             'label': '_' + dataset,
             'linestyle': 'none',
-            'markersize': 6
+            'markersize': 6,
         })
 
     # Plot data
