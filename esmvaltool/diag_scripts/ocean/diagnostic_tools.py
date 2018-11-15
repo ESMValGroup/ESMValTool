@@ -350,9 +350,9 @@ def make_cube_layer_dict(cube):
         return cubes
 
     if len(layers) > 1:
-        # This field has a strange number of layer dimensuions.
+        # This field has a strange number of layer dimensions.
         # depth and regions?
-        assert 0
+        raise ValueError('This cube has both `depth` & `region` coordinates.')
 
     # iris stores coords as a list with one entry:
     layer_dim = layers[0]
