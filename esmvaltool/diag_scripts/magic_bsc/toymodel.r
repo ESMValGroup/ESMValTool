@@ -37,7 +37,7 @@ model_names <- unname(model_names)
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
-a <- params$alpha
+a <- 1
 b <- params$beta
 g <- params$gamma
 nm <- params$number_of_members
