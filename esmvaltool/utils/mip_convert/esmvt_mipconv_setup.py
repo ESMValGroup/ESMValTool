@@ -57,9 +57,11 @@ import yaml  # noqa
 
 # the tool uses a specially tailored mip_convert Rose suite
 # locations of the suite depends on the host
-if socket.gethostname().split('.')[1] == 'ceda':
-    # default location for mip_convert suite on JASMIN
-    DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
+host_name = socket.gethostname().split('.')
+if len(host_name) > 1:
+    if host_name[1] == 'ceda':
+        # default location for mip_convert suite on JASMIN
+        DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
 
 # stream mapping; taken from hadsdk.streams
 # these are used to set defaults if not overrides
