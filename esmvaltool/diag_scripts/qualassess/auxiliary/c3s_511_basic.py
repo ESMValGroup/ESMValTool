@@ -28,6 +28,7 @@ from .libs.customErrors import \
     ImplementationError, ConfigurationError, PathError, EmptyContentError
 import warnings
 from .libs.reporting import do_report as report
+from .libs.reporting import do_full_report as full_report
 from .plots.matrices import do_smm_table
 from .plots.matrices import do_gcos_table
 from .plots.matrices import do_eval_table
@@ -98,6 +99,8 @@ class __Diagnostic_skeleton__(object):
         self.level_dim = None
         self.__time_read__ = []
         self.__avg_timestep__ = None
+        
+        self.reporting_structure = collections.OrderedDict()
 
     def set_info(self, **kwargs):
         self.__cfg__ = kwargs.get('cfg', None)
@@ -219,6 +222,28 @@ class __Diagnostic_skeleton__(object):
                dataset="".join(str(self.__dataset_id__[0])),
                signature=self.CDS_ID,
                latex_opts=self.__latex_output__)
+        return
+
+    def __do_full_report__(self):
+        """
+        reporting function for use with all diagnostics
+        """
+        for content in self.reporting_structure:
+            if not isinstance(self.reporting_structure[content], (list, dict)):
+                raise TypeError("contents of reporting_structure",
+                                "Elements are not a list, nor a dict.")
+
+        filename = "Full Assessment"
+        if not isinstance(filename, str):
+            raise TypeError("filename", "Element is not a string.")
+
+        full_report(self.reporting_structure,
+                    filename,
+                    self.__work_dir__,
+                    ecv=ecv_lookup(self.__varname__),
+                    dataset="".join(str(self.__dataset_id__[0])),
+                    signature=self.CDS_ID,
+                    latex_opts=self.__latex_output__)
         return
 
     def __file_anouncement__(
@@ -371,8 +396,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         self.__cfg__ = kwargs.get('cfg', None)
         
-        print(self.__cfg__)
-
         #######################################################################
         # TODO delete after debugging
 #        self.__logger__.info("Object content pre:")
@@ -400,7 +423,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             matplotlib.cm.get_cmap(self.__cfg__['data_colors'])
             self.colormaps.update({"Data": self.__cfg__['data_colors']})
         except:
-            print("There is no usable specification of data colors. Falling back to default.")
+            print("There is no usable specification of data colors. " + 
+                  "Falling back to default.")
         self.colormaps.update({"Sequential":"YlGn"})
         self.colormaps.update({"Diverging":"BrBG"})
 
@@ -524,6 +548,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         self.__do_gcos_requirements__()
         self.__do_esm_evaluation__()
         self.__do_app_perf_matrix__()
+        
+        self.__do_full_report__()
 
         #######################################################################
         # TODO delete after debugging
@@ -633,18 +659,27 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "listtext": overview_dict,
-                    "plots": list_of_plots,
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "listtext": overview_dict,
+#                    "plots": list_of_plots,
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Overview": 
+                        {"listtext": overview_dict,
+                         "plots": list_of_plots,
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "listtext": overview_dict,
-                    "plots": list_of_plots},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "listtext": overview_dict,
+#                    "plots": list_of_plots},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Overview": 
+                        {"listtext": overview_dict,
+                         "plots": list_of_plots}})
 
         return
 
@@ -823,16 +858,23 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "plots": list_of_plots,
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": list_of_plots,
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Mean and Variability": 
+                        {"plots": list_of_plots,
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "plots": list_of_plots},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": list_of_plots},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Mean and Variability": 
+                        {"plots": list_of_plots}})
 
         return
 
@@ -1411,16 +1453,23 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "plots": list_of_plots,
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": list_of_plots,
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Trends": 
+                        {"plots": list_of_plots,
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "plots": list_of_plots},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": list_of_plots},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"Trends": 
+                        {"plots": list_of_plots}})
 
         # update gcos
         self.__gcos_dict__.update({"Accuracy": {"value": None, "unit": None}})
@@ -1664,16 +1713,23 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "plots": [filename],
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": [filename],
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"System Maturity Matrix": 
+                        {"plots": [filename],
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "plots": [filename]},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": [filename]},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"System Maturity Matrix": 
+                        {"plots": [filename]}})
 
         return
 
@@ -1730,16 +1786,23 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "plots": [filename],
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": [filename],
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"GCOS requirements": 
+                        {"plots": [filename],
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "plots": [filename]},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "plots": [filename]},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"GCOS requirements": 
+                        {"plots": [filename]}})
 
         return
 
@@ -1838,17 +1901,27 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       function=this_function)
 
         if found:
-            self.__do_report__(
-                content={
-                    "listtext": esmeval_dict,
-                    "plots": [filename],
-                    "freetext": expected_input},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "listtext": esmeval_dict,
+#                    "plots": [filename],
+#                    "freetext": expected_input},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"ESM evaluation": 
+                        {"listtext": esmeval_dict,
+                         "plots": [filename],
+                         "freetext": expected_input}})
         else:
-            self.__do_report__(
-                content={
-                    "listtext": esmeval_dict,
-                    "plots": [filename]},
-                filename=this_function.upper())
+#            self.__do_report__(
+#                content={
+#                    "listtext": esmeval_dict,
+#                    "plots": [filename]},
+#                filename=this_function.upper())
+            self.reporting_structure.update(
+                    {"ESM evaluation": 
+                        {"listtext": esmeval_dict,
+                         "plots": [filename],
+                         "freetext": expected_input}})
 
         return

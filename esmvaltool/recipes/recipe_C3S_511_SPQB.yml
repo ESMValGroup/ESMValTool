@@ -19,21 +19,36 @@
 
 datasets:
 #  - {model: CDS-XCO2, project: OBS,    tier: L3,    type: sat,       start_year: 2003,  end_year: 2016}
-  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
 
 preprocessors:
   noop: {}
 
 diagnostics:
-  diagnostic0:
+  SPQB:
     description: Single product quality brief.
     variables:
       ta:
         preprocessor: noop
         field: T3Ms
     scripts:
-      script0:
-        script: qualassess/DUMMY_C3S_511.py
+      SPQB_basic_report:
+        script: qualassess/DUMMY_C3S_511_SPQB.py
         data_colors: RdYlGn
-        levels: [30000.]
+        levels: [40.,300.,3000.,30000.,100000.]
         show_latex: False
+        
+#  diagnostic1:
+#    description: Multi-product quality brief.
+#    variables:
+#      additional_datasets:
+#        - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+#      ta:
+#        preprocessor: noop
+#        field: T3Ms
+#    scripts:
+#      script0:
+#        script: qualassess/DUMMY_C3S_511_MPQB.py
+#        data_colors: RdYlGn
+#        levels: [30000.,10000.]
+#        show_latex: False
