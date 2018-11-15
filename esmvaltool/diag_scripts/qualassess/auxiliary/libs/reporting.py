@@ -504,7 +504,7 @@ def do_full_report(full_report, report_title, work_dir,
     os.environ['SOURCEDIR'] = src_dir
     os.environ['BUILDDIR'] = bld_dir
 
-    if latex_opts is not None:
+    if type(latex_opts) is bool:
         # run Sphinx to create a pdf
         oldpath = os.getcwd()
         os.chdir(
@@ -548,7 +548,7 @@ def do_full_report(full_report, report_title, work_dir,
 
         logger.info("Successfully created " + pdfname + "!")
 
-    else:
+    elif latex_opts == "no_latex":
         shutil.copy(
             os.path.dirname(
                 os.path.abspath(__file__)) +
@@ -571,3 +571,7 @@ def do_full_report(full_report, report_title, work_dir,
                     path_out + "! " +
                     "For report production, please port this directory " +
                     "including all files to a suitable machine.")
+        
+    else:
+        logger.error("The show_latex option could not be read. " + 
+                     "No reports could be produced.")
