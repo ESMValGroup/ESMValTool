@@ -16,10 +16,11 @@ on different UM suite data. You can run this tool in three different ways:
 
 Usage:
 ------
--c --config-file:  user specific configuration file;
--r --recipe-file:  single or multiple (space-separated) recipe files;
--m --mode:         running mode (setup-only, setup-run-suites, postproc);
--l --log-level:    log level [OPTIONAL]
+-c --config-file:  [REQUIRED]  user specific configuration file;
+-r --recipe-file:  [REQUIRED]  single or multiple (space-sep) recipe files;
+-m --mode:         [OPTIONAL]  running mode (setup-only, setup-run-suites,
+                               postproc), default=setup-only
+-l --log-level:    [OPTIONAL]  log level, default=info
 
 Environment
 -----------
@@ -41,6 +42,7 @@ import os
 import sys
 import shutil
 import subprocess
+import socket
 from distutils.version import LooseVersion
 # configparser has changed names in python 3.x
 if LooseVersion(sys.version) < LooseVersion("3.0"):
@@ -49,9 +51,15 @@ else:
     import configparser as ConfigParser
 import yaml  # noqa
 
-# some global variables
-# default location for mip_convert suite on JASMIN
-DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
+####################
+# global variables #
+####################
+
+# the tool uses a specially tailored mip_convert Rose suite
+# locations of the suite depends on the host
+if socket.gethostname().split('.')[1] == 'ceda':
+    # default location for mip_convert suite on JASMIN
+    DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
 
 # stream mapping; taken from hadsdk.streams
 # these are used to set defaults if not overrides
@@ -150,6 +158,7 @@ def get_args():
     parser.add_argument(
         '-m',
         '--mode',
+        default='setup-only',
         choices=['setup-only', 'setup-run-suites', 'postproc'],
         help='How to run: setup: sets up mipconvert suites only;\n' +
         'or setup-run-suites: sets up suites and runs them as well;\n' +
@@ -326,7 +335,9 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     Config.set('request', 'base_date', base_date)
     Config.set('request', 'suite_id', suite_id)
     stream_section = '_'.join(['stream', stream])
-    Config.add_section(stream_section)
+    # add the section if not there already
+    if not Config.has_section(stream_section):
+        Config.add_section(stream_section)
     if 'mip' not in dataset:
         # can work without any mip in dataset
         # will not take it from diagnostic (will assemble
