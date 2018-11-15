@@ -94,13 +94,13 @@ def moving_average(cube, window):
     """
     window = window.split()
     window_len = int(window[0]) / 2.
-    window_units = str(window[1])
+    win_units = str(window[1])
 
-    if window_units not in ['days', 'day', 'dy',
-                            'months', 'month', 'mn',
-                            'years', 'yrs', 'year', 'yr']:
-        raise ValueError("Window_units not recognised: %s",
-                         str(window_units))
+    if win_units not in ['days', 'day', 'dy',
+                         'months', 'month', 'mn',
+                         'years', 'yrs', 'year', 'yr']:
+        raise ValueError("Moving average window units not recognised: " +
+                         "{}".format(win_units))
 
     times = cube.coord('time').units.num2date(cube.coord('time').points)
 
@@ -113,19 +113,19 @@ def moving_average(cube, window):
                       for time_itr in times])
 
     for time_itr in times:
-        if window_units in ['years', 'yrs', 'year', 'yr']:
+        if win_units in ['years', 'yrs', 'year', 'yr']:
             tmin = datetime(time_itr.year - window_len, time_itr.month,
                             time_itr.day, time_itr.hour, time_itr.minute)
             tmax = datetime(time_itr.year + window_len, time_itr.month,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
-        if window_units in ['months', 'month', 'mn']:
+        if win_units in ['months', 'month', 'mn']:
             tmin = datetime(time_itr.year, time_itr.month - window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
             tmax = datetime(time_itr.year, time_itr.month + window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
-        if window_units in ['days', 'day', 'dy']:
+        if win_units in ['days', 'day', 'dy']:
             tmin = datetime(time_itr.year, time_itr.month,
                             time_itr.day - window_len, time_itr.hour,
                             time_itr.minute)
