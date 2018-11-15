@@ -74,9 +74,23 @@ def timeplot(cube, **kwargs):
 
 def moving_average(cube, window):
     """
-    Make a moving average plot.
+    Calculate a moving average.
 
-    the window is a string which isa number and a measuremet of time.
+    The window is a string which is a number and a measuremet of time.
+    For instance, the following are acceptable windows:
+        '5 days'
+        '12 years'
+        '1 month'
+        '5 yr'
+
+    Also note the the value used is the total width of the window.
+    For instance, if the window provided was '10 years', the the moving
+    average returned would be the average of all values within 5 years
+    of the central value.
+    In the case of edge conditions, at the start an end of the data, they
+    only include the average of the data available. Ie the first value
+    in the moving average of a '10 year' window will only include the average
+    of the five subsequent years.
     """
     window = window.split()
     window_len = int(window[0]) / 2.
@@ -88,37 +102,38 @@ def moving_average(cube, window):
         raise ValueError("Window_units not recognised: %s",
                          str(window_units))
 
-    data = cube.data
-    time_coord = cube.coord('time')
-    times = time_coord.units.num2date(time_coord.points)
+    times = cube.coord('time').units.num2date(cube.coord('time').points)
 
     datetime = diagtools.guess_calendar_datetime(cube)
 
     output = []
-    times = [datetime(time.year, time.month, time.day, time.hour, time.minute)
-             for time in times]
-    times = np.array(times)
 
-    for time in times:
+    times = np.array([datetime(time_itr.year, time_itr.month, time_itr.day,
+                               time_itr.hour, time_itr.minute)
+                      for time_itr in times])
+
+    for time_itr in times:
         if window_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(time.year - window_len, time.month, time.day,
-                            time.hour, time.minute)
-            tmax = datetime(time.year + window_len, time.month, time.day,
-                            time.hour, time.minute)
+            tmin = datetime(time_itr.year - window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year + window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
 
         if window_units in ['months', 'month', 'mn']:
-            tmin = datetime(time.year, time.month - window_len, time.day,
-                            time.hour, time.minute)
-            tmax = datetime(time.year, time.month + window_len, time.day,
-                            time.hour, time.minute)
+            tmin = datetime(time_itr.year, time_itr.month - window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month + window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
 
         if window_units in ['days', 'day', 'dy']:
-            tmin = datetime(time.year, time.month, time.day - window_len,
-                            time.hour, time.minute)
-            tmax = datetime(time.year, time.month, time.day + window_len,
-                            time.hour, time.minute)
+            tmin = datetime(time_itr.year, time_itr.month,
+                            time_itr.day - window_len, time_itr.hour,
+                            time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month,
+                            time_itr.day + window_len, time_itr.hour,
+                            time_itr.minute)
 
-        arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
+        arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
     cube.data = np.array(output)
     return cube
@@ -161,7 +176,7 @@ def make_time_series_plots(
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer != '':
-            if len(cube_layer.coords('depth')):
+            if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
             else:
                 z_units = ''
@@ -242,7 +257,7 @@ def multi_model_time_series(
                 color = 'blue'
 
             # Take a moving average, if needed.
-            if 'moving_average' in cfg.keys():
+            if 'moving_average' in cfg:
                 cube = moving_average(model_cubes[filename][layer],
                                       cfg['moving_average'])
             else:
@@ -279,7 +294,7 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                if len(model_cubes[filename][layer].coords('depth')):
+                if model_cubes[filename][layer].coords('depth'):
                     z_units = model_cubes[filename][layer].coord('depth').units
                 else:
                     z_units = ''

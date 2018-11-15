@@ -22,7 +22,7 @@ class allvars(Fix):
 
         """
         lats = cube.coords('latitude')
-        if len(lats):
+        if lats:
             lat = cube.coord('latitude')
             lat.points = np.clip(lat.points, -90., 90.)
             lat.bounds = np.clip(lat.bounds, -90., 90.)

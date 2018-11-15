@@ -98,7 +98,7 @@ def bgc_units(cube, name):
     return cube
 
 
-def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
     """
     Match up model or observations dataset dictionairies from config file.
 
