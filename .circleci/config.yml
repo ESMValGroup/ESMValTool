@@ -103,7 +103,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -136,7 +136,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -169,7 +169,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml

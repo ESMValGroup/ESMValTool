@@ -9,4 +9,4 @@ for tool in "${tools[@]}"; do
     fi
 done
 
-Rscript $PREFIX/lib/python*/site-packages/esmvaltool/R/setup.R >> $PREFIX/.messages.txt
+Rscript $PREFIX/lib/python*/site-packages/esmvaltool/install/R/setup.R >> $PREFIX/.messages.txt
