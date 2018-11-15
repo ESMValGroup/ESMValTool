@@ -1,0 +1,51 @@
+#### summary
+# Example of ESMValTool recipe that can be used with the mip_convert capability
+# Data for this recipe exists in pp format on JASMIN, ready for mip_convert-ion
+# The recipe is no different than any typical ESMValTool recipes, but can be used
+# for a test run of mip_convert capability; see the README document and the included
+# config-mipconv-user.yml configuration file.
+# Author: V. Predoi (Uni Reading, valeriu.predoi@ncas.ac.uk)
+# Date: first draft/November 2018
+###########################################################################################################
+---
+
+datasets:
+  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: Amon,  exp: piControl-spinup,  ensemble: r1i1p1f1_gn,  start_year: 1850,  end_year: 1860}
+
+preprocessors:
+  pp_rad:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  validation_mip_convert:
+    description: "Test with mip convert" 
+    variables:
+      # mapping of standard_name to stream for CMIP6
+      # see the associated config file for input
+      # "ps": "ap4", "ta": "ap4", "va": "ap4", "ua": "ap5", "mrsos": "ap5", "toz":"apm"
+      ps:
+        preprocessor: pp_rad
+        field: T2Ms
+      ta:
+        preprocessor: pp_rad
+        field: T2Ms
+      va:
+        preprocessor: pp_rad
+        field: T2Ms
+      ua:
+        preprocessor: pp_rad
+        field: T2Ms
+      toz:
+        preprocessor: pp_rad
+        field: T2Ms
+    scripts:
+      meridional_mean:
+        script: validation.py
+        title: ""
+        control_model: UKESM1-0-LL
+        exper_model: UKESM1-0-LL
+        analysis_type: meridional_mean
+        seasonal_analysis: True
+
