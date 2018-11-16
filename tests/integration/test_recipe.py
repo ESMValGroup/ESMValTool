@@ -116,6 +116,17 @@ def patched_datafinder(tmpdir, monkeypatch):
     monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
 
 
+def get_recipe(tempdir, content, cfg):
+    """Save and load recipe content."""
+    filename = tempdir / 'recipe_test.yml'
+    with filename.open('w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(str(filename), cfg)
+
+    return recipe
+
+
 def test_simple_recipe(tmpdir, patched_datafinder, config_user):
 
     content = dedent("""
@@ -150,11 +161,7 @@ def test_simple_recipe(tmpdir, patched_datafinder, config_user):
                 custom_setting: 1
         """)
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
-
-    recipe = read_recipe_file(recipe_file, config_user)
+    recipe = get_recipe(tmpdir, content, config_user)
     raw = yaml.safe_load(content)
     # Perform some sanity checks on recipe expansion/normalization
     print("Expanded recipe:")
@@ -224,11 +231,8 @@ def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
+    recipe = get_recipe(tmpdir, content, config_user)
 
-    recipe = read_recipe_file(recipe_file, config_user)
     assert len(recipe.tasks) == 1
     task = recipe.tasks.pop()
     assert len(task.products) == 1
@@ -346,11 +350,7 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user,
             scripts: null
         """)
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
-
-    recipe = read_recipe_file(recipe_file, config_user)
+    recipe = get_recipe(tmpdir, content, config_user)
 
     assert len(recipe.tasks) == 2
 
@@ -428,11 +428,7 @@ def test_derive(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
-
-    recipe = read_recipe_file(recipe_file, config_user)
+    recipe = get_recipe(tmpdir, content, config_user)
 
     # Check generated tasks
     assert len(recipe.tasks) == 1
@@ -485,11 +481,7 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
-
-    recipe = read_recipe_file(recipe_file, config_user)
+    recipe = get_recipe(tmpdir, content, config_user)
 
     # Check generated tasks
     assert len(recipe.tasks) == 1
@@ -552,11 +544,7 @@ def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
                 script: {script}
         """.format(script=script))
 
-    recipe_file = str(tmpdir / 'recipe_test.yml')
-    with open(recipe_file, 'w') as file:
-        file.write(content)
-
-    recipe = read_recipe_file(recipe_file, config_user)
+    recipe = get_recipe(tmpdir, content, config_user)
     diagnostic_task = recipe.tasks.pop()
 
     # Simulate Python diagnostic run
@@ -608,8 +596,7 @@ def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
         assert product.attributes[key] == tuple(tags[key][k] for k in value)
 
     # Check that recipe tags have been added
-    recipe_record = product.provenance.get_record(
-        'recipe:' + os.path.basename(recipe_file))
+    recipe_record = product.provenance.get_record('recipe:recipe_test.yml')
     assert len(recipe_record) == 1
     for key in ('description', 'references'):
         value = src['documentation'][key]
