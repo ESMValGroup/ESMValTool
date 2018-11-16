@@ -15,15 +15,21 @@
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
 
 # Input arguments
-RECIPE=recipe_perfmetrics_CMIP5.yml
-CONFIG=config-user.yml
+RECIPE=recipe_flato13ipcc_9_8.yml
+CONFIG=config-user-dkrz.yml
 
-# Set environment
-CONDAPATH=  # e.g. /home/soft/miniconda3/
-CONDAENV=   # e.g. $CONDAPATH/envs/esmvaltool/bin
-ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
+cd ..
+python setup.py install
+cd esmvaltool
+#esmvaltool -c $CONFIG --max-datasets 5 $RECIPE
+esmvaltool -c $CONFIG $RECIPE
 
-# Changes below this line should not be required
-export PATH=$PATH:$CONDAPATH/bin/
-conda info --envs
-$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG
+## Set environment
+#CONDAPATH=  # e.g. /home/soft/miniconda3/
+#CONDAENV=   # e.g. $CONDAPATH/envs/esmvaltool/bin
+#ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
+#
+## Changes below this line should not be required
+#export PATH=$PATH:$CONDAPATH/bin/
+#conda info --envs
+#$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG

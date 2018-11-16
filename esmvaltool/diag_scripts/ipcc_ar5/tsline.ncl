@@ -40,6 +40,7 @@ load "interface_scripts/interface.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/scaling.ncl"
+load "./diag_scripts/shared/ensemble.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/xy_line.ncl"
@@ -58,6 +59,7 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   dim_MOD = dimsizes(input_file_info@dataset)
+;print(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -135,6 +137,13 @@ print("work_dir = " + config_user_info@work_dir)
   end if
   end if
 
+  ; Set index of the reference (and alternative) dataset
+  if (isatt(variable_info, "reference_dataset")) then
+    ref_ind = \
+      get_ref_dataset_idx(input_file_info, variable_info@reference_dataset)
+    A_ref = read_data(ref_ind, var0, field_type0)
+  end if
+
   ;; Anomaly
   if (isatt(diag_script_info, "ts_anomaly")) then
       anom = diag_script_info@ts_anomaly
@@ -196,6 +205,29 @@ print("work_dir = " + config_user_info@work_dir)
       ;; time, lat, lon
       if (field_type0.eq."T2Ms") then
 
+          if (isatt(variable_info, "reference_dataset")) then
+
+              if(imod .ne. ref_ind) then
+
+                  ; Determine start/end year
+                  start_year = get_start_year(imod)
+                  end_year = get_end_year(imod)
+                  A_ref_mask = time_operations(A_ref,start_year,end_year,"extract","",0)
+
+                  A0=where(A_ref_mask.eq.A_ref_mask@_FillValue,A_ref_mask@_FillValue,A0)
+
+                  delete(A_ref_mask)
+
+                  out_path = config_user_info@work_dir                             
+                  system("mkdir -p " + out_path)
+                  out_path = out_path + "mask_" + input_file_info@dataset(imod) + ".nc"
+                  A0@ncdf = out_path
+                  A0@diag_script = diag_script
+                  A0@var = var0
+                  ncdf_outfile = ncdf_write(A0, out_path)
+              end if
+          end if
+
           ;; Anomaly
           if(anom .eq. "anom") then
               A0_timavg_ref = time_operations(A0,ref_start,ref_end,"average", "annualclim", True)
@@ -254,6 +286,7 @@ print("work_dir = " + config_user_info@work_dir)
       end if
       delete(procmod)
       procmod = A0_timavg
+      delete(A0_timavg)
 
       ;; Match time coordinate
       if (time_avg.eq."monthly") then

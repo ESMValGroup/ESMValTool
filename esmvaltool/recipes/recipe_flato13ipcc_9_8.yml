@@ -42,12 +42,10 @@ preprocessors:
     regrid:
       target_grid: reference_dataset
       scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    #multi_model_statistics:
-    #  span: overlap
-    #  statistics: [mean]
-    #  exclude: [reference_dataset] 
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset] 
 
 diagnostics:
 
@@ -77,12 +75,12 @@ diagnostics:
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
+      #- {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
+      #- {dataset: CESM1-CAM5-1-FV2}
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
       - {dataset: CMCC-CESM}
@@ -91,9 +89,9 @@ diagnostics:
       - {dataset: CNRM-CM5}
       - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
+      #- {dataset: EC-EARTH, ensemble: r6i1p1}
+      #- {dataset: FGOALS-g2}
+      #- {dataset: FGOALS-s2}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
@@ -111,7 +109,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
+      #- {dataset: MIROC4h}
       - {dataset: MIROC5}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
@@ -131,6 +129,7 @@ diagnostics:
         ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
         ref_start: 1961       #start year of reference period for anomalies
         ref_end: 1990         #end year of reference period for anomalies
+        range_option: 0
         plot_units: "degC"
         # Plot style
         styleset: CMIP5
