@@ -1,8 +1,8 @@
 ---
 
 datasets:
- - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
- - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+ - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1995}
+ - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1999}
 #  - {dataset: EC-EARTH,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 preprocessors:
@@ -18,7 +18,8 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
-        reference_dataset: EC-EARTH
+        reference_dataset: MPI-ESM-LR
+        fx_files: [areacello]
         # additional_datasets:
         #   - {dataset: osisaf, institute: eumetsat, project: OBS, type: obs, version: 1,
         #      freq_folder: daily_mean, mip: OImon, short_name: sic, tier: 2,
@@ -28,7 +29,8 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
-        reference_dataset: EC-EARTH
+        reference_dataset: MPI-ESM-LR
+        fx_files: [areacello]
         # additional_datasets:
         #   - {dataset: piomas, institute: psc, project: OBS, type: recon, version: 1,
         #      freq_folder: monthly_mean, mip: OImon, short_name: siv, tier: 2,
@@ -37,8 +39,10 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
+        reference_dataset: MPI-ESM-LR
         derive: true
         force_derivation: false
+        fx_files: [areacello]
     scripts:
       sea_ice_drift:
         script: seaice_drift/seaice_drift.py
