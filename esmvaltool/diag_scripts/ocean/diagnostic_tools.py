@@ -68,7 +68,6 @@ def get_input_files(cfg, index=0):
     return _get_input_data_files(cfg)
 
 
-
 def bgc_units(cube, name):
     """
     Convert the cubes into some friendlier units.
