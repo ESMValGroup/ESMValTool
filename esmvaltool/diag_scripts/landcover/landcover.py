@@ -217,11 +217,10 @@ def main(cfg):
             values['frac'].append(row['frac'])
         # Compute relative bias in average fractions compared to reference
         reffrac = np.array(values['frac'][-1])
-        for im, modfrac in enumerate(values['frac']):
-            if modnam['frac'][im] != refset[var]:
-                row = ((np.array(modfrac) - reffrac) /  reffrac * 100.0).tolist()
-                values['bias'].append(row)
-                modnam['bias'].append(modnam['frac'][im])
+        for im, modfrac in enumerate(values['frac'][:-1]):
+            row = ((np.array(modfrac) - reffrac) /  reffrac * 100.0).tolist()
+            values['bias'].append(row)
+            modnam['bias'].append(modnam['frac'][im])
 
         # Write plotdata as ascii files for user information
         write_plotdata(cfg, regnam, modnam, values, var)
