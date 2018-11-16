@@ -49,7 +49,8 @@ class defaults(object):
     The properties are used in the routine analysecatchments. Catchments and
     reference values are specific for the default catchment mask. All reference
     values are given in mm a-1. Precip data is based on WFDEI, runoff is based
-    on GRDC, ET is derived from both.
+    on GRDC, ET is derived as the difference of both. The values are updated and
+    differ slightly from the ESMValTool 1 version.
     Properties are
         catchments
         mrro
@@ -59,63 +60,63 @@ class defaults(object):
     catchments = {
         # Catchments with name as used in make_catchment_plots and
         # associated ID used in the catchment mask netCDF file
-        "Amazon": 94,
-        "Parana": 98,
-        "Mackenzie": 76,
-        "Mississippi": 86,
-        "Danube": 14,
-        "Congo": 68,
-        "Niger": 65,
-        "Nile": 60,
-        "Lena": 40,
-        "Yangtze-Kiang": 52,
+        "Amazon":             94,
+        "Parana":             98,
+        "Mackenzie":          76,
+        "Mississippi":        86,
+        "Danube":             14,
+        "Congo":              68,
+        "Niger_Malanville":   65,
+        "Nile":               60,
+        "Lena":               40,
+        "Yangtze-Kiang":      52,
         "Ganges-Brahmaputra": 54,
-        "Murray": 100
+        "Murray":            100,
     }
 
     mrro = {
-        'Amazon': 1195.4477,
-        'Congo': 365.6980,
-        'Danube': 250.9211,
-        'Ganges-Brahmaputra': 672.5738,
-        'Lena': 197.3081,
-        'Mackenzie': 173.9881,
-        'Mississippi': 182.2420,
-        'Murray': 8.2041,
-        'Niger': 31.5160,
-        'Nile': 48.7528,
-        'Parana': 203.0060,
-        'Yangtze-Kiang': 531.6936,
+        'Amazon':             1194.63,
+        'Congo':               365.45,
+        'Danube':              250.75,
+        'Ganges-Brahmaputra':  672.11,
+        'Lena':                199.61,
+        'Mackenzie':           173.87,
+        'Mississippi':         182.12,
+        'Murray':                8.20,
+        'Niger_Malanville':     31.49,
+        'Nile':                 48.72,
+        'Parana':              202.87,
+        'Yangtze-Kiang':       531.33,
     }
 
     pr = {
-        'Amazon': 2253.61,
-        'Congo': 1539.98,
-        'Danube': 809.11,
-        'Ganges-Brahmaputra': 1387.95,
-        'Lena': 399.146,
-        'Mackenzie': 445.342,
-        'Mississippi': 890.034,
-        'Murray': 530.441,
-        'Niger': 436.907,
-        'Nile': 673.565,
-        'Parana': 1311.22,
-        'Yangtze-Kiang': 1032.84
+        'Amazon':             2210.25,
+        'Congo':              1571.41,
+        'Danube':              808.04,
+        'Ganges-Brahmaputra': 1405.84,
+        'Lena':                387.01,
+        'Mackenzie':           450.16,
+        'Mississippi':         897.18,
+        'Murray':              474.62,
+        'Niger_Malanville':    437.90,
+        'Nile':                655.62,
+        'Parana':             1314.66,
+        'Yangtze-Kiang':      1074.79,
     }
 
     evspsbl = {
-        'Amazon': 1014.4023,
-        'Congo': 1203.182,
-        'Danube': 554.5999,
-        'Ganges-Brahmaputra': 722.5962,
-        'Lena': 187.4469,
-        'Mackenzie': 269.2429,
-        'Mississippi': 712.192,
-        'Murray': 465.1909,
-        'Niger': 402.23,
-        'Nile': 602.1752,
-        'Parana': 1085.554,
-        'Yangtze-Kiang': 538.0664
+        'Amazon':             1015.62,
+        'Congo':              1205.96,
+        'Danube':              557.29,
+        'Ganges-Brahmaputra':  733.73,
+        'Lena':                187.40,
+        'Mackenzie':           276.29,
+        'Mississippi':         715.06,
+        'Murray':              466.42,
+        'Niger_Malanville':    406.41,
+        'Nile':                606.90,
+        'Parana':             1111.80,
+        'Yangtze-Kiang':       543.46,
     }
 
 
@@ -220,6 +221,10 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
     """
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_pdf import PdfPages
+
+    # Get colorscheme from recipe
+    colorscheme = cfg.get('colorscheme', 'default')
+    plt.style.use(colorscheme)
 
     for model in plotdata.keys():
         outtype = cfg.get('output_file_type', 'png')
