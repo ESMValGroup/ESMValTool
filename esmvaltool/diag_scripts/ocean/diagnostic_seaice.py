@@ -78,7 +78,7 @@ def calculate_area_time_series(cube, plot_type, threshold):
             collapsed cube, in units of m^2
     """
     data = []
-    times = diagtools.timecoord_to_float(cube.coord('time'))
+    times = diagtools.cube_time_to_float(cube)
     for time_itr, time in enumerate(times):
         icedata = cube[time_itr].data
 

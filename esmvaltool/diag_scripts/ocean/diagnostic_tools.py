@@ -20,6 +20,8 @@ matplotlib.use('Agg')  # noqa
 
 import matplotlib.pyplot as plt
 
+from esmvaltool.diag_scripts.shared._base import _get_input_data_files
+
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -27,7 +29,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 def get_obs_projects():
     """
-    Returns a list of strings with the names of observations projects.
+    Return a list of strings with the names of observations projects.
 
     Please keep this list up to date, or replace it with something more
     sensible.
@@ -57,14 +59,14 @@ def folder(name):
 
 def get_input_files(cfg, index=0):
     """
-    Load input configuration file as a Diction.
+    Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
+    This is a wrappper for the _get_input_data_files function from
+    diag_scripts.shared._base.
     """
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as input_file:
-        metadata = yaml.safe_load(input_file)
-    return metadata
+    return _get_input_data_files(cfg)
+
 
 
 def bgc_units(cube, name):
@@ -86,7 +88,7 @@ def bgc_units(cube, name):
         new_units = 'mg m-3'
 
     if name in ['mfo', ]:
-#       sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
+        # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
 
     if new_units != '':
@@ -98,7 +100,7 @@ def bgc_units(cube, name):
     return cube
 
 
-def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
     """
     Match up model or observations dataset dictionairies from config file.
 
@@ -119,20 +121,33 @@ def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     return ''
 
 
-def timecoord_to_float(times):
+def cube_time_to_float(cube):
     """
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
     """
+    times = cube.coord('time')
+    datetime = guess_calendar_datetime(cube)
+
     dtimes = times.units.num2date(times.points)
     floattimes = []
     for dtime in dtimes:
         # TODO: it would be better to have a calendar dependent value
         # for daysperyear, as this is not accurate for 360 day calendars.
         daysperyear = 365.25
-        floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
+
+        try:
+            dayofyr = dtime.dayofyr
+        except AttributeError:
+            time = datetime(dtime.year, dtime.month, dtime.day)
+            time0 = datetime(dtime.year, 1, 1, 0, 0)
+            dayofyr = (time - time0).days
+
+        floattime = dtime.year + dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
+        if dtime.hour:
+            floattime += dtime.hour / (24. * daysperyear)
         if dtime.minute:
             floattime += dtime.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
@@ -142,22 +157,22 @@ def timecoord_to_float(times):
 def guess_calendar_datetime(cube):
     """Guess the cftime.datetime form to create datetimes."""
     time_coord = cube.coord('time')
-    times = time_coord.units.num2date(time_coord.points)
 
-    print(time_coord)
     if time_coord.units.calendar in ['360_day', ]:
-        dt = cftime.Datetime360Day
+        datetime = cftime.Datetime360Day
     elif time_coord.units.calendar in ['365_day', 'noleap']:
-        dt = cftime.DatetimeNoLeap
+        datetime = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
-        dt = cftime.DatetimeJulian
+        datetime = cftime.DatetimeJulian
+    elif time_coord.units.calendar in ['gregorian', ]:
+        datetime = cftime.DatetimeGregorian
     elif time_coord.units.calendar in ['proleptic_gregorian', ]:
-        dt = cftime.DatetimeProlepticGregorian
+        datetime = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
                        time_coord.units.calendar)
-        dt = cftime.DatetimeGregorian
-    return dt
+        datetime = cftime.DatetimeGregorian
+    return datetime
 
 
 def add_legend_outside_right(
@@ -331,17 +346,15 @@ def make_cube_layer_dict(cube):
         if coord.standard_name in ['depth', 'region']:
             layers.append(coord)
 
-    #layers = cube.coords('depth')
     cubes = {}
-
     if layers == []:
         cubes[''] = cube
         return cubes
 
     if len(layers) > 1:
-        # This field has a strange number of layer dimensuions.
+        # This field has a strange number of layer dimensions.
         # depth and regions?
-        assert 0
+        raise ValueError('This cube has both `depth` & `region` coordinates.')
 
     # iris stores coords as a list with one entry:
     layer_dim = layers[0]
@@ -361,7 +374,6 @@ def make_cube_layer_dict(cube):
         for layer_index, layer in enumerate(layer_dim.points):
             slices = [slice(None) for index in cube.shape]
             slices[coord_dim] = layer_index
-            layer = layer.replace('_',' ').title()
+            layer = layer.replace('_', ' ').title()
             cubes[layer] = cube[tuple(slices)]
-    print (cubes)
     return cubes

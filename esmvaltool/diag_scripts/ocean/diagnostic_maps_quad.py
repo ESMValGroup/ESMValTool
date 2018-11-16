@@ -46,6 +46,22 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
+    """
+    Match up the three models and observations dataset from the configs.
+
+    This function checks that the control_model, exper_model and
+    observational_dataset dictionairies from the recipe are matched with the
+    input file dictionairy in the cfg metadata.
+    """
+    for input_file, intput_dict in input_files_dict.items():
+        intersection = dict(intput_dict.items() & cfg_dict.items())
+        if intersection == cfg_dict:
+            return input_file
+    logger.warning("Unable to match model: %s", model_type)
+    return ''
+
+
 def get_cube_range(cubes):
     """Determinue the minimum and maximum values of an array of cubes."""
     mins = []
@@ -96,9 +112,9 @@ def multi_model_maps(
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = diagtools.match_moddel_to_key(model_type,
-                                                              cfg[model_type],
-                                                              input_files)
+        filenames[model_type] = match_model_to_key(model_type,
+                                                   cfg[model_type],
+                                                   input_files)
 
     # ####
     # Load the data for each layer as a separate cube
