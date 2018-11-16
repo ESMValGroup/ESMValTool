@@ -11,12 +11,13 @@ dependencies:
   - python-stratify
   # Multi language support:
   - ncl
-  - ncurses>5
-  # TODO: add R, julia
-  - r
+  - ncurses=6.1=hfc679d8_1
+  - r-base
   - r-rcpp
   - r-ncdf4
   - r-dotcall64
+  - libgfortran-ng # needed by r packages
+  # TODO: add julia
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py
