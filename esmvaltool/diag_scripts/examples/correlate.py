@@ -20,7 +20,7 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
     record = {
         'caption': caption,
         'statistics': ['corr'],
-        'domain': 'global',
+        'domains': ['global'],
         'plot_type': plot_type,
         'authors': [
             'ande_bo',
