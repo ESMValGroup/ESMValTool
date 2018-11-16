@@ -98,8 +98,11 @@ def make_profiles_plots(
 
     plot_details = {}
     for time_index, time in enumerate(times_float):
-
-        color = cmap((time - time_0) / (times_float[-1] - time_0))
+        print('size:', len(times_float))
+        if times_float[-1] == time_0:
+            color = 'black'
+        else:
+            color = cmap((time - time_0) / (times_float[-1] - time_0))
 
         qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'),
                   c=color)
