@@ -103,6 +103,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -135,6 +136,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -167,13 +169,14 @@ jobs:
             source activate esmvaltool
             set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test
+            python setup.py test --installation
             ncl -V
       - store_artifacts:
           path: /logs
@@ -306,7 +309,8 @@ workflows:
     jobs:
       - python3_test
       - python2_test
-      - python3_install   
+      - python3_install
+
   nightly:
     triggers:
       - schedule:
