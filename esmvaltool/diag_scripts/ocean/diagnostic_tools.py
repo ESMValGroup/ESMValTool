@@ -20,6 +20,8 @@ matplotlib.use('Agg')  # noqa
 
 import matplotlib.pyplot as plt
 
+from esmvaltool.diag_scripts.shared._base import _get_input_data_files
+
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -60,11 +62,11 @@ def get_input_files(cfg, index=0):
     Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
+    This is a wrappper for the _get_input_data_files function from
+    diag_scripts.shared._base.
     """
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as input_file:
-        metadata = yaml.safe_load(input_file)
-    return metadata
+    return _get_input_data_files(cfg)
+
 
 
 def bgc_units(cube, name):
