@@ -16,16 +16,13 @@
 #install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
 
 
-Sys.setenv(TAR = '/bin/tar')
+Sys.setenv(TAR = "/bin/tar")
 
 library(startR)
 library(multiApply)
 library(ggplot2)
 library(yaml)
 library(s2dverification)
-#library(lubridate)
-#source("~/PycharmProjects/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
-#source("/home/Earth/nperez/git/ESMValTool/esmvaltool/diag_scripts/magic_bsc/PC.r")
 library(climdex.pcic)
 
 
@@ -34,9 +31,11 @@ args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 initial.options <- commandArgs(trailingOnly = FALSE)
 file.arg.name <- "--file="
-script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
-script.dirname <- dirname(script.name)
-source(paste0(script.dirname,"/PC.r"))
+script_name <- sub(
+    file.arg.name, "", initial.options[grep(file.arg.name, initial.options)]
+)
+script_dirname <- dirname(script_name)
+source(paste0(script_dirname, "/PC.r"))
 
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
@@ -64,12 +63,12 @@ power_curves <- params$power_curves
 
 data <- Start(model = fullpath_filenames,
               var = var0,
-              var_var = 'var_names',
-              time = 'all',
-              lat = 'all',
-              lon = 'all',
-              lon_var = 'lon',
-              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
+              var_var = "var_names",
+              time = "all",
+              lat = "'all",
+              lon = "all",
+              lon_var = "lon",
+              return_vars = list(time = "model", lon = "model", lat = "model"),
               retrieve = TRUE)
 
 lat <- attr(data, "Variables")$dat1$lat
@@ -93,16 +92,16 @@ print(dim(data))
 print(length(days))
 print(no_of_years)
 dims <- dim(data)
-dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1)
-#print(data[1,1,1:5, 1,1])
+dims <- append(
+    dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1
+)
 print("CC")
 print(dims)
 dims <- dims[-c(1, 4)]
 
 dim(data) <- dims
-data <- aperm(data, c(2,1,3,4))
+data <- aperm(data, c(2, 1, 3, 4))
 names(dim(data)) <- c("year", "day", "lat", "lon")
-#print(data[1,1:5,1,1])
 
 #####################################
 # Cross with PC
@@ -111,43 +110,34 @@ names(dim(data)) <- c("year", "day", "lat", "lon")
 #---------------------------
 # Load PC to use and compute CF for 6h values
 #---------------------------
-seas_data <- Mean1Dim(data,2)
-
-#for (power_curve in power_curves){
-#    pc = read_xml_pc(power_curve)
-#    data_cf <- wind2CF(data,pc1)
-#    dim(data_cf) <- dim(data)
-#    seas_data_cf <- Mean1Dim(data_cf,2)
-
-#}
+seas_data <- Mean1Dim(data, 2)
 
 pc1 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp")
 pc2 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp")
 pc3 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp")
 pc4 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V100_2.0MW.wtp")
 pc5 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V110_2.0MW.wtp")
-#pc4 <- read_pc("/home/Earth/llledo/Repos/WindPower/archive/V100-2MW.txt")
 
-data_cf1 <- wind2CF(data,pc1)
+data_cf1 <- wind2CF(data, pc1)
 dim(data_cf1) <- dim(data)
-data_cf2 <- wind2CF(data,pc2)
+data_cf2 <- wind2CF(data, pc2)
 dim(data_cf2) <- dim(data)
-data_cf3 <- wind2CF(data,pc3)
+data_cf3 <- wind2CF(data, pc3)
 dim(data_cf3) <- dim(data)
-data_cf4 <- wind2CF(data,pc4)
+data_cf4 <- wind2CF(data, pc4)
 dim(data_cf4) <- dim(data)
-data_cf5 <- wind2CF(data,pc5)
+data_cf5 <- wind2CF(data, pc5)
 dim(data_cf5) <- dim(data)
 
 #---------------------------
 # Aggregate daily data to seasonal means
 #---------------------------
 
-seas_data_cf1 <- Mean1Dim(data_cf1,2)
-seas_data_cf2 <- Mean1Dim(data_cf2,2)
-seas_data_cf3 <- Mean1Dim(data_cf3,2)
-seas_data_cf4 <- Mean1Dim(data_cf4,2)
-seas_data_cf5 <- Mean1Dim(data_cf5,2)
+seas_data_cf1 <- Mean1Dim(data_cf1, 2)
+seas_data_cf2 <- Mean1Dim(data_cf2, 2)
+seas_data_cf3 <- Mean1Dim(data_cf3, 2)
+seas_data_cf4 <- Mean1Dim(data_cf4, 2)
+seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 
 #save(seas_erai_gwa,seas_erai_cf1,seas_erai_cf2,seas_erai_cf3,seas_erai_cf4,seas_erai_cf5,lats,lons,variable,seasons,first_year,last_year,bbox,nsdates,nleadtime,nlat,nlon,ratio,file="/esnas/scratch/llledo/PC_sensitivity/PC_sensitivity.Rdata")
 
@@ -159,22 +149,43 @@ seas_data_cf5 <- Mean1Dim(data_cf5,2)
 #---------------------------
 library(RColorBrewer)
 library(abind)
-p <- colorRampPalette(brewer.pal(9,"YlOrRd"))
-q <- colorRampPalette(rev(brewer.pal(11,"RdBu")))
+p <- colorRampPalette(brewer.pal(9, "YlOrRd"))
+q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
 years <- seq(start_year,end_year)
-turb_types <- c("IEC I","IEC I/II","IEC II","IEC II/III","IEC III")
+turb_types <- c("IEC I", "IEC I/II", "IEC II", "IEC II/III", "IEC III")
 
-seas_data_cf_all <- abind(seas_data_cf1,seas_data_cf2,seas_data_cf3,seas_data_cf4,seas_data_cf5,along=0)
+seas_data_cf_all <- abind(
+    seas_data_cf1, seas_data_cf2, seas_data_cf3, seas_data_cf4, seas_data_cf5,
+    along=0
+)
 mean_data_cf_all <- Mean1Dim(seas_data_cf_all,2)
-anom_data_cf_all <- seas_data_cf_all-InsertDim(Mean1Dim(seas_data_cf_all,2),2,dim(data)[1])
-pct_anom_data_cf_all <- (seas_data_cf_all/InsertDim(Mean1Dim(seas_data_cf_all,2),2,dim(data)[1]))-1
+anom_data_cf_all <- seas_data_cf_all-InsertDim(
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+)
+pct_anom_data_cf_all <- (seas_data_cf_all/InsertDim(
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+))-1
 
 #---------------------------
 # Plot seasonal CF maps
 #---------------------------
 
-PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(seas_data_cf_all, 2), lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF from ", model_names, " (", start_year, "-", end_year, ")"),
-           fileout = paste0(plot_dir, "/", "capacity_factor_", model_names,  "_", start_year, "-", end_year, ".png"))
+PlotLayout(
+    PlotEquiMap,
+    c(3,2),
+    Mean1Dim(seas_data_cf_all, 2),
+    lon,
+    lat,
+    filled.continents=F,
+    toptitle=paste0(
+        seasons, " CF from ",
+        model_names, " (", start_year, "-", end_year, ")"
+    ),
+    fileout = paste0(
+        plot_dir, "/", "capacity_factor_",
+        model_names,  "_", start_year, "-", end_year, ".png"
+    )
+)
 
 #---------------------------
 # Plot seasonal CF anomalies maps
