@@ -26,7 +26,7 @@ jobs:
             fi
             conda env update --name esmvaltool
             source activate esmvaltool
-            Rscript esmvaltool/R/setup.R
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -73,7 +73,7 @@ jobs:
             fi
             conda env update --name esmvaltool
             source activate esmvaltool
-            Rscript esmvaltool/R/setup.R
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
