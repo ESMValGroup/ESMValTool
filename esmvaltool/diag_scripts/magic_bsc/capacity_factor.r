@@ -191,9 +191,28 @@ PlotLayout(
 # Plot seasonal CF anomalies maps
 #---------------------------
 
-PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(anom_data_cf_all, 2),lon, lat, filled.continents=F,toptitle=paste0(seasons, " CF Anomaly from ", model_names, " (", start_year, "-", end_year, ")")
-           ,col_titles=turb_types,color_fun=q,brks=seq(-0.25,0.25,0.05),bar_scale=0.5,title_scale=0.7,axelab = F,
-           fileout = paste0(plot_dir, "/", "capacity_factor_anomaly_", model_names,  "_", start_year, "-", end_year, ".png"))
+PlotLayout(
+    PlotEquiMap,
+    c(3,2),
+    Mean1Dim(anom_data_cf_all, 2),
+    lon,
+    lat,
+    filled.continents=F,
+    toptitle=paste0(
+        seasons, " CF Anomaly from ", model_names,
+        " (", start_year, "-", end_year, ")"
+    ),
+    col_titles=turb_types,
+    color_fun=q,
+    brks=seq(-0.25,0.25,0.05),
+    bar_scale=0.5,
+    title_scale=0.7,
+    axelab = F,
+    fileout = paste0(
+        plot_dir, "/", "capacity_factor_anomaly_", model_names,
+        "_", start_year, "-", end_year, ".png"
+    )
+)
 
 
 #---------------------------
@@ -202,12 +221,12 @@ PlotLayout(PlotEquiMap,c(3,2),Mean1Dim(anom_data_cf_all, 2),lon, lat, filled.con
 #---------------------------
 # Correlation maps
 #---------------------------
-cor12 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[1,],x[2,])})
-cor13 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[1,],x[3,])})
-cor14 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[1,],x[4,])})
-cor15 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[1,],x[5,])})
-cor24 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[2,],x[4,])})
-cor35 <- apply(seas_data_cf_all,c(3,4),function(x) {cor(x[3,],x[5,])})
+cor12 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[2,])})
+cor13 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[3,])})
+cor14 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[4,])})
+cor15 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[5,])})
+cor24 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[2,], x[4,])})
+cor35 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[3,], x[5,])})
 
 
 PlotLayout(PlotEquiMap,c(1,2),list(cor13^2,cor35^2,cor24^2,cor15^2),lon,lat,nrow=2,ncol=2,filled.continents=F,toptitle="Seasonal CF determination coef.",
@@ -219,13 +238,35 @@ PlotLayout(PlotEquiMap,c(1,2),list(cor13^2,cor35^2,cor24^2,cor15^2),lon,lat,nrow
 # RMSE maps
 #---------------------------
 rmse <- function(x,y) { sqrt(mean((x-y)^2,na.rm=T)) }
-rmse12 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[1,],x[2,])})
-rmse13 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[1,],x[3,])})
-rmse35 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[3,],x[5,])})
-rmse15 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[1,],x[5,])})
-rmse24 <- apply(anom_data_cf_all,c(3,4),function(x) {rmse(x[2,],x[4,])})
+rmse12 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[2,])})
+rmse13 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[3,])})
+rmse35 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[3,], x[5,])})
+rmse15 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[5,])})
+rmse24 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[2,], x[4,])})
 
-PlotLayout(PlotEquiMap,c(1,2),list(rmse13,rmse35,rmse24,rmse15),lon,lat,nrow=2,ncol=2,filled.continents=F,toptitle="Seasonal CF RMSE",
-           titles=c("between cf1 and cf3","between cf3 and cf5","between cf2 and cf4","between cf1 and cf5"),brks=seq(0,0.08,0.01),bar_scale=0.5,
-           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_rmse_maps_", model_names,  "_", start_year, "-", end_year, ".png"))
-
+PlotLayout(
+    PlotEquiMap,
+    c(1,2),
+    list(rmse13,rmse35,rmse24,rmse15),
+    lon,
+    lat,
+    nrow=2,
+    ncol=2,
+    filled.continents=F,
+    toptitle="Seasonal CF RMSE",
+    titles=c(
+        "between cf1 and cf3",
+        "between cf3 and cf5",
+        "between cf2 and cf4",
+        "between cf1 and cf5"
+    ),
+    brks=seq(0,0.08,0.01),
+    bar_scale=0.5,
+    title_scale=0.7,
+    axelab=F,
+    color_fun=p,
+    fileout=paste0(
+        plot_dir, "/", "capacity_factor_rmse_maps_", model_names,
+        "_", start_year, "-", end_year, ".png"
+    )
+)
