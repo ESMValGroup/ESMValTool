@@ -14,7 +14,7 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
-            cat esmvaltool/R/r_requirements.txt >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
@@ -61,7 +61,7 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
-            cat esmvaltool/R/r_requirements.txt >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:

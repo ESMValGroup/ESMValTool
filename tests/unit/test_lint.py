@@ -79,46 +79,28 @@ def test_nclcodestyle():
     assert success, "Your NCL code does not follow our formatting standards."
 
 
-def test_r_lint():
+def test_r_lint(monkeypatch):
     """Test R lint."""
-    environ = dict(os.environ)
+    monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
+    package_root = os.path.dirname(
+        os.path.dirname(os.path.dirname(__file__))
+    )
+    checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
     try:
-        os.environ["LINTR_COMMENT_BOT"] = "FALSE"
-        package_root = os.path.dirname(
-            os.path.dirname(os.path.dirname(__file__))
+        output = subprocess.check_output(
+            ('Rscript', checker, package_root), stderr=subprocess.STDOUT,
+            universal_newlines=True
         )
-        checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
-        if six.PY3:
-            process = subprocess.run(
-                ('Rscript', checker, package_root),
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                universal_newlines=True
-            )
-            stdout = process.stdout
-            stderr = process.stderr
-        else:
-            process = subprocess.Popen(
-                ('Rscript', checker, package_root),
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                universal_newlines=True
-            )
-            stdout, stderr = process.communicate()
+        print(output)
+        return
+    except subprocess.CalledProcessError as ex:
+        print(textwrap.dedent("""
+            Your R code does not follow our formatting standards.
 
-        if process.returncode:
-            print(textwrap.dedent("""
-                Your R code does not follow our formatting standards.
+            Please fix the following issues:
+        """))
+        print(ex.output)
 
-                Please fix the following issues:
-            """))
-            print(stdout)
-            print(stderr)
-            assert False,\
-                'Your R code does not follow our formatting standards.'
-        else:
-            print(stdout)
-            print(stderr)
-    except Exception:
-        raise
-    finally:
-        os.environ.clear()
-        os.environ.update(environ)
+    assert False,\
+        'Your R code does not follow our formatting standards.'
+
