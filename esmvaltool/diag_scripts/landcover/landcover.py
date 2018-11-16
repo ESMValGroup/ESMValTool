@@ -21,8 +21,8 @@ def write_plotdata(cfg, regnam, modnam, values, var):
         Configuration dictionary of the recipe
     regname : list
         list containing the region names
-    modnam : list
-        list containing the dataset names
+    modnam : dict
+        containing list of dataset names for specific metrics
     values : dict
         dictionary of nested list containing the keys
         area --> region sums in 1.0e+6 km2
@@ -33,19 +33,20 @@ def write_plotdata(cfg, regnam, modnam, values, var):
 
     # Header information for different metrics
     filehead = {'area': 'Accumulated land coverage for '+var+' in different regions [1.0e+6 km2]',
-                'frac': 'Average land cover fraction for '+var+' in different regions [&]'}
+                'frac': 'Average land cover fraction for '+var+' in different regions [%]',
+                'bias': 'Bias in average land cover fraction for '+var+' compared to reference [%]'}
     # Write experiment data
     for metric in values.keys():
         filepath = os.path.join(cfg[diag.names.WORK_DIR], '_'.join([metric,var]) + '.txt')
         ncol = len(regnam)
         with open(filepath, 'w') as f:
-            header = '{:25} ' + ncol * ' {:>12}' + '\n'
-            body = '{:25} ' + ncol * ' {:12.4f}' + '\n'
+            header = '{:35} ' + ncol * ' {:>12}' + '\n'
+            body = '{:35} ' + ncol * ' {:12.4f}' + '\n'
             line = [' ',] + regnam
             f.write(filehead[metric]+'\n\n')
             f.write(header.format(*line))
             for ir, row in enumerate(values[metric]):
-                line = [modnam[ir]] + row
+                line = [modnam[metric][ir]] + row
                 f.write(body.format(*line))
 
 
@@ -58,8 +59,8 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         Configuration dictionary of the recipe
     regname : list
         list containing the region names
-    modnam : list
-        list containing the dataset names
+    modnam : dict
+        containing list of dataset names for specific metrics
     values : dict
         dictionary of nested list containing the keys
         area --> region sums in 1.0e+6 km2
@@ -70,14 +71,20 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_pdf import PdfPages
 
+    # Get colorscheme from recipe
+    colorscheme = cfg.get('colorscheme', 'seaborn')
+    plt.style.use(colorscheme)
+
     outtype = cfg.get('output_file_type', 'png')
     logger.info('Generating plots for filetype: ' + outtype)
 
     nicename = {'baresoilFrac': 'bare soil covered', 'treeFrac': 'tree covered', 'grassFrac': 'grass covered'}
     plottitle = {'area': ' '.join(['Accumulated',nicename.get(var,var),'area']),
-                 'frac': ' '.join(['Average',nicename.get(var,var),'fraction'])}
+                 'frac': ' '.join(['Average',nicename.get(var,var),'fraction']),
+                 'bias': ' '.join(['Average',nicename.get(var,var),'fraction bias'])}
     ylabel = {'area': r'Area [$10^6$ km$^2$]',
-              'frac': r'Fraction [%]'}
+              'frac': r'Fraction [%]',
+              'bias': r'Bias [%]'}
 
     # Create pdf in case of pdf output
     if outtype == 'pdf':
@@ -98,11 +105,11 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         for ir, row in enumerate(values[metric]):
             ax.bar(index+ir, row)
 
-        fig.subplots_adjust(bottom=0.30)
+        fig.subplots_adjust(bottom=0.20)
         caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-        for i, label in enumerate(modnam):
+        for i, label in enumerate(modnam[metric]):
             caxe.plot([], [], lw=4, label=label)
-        caxe.legend(ncol=2, loc="lower center", mode="expand")
+        caxe.legend(ncol=2, loc="lower center", fontsize='small')
         caxe.set_axis_off()
 
         if outtype == "pdf":
@@ -132,12 +139,17 @@ def main(cfg):
 
     # Read data and compute long term means
     # to check: Shouldn't this be part of preprocessing?
-    allcubes = {key: [] for key in varlist.short_names()}
-    for dataset_path in datasets:
+    expcubes = {key: [] for key in varlist.short_names()}
+    refcubes = {key: [] for key in varlist.short_names()}
+    refset = {}
+    for dataset_path in sorted(datasets):
         # Get dataset information
         datainfo = datasets.get_dataset_info(path=dataset_path)
         ds = datainfo['dataset']
         var = datainfo['short_name']
+        # Store name of reference data for given variable
+        if var not in refset.keys():
+            refset[var] = datainfo.get('reference_dataset', None)
         # Load data into iris cube
         new_cube = iris.load(dataset_path, varlist.standard_names())[0]
         # Check for expected unit
@@ -147,18 +159,25 @@ def main(cfg):
         # Compute long term mean
         mean_cube = new_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
         # Rename variable in cube
-        mean_cube._var_name = "_".join([var,ds])
+        mean_cube._var_name = "_".join([datainfo.get('cmor_table',''),datainfo.get('dataset',''),
+                              datainfo.get('exp',''),datainfo.get('ensemble','')]).replace('__','_').strip("_")
         mean_cube.long_name = " ".join([var,'for dataset',ds])
         # Update data for dataset
         datasets.set_data(mean_cube.data, dataset_path)
         # Append to cubelist for temporary output
-        allcubes[var].append(mean_cube)
+        if ds == refset[var]:
+            refcubes[var].append(mean_cube)
+        else:
+            expcubes[var].append(mean_cube)
 
     # Write regridded and temporal aggregated netCDF data files (one per model)
     # to do: update attributes
-    for var in allcubes.keys():
+    allcubes = {key: [] for key in varlist.short_names()}
+    for var in expcubes.keys():
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join(['postproc', var]) + '.nc')
+        # Join cubes in one list with ref being the last entry
+        allcubes[var] = expcubes[var] + refcubes[var]
         if cfg[diag.names.WRITE_NETCDF]:
             iris.save(allcubes[var], filepath)
             logger.info("Writing %s", filepath)
@@ -167,14 +186,17 @@ def main(cfg):
     regdef = {'Global': None, 'Tropics': [-30,30], 'North. Hem.': [30,90], 'South. Hem.': [-90,-30]}
     regnam  = list(regdef.keys())
     for var in allcubes.keys():
-        values = {'area': [], 'frac': [],}
-        modnam = []
+        values = {'area': [], 'frac': [], 'bias': []}
+        modnam = {'area': [], 'frac': [], 'bias': []}
+        # Compute metrices for all datasets of a given variable
         for sub_cube in allcubes[var]:
-            modnam.append('_'.join(sub_cube._var_name.split('_')[1:]))
+            dataset_name = sub_cube._var_name
+            modnam['area'].append(dataset_name)
+            modnam['frac'].append(dataset_name)
             cellarea = sub_cube.copy()
             cellarea.name = 'cellarea'
             cellarea.data = iris.analysis.cartography.area_weights(allcubes[var][0], normalize=False)
-            row = {'area': [], 'frac': [],}
+            row = {'area': [], 'frac': []}
             # Compute land cover area in million km2:
             # area = Percentage * 0.01 * area [m2]
             #      / 1.0e+6 [km2]
@@ -193,6 +215,13 @@ def main(cfg):
                     row['frac'].append(sub_cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN, weights=cellarea.data).data.tolist())
             values['area'].append(row['area'])
             values['frac'].append(row['frac'])
+        # Compute relative bias in average fractions compared to reference
+        reffrac = np.array(values['frac'][-1])
+        for im, modfrac in enumerate(values['frac']):
+            if modnam['frac'][im] != refset[var]:
+                row = ((np.array(modfrac) - reffrac) /  reffrac * 100.0).tolist()
+                values['bias'].append(row)
+                modnam['bias'].append(modnam['frac'][im])
 
         # Write plotdata as ascii files for user information
         write_plotdata(cfg, regnam, modnam, values, var)

@@ -52,4 +52,5 @@ diagnostics:
     scripts:
       landcover:
         script: landcover/landcover.py
+        colorscheme: seaborn-darkgrid
 
