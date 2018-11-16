@@ -13,7 +13,6 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import yaml
 import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
@@ -216,20 +215,11 @@ def add_legend_outside_right(
     for index in sorted(plot_details.keys()):
         colour = plot_details[index]['c']
 
-        try:
-            linewidth = plot_details[index]['lw']
-        except KeyError:
-            linewidth = 1.
+        linewidth = plot_details[index].get('lw', 1)
 
-        try:
-            linestyle = plot_details[index]['ls']
-        except KeyError:
-            linestyle = '-'
+        linestyle = plot_details[index].get('ls', '-')
 
-        try:
-            label = plot_details[index]['label']
-        except KeyError:
-            label = str(index)
+        label = plot_details[index].get('label', str(index))
 
         plt.plot(
             [], [],
