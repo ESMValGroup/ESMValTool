@@ -72,6 +72,8 @@ def make_profiles_plots(
         cfg,
         metadata,
         filename,
+        obs_metadata={},
+        obs_filename='',
 ):
     """
     Make a simple profile plot for an individual model.
@@ -90,7 +92,6 @@ def make_profiles_plots(
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
-    #
     times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
@@ -107,8 +108,20 @@ def make_profiles_plots(
         qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'),
                   c=color)
 
-        plot_details[time_index] = {'c': color, 'ls': '-', 'lw': 1,
-                                    'label': str(int(time))}
+        plot_details[str(time_index)] = {'c': color, 'ls': '-', 'lw': 1,
+                                         'label': str(int(time))}
+
+    # Add observational data.
+    if obs_filename:
+        obs_cube = iris.load_cube(obs_filename)
+        obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
+        obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+
+        obs_key = obs_metadata['dataset']
+        qplt.plot(obs_cube, obs_cube.coord('depth'), c='black')
+
+        plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
+                                 'label': obs_key}
 
     # Add title to plot
     title = ' '.join([
@@ -156,7 +169,16 @@ def main(cfg):
         )
 
         metadatas = diagtools.get_input_files(cfg, index=index)
+
+        obs_key = 'observational_dataset'
+        obs_filename = diagtools.match_model_to_key(obs_key,
+                                                    cfg[obs_key],
+                                                    metadatas)
+
         for filename in sorted(metadatas.keys()):
+
+            if filename == obs_filename:
+                continue
 
             logger.info('-----------------')
             logger.info(
@@ -166,7 +188,9 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            make_profiles_plots(cfg, metadatas[filename], filename)
+            make_profiles_plots(cfg, metadatas[filename], filename,
+                                obs_metadata=metadatas[obs_filename],
+                                obs_filename=obs_filename)
 
     logger.info('Success')
 

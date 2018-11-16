@@ -13,6 +13,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+import yaml
 import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
@@ -186,8 +187,7 @@ def add_legend_outside_right(
     where the first level is some key (which is hidden)
     and the 2nd level contains the keys:
         'c': color
-        'lw': line width (optional)
-        'ls': line style (optional)
+        'lw': line width
         'label': label for the legend.
     ax1 is the axis where the plot was drawn.
     """
@@ -213,13 +213,25 @@ def add_legend_outside_right(
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
-        colour = plot_details[index]['c']
+        try:
+            colour = plot_details[index]['c']
+        except AttributeError:
+            colour = plot_details[index]['colour']
 
-        linewidth = plot_details[index].get('lw', 1)
+        try:
+            linewidth = plot_details[index]['lw']
+        except AttributeError:
+            linewidth = 1.
 
-        linestyle = plot_details[index].get('ls', '-')
+        try:
+            linestyle = plot_details[index]['ls']
+        except AttributeError:
+            linestyle = '-'
 
-        label = plot_details[index].get('label', str(index))
+        try:
+            label = plot_details[index]['label']
+        except AttributeError:
+            label = str(index)
 
         plt.plot(
             [], [],

@@ -97,8 +97,8 @@ def multi_model_maps(
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
         filenames[model_type] = diagtools.match_model_to_key(model_type,
-                                                   cfg[model_type],
-                                                   input_files)
+                                                             cfg[model_type],
+                                                             input_files)
 
     # ####
     # Load the data for each layer as a separate cube

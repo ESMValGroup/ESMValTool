@@ -371,9 +371,9 @@ def main(cfg):
         model_type = 'observational_dataset'
         logger.debug('model_type: %s, %s', index, model_type,)
         logger.debug('metadatas:  %s, %s', index, metadatas,)
-        obs_filename = diagtools.match_moddel_to_key('observational_dataset',
-                                                     cfg[model_type],
-                                                     metadatas)
+        obs_filename = diagtools.match_model_to_key('observational_dataset',
+                                                    cfg[model_type],
+                                                    metadatas)
         for filename in sorted(metadatas.keys()):
 
             if filename == obs_filename:
