@@ -1,15 +1,17 @@
 import os
 from pprint import pformat
 from textwrap import dedent
-from mock import create_autospec
 
+import iris
 import pytest
 import yaml
-from netCDF4 import Dataset
+from mock import create_autospec
 
 import esmvaltool
 from esmvaltool._recipe import TASKSEP, read_recipe_file
 from esmvaltool._task import DiagnosticTask
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
 from esmvaltool.preprocessor._io import concatenate_callback
 
@@ -66,22 +68,28 @@ def config_user(tmpdir):
     return cfg
 
 
-def create_test_file(filename):
+def create_test_file(filename, tracking_id=None):
     dirname = os.path.dirname(filename)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    attributes = {
-        'tracking_id': 'xyz',
-    }
+    attributes = {}
+    if tracking_id is not None:
+        attributes['tracking_id'] = tracking_id
+    cube = iris.cube.Cube([], attributes=attributes)
 
-    with Dataset(filename, 'w') as dataset:
-        for key, value in attributes.items():
-            setattr(dataset, key, value)
+    iris.save(cube, filename)
 
 
 @pytest.fixture
 def patched_datafinder(tmpdir, monkeypatch):
+    def tracking_ids(i=0):
+        while True:
+            yield i
+            i += 1
+
+    tracking_id = tracking_ids()
+
     def find_files(_, filename):
         # Any occurrence of [something] in filename should have
         # been replaced before this function is called.
@@ -102,7 +110,7 @@ def patched_datafinder(tmpdir, monkeypatch):
             filenames.append(filename)
 
         for file in filenames:
-            create_test_file(file)
+            create_test_file(file, next(tracking_id))
         return filenames
 
     monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
@@ -495,3 +503,115 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
     check_provenance(ancestor_product)
+
+
+def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
+
+    script = tmpdir / 'diagnostic.py'
+    with script.open('w'):
+        pass
+
+    content = dedent("""
+        documentation:
+          description: This is a test recipe.
+          authors:
+            - ande_bo
+          references:
+            - contact_authors
+            - acknow_project
+          projects:
+            - c3s-magic
+        diagnostics:
+          diagnostic_name:
+            themes:
+              - phys
+            realms:
+              - atmos
+            variables:
+              chl:
+                project: CMIP5
+                mip: Oyr
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: TO3Y
+                ensemble: r1i1p1
+                additional_datasets:
+                  - dataset: CanESM2
+            scripts:
+              script_name:
+                script: {script}
+        """.format(script=script))
+
+    recipe_file = str(tmpdir / 'recipe_test.yml')
+    with open(recipe_file, 'w') as file:
+        file.write(content)
+
+    recipe = read_recipe_file(recipe_file, config_user)
+    diagnostic_task = recipe.tasks.pop()
+
+    # Simulate Python diagnostic run
+    cfg = diagnostic_task.settings
+    input_files = [
+        p.filename for a in diagnostic_task.ancestors for p in a.products
+    ]
+    record = {
+        'caption': 'Test plot',
+        'plot_file': get_plot_filename('test', cfg),
+        'statistics': ['mean', 'var'],
+        'domains': ['trop', 'et'],
+        'plot_type': 'zonal',
+        'authors': ['ande_bo'],
+        'references': ['acknow_project'],
+        'ancestors': input_files,
+    }
+
+    diagnostic_file = get_diagnostic_filename('test', cfg)
+    create_test_file(diagnostic_file)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, record)
+
+    diagnostic_task._collect_provenance()
+    # Done simulating diagnostic run
+
+    # Check resulting product
+    product = diagnostic_task.products.pop()
+    check_provenance(product)
+    for key in ('caption', 'plot_file'):
+        assert product.attributes[key] == record[key]
+        assert product.entity.get_attribute('attribute:' +
+                                            key).pop() == record[key]
+
+    # Check that diagnostic script tags have been added
+    with open(
+            os.path.join(
+                os.path.dirname(esmvaltool.__file__),
+                'config-references.yml')) as file:
+        tags = yaml.safe_load(file)
+    for key in ('statistics', 'domains', 'authors', 'references'):
+        assert product.attributes[key] == tuple(
+            tags[key][k] for k in record[key])
+
+    # Check that recipe diagnostic tags have been added
+    src = yaml.safe_load(content)
+    for key in ('realms', 'themes'):
+        value = src['diagnostics']['diagnostic_name'][key]
+        assert product.attributes[key] == tuple(tags[key][k] for k in value)
+
+    # Check that recipe tags have been added
+    recipe_record = product.provenance.get_record(
+        'recipe:' + os.path.basename(recipe_file))
+    assert len(recipe_record) == 1
+    for key in ('description', 'references'):
+        value = src['documentation'][key]
+        if key == 'references':
+            value = ', '.join(tags[key][k] for k in value)
+        assert recipe_record[0].get_attribute('attribute:' +
+                                              key).pop() == value
+
+    # Test that provenance was saved to netcdf, xml and svg plot
+    cube = iris.load(product.filename)[0]
+    assert 'provenance' in cube.attributes
+    prefix = os.path.splitext(product.filename)[0] + '_provenance'
+    assert os.path.exists(prefix + '.xml')
+    assert os.path.exists(prefix + '.svg')
