@@ -42,7 +42,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
-    logger.info('>>>>>>>> DUMMY_C3S_511.py is running! <<<<<<<<<<<<')
+    logger.info('>>>>>>>> DUMMY_C3S_511_SPQB.py is running! <<<<<<<<<<<<')
 
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from data set %s",
