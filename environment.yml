@@ -3,17 +3,16 @@
 name: esmvaltool
 channels:
   - conda-forge
-  - r
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  # TODO when switching to iris 2.x, switch straight to 2.1+
   - iris=1.13
+  - matplotlib<3
   - python-stratify
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1
-  - r-base=3.5.1
+  - r-base
   - r-rcpp
   - libgfortran-ng # needed by r packages
   # TODO: add julia

@@ -32,7 +32,7 @@ REQUIREMENTS = {
         'cf_units',
         'cython',
         # 'scitools-iris',  # Only iris 2 is on PyPI
-        'matplotlib',
+        'matplotlib<3',
         'netCDF4',
         'numba',
         'numpy',
@@ -67,6 +67,7 @@ REQUIREMENTS = {
         'pydocstyle',
         'pylint',
         'sphinx',
+        'sphinx_rtd_theme',
         'yamllint',
         'yapf',
     ],
