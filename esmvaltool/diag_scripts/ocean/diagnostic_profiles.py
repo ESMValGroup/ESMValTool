@@ -91,7 +91,6 @@ def make_profiles_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
-    times = cube.coord('time')
     times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 

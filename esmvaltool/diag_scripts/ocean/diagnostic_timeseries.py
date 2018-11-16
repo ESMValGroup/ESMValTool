@@ -48,7 +48,6 @@ matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 
 import iris
-import iris.quickplot as qplt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
