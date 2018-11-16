@@ -137,7 +137,7 @@ def get_representant(cube, ref_to_slice):
     return cube[rep_ind]
 
 
-def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
+def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold):
     """Build regridder for 2d regridding"""
     dst_field = cube_to_empty_field(dst_rep)
     src_field = cube_to_empty_field(src_rep)
@@ -178,7 +178,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
     return regridder
 
 
-def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold=.0):
+def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold):
     # pylint: disable=too-many-locals
     # The necessary refactoring will be done for the full 3d regridding.
     """Build regridder for 2.5d regridding"""
