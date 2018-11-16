@@ -18,6 +18,12 @@ ESMF_REGRID_METHODS = {
     'nearest': ESMF.RegridMethod.NEAREST_STOD,
 }
 
+MASK_REGRIDDING_MASK_VALUE = {
+    ESMF.RegridMethod.BILINEAR: np.array([1]),
+    ESMF.RegridMethod.CONSERVE: np.array([1]),
+    ESMF.RegridMethod.NEAREST_STOD: np.array([]),
+}
+
 # ESMF_REGRID_METHODS = {
 #     'bilinear': ESMF.RegridMethod.BILINEAR,
 #     'patch': ESMF.RegridMethod.PATCH,
@@ -149,13 +155,19 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold):
         'ignore_degenerate': True,
     }
     if np.ma.is_masked(src_rep.data):
-        mask_regridder = ESMF.Regrid(src_mask_values=np.array([]),
-                                     **regridding_arguments)
-        src_field.data[...] = src_rep.data.mask.T
-        regr_field = mask_regridder(src_field, dst_field)
-        dst_mask = regr_field.data[...].T > mask_threshold
+        src_field.data[...] = ~src_rep.data.mask.T
+        src_mask = src_field.grid.get_item(ESMF.GridItem.MASK,
+                                           ESMF.StaggerLoc.CENTER)
+        src_mask[...] = src_rep.data.mask.T
         center_mask = dst_field.grid.get_item(ESMF.GridItem.MASK,
                                               ESMF.StaggerLoc.CENTER)
+        center_mask[...] = 0
+        mask_regridder = ESMF.Regrid(
+            src_mask_values=MASK_REGRIDDING_MASK_VALUE[regrid_method],
+            dst_mask_values=np.array([]),
+            **regridding_arguments)
+        regr_field = mask_regridder(src_field, dst_field)
+        dst_mask = regr_field.data[...].T < mask_threshold
         center_mask[...] = dst_mask.T
     else:
         dst_mask = False
@@ -234,7 +246,7 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold):
     return regridder
 
 
-def build_regridder(src_rep, dst_rep, method, mask_threshold=.0):
+def build_regridder(src_rep, dst_rep, method, mask_threshold=.99):
     """Build regridders from representants"""
     regrid_method = ESMF_REGRID_METHODS[method]
     if src_rep.ndim == 2:
