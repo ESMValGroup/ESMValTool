@@ -28,7 +28,7 @@ print(script_dirname)
 
 # read the dependencies
 dependencies <- scan(
-    paste(script.dirname, "r_requirements.txt", sep = "/"),
+    paste(script_dirname, "r_requirements.txt", sep = "/"),
     what = "character"
 )
 # TODO: find a solution for script directory
