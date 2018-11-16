@@ -10,7 +10,7 @@ jobs:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential gfortran
+            apt-get update -y && apt-get install -y build-essential
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -57,7 +57,7 @@ jobs:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential gfortran
+            apt-get update -y && apt-get install -y build-essential
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -101,7 +101,7 @@ jobs:
             mkdir /logs
             # Install
             apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential gfortran >> /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
@@ -134,7 +134,7 @@ jobs:
             mkdir /logs
             # Install
             apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential gfortran >> /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
