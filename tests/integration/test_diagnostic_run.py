@@ -100,6 +100,10 @@ def test_diagnostic_run(tmpdir, script_file, script):
 
     # Create recipe
     recipe = dedent("""
+        documentation:
+          description: Recipe with no data.
+          authors: [ande_bo]
+
         diagnostics:
           diagnostic_name:
             scripts:

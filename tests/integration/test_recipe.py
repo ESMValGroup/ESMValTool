@@ -116,9 +116,24 @@ def patched_datafinder(tmpdir, monkeypatch):
     monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
 
 
+DEFAULT_DOCUMENTATION = dedent("""
+    documentation:
+      description: This is a test recipe.
+      authors:
+        - ande_bo
+      references:
+        - contact_authors
+        - acknow_project
+      projects:
+        - c3s-magic
+    """)
+
+
 def get_recipe(tempdir, content, cfg):
     """Save and load recipe content."""
     filename = tempdir / 'recipe_test.yml'
+    # Add mandatory documentation section
+    content = DEFAULT_DOCUMENTATION + content
     with filename.open('w') as file:
         file.write(content)
 
@@ -405,7 +420,50 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user,
 
 
 def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
-    pass
+
+    content = dedent("""
+        preprocessors:
+          default: &default
+            average_region:
+              coord1: longitude
+              coord2: latitude
+            multi_model_statistics:
+              span: overlap
+              statistics: [mean ]
+          custom:
+            custom_order: true
+            <<: *default
+
+        diagnostics:
+          diagnostic_name:
+            variables:
+              chl_default: &chl
+                short_name: chl
+                preprocessor: default
+                project: CMIP5
+                mip: Oyr
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                field: TO3Y
+                ensemble: r1i1p1
+                additional_datasets:
+                  - {dataset: CanESM2}
+              chl_custom:
+                <<: *chl
+                preprocessor: custom
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmpdir, content, config_user)
+
+    assert len(recipe.tasks) == 2
+    custom = [t for t in recipe.tasks if t.order != DEFAULT_ORDER][0]
+    default = [t for t in recipe.tasks if t is not custom][0]
+    assert custom.order.index('average_region') < custom.order.index(
+        'multi_model_statistics')
+    assert default.order.index('average_region') > default.order.index(
+        'multi_model_statistics')
 
 
 def test_derive(tmpdir, patched_datafinder, config_user):
@@ -513,15 +571,6 @@ def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
         pass
 
     content = dedent("""
-        documentation:
-          description: This is a test recipe.
-          authors:
-            - ande_bo
-          references:
-            - contact_authors
-            - acknow_project
-          projects:
-            - c3s-magic
         diagnostics:
           diagnostic_name:
             themes:
@@ -590,7 +639,7 @@ def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
             tags[key][k] for k in record[key])
 
     # Check that recipe diagnostic tags have been added
-    src = yaml.safe_load(content)
+    src = yaml.safe_load(DEFAULT_DOCUMENTATION + content)
     for key in ('realms', 'themes'):
         value = src['diagnostics']['diagnostic_name'][key]
         assert product.attributes[key] == tuple(tags[key][k] for k in value)
