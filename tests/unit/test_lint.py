@@ -103,4 +103,3 @@ def test_r_lint(monkeypatch):
 
     assert False,\
         'Your R code does not follow our formatting standards.'
-
