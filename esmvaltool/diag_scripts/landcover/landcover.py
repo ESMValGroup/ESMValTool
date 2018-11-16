@@ -137,6 +137,11 @@ def main(cfg):
     varlist = diag.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", varlist)
 
+    # Get target for comparison [variable, model]
+    comparison = cfg.get('comparison', 'variable')
+    if comparison not in ['variable', 'model']:
+        raise ValueError('Only variable or model are valid comparison targets')
+
     # Read data and compute long term means
     # to check: Shouldn't this be part of preprocessing?
     expcubes = {key: [] for key in varlist.short_names()}
@@ -184,7 +189,8 @@ def main(cfg):
 
     # Compute aggregated area and average fractional coverage for different regions
     regdef = {'Global': None, 'Tropics': [-30,30], 'North. Hem.': [30,90], 'South. Hem.': [-90,-30]}
-    regnam  = list(regdef.keys())
+    regnam = list(regdef.keys())
+    mydata = {key: {} for key in varlist.short_names()}
     for var in allcubes.keys():
         values = {'area': [], 'frac': [], 'bias': []}
         modnam = {'area': [], 'frac': [], 'bias': []}
@@ -221,12 +227,33 @@ def main(cfg):
             row = ((np.array(modfrac) - reffrac) /  reffrac * 100.0).tolist()
             values['bias'].append(row)
             modnam['bias'].append(modnam['frac'][im])
+        mydata[var] = {'values': values, 'groups': modnam}
 
+    # Reshuffle data if models are the comparison target
+    if comparison == 'model':
+        shuffle = {key: {} for key in mydata[var]['groups']['area']}
+        for ds in shuffle.keys():
+            ids = mydata[var]['groups']['area'].index(ds)
+            if refset[var] in ds:
+                shuffle[ds] = {'groups': {'area': [], 'frac': []},
+                               'values': {'area': [], 'frac': []}}
+            else:
+                shuffle[ds] = {'groups': {'area': [], 'frac': [], 'bias': []},
+                               'values': {'area': [], 'frac': [], 'bias': []}}
+            for var in sorted(allcubes.keys()):
+                for metric in shuffle[ds]['groups'].keys():
+                    shuffle[ds]['groups'][metric].append(var)
+                    shuffle[ds]['values'][metric].append(mydata[var]['values'][metric][ids])
+        mydata = shuffle
+
+
+    # Output ascii files and plots
+    for target in mydata.keys():
         # Write plotdata as ascii files for user information
-        write_plotdata(cfg, regnam, modnam, values, var)
+        write_plotdata(cfg, regnam, mydata[target]['groups'], mydata[target]['values'], target)
 
         # Plot area values
-        make_landcover_bars(cfg, regnam, modnam, values, var)
+        make_landcover_bars(cfg, regnam, mydata[target]['groups'], mydata[target]['values'], target)
 
 
 if __name__ == '__main__':
