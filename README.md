@@ -5,6 +5,8 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ESMValGroup?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool.svg?style=svg)](https://circleci.com/gh/ESMValGroup/ESMValTool)
 [![Docker Build Status](https://img.shields.io/docker/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
+[![Anaconda-Server Badge](https://anaconda.org/esmvalgroup/esmvaltool/badges/installer/conda.svg)](https://conda.anaconda.org/esmvalgroup)
+
 
 ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP
 
@@ -27,11 +29,21 @@ To install in development mode, follow these instructions.
 - Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
 - Available recipes are located in the directory `esmvaltool/recipes`.
 
-#### R support
-One more step is requoired for R diagnostics. You should run the command below to install R dependencies:
+### Anaconda Package
+The Anaconda packages can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
+If you already installed Anaconda, you can install ESMValTool by running:
+```
+conda install -c esmvalgroup esmvaltool -c conda-forge -c birdhouse
+```
+
+### R support
+If you haven't installed ESMValTool via Anaconda, one more step is required for R language support. You should run the command below to install R dependencies:
 ```
 Rscript esmvaltool/install/R/setup.R
 ```
+**This step is not needed if you install esmvaltool using anaconda.**
+
+
 
 The dependencies of R diagostics should be added to `esmvaltool/install/R/r_requirements.txt` file.
 
