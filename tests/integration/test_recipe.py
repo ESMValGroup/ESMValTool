@@ -296,11 +296,14 @@ def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
     assert product.settings == defaults
 
 
-def test_reference_dataset(tmpdir, patched_datafinder, config_user):
+def test_reference_dataset(tmpdir, patched_datafinder, config_user,
+                           monkeypatch):
 
-    levels = create_autospec(
-        esmvaltool._recipe.get_reference_levels, return_value=[100])
-    esmvaltool._recipe.get_reference_levels = levels
+    levels = [100]
+    get_reference_levels = create_autospec(
+        esmvaltool._recipe.get_reference_levels, return_value=levels)
+    monkeypatch.setattr(esmvaltool._recipe, 'get_reference_levels',
+                        get_reference_levels)
 
     content = dedent("""
         preprocessors:
@@ -361,11 +364,17 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user):
         p for p in task.products if p.attributes['dataset'] == 'MPI-ESM-LR')
 
     assert product.settings['regrid']['target_grid'] == reference.files[0]
-    assert product.settings['extract_levels']['levels'] == levels.return_value
+    assert product.settings['extract_levels']['levels'] == levels
 
     fix_dir = os.path.splitext(reference.filename)[0] + '_fixed'
-    levels.assert_called_once_with(reference.files[0], 'CMIP5', 'MPI-ESM-LR',
-                                   'ta', fix_dir, 'air_pressure')
+    get_reference_levels.assert_called_once_with(
+        reference.files[0],
+        'CMIP5',
+        'MPI-ESM-LR',
+        'ta',
+        fix_dir,
+        'air_pressure',
+    )
 
     assert 'regrid' not in reference.settings
     assert 'extract_levels' not in reference.settings
