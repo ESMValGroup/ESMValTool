@@ -1,22 +1,13 @@
 """Test diagnostic script runs."""
 import contextlib
 import os
-import shutil
 import sys
-import tempfile
 from textwrap import dedent
 
 import pytest
 import yaml
 
 from esmvaltool._main import run
-
-
-@pytest.fixture
-def tempdir():
-    dirname = tempfile.mkdtemp()
-    yield dirname
-    shutil.rmtree(dirname)
 
 
 def write_config_user_file(dirname):
@@ -97,11 +88,11 @@ SCRIPTS = {
 
 @pytest.mark.install
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tempdir, script_file, script):
+def test_diagnostic_run(tmpdir, script_file, script):
 
-    recipe_file = os.path.join(tempdir, 'recipe_test.yml')
-    script_file = os.path.join(tempdir, script_file)
-    result_file = os.path.join(tempdir, 'result.yml')
+    recipe_file = os.path.join(tmpdir, 'recipe_test.yml')
+    script_file = os.path.join(tmpdir, script_file)
+    result_file = os.path.join(tmpdir, 'result.yml')
 
     # Write script to file
     with open(script_file, 'w') as file:
@@ -119,7 +110,7 @@ def test_diagnostic_run(tempdir, script_file, script):
     with open(recipe_file, 'w') as file:
         file.write(recipe)
 
-    config_user_file = write_config_user_file(tempdir)
+    config_user_file = write_config_user_file(tmpdir)
     with arguments('esmvaltool', '-c', config_user_file, recipe_file):
         run()
 
