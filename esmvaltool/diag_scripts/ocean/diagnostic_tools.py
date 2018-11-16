@@ -188,7 +188,8 @@ def add_legend_outside_right(
     where the first level is some key (which is hidden)
     and the 2nd level contains the keys:
         'c': color
-        'lw': line width
+        'lw': line width (optional)
+        'ls': line style (optional)
         'label': label for the legend.
     ax1 is the axis where the plot was drawn.
     """
@@ -214,24 +215,21 @@ def add_legend_outside_right(
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
-        try:
-            colour = plot_details[index]['c']
-        except AttributeError:
-            colour = plot_details[index]['colour']
+        colour = plot_details[index]['c']
 
         try:
             linewidth = plot_details[index]['lw']
-        except AttributeError:
+        except KeyError:
             linewidth = 1.
 
         try:
             linestyle = plot_details[index]['ls']
-        except AttributeError:
+        except KeyError:
             linestyle = '-'
 
         try:
             label = plot_details[index]['label']
-        except AttributeError:
+        except KeyError:
             label = str(index)
 
         plt.plot(
