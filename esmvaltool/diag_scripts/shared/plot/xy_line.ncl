@@ -16,11 +16,7 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
-
 load "./diag_scripts/shared/set_operators.ncl"
-
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
@@ -284,11 +280,12 @@ begin
   if (.not.isatt(diag_script_info, "styleset")) then
     diag_script_info@styleset = "DEFAULT"
   end if
-  colors = project_style(diag_script_info, "colors")
-  dashes = project_style(diag_script_info, "dashes")
-  thicks = tofloat(project_style(diag_script_info, "thicks"))
-  annots = project_style(diag_script_info, "annots")
-  avgstd = project_style(diag_script_info, "avgstd")
+  ; FIX-ME: project_style function has changed
+  ; colors = project_style(diag_script_info, "colors")
+  ; dashes = project_style(diag_script_info, "dashes")
+  ; thicks = tofloat(project_style(diag_script_info, "thicks"))
+  ; annots = project_style(diag_script_info, "annots")
+  ; avgstd = project_style(diag_script_info, "avgstd")
 
   ; Set default ressources
   res = True
@@ -561,8 +558,9 @@ begin
   wks = get_wks(wks_in, diag_script, var)
 
   ; Define line colors (first color is used for the observations)
-  colors = project_style(diag_script_info, "colors")
-  annots = project_style(diag_script_info, "annots")
+  ; FIX-ME: project_style function has changed
+  ; colors = project_style(diag_script_info, "colors")
+  ; annots = project_style(diag_script_info, "annots")
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
@@ -1064,8 +1062,9 @@ begin
   wks = get_wks(wks_in, diag_script, var)
 
   ; Define line colors (first color is used for the observations)
-  colors = project_style(diag_script_info, "colors")
-  annots = project_style(diag_script_info, "annots")
+  ; FIX-ME: project_style function has changed
+  ; colors = project_style(diag_script_info, "colors")
+  ; annots = project_style(diag_script_info, "annots")
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
@@ -1512,11 +1511,12 @@ begin
 
   ; Select colors and other plotting attributes
   ; (see ./diag_scripts/shared/plot/style.ncl)
-  colors = project_style(diag_script_info, "colors")
-  dashes = project_style(diag_script_info, "dashes")
-  thicks = project_style(diag_script_info, "thicks")
-  annots = project_style(diag_script_info, "annots")
-  avgstd = project_style(diag_script_info, "avgstd")
+  ; FIX-ME: project_style function has changed
+  ; colors = project_style(diag_script_info, "colors")
+  ; dashes = project_style(diag_script_info, "dashes")
+  ; thicks = project_style(diag_script_info, "thicks")
+  ; annots = project_style(diag_script_info, "annots")
+  ; avgstd = project_style(diag_script_info, "avgstd")
 
   ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
@@ -1536,11 +1536,12 @@ begin
     input_file_info@dataset = "model_mean"
 
     ; See ./diag_scripts/shared/plot/style.ncl
-    colors_mmm = project_style(diag_script_info, "colors")
-    dashes_mmm = project_style(diag_script_info, "dashes")
-    thicks_mmm = project_style(diag_script_info, "thicks")
-    annots_mmm = project_style(diag_script_info, "annots")
-    avgstd_mmm = project_style(diag_script_info, "avgstd")
+    ; FIX-ME: project_style function has changed
+    ; colors_mmm = project_style(diag_script_info, "colors")
+    ; dashes_mmm = project_style(diag_script_info, "dashes")
+    ; thicks_mmm = project_style(diag_script_info, "thicks")
+    ; annots_mmm = project_style(diag_script_info, "annots")
+    ; avgstd_mmm = project_style(diag_script_info, "avgstd")
     delete(input_file_info)
     input_file_info = temp  ; restore original "input_file_info"
     copy_VarMeta(temp, input_file_info)
@@ -1895,12 +1896,14 @@ end
 undef("cycle_plot")
 function cycle_plot(wks_in[1],
                     source,
-                    varname[1] : string)
+                    varname[1]: string,
+                    items: list)
 ;
 ; Arguments
 ;    wks_in: workstations (graphic object or default will be used).
 ;    source: data to be plotted or a NetCDF filename with data.
 ;    varname: variable name in the file.
+;    items: list of input_file_info metadata
 ;
 ; Source prototype
 ;    source(*, *, 2)
@@ -1941,7 +1944,7 @@ begin
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(data, "var")
-    diag_script = att2var(data, "diag_script")
+    DIAG_SCRIPT = att2var(data, "diag_script")
   else
     var = varname
   end if
@@ -1952,14 +1955,14 @@ begin
 
   ; Select colors and other plotting attributes from the project style files
   ; See ./diag_scripts/shared/plot/style.ncl
-  colors = project_style(diag_script_info, "colors")
-  dashes = project_style(diag_script_info, "dashes")
-  thicks = project_style(diag_script_info, "thicks")
-  annots = project_style(diag_script_info, "annots")
-  avgstd = project_style(diag_script_info, "avgstd")
+  colors = project_style(items, diag_script_info, "colors")
+  dashes = project_style(items, diag_script_info, "dashes")
+  thicks = project_style(items, diag_script_info, "thicks")
+  annots = project_style(items, diag_script_info, "annots")
+  avgstd = project_style(items, diag_script_info, "avgstd")
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks_out = get_wks(wks_in, diag_script, var)
+  wks_out = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define default plot resources
   res                  = True
