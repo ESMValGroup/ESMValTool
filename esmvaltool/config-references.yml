@@ -56,6 +56,10 @@ authors:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
     email: oliverdandrews 'at' googlemail.com
+  arno_en:
+    name: Arnone, Enrico
+    institute: ISAC-CNR, Torino, Italy
+    email: e.arnone 'at' isac.cnr.it 
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -102,6 +106,10 @@ authors:
   hann_ul:
     name: Hansson, Ulf
     institute: SMHI, Sweden
+  hard_jo:
+    name: von Hardenberg, Jost
+    institute: ISAC-CNR, Torino, Italy
+    email: j.vonhardenberg 'at' isac.cnr.it    
   hemp_ni:
     name: Hempelmann, Nils
     institute: IPSL, France
@@ -413,6 +421,7 @@ references:
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030, doi:10.1175/2008JCLI2731.1, 2009."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
+  donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
   duemenil00mpimr: "Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
   emmons00jgr: "Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000."
   eyring06jgr: "Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006."
@@ -437,6 +446,7 @@ references:
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."
+  rebora06jhm: "Rebora et. al., JHM 7, 724, 2006."
   righi13acp: "Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013."
   righi15gmd: "Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
