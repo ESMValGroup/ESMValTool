@@ -1,30 +1,53 @@
 """
-Diagnostic Maps quad.
+Model 1 vs Model 2 vs Observations diagnostics
+==============================================
 
-Diagnostic to produce an image showing four maps.
-These plost show latitude vs longitude and the cube value is used as the colour
-scale.
-        model1              model 1 minus model2
-        model2 minus obs    model1 minus obs
+Diagnostic to produce an image showing four maps, based on a comparison of two
+differnt models results against an observational dataset. This process is
+often used to compare a new iteration of a model under development against
+a previous version of the same model. The four map plots are:
+
+* Top left: model 1
+* Top right: model 1 minus model 2
+* Bottom left: model 2 minus obs
+* Bottom right: model 1 minus obs
+
+All four plots show latitude vs longitude and the cube value is used as the
+colour scale.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
+An approproate preprocessor for a 3D+time field would be::
+
+  preprocessors:
+    prep_map:
+      extract_levels:
+        levels:  [100., ]
+        scheme: linear_extrap
+      time_average:
+
+This diagnostic also requires the ``exper_model``, ``exper_model`` and
+``observational_dataset`` keys in the recipe::
+
+  diagnostics:
+     diag_name:
+       ...
+       scripts:
+         Global_Ocean_map:
+           script: ocean/diagnostic_maps_quad.py
+           exper_model:  {Model 1 dataset details}
+           control_model: {Model 2 dataset details}
+           observational_dataset: {Observational dataset details}
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool,
 and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
+
 """
 import logging
 import os
@@ -38,7 +61,7 @@ import iris.quickplot as qplt
 
 import numpy as np
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -46,27 +69,24 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def get_cube_range(cubes):
-    """Determinue the minimum and maximum values of an array of cubes."""
-    mins = []
-    maxs = []
-    for cube in cubes:
-        mins.append(cube.data.min())
-        maxs.append(cube.data.max())
-    return [np.min(mins), np.max(maxs), ]
-
-
-def get_cube_range_diff(cubes):
-    """Determinue the largest deviation from zero in an array of cubes."""
-    ranges = []
-    for cube in cubes:
-        ranges.append(np.abs(cube.data.min()))
-        ranges.append(np.abs(cube.data.max()))
-    return [-1. * np.max(ranges), np.max(ranges)]
-
-
 def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
-    """Create a map subplot."""
+    """
+    Add a map subplot to the current pyplot figure.
+
+    Parameters
+    ----------
+    subplot: int
+        The matplotlib.pyplot subplot number. (ie 221)
+    cube: iris.cube.Cube
+        the iris cube to be plotted.
+    nspace: numpy.array
+        An array of the ticks of the colour part.
+    title: str
+        A string to set as the subplot title.
+    cmap: str
+        A string to describe the matplotlib colour map.
+
+    """
     plt.subplot(subplot)
     qplot = qplt.contourf(cube, nspace, linewidth=0,
                           cmap=plt.cm.get_cmap(cmap))
@@ -83,11 +103,15 @@ def multi_model_maps(
         input_files,
 ):
     """
-    Make a simple map plot for an individual model.
+    Makes the four pane model vs model vs obs comparison plot.
 
-    The cfg is the opened global config,
-    input_files is the input files dictionairy
-    filename is the preprocessing model file.
+    Parameters
+     ----------
+     cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+     input_files: dict
+        the metadata dictionairy
+
     """
     filenames = {}
     ctl_key = 'control_model'
@@ -137,8 +161,8 @@ def multi_model_maps(
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange1 = get_cube_range([cube221, ])
-        zrange2 = get_cube_range_diff([cube222, cube223, cube224])
+        zrange1 = diagtools.get_cube_range([cube221, ])
+        zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
         linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
@@ -172,7 +196,11 @@ def main(cfg):
     """
     Load the config file, and send it to the plot maker.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(

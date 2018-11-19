@@ -1,6 +1,6 @@
 """
-Diagnostic Maps:
-----------------
+Maps diagnostics
+================
 
 Diagnostic to produce images of a map with coastlines from a cube.
 These plost show latitude vs longitude and the cube value is used as the colour
@@ -11,18 +11,21 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
+An approproate preprocessor for a 3D+time field would be::
+
+  preprocessors:
+    prep_map:
+      extract_levels:
+        levels:  [100., ]
+         scheme: linear_extrap
+      time_average:
+
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
+
 """
 import logging
 import os
@@ -38,7 +41,7 @@ import cartopy
 
 from esmvaltool.preprocessor._regrid import _stock_cube
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -47,7 +50,23 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def regrid_irregulars(cube, scheme='nearest'):
-    """Regrid irregular grids."""
+    """Regrid irregular grids.
+
+    This function uses the regridding preprocessor.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+    scheme: str
+        The string describing the regirdding scheme.
+
+    Returns
+    -------
+    iris.cube.Cube
+        the cube with the new grid.
+
+    """
     lats = cube.coord('latitude')
     if lats.ndim == 1:
         return cube
@@ -69,9 +88,15 @@ def make_map_plots(
     """
     Make a simple map plot for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+    filename: str
+        the preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -142,9 +167,15 @@ def make_map_contour(
     """
     Make a simple contour map plot for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+    filename: str
+        the preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -244,8 +275,13 @@ def multi_model_contours(
     """
     Make a contour map showing several models.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy.
+
     """
     ####
     # Load the data for each layer as a separate cube
@@ -363,9 +399,13 @@ def multi_model_contours(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot makers.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(

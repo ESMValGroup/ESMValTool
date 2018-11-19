@@ -1,27 +1,29 @@
 """
-Diagnostic transect:
+Transects diagnostics
+=====================
 
-Diagnostic to produce images of a transect.
-These plost show either latitude or longitude against depth, and the cube value
-is used as the colour scale.
+Diagnostic to produce images of a transect. These plost show either latitude or
+longitude against depth, and the cube value is used as the colour scale.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, and one of the latitude or
 longitude coordinates has been reduced to a single value.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_transect:
-    time_average:
-    extract_slice: # Atlantic Meridional Transect
-      latitude: [-50.,50.]
-      longitude: 332.
+An approproate preprocessor for a 3D+time field would be::
+
+  preprocessors:
+    prep_transect:
+      time_average:
+      extract_slice: # Atlantic Meridional Transect
+        latitude: [-50.,50.]
+        longitude: 332.
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
+
 """
 import logging
 import os
@@ -34,7 +36,7 @@ import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -47,6 +49,12 @@ def determine_transect_str(cube):
     Determine the Transect String
 
     Takes a guess at a string to describe the transect.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube to use to determine the transect name.
+
     """
     options = ['latitude', 'longitude']
     for option in options:
@@ -72,10 +80,21 @@ def make_transects_plots(
     """
     Make a simple plot of the transect for an indivudual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    This tool loads the cube from the file, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
+
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -118,7 +137,15 @@ def make_transects_plots(
 
 
 def add_sea_floor(cube):
-    """Add a simple sea floor line from the cube mask."""
+    """
+    Add a simple sea floor line from the cube mask.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube to use to produce the sea floor.
+
+    """
     land_cube = cube.copy()
     mask = 1. * land_cube.data.mask
     # mask = np.ma.masked_where(mask==0, mask)
@@ -135,12 +162,23 @@ def make_transect_contours(
         filename,
 ):
     """
-    Make a simple contour plot of the transect for an indivudual model.
+    Make a contour plot of the transect for an indivudual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    This tool loads the cube from the file, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
+
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -216,11 +254,22 @@ def multi_model_contours(
         metadata,
 ):
     """
-    Make a contour transect showing several models.
+    Make a multi model comparison plot showing the transect contour plots of
+    several preprocesssed datasets.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy.
+    This tool loads several cubes from the files, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+
     """
+
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -314,9 +363,14 @@ def multi_model_contours(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file and some metadata, then pass them the plot making
+    tools.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     #####
     for index, metadata_filename in enumerate(cfg['input_files']):

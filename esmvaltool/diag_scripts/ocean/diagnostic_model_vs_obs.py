@@ -1,12 +1,16 @@
 """
-Diagnostic Model vs observations maps.
+Model vs Observations maps Diagnostic
+=====================================
 
 Diagnostic to produce comparison of model and data.
 The first kind of image shows four maps and the other shows a scatter plot.
 
 The four pane image is a latitude vs longitude figures showing:
-        model              obs
-        model minus obs    model1 over obs
+
+* Top left: model
+* Top right: observations
+* Bottom left: model minus observations
+* Bottom right: model over observations
 
 
 The scatter plots plot the matched model coordinate on the x axis, and the
@@ -19,22 +23,24 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
-    regrid:
-      target_grid: 1x1
-      scheme: linear
+An approproate preprocessor for a 3D + time field would be::
+
+  preprocessors:
+    prep_map:
+      extract_levels:
+        levels:  [100., ]
+        scheme: linear_extrap
+      time_average:
+      regrid:
+        target_grid: 1x1
+        scheme: linear
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool,
 and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
+
 """
 import logging
 import os
@@ -52,7 +58,7 @@ import math
 import numpy as np
 from scipy.stats import linregress
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -60,40 +66,27 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def get_cube_range(cubes):
-    """Determinue the minimum and maximum values of an array of cubes."""
-    mins = []
-    maxs = []
-    for cube in cubes:
-        mins.append(cube.data.min())
-        maxs.append(cube.data.max())
-    return [np.min(mins), np.max(maxs), ]
-
-
-def get_array_range(arrays):
-    """Determinue the minimum and maximum values of a list of arrays."""
-    mins = []
-    maxs = []
-    for arr in arrays:
-        mins.append(arr.min())
-        maxs.append(arr.max())
-    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
-    return [np.min(mins), np.max(maxs), ]
-
-
-def get_cube_range_diff(cubes):
-    """Determinue the largest deviation from zero in an array of cubes."""
-    ranges = []
-    for cube in cubes:
-        ranges.append(np.abs(cube.data.min()))
-        ranges.append(np.abs(cube.data.max()))
-    max_range = [-1. * np.max(ranges), np.max(ranges)]
-    logger.info('get_cube_range_diff: %s, %s', max_range)
-    return max_range
-
-
 def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
-    """Create a map subplot."""
+    """
+    Add a map subplot to the current pyplot figure.
+
+    Parameters
+    ----------
+    subplot: int
+        The matplotlib.pyplot subplot number. (ie 221)
+    cube: iris.cube.Cube
+        the iris cube to be plotted.
+    nspace: numpy.array
+        An array of the ticks of the colour part.
+    title: str
+        A string to set as the subplot title.
+    cmap: str
+        A string to describe the matplotlib colour map.
+    log: bool
+        Flag to plot the colour scale linearly (False) or
+        logarithmically (True)
+    """
+
     plt.subplot(subplot)
     logger.info('add_map_subplot: %s', subplot)
     if log:
@@ -122,11 +115,26 @@ def make_model_vs_obs_plots(
         model_filename,
         obs_filename):
     """
-    Make a model vs obs map plot
+    Make a figure showing four maps and the other shows a scatter plot.
 
-    The cfg is the opened global config,
-    metadata is the input files dictionairy
-    filename is the preprocessing model file.
+    The four pane image is a latitude vs longitude figures showing:
+
+    * Top left: model
+    * Top right: observations
+    * Bottom left: model minus observations
+    * Bottom right: model over observations
+
+    Parameters
+    ----------
+     cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+     metadata: dict
+        the input files dictionairy
+    model_filename: str
+        the preprocessed model file.
+    obs_filename: str
+        the preprocessed observations file.
+
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
     logger.debug('make_model_vs_obs_plots filenames: %s', filenames)
@@ -168,8 +176,8 @@ def make_model_vs_obs_plots(
         cube224 = cubes['model'][layer] / cubes['obs'][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange12 = get_cube_range([cube221, cube222])
-        zrange3 = get_cube_range_diff([cube223])
+        zrange12 = diagtools.get_cube_range([cube221, cube222])
+        zrange3 = diagtools.get_cube_range_diff([cube223])
 
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
         zrange4 = [0.1, 10.]
@@ -209,10 +217,21 @@ def make_model_vs_obs_plots(
 
 def round_sig(x, sig=3):
     """
-    param x: a float
-    param sig: number of significant figures
+    Function to round a float to a specific number of significant figures
+    and return it as a string.
 
-    rounds a value to a specific number of significant figures.
+    Parameters
+    ----------
+    x: float
+       The float that is to be rounded.
+    sig: int
+        The number of significant figures.
+
+    Returns
+    ----------
+    str:
+        The rounded output string.
+
     """
     if x == 0.:
         return str(0.)
@@ -225,7 +244,24 @@ def round_sig(x, sig=3):
 
 def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
                           extent=None):
-    """Add a straight line fit to an axis."""
+    """
+    Add a straight line fit to an axis.
+
+    Parameters
+    ----------
+    ax: matplotlib.pyplot.axes
+        The matplotlib axes on which to plot the linear regression.
+    arr_x: numpy.array
+        The data for the x coordinate.
+    arr_y: numpy array
+        The data for the y coordinate.
+    showtext: bool
+        A flag to turn on or off the result of the fit on the plot.
+    addOneToOne: bool
+        A flag to also add a 1:1 line to the figure
+    extent: list of floats
+        The extent of the plot axes.
+    """
 
     beta1, beta0, rValue, pValue, stdErr = linregress(arr_x, arr_y)
     texts = [r'$\^\beta_0$ = ' + round_sig(beta0),
@@ -264,12 +300,23 @@ def make_scatter(
         model_filename,
         obs_filename):
     """
-    Make a model vs obs scatter plot
+    Make scatter plot showing the matched model and observational data with the
+    model data as the x-axis coordinate and the observational data as the
+    y-axis coordinate. A linear regression is also applied to the matched
+    data and the result of the fit is shown on the figure.
 
-    The cfg is the opened global config,
-    metadata is the input files dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+     cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+     metadata: dict
+        the input files dictionairy
+    model_filename: str
+        the preprocessed model file.
+    obs_filename: str
+        the preprocessed observations file.
     """
+
     filenames = {'model': model_filename, 'obs': obs_filename}
     logger.debug('make_model_vs_obs_plots: \t%s', filenames)
     # ####
@@ -358,8 +405,13 @@ def main(cfg):
     """
     Load the config file, and send it to the plot maker.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s, %s',
