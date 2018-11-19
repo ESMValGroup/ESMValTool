@@ -490,6 +490,42 @@ class TestHelpers(tests.Test):
             self.assertTrue((expected_kwargs[key] == kwargs[key]).all())
         self.assertTrue(mock_regrid.call_args_list[1] == expected_calls[1])
 
+    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+                mock_cube_to_empty_field)
+    @mock.patch('ESMF.Regrid')
+    def test_regridder_2d_unmasked_data(self, mock_regrid):
+        field_regridder = mock.Mock(
+            return_value=mock.Mock(data=self.data.T)
+        )
+        mock_regrid.return_value = field_regridder
+        regrid_method = mock.sentinel.rm_bilinear
+        src_rep = mock.MagicMock(data=self.data)
+        dst_rep = mock.MagicMock(shape=(4, 4))
+        regridder = build_regridder_2d(src_rep,
+                                       dst_rep,
+                                       regrid_method, .99)
+        field_regridder.reset_mock()
+        regridder(src_rep)
+        field_regridder.assert_called_once_with(src_rep.field, dst_rep.field)
+
+    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+                mock_cube_to_empty_field)
+    @mock.patch('ESMF.Regrid')
+    def test_regridder_2d_masked_data(self, mock_regrid):
+        field_regridder = mock.Mock(
+            return_value=mock.Mock(data=self.data.T)
+        )
+        mock_regrid.return_value = field_regridder
+        regrid_method = mock.sentinel.rm_bilinear
+        src_rep = mock.MagicMock(data=self.data)
+        dst_rep = mock.MagicMock(shape=(4, 4))
+        regridder = build_regridder_2d(src_rep,
+                                       dst_rep,
+                                       regrid_method, .99)
+        field_regridder.reset_mock()
+        regridder(self.cube)
+        field_regridder.assert_called_once_with(src_rep.field, dst_rep.field)
+
     @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_3d')
     @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_2d')
     def test_build_regridder_2(self, mock_regridder_2d, mock_regridder_3d):
