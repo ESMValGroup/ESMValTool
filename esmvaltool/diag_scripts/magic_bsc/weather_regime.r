@@ -237,14 +237,26 @@ metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE))))
 dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
 dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
 
-variable_list <- list(variable = WR_obs$composite, pvalue = WR_obs$pvalue, cluster = WR_obs$cluster,
-                      frequency = WR_obs$frequency, lat = lat, lon = lon,  time = time)
-  names(variable_list)[1] <- var0
+variable_list <- list(
+  variable = WR_obs$composite,
+  pvalue = WR_obs$pvalue,
+  cluster = WR_obs$cluster,
+  frequency = WR_obs$frequency,
+  lat = lat,
+  lon = lon,
+  time = time
+)
+
+names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
-  ArrayToNetCDF(variable_list,
-              paste0(plot_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
-              start_projection, "_", end_projection,"_", start_historical, "_", end_historical,
-              ".nc"))
+ArrayToNetCDF(
+  variable_list,
+  paste0(
+    plot_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
+    start_projection, "_", end_projection,"_", start_historical, "_",
+    end_historical, ".nc"
+  )
+)
 
 # ---------------------------
 # Reading and formating
@@ -261,9 +273,9 @@ projection_data <- Start(model = fullpath_filenames[projection_files],
               return_vars = list(time = 'model', lon = 'model', lat = 'model'),
               retrieve = TRUE)
 # Provisional solution to error in dimension order:
- time <- attr(projection_data, "Variables")$dat1$time
- dates_projection <- seq(start_projection, end_projection, data_type)
- calendario <- attributes(time)$variables$time$calendar
+time <- attr(projection_data, "Variables")$dat1$time
+dates_projection <- seq(start_projection, end_projection, data_type)
+calendario <- attributes(time)$variables$time$calendar
 if (length(dates_projection) != length(time)) {
    if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
         dates_projection <- dates_projection[-which(substr(dates_projection, 6, 10) == "02-29")]
@@ -272,10 +284,16 @@ if (length(dates_projection) != length(time)) {
 if (length(dates_projection) != length(time)) {
 print("Time problems 2")
 }
- data <- as.vector(projection_data)
-    dim(projection_data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
-    projection_data <- aperm(projection_data, c(1,2,5,4,3))
-    attr(projection_data, "Variables")$dat1$time <- time
+data <- as.vector(projection_data)
+dim(projection_data) <- c(
+  model = 1,
+  var = 1,
+  lon = length(lon),
+  lat = length(lat),
+  time = length(time)
+)
+projection_data <- aperm(projection_data, c(1, 2, 5, 4, 3))
+attr(projection_data, "Variables")$dat1$time <- time
 
 # ---------------------------
 # Selecting the period
@@ -286,40 +304,61 @@ if (!is.na(mes)) {
     print("MONTHLY")
     dims <- dim(projection_data)
     ind = which(as.numeric(substr(projection_historical, 6, 7)) == mes)
-    years = unique(as.numeric(substr(projection_historical, 1,4)))
+    years = unique(as.numeric(substr(projection_historical, 1 4)))
     projection_data = projection_data[ , ,ind , , ]
-    dims <- append(dims, c(length(ind)/length(years), length(years)), after = time_dim)
+    dims <- append(
+      dims,
+      c(length(ind)/length(years), length(years)),
+      after = time_dim)
 } else if (!is.na(sea)) {
-    print("Seasonal")
-    projection_data <- SeasonSelect(projection_data, season = frequency, dates = dates_projection,
-                                    calendar = calendario)
-    time <- projection_data$dates
-    years = unique(as.numeric(substr(time, 1, 4)))
-    projection_data <- projection_data$data
- projection_data <- InsertDim(InsertDim(projection_data, posdim = 1, lendim = 1), posdim = 1, lendim = 1)
- names(dim(projection_data))[c(1, 2)] <- c("model", "var")
-dims <- dim(projection_data)
-dims <- append(dims, c(length(time)/length(years), length(years)), after = time_dim)
+  print("Seasonal")
+  projection_data <- SeasonSelect(
+    projection_data,
+    season = frequency,
+    dates = dates_projection,
+    calendar = calendario
+  )
+  time <- projection_data$dates
+  years <- unique(as.numeric(substr(time, 1, 4)))
+  projection_data <- projection_data$data
+  projection_data <- InsertDim(projection_data, posdim = 1, lendim = 1)
+  projection_data <- InsertDim(projection_data, posdim = 1, lendim = 1)
+
+  names(dim(projection_data))[c(1, 2)] <- c("model", "var")
+  dims <- dim(projection_data)
+  dims <- append(
+    dims,
+    c(length(time)/length(years), length(years)),
+    after = time_dim
+  )
 }
 dims <- dims[-time_dim]
 dim(projection_data) <- dims
 names(dim(projection_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 
+clim_ref <- array(
+  apply(projection_data, c(1, 2, 3, 5, 6), mean),
+  dim = dim(projection_data)[-4]
+)
 
-clim_ref <- array(apply(projection_data, c(1, 2, 3, 5, 6), mean), dim = dim(projection_data)[-4])
-
-clim_ref <- aperm(apply(clim_ref, c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')], Loess,
-                        loess_span = 1), c(2, 3, 1, 4, 5))
+clim_ref <- aperm(
+  apply(
+    clim_ref,
+    c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')],
+    Loess,
+    loess_span = 1),
+    c(2, 3, 1, 4, 5))
 
 print(dim(clim_ref))
 print(dim(projection_data))
 anom_exp <- Ano(projection_data, clim_ref)
 
-
 reference <- drop(WR_obs$composite)
 names(dim(reference))<-c('lat','lon','nclust')
 
-WR_exp <- RegimesAssign(var_ano = anom_exp, ref_maps = reference, lats = lat, method = 'distance')
+WR_exp <- RegimesAssign(
+  var_ano = anom_exp, ref_maps = reference, lats = lat, method = 'distance'
+)
 
 # ---------------------------
 # Plotting WR projection:
@@ -335,21 +374,47 @@ if(lim < 1) {
     lim <- ceiling(lim)
 }
 if (region == "Polar") {
-    PlotLayout(PlotStereoMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
-          titles = paste0(paste0('Cluster ', 1 : dim(cosa)[1], ' (', paste0('freq = ', round(WR_exp$frequency, 1), '%'),
-	' )')),
-           filled.continents = FALSE,
-           draw_separators = T, subsampleg = 1,
-	       brks = seq(-1 * lim, lim, by = lim / 10),
-	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'))
+  PlotLayout(
+    PlotStereoMap,
+    c(2 ,3),
+    lon = lon,
+    lat = lat,
+    var = cosa / 100,
+    titles = paste0(
+      paste0(
+        'Cluster ', 1 : dim(cosa)[1], ' (',
+        paste0('freq = ', round(WR_exp$frequency, 1),'%'),
+        ' )'
+      )
+    ),
+    filled.continents = FALSE,
+    draw_separators = T, subsampleg = 1,
+    brks = seq(-1 * lim, lim, by = lim / 10),
+    fileout = paste0(
+      plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'
+    )
+  )
 } else {
-    PlotLayout(PlotEquiMap, c(2 ,3), lon = lon, lat = lat, var = cosa / 100,
-          titles = paste0(paste0('Cluster ', 1 : dim(cosa)[1], ' (', paste0('freq = ', round(WR_exp$frequency, 1), '%'),
-	' )')),
-           filled.continents = FALSE,
-           axelab = FALSE, draw_separators = T, subsampleg = 1,
-	       brks = seq(-1 * lim, lim, by = lim / 10),
-	    fileout = paste0(plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'))
+  PlotLayout(
+    PlotEquiMap,
+    c(2 ,3),
+    lon = lon,
+    lat = lat,
+    var = cosa / 100,
+    titles = paste0(
+      paste0(
+        'Cluster ', 1 : dim(cosa)[1], ' (',
+        paste0('freq = ', round(WR_exp$frequency, 1), '%'),
+        ' )'
+      )
+    ),
+    filled.continents = FALSE,
+    axelab = FALSE, draw_separators = T, subsampleg = 1,
+    brks = seq(-1 * lim, lim, by = lim / 10),
+    fileout = paste0(
+      plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'
+    )
+  )
 }
 
 # -------------------------------
@@ -373,14 +438,26 @@ metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE))))
 dim(WR_exp$frequency) <- c(frequency = length(WR_exp$frequency))
 dim(WR_exp$pvalue) <- c(pvalue = length(WR_exp$pvalue))
 
-variable_list <- list(variable = WR_exp$composite, pvalue = WR_exp$pvalue, cluster = WR_exp$cluster,
-                      frequency = WR_exp$frequency, lat = lat, lon = lon,  time = time)
-  names(variable_list)[1] <- var0
+variable_list <- list(
+  variable = WR_exp$composite,
+  pvalue = WR_exp$pvalue,
+  cluster = WR_exp$cluster,
+  frequency = WR_exp$frequency,
+  lat = lat,
+  lon = lon,
+  time = time
+)
+names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
-  ArrayToNetCDF(variable_list,
-              paste0(plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
-              start_projection, "_", end_projection,"_", start_historical, "_", end_historical,
-              ".nc"))
+
+ArrayToNetCDF(
+  variable_list,
+  paste0(
+    plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
+    start_projection, "_", end_projection, "_", start_historical, "_", end_historical,
+    ".nc"
+  )
+)
 # ---------------------------
 # Computing the RMSE:
 # ---------------------------
@@ -388,17 +465,27 @@ cosa <- aperm(WR_exp$composite, c(2, 1, 3))
 rmse <- NULL
 for (i in 1 : ncenters) {
   for (j in 1 : ncenters) {
-      rmse <- c(rmse, sqrt(mean((reference[ , ,i ] - cosa[ , ,j]) ^ 2, na.rm = T)))
+      rmse <- c(rmse, sqrt(mean((reference[,,i ] - cosa[,,j]) ^ 2, na.rm = T)))
   }
 }
 dim(rmse) <- c(ncenters, ncenters)
 print(rmse)
 
-dimpattern <- ncdim_def(name = "pattern", units = "undim", vals = 1:ncenters, longname = "Pattern" )
-defrmse <- ncvar_def(name = "rmse", units = "undim",
-                    dim = list(observed = dimpattern, experiment = dimpattern),
-                    longname = "Root Mean Squared Error between observed and
-                                future projected patterns")
+dimpattern <- ncdim_def(
+  name = "pattern",
+  units = "undim",
+  vals = 1:ncenters,
+  longname = "Pattern"
+)
+defrmse <- ncvar_def(
+  name = "rmse",
+  units = "undim",
+  dim = list(observed = dimpattern, experiment = dimpattern),
+  longname = paste0(
+    "Root Mean Squared Error between observed and ",
+    "future projected patterns"
+  )
+)
 
 file <- nc_create(paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
                          model_names, "_", start_projection, "_",

@@ -55,5 +55,6 @@ diagnostics:
           - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp
           - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V100_2.0MW.wtp
           - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V110_2.0MW.wtp
+        power_curves_folder: /home/Earth/llledo/Documents/Power_Curves/Windographer_library
 
 

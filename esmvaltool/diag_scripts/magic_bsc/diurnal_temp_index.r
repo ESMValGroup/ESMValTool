@@ -23,12 +23,27 @@ dir.create(work_dir, recursive = TRUE)
 input_files_tasmax <- yaml::read_yaml(params$input_files[1])
 model_names <- input_files_tasmax[[1]]$dataset
 var_names_tmax <- input_files_tasmax[[1]]$short_name
-experiment <- lapply(input_files_tasmax, function(x){x$exp})
-filename_tasmax <- lapply(input_files_tasmax, function(x){x$filename})
+experiment <- lapply(
+  input_files_tasmax,
+  function(x){
+    x$exp
+  }
+)
+filename_tasmax <- lapply(
+  input_files_tasmax,
+  function(x){
+    x$filename
+  }
+)
 
 input_files_tasmin <- yaml::read_yaml(params$input_files[2])
 var_names_tmin <- input_files_tasmin[[1]]$short_name
-filename_tasmin <- lapply(input_files_tasmin, function(x){x$filename})
+filename_tasmin <- lapply(
+  input_files_tasmin,
+  function(x){
+    x$filename
+  }
+)
 
 reference_files <- which(experiment == "historical")
 projection_files <- which(experiment != "historical")
@@ -44,28 +59,31 @@ rcp8.5 <- params$rcp8.5
 rcp2.6 <- params$rcp2.6
 rcp_scenario <- c(rcp8.5, rcp2.6)
 
-fullpath_filenames_historical_tasmax <- filename_tasmax[[reference_files]]
+fullpath_hist_tasmax <- filename_tasmax[[reference_files]]
 historical_tasmax <- Start(
-  model = fullpath_filenames_historical_tasmax,
-var = "tasmax",
-var_var = 'var_names',
-time = 'all',
-lon='all', lat='all',
-lon_var = 'lon',
-lon_reorder = CircularSort(0, 360),
-return_vars = list(time = 'model', lon = 'model', lat = 'model'),
-retrieve = TRUE)
+  model = fullpath_hist_tasmax,
+  var = "tasmax",
+  var_var = "var_names",
+  time = "all",
+  lon = "all",
+  lat = "all",
+  lon_var = "lon",
+  lon_reorder = CircularSort(0, 360), # nolint
+  return_vars = list(time = "model", lon = "model", lat = "model"),
+  retrieve = TRUE
+)
 
-fullpath_filenames_historical_tasmin <- filename_tasmin[[reference_files]]
+fullpath_hist_tasmin <- filename_tasmin[[reference_files]]
 historical_tasmin <- Start(
-  model = fullpath_filenames_historical_tasmin,
+  model = fullpath_hist_tasmin,
   var = "tasmin",
-  var_var = 'var_names',
-  time = 'all',
-  lon='all', lat='all',
-  lon_var = 'lon',
-  lon_reorder = CircularSort(0, 360),
-  return_vars = list(time = 'model', lon = 'model', lat = 'model'),
+  var_var = "var_names",
+  time = "all",
+  lon = "all",
+  lat = "all",
+  lon_var = "lon",
+  lon_reorder = CircularSort(0, 360), # nolint
+  return_vars = list(time = "model", lon = "model", lat = "model"),
   retrieve = TRUE
 )
 lat <- attr(historical_tasmax, "Variables")$dat1$lat
@@ -80,21 +98,33 @@ lon <- attr(historical_tasmax, "Variables")$dat1$lon
  calendar <- attributes(time)$variables$time$calendar
 time_his = time
 if ((end_historical-start_historical + 1) * 12 == length(time)) {
-  time <-  seq(
+  time <- seq(
     as.Date(
-      paste(start_historical, '01', '01', sep = "-"),
+      paste(start_historical, "01", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     as.Date(
-      paste(end_historical, '12', '01', sep = "-"),
+      paste(end_historical, "12", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     "day")
 }
 historical_tasmin <- as.vector(historical_tasmin)
 historical_tasmax <- as.vector(historical_tasmax)
-dim(historical_tasmin) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
-dim(historical_tasmax) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
+dim(historical_tasmin) <- c(
+  model = 1,
+  var = 1,
+  lon = length(lon),
+  lat = length(lat),
+  time = length(time)
+)
+dim(historical_tasmax) <- c(
+  model = 1,
+  var = 1,
+  lon = length(lon),
+  lat = length(lat),
+  time = length(time)
+)
 historical_tasmin <- aperm(historical_tasmin, c(1,2,5,4,3))
 historical_tasmax <- aperm(historical_tasmax, c(1,2,5,4,3))
 attr(historical_tasmin, "Variables")$dat1$time <- time
@@ -108,7 +138,12 @@ long_names <- attr(historical_tasmin, "Variables")$common$tas$long_name
 projection <- attr(historical_tasmin, "Variables")$common$tas$coordinates
 units <- (attr(historical_tasmin,"Variables")$common)[[2]]$units
 
-dtr_base <- DTRRef(tmax = historical_tasmax, tmin = historical_tasmin, by.seasons = TRUE, ncores = NULL)
+dtr_base <- DTRRef( # nolint
+  tmax = historical_tasmax,
+  tmin = historical_tasmin,
+  by.seasons = TRUE,
+  ncores = NULL
+)
 
 #print(str(dtr_base))
 #jpeg(paste0(plot_dir, "/plotBASE.jpg"))
@@ -119,26 +154,26 @@ for (i in 1 : length(projection_files)){
   fullpath_filenames_projection_tasmax <- filename_tasmax[[projection_files[i]]]
   rcp_tasmax <- Start(
     model = fullpath_filenames_projection_tasmax,
-    var = 'tasmax',
-    var_var = 'var_names',
-    time = 'all',
-    lon='all', lat='all',
-    lon_var = 'lon',
+    var = "tasmax",
+    var_var = "var_names",
+    time = "all",
+    lon="all", lat="all",
+    lon_var = "lon",
     lon_reorder = CircularSort(0, 360),
-    return_vars = list(time = 'model', lon = 'model', lat = 'model'),
+    return_vars = list(time = "model", lon = "model", lat = "model"),
     retrieve = TRUE
   )
 
   fullpath_filenames_projection_tasmin <- filename_tasmin[[projection_files[i]]]
   rcp_tasmin <- Start(
     model = fullpath_filenames_projection_tasmin,
-    var = 'tasmin',
-    var_var = 'var_names',
-    time = 'all',
-    lon='all', lat='all',
-    lon_var = 'lon',
+    var = "tasmin",
+    var_var = "var_names",
+    time = "all",
+    lon="all", lat="all",
+    lon_var = "lon",
     lon_reorder = CircularSort(0, 360),
-    return_vars = list(time = 'model', lon = 'model', lat = 'model'),
+    return_vars = list(time = "model", lon = "model", lat = "model"),
     retrieve = TRUE
   )
   lat <- attr(rcp_tasmax, "Variables")$dat1$lat
@@ -154,11 +189,11 @@ calendar <- attributes(time)$variables$time$calendar
 if ((end_projection-start_projection + 1) * 12 == length(time)) {
   time <-  seq(
     as.Date(
-      paste(start_projection, '01', '01', sep = "-"),
+      paste(start_projection, "01", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     as.Date(
-      paste(end_projection, '12', '01', sep = "-"),
+      paste(end_projection, "12", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     "day"
@@ -199,10 +234,10 @@ for (j in 1 : 4){
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
 PlotLayout(
   PlotEquiMap,
-  plot_dims = c('lon', 'lat'),
+  plot_dims = c("lon", "lat"),
   var = dtr_rcp,
   lon = lon, lat = lat ,
-  titles = c('DJF', 'MAM', 'JJA', 'SON'),
+  titles = c("DJF", "MAM", "JJA", "SON"),
   toptitle = paste(
     "Number of days exceeding the DTR in 5 degrees during the period",
     start_projection, "-", end_projection
@@ -211,7 +246,7 @@ PlotLayout(
   axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
   brks = seq(0, max(dtr_rcp), 2), color_fun = clim.palette("yellowred"),
   bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
-  fileout = paste0(plot_dir, '/rcp85.png')
+  fileout = paste0(plot_dir, "/rcp85.png")
 )
 
 print(paste(

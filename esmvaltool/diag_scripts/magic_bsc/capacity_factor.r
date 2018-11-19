@@ -1,6 +1,6 @@
 ### To do: extrapolate surface wind to 100m wind (different for land and sea)
 
-# nolint start
+j# nolint start
 ####REQUIRED SYSTEM LIBS
 ####ŀibssl-dev
 ####libnecdf-dev
@@ -18,7 +18,7 @@
 
 # nolint end
 
-Sys.setenv(TAR = "/bin/tar")
+Sys.setenv(TAR = "/bin/tar") # nolint
 
 library(startR) # nolint
 library(multiApply) # nolint
@@ -37,7 +37,7 @@ script_name <- sub(
     file_arg_name, "", initial.options[grep(file_arg_name, initial.options)]
 )
 script_dirname <- dirname(script_name)
-source(paste0(script_dirname, "/PC.r"))
+source(file.path(script_dirname, "PC.r"))
 
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
@@ -62,6 +62,7 @@ end_year <- lapply(input_files_per_var, function(x) x$end_year)
 end_year <- c(unlist(unname(end_year)))[1]
 seasons <- params$seasons
 power_curves <- params$power_curves
+power_curves_folder <- params$power_curves_folder
 
 data <- Start(model = fullpath_filenames,
               var = var0,
@@ -79,6 +80,7 @@ no_of_years <- length(start_year : end_year)
 
 time_dim <- which(names(dim(data)) == "time")
 
+# nolint start
 ## TODO extrapolate from surface wind to 100m height
 #---------------------------
 # We assume power law and s sheaering exponents:
@@ -88,6 +90,7 @@ time_dim <- which(names(dim(data)) == "time")
 # spd100 = spd10*(100/10)^0.143 = spd10*1.39
 
 # ratio <- ifelse(landmask > 50,1.39,1.29)
+# nolint end
 
 days <- as.Date(attr(data, "Variables")$dat1$time)
 print(dim(data))
@@ -114,11 +117,11 @@ names(dim(data)) <- c("year", "day", "lat", "lon")
 #---------------------------
 seas_data <- Mean1Dim(data, 2)
 
-pc1 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp")
-pc2 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp")
-pc3 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp")
-pc4 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V100_2.0MW.wtp")
-pc5 <- read_xml_pc("/home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V110_2.0MW.wtp")
+pc1 <- read_xml_pc(file.path(power_curves_folder, "Enercon_E70_2.3MW.wtp"))
+pc2 <- read_xml_pc(file.path(power_curves_folder, "Gamesa_G80_2.0MW.wtp"))
+pc3 <- read_xml_pc(file.path(power_curves_folder, "Gamesa_G87_2.0MW.wtp"))
+pc4 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V100_2.0MW.wtp"))
+pc5 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V110_2.0MW.wtp"))
 
 data_cf1 <- wind2CF(data, pc1)
 dim(data_cf1) <- dim(data)
@@ -141,7 +144,15 @@ seas_data_cf3 <- Mean1Dim(data_cf3, 2)
 seas_data_cf4 <- Mean1Dim(data_cf4, 2)
 seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 
-#save(seas_erai_gwa,seas_erai_cf1,seas_erai_cf2,seas_erai_cf3,seas_erai_cf4,seas_erai_cf5,lats,lons,variable,seasons,first_year,last_year,bbox,nsdates,nleadtime,nlat,nlon,ratio,file="/esnas/scratch/llledo/PC_sensitivity/PC_sensitivity.Rdata")
+# nolint start
+# save(
+#   seas_erai_gwa,
+#   seas_erai_cf1, seas_erai_cf2, seas_erai_cf3,
+#   seas_erai_cf4, seas_erai_cf5, lats, lons, variable, seasons, first_year,
+#   last_year, bbox, nsdates, nleadtime, nlat, nlon, ratio,
+#   file="/esnas/scratch/llledo/PC_sensitivity/PC_sensitivity.Rdata"
+# )
+# nolint end
 
 ##############################
 # Make some plots
@@ -153,7 +164,7 @@ library(RColorBrewer) # nolint
 library(abind)
 p <- colorRampPalette(brewer.pal(9, "YlOrRd"))
 q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
-years <- seq(start_year,end_year)
+years <- seq(start_year, end_year)
 turb_types <- c("IEC I", "IEC I/II", "IEC II", "IEC II/III", "IEC III")
 
 seas_data_cf_all <- abind(
@@ -161,25 +172,25 @@ seas_data_cf_all <- abind(
     along = 0
 )
 mean_data_cf_all <- Mean1Dim(seas_data_cf_all, 2)
-anom_data_cf_all <- seas_data_cf_all - InsertDim(
-    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+anom_data_cf_all <- seas_data_cf_all - InsertDim( # nolint
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1] # nolint
 )
-pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim(
-    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
-))-1
+pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim( # nolint
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1] # nolint
+)) - 1
 
 #---------------------------
 # Plot seasonal CF maps
 #---------------------------
 
-PlotLayout(
-    PlotEquiMap,
-    c(3,2),
+PlotLayout( # nolint
+    PlotEquiMap, # nolint
+    c(3, 2),
     Mean1Dim(seas_data_cf_all, 2),
     lon,
     lat,
-    filled.continents=F,
-    toptitle=paste0(
+    filled.continents = F,
+    toptitle = paste0(
         seasons, " CF from ",
         model_names, " (", start_year, "-", end_year, ")"
     ),
@@ -193,22 +204,22 @@ PlotLayout(
 # Plot seasonal CF anomalies maps
 #---------------------------
 
-PlotLayout(
-    PlotEquiMap,
+PlotLayout( #nolint
+    PlotEquiMap, # nolint
     c(3, 2),
     Mean1Dim(anom_data_cf_all, 2),
     lon,
     lat,
-    filled.continents=F,
-    toptitle=paste0(
+    filled.continents = F,
+    toptitle = paste0(
         seasons, " CF Anomaly from ", model_names,
         " (", start_year, "-", end_year, ")"
     ),
-    col_titles=turb_types,
-    color_fun=q,
-    brks=seq(-0.25,0.25,0.05),
-    bar_scale=0.5,
-    title_scale=0.7,
+    col_titles = turb_types,
+    color_fun = q,
+    brks = seq(-0.25, 0.25, 0.05),
+    bar_scale = 0.5,
+    title_scale = 0.7,
     axelab = F,
     fileout = paste0(
         plot_dir, "/", "capacity_factor_anomaly_", model_names,
@@ -223,19 +234,27 @@ PlotLayout(
 #---------------------------
 # Correlation maps
 #---------------------------
-cor12 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[2,])})
-cor13 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[3,])})
-cor14 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[4,])})
-cor15 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[1,], x[5,])})
-cor24 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[2,], x[4,])})
-cor35 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[3,], x[5,])})
-
+corr <- function(data, i, j){
+  apply(
+    data,
+    c(3, 4),
+    function(x) {
+      cor(x[i, ], x[j, ])
+    }
+  )
+}
+cor12 <- corr(data, 1, 2)
+cor12 <- corr(data, 1, 3)
+cor14 <- corr(data, 1, 4)
+cor15 <- corr(data, 1, 5)
+cor24 <- corr(data, 2, 4)
+cor35 <- corr(data, 3, 5)
 
 PlotLayout(
     PlotEquiMap,
     c(1, 2),
-    list(cor13^2, cor35^2, cor24^2, cor15^2),
-    lon, lat, nrow=2, ncol=2,
+    list(cor13 ^ 2, cor35 ^ 2, cor24 ^ 2, cor15 ^ 2),
+    lon, lat, nrow = 2, ncol = 2,
     filled.continents=F,
     toptitle="Seasonal CF determination coef.",
     titles=c(
@@ -244,49 +263,57 @@ PlotLayout(
         "between cf2 and cf4",
         "between cf1 and cf5"
     ),
-    brks=c(0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.96, 0.98, 0.99, 1),
-    bar_scale=0.5,
-    title_scale=0.7,
-    axelab=F, color_fun=p,
+    brks = c(0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.96, 0.98, 0.99, 1),
+    bar_scale = 0.5,
+    title_scale = 0.7,
+    axelab = F,
+    color_fun = p,
     fileout = paste0(
         plot_dir, "/", "capacity_factor_correlation_maps_", model_names,
         "_", start_year, "-", end_year, ".png"
     )
 )
 
-
 #---------------------------
 # RMSE maps
 #---------------------------
-rmse <- function(x,y) { sqrt(mean((x-y)^2,na.rm=T)) }
-rmse12 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[2,])})
-rmse13 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[3,])})
-rmse35 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[3,], x[5,])})
-rmse15 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[1,], x[5,])})
-rmse24 <- apply(anom_data_cf_all, c(3,4), function(x) {rmse(x[2,], x[4,])})
+rmse <- function(data, i, j)
+  apply(
+    data,
+    c(3, 4),
+    function(x, y){
+      sqrt(mean( (x[i,] - x[j,]) ^ 2, na.rm = T))
+    }
+  )
+}
+rmse12 <- rmse(anom_data_cf_all, 1, 2)
+rmse13 <- rmse(anom_data_cf_all, 1, 3)
+rmse35 <- rmse(anom_data_cf_all, 3, 5)
+rmse15 <- rmse(anom_data_cf_all, 1, 5)
+rmse24 <- rmse(anom_data_cf_all, 2, 4)
 
-PlotLayout(
-    PlotEquiMap,
-    c(1,2),
+PlotLayout( # nolint
+    PlotEquiMap, # nolint
+    c(1, 2),
     list(rmse13,rmse35,rmse24,rmse15),
     lon,
     lat,
-    nrow=2,
-    ncol=2,
-    filled.continents=F,
+    nrow = 2,
+    ncol = 2,
+    filled.continents = F,
     toptitle="Seasonal CF RMSE",
-    titles=c(
+    titles = c(
         "between cf1 and cf3",
         "between cf3 and cf5",
         "between cf2 and cf4",
         "between cf1 and cf5"
     ),
-    brks=seq(0,0.08,0.01),
-    bar_scale=0.5,
-    title_scale=0.7,
-    axelab=F,
-    color_fun=p,
-    fileout=paste0(
+    brks = seq(0,0.08,0.01),
+    bar_scale = 0.5,
+    title_scale = 0.7,
+    axelab = F,
+    color_fun = p,
+    fileout = paste0(
         plot_dir, "/", "capacity_factor_rmse_maps_", model_names,
         "_", start_year, "-", end_year, ".png"
     )
