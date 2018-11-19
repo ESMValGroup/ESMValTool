@@ -163,7 +163,7 @@ diagnostics:
       - {dataset: NorESM1-M,      ensemble: r1i1p1}
     scripts:
       ta_sp100: &ta_sp100
-        script: mder/austral_jet_diags.ncl
+        script: austral_jet/main.ncl
         average_ens: True
         styleset: CMIP5
         e13fig10_yr_min: 1979
@@ -442,7 +442,7 @@ diagnostics:
     scripts:
       asr_sh: &asr_sh
         <<: *ta_sp100
-        script: mder/asr.ncl
+        script: austral_jet/asr.ncl
         season: monthlyclim
         wdiag: ['ASR-SH']
         wdiag_title: ['ASR-SH']

@@ -1,5 +1,5 @@
 ; #############################################################################
-; mder/asr.ncl
+; austral_jet/asr.ncl
 ; #############################################################################
 ; Author: Sabrina Zechlau (DLR, Germany)
 ; ESMVal project PI: Veronika Eyring (DLR, Germany)

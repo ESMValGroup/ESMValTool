@@ -1,5 +1,5 @@
 ; #############################################################################
-; mder/austral_jet_diags.ncl
+; austral_jet/main.ncl
 ; #############################################################################
 ; Author: Sabrina Zechlau (DLR, Germany)
 ; ESMVal project PI: Veronika Eyring (DLR, Germany)
