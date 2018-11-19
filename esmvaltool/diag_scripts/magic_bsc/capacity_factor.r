@@ -1,5 +1,6 @@
 ### To do: extrapolate surface wind to 100m wind (different for land and sea)
 
+# nolint start
 ####REQUIRED SYSTEM LIBS
 ####ŀibssl-dev
 ####libnecdf-dev
@@ -15,11 +16,12 @@
 #install_git('https://earth.bsc.es/gitlab/es/startR', branch = 'develop-hotfixes-0.0.2')
 #install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
 
+# nolint end
 
 Sys.setenv(TAR = "/bin/tar")
 
-library(startR)
-library(multiApply)
+library(startR) # nolint
+library(multiApply) # nolint
 library(ggplot2)
 library(yaml)
 library(s2dverification)
@@ -30,9 +32,9 @@ library(climdex.pcic)
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 initial.options <- commandArgs(trailingOnly = FALSE)
-file.arg.name <- "--file="
+file_arg_name <- "--file="
 script_name <- sub(
-    file.arg.name, "", initial.options[grep(file.arg.name, initial.options)]
+    file_arg_name, "", initial.options[grep(file_arg_name, initial.options)]
 )
 script_dirname <- dirname(script_name)
 source(paste0(script_dirname, "/PC.r"))
@@ -147,7 +149,7 @@ seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 #---------------------------
 # Prepare data, labels and colorscales
 #---------------------------
-library(RColorBrewer)
+library(RColorBrewer) # nolint
 library(abind)
 p <- colorRampPalette(brewer.pal(9, "YlOrRd"))
 q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
@@ -156,13 +158,13 @@ turb_types <- c("IEC I", "IEC I/II", "IEC II", "IEC II/III", "IEC III")
 
 seas_data_cf_all <- abind(
     seas_data_cf1, seas_data_cf2, seas_data_cf3, seas_data_cf4, seas_data_cf5,
-    along=0
+    along = 0
 )
-mean_data_cf_all <- Mean1Dim(seas_data_cf_all,2)
-anom_data_cf_all <- seas_data_cf_all-InsertDim(
+mean_data_cf_all <- Mean1Dim(seas_data_cf_all, 2)
+anom_data_cf_all <- seas_data_cf_all - InsertDim(
     Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
 )
-pct_anom_data_cf_all <- (seas_data_cf_all/InsertDim(
+pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim(
     Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
 ))-1
 
@@ -193,7 +195,7 @@ PlotLayout(
 
 PlotLayout(
     PlotEquiMap,
-    c(3,2),
+    c(3, 2),
     Mean1Dim(anom_data_cf_all, 2),
     lon,
     lat,
@@ -229,9 +231,28 @@ cor24 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[2,], x[4,])})
 cor35 <- apply(seas_data_cf_all, c(3,4), function(x) {cor(x[3,], x[5,])})
 
 
-PlotLayout(PlotEquiMap,c(1,2),list(cor13^2,cor35^2,cor24^2,cor15^2),lon,lat,nrow=2,ncol=2,filled.continents=F,toptitle="Seasonal CF determination coef.",
-           titles=c("between cf1 and cf3","between cf3 and cf5","between cf2 and cf4","between cf1 and cf5"),brks=c(0.,0.3,0.5,0.6,0.7,0.8,0.9,0.93,0.96,0.98,0.99,1),bar_scale=0.5,
-           title_scale=0.7,axelab=F,color_fun=p, fileout = paste0(plot_dir, "/", "capacity_factor_correlation_maps_", model_names,  "_", start_year, "-", end_year, ".png"))
+PlotLayout(
+    PlotEquiMap,
+    c(1, 2),
+    list(cor13^2, cor35^2, cor24^2, cor15^2),
+    lon, lat, nrow=2, ncol=2,
+    filled.continents=F,
+    toptitle="Seasonal CF determination coef.",
+    titles=c(
+        "between cf1 and cf3",
+        "between cf3 and cf5",
+        "between cf2 and cf4",
+        "between cf1 and cf5"
+    ),
+    brks=c(0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.96, 0.98, 0.99, 1),
+    bar_scale=0.5,
+    title_scale=0.7,
+    axelab=F, color_fun=p,
+    fileout = paste0(
+        plot_dir, "/", "capacity_factor_correlation_maps_", model_names,
+        "_", start_year, "-", end_year, ".png"
+    )
+)
 
 
 #---------------------------
