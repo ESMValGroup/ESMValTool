@@ -250,14 +250,14 @@ cor15 <- corr(data, 1, 5)
 cor24 <- corr(data, 2, 4)
 cor35 <- corr(data, 3, 5)
 
-PlotLayout(
-    PlotEquiMap,
+PlotLayout( # nolint
+    PlotEquiMap, # nolint
     c(1, 2),
     list(cor13 ^ 2, cor35 ^ 2, cor24 ^ 2, cor15 ^ 2),
     lon, lat, nrow = 2, ncol = 2,
-    filled.continents=F,
-    toptitle="Seasonal CF determination coef.",
-    titles=c(
+    filled.continents = F,
+    toptitle = "Seasonal CF determination coef.",
+    titles = c(
         "between cf1 and cf3",
         "between cf3 and cf5",
         "between cf2 and cf4",
@@ -277,12 +277,12 @@ PlotLayout(
 #---------------------------
 # RMSE maps
 #---------------------------
-rmse <- function(data, i, j)
+rmse <- function(data, i, j){
   apply(
     data,
     c(3, 4),
     function(x, y){
-      sqrt(mean( (x[i,] - x[j,]) ^ 2, na.rm = T))
+      sqrt(mean( (x[i, ] - x[j, ]) ^ 2, na.rm = T))
     }
   )
 }
@@ -295,20 +295,20 @@ rmse24 <- rmse(anom_data_cf_all, 2, 4)
 PlotLayout( # nolint
     PlotEquiMap, # nolint
     c(1, 2),
-    list(rmse13,rmse35,rmse24,rmse15),
+    list(rmse13, rmse35, rmse24, rmse15),
     lon,
     lat,
     nrow = 2,
     ncol = 2,
     filled.continents = F,
-    toptitle="Seasonal CF RMSE",
+    toptitle = "Seasonal CF RMSE",
     titles = c(
         "between cf1 and cf3",
         "between cf3 and cf5",
         "between cf2 and cf4",
         "between cf1 and cf5"
     ),
-    brks = seq(0,0.08,0.01),
+    brks = seq(0, 0.08, 0.01),
     bar_scale = 0.5,
     title_scale = 0.7,
     axelab = F,

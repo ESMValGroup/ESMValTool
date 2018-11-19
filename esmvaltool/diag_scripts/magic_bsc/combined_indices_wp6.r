@@ -176,7 +176,7 @@ if (!is.null(running_mean)) {
 
 print(paste("moninf", moninf))
 if (!is.null(moninf)) {
-  months <- paste0(month.abb[moninf],"-", month.abb[monsup])
+  months <- paste0(month.abb[moninf], "-", month.abb[monsup])
   print(months)
   dims <- dim(data)
   dims <- append(dims, c(12, dims[time_dim] / 12), after = time_dim)
@@ -198,7 +198,7 @@ if (!is.null(moninf)) {
   data <- adrop(data, month_dim)
   if (multi_year_average == "TRUE") {
     time <- time[1]
-    data <- Mean1Dim(data, c(years_dim -1))
+    data <- Mean1Dim(data, c(years_dim - 1))
   }
 }
 
@@ -225,7 +225,9 @@ if (!is.null(region)) {
   attributes(data) <- NULL
   dim(data) <-  c(time = length(data))
   metadata <- list(
-    index = list(dim = list(list(name="time", unlim = FALSE, prec = "double")))
+    index = list(
+      dim = list(list(name = "time", unlim = FALSE, prec = "double"))
+    )
   )
   names(metadata)[1] <- var0
   attr(data, "variables") <- metadata
@@ -281,14 +283,15 @@ if (!is.null(region)) {
     list(defdata)
   )
   ncvar_put(file, defdata, data)
-  #ncatt_put(file, 0, "Conventions", "CF-1.5")
   nc_close(file)
 } else {
-  data <- data[1, 1, , ,]
-  data <- aperm(data, c(3,2,1))
+  data <- data[1, 1,,, ]
+  data <- aperm(data, c(3, 2, 1))
   names(dim(data)) <- c("lon", "lat", "time")
   metadata <- list(
-    index = list(dim = list(list(name="time", unlim = FALSE, prec = "double")))
+    index = list(
+      dim = list(list(name = "time", unlim = FALSE, prec = "double"))
+    )
   )
   names(metadata)[1] <- var0
   attr(data, "variables") <- metadata
@@ -332,9 +335,8 @@ if (!is.null(region)) {
     name = "data",
     units = units,
     dim = list(time = dimtime),
-    longname = paste("Combination",long_names)
+    longname = paste("Combination", long_names)
   )
-
   file <- nc_create(
     paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
@@ -343,6 +345,5 @@ if (!is.null(region)) {
     list(defdata)
   )
   ncvar_put(file, defdata, data)
-  #ncatt_put(file, 0, "Conventions", "CF-1.5")
   nc_close(file)
 }

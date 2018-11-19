@@ -1,4 +1,4 @@
-AtomicWeatherRegime <- function(
+AtomicWeatherRegime <- function( # nolint
   data, EOFS = TRUE, neofs = 30, threshold = NULL, lon = NULL, lat = NULL,
   ncenters = NULL, method = "kmeans", nstart = 30) {
   names(dim(data)) <- c("sdate", "ftime", "lat", "lon")
@@ -24,24 +24,24 @@ AtomicWeatherRegime <- function(
   }
 
   if (EOFS  == TRUE) {
-    #data <- princomp(data[,subs], cor = FALSE)$scores
-    dataPC <- EOF(
+    data_pc <- EOF( # nolint
       data,
       lat = as.vector(lat),
       lon = as.vector(lon),
       neofs = neofs
     )
     if (is.null(threshold)){
-      threshold <- sum(dataPC$var)
-      cluster_input <- dataPC$PC
+      threshold <- sum(data_pc$var)
+      cluster_input <- data_pc$PC
     } else {
       threshold <- threshold
-      minPC <- head(as.numeric(which(cumsum(dataPC$var) > threshold)), 1)
-      cluster_input <- dataPC$PC[, 1 : minPC]    }
+      min_pc <- head(as.numeric(which(cumsum(data_pc$var) > threshold)), 1)
+      cluster_input <- data_pc$PC[, 1 : min_pc]
+    }
   } else {
     cluster_input <- data
     latWeights <- InsertDim(
-      InsertDim(cos(lat*pi/180), 1, nftimes*nsdates),
+      InsertDim(cos(lat * pi / 180), 1, nftimes * nsdates),
       3,
       nlon
     )
@@ -53,7 +53,7 @@ AtomicWeatherRegime <- function(
                      iter.max = 100, nstart = nstart, trace = FALSE)
     reconstructed <- array(0, c(ncenters, nlat, nlon))
     data <- aperm(data, c(2, 3, 1))
-    reconstructed <- Composite(data, result$cluster)
+    reconstructed <- Composite(data, result$cluster) # nolint
     names(dim(reconstructed$composite)) <- c("lon", "lat", "cluster")
     cluster_timeseries <- list(lengths = c(), values = c())
     frequency <- persistence <- matrix(NA, nsdates, ncenters)
@@ -71,24 +71,11 @@ AtomicWeatherRegime <- function(
         persistence[i,j] <- mean(occurences$lengths[occurences$values == j])
       }
     }
-    # for (i in 1 : ncenters) {
-    #   for (j in 1 : nsdates) {
-    #     timeseries_subset <- cluster_timeseries$lengths#[(1 +((nftimes -1) * j)) : (nftimes * j)]
-    #     cluster_subset <- cluster_timeseries$values[(1 +((nftimes -1) * j)) : (nftimes * j)]
-    #     print(timeseries_subset)
-    #     print(cluster_subset)
-    #     print((1 +((nftimes -1) * j)) : (nftimes * j))
-    #     stop()
-    #     frequency[i, j] <- (sum(timeseries_subset[cluster_subset == i]) / length(nftimes)) * 100
-    #     persistence[i,j] <- mean(timeseries_subset[cluster_subset == i])
-    #   }
-    #   #frequency[i] <- (sum(cluster_timeseries$lengths[cluster_timeseries$values == i]) / length(result$cluster)) * 100
-    # }
   } else {
     result <- hclust(dist(cluster_input), method = method)
     clusterCut <- cutree(result, ncenters)
     data <- aperm(data, c(3, 2, 1))
-    result <- Composite(data, clusterCut)
+    result <- Composite(data, clusterCut) # nolint
   }
   if (method == "kmeans") {
     return(list(
@@ -103,12 +90,12 @@ AtomicWeatherRegime <- function(
     return(list(
       composite = result$composite,
       pvalue = result$pvalue,
-      cluster = as.array(clusterCut)
+      cluster = as.array(clusterCut) # nolint
     ))
   }
 }
 
-WeatherRegime <- function(
+WeatherRegime <- function( # nolint
   data, EOFS = TRUE, neofs = 30, threshold = NULL, lon = NULL, lat = NULL,
   ncenters = NULL, method = "kmeans", nstart = 30, iter.max = 100,
   ncores = NULL) {
@@ -134,7 +121,7 @@ WeatherRegime <- function(
       ncores = ncores
     )
   } else {
-    result <- AtomicWeatherRegime(
+    result <- AtomicWeatherRegime( # nolint
       data,
       EOFS = EOFS,
       neofs = neofs,

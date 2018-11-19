@@ -46,12 +46,12 @@ projection_files <- which(unname(experiment) != "historical")
 
 #Region considered
 region <- params$region
-if (region == 'North-Atlantic') {
+if (region == "North-Atlantic") {
     lon.min <- -80
     lon.max <- 50
     lat.min <- 20
     lat.max <- 80
-} else if (region == 'Polar')  {
+} else if (region == "Polar")  {
     lat.max <- 90
     lat.min <- 61
     lon.max <- 359
@@ -77,13 +77,13 @@ detrend_order <- params$detrend_order
 # ---------------------------
 reference_data <- Start(model = fullpath_filenames[reference_files],
               var = var0,
-              var_var = 'var_names',
-              time ='all',
+              var_var = "var_names",
+              time ="all",
               lat = values(list(lat.min, lat.max)),
               lon = values(list(lon.min, lon.max)),
-              lon_var = 'lon',
+              lon_var = "lon",
               lon_reorder = CircularSort(0, 360),
-              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
+              return_vars = list(time = "model", lon = "model", lat = "model"),
               retrieve = TRUE)
       # ------------------------------
 
@@ -160,7 +160,7 @@ clim_obs <- array(
 clim_obs <- aperm(
     apply(
         clim_obs,
-        c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == 'sdate')],
+        c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == "sdate")],
         Loess,
         loess_span = 1),
     c(2, 3, 1, 4, 5)
@@ -179,8 +179,8 @@ names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
 # -------------------------------
 
 clim_frequencies <- paste0(
-    'freq = ',
-    round(Mean1Dim(WR_obs$frequency, 1), 1), '%'
+    "freq = ",
+    round(Mean1Dim(WR_obs$frequency, 1), 1), "%"
 )
 cosa <- aperm(drop(WR_obs$composite), c(3,1,2))
 
@@ -197,23 +197,23 @@ if (region == "Polar") {
     PlotLayout(
         PlotStereoMap, c(2, 3), lon = lon, lat = lat,
         var = cosa/100,
-        titles = paste0(paste0('Cluster ', 1:4),' (', clim_frequencies, ' )'),
+        titles = paste0(paste0("Cluster ", 1:4)," (", clim_frequencies, " )"),
         filled.continents = FALSE,
         axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
         brks = seq(-1 *lim, lim, by = lim / 10),
         fileout = paste0(
-            plot_dir, '/', frequency, '-',var0,'_observed_regimes.png'
+            plot_dir, "/", frequency, "-",var0,"_observed_regimes.png"
             )
         )
 } else {
     PlotLayout(
         PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
-        titles = paste0(paste0('Cluster ', 1:4),' (',clim_frequencies,' )'),
+        titles = paste0(paste0("Cluster ", 1:4)," (",clim_frequencies," )"),
         filled.continents = FALSE,
         axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
         brks = seq(-1 *lim, lim, by = lim / 10),
         fileout = paste0(
-            plot_dir, '/', frequency, '-',var0,'_observed_regimes.png')
+            plot_dir, "/", frequency, "-",var0,"_observed_regimes.png")
         )
 }
 # -------------------------------
@@ -223,16 +223,16 @@ time <- dates_historical
 time <- julian(time, origin = as.POSIXct("1970-01-01"))
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
-metadata <- list(time = list(standard_name = 'time', long_name = 'time',
-                units = 'days since 1970-01-01 00:00:00', prec = 'double',
-                dim = list(list(name='time', unlim = FALSE))))
+metadata <- list(time = list(standard_name = "time", long_name = "time",
+                units = "days since 1970-01-01 00:00:00", prec = "double",
+                dim = list(list(name="time", unlim = FALSE))))
 attr(time, "variables") <- metadata
 
 attributes(lon) <- NULL
 attributes(lat) <- NULL
 dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
-metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE))))
+metadata <- list(variable = list(dim = list(list(name="time", unlim = FALSE))))
 
 dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
 dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
@@ -261,17 +261,18 @@ ArrayToNetCDF(
 # ---------------------------
 # Reading and formating
 # ---------------------------
-projection_data <- Start(model = fullpath_filenames[projection_files],
-              var = var0,
-              var_var = 'var_names',
-              time ='all',
-              time_tolerance = as.difftime(15, units = 'days'),
-              lat = values(list(lat.min, lat.max)),
-              lon = values(list(lon.min, lon.max)),
-              lon_var = 'lon',
-              lon_reorder = CircularSort(0, 360),
-              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
-              retrieve = TRUE)
+projection_data <- Start(
+  model = fullpath_filenames[projection_files],
+  var = var0,
+  var_var = "var_names",
+  time ="all",
+  time_tolerance = as.difftime(15, units = "days"),
+  lat = values(list(lat.min, lat.max)),
+  lon = values(list(lon.min, lon.max)),
+  lon_var = "lon", # nolint
+  return_vars = list(time = "model", lon = "model", lat = "model"),
+  retrieve = TRUE
+)
 # Provisional solution to error in dimension order:
 time <- attr(projection_data, "Variables")$dat1$time
 dates_projection <- seq(start_projection, end_projection, data_type)
@@ -301,15 +302,15 @@ attr(projection_data, "Variables")$dat1$time <- time
 time_dim <- which(names(dim(projection_data)) == "time")
 
 if (!is.na(mes)) {
-    print("MONTHLY")
-    dims <- dim(projection_data)
-    ind = which(as.numeric(substr(projection_historical, 6, 7)) == mes)
-    years = unique(as.numeric(substr(projection_historical, 1 4)))
-    projection_data = projection_data[ , ,ind , , ]
-    dims <- append(
-      dims,
-      c(length(ind)/length(years), length(years)),
-      after = time_dim)
+  print("MONTHLY")
+  dims <- dim(projection_data)
+  ind <- which(as.numeric(substr(projection_historical, 6, 7)) == mes)
+  years <- unique(as.numeric(substr(projection_historical, 1, 4)))
+  projection_data <- projection_data[ , ,ind , , ]
+  dims <- append(
+    dims,
+    c(length(ind)/length(years), length(years)),
+    after = time_dim)
 } else if (!is.na(sea)) {
   print("Seasonal")
   projection_data <- SeasonSelect(
@@ -344,7 +345,7 @@ clim_ref <- array(
 clim_ref <- aperm(
   apply(
     clim_ref,
-    c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == 'sdate')],
+    c(1 : length(dim(clim_ref)))[-which(names(dim(clim_ref)) == "sdate")],
     Loess,
     loess_span = 1),
     c(2, 3, 1, 4, 5))
@@ -354,10 +355,10 @@ print(dim(projection_data))
 anom_exp <- Ano(projection_data, clim_ref)
 
 reference <- drop(WR_obs$composite)
-names(dim(reference))<-c('lat','lon','nclust')
+names(dim(reference))<-c("lat","lon","nclust")
 
 WR_exp <- RegimesAssign(
-  var_ano = anom_exp, ref_maps = reference, lats = lat, method = 'distance'
+  var_ano = anom_exp, ref_maps = reference, lats = lat, method = "distance"
 )
 
 # ---------------------------
@@ -382,16 +383,16 @@ if (region == "Polar") {
     var = cosa / 100,
     titles = paste0(
       paste0(
-        'Cluster ', 1 : dim(cosa)[1], ' (',
-        paste0('freq = ', round(WR_exp$frequency, 1),'%'),
-        ' )'
+        "Cluster ", 1 : dim(cosa)[1], " (",
+        paste0("freq = ", round(WR_exp$frequency, 1),"%"),
+        " )"
       )
     ),
     filled.continents = FALSE,
     draw_separators = T, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = paste0(
-      plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'
+      plot_dir, "/", frequency, "-",var0,"_predicted_regimes.png"
     )
   )
 } else {
@@ -403,16 +404,16 @@ if (region == "Polar") {
     var = cosa / 100,
     titles = paste0(
       paste0(
-        'Cluster ', 1 : dim(cosa)[1], ' (',
-        paste0('freq = ', round(WR_exp$frequency, 1), '%'),
-        ' )'
+        "Cluster ", 1 : dim(cosa)[1], " (",
+        paste0("freq = ", round(WR_exp$frequency, 1), "%"),
+        " )"
       )
     ),
     filled.continents = FALSE,
     axelab = FALSE, draw_separators = T, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = paste0(
-      plot_dir, '/', frequency, '-',var0,'_predicted_regimes.png'
+      plot_dir, "/", frequency, "-",var0,"_predicted_regimes.png"
     )
   )
 }
@@ -424,16 +425,16 @@ time <- dates_projection
 time <- julian(time, origin = as.POSIXct("1970-01-01"))
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
-metadata <- list(time = list(standard_name = 'time', long_name = 'time',
-                units = 'days since 1970-01-01 00:00:00', prec = 'double',
-                dim = list(list(name='time', unlim = FALSE))))
+metadata <- list(time = list(standard_name = "time", long_name = "time",
+                units = "days since 1970-01-01 00:00:00", prec = "double",
+                dim = list(list(name="time", unlim = FALSE))))
 attr(time, "variables") <- metadata
 
 attributes(lon) <- NULL
 attributes(lat) <- NULL
 dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
-metadata <- list(variable = list(dim = list(list(name='time', unlim = FALSE))))
+metadata <- list(variable = list(dim = list(list(name="time", unlim = FALSE))))
 
 dim(WR_exp$frequency) <- c(frequency = length(WR_exp$frequency))
 dim(WR_exp$pvalue) <- c(pvalue = length(WR_exp$pvalue))
@@ -454,8 +455,8 @@ ArrayToNetCDF(
   variable_list,
   paste0(
     plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
-    start_projection, "_", end_projection, "_", start_historical, "_", end_historical,
-    ".nc"
+    start_projection, "_", end_projection, "_", start_historical, "_",
+    end_historical, ".nc"
   )
 )
 # ---------------------------
@@ -495,8 +496,8 @@ ncvar_put(file, defrmse, rmse)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
 
-colnames(rmse) <- paste('Obs', 1 : ncenters)
-rownames(rmse) <- paste('Pre', 1 : ncenters)
+colnames(rmse) <- paste("Obs", 1 : ncenters)
+rownames(rmse) <- paste("Pre", 1 : ncenters)
 
 png(paste0(plot_dir, "/Table_", var0, "_", frequency, "_rmse_", model_names,
            "_", start_projection, "_", end_projection, "_", start_historical,
