@@ -146,19 +146,21 @@ class Test(tests.Test):
                 raise iris.exceptions.CoordinateNotFoundError('')
 
         def src_coords(*args, contains_dimension=None, dim_coords=None):
-            dim_coords_list = {0: self.time,
-                               1: self.z,
-                               2: self.src_latitude,
-                               3: self.src_longitude}
+            dim_coords_list = [self.time,
+                               self.z,
+                               self.src_latitude,
+                               self.src_longitude]
             if contains_dimension is not None:
                 return [dim_coords_list[contains_dimension]]
             if dim_coords:
-                return dim_coords_list.values()
-            return [self.scalar_coord] + dim_coords_list.values()
+                return dim_coords_list
+            return [self.scalar_coord] + dim_coords_list
 
         def src_repr_coords(*args, **kwargs):
             dim_coords = [self.src_latitude, self.src_longitude]
             if kwargs.get('dim_coords', False):
+                return dim_coords
+            if 'contains_dimension' in kwargs:
                 return dim_coords
             return [self.scalar_coord] + dim_coords
 
@@ -186,6 +188,7 @@ class Test(tests.Test):
         self.src_repr = mock.Mock(
             spec=iris.cube.Cube,
             coords=src_repr_coords,
+            ndim=2,
         )
         self.dst_repr = mock.Mock(
             spec=iris.cube.Cube,
@@ -193,6 +196,23 @@ class Test(tests.Test):
             shape=(2, 2),
         )
 
-    def test_nothing(self):
-        map_slices(self.src_cube, lambda s: np.empty((2,2)),
-                   self.src_repr, self.dst_repr)
+    @mock.patch('esmvaltool.preprocessor._mapping.get_empty_data',
+                return_value=mock.sentinel.empty_data)
+    @mock.patch('iris.cube.Cube')
+    def test_map_slices(self, mock_cube, mock_get_empty_data):
+        dst = map_slices(self.src_cube, lambda s: np.ones((2, 2)),
+                         self.src_repr, self.dst_repr)
+        self.assertEqual(dst, mock_cube.return_value)
+        dim_coords = self.src_cube.coords(dim_coords=True)[:2] \
+            + self.dst_repr.coords(dim_coords=True)
+        dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
+        mock_cube.assert_called_once_with(
+            data=mock.sentinel.empty_data,
+            standard_name=self.src_cube.standard_name,
+            long_name=self.src_cube.long_name,
+            var_name=self.src_cube.var_name,
+            units=self.src_cube.units,
+            attributes=self.src_cube.attributes,
+            cell_methods=self.src_cube.cell_methods,
+            dim_coords_and_dims=dim_coords_and_dims,
+        )
