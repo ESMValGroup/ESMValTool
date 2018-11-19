@@ -28,6 +28,10 @@ def identity(*args, **kwargs):
         return args
 
 
+def mock_cube_to_empty_field(cube):
+    return cube.field
+
+
 class MockGrid(mock.MagicMock):
     get_coords = mock.Mock(return_value=mock.MagicMock())
     add_coords = mock.Mock()
@@ -425,10 +429,12 @@ class TestHelpers(tests.Test):
             (slice(None, None, None), slice(None, None, None)))
 
     @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
-                mock.Mock(side_effect=identity))
+                mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_build_regridder_2d_unmasked_data(self, mock_regrid):
         self.cube.data = self.cube.data.data
+        self.cube.field = mock.Mock()
+        mock.sentinel.dst_rep.field = mock.Mock()
         build_regridder_2d(self.cube,
                            mock.sentinel.dst_rep,
                            mock.sentinel.regrid_method, .99)
@@ -436,15 +442,15 @@ class TestHelpers(tests.Test):
             'src_mask_values': np.array([1]),
             'dst_mask_values': np.array([1]),
             'regrid_method': mock.sentinel.regrid_method,
-            'srcfield': self.cube,
-            'dstfield': mock.sentinel.dst_rep,
+            'srcfield': self.cube.field,
+            'dstfield': mock.sentinel.dst_rep.field,
             'unmapped_action': mock.sentinel.ua_ignore,
             'ignore_degenerate': True,
         }
         mock_regrid.assert_called_once_with(**expected_kwargs)
 
     @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
-                mock.Mock(side_effect=identity))
+                mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_build_regridder_2d_masked_data(self, mock_regrid):
         mock_regrid.return_value = mock.Mock(
@@ -453,22 +459,24 @@ class TestHelpers(tests.Test):
         regrid_method = mock.sentinel.rm_bilinear
         src_rep = mock.MagicMock(data=self.data)
         dst_rep = mock.MagicMock()
+        src_rep.field = mock.MagicMock(data=self.data.copy())
+        dst_rep.field = mock.MagicMock()
         build_regridder_2d(src_rep,
                            dst_rep,
                            regrid_method, .99)
         expected_calls = [
             mock.call(src_mask_values=np.array([]),
                       dst_mask_values=np.array([]),
-                      srcfield=src_rep,
-                      dstfield=dst_rep,
+                      srcfield=src_rep.field,
+                      dstfield=dst_rep.field,
                       unmapped_action=mock.sentinel.ua_ignore,
                       ignore_degenerate=True,
                       regrid_method=regrid_method),
             mock.call(src_mask_values=np.array([1]),
                       dst_mask_values=np.array([1]),
                       regrid_method=regrid_method,
-                      srcfield=src_rep,
-                      dstfield=dst_rep,
+                      srcfield=src_rep.field,
+                      dstfield=dst_rep.field,
                       unmapped_action=mock.sentinel.ua_ignore,
                       ignore_degenerate=True),
         ]
