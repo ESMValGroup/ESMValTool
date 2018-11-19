@@ -101,12 +101,16 @@ def get_associated_coords(cube, dimensions):
         if dim not in dim_set:
             dims.append(dim)
             dim_set.add(dim)
-    dim_coords = [
-        cube.coords(contains_dimension=i, dim_coords=True)[0] for i in dims
-    ]
-    aux_coords = [
-        cube.coords(contains_dimension=i, dim_coords=False)[0] for i in dims
-    ]
+    dim_coords = []
+    for i in dims:
+        c = cube.coords(contains_dimension=i, dim_coords=True)
+        if len(c) > 0:
+            dim_coords.append(c[0])
+    aux_coords = []
+    for i in dims:
+        c = cube.coords(contains_dimension=i, dim_coords=False)
+        if len(c) > 0:
+            aux_coords.append(c[0])
     return dim_coords, aux_coords
 
 
