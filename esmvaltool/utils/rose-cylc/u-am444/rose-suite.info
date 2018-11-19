@@ -1,6 +1,6 @@
-CDDS-config-version=Tested with v1.0
-access-list=matthewmizielinski
-description=Prototype suite for running CDDS conversion processes
-owner=matthewmizielinski
-project=CDDS
-title=cdds_convert component of CDDS
+esmvaltool=version2_development
+access-list=valeriupredoi
+description=Prototype suite for running ESMValTool
+owner=valeriupredoi
+project=esmvaltool
+title=esmvaltool-rose-cylc
