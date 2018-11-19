@@ -61,6 +61,7 @@ def ref_to_dims_index(cube, ref_to_slice):
     if _is_single_item(ref_to_slice):
         ref_to_slice = [ref_to_slice]
     dim_to_slice = []
+    dim_to_slice_set = set()
     for ref in ref_to_slice:
         try:
             # attempt to handle as coordinate
@@ -71,7 +72,10 @@ def ref_to_dims_index(cube, ref_to_slice):
                        'which does not describe a dimension.')
                 msg = msg.format(coord.name())
                 raise ValueError(msg)
-            dim_to_slice.extend(dims)
+            for dim in dims:
+                if dim not in dim_to_slice_set:
+                    dim_to_slice.append(dim)
+                    dim_to_slice_set.add(dim)
         except TypeError:
             try:
                 # attempt to handle as dimension index
@@ -83,8 +87,9 @@ def ref_to_dims_index(cube, ref_to_slice):
                 msg = ('Requested an iterator over a dimension ({}) '
                        'which does not exist.'.format(dim))
                 raise ValueError(msg)
-            dim_to_slice.append(dim)
-    dim_to_slice = np.unique(dim_to_slice)
+            if dim not in dim_to_slice_set:
+                dim_to_slice.append(dim)
+                dim_to_slice_set.add(dim)
     return dim_to_slice
 
 
