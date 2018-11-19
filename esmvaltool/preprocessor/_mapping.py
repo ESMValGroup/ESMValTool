@@ -153,6 +153,18 @@ def index_iterator(dims_to_slice, shape):
         yield src_ind, dst_ind
 
 
+def get_slice_coords(cube):
+    slice_coords = []
+    slice_set = set()
+    for i in range(cube.ndim):
+        cs = cube.coords(contains_dimension=i)
+        for c in cs:
+            if c not in slice_set:
+                slice_coords.append(c)
+                slice_set.add(c)
+    return slice_coords
+
+
 def map_slices(src, func, src_rep, dst_rep):
     """
     Map slices of a cube, replacing them with different slices
@@ -186,7 +198,7 @@ def map_slices(src, func, src_rep, dst_rep):
         :class:`iris.coords.DimCoord` for the new dimensions are taken from
         `dst_rep`.
     """
-    ref_to_slice = src_rep.coords(dim_coords=True)
+    ref_to_slice = get_slice_coords(src_rep)
     src_slice_dims = ref_to_dims_index(src, ref_to_slice)
     src_keep_dims = list(set(range(src.ndim)) - set(src_slice_dims))
     src_keep_spec = get_slice_spec(src, src_keep_dims)
