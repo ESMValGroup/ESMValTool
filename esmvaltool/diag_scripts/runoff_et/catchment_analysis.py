@@ -49,8 +49,8 @@ class defaults(object):
     The properties are used in the routine analysecatchments. Catchments and
     reference values are specific for the default catchment mask. All reference
     values are given in mm a-1. Precip data is based on WFDEI, runoff is based
-    on GRDC, ET is derived as the difference of both. The values are updated and
-    differ slightly from the ESMValTool 1 version.
+    on GRDC, ET is derived as the difference of both. The values are updated
+    and differ slightly from the ESMValTool 1 version.
     Properties are
         catchments
         mrro
