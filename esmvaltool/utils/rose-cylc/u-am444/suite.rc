@@ -1,0 +1,55 @@
+#!jinja2
+
+[cylc]
+    UTC mode = True
+        
+[scheduling]
+    [[dependencies]]
+        {% for RECIPE in RECIPES %}
+        graph = """
+                    {% set SUFFIX = RECIPE %}
+                    esmvaltool_{{ SUFFIX }}
+        """
+        {% endfor %}
+    [[queues]]
+        [[[default]]]
+            limit = {{ PARALLEL_TASKS }}
+[runtime]
+    [[root]]
+        script = rose task-run --verbose
+        [[[events]]]
+            mail events = submission timeout, execution timeout
+        [[[environment]]]
+            PYTHON_INTERPRETER_LOCATION = {{ PYTHON_INTERPRETER_LOCATION }}
+    [[SPICE]]
+        [[[job]]]
+            batch system = slurm
+        [[[directives]]]
+            --mem={{ MEMORY }}
+            --time={{ WALL_TIME }}
+            --wckey=CDDS
+    [[LOTUS]]
+        [[[job]]]
+            batch system = lsf
+        [[[directives]]]
+            -q = short-serial
+            # -W = {{ WALL_TIME }}
+            # -R = "rusage[mem={{ MEMORY }}]"
+            -C = 0
+    [[LOG_MANAGEMENT]]
+
+{% for RECIPE in RECIPES %}
+    {% set SUFFIX = RECIPE %}
+    [[esmvaltool_{{ SUFFIX  }}]]
+        inherit = LOTUS
+        [[[environment]]]
+            ROSE_TASK_APP = esmvaltool
+            INPUT_DIR = {{ INPUT_DIR }}
+            RECIPE = {{ RECIPE }}
+            OUTPUT_DIR = {{ OUTPUT_DIR }}
+{% endfor %}
+
+            
+
+
+

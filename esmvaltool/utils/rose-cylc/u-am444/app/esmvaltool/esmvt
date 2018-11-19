@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+Run ESMValTool via Rose/Cylc.
+
+Wrapper for esmvaltool to run within a Rose suite. This wrapper
+allows the user to run each recipe as a separate LOTUS serial short job.
+"""
+import sys
+import logging
+import os
+import subprocess
+
+
+def run_esmvaltool(params):
+    """
+    Run esmvaltool.
+
+    Parameters
+    ----------
+    params : dict
+        Parameters to use for command line.
+
+    Returns
+    -------
+    int
+        Return code of the mip_convert process.
+    """
+    logger = logging.getLogger(__name__)
+    logger.info('Running esmvaltool...')
+
+    config_file = os.path.join(params['INPUT_DIR'], 'config-user.yml')
+    recipe_file = os.path.join(params['INPUT_DIR'], 'recipes',
+                               params['RECIPE'] + '.yml')
+    cmd = ['esmvaltool', '-c', config_file, recipe_file]
+    logger.info('Command to execute: %s', ' '.join(cmd))
+
+    logger.info('Launching subprocess')
+    os.chdir(params['OUTPUT_DIR'])
+    esmvaltool_cmd = subprocess.Popen(cmd, env=os.environ.copy(),
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE)
+    output, error = esmvaltool_cmd.communicate()
+    retval = esmvaltool_cmd.returncode
+    logger.info('============ STDOUT ============')
+    logger.info(output)
+    logger.info('========== STDOUT END ==========')
+    logger.info('============ STDERR ============')
+    logger.info(error)
+    logger.info('========== STDERR END ==========')
+    if retval != 0:
+        logger.info('Command failed with return code %s', str(retval))
+    return retval
+
+
+def print_env():
+    """
+    Print environment.
+
+    Return a string description of the environment variables (useful
+    for debugging).
+
+    Returns
+    -------
+    str
+       Description of the current environment variables.
+    """
+    output = 'environment:\n'
+    for env_var in sorted(os.environ.keys()):
+        output += '    "{}" : "{}"\n'.format(env_var, os.environ[env_var])
+    return output
+
+
+def main():
+    """Get the params and run."""
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    streamhandler = logging.StreamHandler(sys.stdout)
+    streamhandler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s %(funcName)s '
+                                  '%(levelname)s: %(message)s',
+                                  datefmt='%Y-%m-%dT%H:%M:%S')
+    streamhandler.setFormatter(formatter)
+    logger.addHandler(streamhandler)
+
+    logger.info('ESMValTool Wrapper Starting')
+    try:
+        params = {env_var: os.environ[env_var] for env_var in
+                  ['RECIPE', 'INPUT_DIR', 'OUTPUT_DIR']}
+        logger.info("Running parameters %s", str(params))
+    except KeyError as err:
+        logger.error('Required environment variable not found %s', str(err))
+        logger.info(print_env())
+        raise
+
+    try:
+        exit_code = run_esmvaltool(params)
+    except Exception as error:
+        logger.error('esmvaltool failed with error: ' + repr(error))
+        logger.info(print_env())
+        raise error
+
+    logger.info('Exiting with code %s', str(exit_code))
+    sys.exit(exit_code)
+
+
+if __name__ == '__main__':
+    main()
