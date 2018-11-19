@@ -13,6 +13,7 @@ dependencies:
   - python-stratify
   - esmpy
   # Multi language support:
+  - gcc
   - ncl
   - ncurses=6.1=hfc679d8_1
   - r-base
