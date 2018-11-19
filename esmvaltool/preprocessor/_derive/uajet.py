@@ -1,5 +1,6 @@
 """Derivation of variable `uajet`."""
 
+import cf_units
 import iris
 from iris import Constraint
 import numpy as np
@@ -50,6 +51,7 @@ class DerivedVariable(DerivedVariableBase):
 
         uajet_cube = iris.cube.Cube(
             uajet_vals,
+            units=cf_units.Unit('degrees_north'),
             dim_coords_and_dims=[(ua_cube.coord('time'), 0)],
             attributes={
                 'plev': PLEV,
