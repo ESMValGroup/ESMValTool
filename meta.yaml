@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build esmvaltool -c conda-forge -c birdhouse
+# conda build . -c conda-forge -c birdhouse
 
 # Package version number
 {% set version = "2.0a1" %}
@@ -13,16 +13,20 @@ package:
 
 source:
   # Use these two lines to build a release:
-  git_rev: v{{ version }}
-  git_url: https://github.com/ESMValGroup/ESMValTool.git
+  # git_rev: v{{ version }}
+  # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  # path: .
+  path: .
 
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+  number: 1
+  script: |
+      python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+      POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
+      cp -v ${RECIPE_DIR}/language_support.sh ${POST_LINK};
+      chmod +x ${POST_LINK};
 
 requirements:
   build:
@@ -30,6 +34,9 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
+    - r-base
+    - r-rcpp
+    - libgfortran-ng
   run:
     # esmvaltool
     - python
@@ -53,8 +60,12 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - ncurses>5
-    # TODO: add R, julia
+    - ncurses=6.1=hfc679d8_1
+    - gcc
+    - r-base
+    - r-rcpp
+    - libgfortran-ng
+    # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:

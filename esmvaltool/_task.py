@@ -242,7 +242,7 @@ class DiagnosticTask(AbstractTask):
                 executables = {
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
-                    'r': [which('Rscript'), '--slave', '--quiet'],
+                    'r': [which('Rscript')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -251,7 +251,7 @@ class DiagnosticTask(AbstractTask):
                     'py': [which('python'), '-m', 'vmprof', '--lines',
                            '-o', profile_file],
                     'ncl': [which('ncl'), '-n', '-p'],
-                    'r': [which('Rscript'), '--slave', '--quiet'],
+                    'r': [which('Rscript')],
                 }
 
             if extension not in executables:
