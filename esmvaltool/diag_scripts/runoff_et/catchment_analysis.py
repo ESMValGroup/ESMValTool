@@ -469,18 +469,15 @@ def main(cfg):
                     'Reference must be the same for all variables!')
             setattr(catch_info, dvar, rivervalues)
         else:
-            if dset not in plotdata.keys():
-                plotdata[dset] = {}
-            if dexp not in plotdata[dset].keys():
-                plotdata[dset][dexp] = {}
-            if dens not in plotdata[dset][dexp].keys():
-                plotdata[dset][dexp][dens] = {}
-            if dvar in plotdata[dset][dexp][dens].keys():
+            identifier = "_".join([dset.upper(), dexp, dens])
+            if dvar not in plotdata.keys():
+                plotdata[dvar] = {}
+            if identifier in plotdata[dvar].keys():
                 raise StandardError(
                     'Variable', dvar,
                     'already exists in plot dictionary --> check script')
             else:
-                plotdata[dset][dexp][dens][dvar] = rivervalues
+                plotdata[dvar][identifier] = rivervalues
 
         # Update data for dataset
         # to check: necessary at all? dataset not used later...
