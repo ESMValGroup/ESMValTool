@@ -93,6 +93,11 @@ diagnostics:
         # one has to have  `hofm_data`: True and "EB" as one of the `hofm_regions`
         AW_core: True
         AW_core_2d: True
+        tsdiag: True
+        tsdiag_regions: ["AB" ,  'EB']
+        tsdiag_depth: 1500
+        tsdiag_ncol: 3
+
 
 
 

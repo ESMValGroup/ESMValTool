@@ -296,13 +296,33 @@ def main(cfg):
                          aw_core_parameters, 'AO', diagworkdir, diagplotdir,
                          dpi=100, observations=observations)
     
-    ############# Calculate AW parameters and plot #########################
-    # aw_core_parameters = aw_core(model_filenames_thetao, diagworkdir, 'EB', 'thetao')
-    # plot_aw_core_stat(aw_core_parameters, diagplotdir)
-    # plot2d_original_grid_AWdepth(model_filenames_thetao, 'thetao', 
-    #                      aw_core_parameters, 'AO', diagworkdir, diagplotdir,
-    #                      dpi=100, observations=observations)
-    ############# END Calculate AW parameters and plot #########################
+    if cfg['tsdiag']:    
+        model_filenames = get_clim_model_filenames(cfg, 'thetao')
+        model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                key=lambda t: t[0]))
+        for mmodel, region in itertools.product(model_filenames,
+                                                    cfg['tsdiag_regions']):
+                tsplot_data(mmodel,
+                            cfg['tsdiag_depth'], 
+                            region,
+                            diagworkdir,
+                            observations=observations)
+        
+        if cfg['tsdiag_ncol']:
+            ncols = cfg['tsdiag_ncol']
+        else:
+            ncols = 3
+
+        for region in cfg['tsdiag_regions']:
+            tsplot_plot(model_filenames,
+                        cfg['tsdiag_depth'],
+                        region, diagworkdir,
+                        diagplotdir,
+                        ncols=ncols,
+                        cmap=cm.Set1,
+                        observations = observations)
+
+
     # tsplot_data_clim(1500, 'EB', diagworkdir)
     # for mmodel in model_filenames_thetao:
     #     tsplot_data(mmodel, 1500, 'EB', diagworkdir, observations=observations)
