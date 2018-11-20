@@ -25,12 +25,26 @@ def run_esmvaltool(params):
     int
         Return code of the mip_convert process.
     """
+    # configure logging
     logger = logging.getLogger(__name__)
     logger.info('Running esmvaltool...')
 
+    # set dirs
+    if not os.path.exists(params['INPUT_DIR']):
+        logger.warning("Input dir %s not found, will create it now",
+                       params['INPUT_DIR'])
+        os.makedirs(params['INPUT_DIR'])
+    if not os.path.exists(params['OUTPUT_DIR']):
+        os.makedirs(params['OUTPUT_DIR'])
+
+    # set needed files
     config_file = os.path.join(params['INPUT_DIR'], 'config-user.yml')
     recipe_file = os.path.join(params['INPUT_DIR'], 'recipes',
                                params['RECIPE'] + '.yml')
+    if not os.path.isfile(config_file):
+        logger.warning("Config file %s not found", config_file)
+
+    # set up the command
     cmd = ['esmvaltool', '-c', config_file, recipe_file]
     logger.info('Command to execute: %s', ' '.join(cmd))
 
@@ -41,9 +55,11 @@ def run_esmvaltool(params):
                                       stderr=subprocess.PIPE)
     output, error = esmvaltool_cmd.communicate()
     retval = esmvaltool_cmd.returncode
-    logger.info('============ STDOUT ============')
-    logger.info(output)
-    logger.info('========== STDOUT END ==========')
+    logger.info('============ CLIPPED STDOUT ============')
+    # output only the last 20 odd lines of output
+    # full log is found in the esmvaltool run directory
+    logger.info(output.split(b'\n')[-21:])
+    logger.info('========== CLIPPED STDOUT END ==========')
     logger.info('============ STDERR ============')
     logger.info(error)
     logger.info('========== STDERR END ==========')
