@@ -27,7 +27,6 @@
 ;                                   (default: False)
 ;    conf_level (for zonal and latlon): confidence level for the t-test
 ;                                       (default: False)
-;    range_option: time range selection option (default: 0)
 ;    projection: map projection for lat-lon plots (default:
 ;                CylindricalEquidistant)
 ;    draw_plots: draw plots (default: True)
@@ -92,29 +91,16 @@ load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/scaling.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/xy_line.ncl"
-load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
-
-  ; Write references  ; FIX-ME to be replaced by new method
-  ; write_references(diag_script, "A_fran_fr", \
-  ;                  (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
-  ;                  (/"D_righi15gmd", "D_gleckler08jgr"/), \
-  ;                  (/"E_ncep", "E_erainterim", "E_airs", "E_ceresebaf", \
-  ;                    "E_srb"/), \
-  ;                  (/"P_embrace", "P_esmval"/))
+  ; Get variables and datasets
+  var0 = variable_info[0]@short_name
+  field0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  nDatasets = ListCount(info_items)
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"plot_type", "time_avg", "region"/))
@@ -126,7 +112,7 @@ begin
   ptype = diag_script_info@plot_type
 
   if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
-    error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
+    error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + " is not a " + \
               "supported plot_type in this diagnostic")
   end if
 
@@ -138,25 +124,24 @@ begin
 
   if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
       diag_script_info@region.ne."Global") then
-    error_msg("f", diag_script, "", "plot_type " + ptype + \
+    error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + \
               " implemented only for region='Global'")
   end if
 
   ; Check valid field
   if ((ptype.eq."zonal" .and. \
-      all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
+      all(field0.ne.(/"T3M", "T2Mz"/))) .or. \
       (ptype.eq."cycle" .and. \
-      all(field_type0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
+      all(field0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
       (ptype.eq."latlon" .and. \
-      all(field_type0.ne.(/"T3M", "T2Ms"/))) .or. \
+      all(field0.ne.(/"T3M", "T2Ms"/))) .or. \
       (ptype.eq."cycle_latlon" .and. \
-      all(field_type0.ne.(/"T3M", "T2Ms"/)))) then
-    error_msg("f", diag_script, "", "input field " + field_type0 + \
+      all(field0.ne.(/"T3M", "T2Ms"/)))) then
+    error_msg("f", DIAG_SCRIPT, "", "input field " + field0 + \
               " is not compatible with plot_type " + ptype)
   end if
 
   ; Set default values for non-required diag_script_info attributes
-  set_default_att(diag_script_info, "range_option", 0)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "draw_plots", True)
   set_default_att(diag_script_info, "plot_diff", False)
@@ -170,10 +155,10 @@ begin
 
   ; Check consistency of diff plots settings
   if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
-    error_msg("f", diag_script, "", "plot_diff must be True to apply t-test")
+    error_msg("f", DIAG_SCRIPT, "", "plot_diff must be True to apply t-test")
   end if
   if (diag_script_info@t_test .and. .not.diag_script_info@conf_level) then
-    error_msg("f", diag_script, "", \
+    error_msg("f", DIAG_SCRIPT, "", \
               "conf_level must be specified to apply t-test")
   end if
 
@@ -182,34 +167,27 @@ begin
     exit_if_missing_atts(diag_script_info, (/"metric", "normalization"/))
     if (dimsizes(diag_script_info@metric).ne.\
         dimsizes(diag_script_info@normalization)) then
-      error_msg("f", diag_script, "", "normalization must be " + \
+      error_msg("f", DIAG_SCRIPT, "", "normalization must be " + \
                 "provided for each requested metric")
     end if
   end if
 
-  ; Unique names for datasets
-  datasetnames = project_style(diag_script_info, "annots")
+  ; Set dataset names
+  datasetnames = listatts2array(info_items, "dataset")
 
   ; Check for reference dataset definition
-  if (variable_info@reference_dataset.eq."None") then
-    error_msg("f", diag_script, "", "no reference dataset is specified")
+  if (variable_info[0]@reference_dataset.eq."None") then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset is specified")
   end if
 
   ; Set index of the reference (and alternative) dataset
-  if (isatt(variable_info, "alternative_dataset")) then
+  l_altern = False
+  nobs = 1
+  ref_ind = ind(datasetnames.eq.variable_info[0]@reference_dataset)
+  if (isatt(variable_info[0], "alternative_dataset")) then
     l_altern = True
     nobs = 2
-    ref_inds = get_ref_dataset_idx(input_file_info, \
-                                   (/variable_info@reference_dataset, \
-                                    variable_info@alternative_dataset/))
-    ref_ind = ref_inds(0)
-    alt_ind = ref_inds(1)
-  else
-    l_altern = False
-    nobs = 1
-    ref_inds = \
-      get_ref_dataset_idx(input_file_info, variable_info@reference_dataset)
-    ref_ind = ref_inds
+    alt_ind = ind(datasetnames.eq.variable_info[0]@alternative_dataset)
   end if
 
   ; Create output plot directory
@@ -242,7 +220,7 @@ begin
       location = " - " + diag_script_info@region
     end if
     altitude = ""  ; priority 2
-    if(any(field_type0.eq.(/"T0M", "T0Ms"/))) then
+    if(any(field0.eq.(/"T0M", "T0Ms"/))) then
       if(isatt(diag_script_info, "altitude")) then
         altitude = " - " + diag_script_info@altitude  ; priority 1
       end if
@@ -254,36 +232,36 @@ begin
     var0_grade = var0
     var0_grade = var0_grade + region_name
     if(isatt(diag_script_info, "level").and. \
-       any(field_type0.eq.(/"T3M", "T1M"/))) then
+       any(field0.eq.(/"T3M", "T1M"/))) then
       var0_grade = var0_grade + "-" + diag_script_info@level  ; FIX-ME
     end if
 
     ; Define grading arrays
     nmetrics = dimsizes(diag_script_info@metric)
     ncdf_dir = new(nmetrics, string)
-    ndatasets = dimsizes(datasetnames) - nobs
+    nModels = dimsizes(datasetnames) - nobs
 
-    grading = new((/nmetrics, 1, ndatasets, nobs/), float)
+    grading = new((/nmetrics, 1, nModels, nobs/), float)
     grading!0 = "metric"
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
     grading!2 = "models"
     grading!3 = "reference"
     grading&diagnostics = var0_grade
-    grading&models = remove_index(datasetnames, ref_inds)
+    grading&models = remove_index(datasetnames, ref_inds)  ; FIX-ME
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
 
     ; Special case Taylor
     if (any(diag_script_info@metric.eq."taylor")) then
-      ndatasets = dimsizes(datasetnames) - 1  ; always 1 reference dataset
-      taylor = new((/1, ndatasets, 2/), float)
+      nModels = dimsizes(datasetnames) - 1  ; always 1 reference dataset
+      taylor = new((/1, nModels, 2/), float)
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
       taylor!1 = "models"
       taylor!2 = "statistic"
       taylor&diagnostics = var0_grade
       taylor&statistic = (/"stddev_ratio", "correlation"/)
-      taylor&models = remove_index(datasetnames, ref_ind)
+      taylor&models = remove_index(datasetnames, ref_ind)  ; FIX-ME
     end if
 
     ; Define grading filename
@@ -335,7 +313,7 @@ begin
       metric@long_name = \
         "Grading table of metric " + diag_script_info@metric(met)
       metric@metric = diag_script_info@metric(met)
-      metric@diag_script = (/diag_script/)
+      metric@diag_script = (/DIAG_SCRIPT/)
       metric@var = "grade"
       metric@region = location
       metric@num_climofiles = dimsizes(input_file_info@dataset)  ; FIX-ME ?
@@ -375,6 +353,6 @@ begin
 
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end
