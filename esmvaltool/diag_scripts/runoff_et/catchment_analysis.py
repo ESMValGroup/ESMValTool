@@ -418,13 +418,144 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
             pdf.close()
 
 
+def get_catchment_data(cfg):
+    """ Read and prepare catchment mask
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    """
+
+    catchment_filepath = cfg.get('catchmentmask')
+    catchment_cube = iris.load_cube(catchment_filepath)
+    if catchment_cube.coord('latitude').bounds is None:
+        catchment_cube.coord('latitude').guess_bounds()
+    if catchment_cube.coord('longitude').bounds is None:
+        catchment_cube.coord('longitude').guess_bounds()
+    catchment_areas = iris.analysis.cartography.area_weights(catchment_cube)
+
+    return catchment_cube, catchment_areas
+
+
+def get_sim_data(cfg, datapath, catchment_cube):
+    """ Read netcdf data, check units, aggregate to long term mean
+    yearly sum and regrid to resolution of catchment mask
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe.
+    dataset_path : str
+        Path to the netcdf file
+    catchment_cube : obj
+        iris cube object containing simulation data
+    """
+
+    datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
+    varlist = diag.Variables(cfg)
+    var = datainfo['short_name']
+    identifier = "_".join(
+        [datainfo['dataset'].upper(), datainfo['exp'], datainfo['ensemble']])
+    # Load data into iris cube
+    new_cube = iris.load(datapath, varlist.standard_names())[0]
+    # Check for expected unit
+    if new_cube.units != 'kg m-2 s-1':
+        raise ValueError('Unit [kg m-2 s-1] is expected for ',
+                         new_cube.long_name.lower(), ' flux')
+    # Convert to unit mm per month
+    timelist = new_cube.coord('time')
+    daypermonth = []
+    for mydate in timelist.units.num2date(timelist.points):
+        daypermonth.append(calendar.monthrange(mydate.year, mydate.month)[1])
+    new_cube.data *= 86400.0
+    for i, days in enumerate(daypermonth):
+        new_cube.data[i] *= days
+    # Aggregate over year --> unit mm per year
+    year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
+    year_cube.units = "mm a-1"
+    # Compute long term mean
+    mean_cube = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
+    # Regrid to catchment data grid --> maybe use area_weighted instead?
+    if mean_cube.coord('latitude').bounds is None:
+        mean_cube.coord('latitude').guess_bounds()
+    if mean_cube.coord('longitude').bounds is None:
+        mean_cube.coord('longitude').guess_bounds()
+    m_grid = [iris.analysis.Linear(), iris.analysis.AreaWeighted()]
+    mean_cube_regrid = mean_cube.regrid(catchment_cube, m_grid[1])
+
+    return var, identifier, mean_cube_regrid
+
+
+def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
+    """ Computes area weighted averages for river catchments
+    Parameters
+    ----------
+    catch_info : object
+        Object containing catchment names, IDs, and reference data
+    catch_cube : obj
+        iris cube object containing the catchment mask
+    catch_areas: obj
+        numpy array containing the area size for every grid cell
+    sim_cube : obj
+        iris cube object containing the simulation data
+    """
+
+    avg = {}
+    for river, rid in catch_info.catchments.items():
+        data_catch = np.ma.masked_where(
+            catch_cube.data.astype(np.int) != rid, sim_cube.data)
+        area_catch = np.ma.masked_where(
+            catch_cube.data.astype(np.int) != rid, catch_areas.data)
+        avg[river] = (data_catch * (area_catch / area_catch.sum())).sum()
+    return avg
+
+
+def update_reference(catch_info, reference, model, rivervalues, var):
+    """ Updates reference catchment averages
+    Parameters
+    ----------
+    catch_info : object
+        Object containing catchment names, IDs, and reference data
+    reference : str
+        name of the reference dataset
+    model : str
+        name of the data set
+    rivervalues : dict
+        dictionary of river catchment averages
+    var : str
+        short name of the variable
+    """
+
+    if reference != model and reference != 'default':
+        raise ValueError('Reference must be the same for all variables!')
+    setattr(catch_info, var, rivervalues)
+
+
+def update_plotdata(identifier, plotdata, rivervalues, var):
+    """ Updates reference catchment averages
+    identifier : str
+        string consisting of dataset, experiment and ensemble information
+    plotdata : dict
+        river catchment averages for different variables and datasets
+    rivervalues : dict
+        river catchment averages for different variables
+    var : str
+        short name of the variable
+    """
+    if var not in plotdata.keys():
+        plotdata[var] = {}
+    if identifier in plotdata[var].keys():
+        raise StandardError('Variable', var, 'already exists in plot dict')
+    else:
+        plotdata[var][identifier] = rivervalues
+
+
 def main(cfg):
     """Run the diagnostic.
 
     Parameters
     ----------
     cfg : dict
-    Configuration dictionary of the recipe.
+        Configuration dictionary of the recipe.
     """
 
     # Get dataset and variable information
@@ -440,98 +571,39 @@ def main(cfg):
 
     # Read catchmentmask
     # to check: Correct way to read auxillary data using recipes?
-    catchment_filepath = cfg.get('catchmentmask')
-    catchment_cube = iris.load_cube(catchment_filepath)
-    if catchment_cube.coord('latitude').bounds is None:
-        catchment_cube.coord('latitude').guess_bounds()
-    if catchment_cube.coord('longitude').bounds is None:
-        catchment_cube.coord('longitude').guess_bounds()
-    catchment_areas = iris.analysis.cartography.area_weights(catchment_cube)
+    catch_cube, catch_areas = get_catchment_data(cfg)
 
     catch_info = defaults()
     reference = 'default'
 
-    # Read data and compute long term means
+    # Read data, convert units and compute long term means
     # to check: Shouldn't this be part of preprocessing?
     # to check: How to regrid onto catchment_cube grid
     #           with preproc recipe statements
     #           instead of using regrid here?
     allcubes = {}
     plotdata = {}
-    for dataset_path in datasets:
-        # Prepare data dictionary
-        # to check: what is a smart way to do this in python3?
-        datainfo = datasets.get_dataset_info(path=dataset_path)
-        dset, dexp, dens, dvar = datainfo['dataset'], datainfo[
-            'exp'], datainfo['ensemble'], datainfo['short_name']
-        if dset not in allcubes.keys():
-            allcubes[dset] = []
-        # Load data into iris cube
-        new_cube = iris.load(dataset_path, varlist.standard_names())[0]
-        # Check for expected unit
-        if new_cube.units != 'kg m-2 s-1':
-            raise ValueError('Unit [kg m-2 s-1] is expected for ',
-                             new_cube.long_name.lower(), ' flux')
-        # Convert to unit mm per month
-        timelist = new_cube.coord('time')
-        daypermonth = []
-        for mydate in timelist.units.num2date(timelist.points):
-            daypermonth.append(
-                calendar.monthrange(mydate.year, mydate.month)[1])
-        new_cube.data *= 86400.0
-        for i, days in enumerate(daypermonth):
-            new_cube.data[i] *= days
-        # Aggregate over year --> unit mm per year
-        year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
-        year_cube.units = "mm a-1"
-        # Compute long term mean
-        mean_cube = year_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
-        # Regrid to catchment data grid --> maybe use area_weighted instead?
-        if mean_cube.coord('latitude').bounds is None:
-            mean_cube.coord('latitude').guess_bounds()
-        if mean_cube.coord('longitude').bounds is None:
-            mean_cube.coord('longitude').guess_bounds()
-        # mean_cube_regrid = mean_cube.regrid(catchment_cube,
-        #                                     iris.analysis.Linear())
-        mean_cube_regrid = mean_cube.regrid(catchment_cube,
-                                            iris.analysis.AreaWeighted())
-        # Get catchment area means
-        rivervalues = {}
-        for river, rid in catch_info.catchments.items():
-            data_catch = np.ma.masked_where(
-                catchment_cube.data.astype(np.int) != rid,
-                mean_cube_regrid.data)
-            area_catch = np.ma.masked_where(
-                catchment_cube.data.astype(np.int) != rid,
-                catchment_areas.data)
-            rivervalues[river] = (
-                data_catch * (area_catch / area_catch.sum())).sum()
-        if dset == datainfo.get('reference_dataset', None):
-            if reference == 'default':
-                reference = datainfo['reference_dataset']
-            elif reference != datainfo['reference_dataset']:
-                raise ValueError(
-                    'Reference must be the same for all variables!')
-            setattr(catch_info, dvar, rivervalues)
+    for datapath in datasets:
+        # Get simulation data
+        var, identifier, cube = get_sim_data(cfg, datapath, catch_cube)
+        # Get river catchment averages
+        rivervalues = get_catch_avg(catch_info, catch_cube, catch_areas, cube)
+        # Sort into data dictionaries
+        datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
+        model = datainfo['dataset']
+        if model == datainfo.get('reference_dataset', None):
+            update_reference(catch_info, reference, model, rivervalues, var)
+            reference = model
         else:
-            identifier = "_".join([dset.upper(), dexp, dens])
-            if dvar not in plotdata.keys():
-                plotdata[dvar] = {}
-            if identifier in plotdata[dvar].keys():
-                raise StandardError(
-                    'Variable', dvar,
-                    'already exists in plot dictionary --> check script')
-            else:
-                plotdata[dvar][identifier] = rivervalues
+            update_plotdata(identifier, plotdata, rivervalues, var)
 
-        # Update data for dataset
-        # to check: necessary at all? dataset not used later...
-        datasets.set_data(mean_cube_regrid.data, dataset_path)
         # Append to cubelist for temporary output
-        allcubes[dset].append(mean_cube_regrid)
+        if model not in allcubes.keys():
+            allcubes[model] = []
+        allcubes[model].append(cube)
 
     # Write regridded and temporal aggregated netCDF data files (one per model)
-    # to do: update attributes
+    # to do: update attributes, something fishy with unlimited dimension
     for model in allcubes.keys():
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join(['postproc', model]) + '.nc')
