@@ -768,25 +768,6 @@ begin
         filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
     end if
   end do
-
-  ; Convert unsupported list-type attributes
-  atts = getvaratts(data)
-  do i = 0, dimsizes(atts) - 1
-    if (typeof(data@$atts(i)$).eq."list") then
-      if (ListCount(data@$atts(i)$).eq.1) then
-        tmp = ListPop(data@$atts(i)$)
-        data@$atts(i)$ := tmp
-        delete(tmp)
-      else
-        tmp = new(ListCount(data@$atts(i)$), string)
-        do j = 0, ListCount(data@$atts(i)$) - 1
-          tmp(j) = ListPop(data@$atts(i)$)
-        end do
-        data@$atts(i)$ := tmp
-      end if
-    end if
-  end do
-  delete(atts)
   filevarattdef(ncdf, var, data)
 
   ; Explicitly exit file definition mode. **NOT REQUIRED**
@@ -1449,7 +1430,7 @@ begin
 end
 
 ; #############################################################################
-undef("write_ignore_warnings")
+undef("write_ignore_warnings")  ; FIX-ME: to be removed
 procedure write_ignore_warnings(warnings[*]:string,
                                 warn_file_str[1]:string)
 ;
@@ -1485,7 +1466,7 @@ begin
 end
 
 ; #############################################################################
-undef("get_ref_dataset_idx")
+undef("get_ref_dataset_idx")  ; FIX-ME to be removed
 function get_ref_dataset_idx(datasets[1]:logical,\
                              dataset_ref_name:string)
 ;
