@@ -20,6 +20,34 @@ python esmvt_rose_wrapper.py -c /home/users/valeriu/input/config-user.yml \
                              -d /home/users/valeriu/esmvat_WRAPPER \
                              -s /home/users/valeriu/u-am444/ \
                              -n
+
+Base suite:
+-----------
+The base suite to run esmvaltool via rose-cylc is u-am444; for now (Nov 2018)
+the base suite comes with esmvaltool package by default; this suite will be,
+in the near future, included in the Rose repository. The location inside
+esmvaltool is standardized to:
+
+$ESMVALTOOL/esmvaltool/utils/rose-cylc/
+
+When rose (exec.) will be working with python3.x, this location will become
+default and the pipeline will aceess it independently of user, unless, of
+course the user will specify -s $SUITE_LOCATION; until then the user needs
+to grab a copy of it in $HOME or specify the default location via -s option.
+
+Environment:
+------------
+We will move to a unified and centrally-installed esmvaltool environment;
+until then, the user will have to alter the env_setup script:
+
+u-am444/app/esmvaltool/env_setup
+
+with the correct pointers to esmvaltool installation, if desired;
+NOTE that the defaults are working pointers for an install on CEDA-Jasmin.
+
+Contact:
+--------
+author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 """
 import argparse
 import logging
