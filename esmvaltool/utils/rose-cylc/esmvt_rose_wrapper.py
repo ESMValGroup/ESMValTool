@@ -45,6 +45,27 @@ u-am444/app/esmvaltool/env_setup
 with the correct pointers to esmvaltool installation, if desired;
 NOTE that the defaults are working pointers for an install on CEDA-Jasmin.
 
+To be able to submit to cylc, you need to have the /metomi/ suite in path
+AND use a python2.7 environment. Use the Jasmin-example below for guidance.
+
+Jasmin-example:
+---------------
+This shows how to interact with rose-cylc and run esmvaltool under cylc
+using this script:
+
+export PATH=/apps/contrib/metomi/bin:$PATH
+export PATH=/home/users/valeriu/miniconda2/bin:$PATH
+mkdir esmvaltool_rose
+cd esmvaltool_rose
+cp $esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
+[get u-am444 in $HOME, get your recipes and the config]
+python esmvt_rose_wrapper.py -c config-user.yml \
+-r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
+-d $HOME/esmvaltool_rose
+
+Note that you need to pass FULL PATHS to cylc, no . or .. because all
+operations are done remotely on different nodes.
+
 Contact:
 --------
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
