@@ -34,6 +34,10 @@ python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m setup-run-suites
 [check succesful completion of mip_convert suites]
 [run the symlinking]
 python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m postproc
+
+Contact:
+--------
+author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 """
 import argparse
 import datetime
