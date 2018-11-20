@@ -222,7 +222,7 @@ with open('README.md') as readme:
                 'esmvaltool = esmvaltool._main:run',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
                 'mip_convert_setup = esmvaltool.utils.mip_convert.esmvt_mipconv_setup:main',
-                'rose_cylc_run = esmvaltool.utils.rose-cylc.esmvt_rose_wrapper:main'
+                'rose_run = esmvaltool.utils.rose_cylc.esmvt_rose_wrapper:main',
             ],
         },
         cmdclass={
