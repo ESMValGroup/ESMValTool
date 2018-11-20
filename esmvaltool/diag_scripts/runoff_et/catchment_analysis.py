@@ -262,7 +262,53 @@ def prep_barplot(title, rivers, var):
     return fig, axs
 
 
-def finish_plot(fig, pltdir,name,pdf):
+def prep_scatplot(title, coeftype):
+    """ Prepare scatterplot for different coefficients
+    Parameters
+    ----------
+    title : str
+        multipanel plot title
+    coeftype : str
+        string indicting plot type [prbias,etcoef]
+    """
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
+    ax.set_title(title)
+    ax.set_ylabel('Bias of runoff coefficient [%]')
+    if coeftype == 'prbias':
+        ax.set_xlabel('Relative bias of precipitation [%]')
+    elif coeftype == 'etcoef':
+        ax.set_xlabel('Bias of ET coefficient [%]')
+    else:
+        raise ValueError('Unexpected coefficient combination in prep_scatplot')
+
+    return fig, ax
+
+
+def add_legend(fig, rivers, markerlist):
+    """ Prepare scatterplot for different coefficients
+    Parameters
+    ----------
+    fig : obj
+        plot figure object
+    rivers : list
+        list of river catchment names
+    markerlist : list
+        list of marker strings for scatterplot legend
+    """
+
+    # Define legend
+    fig.subplots_adjust(bottom=0.30)
+    marker = cycle(markerlist)
+    caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
+    for i, label in enumerate(rivers):
+        caxe.scatter([], [], marker=next(marker), label=label)
+    caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
+    caxe.set_axis_off()
+
+
+def finish_plot(fig, pltdir, name, pdf):
     """ Save actual figure to either png or pdf
     Parameters
     ----------
@@ -276,9 +322,10 @@ def finish_plot(fig, pltdir,name,pdf):
         pdf object collection all pages in case of pdf output
     """
     import matplotlib.pyplot as plt
-    plt.tight_layout()
+    if '-bias' in name:
+        plt.tight_layout()
     if pdf is None:
-        filepath = os.path.join(pltdir, name+".png")
+        filepath = os.path.join(pltdir, name + ".png")
         fig.savefig(filepath)
     else:
         fig.savefig(pdf, dpi=80, format='pdf')
