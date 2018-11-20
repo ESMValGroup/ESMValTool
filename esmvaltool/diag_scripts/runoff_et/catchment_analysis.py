@@ -352,151 +352,66 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
     # Get colorscheme from recipe
     colorscheme = cfg.get('colorscheme', 'default')
     plt.style.use(colorscheme)
+    pltdir = cfg[diag.names.PLOT_DIR]
+    markerlist = ('s', '+', 'o', '*', 'x', 'D')
 
-    for model in plotdata.keys():
-        outtype = cfg.get('output_file_type', 'png')
-        logger.info('Generating plots for filetype: ' + outtype)
-        if outtype == 'pdf':
-            filepath = os.path.join(
-                cfg[diag.names.PLOT_DIR],
-                model.upper() + '_runoff_et' + '.' + outtype)
+    first = list(plotdata.keys())[0]
+    for identifier in plotdata[first].keys():
+        if cfg.get('output_file_type', 'png') == 'pdf':
+            filepath = os.path.join(pltdir, identifier + ".pdf")
             pdf = PdfPages(filepath)
+        else:
+            pdf = None
 
-        for exp in plotdata[model].keys():
-            for member in plotdata[model][exp].keys():
-                refdata, expdata = {}, {}
+        # Compute diagnostics for plots
+        expdata, refdata, absdiff, reldiff = {}, {}, {}, {}
+        # 1. Variable biases
+        for var in plotdata.keys():
+            rivers, refdata[var], expdata[var] = get_expdata(
+                plotdata[var][identifier], getattr(catch_info, var))
+            absdiff[var] = expdata[var] - refdata[var]
+            reldiff[var] = absdiff[var] / refdata[var] * 100
+            xrivers = range(len(rivers))
+        # 2. Coefficients
+        prbias = (expdata['pr'] - refdata['pr']) / refdata['pr'] * 100
+        rocoef = (expdata['mrro'] / expdata['pr'] * 100) - (
+            refdata['mrro'] / refdata['pr'] * 100)
+        etcoef = (expdata['evspsbl'] / expdata['pr'] * 100) - (
+            refdata['evspsbl'] / refdata['pr'] * 100)
 
-                # 1. Barplots for single variables
-                for var in plotdata[model][exp][member].keys():
-                    filepath = os.path.join(
-                        cfg[diag.names.PLOT_DIR], '_'.join([
-                            model.upper(), exp, member, 'bias-plot_' + var
-                        ]) + '.' + outtype)
-                    river, expdata[var], refdata[var] = [], [], []
-                    for xlabel, rdata in sorted(
-                            getattr(catch_info, var).items()):
-                        river.append(xlabel)
-                        refdata[var].append(rdata)
-                        expdata[var].append(
-                            plotdata[model][exp][member][var][xlabel])
-                    logger.info(var + " Reference:", refdata[var])
-                    logger.info(var + " Experiment:", expdata[var])
+        # Plot diagnostics
+        # 1. Barplots for single variables
+        title = identifier.upper() + ' vs ' + reference.upper()
+        for var in plotdata.keys():
+            fig, ax = prep_barplot(title, rivers, var)
+            # 1a. Plot absolut bias for every catchment
+            ax[0].bar(xrivers, absdiff[var], color="C{}".format(0))
+            # 1b. Plot relative bias for every catchment
+            ax[1].bar(xrivers, reldiff[var], color="C{}".format(1))
+            finish_plot(fig, pltdir, identifier + '_' + var + '-bias', pdf)
 
-                    refdata[var], expdata[var] = np.array(
-                        refdata[var]), np.array(expdata[var])
-                    fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
-                    fig.suptitle(model.upper() + ' vs ' + reference.upper())
-                    fig.subplots_adjust(bottom=0.35)
+        # 2. Runoff coefficient vs relative precipitation bias
+        title = identifier.upper() + ' vs ' + reference.upper()
+        fig, ax = prep_scatplot(title, 'prbias')
+        marker = cycle(markerlist)
+        for i, label in enumerate(rivers):
+            ax.scatter(prbias[i], rocoef[i], marker=next(marker))
+        format_coef_plot(ax)
+        add_legend(fig, rivers, markerlist)
+        finish_plot(fig, pltdir, identifier + '_pr-vs-ro', pdf)
 
-                    # 1a. Plot absolut bias for every catchment
-                    ax = axs[0]
-                    ax.set_title('\nBias for ' + var.upper())
-                    ax.set_xlabel('Catchment')
-                    ax.set_ylabel(var.upper() + ' [mm a-1]')
-                    ax.set_xticks(range(len(river)))
-                    ax.set_xticklabels((river), fontsize='small')
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(90)
-                    ax.bar(
-                        range(len(river)),
-                        expdata[var] - refdata[var],
-                        color='SkyBlue')
-                    ax.axhline(c='black', lw=2)
+        # 3. Runoff coefficient vs evaporation coefficient bias
+        title = identifier.upper() + ' vs ' + reference.upper()
+        fig, ax = prep_scatplot(title, 'etcoef')
+        marker = cycle(markerlist)
+        for i, label in enumerate(rivers):
+            ax.scatter(etcoef[i], rocoef[i], marker=next(marker))
+        format_coef_plot(ax)
+        add_legend(fig, rivers, markerlist)
+        finish_plot(fig, pltdir, identifier + '_et-vs-ro', pdf)
 
-                    # 1b. Plot relative bias for every catchment
-                    ax = axs[1]
-                    ax.set_title('\nRelative bias for ' + var.upper())
-                    ax.set_xlabel('Catchment')
-                    ax.set_ylabel('Relative bias [%]')
-                    ax.set_xticks(range(len(river)))
-                    ax.set_xticklabels((river), fontsize='small')
-                    for tick in ax.get_xticklabels():
-                        tick.set_rotation(90)
-                    ax.bar(
-                        range(len(river)),
-                        (expdata[var] - refdata[var]) / refdata[var] * 100,
-                        color='IndianRed')
-                    ax.axhline(c='black', lw=2)
-
-                    plt.tight_layout()
-                    if outtype == "pdf":
-                        fig.savefig(pdf, dpi=80, format='pdf')
-                        plt.close()
-                    else:
-                        fig.savefig(filepath)
-
-                markerlist = ('s', '+', 'o', '*', 'x', 'D')
-                # 2. Runoff coefficient vs relative precipitation bias
-                marker = cycle(markerlist)
-                filepath = os.path.join(
-                    cfg[diag.names.PLOT_DIR], '_'.join([
-                        model.upper(), exp, member, 'rocoef-vs-relprbias'
-                    ]) + '.' + outtype)
-                fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
-                for i, label in enumerate(river):
-                    ax.scatter(
-                        (expdata['pr'][i] - refdata['pr'][i]) /
-                        refdata['pr'][i] * 100,
-                        (expdata['mrro'][i] / expdata['pr'][i] * 100) -
-                        (refdata['mrro'][i] / refdata['pr'][i] * 100),
-                        marker=next(marker),
-                        label=label)
-                ax.set_title(model.upper() + ' vs ' + reference.upper())
-                ax.set_xlabel('Relative bias of precipitation [%]')
-                ax.set_ylabel('Bias of runoff coefficient [%]')
-                ax = format_coef_plot(ax)
-
-                fig.subplots_adjust(bottom=0.30)
-                caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-                marker = cycle(markerlist)
-                for i, label in enumerate(river):
-                    caxe.scatter([], [], marker=next(marker), label=label)
-                caxe.legend(
-                    ncol=3, numpoints=1, loc="lower center", mode="expand")
-                caxe.set_axis_off()
-
-                if outtype == "pdf":
-                    fig.savefig(pdf, dpi=80, format='pdf')
-                    plt.close()
-                else:
-                    fig.savefig(filepath)
-
-                # 3. Runoff coefficient vs evaporation coefficient bias
-                marker = cycle(markerlist)
-                filepath = os.path.join(
-                    cfg[diag.names.PLOT_DIR],
-                    '_'.join([model.upper(), exp, member, 'rocoef-vs-etcoef'
-                              ]) + '.' + outtype)
-                fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
-                for i, label in enumerate(river):
-                    ax.scatter(
-                        (expdata['evspsbl'][i] / expdata['pr'][i] * 100) -
-                        (refdata['evspsbl'][i] / refdata['pr'][i] * 100),
-                        (expdata['mrro'][i] / expdata['pr'][i] * 100) -
-                        (refdata['mrro'][i] / refdata['pr'][i] * 100),
-                        marker=next(marker),
-                        label=label)
-                ax.set_title(model.upper() + ' vs ' + reference.upper())
-                ax.set_xlabel('Bias of ET coefficient [%]')
-                ax.set_ylabel('Bias of runoff coefficient [%]')
-                ax = format_coef_plot(ax)
-
-                fig.subplots_adjust(bottom=0.30)
-                marker = cycle(markerlist)
-                caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-                for i, label in enumerate(river):
-                    caxe.scatter([], [], marker=next(marker), label=label)
-                caxe.legend(
-                    ncol=3, numpoints=1, loc="lower center", mode="expand")
-                caxe.set_axis_off()
-
-                if outtype == "pdf":
-                    fig.savefig(pdf, dpi=80, format='pdf')
-                    plt.close()
-                else:
-                    fig.savefig(filepath)
-
-        if outtype == "pdf":
+        # Finish pdf if it is the chosen output
+        if pdf is not None:
             pdf.close()
 
 
