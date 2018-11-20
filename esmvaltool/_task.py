@@ -123,7 +123,7 @@ def _py2ncl(value, var_name=''):
         if not value:
             txt += 'NewList("fifo")'
         else:
-            txt += '[/{}/]'.format(', '.join(_py2ncl(v) for v in value))
+            txt += '(/{}/)'.format(', '.join(_py2ncl(v) for v in value))
     elif isinstance(value, dict):
         if not var_name:
             raise ValueError("NCL does not support nested dicts.")
