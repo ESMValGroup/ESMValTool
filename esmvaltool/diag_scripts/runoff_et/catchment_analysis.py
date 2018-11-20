@@ -213,6 +213,76 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
                 ref_vars.append(var)
 
 
+def get_expdata(datadict, rivers):
+    """ Get list with catchment averages sorted according to
+        river list from reference
+    Parameters
+    ----------
+    datadict : dict
+        the catchment averages data dictionary
+    rivers : list
+        list of river catchment names
+    """
+
+    expdata = []
+    for riv in rivers:
+        expdata.append(datadict[riv])
+    return np.array([expdata])
+
+
+def prep_barplot(title, rivers, var):
+    """ Prepare barplot
+    Parameters
+    ----------
+    title : str
+        multipanel plot title
+    rivers : list
+        list of river catchment names
+    var : str
+        short name of the actual variable
+    """
+    import matplotlib.pyplot as plt
+
+    fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
+    fig.suptitle(title)
+    fig.subplots_adjust(bottom=0.35)
+    plottitle = ['\nBias for ', '\nRelative bias for ']
+    ylabel = [var.upper() + ' [mm a-1]','Relative bias [%]']
+
+    for ia, ax in enumerate(axs.keys()):
+        ax.set_title(plottitle[ia] + var.upper())
+        ax.set_ylabel(ylabel[ia])
+        ax.set_xlabel('Catchment')
+        ax.set_xticks(range(len(rivers)))
+        ax.set_xticklabels((rivers), fontsize='small')
+        for tick in ax.get_xticklabels():
+            tick.set_rotation(90)
+        ax.axhline(c='black', lw=2)
+
+    return fig, axs
+
+
+def finish_plot(fig, pltdir,name,pdf):
+    """ Save actual figure to either png or pdf
+    Parameters
+    ----------
+    fig : obj
+        actual figure
+    pltdir : str
+        target directory to store plots
+    name : str
+        filename for png output without extension
+    pdf : obj
+        pdf object collection all pages in case of pdf output
+    """
+    import matplotlib.pyplot as plt
+    plt.tight_layout()
+    if pdf is None:
+        filepath = os.path.join(pltdir, name+".png")
+        fig.savefig(filepath)
+    else:
+        fig.savefig(pdf, dpi=80, format='pdf')
+        plt.close()
 
 
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
