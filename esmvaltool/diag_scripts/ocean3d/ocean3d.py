@@ -237,33 +237,64 @@ def main(cfg):
                             diagworkdir,
                             diagplotdir,
                             contours=np.round(np.linspace(vmin,
-                                                          vmax,
-                                                          sstep),
-                                                          roundlimit),
+                                              vmax,
+                                              sstep),
+                                              roundlimit),
                             dpi=100,
-                            observations = observations)
+                            observations=observations)
 
-#    ############# plot 2d original grid ###########################
-    # for ddepth in [10, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000 ]:
-    #     plot2d_original_grid(model_filenames_thetao, 'thetao', 
-    #                      ddepth, 'AO', diagworkdir, diagplotdir, dpi=100)
-#     ############# END plot 2d original grid #######################
-    # for ddepth in [10, 100, 200, 300, 400, 500 ]:
-    # for ddepth in [10]:
-        # plot2d_bias(model_filenames_thetao, 'thetao', 
-        #         ddepth, 'AO', diagworkdir, diagplotdir, contours=[-3, 3, 21], dpi=100, observations = observations)
-    # for ddepth in [300]:
-    # for ddepth in [10]:
-        # plot2d_bias2(model_filenames_thetao, 'thetao', 
-        #         ddepth, 'AO', diagworkdir, diagplotdir, contours=[-3, 3, 21], dpi=100, observations = observations)
+    if cfg['transects']:
+        for var_number, trans_var in enumerate(cfg['transects_vars']):
+            model_filenames = get_clim_model_filenames(cfg, hofm_var)
+            model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                 key=lambda t: t[0]))
+            for mmodel, region in itertools.product(model_filenames,
+                                                    cfg['transects_regions']):
+                transect_data(mmodel,
+                              trans_var,
+                              cfg['transects_depth'],
+                              region,
+                              diagworkdir, 
+                              observations=observations)
 
-#     for mmodel in model_filenames_thetao:
-#         transect_data(mmodel, 'thetao', 1500,
-#                   'AWpath', diagworkdir, observations=observations)
-    
-#     transect_plot(model_filenames_thetao, 'thetao',
-#               1500, 'AWpath', diagworkdir, diagplotdir,
-#               levels=np.round(np.linspace(0, 5, 21), 1), ncols=3, cmap=cm.Spectral_r)
+            if cfg['transects_cmap']:
+                cmap = get_cmap(cfg['transects_cmap'][var_number])
+            else:
+                cmap = get_cmap('Spectral_r')
+            
+            if cfg['transects_ncol']:
+                ncols = cfg['transects_ncol']
+            else:
+                ncols = 3
+
+            vmin, vmax, sstep, roundlimit = cfg['transects_limits'][var_number]
+            for region in cfg['transects_regions']:
+                transect_plot(model_filenames, 
+                              trans_var,
+                              cfg['transects_depth'],
+                              region, diagworkdir, diagplotdir,
+                              levels=np.round(np.linspace(vmin,
+                                              vmax,
+                                              sstep),
+                                              roundlimit),
+                              ncols=ncols, 
+                              cmap=cmap)
+
+    # Will change to more general definition of the water mass core
+    if cfg['AW_core']:
+        model_filenames = get_clim_model_filenames(cfg, 'thetao')
+        model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                 key=lambda t: t[0]))
+        aw_core_parameters = aw_core(model_filenames, diagworkdir, 'EB', 'thetao')
+        plot_aw_core_stat(aw_core_parameters, diagplotdir)
+
+    if cfg['AW_core_2d']:
+        model_filenames = get_clim_model_filenames(cfg, 'thetao')
+        model_filenames = OrderedDict(sorted(model_filenames.items(),
+                                                 key=lambda t: t[0]))
+        plot2d_original_grid_AWdepth(model_filenames, 'thetao', 
+                         aw_core_parameters, 'AO', diagworkdir, diagplotdir,
+                         dpi=100, observations=observations)
     
     ############# Calculate AW parameters and plot #########################
     # aw_core_parameters = aw_core(model_filenames_thetao, diagworkdir, 'EB', 'thetao')
