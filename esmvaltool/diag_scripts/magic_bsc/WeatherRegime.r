@@ -98,7 +98,7 @@ WeatherRegime <- function(data, EOFS = TRUE, neofs = 30, threshold = NULL, lon =
     dims <- c(1 : length(dim(data)))[-c(sdate, ftime, lon_dim, lat_dim)]
     data <- aperm(data, c(sdate, ftime, lat_dim, lon_dim, dims))
     margins <- 5 : length(dim(data))
-    result <- Apply(data = list(data), margins = list(margins), AtomicFun = "AtomicWeatherRegime", EOFS = EOFS, neofs = neofs,
+    result <- Apply(data = list(data), margins = list(margins), fun = "AtomicWeatherRegime", EOFS = EOFS, neofs = neofs,
                     threshold = threshold, lon = lon, lat = lat, ncenters = ncenters, method = method,
                     ncores = ncores)
   } else {

@@ -10,7 +10,7 @@ library(parallel)
 #source('https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R')
 
 #library('magic.bsc', lib.loc = '/home/Earth/nperez/git/magic.bsc.Rcheck')
-library('ClimProjDiags')
+library(ClimProjDiags)
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -103,6 +103,7 @@ projection_filenames <-  fullpath_filenames[projection_files]
 
 
 for (i in 1 : length(projection_filenames)) {
+print(i)
     projection_data <- Start(model = projection_filenames[i],
                              var = var0,
                              var_var = 'var_names',
@@ -113,7 +114,7 @@ for (i in 1 : length(projection_filenames)) {
    #     lon_reorder = CircularSort(0, 360),
                              return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                              retrieve = TRUE)
-
+print("OK")
        # ------------------------------
 # Provisional solution to error in dimension order:
  lon <- attr(projection_data, "Variables")$dat1$lon

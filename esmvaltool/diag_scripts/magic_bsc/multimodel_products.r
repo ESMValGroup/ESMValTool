@@ -155,7 +155,7 @@ if (moninf <= monsup) {
             # and removing the last december
             names(dim(reference_seasonal_mean)) <- nom
             dimensiones <- 1 : length(dim(reference_seasonal_mean))
-            reference_seasonal_mean <- Apply(reference_seasonal_mean, target_dims = time_dim, AtomicFun = function(x){x[1 : (length(x) -1)]})$output1
+            reference_seasonal_mean <- Apply(reference_seasonal_mean, target_dims = time_dim, fun = function(x){x[1 : (length(x) -1)]})$output1
        dims <- dim(reference_seasonal_mean)
        time_dim <- which(names(dim(reference_seasonal_mean)) == "time")
        dims <- append(dims, c(3, dims[time_dim] / 3), after = time_dim)
@@ -241,7 +241,7 @@ if (moninf <= monsup) {
        borrar <- dim(rcp_seasonal_mean)[time_dim]
        names(dim(rcp_seasonal_mean)) <- nom
             dimensiones <- 1 : length(dim(rcp_seasonal_mean))
-            rcp_seasonal_mean <- Apply(rcp_seasonal_mean, target_dims = time_dim, AtomicFun = function(x){x[1 : (length(x) -1)]})$output1
+            rcp_seasonal_mean <- Apply(rcp_seasonal_mean, target_dims = time_dim, fun = function(x){x[1 : (length(x) -1)]})$output1
        dims <- dim(rcp_seasonal_mean)
        time_dim <- which(names(dim(rcp_seasonal_mean)) == "time")
        dims <- append(dims, c(3, dims[time_dim] / 3), after = time_dim)

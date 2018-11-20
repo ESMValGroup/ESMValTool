@@ -8,12 +8,14 @@
 Sys.setenv(TAR = '/bin/tar')
 library(s2dverification)
 #library(startR)
-library(startR)
+#library(startR)
 
 library(multiApply)
-library(ggplot2)
+#library(ggplot2)
 library(yaml)
 library(ncdf4)
+library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+
 library(parallel)
 ##Until integrated into current version of s2dverification
 #library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
@@ -74,8 +76,11 @@ historical_data <- Start(model = reference_filenames,
                          lon = 'all',
                          lon_var = 'lon',
                          lon_reorder = CircularSort(0, 360),
+                         lat_var = 'lat',
+                         time_var = 'time',
                          return_vars = list(time = 'model', lon = 'model', lat = 'model'),
                          retrieve = TRUE)
+
 lat <- attr(historical_data, "Variables")$dat1$lat
 lon  <- attr(historical_data, "Variables")$dat1$lon
 long_names <- attr(historical_data, "Variables")$common$tas$long_name
@@ -101,7 +106,6 @@ historical_data <- aperm(historical_data, c(1,2,5,3,4))
 #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
 
-print(str(historical_data))
 names(dim(historical_data)) <- historical_names
 time_dimension <- which(names(dim(historical_data)) == "time")
 
@@ -140,14 +144,14 @@ for (m in 1 : length(metric)) {
     base_index <- Climdex(data = historical_data, metric = metric[m], ncores = detectCores() - 1)
   }
 
-  base_sd[[m]] <- Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "sd")$output1
+  base_sd[[m]] <- Apply(list(base_index$result), target_dims = list(c(1)), fun = "sd")$output1
   base_sd_historical[[m]] <- InsertDim(base_sd[[m]], 1, dim(base_index$result)[1])
 
   if (var0 != "pr") {
     base_mean[[m]] <- 10
     base_mean_historical <- 10
   } else {
-    base_mean[[m]] <-  Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "mean")$output1
+    base_mean[[m]] <-  Apply(list(base_index$result), target_dims = list(c(1)), fun = "mean")$output1
     base_mean_historical <- InsertDim(base_mean[[m]], 1, dim(base_index$result)[1])
   }
 }
@@ -229,8 +233,6 @@ ncvar_put(file, defdata, data)
 #ncatt_put(file, 0, "Conventions", "CF-1.5")
 nc_close(file)
 
-        print(dim(data))
-        print(length(lon))
       title <- paste0("Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
                       substr(end_projection, 1, 4), " ",
                       " (",rcp_scenario[i]," ", model_names ,")")
