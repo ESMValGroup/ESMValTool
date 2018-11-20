@@ -155,7 +155,7 @@ def format_coef_plot(ax):
     # Show ticks in the left and lower axes only
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
-    return ax
+
 
 def data2file(cfg, filename, title, filedata):
     """ Output data dictionary into ascii file
@@ -194,8 +194,8 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
     """
 
     ref_vars = []
-    metric   = "catchment averages"
-    unit     = "[mm a-1]"
+    metric = "catchment averages"
+    unit = "[mm a-1]"
 
     for var in plotdata.keys():
         for identifier in plotdata[var].keys():
@@ -213,21 +213,24 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
                 ref_vars.append(var)
 
 
-def get_expdata(datadict, rivers):
-    """ Get list with catchment averages sorted according to
-        river list from reference
+def get_expdata(expdict, refdict):
+    """ Get list with catchment averages for experiment and reference
+    sorted according to river list from reference
     Parameters
     ----------
-    datadict : dict
-        the catchment averages data dictionary
-    rivers : list
-        list of river catchment names
+    expdict : dict
+        the catchment averages experiments dictionary
+    refdict : dict
+        the catchment averages reference dictionary
     """
 
-    expdata = []
+    expdata, refdata, rivers = [], [], []
+    for riv, ref in sorted(refdict.items()):
+        rivers.append(riv)
+        refdata.append(ref)
     for riv in rivers:
-        expdata.append(datadict[riv])
-    return np.array([expdata])
+        expdata.append(expdict[riv])
+    return rivers, np.array(refdata), np.array(expdata)
 
 
 def prep_barplot(title, rivers, var):
@@ -247,9 +250,9 @@ def prep_barplot(title, rivers, var):
     fig.suptitle(title)
     fig.subplots_adjust(bottom=0.35)
     plottitle = ['\nBias for ', '\nRelative bias for ']
-    ylabel = [var.upper() + ' [mm a-1]','Relative bias [%]']
+    ylabel = [var.upper() + ' [mm a-1]', 'Relative bias [%]']
 
-    for ia, ax in enumerate(axs.keys()):
+    for ia, ax in enumerate(axs.tolist()):
         ax.set_title(plottitle[ia] + var.upper())
         ax.set_ylabel(ylabel[ia])
         ax.set_xlabel('Catchment')
