@@ -189,7 +189,7 @@ if (moninf <= monsup) {
     reference_seasonal_mean <- Apply(
       reference_seasonal_mean,
       target_dims = time_dim,
-      AtomicFun = function(x){x[1 : (length(x) -1)]}
+      fun = function(x){x[1 : (length(x) -1)]}
     )$output1
     dims <- dim(reference_seasonal_mean)
     time_dim <- which(names(dim(reference_seasonal_mean)) == "time")
@@ -312,7 +312,7 @@ if (moninf <= monsup) {
     rcp_seasonal_mean <- Apply(
       rcp_seasonal_mean,
       target_dims = time_dim,
-      AtomicFun = function(x){x[1 : (length(x) -1)]}
+      fun = function(x){x[1 : (length(x) -1)]}
     )$output1
     dims <- dim(rcp_seasonal_mean)
     time_dim <- which(names(dim(rcp_seasonal_mean)) == "time")

@@ -9,7 +9,7 @@ library(parallel)
 #source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R")
 
 #library("magic.bsc", lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck")
-library("ClimProjDiags") # nolint
+library(ClimProjDiags) # nolint
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -111,7 +111,6 @@ for (i in 1 : length(projection_filenames)) {
     lat = "all",
     lon = "all",
     lon_var = "lon",
-    # lon_reorder = CircularSort(0, 360),
     return_vars = list(time = "model", lon = "model", lat = "model"),
     retrieve = TRUE)
 

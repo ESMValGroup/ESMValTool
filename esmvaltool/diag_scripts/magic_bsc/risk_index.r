@@ -8,12 +8,14 @@
 Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
 #library(startR)
-library(startR)
+#library(startR)
 
 library(multiApply)
-library(ggplot2)
+#library(ggplot2)
 library(yaml)
 library(ncdf4)
+library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+
 library(parallel)
 ##Until integrated into current version of s2dverification
 #library(magic.bsc, lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck/")
@@ -71,7 +73,9 @@ historical_data <- Start(
   var = var0,
   var_var = "var_names",
   time = "all",
+  time_var = "time",
   lat = "all",
+  lat_var = "lat",
   lon = "all",
   lon_var = "lon",
   lon_reorder = CircularSort(0, 360), # nolint
@@ -124,7 +128,6 @@ attr(historical_data, "Variables")$dat1$time <- time
 #dev.off()
 # nolint end
 
-print(str(historical_data))
 names(dim(historical_data)) <- historical_names
 time_dimension <- which(names(dim(historical_data)) == "time")
 
@@ -176,7 +179,7 @@ for (m in 1 : length(metric)) {
   base_sd[[m]] <- Apply(
     list(base_index$result),
     target_dims = list(c(1)),
-    AtomicFun = "sd"
+    fun = "sd"
   )$output1
   base_sd_historical[[m]] <- InsertDim(
     base_sd[[m]], 1, dim(base_index$result)[1]
@@ -189,7 +192,7 @@ for (m in 1 : length(metric)) {
     base_mean[[m]] <- Apply(
       list(base_index$result),
       target_dims = list(c(1)),
-      AtomicFun = "mean"
+      fun = "mean"
     )$output1
     base_mean_historical <- InsertDim(
       base_mean[[m]], 1, dim(base_index$result)[1]
@@ -300,7 +303,7 @@ for (i in 1 : length(projection_filenames)) {
         name = "data",
         units = units,
         dim = list(lat = dimlat, lon = dimlon),
-        longname = paste("Mean",metric[m], long_names)
+        longname = paste("Mean", metric[m], long_names)
       )
       file <- nc_create(
         paste0(
@@ -313,8 +316,6 @@ for (i in 1 : length(projection_filenames)) {
       ncvar_put(file, defdata, data)
       nc_close(file)
 
-      print(dim(data))
-      print(length(lon))
       title <- paste0(
         "Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
         substr(end_projection, 1, 4), " ", " (", rcp_scenario[i],
