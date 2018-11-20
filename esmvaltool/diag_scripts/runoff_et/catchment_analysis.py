@@ -157,6 +157,27 @@ def format_coef_plot(ax):
     ax.yaxis.set_ticks_position('left')
     return ax
 
+def data2file(cfg, filename, title, filedata):
+    """ Output data dictionary into ascii file
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    filename : str
+        String containing the file name
+    title : str
+        String containing the file header
+    filedata : dict
+        Dictionary of catchment averages per river
+    """
+
+    # Write experiment data
+    filepath = os.path.join(cfg[diag.names.WORK_DIR], filename)
+    with open(filepath, 'w') as f:
+        f.write(title + '\n\n')
+        for river, value in sorted(filedata.items()):
+            f.write('{:25} : {:8.2f}\n'.format(river, value))
+
 
 def write_plotdata(cfg, plotdata, catch_info, reference):
     """ Output catchment averaged values for all datasets.
@@ -173,36 +194,25 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
     """
 
     ref_vars = []
-    for model in plotdata.keys():
-        for exp in plotdata[model].keys():
-            for ens in plotdata[model][exp].keys():
-                for var in plotdata[model][exp][ens].keys():
-                    # Write experiment data
-                    filepath = os.path.join(
-                        cfg[diag.names.WORK_DIR],
-                        '_'.join([var, model, exp, ens]) + '.txt')
-                    with open(filepath, 'w') as f:
-                        f.write(" ".join([
-                            model.upper(), exp, ens, var, 'catchment averages',
-                            '[mm a-1]'
-                        ]) + '\n\n')
-                        for river, value in sorted(
-                                plotdata[model][exp][ens][var].items()):
-                            f.write('{:25} : {:8.2f}\n'.format(river, value))
-                    # Write reference data
-                    if var not in ref_vars:
-                        filepath = os.path.join(
-                            cfg[diag.names.WORK_DIR],
-                            '_'.join([var, 'reference']) + '.txt')
-                        with open(filepath, 'w') as f:
-                            f.write(" ".join([
-                                'Reference', 'catchment averages', '[mm a-1]'
-                            ]) + '\n\n')
-                            for river, value in sorted(
-                                    getattr(catch_info, var).items()):
-                                f.write('{:25} : {:8.2f}\n'.format(
-                                    river, value))
-                        ref_vars.append(var)
+    metric   = "catchment averages"
+    unit     = "[mm a-1]"
+
+    for var in plotdata.keys():
+        for identifier in plotdata[var].keys():
+            # Write experiment data
+            filename = '_'.join([var, identifier]) + '.txt'
+            title = " ".join(identifier.split(' ') + [var, metric, unit])
+            filedata = plotdata[var][identifier]
+            data2file(cfg, filename, title, filedata)
+            # Write reference data
+            if var not in ref_vars:
+                filename = '_'.join([var, 'reference']) + '.txt'
+                title = " ".join([reference, metric, unit])
+                filedata = getattr(catch_info, var)
+                data2file(cfg, filename, title, filedata)
+                ref_vars.append(var)
+
+
 
 
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
