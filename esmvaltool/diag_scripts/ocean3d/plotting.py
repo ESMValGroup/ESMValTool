@@ -504,18 +504,23 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
     nrows = math.ceil(nplots/ncols)
     ncols = int(ncols)
     nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
-    mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
-    
-    for mmodel in model_filenames:
-        print(mmodel)
+    # nplot = 1
+    figsize=(5*ncols,1.5*nrows*ncols)
+    fig, ax = plt.subplots(nrows,ncols, 
+                           figsize=figsize,
+#                           subplot_kw=dict(projection=proj),
+                           constrained_layout=True)
+    ax = ax.flatten()
+
+    # plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
+    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
+    for indx, mmodel in enumerate(model_filenames):
+    # for mmodel in model_filenames:
+        
         logger.info("Plot plot2d_original_grid_AWdepth {} for {}".format(cmor_var, mmodel))
         ifilename = genfilename(diagworkdir, cmor_var,
                              mmodel,  data_type='timmean', extension='.nc')
-        # ifilename = os.path.join(diagworkdir,
-        #                     'arctic_ocean_{}_{}_timmean.nc'.format(cmor_var,
-        #                                                           mmodel))
+        mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l', ax=ax[indx])
         datafile = Dataset(ifilename)
         lon = datafile.variables['lon'][:]
         lat = datafile.variables['lat'][:]
@@ -526,81 +531,38 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
             lon2d, lat2d = np.meshgrid(lon, lat)
         #areacello = datafile.variables['areacello'][:]
         maxvalue_index = aw_core_parameters[mmodel]['maxvalue_index']
-        if mmodel != observations:
-            data = datafile.variables[cmor_var][0, maxvalue_index, :, :]
-        else:
-            data = datafile.variables[cmor_var][maxvalue_index, :, :]
-            
 
+        if datafile.variables[cmor_var].ndim < 4:
+            data = datafile.variables[cmor_var][maxvalue_index,:,:]
+        else:
+            data = datafile.variables[cmor_var][0,maxvalue_index,:,:]
+            
         if cmor_var == 'thetao':
             data = data-273.15
             cb_label = '$^{\circ}$C'
         elif cmor_var == 'so':
             cb_label = 'psu'
         
-        plt.subplot(nrows, ncols, nplot)
+        # plt.subplot(nrows, ncols, nplot)
 
         xx, yy = mm(lon2d, lat2d)
         mm.drawmapboundary(fill_color='0.9')
         mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
         mm.drawcoastlines(linewidth=0.1)
-        mm.contourf(xx,yy, data,
+        image = ax[indx].contourf(xx,yy, data,
                     levels=np.round(np.linspace(-2, 2.3, 41), 1),
                     cmap = cmo.balance, 
                     extend='both',
                   )
-        cb = plt.colorbar(orientation='horizontal', pad=0.03, shrink=0.95)
-        cb.set_label(cb_label, rotation='horizontal', size=12)
-        cb.ax.tick_params(labelsize=12)
-
-        plt.title("{}, {} m".format(mmodel, np.round(lev[maxvalue_index], 1)), size=18)
-        nplot = nplot+1
-
-    # phc = Dataset('/mnt/lustre01/work/ab0995/a270088/ESMV/obsdata/Tier2/PHC/phc3.0_annual.nc')
-    # temp_phc = phc.variables['temp'][:]
-    # salt_phc = phc.variables['salt'][:]
-    # lon_phc = phc.variables['lon'][:]
-    # lat_phc = phc.variables['lat'][:]
-    # depth_phc = phc.variables['depth'][:]
-
-    # depth3d_phc = np.zeros(salt_phc.shape)
-    # for i in range(depth_phc.shape[0]):
-    #     depth3d_phc[i, :, :] = depth_phc[i]
-
-    # ptemp_phc = sw.ptmp(salt_phc, temp_phc, depth3d_phc)
-    # temp_phc = ptemp_phc
-
-    # lonc, latc = np.meshgrid(lon_phc, lat_phc)
-
-    # maxvalue_index = aw_core_parameters['PHC3']['maxvalue_index']
-
-    # data = temp_phc[maxvalue_index, :, :]
-
-    # if cmor_var == 'thetao':
-    #     data = data
-    #     cb_label = '$^{\circ}$C'
-    # elif cmor_var == 'so':
-    #     cb_label = 'psu'
+        ax[indx].set_title("{}, {} m".format(mmodel, np.round(lev[maxvalue_index],1)), size=18)
+        ax[indx].set_rasterization_zorder(-1)
     
-    # plt.subplot(nrows, ncols, nplot)
+    for delind in range(indx+1, len(ax)):
+        fig.delaxes(ax[delind])
+    cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.01, shrink = 0.9)
+    cb.set_label(cb_label, rotation='horizontal', size=12)
+    cb.ax.tick_params(labelsize=12)
 
-    # xx, yy = mm(lonc, latc)
-    # mm.drawmapboundary(fill_color='0.9')
-    # mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
-    # mm.drawcoastlines(linewidth=0.1)
-    # mm.contourf(xx,yy, data,
-    #             levels=np.round(np.linspace(-2, 2.3, 41),1),
-    #             cmap = cmo.balance, 
-    #             extend='both',
-    #           )
-    # cb = plt.colorbar(orientation='horizontal', pad=0.03, shrink=0.95)
-    # cb.set_label(cb_label, rotation='horizontal', size=12)
-    # cb.ax.tick_params(labelsize=12)
-
-    # plt.title("{}, {} m".format('PHC3', np.round(depth_phc[maxvalue_index],1)), size=18)
-    nplot=nplot+1
-
-    plt.tight_layout()
     pltoutname = os.path.join(diagplotdir,
                               'arctic_ocean_{}_{}_plot2dAWdepth'.format(cmor_var,
                                                                   region))
