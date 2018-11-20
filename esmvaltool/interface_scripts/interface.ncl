@@ -20,10 +20,10 @@ end
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = diag_script_info@input_files
-  nvdf = ListCount(vardeffiles)
+  nvdf = dimsizes(vardeffiles)
   do i = 0, nvdf - 1
-    if (.not. ismissing(vardeffiles[nvdf - 1 - i])) then
-      vardeffile = vardeffiles[nvdf - 1 - i]
+    if (.not. ismissing(vardeffiles(i))) then
+      vardeffile = vardeffiles(i)
       print("INFO    Loading input data description from " + vardeffile)
       loadscript(vardeffile)
     end if
