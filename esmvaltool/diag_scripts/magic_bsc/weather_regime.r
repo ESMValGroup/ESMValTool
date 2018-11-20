@@ -75,17 +75,18 @@ detrend_order <- params$detrend_order
 # ---------------------------
 # Reading and formating
 # ---------------------------
-reference_data <- Start(model = fullpath_filenames[reference_files],
-              var = var0,
-              var_var = "var_names",
-              time ="all",
-              lat = values(list(lat.min, lat.max)),
-              lon = values(list(lon.min, lon.max)),
-              lon_var = "lon",
-              lon_reorder = CircularSort(0, 360),
-              return_vars = list(time = "model", lon = "model", lat = "model"),
-              retrieve = TRUE)
-      # ------------------------------
+reference_data <- Start(
+  model = fullpath_filenames[reference_files],
+  var = var0,
+  var_var = "var_names",
+  time = "all",
+  lat = values(list(lat.min, lat.max)),
+  lon = values(list(lon.min, lon.max)),
+  lon_var = "lon",
+  lon_reorder = CircularSort(0, 360), # nolint
+  return_vars = list(time = "model", lon = "model", lat = "model"),
+  retrieve = TRUE
+
 
 # Provisional solution to error in dimension order:
  lon <- attr(reference_data, "Variables")$dat1$lon
@@ -96,81 +97,106 @@ reference_data <- Start(model = fullpath_filenames[reference_files],
 data_type <- ifelse(grepl("Amon", fullpath_filenames[1]), "Amon", "day")
 dates_historical <- seq(start_historical, end_historical, data_type)
 if (length(dates_historical) != length(time)) {
-   if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
-	dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
-    }
+  if (
+    calendario == "365" | calendario == "365_days" |
+    calendario == "365_day" | calendario == "noleap"
+  ) {
+	  dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
+  }
 }
 if (length(dates_historical) != length(time)) {
 print("Time problems 1")
 }
-    reference_data <- as.vector(reference_data)
-    dim(reference_data) <- c(model = 1, var = 1, lon = length(lon), lat = length(lat), time = length(time))
-    reference_data <- aperm(reference_data, c(1, 2, 5, 4, 3))
-    attr(reference_data, "Variables")$dat1$time <- time
+reference_data <- as.vector(reference_data)
+dim(reference_data) <- c(
+  model = 1,
+  var = 1,
+  lon = length(lon),
+  lat = length(lat),
+  time = length(time)
+)
+reference_data <- aperm(reference_data, c(1, 2, 5, 4, 3))
+attr(reference_data, "Variables")$dat1$time <- time
 
 # -------------------------------
 ## Selecting the season or month
 # -------------------------------
 time_dim <- which(names(dim(reference_data)) == "time")
 
-months <- c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+months <- c(
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP",
+  "OCT", "NOV", "DEC"
+)
 seasons <- c("DJF", "MAM", "JJA", "SON")
 mes <- match(frequency, months)
 sea <- match(frequency, seasons)
 
 if (!is.na(mes)) {
-    print("MONTHLY")
-    dims <- dim(reference_data)
-    ind = which(as.numeric(substr(dates_historical, 6, 7)) == mes)
-    years = unique(as.numeric(substr(dates_historical, 1, 4)))
-    reference_data = reference_data[ , ,ind , , ]
-    dims <- append(dims, c(length(ind)/length(years), length(years)), after = time_dim)
+  print("MONTHLY")
+  dims <- dim(reference_data)
+  ind = which(as.numeric(substr(dates_historical, 6, 7)) == mes)
+  years = unique(as.numeric(substr(dates_historical, 1, 4)))
+  reference_data = reference_data[ , ,ind , , ]
+  dims <- append(
+    dims, c(length(ind)/length(years), length(years)), after = time_dim
+  )
 } else if (!is.na(sea)) {
-    print("Seasonal")
-    reference_data <- SeasonSelect(reference_data, season = frequency, dates = dates_historical, calendar = calendario)
-    time <- reference_data$dates
-    years = unique(as.numeric(substr(time, 1, 4)))
-    reference_data <- reference_data$data
- reference_data <- InsertDim(InsertDim(reference_data, posdim = 1, lendim = 1), posdim = 1, lendim = 1)
- names(dim(reference_data))[c(1, 2)] <- c("model", "var")
-dims <- dim(reference_data)
-dims <- append(dims, c(length(time)/length(years), length(years)), after = time_dim)
+  print("Seasonal")
+  reference_data <- SeasonSelect(
+    reference_data,
+    season = frequency,
+    dates = dates_historical,
+    calendar = calendario
+  )
+  time <- reference_data$dates
+  years = unique(as.numeric(substr(time, 1, 4)))
+  reference_data <- reference_data$data
+  reference_data <- InsertDim(reference_data, posdim = 1, lendim = 1)
+  reference_data <- InsertDim(reference_data, posdim = 1, lendim = 1)
+  names(dim(reference_data))[c(1, 2)] <- c("model", "var")
+  dims <- dim(reference_data)
+  dims <- append(
+    dims, c(length(time)/length(years), length(years)), after = time_dim
+  )
 }
 dims <- dims[-time_dim]
 
 dim(reference_data) <- dims
 names(dim(reference_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 
-Loess <- function(clim, loess_span)
-    {
-        data <- data.frame(ensmean = clim, day = 1 : length(clim))
-        loess_filt <- loess(
-            ensmean ~ day, data, span = loess_span, degree = detrend_order
-        )
-        output <- predict(loess_filt)
-        return(output)
-    }
+Loess <- function(clim, loess_span) {
+  data <- data.frame(ensmean = clim, day = 1 : length(clim))
+  loess_filt <- loess(
+    ensmean ~ day, data, span = loess_span, degree = detrend_order
+  )
+  output <- predict(loess_filt)
+  return(output)
+}
 # -------------------------------
 ## Computing the WR_obs
 # -------------------------------
 clim_obs <- array(
-    apply(reference_data, c(1, 2, 3, 5, 6), mean),
-    dim = dim(reference_data)[-4]
+  apply(reference_data, c(1, 2, 3, 5, 6), mean),
+  dim = dim(reference_data)[-4]
 )
 clim_obs <- aperm(
-    apply(
-        clim_obs,
-        c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == "sdate")],
-        Loess,
-        loess_span = 1),
-    c(2, 3, 1, 4, 5)
+  apply(
+      clim_obs,
+      c(1 : length(dim(clim_obs)))[-which(names(dim(clim_obs)) == "sdate")],
+      Loess,
+      loess_span = 1),
+  c(2, 3, 1, 4, 5)
 )
 
 anom_obs <- Ano(reference_data, clim_obs)
 
 WR_obs <- WeatherRegime(
-    data = anom_obs, EOFS = EOFS, lat = lat, lon = lon,
-    ncenters = ncenters, method = cluster_method
+  data = anom_obs,
+  EOFS = EOFS,
+  lat = lat,
+  lon = lon,
+  ncenters = ncenters,
+  method = cluster_method
 )
 names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
 
@@ -194,27 +220,39 @@ if(lim < 1) {
 }
 
 if (region == "Polar") {
-    PlotLayout(
-        PlotStereoMap, c(2, 3), lon = lon, lat = lat,
-        var = cosa/100,
-        titles = paste0(paste0("Cluster ", 1:4)," (", clim_frequencies, " )"),
-        filled.continents = FALSE,
-        axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
-        brks = seq(-1 *lim, lim, by = lim / 10),
-        fileout = paste0(
-            plot_dir, "/", frequency, "-",var0,"_observed_regimes.png"
-            )
-        )
+  PlotLayout(
+    PlotStereoMap,
+    c(2, 3),
+    lon = lon,
+    lat = lat,
+    var = cosa/100,
+    titles = paste0(paste0("Cluster ", 1:4)," (", clim_frequencies, " )"),
+    filled.continents = FALSE,
+    axelab = FALSE,
+    draw_separators = TRUE,
+    subsampleg = 1,
+    brks = seq(-1 *lim, lim, by = lim / 10),
+    fileout = paste0(
+        plot_dir, "/", frequency, "-", var0, "_observed_regimes.png"
+    )
+  )
 } else {
-    PlotLayout(
-        PlotEquiMap, c(2, 3), lon = lon, lat = lat, var = cosa/100,
-        titles = paste0(paste0("Cluster ", 1:4)," (",clim_frequencies," )"),
-        filled.continents = FALSE,
-        axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
-        brks = seq(-1 *lim, lim, by = lim / 10),
-        fileout = paste0(
-            plot_dir, "/", frequency, "-",var0,"_observed_regimes.png")
-        )
+  PlotLayout(
+    PlotEquiMap,
+    c(2, 3),
+    lon = lon,
+    lat = lat,
+    var = cosa/100,
+    titles = paste0(paste0("Cluster ", 1:4)," (",clim_frequencies," )"),
+    filled.continents = FALSE,
+    axelab = FALSE,
+    draw_separators = TRUE,
+    subsampleg = 1,
+    brks = seq(-1 *lim, lim, by = lim / 10),
+    fileout = paste0(
+      plot_dir, "/", frequency, "-",var0,"_observed_regimes.png"
+    )
+  )
 }
 # -------------------------------
 ## Save the WR_obs output to ncdf
@@ -223,9 +261,10 @@ time <- dates_historical
 time <- julian(time, origin = as.POSIXct("1970-01-01"))
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
-metadata <- list(time = list(standard_name = "time", long_name = "time",
-                units = "days since 1970-01-01 00:00:00", prec = "double",
-                dim = list(list(name="time", unlim = FALSE))))
+metadata <- list(time = list(
+  standard_name = "time", long_name = "time",
+  units = "days since 1970-01-01 00:00:00", prec = "double",
+  dim = list(list(name="time", unlim = FALSE))))
 attr(time, "variables") <- metadata
 
 attributes(lon) <- NULL

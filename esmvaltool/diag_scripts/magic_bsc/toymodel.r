@@ -4,13 +4,13 @@
 ####cdo
 
 # conda install -c conda-forge r-ncdf4
-#install.packages('yaml')
-#install.packages('devtools')
+#install.packages("yaml")
+#install.packages("devtools")
 #library(devtools)
-#Sys.setenv(TAR = '/bin/tar')
-#install_git('https://earth.bsc.es/gitlab/es/startR', branch = 'develop-hotfixes-0.0.2')
-#install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
-Sys.setenv(TAR = '/bin/tar')
+#Sys.setenv(TAR = "/bin/tar")
+#install_git("https://earth.bsc.es/gitlab/es/startR", branch = "develop-hotfixes-0.0.2")
+#install_git("https://earth.bsc.es/gitlab/es/easyNCDF", branch = "master")
+Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
 library(startR)
 library(multiApply)
@@ -44,18 +44,18 @@ nm <- params$number_of_members
 nstartd <- 1
 nleadt = params$no_of_lead_times
 
-#fullpath_filenames <-  "/scratch/Earth/ahunter/esmvaltool_input/CMIP5/Tier2/NCEP/OBS_NCEP_reanaly_1_T3M_ta_200001-200212.nc"
-data <- Start(model = fullpath_filenames,
-                        var = var0,
-                        var_var = 'var_names',
-                        time = 'all',
-                        lat = 'all',
-                        lon = 'all',
-                        lon_var = 'lon',
-                        return_vars = list(time = 'model', lon = 'model', lat = 'model'),
-                        retrieve = TRUE)
-
-
+#fullpath_filenames <- "/scratch/Earth/ahunter/esmvaltool_input/CMIP5/Tier2/NCEP/OBS_NCEP_reanaly_1_T3M_ta_200001-200212.nc"
+data <- Start(
+  model = fullpath_filenames,
+  var = var0,
+  var_var = "var_names",
+  time = "all",
+  lat = "all",
+  lon = "all",
+  lon_var = "lon",
+  return_vars = list(time = "model", lon = "model", lat = "model"),
+  retrieve = TRUE
+)
 dim_names <- names(dim(data))
 units <- (attr(data,"Variables")$common)[[2]]$units
 time <- attributes(data)$Variables$dat1$time
@@ -69,97 +69,128 @@ data <- WeightedMean(data, lat = lat, lon = lon, londim = lon_dim, latdim = lat_
 names(dim(data)) <- dim_names[-c(lon_dim, lat_dim)]
 time_dim <- which(names(dim(data)) == "time")
 
-ToyModel <- function (alpha = 0.1, beta = 0.4, gamma = 1, sig = 1, trend = 0,
-    nstartd = 30, nleadt = 4, nmemb = 10, obsini = NULL, fxerr = NULL)
-{
-    if (any(!is.numeric(c(alpha, beta, gamma, sig, trend, nstartd,
-        nleadt, nmemb)))) {
-        stop(paste("Parameters 'alpha', 'beta', 'gamma', 'sig', 'trend', 'nstartd',",
-            "nleadt and nmemb must be numeric."))
+ToyModel <- function (
+  alpha = 0.1, beta = 0.4, gamma = 1, sig = 1, trend = 0,
+  nstartd = 30, nleadt = 4, nmemb = 10, obsini = NULL, fxerr = NULL
+){
+  if (any(!is.numeric(c(alpha, beta, gamma, sig, trend, nstartd,
+      nleadt, nmemb)))) {
+      stop(paste("Parameters alpha, beta, gamma, sig, trend, nstartd,",
+          "nleadt and nmemb must be numeric."))
+  }
+  nstartd <- round(nstartd)
+  nleadt <- round(nleadt)
+  nmemb <- round(nmemb)
+  if (!is.null(obsini)) {
+    if (!is.numeric(obsini) || !is.array(obsini)) {
+      stop("Parameter obsini must be a numeric array.")
     }
-    nstartd <- round(nstartd)
-    nleadt <- round(nleadt)
-    nmemb <- round(nmemb)
-    if (!is.null(obsini)) {
-        if (!is.numeric(obsini) || !is.array(obsini)) {
-            stop("Parameter 'obsini' must be a numeric array.")
+    if (length(dim(obsini)) != 4) {
+      stop(paste(
+        "Parameter obsini must be an array with dimensions",
+        "c(1, 1, nleadt, nstartd)."
+      ))
+    }
+    if (dim(obsini)[3] != nstartd || dim(obsini)[4] != nleadt) {
+      stop(paste0(
+        "The dimensions of parameter obsini and the parameters ",
+        "nleadt and nstartd must match:\n  dim(obsini) = c(",
+        dim(obsini)[3], ", ", dim(obsini)[4], ")\n  nstartd = ",
+        nstartd, "  nleadt = ", nleadt
+      ))
+    }
+  }
+  if (!is.null(fxerr)) {
+    if (!is.numeric(fxerr)) {
+        stop("Parameter fxerr must be numeric.")
+    }
+  }
+  time <- seq(1, nstartd)
+  if (!(sig^2 - alpha^2 - beta^2 > 0)) {
+    stop(paste(
+      "Model variability not constrained: respect condition",
+      \"sig^2-alpha^2-beta^2 > 0\")"
+    ))
+  }
+  if (nstartd < 0) {
+      stop("Number of start dates must be positive")
+  }
+  if (nleadt < 0) {
+      stop("Number of lead-times must be positive")
+  }
+  if (nmemb < 0) {
+      stop("Number of members must be positive")
+  }
+  if (!is.null(obsini)) {
+    obs_ano <- obsini
+  }
+  else {
+    obs_ano <- array(rnorm(nleadt * nstartd, mean = 0, sd = sig),
+        dim = c(1, 1, nstartd, nleadt))
+    obs_trend <- array(t(time) * rep(trend, times = nstartd),
+        , dim = c(1, 1, nstartd, nleadt))
+    obs <- obs_ano + obs_trend
+    trend <- rep(c(trend), times = nleadt)
+    sig <- rep(c(sig), times = nleadt)
+  }
+  forecast <- array(dim = c(length(gamma), nmemb, nstartd, nleadt))
+  for (j in 1:nstartd) {
+    for (f in 1:nleadt) {
+      for (g in 1:length(gamma)) {
+        auto_term <-  obs_ano[1, 1, j, f]
+        if (is.numeric(fxerr)) {
+          conf_term <- fxerr
         }
-        if (length(dim(obsini)) != 4) {
-            stop("Parameter 'obsini' must be an array with dimensions c(1, 1, nleadt, nstartd).")
+        else {
+          conf_term <- rnorm(1, mean = 0, sd = beta)
         }
-        if (dim(obsini)[3] != nstartd || dim(obsini)[4] != nleadt) {
-            stop(paste0("The dimensions of parameter 'obsini' and the parameters 'nleadt' and 'nstartd' must match:\n  dim(obsini) = c(",
-                dim(obsini)[3], ", ", dim(obsini)[4], ")\n  nstartd = ",
-                nstartd, "  nleadt = ", nleadt))
-        }
+        trend_term <- gamma[g] * trend * j
+        var_corr <- rnorm(
+          nmemb,
+          mean = 0,
+          sd = sqrt(sig - alpha ^ 2 - beta ^ 2)
+        )
+        forecast[g, , j, f] <- matrix(auto_term, c(nmemb,1)) + matrix(conf_term, c(nmemb, 1)) + matrix(trend_term, c(nmemb, 1)) + var_corr
+      }
     }
-    if (!is.null(fxerr)) {
-        if (!is.numeric(fxerr)) {
-            stop("Parameter 'fxerr' must be numeric.")
-        }
-    }
-    time <- seq(1, nstartd)
-    if (!(sig^2 - alpha^2 - beta^2 > 0)) {
-        stop("Model variability not constrained: respect condition \"sig^2-alpha^2-beta^2 > 0\")")
-    }
-    if (nstartd < 0) {
-        stop("Number of start dates must be positive")
-    }
-    if (nleadt < 0) {
-        stop("Number of lead-times must be positive")
-    }
-    if (nmemb < 0) {
-        stop("Number of members must be positive")
-    }
-    if (!is.null(obsini)) {
-        obs_ano <- obsini
-    }
-    else {
-        obs_ano <- array(rnorm(nleadt * nstartd, mean = 0, sd = sig),
-            dim = c(1, 1, nstartd, nleadt))
-        obs_trend <- array(t(time) * rep(trend, times = nstartd),
-            , dim = c(1, 1, nstartd, nleadt))
-        obs <- obs_ano + obs_trend
-        trend <- rep(c(trend), times = nleadt)
-        sig <- rep(c(sig), times = nleadt)
-    }
-    forecast <- array(dim = c(length(gamma), nmemb, nstartd,
-        nleadt))
-    for (j in 1:nstartd) {
-        for (f in 1:nleadt) {
-            for (g in 1:length(gamma)) {
-                auto_term <-  obs_ano[1, 1, j, f]
-                if (is.numeric(fxerr)) {
-                  conf_term <- fxerr
-                }
-                else {
-                  conf_term <- rnorm(1, mean = 0, sd = beta)
-                }
-                trend_term <- gamma[g] * trend * j
-                var_corr <- rnorm(nmemb, mean = 0, sd = sqrt(sig -
-                  alpha^2 - beta^2))
-                forecast[g, , j, f] <- matrix(auto_term, c(nmemb,
-                  1)) + matrix(conf_term, c(nmemb, 1)) + matrix(trend_term,
-                  c(nmemb, 1)) + var_corr
-            }
-        }
-    }
-    list(mod = forecast, obs = obs_ano)
+  }
+  list(mod = forecast, obs = obs_ano)
 }
 
-forecast <- ToyModel(alpha = a, beta = b, gamma = g, nmemb = nm,
-              obsini = InsertDim(data, 3, 1), nstartd = 1, nleadt = dim(data)[time_dim])
+forecast <- ToyModel(
+  alpha = a,
+  beta = b,
+  gamma = g,
+  nmemb = nm,
+  obsini = InsertDim(data, 3, 1), # nolint
+  nstartd = 1,
+  nleadt = dim(data)[time_dim]
+)
 
 #Quick plot of results
-print(brewer.pal(n = nm, name = 'Reds'))
-jpeg(paste0(plot_dir, "/", "synthetic_", gsub(".nc", "", basename(fullpath_filenames)), ".jpg"),
-     height = 460, width = 600)#, units = "cm", res = 300)
+print(brewer.pal(n = nm, name = "Reds"))
+jpeg(
+  paste0(
+    plot_dir, "/", "synthetic_", gsub(".nc", "",
+    basename(fullpath_filenames)), ".jpg"
+  ),
+  height = 460,
+  width = 600
+)
 plot(time, forecast$obs, type = "l",
-     ylim = c(min(c(forecast$obs, forecast$mod)),
-              max(c(forecast$obs, forecast$mod))),
-     ylab = paste(var0, "(", units, ")"),
-     main = paste(nm, "synthetic members generated"), bty = 'n')
-matlines(time, t(forecast$mod[1, , 1, ]), col = brewer.pal(n = nm, name = 'Blues'))
+  ylim = c(
+    min(c(forecast$obs, forecast$mod)),
+    max(c(forecast$obs, forecast$mod))
+  ),
+  ylab = paste(var0, "(", units, ")"),
+  main = paste(nm, "synthetic members generated"),
+  bty = "n"
+)
+matlines(
+  time,
+  t(forecast$mod[1, , 1, ]),
+  col = brewer.pal(n = nm, name = "Blues")
+)
 lines(time, forecast$obs, lwd = 2)
 dev.off()
 
@@ -170,18 +201,13 @@ names(dim(data))[c(1, 2)] <- c("number", "time")
 
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
-metadata <- list(time = list(standard_name = 'time', long_name = 'time', units = 'days since 1970-01-01 00:00:00', prec = 'double', dim = list(list(name='time', unlim = FALSE))))
-attr(time, 'variables') <- metadata
-metadata <- list(index = list(dim = list(list(name='time', unlim = FALSE, prec = 'double'))))
+metadata <- list(time = list(standard_name = "time", long_name = "time", units = "days since 1970-01-01 00:00:00", prec = "double", dim = list(list(name="time", unlim = FALSE))))
+attr(time, "variables") <- metadata
+metadata <- list(index = list(dim = list(list(name="time", unlim = FALSE, prec = "double"))))
 names(metadata)[1] <- var0
-attr(data, 'variables') <- metadata
+attr(data, "variables") <- metadata
 variable_list <- list(variable = data, time = time)
 names(variable_list)[1] <- var0
 print(str(data))
 ArrayToNetCDF(variable_list,
               paste0(plot_dir, "/", "synthetic_", basename(fullpath_filenames)))
-
-
-
-
-

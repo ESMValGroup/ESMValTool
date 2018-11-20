@@ -5,7 +5,7 @@
 
 # conda install -c conda-forge r-ncdf4
 
-Sys.setenv(TAR = '/bin/tar')
+Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
 #library(startR)
 library(startR)
@@ -66,40 +66,63 @@ metric <- params$metric
 
 
 reference_filenames <-  fullpath_filenames[reference_files]
-historical_data <- Start(model = reference_filenames,
-                         var = var0,
-                         var_var = 'var_names',
-                         time = 'all',
-                         lat = 'all',
-                         lon = 'all',
-                         lon_var = 'lon',
-                         lon_reorder = CircularSort(0, 360),
-                         return_vars = list(time = 'model', lon = 'model', lat = 'model'),
-                         retrieve = TRUE)
+historical_data <- Start(
+  model = reference_filenames,
+  var = var0,
+  var_var = "var_names",
+  time = "all",
+  lat = "all",
+  lon = "all",
+  lon_var = "lon",
+  lon_reorder = CircularSort(0, 360), # nolint
+  return_vars = list(time = "model", lon = "model", lat = "model"),
+  retrieve = TRUE
+)
 lat <- attr(historical_data, "Variables")$dat1$lat
 lon  <- attr(historical_data, "Variables")$dat1$lon
 long_names <- attr(historical_data, "Variables")$common$tas$long_name
 projection <- attr(historical_data, "Variables")$common$tas$coordinates
+
+# nolint start
 #hist_names <- names(dim(historical_data))
 #jpeg(paste0(plot_dir, "/plot1.jpg"))
 #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order:
- historical_names <- names(dim(historical_data))
- time <- attr(historical_data, "Variables")$dat1$time
- calendar <- attributes(time)$variables$time$calendar
- if ((end_reference-start_reference + 1) * 12 == length(time)) {
-     time <-  seq(as.Date(paste(start_reference, '01', '01', sep = "-"), format = "%Y-%m-%d"), as.Date(paste(end_reference, '12', '01', sep = "-"), format = "%Y-%m-%d"), "month")
- }
- historical_data <- as.vector(historical_data)
-    dim(historical_data) <- c(model = 1, var = 1, lon = length(lon),  lat = length(lat), time = length(time))
-historical_data <- aperm(historical_data, c(1,2,5,3,4))
-    attr(historical_data, "Variables")$dat1$time <- time
+# nolint end
+historical_names <- names(dim(historical_data))
+time <- attr(historical_data, "Variables")$dat1$time
+calendar <- attributes(time)$variables$time$calendar
+if ((end_reference-start_reference + 1) * 12 == length(time)) {
+  time <- seq(
+    as.Date(
+      paste(start_reference, "01", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    as.Date(
+      paste(end_reference, "12", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    "month"
+  )
+}
+historical_data <- as.vector(historical_data)
+dim(historical_data) <- c(
+  model = 1,
+  var = 1,
+  lon = length(lon),
+  lat = length(lat),
+  time = length(time)
+)
+historical_data <- aperm(historical_data, c(1, 2, 5, 3, 4))
+attr(historical_data, "Variables")$dat1$time <- time
+# nolint start
 # ------------------------------
 #jpeg(paste0(plot_dir, "/plot2.jpg"))
 #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
+# nolint end
 
 print(str(historical_data))
 names(dim(historical_data)) <- historical_names
@@ -121,7 +144,7 @@ if (var0 == "tasmin") {
   quantile <- 0.9
 } else if (var0 == "sfcWind") {
   #metric <- "Wx"
-  historical_data <- 0.5 * 1.23 * (historical_data ** 3)  # Convert to wind power
+  historical_data <- 0.5 * 1.23 * (historical_data ** 3)
   quantile <- 0.9
 } else if (var0 == "pr") {
   #metric <- c("cdd", "rx5day")
@@ -132,72 +155,113 @@ if (var0 == "tasmin") {
 base_sd <- base_sd_historical <- base_mean <- list()
 for (m in 1 : length(metric)) {
   if (var0 != "pr") {
-    thresholds <- Threshold(historical_data,
-                            qtiles = quantile, ncores = detectCores() -1)
-    base_index <- Climdex(data = historical_data, metric = metric[m],
-                          threshold = thresholds, ncores = detectCores() - 1)
+    thresholds <- Threshold(
+      historical_data,
+      qtiles = quantile,
+      ncores = detectCores() -1
+    )
+    base_index <- Climdex(
+      data = historical_data,
+      metric = metric[m],
+      threshold = thresholds,
+      ncores = detectCores() - 1
+    )
   } else {
-    base_index <- Climdex(data = historical_data, metric = metric[m], ncores = detectCores() - 1)
+    base_index <- Climdex(
+      data = historical_data,
+      metric = metric[m],
+      ncores = detectCores() - 1
+    )
   }
-
-  base_sd[[m]] <- Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "sd")$output1
-  base_sd_historical[[m]] <- InsertDim(base_sd[[m]], 1, dim(base_index$result)[1])
+  base_sd[[m]] <- Apply(
+    list(base_index$result),
+    target_dims = list(c(1)),
+    AtomicFun = "sd"
+  )$output1
+  base_sd_historical[[m]] <- InsertDim(
+    base_sd[[m]], 1, dim(base_index$result)[1]
+  )
 
   if (var0 != "pr") {
     base_mean[[m]] <- 10
     base_mean_historical <- 10
   } else {
-    base_mean[[m]] <-  Apply(list(base_index$result), target_dims = list(c(1)), AtomicFun = "mean")$output1
-    base_mean_historical <- InsertDim(base_mean[[m]], 1, dim(base_index$result)[1])
+    base_mean[[m]] <- Apply(
+      list(base_index$result),
+      target_dims = list(c(1)),
+      AtomicFun = "mean"
+    )$output1
+    base_mean_historical <- InsertDim(
+      base_mean[[m]], 1, dim(base_index$result)[1]
+    )
   }
 }
-
-
-#Compute the time series of the relevant index, using the quantiles and standard deviation from the index
+# Compute the time series of the relevant index, using the quantiles
+# and standard deviation from the index
 projection_filenames <-  fullpath_filenames[projection_files]
 
 for (i in 1 : length(projection_filenames)) {
-    projection_data <- Start(model = projection_filenames[i],
-                             var = var0,
-                             var_var = 'var_names',
-                             time = 'all',
-                             lat = 'all',
-                             lon = 'all',
-                             lon_var = 'lon',
-                        lon_reorder = CircularSort(0, 360),
-                             return_vars = list(time = 'model', lon = 'model', lat = 'model'),
-                             retrieve = TRUE)
-     units <- (attr(projection_data,"Variables")$common)[[2]]$units
-     #proj_names <- names(dim(projection_data))
-    # ------------------------------
-#jpeg(paste0(plot_dir, "/plot3.jpg"))
-#PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
-    # ------------------------------
-# Provisional solution to error in dimension order:
- projection_names <- names(dim(projection_data))
- lon <- attr(projection_data, "Variables")$dat1$lon
- lat <- attr(projection_data, "Variables")$dat1$lat
- time <- attr(projection_data, "Variables")$dat1$time
- if ((end_projection-start_projection + 1) * 12 == length(time)) {
-     time <-  seq(as.Date(paste(start_projection, '01', '01', sep = "-"), format = "%Y-%m-%d"), as.Date(paste(end_projection, '12', '01', sep = "-"), format = "%Y-%m-%d"), "month")
- }
-    projection_data <- as.vector(projection_data)
-    dim(projection_data) <- c(model = 1, var = 1,  lon = length(lon), lat = length(lat), time = length(time))
-    projection_data <- aperm(projection_data, c(1,2,5,3,4))
-     attr(projection_data, "Variables")$dat1$time <- time
- names(dim(projection_data)) <- projection_names
-# ------------------------------
-#jpeg(paste0(plot_dir, "/plot4.jpg"))
-#PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
+  projection_data <- Start(
+    model = projection_filenames[i],
+    var = var0,
+    var_var = "var_names",
+    time = "all",
+    lat = "all",
+    lon = "all",
+    lon_var = "lon",
+    lon_reorder = CircularSort(0, 360), # nolint
+    return_vars = list(time = "model", lon = "model", lat = "model"),
+    retrieve = TRUE
+  )
+  units <- (attr(projection_data,"Variables")$common)[[2]]$units
+  #proj_names <- names(dim(projection_data))
+  # ------------------------------
+  #jpeg(paste0(plot_dir, "/plot3.jpg"))
+  #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+  #dev.off()
+      # ------------------------------
+  # Provisional solution to error in dimension order:
+  projection_names <- names(dim(projection_data))
+  lon <- attr(projection_data, "Variables")$dat1$lon
+  lat <- attr(projection_data, "Variables")$dat1$lat
+  time <- attr(projection_data, "Variables")$dat1$time
+  if ((end_projection-start_projection + 1) * 12 == length(time)) {
+    time <- seq(
+      as.Date(
+        paste(start_projection, "01", "01", sep = "-"),
+        format = "%Y-%m-%d"
+      ),
+      as.Date(
+        paste(end_projection, "12", "01", sep = "-"),
+        format = "%Y-%m-%d"
+      ),
+      "month"
+    )
+  }
+  projection_data <- as.vector(projection_data)
+  dim(projection_data) <- c(
+    model = 1,
+    var = 1,
+    lon = length(lon),
+    lat = length(lat),
+    time = length(time)
+  )
+  projection_data <- aperm(projection_data, c(1,2,5,3,4))
+  attr(projection_data, "Variables")$dat1$time <- time
+  names(dim(projection_data)) <- projection_names
+  # nolint start
+  # ------------------------------
+  #jpeg(paste0(plot_dir, "/plot4.jpg"))
+  #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+  #dev.off()
+  # nolint end
 
-    if (var0 == "pr") {
-      projection_data <- projection_data * 60 * 60 * 24
-    } else if (var0 == "sfcWind") {
-      projection_data <- 0.5 * 1.23 * (projection_data ** 3)
-    }
-  #names(dim(projection_data)) <- proj_names
+  if (var0 == "pr") {
+    projection_data <- projection_data * 60 * 60 * 24
+  } else if (var0 == "sfcWind") {
+    projection_data <- 0.5 * 1.23 * (projection_data ** 3)
+  }
+    #names(dim(projection_data)) <- proj_names
   for (m in 1 : length(metric)) {
 
     if (var0 != "pr") {
@@ -214,32 +278,62 @@ for (i in 1 : length(projection_filenames)) {
     projection_index_standardized <- (projection_index$result - projection_mean) / base_sd_proj
     #model_dim <- which(proj_names == "model")
     for (mod in 1 : dim(projection_data)[model_dim]) {
+      data <- drop(Mean1Dim(projection_index_standardized, 1))
+      print(paste(
+        "Attribute projection from climatological data is saved and,",
+        "if it's correct, it can be added to the final output:",
+        projection
+      ))
+      dimlon <- ncdim_def(
+        name = "lon",
+        units = "degrees_east",
+        vals = as.vector(lon),
+        longname = "longitude"
+      )
+      dimlat <- ncdim_def(
+        name = "lat",
+        units = "degrees_north",
+        vals = as.vector(lat),
+        longname = "latitude"
+      )
+      defdata <- ncvar_def(
+        name = "data",
+        units = units,
+        dim = list(lat = dimlat, lon = dimlon),
+        longname = paste("Mean",metric[m], long_names)
+      )
+      file <- nc_create(
+        paste0(
+          plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
+          model_names, "_", start_projection, "_", end_projection, "_",
+          start_reference, "_", end_reference, ".nc"
+        ),
+        list(defdata)
+      )
+      ncvar_put(file, defdata, data)
+      nc_close(file)
 
-        data <- drop(Mean1Dim(projection_index_standardized, 1))
-print(paste("Attribute projection from climatological data is saved and, if it's correct, it can be added to the final output:", projection))
-
-dimlon <- ncdim_def(name = "lon", units = "degrees_east", vals = as.vector(lon), longname = "longitude" )
-dimlat <- ncdim_def(name = "lat", units = "degrees_north", vals = as.vector(lat), longname = "latitude")
-defdata <- ncvar_def(name = "data", units = units, dim = list(lat = dimlat, lon = dimlon), longname = paste('Mean',metric[m], long_names))
-
-file <- nc_create(paste0(plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
-              model_names, "_", start_projection, "_", end_projection, "_", start_reference, "_", end_reference, ".nc"), list(defdata))
-ncvar_put(file, defdata, data)
-
-#ncatt_put(file, 0, "Conventions", "CF-1.5")
-nc_close(file)
-
-        print(dim(data))
-        print(length(lon))
-      title <- paste0("Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
-                      substr(end_projection, 1, 4), " ",
-                      " (",rcp_scenario[i]," ", model_names ,")")
+      print(dim(data))
+      print(length(lon))
+      title <- paste0(
+        "Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
+        substr(end_projection, 1, 4), " ", " (", rcp_scenario[i],
+        " ", model_names ,")")
 
       breaks <- seq(-1 * ceiling(max(abs(data))), ceiling(max(abs(data))), 2 * ceiling(max(abs(data))) / 16)
-      PlotEquiMap(data, lon = lon, lat = lat, filled.continents = FALSE,
-                  toptitle = title, brks = breaks,
-                  fileout = paste0(plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i], "_", start_projection, "_", end_projection, ".png"))
-      }
+      PlotEquiMap(
+        data,
+        lon = lon,
+        lat = lat,
+        filled.continents = FALSE,
+        toptitle = title,
+        brks = breaks,
+        fileout = paste0(
+          plot_dir, "/", metric[m], "_",model_names[mod],"_", rcp_scenario[i],
+          "_", start_projection, "_", end_projection, ".png"
+        )
+      )
+    }
   }
 
 }
