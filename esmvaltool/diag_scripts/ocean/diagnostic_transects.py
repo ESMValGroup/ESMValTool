@@ -383,7 +383,7 @@ def multi_model_contours(
                 prefix='MultipleModels',
                 suffix='_'.join(['contour_tramsect',
                                  str(threshold) + image_extention]),
-                metadatas_id_list=[
+                metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
                 ],
