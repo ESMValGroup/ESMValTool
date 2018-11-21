@@ -1,23 +1,21 @@
 ---
 
 datasets:
-  # - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: CCSM4,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
-  # - {dataset: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: CMCC-CM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: ACCESS1-3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: ACCESS1-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: HadCM3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  # - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CCSM4,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
+  - {dataset: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CMCC-CM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: ACCESS1-3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: ACCESS1-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: HadCM3,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   
-  # - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-
 
 preprocessors:
 
@@ -61,7 +59,7 @@ diagnostics:
         # Maximum depth of Hovmoeller and vertical profiles
         hofm_depth: 1500
         # Define if Hovmoeller diagrams will be ploted.
-        hofm_plot: False
+        hofm_plot: True
         # Define colormap (as a list, same size as list with variables)
         # Only cmaps from matplotlib and cmocean are supported. 
         # Additional cmap - 'custom_salinity1'.
@@ -70,20 +68,20 @@ diagnostics:
         # Number of columns in the plot
         hofm_ncol: 3
         mean: True
-        profiles: False
-        plot2d: False
+        profiles: True
+        plot2d: True
         plot2d_depths: [10, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000]
         plot2d_vars: ['thetao', 'so']
         plot2d_cmap: ['Spectral_r', 'custom_salinity1'] 
         plot2d_limits: [[-2, 4, 20, 1], [30.5, 35.1, 47, 2]]
         plot2d_ncol: 3
-        plot2d_bias: False
+        plot2d_bias: True
         plot2d_bias_depths: [10, 100, 200, 300, 400]
         plot2d_bias_vars: ['thetao', 'so']
         plot2d_bias_cmap: ['balance', 'balance'] 
         plot2d_bias_limits: [[-3, 3, 20, 1], [-2, 2, 47, 2]]
         plot2d_bias_ncol: 3
-        transects: False
+        transects: True
         transects_regions: ["AWpath", "Fram"]
         transects_vars: ['thetao', 'so']
         transects_cmap: ['Spectral_r', 'custom_salinity1'] 
