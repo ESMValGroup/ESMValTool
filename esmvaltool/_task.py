@@ -125,7 +125,10 @@ def write_ncl_settings(settings, filename, mode='wt'):
             # If an array contains a str, make all items str
             if any(isinstance(v, str) or v is None for v in value):
                 value = [(str(v)) for v in value]
-            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+            if not value:
+                txt = 'NewList("fifo")'
+            else:
+                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
         else:
             txt = str(value)
         return txt
@@ -239,7 +242,7 @@ class DiagnosticTask(AbstractTask):
                 executables = {
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
-                    'r': [which('Rscript'), '--slave', '--quiet'],
+                    'r': [which('Rscript')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -248,7 +251,7 @@ class DiagnosticTask(AbstractTask):
                     'py': [which('python'), '-m', 'vmprof', '--lines',
                            '-o', profile_file],
                     'ncl': [which('ncl'), '-n', '-p'],
-                    'r': [which('Rscript'), '--slave', '--quiet'],
+                    'r': [which('Rscript')],
                 }
 
             if extension not in executables:
