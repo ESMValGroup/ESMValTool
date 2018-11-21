@@ -193,10 +193,7 @@ def make_map_contour(
     # Load threshold/thresholds.
     plot_details = {}
     colours = []
-    if 'threshold' in cfg.keys():
-        thresholds = [float(cfg['threshold']), ]
-    elif 'thresholds' in cfg.keys():
-        thresholds = [float(thres) for thres in cfg['thresholds']]
+    thresholds = diagtools.load_thresholds(cfg, metadata)
 
     for itr, thres in enumerate(thresholds):
         if len(thresholds) > 1:
@@ -300,10 +297,7 @@ def multi_model_contours(
     image_extention = diagtools.get_image_format(cfg)
 
     # Load threshold/thresholds.
-    if 'threshold' in cfg.keys():
-        thresholds = [float(cfg['threshold']), ]
-    elif 'thresholds' in cfg.keys():
-        thresholds = [float(thres) for thres in cfg['thresholds']]
+    thresholds = diagtools.load_thresholds(cfg, metadata)
 
     # Make a plot for each layer and each threshold
     for layer, threshold in product(layers, thresholds):
@@ -413,9 +407,11 @@ def main(cfg):
             metadata_filename,
         )
 
+        thresholds = diagtools.load_thresholds(cfg, metadata)
+
         metadatas = diagtools.get_input_files(cfg, index=index)
 
-        if 'threshold' in cfg.keys() or 'thresholds' in cfg.keys():
+        if thresholds:
             #######
             # Multi model contour plots
             multi_model_contours(
@@ -433,7 +429,7 @@ def main(cfg):
 
             ######
             # Contour maps of individual model
-            if 'threshold' in cfg.keys() or 'thresholds' in cfg.keys():
+            if thresholds:
                 make_map_contour(cfg, metadatas[filename], filename)
 
             ######

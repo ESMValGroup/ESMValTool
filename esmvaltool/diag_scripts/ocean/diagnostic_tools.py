@@ -73,7 +73,7 @@ def folder(name):
     return name
 
 
-def get_input_files(cfg, index=0):
+def get_input_files(cfg, index=''):
     """
     Load input configuration file as a Dictionairy.
 
@@ -85,12 +85,20 @@ def get_input_files(cfg, index=0):
     ---------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
+    index: int
+        the index of the file in the cfg file.
 
     Returns
     ---------
     dict
         A dictionairy of the input files and their linked details.
     """
+
+    if isinstance(index, int):
+        metadata_file = cfg['input_files'][index]
+        with open(metadata_file) as input_file:
+            metadata = yaml.safe_load(input_file)
+        return metadata
     return _get_input_data_files(cfg)
 
 
@@ -114,7 +122,6 @@ def bgc_units(cube, name):
         the cube with the new units.
     """
     new_units = ''
-
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
@@ -248,6 +255,41 @@ def guess_calendar_datetime(cube):
                        time_coord.units.calendar)
         datetime = cftime.DatetimeGregorian
     return datetime
+
+
+def load_thresholds(cfg, metadata):
+    """
+    Load the thresholds for contour plots from the config files
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+
+    Returns
+    -------
+    list:
+        List of thresholds
+    """
+    thresholds = []
+
+    if 'threshold' in cfg.keys():
+        thresholds.append(float(cfg['threshold']))
+
+    if 'threshold' in metadata.keys():
+        thresholds.append(float(metadata['threshold']))
+
+    if 'thresholds' in cfg.keys():
+        thresholds.extend([float(thres) for thres in cfg['thresholds']])
+
+    if 'thresholds' in metadata.keys():
+        thresholds.extend([float(thres) for thres in metadata['thresholds']])
+
+    thresholds = {threshold: True for threshold in thresholds}
+
+    return sorted(thresholds.keys())
 
 
 def add_legend_outside_right(
