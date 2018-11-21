@@ -72,6 +72,45 @@ def determine_transect_str(cube):
     return ''
 
 
+def make_depth_safe(cube):
+    """
+    Make the depth coordinate safe
+
+    If the depth coordinate has a value of zero or above, we replace the
+    zero with the average point of the first depth layer.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube to make the depth coordinate safe
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        Output cube with a safe depth coordinate
+
+    """
+    depth = cube.coord('depth')
+
+    # it's fine
+    if depth.points.min() * depth.points.max() > 0.:
+        return cube
+
+    if depth.attributes['positive'] != 'down':
+        raise Exception('The depth field is not set up correctly')
+
+    depth_points = []
+    bad_points = depth.points <= 0.
+    for itr, point in enumerate(depth.points):
+        if bad_points[itr]:
+            depth_points.append(depth.bounds[itr, :].mean())
+        else:
+            depth_points.append(point)
+
+    cube.coord('depth').points = depth_points
+    return cube
+
+
 def make_transects_plots(
         cfg,
         metadata,
@@ -102,9 +141,10 @@ def make_transects_plots(
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
-    # Make a dict of cubes for each layer.
+    cube = make_depth_safe(cube)
 
-    qplt.contourf(cube, 25, linewidth=0, rasterized=True)
+    # Make a dict of cubes for each layer.
+    qplt.contourf(cube, 15, linewidth=0, rasterized=True)
     plt.axes().set_yscale('log')
 
     # Add title to plot
@@ -182,6 +222,7 @@ def make_transect_contours(
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = make_depth_safe(cube)
 
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
@@ -189,10 +230,7 @@ def make_transect_contours(
     # Load threshold/thresholds.
     plot_details = {}
     colours = []
-    if 'threshold' in cfg.keys():
-        thresholds = [float(cfg['threshold']), ]
-    elif 'thresholds' in cfg.keys():
-        thresholds = [float(thres) for thres in cfg['thresholds']]
+    thresholds = diagtools.load_thresholds(cfg, metadata)
     linewidths = [1 for thres in thresholds]
     linestyles = ['-' for thres in thresholds]
     for itr, thres in enumerate(thresholds):
@@ -251,7 +289,7 @@ def make_transect_contours(
 
 def multi_model_contours(
         cfg,
-        metadata,
+        metadatas,
 ):
     """
     Make a multi model comparison plot showing the transect contour plots of
@@ -265,25 +303,25 @@ def multi_model_contours(
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-    metadata: dict
-        The metadata dictionairy for a specific model.
+    metadatas: dict
+        The metadatas dictionairy for a specific model.
 
     """
 
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
-    for filename in sorted(metadata):
+    for filename in sorted(metadatas):
         cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadatas[filename]['short_name'])
+        cube = make_depth_safe(cube)
         model_cubes[filename] = cube
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
+
     # Load threshold/thresholds.
-    if 'threshold' in cfg.keys():
-        thresholds = [float(cfg['threshold']), ]
-    elif 'thresholds' in cfg.keys():
-        thresholds = [float(thres) for thres in cfg['thresholds']]
+    thresholds = diagtools.load_thresholds(cfg, metadatas[filename])
 
     # Make a plot for each layer and each threshold
     for threshold in thresholds:
@@ -293,19 +331,19 @@ def multi_model_contours(
         cmap = plt.cm.get_cmap('jet')
 
         # Plot each file in the group
-        for index, filename in enumerate(sorted(metadata)):
-            if len(metadata) > 1:
-                color = cmap(index / (len(metadata) - 1.))
+        for index, filename in enumerate(sorted(metadatas)):
+            if len(metadatas) > 1:
+                color = cmap(index / (len(metadatas) - 1.))
             else:
                 color = 'blue'
             linewidth = 1.
             linestyle = '-'
             # Determine line style for MultiModel statistics:
-            if 'MultiModel' in metadata[filename]['dataset']:
+            if 'MultiModel' in metadatas[filename]['dataset']:
                 linewidth = 2.
                 linestyle = ':'
             # Determine line style for Observations
-            if metadata[filename]['project'] in diagtools.get_obs_projects():
+            if metadatas[filename]['project'] in diagtools.get_obs_projects():
                 color = 'black'
                 linewidth = 1.7
                 linestyle = '-'
@@ -320,11 +358,11 @@ def multi_model_contours(
             plot_details[filename] = {'c': color,
                                       'ls': linestyle,
                                       'lw': linewidth,
-                                      'label': metadata[filename]['dataset']}
+                                      'label': metadatas[filename]['dataset']}
 
             plt.axes().set_yscale('log')
 
-            title = metadata[filename]['long_name']
+            title = metadatas[filename]['long_name']
             units = str(model_cubes[filename].units)
 
             add_sea_floor(model_cubes[filename])
@@ -341,11 +379,11 @@ def multi_model_contours(
         if cfg['write_plots']:
             path = diagtools.get_image_path(
                 cfg,
-                metadata[filename],
+                metadatas[filename],
                 prefix='MultipleModels',
                 suffix='_'.join(['contour_tramsect',
                                  str(threshold) + image_extention]),
-                metadata_id_list=[
+                metadatas_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
                 ],
@@ -379,16 +417,20 @@ def main(cfg):
             metadata_filename,
         )
 
-        metadata = diagtools.get_input_files(cfg, index=index)
+        metadatas = diagtools.get_input_files(cfg, index=index)
+
+        thresholds = diagtools.load_thresholds(cfg,
+                                               next(iter(metadatas.values())))
 
         #######
         # Multi model contour plots
-        multi_model_contours(
-            cfg,
-            metadata,
-        )
+        if thresholds:
+            multi_model_contours(
+                cfg,
+                metadatas,
+            )
 
-        for filename in sorted(metadata.keys()):
+        for filename in sorted(metadatas.keys()):
 
             logger.info('-----------------')
             logger.info(
@@ -398,12 +440,12 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            make_transects_plots(cfg, metadata[filename], filename)
+            make_transects_plots(cfg, metadatas[filename], filename)
 
             ######
             # Contour maps of individual model
-            if 'threshold' in cfg.keys() or 'thresholds' in cfg.keys():
-                make_transect_contours(cfg, metadata[filename], filename)
+            if thresholds:
+                make_transect_contours(cfg, metadatas[filename], filename)
 
     logger.info('Success')
 
