@@ -150,9 +150,9 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     
     # Select depth in climatology that is closest to the desired depth 
     target_depth, iz = closest_depth(depth_obs, depth)
-    
+
     # climatology data on the level 
-    data_onlev_obs = data_obs[iz, :, :]
+    data_onlev_obs = data_obs[0, iz, :, :]
     
     # add cyclic point to data and coordinates
 #     data_onlev_obs_cyc, lon_obs_cyc = addcyclic(data_onlev_obs, lon_obs[0,:])

@@ -154,8 +154,9 @@ def transect_data(mmodel,  cmor_var,
         if mmodel != observations:
             thetao = datafile.variables[cmor_var][0,kind,:,:]
         else:
-            thetao = datafile.variables[cmor_var][kind,:,:]
-
+            thetao = datafile.variables[cmor_var][0,kind,:,:]
+        print(mmodel)
+        print(thetao.shape)
         if isinstance(thetao, np.ma.core.MaskedArray):
             sourcefield.data[...] = thetao.filled(0).T
         else:
@@ -230,8 +231,8 @@ def tsplot_data(mmodel,
             level_pp = datafile_t.variables['thetao'][0, ind, :, :]
             level_pp_s = datafile_s.variables['so'][0, ind, :, :]
         else:
-            level_pp = datafile_t.variables['thetao'][ind, :, :]
-            level_pp_s = datafile_s.variables['so'][ind, :, :]
+            level_pp = datafile_t.variables['thetao'][0, ind, :, :]
+            level_pp_s = datafile_s.variables['so'][0, ind, :, :]
         ## This is fix fo make models with 0 as missing values work,
         ## should be fixed in fixes that do not work for now in the new backend
         if not isinstance(level_pp, np.ma.MaskedArray):
