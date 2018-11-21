@@ -407,9 +407,8 @@ def main(cfg):
             metadata_filename,
         )
 
-        thresholds = diagtools.load_thresholds(cfg, metadata)
-
         metadatas = diagtools.get_input_files(cfg, index=index)
+        thresholds = diagtools.load_thresholds(cfg, metadatas)
 
         if thresholds:
             #######
