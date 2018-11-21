@@ -359,7 +359,7 @@ def make_scatter(
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
         colours = 'gist_yarg'
-        zrange = get_array_range([model_data, obs_data])
+        zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
         hexbin = pyplot.hexbin(model_data,
