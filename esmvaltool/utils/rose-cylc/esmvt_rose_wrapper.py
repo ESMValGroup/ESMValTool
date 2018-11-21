@@ -66,6 +66,12 @@ python esmvt_rose_wrapper.py -c config-user.yml \
 Note that you need to pass FULL PATHS to cylc, no . or .. because all
 operations are done remotely on different nodes.
 
+A practical actual example of running the tool can be found on JASMIN:
+/home/users/valeriu/esmvaltool_rose
+There you will find the run shell: run_example, as well as an example
+how to set the configuration file. A copy of u-am444 is always located
+in /home/users/valeriu/roses/u-am444.
+
 Contact:
 --------
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)

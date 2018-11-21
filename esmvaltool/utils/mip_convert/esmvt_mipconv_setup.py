@@ -35,6 +35,11 @@ python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m setup-run-suites
 [run the symlinking]
 python esmvt_mipconv_setup.py -c config.yml -r recipe.yml -m postproc
 
+A practical example of running the tool can be found on JASMIN:
+/home/users/valeriu/esmvaltool_mip_convert
+There you will find the two component shells: run_conversion
+and run_symlink, as well as an example how to set the configuration file.
+
 Contact:
 --------
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
