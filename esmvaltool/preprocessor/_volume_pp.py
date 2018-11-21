@@ -88,9 +88,6 @@ def _create_cube_time(src_cube, data, times):
         scalar vertical coordinate will be added.
 
     """
-    print(src_cube.coords)
-    print(len(data))
-    print(times)
     # Get the source cube vertical coordinate and associated dimension.
     src_times = src_cube.coord('time')
     t_dim, = src_cube.coord_dims(src_times)
@@ -132,12 +129,6 @@ def _create_cube_time(src_cube, data, times):
     except ValueError:
         coord = iris.coords.AuxCoord(times, **kwargs)
         result.add_aux_coord(coord, t_dim)
-
-    # Collapse the z-dimension for the scalar case.
-    if times.size == 1:
-        slicer = [slice(None)] * result.ndim
-        slicer[t_dim] = 0
-        result = result[tuple(slicer)]
 
     return result
 
@@ -239,12 +230,6 @@ def volume_average(
         assert 0
 
     # #####
-    # Create a small dummy output array for the output cube
-    src_cube = cube[:2, :2].collapsed([coordz, coord1, coord2],
-                                      iris.analysis.MEAN,
-                                      weights=grid_volume[:2, :2], )
-
-    # #####
     # Calculate global volume weighted average
     result = []
     # #####
@@ -285,6 +270,13 @@ def volume_average(
     # Send time series and dummy cube to cube creating tool.
     times = np.array(cube.coord('time').points.astype(float))
     result = np.array(result)
+
+    # #####
+    # Create a small dummy output array for the output cube
+    src_cube = cube[:2, :2].collapsed([coordz, coord1, coord2],
+                                      iris.analysis.MEAN,
+                                      weights=grid_volume[:2, :2], )
+
     return _create_cube_time(src_cube, result, times)
 
 
@@ -398,8 +390,9 @@ def extract_transect(cube, latitude=None, longitude=None):
                                         [latitude, longitude], [lats, lons]):
         # ####
         # Look for the first coordinate.
+
         if isinstance(dim_cut, float):
-            coord_index = lats.nearest_neighbour_index(dim_cut)
+            coord_index = coord.nearest_neighbour_index(dim_cut)
             coord_dim = cube.coord_dims(dim_name)[0]
 
         # ####
