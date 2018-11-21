@@ -14,7 +14,6 @@ library(multiApply)
 #library(ggplot2)
 library(yaml)
 library(ncdf4)
-library(startR)
 
 library(parallel)
 ##Until integrated into current version of s2dverification
@@ -65,28 +64,23 @@ end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
 # Which metric to be computed
 metric <- params$metric
-
-
+var0 <- unlist(var0)
+projection <- "NULL"
 reference_filenames <-  fullpath_filenames[reference_files]
-historical_data <- Start(
-  model = reference_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  time_var = "time",
-  lat = "all",
-  lat_var = "lat",
-  lon = "all",
-  lon_var = "lon",
-  lon_reorder = CircularSort(0, 360), # nolint
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
-print(reference_filenames)
-lat <- attr(historical_data, "Variables")$dat1$lat
-lon  <- attr(historical_data, "Variables")$dat1$lon
-long_names <- attr(historical_data, "Variables")$common$tas$long_name
-projection <- attr(historical_data, "Variables")$common$tas$coordinates
+hist_nc <- nc_open(reference_filenames)
+historical_data <- ncvar_get(hist_nc, var0)
+
+names(dim(historical_data)) <- rev(names(hist_nc$dim))[-1]
+lat <- ncvar_get(hist_nc,"lat")
+lon <- ncvar_get(hist_nc,"lon")
+units <- ncatt_get(hist_nc, var0, "units")$value
+calendar <- ncatt_get(hist_nc, "time", "calendar")$value
+long_names <-  ncatt_get(hist_nc,var0,"long_name")$value
+time <-  ncvar_get(hist_nc,"time")
+start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time", "units")$value,11, 29 ))
+
+time <- as.Date(time, origin = start_date, calendar = calendar)
+#projection <- attr(historical_data, "Variables")$common$tas$coordinates
 
 # nolint start
 #hist_names <- names(dim(historical_data))
@@ -96,9 +90,6 @@ projection <- attr(historical_data, "Variables")$common$tas$coordinates
 # ------------------------------
 # Provisional solution to error in dimension order:
 # nolint end
-historical_names <- names(dim(historical_data))
-time <- attr(historical_data, "Variables")$dat1$time
-calendar <- attributes(time)$variables$time$calendar
 if ((end_reference-start_reference + 1) * 12 == length(time)) {
   time <- seq(
     as.Date(
@@ -121,7 +112,6 @@ dim(historical_data) <- c(
   time = length(time)
 )
 historical_data <- aperm(historical_data, c(1, 2, 5, 3, 4))
-attr(historical_data, "Variables")$dat1$time <- time
 # nolint start
 # ------------------------------
 #jpeg(paste0(plot_dir, "/plot2.jpg"))
@@ -129,7 +119,7 @@ attr(historical_data, "Variables")$dat1$time <- time
 #dev.off()
 # nolint end
 
-names(dim(historical_data)) <- historical_names
+names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
 
 attributes(lon) <- NULL
@@ -155,17 +145,21 @@ if (var0 == "tasmin") {
   historical_data <- historical_data * 60 * 60 * 24
 
 }
+attr(historical_data, "Variables")$dat1$time <- time
 #names(dim(historical_data)) <- hist_names
 base_sd <- base_sd_historical <- base_mean <- list()
 for (m in 1 : length(metric)) {
   if (var0 != "pr") {
     thresholds <- Threshold(
       historical_data,
+      calendar = calendar,
       qtiles = quantile,
       ncores = detectCores() -1
     )
+  str(thresholds)
     base_index <- Climdex(
       data = historical_data,
+      calendar = calendar,
       metric = metric[m],
       threshold = thresholds,
       ncores = detectCores() - 1
@@ -173,6 +167,7 @@ for (m in 1 : length(metric)) {
   } else {
     base_index <- Climdex(
       data = historical_data,
+      calendar = calendar,
       metric = metric[m],
       ncores = detectCores() - 1
     )
@@ -205,19 +200,13 @@ for (m in 1 : length(metric)) {
 projection_filenames <-  fullpath_filenames[projection_files]
 
 for (i in 1 : length(projection_filenames)) {
-  projection_data <- Start(
-    model = projection_filenames[i],
-    var = var0,
-    var_var = "var_names",
-    time = "all",
-    lat = "all",
-    lon = "all",
-    lon_var = "lon",
-    lon_reorder = CircularSort(0, 360), # nolint
-    return_vars = list(time = "model", lon = "model", lat = "model"),
-    retrieve = TRUE
-  )
-  units <- (attr(projection_data,"Variables")$common)[[2]]$units
+  proj_nc <- nc_open(projection_filenames[i])
+  projection_data <- ncvar_get(proj_nc, var0)
+  time <-  ncvar_get(proj_nc,"time")
+  start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time", "units")$value,11, 29 ))
+  calendar <- ncatt_get(hist_nc, "time", "calendar")$value
+  time <- as.Date(time, origin = start_date, calendar = calendar)
+
   #proj_names <- names(dim(projection_data))
   # ------------------------------
   #jpeg(paste0(plot_dir, "/plot3.jpg"))
@@ -225,10 +214,6 @@ for (i in 1 : length(projection_filenames)) {
   #dev.off()
       # ------------------------------
   # Provisional solution to error in dimension order:
-  projection_names <- names(dim(projection_data))
-  lon <- attr(projection_data, "Variables")$dat1$lon
-  lat <- attr(projection_data, "Variables")$dat1$lat
-  time <- attr(projection_data, "Variables")$dat1$time
   if ((end_projection-start_projection + 1) * 12 == length(time)) {
     time <- seq(
       as.Date(
@@ -252,7 +237,7 @@ for (i in 1 : length(projection_filenames)) {
   )
   projection_data <- aperm(projection_data, c(1,2,5,3,4))
   attr(projection_data, "Variables")$dat1$time <- time
-  names(dim(projection_data)) <- projection_names
+  names(dim(projection_data)) <- c("model", "var", "time", "lon", "lat")
   # nolint start
   # ------------------------------
   #jpeg(paste0(plot_dir, "/plot4.jpg"))
@@ -269,11 +254,11 @@ for (i in 1 : length(projection_filenames)) {
   for (m in 1 : length(metric)) {
 
     if (var0 != "pr") {
-      projection_index <- Climdex(data = projection_data, metric = metric[m],
+      projection_index <- Climdex(data = projection_data, metric = metric[m], calendar = calendar,
                                   threshold = thresholds, ncores = detectCores() - 1)
       projection_mean <- 10
     } else {
-      projection_index <- Climdex(data = projection_data, metric = metric[m],
+      projection_index <- Climdex(data = projection_data, metric = metric[m], calendar = calendar,
                                   ncores = detectCores() - 1)
       projection_mean <- InsertDim(base_mean[[m]], 1, dim(projection_index$result)[1])
     }
