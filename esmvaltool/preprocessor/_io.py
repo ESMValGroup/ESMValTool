@@ -207,7 +207,12 @@ def extract_metadata(files, write_ncl=False):
     for output_dir, filenames in groupby(files, os.path.dirname):
         metadata = {}
         for filename in filenames:
-            cube = iris.load_cube(filename)
+            try:
+                cube = iris.load_cube(filename)
+            except iris.exceptions.ConstraintMismatchError:
+                logger.error('extract_metadata: Unable to load: %s', filename)
+                raise iris.exceptions.input(
+                    'Can not load file {0}'.format(filename))
             raw_cube_metadata = cube.attributes.get('metadata')
             if raw_cube_metadata:
                 cube_metadata = yaml.safe_load(raw_cube_metadata)
