@@ -484,10 +484,11 @@ class TestHelpers(tests.Test):
         expected_kwargs = expected_calls[0][-1]
         self.assertEqual(expected_kwargs.keys(), kwargs.keys())
         array_keys = set(['src_mask_values', 'dst_mask_values'])
-        for key in kwargs.keys() - array_keys:
-            self.assertEqual(expected_kwargs[key], kwargs[key])
-        for key in array_keys:
-            self.assertTrue((expected_kwargs[key] == kwargs[key]).all())
+        for key in kwargs.keys():
+            if key in array_keys:
+                self.assertTrue((expected_kwargs[key] == kwargs[key]).all())
+            else:
+                self.assertEqual(expected_kwargs[key], kwargs[key])
         self.assertTrue(mock_regrid.call_args_list[1] == expected_calls[1])
 
     @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',

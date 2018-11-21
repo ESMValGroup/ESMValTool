@@ -145,13 +145,15 @@ class Test(tests.Test):
             else:
                 raise iris.exceptions.CoordinateNotFoundError('')
 
-        def src_coords(*args, contains_dimension=None, dim_coords=None):
+        def src_coords(*args, **kwargs):
             dim_coords_list = [self.time,
                                self.z,
                                self.src_latitude,
                                self.src_longitude]
+            contains_dimension = kwargs.get('contains_dimension', None)
             if contains_dimension is not None:
                 return [dim_coords_list[contains_dimension]]
+            dim_coords = kwargs.get('dim_coords', None)
             if dim_coords:
                 return dim_coords_list
             return [self.scalar_coord] + dim_coords_list
