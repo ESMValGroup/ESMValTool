@@ -22,7 +22,9 @@ begin
   vardeffiles = diag_script_info@input_files
   nvdf = dimsizes(vardeffiles)
   do i = 0, nvdf - 1
-    if (.not. ismissing(vardeffiles(i))) then
+    isncl = .not.ismissing(str_match_ic_regex(vardeffiles(i), \
+                                              ".*_info\" + ".ncl"))
+    if (.not. ismissing(vardeffiles(i)) .and. isncl) then
       vardeffile = vardeffiles(i)
       print("INFO    Loading input data description from " + vardeffile)
       loadscript(vardeffile)
