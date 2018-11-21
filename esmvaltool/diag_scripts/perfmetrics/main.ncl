@@ -82,7 +82,7 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"
+load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
@@ -184,10 +184,12 @@ begin
   l_altern = False
   nobs = 1
   ref_ind = ind(datasetnames.eq.variable_info[0]@reference_dataset)
+  ref_inds = ref_ind
   if (isatt(variable_info[0], "alternative_dataset")) then
     l_altern = True
     nobs = 2
     alt_ind = ind(datasetnames.eq.variable_info[0]@alternative_dataset)
+    ref_inds := (/ref_ind, alt_ind/)
   end if
 
   ; Create output plot directory
@@ -247,7 +249,7 @@ begin
     grading!2 = "models"
     grading!3 = "reference"
     grading&diagnostics = var0_grade
-    grading&models = remove_index(datasetnames, ref_inds)  ; FIX-ME
+    grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
@@ -261,7 +263,7 @@ begin
       taylor!2 = "statistic"
       taylor&diagnostics = var0_grade
       taylor&statistic = (/"stddev_ratio", "correlation"/)
-      taylor&models = remove_index(datasetnames, ref_ind)  ; FIX-ME
+      taylor&models = remove_index(datasetnames, ref_ind)
     end if
 
     ; Define grading filename
@@ -316,10 +318,10 @@ begin
       metric@diag_script = (/DIAG_SCRIPT/)
       metric@var = "grade"
       metric@region = location
-      metric@num_climofiles = dimsizes(input_file_info@dataset)  ; FIX-ME ?
-      do imod = 0, dimsizes(input_file_info@dataset) - 1
+      metric@num_climofiles = nDatasets
+      do imod = 0, nDatasets - 1
         num_climo = "climofile_" + imod
-        metric@$num_climo$ = input_file_info@filename(imod)
+        metric@$num_climo$ = info_items[imod]@filename
       end do
       metric@ncdf_dir = ncdf_dir(met)
 
