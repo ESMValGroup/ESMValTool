@@ -134,7 +134,6 @@ def make_profiles_plots(
 
     plot_details = {}
     for time_index, time in enumerate(times_float):
-        print('size:', len(times_float))
         if times_float[-1] == time_0:
             color = 'black'
         else:
@@ -211,9 +210,13 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
 
         obs_key = 'observational_dataset'
-        obs_filename = diagtools.match_model_to_key(obs_key,
-                                                    cfg[obs_key],
-                                                    metadatas)
+        obs_filename = ''
+        obs_metadata = {}
+        if obs_key in cfg:
+            obs_filename = diagtools.match_model_to_key(obs_key,
+                                                        cfg[obs_key],
+                                                        metadatas)
+            obs_metadata = metadatas[obs_filename]
 
         for filename in sorted(metadatas.keys()):
 
@@ -229,7 +232,7 @@ def main(cfg):
             ######
             # Time series of individual model
             make_profiles_plots(cfg, metadatas[filename], filename,
-                                obs_metadata=metadatas[obs_filename],
+                                obs_metadata=obs_metadata,
                                 obs_filename=obs_filename)
 
     logger.info('Success')
