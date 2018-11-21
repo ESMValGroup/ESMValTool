@@ -110,7 +110,7 @@ WeatherRegime <- function( # nolint
     result <- Apply(
       data = list(data),
       margins = list(margins),
-      fun = "AtomicWeatherRegime",
+      "AtomicWeatherRegime",
       EOFS = EOFS,
       neofs = neofs,
       threshold = threshold,

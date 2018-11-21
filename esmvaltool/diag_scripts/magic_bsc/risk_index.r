@@ -14,7 +14,7 @@ library(multiApply)
 #library(ggplot2)
 library(yaml)
 library(ncdf4)
-library(startR, lib.loc='/home/Earth/ahunter/R/x86_64-unknown-linux-gnu-library/3.2/')
+library(startR)
 
 library(parallel)
 ##Until integrated into current version of s2dverification
@@ -82,6 +82,7 @@ historical_data <- Start(
   return_vars = list(time = "model", lon = "model", lat = "model"),
   retrieve = TRUE
 )
+print(reference_filenames)
 lat <- attr(historical_data, "Variables")$dat1$lat
 lon  <- attr(historical_data, "Variables")$dat1$lon
 long_names <- attr(historical_data, "Variables")$common$tas$long_name
@@ -179,7 +180,7 @@ for (m in 1 : length(metric)) {
   base_sd[[m]] <- Apply(
     list(base_index$result),
     target_dims = list(c(1)),
-    fun = "sd"
+     "sd"
   )$output1
   base_sd_historical[[m]] <- InsertDim(
     base_sd[[m]], 1, dim(base_index$result)[1]
@@ -192,7 +193,7 @@ for (m in 1 : length(metric)) {
     base_mean[[m]] <- Apply(
       list(base_index$result),
       target_dims = list(c(1)),
-      fun = "mean"
+       "mean"
     )$output1
     base_mean_historical <- InsertDim(
       base_mean[[m]], 1, dim(base_index$result)[1]
