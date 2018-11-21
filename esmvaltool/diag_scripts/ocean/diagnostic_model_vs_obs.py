@@ -290,8 +290,12 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
         fy = np.ma.masked_where(mask, fy)
 
     pyplot.plot(fx, fy, 'k')
+
     if addOneToOne:
-        pyplot.plot(fx, fx, 'k--')
+        axis = pyplot.gca().axis()
+        step = (max(axis) - min(axis))/100.
+        one_to_one = np.arange(min(axis), max(axis) + step, step)
+        pyplot.plot(one_to_one, one_to_one, 'k--')
 
 
 def make_scatter(
