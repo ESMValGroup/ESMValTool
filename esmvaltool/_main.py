@@ -37,10 +37,11 @@ import shutil
 import sys
 from multiprocessing import cpu_count
 
-from . import __version__
-from ._config import configure_logging, read_config_user_file
-from ._recipe import read_recipe_file
-from ._task import resource_usage_logger
+from esmvaltool._version import __version__
+from esmvaltool._config import configure_logging, read_config_user_file
+from esmvaltool._recipe import read_recipe_file
+from esmvaltool._task import resource_usage_logger
+
 
 # set up logging
 logger = logging.getLogger(__name__)
@@ -229,3 +230,6 @@ def run():
             logger.info("set remove_preproc_dir to false in config")
             shutil.rmtree(conf["preproc_dir"])
         logger.info("Run was succesful")
+
+if __name__ == "__main__":
+    run()
