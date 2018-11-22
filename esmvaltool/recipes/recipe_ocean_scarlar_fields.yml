@@ -36,13 +36,6 @@ datasets:
     - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
 
 
-preprocessors:
-  # --------------------------------------------------
-  # Time series preprocessors
-  # --------------------------------------------------
-  prep_timeseries: # Load file as is.
-    custom_order: true
-
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
@@ -51,7 +44,6 @@ diagnostics:
     description: sea_water_transport_across_line
     variables:
       mfo: # sea_water_transport_across_line
-        preprocessor: prep_timeseries
         field: TO0M
         mip: Omon
     scripts:
