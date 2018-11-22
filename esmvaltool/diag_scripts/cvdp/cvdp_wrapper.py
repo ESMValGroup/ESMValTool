@@ -58,6 +58,7 @@ def setup_driver(cfg):
     with open(new_driver, 'w') as f:
         f.write("".join(content))
 
+
 def create_link(cfg, p):
     """Create link for the input file that matches the naming convention
     of the cvdp package. Return the path to the link.
@@ -71,11 +72,12 @@ def create_link(cfg, p):
         import re
         h, t = os.path.split(p)
         s = re.search(r'[0-9]{4}-[0-9]{4}', t).group(0)
-        return t.replace(s,"{0}01-{1}12".format(*s.split('-')))
+        return t.replace(s, "{0}01-{1}12".format(*s.split('-')))
 
     link = os.path.join(cfg['run_dir'], "links", _create_link_name(p))
     os.symlink(p, link)
     return link
+
 
 def setup_namelist(cfg):
     """Setup the namelist file of the cvdp package."""
