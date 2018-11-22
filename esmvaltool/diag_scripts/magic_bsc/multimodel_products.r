@@ -18,7 +18,6 @@
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 library(s2dverification)
-library(startR) # nolint
 library(ClimProjDiags) # nolint
 library(abind)
 library(ggplot2)
@@ -84,25 +83,28 @@ if (moninf == monsup) {
 
 time_series_plot <- params$time_series_plot
 ### Load data and compute climatologies and anomalies
-
+var0 <- unlist(var0)
 climatology_filenames <- fullpath_filenames[climatology_files]
-reference_data <- Start(
-  model = climatology_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = "all",
-  lon = "all",
-  lon_var = "lon",
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
+ref_nc <- nc_open(fullpath_filenames[climatology_files][1])
+lat <- ncvar_get(ref_nc,"lat")
+lon <- ncvar_get(ref_nc,"lon")
+units <- ncatt_get(ref_nc, var0, "units")$value
+calendar <- ncatt_get(ref_nc, "time", "calendar")$value
+long_names <-  ncatt_get(ref_nc,var0,"long_name")$value
+time <-  ncvar_get(ref_nc,"time")
+reference_data <- InsertDim(ncvar_get(ref_nc, var0),1,1)
+start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time", "units")$value,11, 29 ))
+time <- as.Date(time, origin = start_date, calendar = calendar)
+projection <- "NULL"
+nc_close(ref_nc)
+for (i in 2 : length(fullpath_filenames[climatology_files])) {
+  ref_nc <- nc_open(fullpath_filenames[climatology_files][i])
+  reference_data <- abind(reference_data, InsertDim(ncvar_get(ref_nc, var0),1,1),along = 1)
+  nc_close(ref_nc)
+}
+attr(reference_data, "Variables")$dat1$time <- time
 
-lat <- attr(reference_data, "Variables")$dat1$lat
-lon <- attr(reference_data, "Variables")$dat1$lon
-long_names <- attr(reference_data, "Variables")$common$tas$long_name
-projection <- attr(reference_data, "Variables")$common$tas$coordinates
-
+names(dim(reference_data)) <- c("model", "lon", "lat", "time")
 # nolint start
 #jpeg(paste0(plot_dir, "/plot.jpg"))
 #PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
@@ -111,7 +113,7 @@ projection <- attr(reference_data, "Variables")$common$tas$coordinates
 # Provisional solution to error in dimension order and time values:
 # nolint end
 time <- attr(reference_data, "Variables")$dat1$time
-calendar <- attributes(time)$variables$time$calendar
+attributes(time)$variables$time$calendar <- calendar
 if ((end_climatology-start_climatology + 1) * 12 == length(time)) {
   time <- seq(
     as.Date(
@@ -137,7 +139,7 @@ dim(reference_data) <- c(
 )
 reference_data <- aperm(reference_data, c(1,2,5,4,3))
 attr(reference_data, "Variables")$dat1$time <- time
-
+names(dim(reference_data)) <- c("model", "var", "time", "lat", "lon")
 # nolint start
 # ------------------------------
 #jpeg(paste0(plot_dir, "/plot1.jpg"))
@@ -152,9 +154,8 @@ attr(reference_data, "Variables")$dat1$time <- time
 #---------------------------------------------
 # nolint end
 
-time_dim <- which(names(dim(reference_data)) == "time")
 dims <- dim(reference_data)
-
+time_dim <- which(names(dim(reference_data)) == "time")
 if (moninf <= monsup) {
   dims <- append(dims, c(12, dims[time_dim] / 12), after = time_dim)
   dims <- dims[-time_dim]
@@ -206,18 +207,26 @@ years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
 climatology <- Mean1Dim(reference_seasonal_mean, years_dim)
 
 anomaly_filenames <- fullpath_filenames[anomaly_files]
-rcp_data <- Start(
-  model = anomaly_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = "all",
-  lon = "all",
-  lon_var = "lon",
-  #lon_reorder = CircularSort(0, 360),
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
+rcp_nc <- nc_open(anomaly_filenames[1])
+lat <- ncvar_get(rcp_nc,"lat")
+lon <- ncvar_get(rcp_nc,"lon")
+units <- ncatt_get(rcp_nc, var0, "units")$value
+calendar <- ncatt_get(rcp_nc, "time", "calendar")$value
+long_names <-  ncatt_get(rcp_nc,var0,"long_name")$value
+time <-  ncvar_get(rcp_nc,"time")
+rcp_data <- InsertDim(ncvar_get(rcp_nc, var0),1,1)
+start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time", "units")$value,11, 29 ))
+time <- as.Date(time, origin = start_date, calendar = calendar)
+
+nc_close(rcp_nc)
+for (i in 2 : length(anomaly_filenames)) {
+  rcp_nc <- nc_open(anomaly_filenames[i])
+  rcp_data <- abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0),1,1),along = 1)
+  nc_close(rcp_nc)
+}
+attr(rcp_data, "Variables")$dat1$time <- time
+
+names(dim(rcp_data)) <- c("model", "lon", "lat", "time")
 # nolint start
 #jpeg(paste0(plot_dir, "/plot2.jpg"))
 #PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
@@ -225,12 +234,9 @@ rcp_data <- Start(
 # ------------------------------
 # Provisional solution to error in dimension order:
 # nolint end
-lon <- attr(rcp_data, "Variables")$dat1$lon
-lat <- attr(rcp_data, "Variables")$dat1$lat
-time <- attr(rcp_data, "Variables")$dat1$time
-if (attributes(time)$variables$time$calendar != calendar) {
-  print("Different calendars between climatology and anomaly.")
-}
+#if (attributes(time)$variables$time$calendar != calendar) {
+#  print("Different calendars between climatology and anomaly.")
+#}
 if ( (end_anomaly-start_anomaly + 1) * 12 == length(time)) {
   time <- seq(
     as.Date(
@@ -245,7 +251,6 @@ if ( (end_anomaly-start_anomaly + 1) * 12 == length(time)) {
   )
 }
 num_models <- dim(rcp_data)[which(names(dim(rcp_data))=="model")]
-units <- (attr(rcp_data,"Variables")$common)[[2]]$units
 rcp_data <- as.vector(rcp_data)
 dim(rcp_data) <- c(
   num_models,
@@ -255,6 +260,7 @@ dim(rcp_data) <- c(
   time = length(time)
 )
 rcp_data <- aperm(rcp_data, c(1,2,5,4,3))
+names(dim(rcp_data)) <- c("model", "var", "time", "lat", "lon")
 attr(rcp_data, "Variables")$dat1$time <- time
 
 # nolint start
