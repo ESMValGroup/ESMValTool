@@ -32,7 +32,7 @@ CMIP5:
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[frequency]'
     BSC: '[type]/[project]/[exp]/[dataset.lower]'
-  input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_*'
+  input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_*.nc'
   input_fx_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
@@ -120,7 +120,7 @@ OBS:
     default: 'Tier[tier]/[dataset]'
     BSC: '[type]/[institute.lower]/[dataset.lower]/[freq_folder]/[short_name][freq_base]'
   input_file:
-    default: '[project]_[dataset]_[type]_[version]_[field]_[short_name]_*'
+    default: '[project]_[dataset]_[type]_[version]_[field]_[short_name]_*.nc'
     BSC: '[short_name]_*.nc'
   input_fx_dir:
     default: 'Tier[tier]/[dataset]'
@@ -132,7 +132,7 @@ OBS:
 obs4mips:
   input_dir:
     default: 'Tier[tier]/[dataset]'
-  input_file: '[short_name]_[dataset]_[level]_[version]_*'
+  input_file: '[short_name]_[dataset]_[level]_[version]_*.nc'
   input_fx_dir:
     default: 'Tier[tier]/[dataset]'
   input_fx_file:
@@ -143,21 +143,21 @@ obs4mips:
 ana4mips:
   input_dir:
     default: 'Tier[tier]/[dataset]'
-  input_file: '[short_name]_[mip]_[type]_[dataset]_*'
+  input_file: '[short_name]_[mip]_[type]_[dataset]_*.nc'
   output_file: '[project]_[mip]_[type]_[dataset]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 CCMVal1:
   input_dir:
     default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]'
+  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name].nc'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 CCMVal2:
   input_dir:
     default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]'
+  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name].nc'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 

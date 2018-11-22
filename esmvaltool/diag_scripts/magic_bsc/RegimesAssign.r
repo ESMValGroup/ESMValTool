@@ -104,7 +104,7 @@ RegimesAssign <- function(var_ano, ref_maps, lats, method = 'distance') {
       margins = c((1:length(dim(
         var_ano
       )))[-c(poslat_ano, poslon_ano)]) ,
-      AtomicFun = 'anom2regime',
+       'anom2regime',
       ref = ref_maps,
       lat = lats,
       method = method
