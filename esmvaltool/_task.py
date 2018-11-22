@@ -3,6 +3,7 @@ import contextlib
 import datetime
 import errno
 import logging
+import numbers
 import os
 import pprint
 import subprocess
@@ -121,12 +122,20 @@ def _py2ncl(value, var_name=''):
         txt += '"{}"'.format(value)
     elif isinstance(value, (list, tuple)):
         if not value:
-            txt += 'NewList("fifo")'
+            txt += '_Missing'
         else:
+            if isinstance(value[0], numbers.Real):
+                type_ = numbers.Real
+            else:
+                type_ = type(value[0])
+            if any(not isinstance(v, type_) for v in value):
+                raise ValueError(
+                    "NCL array cannot be mixed type: {}".format(value))
             txt += '(/{}/)'.format(', '.join(_py2ncl(v) for v in value))
     elif isinstance(value, dict):
         if not var_name:
-            raise ValueError("NCL does not support nested dicts.")
+            raise ValueError(
+                "NCL does not support nested dicts: {}".format(value))
         txt += 'True\n'
         for key in value:
             txt += '{}@{} = {}\n'.format(var_name, key, _py2ncl(value[key]))
