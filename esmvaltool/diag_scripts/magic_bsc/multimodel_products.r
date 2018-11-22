@@ -95,7 +95,7 @@ time <-  ncvar_get(ref_nc,"time")
 reference_data <- InsertDim(ncvar_get(ref_nc, var0),1,1)
 start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time", "units")$value,11, 29 ))
 time <- as.Date(time, origin = start_date, calendar = calendar)
-
+projection <- "NULL"
 nc_close(ref_nc)
 for (i in 2 : length(fullpath_filenames[climatology_files])) {
   ref_nc <- nc_open(fullpath_filenames[climatology_files][i])
