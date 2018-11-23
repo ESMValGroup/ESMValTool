@@ -99,9 +99,7 @@ threshold <- Threshold(
 )
 
 projection_filenames <-  fullpath_filenames[projection_files]
-print(projection_filenames)
 for (i in 1 : length(projection_filenames)) {
-print(i)
   proj_nc <- nc_open(projection_filenames[i])
   projection_data <- ncvar_get(proj_nc, var0)
   time <-  ncvar_get(proj_nc,"time")
@@ -184,7 +182,6 @@ print(i)
       "quantile obtained from", start_reference, "-", end_reference
     )
   )
-  print("OK")
   file <- nc_create(
     paste0(
       plot_dir, "/" , var0, "_extreme_spell_duration", season,
@@ -202,9 +199,6 @@ print(i)
     "th quantile for ", substr(start_reference, 1, 4), "-",
     substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"
   )
-  print(str(Mean1Dim(data,1)))
-  print(length(lon))
- print(length(lat))
   PlotEquiMap( Mean1Dim(data, 1), # nolint
     lat = lat,
     lon = lon,
