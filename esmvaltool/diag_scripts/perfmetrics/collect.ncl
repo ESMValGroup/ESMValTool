@@ -40,7 +40,7 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"
+load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/portrait_plot.ncl"
@@ -48,8 +48,8 @@ load "./diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  diag_script_base = basename(diag_script)
+  enter_msg(DIAG_SCRIPT, "")
+  diag_script_base = basename(DIAG_SCRIPT)
 
   ; Check file type
   file_type = config_user_info@output_file_type
@@ -210,6 +210,6 @@ begin
 
   log_info(" gv " + outfile_plot + "." + file_type)
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

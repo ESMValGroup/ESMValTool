@@ -151,7 +151,7 @@ begin
   if (ismissing(col)) then
     error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
   end if
-  datasets = listatts2arr(items, "dataset")
+  datasets = listatts2array(items, "dataset")
   ndatasets = dimsizes(datasets)
   column = new(ndatasets, string)
   wildcard_cnt = 0

@@ -327,7 +327,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Default resources
   res = True

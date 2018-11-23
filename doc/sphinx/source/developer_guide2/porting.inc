@@ -132,6 +132,7 @@ The following changes may also have to be considered:
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` and the convenience functions in ``esmvaltool/interface_scripts/interface.ncl`` to access the required attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics are to be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they go in ``shared/``);
+- the relevant input_file_info items required by a plot routine should be passed as argument to the routine itself;
 - upper case characters have to be avoided in script names, if possible.
 
 As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics/main.ncl`` can be followed as working example.
