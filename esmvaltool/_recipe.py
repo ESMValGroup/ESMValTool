@@ -503,8 +503,11 @@ def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings.keys():
-        fx_files = get_required(variable['short_name'],
-                                variable['field']).get('fx_files')
+        try:
+            fx_files = get_required(variable['short_name'],
+                                    variable['field']).get('fx_files')
+        except NotImplementedError:
+            fx_files = []
         if fx_files:
             settings['derive']['fx_files'] = {}
             variable = dict(variable)
