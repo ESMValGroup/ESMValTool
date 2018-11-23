@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Provides mapping of a cube"""
+"""Provides mapping of a cube."""
 
 import collections
-import itertools
 
 import iris
 import numpy as np
@@ -11,7 +10,7 @@ import six
 
 def _is_single_item(testee):
     """
-    Check if testee is a single item
+    Check if testee is a single item.
 
     Return whether this is a single item, rather than an iterable.
     We count string types as 'single', also.
@@ -38,9 +37,36 @@ def _as_list_of_coords(cube, names_or_coords):
     return coords
 
 
+def ref_to_dims_index_as_coordinate(cube, ref):
+    """Get dims for coord ref."""
+    coord = _as_list_of_coords(cube, ref)[0]
+    dims = cube.coord_dims(coord)
+    if not dims:
+        msg = ('Requested an iterator over a coordinate ({}) '
+               'which does not describe a dimension.')
+        msg = msg.format(coord.name())
+        raise ValueError(msg)
+    return dims
+
+
+def ref_to_dims_index_as_index(cube, ref):
+    """Get dim for index ref."""
+    try:
+        dim = int(ref)
+    except (ValueError, TypeError):
+        raise ValueError('{} Incompatible type {} for '
+                         'slicing'.format(ref, type(ref)))
+    if dim < 0 or dim > cube.ndim:
+        msg = ('Requested an iterator over a dimension ({}) '
+               'which does not exist.'.format(dim))
+        raise ValueError(msg)
+    dims = [dim]
+    return dims
+
+
 def ref_to_dims_index(cube, ref_to_slice):
     """
-    Map a list of :class:`iris.coords.DimCoord` to a tuple of indices
+    Map a list of :class:`iris.coords.DimCoord` to a tuple of indices.
 
     This method finds the indices of the dimensions in a cube that collectively
     correspond to the given list of :class:`iris.coords.DimCoord`.
@@ -64,29 +90,10 @@ def ref_to_dims_index(cube, ref_to_slice):
     dim_to_slice_set = set()
     for ref in ref_to_slice:
         try:
-            # attempt to handle as coordinate
-            coord = _as_list_of_coords(cube, ref)[0]
-            dims = cube.coord_dims(coord)
-            if not dims:
-                msg = ('Requested an iterator over a coordinate ({}) '
-                       'which does not describe a dimension.')
-                msg = msg.format(coord.name())
-                raise ValueError(msg)
-            for dim in dims:
-                if dim not in dim_to_slice_set:
-                    dim_to_slice.append(dim)
-                    dim_to_slice_set.add(dim)
+            dims = ref_to_dims_index_as_coordinate(cube, ref)
         except TypeError:
-            try:
-                # attempt to handle as dimension index
-                dim = int(ref)
-            except (ValueError, TypeError):
-                raise ValueError('{} Incompatible type {} for '
-                                 'slicing'.format(ref, type(ref)))
-            if dim < 0 or dim > cube.ndim:
-                msg = ('Requested an iterator over a dimension ({}) '
-                       'which does not exist.'.format(dim))
-                raise ValueError(msg)
+            dims = ref_to_dims_index_as_index(cube, ref)
+        for dim in dims:
             if dim not in dim_to_slice_set:
                 dim_to_slice.append(dim)
                 dim_to_slice_set.add(dim)
@@ -108,14 +115,14 @@ def get_associated_coords(cube, dimensions):
             dim_set.add(dim)
     dim_coords = []
     for i in dims:
-        c = cube.coords(contains_dimension=i, dim_coords=True)
-        if len(c) > 0:
-            dim_coords.append(c[0])
+        coords = cube.coords(contains_dimension=i, dim_coords=True)
+        if coords:
+            dim_coords.append(coords[0])
     aux_coords = []
     for i in dims:
-        c = cube.coords(contains_dimension=i, dim_coords=False)
-        if len(c) > 0:
-            aux_coords.append(c[0])
+        coords = cube.coords(contains_dimension=i, dim_coords=False)
+        if coords:
+            aux_coords.append(coords[0])
     return dim_coords, aux_coords
 
 
@@ -133,7 +140,7 @@ def get_empty_data(shape):
 
 def get_slice_spec(cube, ref_to_slice):
     """
-    Turn a slice reference into a specification for the slice
+    Turn a slice reference into a specification for the slice.
 
     Turns a slice reference into a specification comprised of the shape as well
     as the relevant dimensional and auxiliary coordinates.
@@ -146,7 +153,7 @@ def get_slice_spec(cube, ref_to_slice):
 
 def index_iterator(dims_to_slice, shape):
     """
-    An iterator for subsets of multidimensional objects
+    Return iterator for subsets of multidimensional objects.
 
     An iterator over a multidimensional object, giving both source and
     destination indices.
@@ -163,20 +170,21 @@ def index_iterator(dims_to_slice, shape):
 
 
 def get_slice_coords(cube):
+    """Return ordered set of unique coordinates."""
     slice_coords = []
     slice_set = set()
     for i in range(cube.ndim):
-        cs = cube.coords(contains_dimension=i)
-        for c in cs:
-            if c not in slice_set:
-                slice_coords.append(c)
-                slice_set.add(c)
+        coords = cube.coords(contains_dimension=i)
+        for coord in coords:
+            if coord not in slice_set:
+                slice_coords.append(coord)
+                slice_set.add(coord)
     return slice_coords
 
 
 def map_slices(src, func, src_rep, dst_rep):
     """
-    Map slices of a cube, replacing them with different slices
+    Map slices of a cube, replacing them with different slices.
 
     This method is similar to the standard cube collapsed and aggregated_by
     methods, however, where they completely remove the mapped dimensions, this
