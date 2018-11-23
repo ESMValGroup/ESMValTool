@@ -1,6 +1,6 @@
 ### To do: extrapolate surface wind to 100m wind (different for land and sea)
 
-j# nolint start
+# nolint start
 ####REQUIRED SYSTEM LIBS
 ####ŀibssl-dev
 ####libnecdf-dev
@@ -20,13 +20,12 @@ j# nolint start
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 
-library(startR) # nolint
 library(multiApply) # nolint
 library(ggplot2)
 library(yaml)
 library(s2dverification)
 library(climdex.pcic)
-
+library(ncdf4)
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -64,19 +63,23 @@ seasons <- params$seasons
 power_curves <- params$power_curves
 power_curves_folder <- params$power_curves_folder
 
-data <- Start(model = fullpath_filenames,
-              var = var0,
-              var_var = "var_names",
-              time = "all",
-              lat = "'all",
-              lon = "all",
-              lon_var = "lon",
-              return_vars = list(time = "model", lon = "model", lat = "model"),
-              retrieve = TRUE)
-
-lat <- attr(data, "Variables")$dat1$lat
-lon <- attr(data, "Variables")$dat1$lon
 no_of_years <- length(start_year : end_year)
+var0 <- unlist(var0)
+data_nc <- nc_open(fullpath_filenames)
+data <- ncvar_get(data_nc, var0)
+
+names(dim(data)) <- c("lon", "lat", "time")
+lat <- ncvar_get(data_nc,"lat")
+lon <- ncvar_get(data_nc,"lon")
+units <- ncatt_get(data_nc, var0, "units")$value
+calendar <- ncatt_get(data_nc, "time", "calendar")$value
+long_names <-  ncatt_get(data_nc,var0,"long_name")$value
+time <-  ncvar_get(data_nc,"time")
+start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time", "units")$value,11, 29 ))
+nc_close(data_nc)
+time <- as.Date(time, origin = start_date, calendar = calendar)
+
+
 
 time_dim <- which(names(dim(data)) == "time")
 
@@ -92,7 +95,7 @@ time_dim <- which(names(dim(data)) == "time")
 # ratio <- ifelse(landmask > 50,1.39,1.29)
 # nolint end
 
-days <- as.Date(attr(data, "Variables")$dat1$time)
+days <- time
 print(dim(data))
 print(length(days))
 print(no_of_years)
@@ -102,7 +105,7 @@ dims <- append(
 )
 print("CC")
 print(dims)
-dims <- dims[-c(1, 4)]
+#dims <- dims[-c(1, 4)]
 
 dim(data) <- dims
 data <- aperm(data, c(2, 1, 3, 4))
