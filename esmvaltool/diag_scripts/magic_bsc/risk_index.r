@@ -78,7 +78,7 @@ calendar <- ncatt_get(hist_nc, "time", "calendar")$value
 long_names <-  ncatt_get(hist_nc,var0,"long_name")$value
 time <-  ncvar_get(hist_nc,"time")
 start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time", "units")$value,11, 29 ))
-
+nc_close(hist_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 #projection <- attr(historical_data, "Variables")$common$tas$coordinates
 
@@ -206,7 +206,7 @@ for (i in 1 : length(projection_filenames)) {
   start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time", "units")$value,11, 29 ))
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   time <- as.Date(time, origin = start_date, calendar = calendar)
-
+  nc_close(proj_nc)
   #proj_names <- names(dim(projection_data))
   # ------------------------------
   #jpeg(paste0(plot_dir, "/plot3.jpg"))

@@ -1,6 +1,5 @@
 library(yaml)
 library(s2dverification)
-library(startR) # nolint
 library(multiApply) # nolint
 library(ncdf4)
 library(climdex.pcic)
@@ -57,24 +56,25 @@ spell_length <- params$min_duration
 season <- params$season
 
 reference_filenames <-  fullpath_filenames[reference_files]
-historical_data  <- Start(
-  model = reference_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = "all",
-  lon = "all",
-  lon_var = "lon",
-  # lon_reorder = CircularSort(0, 360),
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
+projection <- "NULL"
+reference_filenames <-  fullpath_filenames[reference_files]
+hist_nc <- nc_open(reference_filenames)
+var0 <- unlist(var0)
+historical_data <- ncvar_get(hist_nc, var0)
+
+names(dim(historical_data)) <- rev(names(hist_nc$dim))[-1]
+lat <- ncvar_get(hist_nc,"lat")
+lon <- ncvar_get(hist_nc,"lon")
+units <- ncatt_get(hist_nc, var0, "units")$value
+calendar <- ncatt_get(hist_nc, "time", "calendar")$value
+long_names <-  ncatt_get(hist_nc,var0,"long_name")$value
+time <-  ncvar_get(hist_nc,"time")
+start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time", "units")$value,11, 29 ))
+nc_close(hist_nc)
+time <- as.Date(time, origin = start_date, calendar = calendar)
 
 # ------------------------------
 # Provisional solution to error in dimension order:
-lon <- attr(historical_data, "Variables")$dat1$lon
-lat <- attr(historical_data, "Variables")$dat1$lat
-time <- attr(historical_data, "Variables")$dat1$time
 historical_data <- as.vector(historical_data)
 dim(historical_data) <- c(
   model = 1,
@@ -87,38 +87,30 @@ historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
 attr(historical_data, "Variables")$dat1$time <- time
 print(dim(historical_data))
 # ------------------------------
-
-long_names <- attr(historical_data, "Variables")$common$tas$long_name
-projection <- attr(historical_data, "Variables")$common$tas$coordinates
-units <- (attr(historical_data, "Variables")$common)[[2]]$units
+names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
+time_dimension <- which(names(dim(historical_data)) == "time")
 
 base_range <- c(
   as.numeric(substr(start_reference, 1, 4)),
   as.numeric(substr(end_reference, 1, 4))
 )
 threshold <- Threshold(
-  historical_data, base.range = base_range, qtiles = qtile, ncores = NULL
+  historical_data, base.range = base_range, calendar = calendar, qtiles = qtile, ncores = NULL
 )
 
 projection_filenames <-  fullpath_filenames[projection_files]
-
+print(projection_filenames)
 for (i in 1 : length(projection_filenames)) {
-  projection_data <- Start(
-    model = projection_filenames[i],
-    var = var0,
-    var_var = "var_names",
-    time = "all",
-    lat = "all",
-    lon = "all",
-    lon_var = "lon",
-    return_vars = list(time = "model", lon = "model", lat = "model"),
-    retrieve = TRUE)
-
+print(i)
+  proj_nc <- nc_open(projection_filenames[i])
+  projection_data <- ncvar_get(proj_nc, var0)
+  time <-  ncvar_get(proj_nc,"time")
+  start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time", "units")$value,11, 29 ))
+  calendar <- ncatt_get(hist_nc, "time", "calendar")$value
+  time <- as.Date(time, origin = start_date, calendar = calendar)
+  nc_close(proj_nc)
   # ------------------------------
   # Provisional solution to error in dimension order:
-  lon <- attr(projection_data, "Variables")$dat1$lon
-  lat <- attr(projection_data, "Variables")$dat1$lat
-  time <- attr(projection_data, "Variables")$dat1$time
   projection_data <- as.vector(projection_data)
   dim(projection_data) <- c(
     model = 1,
@@ -129,10 +121,12 @@ for (i in 1 : length(projection_filenames)) {
   )
   projection_data <- aperm(projection_data, c(1, 2, 5, 4, 3))
   attr(projection_data, "Variables")$dat1$time <- time
+  names(dim(projection_data)) <- c("model", "var", "time", "lon", "lat")
   # ------------------------------
   heatwave <- WaveDuration( # nolint
     projection_data,
     threshold,
+    calendar = calendar,
     op = op,
     spell.length = spell_length,
     by.seasons = TRUE,
@@ -190,7 +184,7 @@ for (i in 1 : length(projection_filenames)) {
       "quantile obtained from", start_reference, "-", end_reference
     )
   )
-
+  print("OK")
   file <- nc_create(
     paste0(
       plot_dir, "/" , var0, "_extreme_spell_duration", season,
@@ -208,9 +202,10 @@ for (i in 1 : length(projection_filenames)) {
     "th quantile for ", substr(start_reference, 1, 4), "-",
     substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"
   )
-
-  PlotEquiMap( # nolint
-    Mean1Dim(data, 1), # nolint
+  print(str(Mean1Dim(data,1)))
+  print(length(lon))
+ print(length(lat))
+  PlotEquiMap( Mean1Dim(data, 1), # nolint
     lat = lat,
     lon = lon,
     filled.continents = FALSE,
@@ -225,5 +220,4 @@ for (i in 1 : length(projection_filenames)) {
     ),
     title_scale = 0.5
   )
-
 }
