@@ -1,3 +1,5 @@
+"""Unit tests for the esmvaltool.preprocessor._mapping module."""
+# pylint: disable=invalid-name
 from __future__ import absolute_import, division, print_function
 
 import cf_units
@@ -12,7 +14,10 @@ from esmvaltool.preprocessor._mapping import (get_empty_data,
 
 
 class TestHelpers(tests.Test):
+    """Unit tests for all helper methods."""
+
     def setUp(self):
+        """Set up basic fixtures."""
         self.coord_system = mock.Mock(return_value=None)
         self.scalar_coord = mock.sentinel.scalar_coord
         self.scalar_coord.name = lambda: 'scalar_coord'
@@ -20,6 +25,7 @@ class TestHelpers(tests.Test):
         self.coords = mock.Mock(return_value=[self.scalar_coord, self.coord])
 
         def coord(name_or_coord):
+            """Return coord for mock cube."""
             if name_or_coord == 'coord':
                 return self.coord
             elif name_or_coord == 'scalar_coord':
@@ -28,6 +34,7 @@ class TestHelpers(tests.Test):
                 raise iris.exceptions.CoordinateNotFoundError('')
 
         def coord_dims(coord):
+            """Return associated dims for coord in mock cube."""
             if coord == self.coord:
                 return [0]
             elif coord == self.scalar_coord:
@@ -44,42 +51,53 @@ class TestHelpers(tests.Test):
         )
 
     def test_get_empty_data(self):
+        """Test creation of empty data."""
         shape = (3, 3)
         data = get_empty_data(shape)
         self.assertIsInstance(data, np.ma.MaskedArray)
         self.assertEqual(data.shape, shape)
 
     def test_ref_to_dims_index__int(self):
-        ref_to_dims_index(self.cube, 0)
+        """Test ref_to_dims_index with valid integer."""
+        dims = ref_to_dims_index(self.cube, 0)
+        self.assertEqual([0], dims)
 
     def test_ref_to_dims_index__invalid_int(self):
+        """Test ref_to_dims_index with invalid integer."""
         self.assertRaises(ValueError,
                           ref_to_dims_index, self.cube, -1)
         self.assertRaises(ValueError,
                           ref_to_dims_index, self.cube, 100)
 
     def test_ref_to_dims_index__scalar_coord(self):
+        """Test ref_to_dims_index with scalar coordinate."""
         self.assertRaises(ValueError,
                           ref_to_dims_index, self.cube, 'scalar_coord')
 
     def test_ref_to_dims_index__valid_coordinate_name(self):
-        ref_to_dims_index(self.cube, 'coord')
+        """Test ref_to_dims_index with valid coordinate name."""
+        dims = ref_to_dims_index(self.cube, 'coord')
+        self.assertEqual([0], dims)
 
     def test_ref_to_dims_index__invalid_coordinate_name(self):
+        """Test ref_to_dims_index with invalid coordinate name."""
         self.assertRaises(iris.exceptions.CoordinateNotFoundError,
                           ref_to_dims_index, self.cube, 'test')
 
     def test_ref_to_dims_index__invalid_type(self):
+        """Test ref_to_dims_index with invalid argument."""
         self.assertRaises(ValueError,
                           ref_to_dims_index,
                           self.cube, mock.sentinel.something)
 
 
 class Test(tests.Test):
-    def setUp(self):
-        self.coord_system = mock.Mock(return_value=None)
-        self.scalar_coord = mock.sentinel.scalar_coord
-        self.scalar_coord.name = lambda: 'scalar_coord'
+    """Unit tests for the main mapping method."""
+
+    # pylint: disable=too-many-instance-attributes
+
+    def setup_coordinates(self):
+        """Set up coordinates for mock cube."""
         self.time = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='time',
@@ -121,7 +139,15 @@ class Test(tests.Test):
             points=np.array([1.1, 2.2]),
         )
 
+    def setUp(self):
+        """Set up fixtures for mapping test."""
+        self.coord_system = mock.Mock(return_value=None)
+        self.scalar_coord = mock.sentinel.scalar_coord
+        self.scalar_coord.name = lambda: 'scalar_coord'
+        self.setup_coordinates()
+
         def src_coord(name_or_coord):
+            """Return coord for mock source cube."""
             if name_or_coord in ['latitude', self.src_latitude]:
                 return self.src_latitude
             elif name_or_coord in ['longitude', self.src_longitude]:
@@ -132,6 +158,7 @@ class Test(tests.Test):
                 raise iris.exceptions.CoordinateNotFoundError('')
 
         def coord_dims(coord):
+            """Return coord dim for mock cubes."""
             if coord in [self.time, self.dst_latitude]:
                 return [0]
             elif coord in [self.z, self.dst_longitude]:
@@ -146,6 +173,9 @@ class Test(tests.Test):
                 raise iris.exceptions.CoordinateNotFoundError('')
 
         def src_coords(*args, **kwargs):
+            """Return selected coords for source cube."""
+            # pylint: disable=unused-argument
+            # Here, args is ignored.
             dim_coords_list = [self.time,
                                self.z,
                                self.src_latitude,
@@ -159,6 +189,9 @@ class Test(tests.Test):
             return [self.scalar_coord] + dim_coords_list
 
         def src_repr_coords(*args, **kwargs):
+            """Return selected coords for source representant cube."""
+            # pylint: disable=unused-argument
+            # Here, args is ignored.
             dim_coords = [self.src_latitude, self.src_longitude]
             if kwargs.get('dim_coords', False):
                 return dim_coords
@@ -167,6 +200,9 @@ class Test(tests.Test):
             return [self.scalar_coord] + dim_coords
 
         def dst_repr_coords(*args, **kwargs):
+            """Return selected coords for destination representant cube."""
+            # pylint: disable=unused-argument
+            # Here, args is ignored.
             dim_coords = [self.dst_latitude, self.dst_longitude]
             if kwargs.get('dim_coords', False):
                 return dim_coords
@@ -198,10 +234,11 @@ class Test(tests.Test):
             shape=(2, 2),
         )
 
-    @mock.patch('esmvaltool.preprocessor._mapping.get_empty_data',
-                return_value=mock.sentinel.empty_data)
+    @mock.patch('esmvaltool.preprocessor._mapping.get_empty_data')
     @mock.patch('iris.cube.Cube')
     def test_map_slices(self, mock_cube, mock_get_empty_data):
+        """Test map_slices."""
+        mock_get_empty_data.return_value = mock.sentinel.empty_data
         dst = map_slices(self.src_cube, lambda s: np.ones((2, 2)),
                          self.src_repr, self.dst_repr)
         self.assertEqual(dst, mock_cube.return_value)
