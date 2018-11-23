@@ -12,7 +12,7 @@
 #install_git("https://earth.bsc.es/gitlab/es/easyNCDF", branch = "master")
 Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
-library(startR)
+library(ncdf4)
 library(multiApply)
 library(yaml)
 library(abind)
@@ -39,32 +39,36 @@ fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 a <- 1
 b <- params$beta
-g <- 0
+g <- 0.1
 nm <- params$number_of_members
 nstartd <- 1
 nleadt = params$no_of_lead_times
 
 #fullpath_filenames <- "/scratch/Earth/ahunter/esmvaltool_input/CMIP5/Tier2/NCEP/OBS_NCEP_reanaly_1_T3M_ta_200001-200212.nc"
-data <- Start(
-  model = fullpath_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = "all",
-  lon = "all",
-  lon_var = "lon",
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
-dim_names <- names(dim(data))
-units <- (attr(data,"Variables")$common)[[2]]$units
-time <- attributes(data)$Variables$dat1$time
-lon_dim <- which(names(dim(data)) == "lon")
-lat_dim <- which(names(dim(data)) == "lat")
-lat <- attr(data, "Variables")$dat1$lat
-lon <- attr(data, "Variables")$dat1$lon
+var0 <- unlist(var0)
+data_nc <- nc_open(fullpath_filenames)
+data <- ncvar_get(data_nc, var0)
+data <- InsertDim(InsertDim(data, 1, 1),1,1)
+names(dim(data)) <- c("model", "var","lon", "lat", "time")
+lat <- ncvar_get(data_nc,"lat")
+lon <- ncvar_get(data_nc,"lon")
+lon <- unlist(lon)
+lat <- unlist(lat)
+print(lon)
+print(lat)
 attributes(lon) <- NULL
 attributes(lat) <- NULL
+units <- ncatt_get(data_nc, var0, "units")$value
+calendar <- ncatt_get(data_nc, "time", "calendar")$value
+long_names <-  ncatt_get(data_nc,var0,"long_name")$value
+time <-  ncvar_get(data_nc,"time")
+start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time", "units")$value,11, 29 ))
+nc_close(data_nc)
+time <- as.Date(time, origin = start_date, calendar = calendar)
+
+dim_names <- names(dim(data))
+lon_dim <- which(names(dim(data)) == "lon")
+lat_dim <- which(names(dim(data)) == "lat")
 data <- WeightedMean(data, lat = lat, lon = lon, londim = lon_dim, latdim = lat_dim)
 names(dim(data)) <- dim_names[-c(lon_dim, lat_dim)]
 time_dim <- which(names(dim(data)) == "time")
@@ -106,12 +110,6 @@ ToyModel <- function (
     }
   }
   time <- seq(1, nstartd)
-  if (!(sig^2 - alpha^2 - beta^2 > 0)) {
-    stop(paste(
-      "Model variability not constrained: respect condition",
-      \"sig^2-alpha^2-beta^2 > 0\")"
-    ))
-  }
   if (nstartd < 0) {
       stop("Number of start dates must be positive")
   }
@@ -150,7 +148,7 @@ ToyModel <- function (
           mean = 0,
           sd = sqrt(sig - alpha ^ 2 - beta ^ 2)
         )
-        forecast[g, , j, f] <- matrix(auto_term, c(nmemb,1)) + matrix(conf_term, c(nmemb, 1)) + matrix(trend_term, c(nmemb, 1)) + var_corr
+        forecast[g, , j, f] <- matrix(auto_term, c(nmemb,1)) + matrix(conf_term, c(nmemb, 1)) + matrix(trend_term, c(nmemb, 1)) 
       }
     }
   }
@@ -162,11 +160,12 @@ forecast <- ToyModel(
   beta = b,
   gamma = g,
   nmemb = nm,
-  obsini = InsertDim(data, 3, 1), # nolint
+  obsini = InsertDim(data, 1, 1), # nolint
   nstartd = 1,
   nleadt = dim(data)[time_dim]
 )
-
+print(  min(c(forecast$obs, forecast$mod)))
+print( max(c(forecast$obs, forecast$mod)))
 #Quick plot of results
 print(brewer.pal(n = nm, name = "Reds"))
 jpeg(
@@ -178,10 +177,10 @@ jpeg(
   width = 600
 )
 plot(time, forecast$obs, type = "l",
-  ylim = c(
-    min(c(forecast$obs, forecast$mod)),
-    max(c(forecast$obs, forecast$mod))
-  ),
+ # ylim = c(
+   # min(c(forecast$obs, forecast$mod), rm.na = TRUE),
+  #  max(c(forecast$obs, forecast$mod), rm.na = TRUE)
+ # ),
   ylab = paste(var0, "(", units, ")"),
   main = paste(nm, "synthetic members generated"),
   bty = "n"
