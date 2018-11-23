@@ -51,8 +51,18 @@ class o2(Fix):
             original filepath.
         """
         new_path = Fix.get_fixed_filepath(output_dir, filepath)
-        cube = iris.load_cube(filepath)
+        cubes = iris.load(filepath)
 
+        ###
+        # There are several fields in this NetCDF,
+        # so we need to find the right one.
+        found_o2 = False
+        for cube in cubes:
+            if cube.name() == 'Dissolved Oxygen Concentration':
+                found_o2 = True
+                break
+        if not found_o2:
+            assert 0
         std = 'mole_concentration_of_dissolved_molecular_oxygen_in_sea_water'
         long_name = 'Dissolved Oxygen Concentration'
 

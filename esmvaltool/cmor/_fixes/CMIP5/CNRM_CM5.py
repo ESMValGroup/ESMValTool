@@ -67,3 +67,24 @@ class o2(Fix):
 
         iris.save(cube, new_path)
         return new_path
+
+    def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes cube units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+    -------
+        iris.cube.Cube
+
+        """
+        depth = cube.coord('ocean depth coordinate')
+        depth.standard_name = 'depth'
+        depth.long_name = 'depth'
+        depth.attributes['positive'] = 'down'
+        return cube

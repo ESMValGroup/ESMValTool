@@ -1,5 +1,6 @@
 """
-Diagnostic tools:
+Diagnostic tools
+================
 
 This module contains several python tools used elsewhere by the ocean
 diagnostics package.
@@ -13,19 +14,32 @@ import logging
 import os
 import sys
 import yaml
+import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
 
+import numpy as np
 import matplotlib.pyplot as plt
+
+from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-# A list of observations
 def get_obs_projects():
-    """Returns a list of strings with the names of observations projects."""
+    """
+    Return a list of strings with the names of observations projects.
+
+    Please keep this list up to date, or replace it with something more
+    sensible.
+
+    Returns
+    ---------
+    list
+        Returns a list of strings of the various types of observational data.
+    """
     obs_projects = ['obs4mips', ]
     return obs_projects
 
@@ -37,6 +51,16 @@ def folder(name):
     Take a string or a list of strings, convert it to a directory style,
     then make the folder and the string.
     Returns folder string and final character is always os.sep. ('/')
+
+    Arguments
+    ---------
+    name: list or string
+        A list of nested directories, or a path to a directory.
+
+    Returns
+    ---------
+    str
+        Returns a string of a full (potentially new) path of the directory.
     """
     sep = os.sep
     if isinstance(name, list):
@@ -49,16 +73,33 @@ def folder(name):
     return name
 
 
-def get_input_files(cfg, index=0):
+def get_input_files(cfg, index=''):
     """
-    Load input configuration file.
+    Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
+    This is a wrappper for the _get_input_data_files function from
+    diag_scripts.shared._base.
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    index: int
+        the index of the file in the cfg file.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of the input files and their linked details.
     """
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as input_file:
-        metadata = yaml.safe_load(input_file)
-    return metadata
+
+    if isinstance(index, int):
+        metadata_file = cfg['input_files'][index]
+        with open(metadata_file) as input_file:
+            metadata = yaml.safe_load(input_file)
+        return metadata
+    return _get_input_data_files(cfg)
 
 
 def bgc_units(cube, name):
@@ -67,21 +108,32 @@ def bgc_units(cube, name):
 
     This is because many CMIP standard units are not the standard units
     used by the BGC community (ie, Celsius is prefered over Kelvin, etc.)
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+    name: str
+        The string describing the data field.
+
+    Returns
+    -------
+    iris.cube.Cube
+        the cube with the new units.
     """
     new_units = ''
-
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
-    if name in [
-            'no3',
-    ]:
+    if name in ['no3', ]:
         new_units = 'mmol m-3'
 
-    if name in [
-            'chl',
-    ]:
+    if name in ['chl', ]:
         new_units = 'mg m-3'
+
+    if name in ['mfo', ]:
+        # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
+        new_units = 'Tg s-1'
 
     if new_units != '':
         logger.info(' '.join(
@@ -92,13 +144,29 @@ def bgc_units(cube, name):
     return cube
 
 
-def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
     """
-    Match up the three models and observations dataset from the configs.
+    Match up model or observations dataset dictionairies from config file.
 
     This function checks that the control_model, exper_model and
     observational_dataset dictionairies from the recipe are matched with the
     input file dictionairy in the cfg metadata.
+
+    Arguments
+    ---------
+    model_type: str
+        The string model_type to match (only used in debugging).
+    cfg_dict: dict
+        the config dictionairy item for this model type, parsed directly from
+        the diagnostics/ scripts, part of the recipe.
+    input_files_dict: dict
+        The input file dictionairy, loaded directly from the get_input_files()
+         function, in diagnostics_tools.py.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of the input files and their linked details.
     """
     for input_file, intput_dict in input_files_dict.items():
         intersect_keys = intput_dict.keys() & cfg_dict.keys()
@@ -113,20 +181,43 @@ def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
     return ''
 
 
-def timecoord_to_float(times):
+def cube_time_to_float(cube):
     """
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    list
+        List of floats showing the time coordinate in decimal time.
+
     """
+    times = cube.coord('time')
+    datetime = guess_calendar_datetime(cube)
+
     dtimes = times.units.num2date(times.points)
     floattimes = []
     for dtime in dtimes:
         # TODO: it would be better to have a calendar dependent value
         # for daysperyear, as this is not accurate for 360 day calendars.
         daysperyear = 365.25
-        floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
+
+        try:
+            dayofyr = dtime.dayofyr
+        except AttributeError:
+            time = datetime(dtime.year, dtime.month, dtime.day)
+            time0 = datetime(dtime.year, 1, 1, 0, 0)
+            dayofyr = (time - time0).days
+
+        floattime = dtime.year + dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
+        if dtime.hour:
+            floattime += dtime.hour / (24. * daysperyear)
         if dtime.minute:
             floattime += dtime.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
@@ -134,21 +225,71 @@ def timecoord_to_float(times):
 
 
 def guess_calendar_datetime(cube):
-    """Guess the cftime.datetime form to create datetimes."""
+    """
+    Guess the cftime.datetime form to create datetimes.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    cftime.datetime
+        A datetime creator function from cftime, based on the cube's calendar.
+    """
     time_coord = cube.coord('time')
-    times = time_coord.units.num2date(time_coord.points)
 
     if time_coord.units.calendar in ['360_day', ]:
-        dt = cftime.Datetime360Day
+        datetime = cftime.Datetime360Day
     elif time_coord.units.calendar in ['365_day', 'noleap']:
-        dt = cftime.DatetimeNoLeap
+        datetime = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in ['julian', ]:
-        dt = cftime.DatetimeJulian
+        datetime = cftime.DatetimeJulian
+    elif time_coord.units.calendar in ['gregorian', ]:
+        datetime = cftime.DatetimeGregorian
+    elif time_coord.units.calendar in ['proleptic_gregorian', ]:
+        datetime = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
                        time_coord.units.calendar)
-        dt = cftime.DatetimeGregorian
-    return dt
+        datetime = cftime.DatetimeGregorian
+    return datetime
+
+
+def load_thresholds(cfg, metadata):
+    """
+    Load the thresholds for contour plots from the config files
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+
+    Returns
+    -------
+    list:
+        List of thresholds
+    """
+    thresholds = []
+
+    if 'threshold' in cfg.keys():
+        thresholds.append(float(cfg['threshold']))
+
+    if 'threshold' in metadata.keys():
+        thresholds.append(float(metadata['threshold']))
+
+    if 'thresholds' in cfg.keys():
+        thresholds.extend([float(thres) for thres in cfg['thresholds']])
+
+    if 'thresholds' in metadata.keys():
+        thresholds.extend([float(thres) for thres in metadata['thresholds']])
+
+    thresholds = {threshold: True for threshold in thresholds}
+
+    return sorted(thresholds.keys())
 
 
 def add_legend_outside_right(
@@ -163,12 +304,30 @@ def add_legend_outside_right(
     plot_details is a 2 level dict,
     where the first level is some key (which is hidden)
     and the 2nd level contains the keys:
-        'c': color
-        'lw': line width
-        'label': label for the legend.
+    'c': color
+    'lw': line width
+    'label': label for the legend.
     ax1 is the axis where the plot was drawn.
+
+    Parameters
+    ----------
+    plot_details: dict
+        A dictionary of the plot details (color, linestyle, linewidth, label)
+    ax1: matplotlib.pyplot.axes
+        The pyplot axes to add the
+    column_width: float
+        The width of the legend column. This is used to adjust for longer words
+        in the legends
+    loc: string
+       Location of the legend. Options are "right" and "below".
+
+    Returns
+    -------
+    cftime.datetime
+        A datetime creator function from cftime, based on the cube's calendar.
+
     """
-    #####
+    # ####
     # Create dummy axes:
     legend_size = len(plot_details.keys()) + 1
     box = ax1.get_position()
@@ -244,6 +403,16 @@ def get_image_format(cfg, default='png'):
     The default is set in the user config.yml
     Individual diagnostics can set their own format which will
     supercede the main config.yml.
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
+    Returns
+    ---------
+    str
+        The image format extention.
     """
     image_extention = default
 
@@ -276,6 +445,25 @@ def get_image_path(cfg,
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy (for the individual dataset file)
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    prefix: str
+        A string to prepend to the image basename.
+    suffix: str
+        A string to append to the image basename
+    metadata_id_list: list
+        A list of strings to add to the file path. It loads these from the cfg.
+
+    Returns
+    ---------
+    str
+        The ultimate image path
+
     """
     #####
     if metadata_id_list == 'default':
@@ -297,6 +485,8 @@ def get_image_path(cfg,
     if path.find(image_extention) == -1:
         path += image_extention
 
+    path = path.replace(' ', '_')
+
     logger.info("Image path will be: %s", path)
     return path
 
@@ -306,30 +496,128 @@ def make_cube_layer_dict(cube):
     Take a cube and return a dictionairy layer:cube
 
     Each item in the dict is a layer with a separate cube for each layer.
-    ie:
-        cubes[depth] = cube from specific layer
+    ie: cubes[depth] = cube from specific layer
 
-    Cubes with no depth component are returns as:
-        cubes[''] = cube with no depth component.
+    Cubes with no depth component are returned as dict, where the dict key
+    is a blank empty string, and the value is the cube.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of layer name : layer cube.
     """
     #####
     # Check layering:
-    depth = cube.coords('depth')
-    cubes = {}
+    coords = cube.coords()
+    layers = []
+    for coord in coords:
+        if coord.standard_name in ['depth', 'region']:
+            layers.append(coord)
 
-    if depth == []:
+    cubes = {}
+    if layers == []:
         cubes[''] = cube
-    else:
-        # iris stores coords as a list with one entry:
-        depth = depth[0]
-        if len(depth.points) in [
-                1,
-        ]:
-            cubes[''] = cube
-        else:
-            coord_dim = cube.coord_dims('depth')[0]
-            for layer_index, layer in enumerate(depth.points):
-                slices = [slice(None) for index in cube.shape]
-                slices[coord_dim] = layer_index
-                cubes[layer] = cube[tuple(slices)]
+        return cubes
+
+    if len(layers) > 1:
+        # This field has a strange number of layer dimensions.
+        # depth and regions?
+        raise ValueError('This cube has both `depth` & `region` coordinates.')
+
+    # iris stores coords as a list with one entry:
+    layer_dim = layers[0]
+    if len(layer_dim.points) in [1, ]:
+        cubes[''] = cube
+        return cubes
+
+    if layer_dim.standard_name == 'depth':
+        coord_dim = cube.coord_dims('depth')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            cubes[layer] = cube[tuple(slices)]
+
+    if layer_dim.standard_name == 'region':
+        coord_dim = cube.coord_dims('region')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            layer = layer.replace('_', ' ').title()
+            cubes[layer] = cube[tuple(slices)]
     return cubes
+
+
+def get_cube_range(cubes):
+    """
+    Determinue the minimum and maximum values of a list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the overall minumum and maximum values of the
+        list of cubes.
+
+    """
+    mins = []
+    maxs = []
+    for cube in cubes:
+        mins.append(cube.data.min())
+        maxs.append(cube.data.max())
+    return [np.min(mins), np.max(maxs), ]
+
+
+def get_cube_range_diff(cubes):
+    """
+    Determinue the largest deviation from zero in an list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the maximum deviation from zero and its opposite.
+    """
+    ranges = []
+    for cube in cubes:
+        ranges.append(np.abs(cube.data.min()))
+        ranges.append(np.abs(cube.data.max()))
+    return [-1. * np.max(ranges), np.max(ranges)]
+
+
+def get_array_range(arrays):
+    """
+    Determinue the minimum and maximum values of a list of arrays..
+
+    Parameters
+    ----------
+    arrays: list of numpy.array
+        A list of numpy.array.
+
+    Returns
+    ----------
+    list:
+        A list of two values, the overall minumum and maximum values of the
+        list of cubes.
+
+    """
+
+    mins = []
+    maxs = []
+    for arr in arrays:
+        mins.append(arr.min())
+        maxs.append(arr.max())
+    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
+    return [np.min(mins), np.max(maxs), ]

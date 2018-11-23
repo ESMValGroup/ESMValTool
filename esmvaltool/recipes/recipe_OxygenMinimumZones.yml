@@ -18,6 +18,7 @@ documentation:
 
 
 datasets:
+  # Working:
     - {dataset: CESM1-BGC,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
     - {dataset: CMCC-CESM,        project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
     - {dataset: HadGEM2-ES,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
@@ -51,23 +52,16 @@ datasets:
 
 # buggy:
     # - {dataset: GFDL-ESM2G,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#    - {dataset: GFDL-ESM2M,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#    - {dataset: MRI-ESM1,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#    - {dataset: MPI-ESM-MR,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+    # Problems models:
+    # MemoryError
     # - {dataset: CNRM-CM5,         project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-# o2 range is insanely high: (1-4 mol/m3)
+    #
+    # o2 range is too high: (1-4 mol/m3)
     # - {dataset: BNU-ESM,          project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-
-# Iregular grid:
-
-
-
-# No oxygen data on jasmin:
-  # - {dataset: CanESM2, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: GISS-E2-H, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadCM3, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CanCM4, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Oyr, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
 preprocessors:
   # --------------------------------------------------
@@ -126,6 +120,17 @@ preprocessors:
       longitude: [140., 290.]
 
 
+  prep_profile_2: # For a regional profile
+    # extract_region:
+    #   start_longitude: 0.
+    #   end_longitude: 20.
+    #   start_latitude: -30.
+    #   end_latitude: 30.
+    average_region:
+      coord1: longitude
+      coord2: latitude
+      use_fx_files: true
+
   # prep_global_volume_average: # For 2D fields
   #   custom_order: true
   #   mask_above_threshold:
@@ -159,10 +164,10 @@ preprocessors:
 #  Oxygen concentration along 15 N/15 South slices.
 #  Oxygen minimum over z
 #  OMZ volume
-# Apparent oxygen usage - talk to Oli Andrews from Bristol.
 # Zonal average of 10N-10S against WOA data.
 # Vertical profiles of average oxygen region.
 # Colour scale for anoxic/oxic etc
+
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
@@ -211,9 +216,24 @@ diagnostics:
         preprocessor: prep_depth_layers
         field: TO3Y
     additional_datasets:
-      # /data/sthenno1/scratch/ledm/Observations/WOA/Oxygen_All_Periods/obsdata/Tier2/WOA/OBS_WOA_clim_TO3M_o2_000000-000000.nc
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
       - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
     scripts:
       model_vs_obs:
          script: ocean/diagnostic_model_vs_obs.py
          observational_dataset: {dataset: WOA, project: obs4mips,}
+
+  model_vs_obs_profile:
+    description: Regional Ocean mean profile
+    variables:
+      o2: # Temperature ocean surface
+        preprocessor: prep_profile_2
+        field: TO3Y
+        fx_files: [volcello,]
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      Regional_Ocean_mean_profile:
+        script: ocean/diagnostic_profiles.py
+        observational_dataset: {dataset: WOA, project: obs4mips,}

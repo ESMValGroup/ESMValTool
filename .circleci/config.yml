@@ -14,6 +14,7 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
@@ -24,6 +25,8 @@ jobs:
               conda create -y --name esmvaltool python=3
             fi
             conda env update --name esmvaltool
+            source activate esmvaltool
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -58,6 +61,7 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
@@ -68,6 +72,8 @@ jobs:
               conda create -y --name esmvaltool python=2
             fi
             conda env update --name esmvaltool
+            source activate esmvaltool
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -103,6 +109,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -135,6 +142,7 @@ jobs:
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -167,13 +175,14 @@ jobs:
             source activate esmvaltool
             set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test
+            python setup.py test --installation
             ncl -V
       - store_artifacts:
           path: /logs
@@ -306,7 +315,7 @@ workflows:
     jobs:
       - python3_test
       - python2_test
-      - python3_install   
+      - python3_install
   nightly:
     triggers:
       - schedule:

@@ -1,0 +1,599 @@
+###############################################################################
+# recipe_OceanBGC.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate the marine biogeochemistry models of CMIP5.
+    There are also some physical evaluation metrics here too.
+    This work based on the BGC-val toolkit GMD-2018-103.
+    DOI: https://doi.org/10.5194/gmd-11-4215-2018
+    Written by Lee de Mora, Plymouth Marine Laboratory, ledm@pml.ac.uk
+
+  authors:
+    - ledm
+
+  references:
+    - "de Mora, L., Yool, A., Palmieri, J., Sellar, A., Kuhlbrodt, T., Popova,
+      E., Jones, C., and Allen, J. I.: BGC-val: a model- and grid-independent
+      Python toolkit to evaluate marine biogeochemical models,
+      Geosci. Model Dev., 11, 4215-4240, https://doi.org/10.5194/gmd-11-4215-2018,
+      2018."
+
+  projects:
+    - ukesm
+
+
+datasets:
+  - {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2004}
+
+# working datasets
+  # - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: CanCM4,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: GISS-E2-H,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: HadGEM2-AO,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  # - {dataset: HadCM3,    project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+
+
+
+###
+# Problem with times
+#  - {dataset: MIROC-ESM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+# Unstructured grids
+#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
+#  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: ACCESS1-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: ACCESS1-3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # Global 3D Volume-weighted Average
+  prep_timeseries_global_volume_average:
+    custom_order: true
+    average_volume:
+      coord1: longitude
+      coord2: latitude
+      coordz: depth
+      use_fx_files: true
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  # Global area-weighted Average from 2D field
+  prep_global_Surface_average_timeseries_2D:
+    custom_order: true
+    average_region:
+      coord1: longitude
+      coord2: latitude
+      use_fx_files: true
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  # Global area -weighted surface Average from 3D field
+  prep_global_Surface_average_timeseries_3D:
+    custom_order: true
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+    average_region:
+      coord1: longitude
+      coord2: latitude
+      use_fx_files: true
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+  prep_timeseries_scalar: # Load file as is.
+    custom_order: true
+
+
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    time_average:
+
+  # For a 3D global surface map
+  prep_surface_map_3D:
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+    time_average:
+
+  prep_surface_map_regrid_3D:
+    custom_order: true
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+    time_average:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+
+  prep_global_profile:
+    average_region:
+      coord1: longitude
+      coord2: latitude
+      use_fx_files: true
+
+  prep_transect_AMT: # Atlantic Meridional Transect (28W)
+    custom_order: true
+    time_average:
+    extract_region:
+      start_longitude: 320.
+      end_longitude: 345.
+      start_latitude: -81.
+      end_latitude: 89.9
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_transect:
+      longitude: 332.
+
+#   # 2D map global depth integration
+#   prep_depth_integration:
+#     depth_integration:
+#       coordz: depth
+# #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
+#     time_average:
+#
+#   # 2D map global depth integration time series maps
+#   prep_depth_integration_timeseries:
+#     custom_order: true
+#     depth_integration:
+#       coordz: depth
+#     average_region:
+#       coord1: longitude
+#       coord2: latitude
+
+
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+# Need to add:
+    # Global Air sea flux of CO2
+
+# Added:
+    # Global volume average Temperature time series
+    # Global volumne average salinity time series
+    # Drake passge/AMOC (if exists as scalar field)
+    # Global net integrated primary production timeseries
+    # Global surface mean chlorophyll timeseries
+    # Global surface mean nutrients timeseries
+    # Global surface mean chlorophyll map
+    # Global surface mean nutrients map
+    # Global net integrated primary production map
+
+
+  # --------------------------------------------------
+  # Volume average time series vs WOA
+  # --------------------------------------------------
+  diag_timeseries_volume_average_vs_WOA:
+    description: Global volume average time series (WOA observations)
+    variables:
+      thetao: # Temperature 3D
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3M
+        mip: Omon
+        fx_files: [volcello,]
+      so: # Salinity 3D
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3M
+        mip: Omon
+        fx_files: [volcello,]
+      no3: # nitrate
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      o2: # oxygen
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      si: # Silicate
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+    #   po4: # phosphate # No HadGEM2-ES phosphate.
+    #     preprocessor: prep_timeseries_global_volume_average
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [volcello,]
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+        - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000}
+    scripts:
+      Global_Volume_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+
+  # --------------------------------------------------
+  # Volume average time series - no data
+  # --------------------------------------------------
+  diag_timeseries_volume_average_no_obs:
+    description: Global volume average time series (No observations)
+    variables:
+      chl: # chlorophyll
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      dfe: # iron
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      talk: # alkalinity
+        preprocessor: prep_timeseries_global_volume_average
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+    #   dic: # Dissolved inorganic carbon
+    #     preprocessor: prep_timeseries_global_volume_average
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [volcello,]
+    scripts:
+      Global_Volume_verage_timeseries:
+        script: ocean/diagnostic_timeseries.py
+
+
+  # --------------------------------------------------
+  # Surface and 2D fields time series
+  # --------------------------------------------------
+  diag_timeseries_surface_average_no_obs:
+    description: Global volume average time series - no data
+    variables:
+      talk: # alkalinity
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+      intpp:
+        preprocessor: prep_global_Surface_average_timeseries_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      chl:
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO3Y
+        mip: Oyr
+        thresholds: [0.1, 0.2, 0.5]
+        fx_files: [areacella, areacello]
+    #   dfe: # iron
+    #     preprocessor: prep_global_Surface_average_timeseries_3D
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [areacella, areacello]
+    #   dic: # Dissolved inorganic carbon
+    #     preprocessor: prep_global_Surface_average_timeseries_3D
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [areacella, areacello]
+    scripts:
+      Global_Volume_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+
+  # --------------------------------------------------
+  # Surface time series vs WOA
+  # --------------------------------------------------
+  diag_timeseries_surface_average_vs_WOA:
+    description: Global surface time series (WOA observations)
+    variables:
+      thetao: # Temperature ocean surface
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      so: # Salinity ocean surface
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      no3: # Nitrate ocean surface
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+      o2: # oxygen
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+      si: # Silicate
+        preprocessor: prep_global_Surface_average_timeseries_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+    #   po4: # Phosphate
+    #     preprocessor: prep_global_Surface_average_timeseries_3D
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [areacella, areacello]
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      Global_Volume_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        observational_dataset: {dataset: WOA, project: obs4mips,}
+
+
+  # --------------------------------------------------
+  # Scalar time series
+  # --------------------------------------------------
+  diag_timeseries_scalars:
+    description: Scalar time series
+    variables:
+      mfo: # Marine currents flux
+        preprocessor: prep_timeseries_scalar
+        field: TO0M
+        mip: Omon
+    scripts:
+      Scalar_timeseries:
+        script: ocean/diagnostic_timeseries.py
+
+
+  # --------------------------------------------------
+  # Profile diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_profile_vs_WOA:
+    description: Global profile (WOA observations)
+    variables:
+      thetao: # Temperature ocean surface
+        preprocessor: prep_global_profile
+        field: TO2M
+        mip: Omon
+        fx_files: [volcello,]
+      so: # Salinity ocean surface
+        preprocessor: prep_global_profile
+        field: TO2M
+        mip: Omon
+        fx_files: [volcello,]
+      no3: # Nitrate ocean surface
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      o2: # oxygen
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      si: # Silicate
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+    #   po4: # Phosphate
+    #     preprocessor: prep_global_profile
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [volcello,]
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      Global_profile_vs_WOA:
+        script: ocean/diagnostic_profiles.py
+        observational_dataset: {dataset: WOA, project: obs4mips,}
+
+  # --------------------------------------------------
+  # Profile diagnostics - no data
+  # --------------------------------------------------
+  diag_profile_no_obs:
+    description: Global profile (No observations)
+    variables:
+      chl: # chlorophyll
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      dfe: # iron
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+      talk: # alkalinity
+        preprocessor: prep_global_profile
+        field: TO3Y
+        mip: Oyr
+        fx_files: [volcello,]
+    #   dic: # Dissolved inorganic carbon
+    #     preprocessor: prep_global_profile
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [volcello,]
+    scripts:
+      Global_profile_no_obs:
+        script: ocean/diagnostic_profiles.py
+
+
+  # --------------------------------------------------
+  # Map diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_surface_maps_vs_WOA:
+    description: Global Ocean Surface maps vs WOA
+    variables:
+      thetao:
+        preprocessor: prep_surface_map_regrid_3D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      so:
+        preprocessor: prep_surface_map_regrid_3D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      no3:
+        preprocessor: prep_surface_map_regrid_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+      si: # Silicate
+        preprocessor: prep_surface_map_regrid_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+      o2: # Oxygen
+        preprocessor: prep_surface_map_regrid_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+    #   po4:
+    #     preprocessor: prep_surface_map_3D
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [areacella, areacello]
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: WOA, project: obs4mips,}
+
+  # --------------------------------------------------
+  # Map diagnostics - no data
+  # --------------------------------------------------
+  diag_surface_maps_no_data:
+    description: Global Ocean Surface maps - no data
+    variables:
+      intpp:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacella, areacello]
+      chl:
+        preprocessor: prep_surface_map_3D
+        field: TO3Y
+        mip: Oyr
+        # thresholds: [0.1, 0.2, 0.5]
+        fx_files: [areacella, areacello]
+      dfe:
+        preprocessor: prep_surface_map_3D
+        field: TO3Y
+        mip: Oyr
+        fx_files: [areacella, areacello]
+    #   dic:
+    #     preprocessor: prep_surface_map_3D
+    #     field: TO3Y
+    #     mip: Oyr
+    #    fx_files: [areacella, areacello]
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+
+
+
+
+  # --------------------------------------------------
+  # Transects diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_transect_vs_WOA:
+    description: Transect maps vs WOA
+    variables:
+      thetao:
+        preprocessor: prep_transect_AMT
+        field: TO2M
+        mip: Omon
+        thresholds: [0., 5., 10., 15., 20., 25., 30.]
+      so:
+        preprocessor: prep_transect_AMT
+        field: TO2M
+        mip: Omon
+      no3:
+        preprocessor: prep_transect_AMT
+        field: TO3Y
+        mip: Oyr
+        thresholds: [10., 20., 30.]
+      si: # Silicate
+        preprocessor: prep_transect_AMT
+        field: TO3Y
+        mip: Oyr
+      o2: # Oxygen
+        preprocessor: prep_transect_AMT
+        field: TO3Y
+        mip: Oyr
+        thresholds: [0.03, ]
+    #   po4:
+    #     preprocessor: prep_transect_AMT
+    #     field: TO3Y
+    #     mip: Oyr
+    additional_datasets:
+      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+    scripts:
+      Transects_vs_WOA:
+        script: ocean/diagnostic_transects.py
+        # observational_dataset: {dataset: WOA, project: obs4mips,}
+
+  # # --------------------------------------------------
+  # # Map diagnostics - no data
+  # # --------------------------------------------------
+  diag_transect_no_data:
+    description: Transects - no data
+    variables:
+      chl:
+        preprocessor: prep_transect_AMT
+        field: TO3Y
+        mip: Oyr
+      dfe:
+        preprocessor: prep_transect_AMT
+        field: TO3Y
+        mip: Oyr
+    #   dic:
+    #     preprocessor: prep_transect_AMT
+    #     field: TO3Y
+    #     mip: Oyr
+    scripts:
+      Transects_no_data:
+        script: ocean/diagnostic_transects.py
+
+
+
+
+
+  # # # Depth integrated maps
+  # # diag_depth_int_maps:
+  # #   description: Global Ocean Depth Integrated maps
+  # #   variables:
+  # #     chl:
+  # #       preprocessor: prep_depth_integration
+  # #       field: TO3Y
+  # #       mip: Oyr
+  # #     # intpp:
+  # #     #   preprocessor: prep_depth_integration
+  # #     #   field: TO3Y
+  # #     #   mip: Oyr
+  # #   scripts:
+  # #     Global_Ocean_DepthIntegration_map:
+  # #       script: ocean/diagnostic_maps.py
+  #
+  # diag_depth_int_timeseries:
+  #   description: Global Ocean Depth Integrated time series
+  #   variables:
+  #     chl:
+  #       preprocessor: prep_depth_integration_timeseries
+  #       field: TO3Y
+  #       mip: Oyr
+  #     # intpp:
+  #     #   preprocessor: prep_depth_integration_timeseries
+  #     #   field: TO3Y
+  #     #   mip: Oyr
+  #   scripts:
+  #     Global_Ocean_DepthIntegration_timeseries:
+  #       script: ocean/diagnostic_timeseries.py
+  #       flags: area_total

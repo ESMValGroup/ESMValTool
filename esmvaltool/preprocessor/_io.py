@@ -9,7 +9,7 @@ import iris.exceptions
 import numpy as np
 import yaml
 
-from .. import use_legacy_iris
+from .._config import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
@@ -60,10 +60,6 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
-        if use_legacy_iris():
-            # always set fillvalue to 1e+20
-            if np.ma.is_masked(cube.data):
-                np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -211,7 +207,12 @@ def extract_metadata(files, write_ncl=False):
     for output_dir, filenames in groupby(files, os.path.dirname):
         metadata = {}
         for filename in filenames:
-            cube = iris.load_cube(filename)
+            try:
+                cube = iris.load_cube(filename)
+            except iris.exceptions.ConstraintMismatchError:
+                logger.error('extract_metadata: Unable to load: %s', filename)
+                raise iris.exceptions.input(
+                    'Can not load file {0}'.format(filename))
             raw_cube_metadata = cube.attributes.get('metadata')
             if raw_cube_metadata:
                 cube_metadata = yaml.safe_load(raw_cube_metadata)

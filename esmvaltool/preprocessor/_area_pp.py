@@ -1,18 +1,34 @@
 """
-Area operations on data cubes
+Area operations on data cubes.
 
 Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
+import os
+import logging
+
 import iris
 import numpy as np
+
+
+logger = logging.getLogger(__name__)
+
+
+# guess bounds tool
+def _guess_bounds(cube, coords):
+    """Guess bounds of a cube, or not."""
+    # check for bounds just in case
+    for coord in coords:
+        if not cube.coord(coord).has_bounds():
+            cube.coord(coord).guess_bounds()
+    return cube
 
 
 # slice cube over a restricted area (box)
 def area_slice(cube, start_longitude, end_longitude, start_latitude,
                end_latitude):
     """
-    Subset a cube on area
+    Subset a cube on area.
 
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
@@ -68,7 +84,7 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
 # get zonal means
 def zonal_means(cube, coordinate, mean_type):
     """
-    Get zonal means
+    Get zonal means.
 
     Function that returns zonal means along a coordinate `coordinate`;
     the type of mean is controlled by mean_type variable (string):
@@ -108,7 +124,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2):
+def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     """
     Determine the area average.
 
@@ -120,22 +136,59 @@ def area_average(cube, coord1, coord2):
         cube: iris.cube.Cube
             input cube.
 
-        coord1: str
-            name of first coordinate
+        coord1, coord2: str, str
+            coords to use
 
-        coord2: str
-            name of second coordinate
+        use_fx_files: bool
+            boolean to switch in fx files.
+
+        fx_files: dictionary
+            dictionary of field:filename for the fx_files
 
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
     """
-    # check for bounds just in case
-    for coord in (coord1, coord2):
-        if not cube.coord(coord).has_bounds():
-            cube.coord(coord).guess_bounds()
-    grid_areas = iris.analysis.cartography.area_weights(cube)
-    result = cube.collapsed(
-        [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
+    grid_areas_found = False
+    grid_areas = None
+    if use_fx_files:
+        for key, fx_file in fx_files.items():
+            if fx_file is None:
+                continue
+            logger.info('Attempting to load %s from file: %s', key, fx_file)
+            fx_cube = iris.load_cube(fx_file)
+
+            grid_areas = fx_cube.data
+            grid_areas_found = True
+            cube_shape = cube.data.shape
+            if cube.data.ndim == 4 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], cube_shape[1], 1, 1])
+            elif cube.data.ndim == 4 and grid_areas.ndim == 3:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], 1, 1, 1])
+            elif cube.data.ndim == 3 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], 1, 1])
+
+    if not use_fx_files and cube.coord('latitude').points.ndim == 2:
+            logger.error('area_average ERROR: fx_file needed to calculate grid'
+                         + ' cell area for irregular grids.')
+            raise iris.exceptions.CoordinateMultiDimError(
+               cube.coord('latitude'))
+
+    if not grid_areas_found:
+        cube = _guess_bounds(cube, [coord1, coord2])
+        grid_areas = iris.analysis.cartography.area_weights(cube)
+        logger.info('Calculated grid area...', grid_areas.shape)
+
+    if cube.data.shape != grid_areas.shape:
+        logger.error('Cube shape (%s) doesn`t match grid area (%s)',
+                     cube.data.shape, grid_areas.shape)
+        assert 0
+
+    result = cube.collapsed([coord1, coord2],
+                            iris.analysis.MEAN,
+                            weights=grid_areas)
     return result
