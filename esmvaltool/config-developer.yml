@@ -27,6 +27,7 @@ CMIP6:
 CMIP5:
   input_dir:
     default: '/'
+# :/badc/cmip5/data/cmip5/output1/CCCma/CanESM2/historical/mon/ocean/Omon/r1i1p1/latest/tos/
     BADC: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/latest/[short_name]'
     DKRZ: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/[latestversion]/[short_name]'
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
