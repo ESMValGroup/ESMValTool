@@ -57,7 +57,6 @@
 ; Caveats
 ;   TO DO (ESMValTool v2.0.0)
 ;     1) get tags from namelist and write meta data to plots
-;     2) test implemention of handling error estimates
 ;   KNOWN LIMITATIONS (all versions)
 ;     1) only 2-dim variables are currently supported
 ;     2) observational uncertainties are regridded like standard variables
@@ -100,34 +99,57 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
-  tmp = listatts2array(input_file_info, "short_name")
-  variables = remove_duplicates(tmp)
-  delete(tmp)
-  n = dimsizes(variables)
+  set_default_att(diag_script_info, "embracelegend", False)
+  set_default_att(diag_script_info, "estimate_obs_uncertainty", False)
+  set_default_att(diag_script_info, "mask_ts_sea_ice", False)
+  set_default_att(diag_script_info, "timemean", "annualclim")
+  set_default_att(diag_script_info, "valid_fraction", 0.5)
 
-  if (n.gt.2) then
-    log_info(DIAG_SCRIPT + ": WARNING - max 2 variables supported. " \
-             + "Using only first two variables.")
-  end if
+  estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
 
-  mainvarind = 0
-  errvarind = -1
+  variables = listatts2array(variable_info, "short_name")
+  numvars = dimsizes(variables)
 
-  if (n .gt. 1) then
-    do i = 0, 1
+  ; find "main" variable and if present uncertainty estimates or auxiliary
+  ; variables that can optionally be used to estimate the uncertainties
+
+  mainvarind = 0  ; default = main variable is first (and only) variable
+  errvarind = -1  ; default = no error estimate available
+
+  if (numvars.gt.1) then
+    ; uncertainty estimates are identified by "err" in their short_name
+    do i = 0, numvars - 1
       if (isStrSubset(variables(i), "err")) then
         errvarind = i
         exit
       end if
     end do
-    if (errvarind .eq. 0) then
-      mainvarind = 1
-    end if
+    ; now find the main variable:
+    ; it is assumed that the main variable is either the first non-error
+    ; variable or the first "derived" variable
+    idx = ind(ispan(0, numvars -1, 1) .ne. errvarind)
+    mainvarind = idx(0)  ; first non-error variable
+    ; now check for possibly derived variables
+    do ii = 1, dimsizes(idx) - 1
+       i = idx(ii)
+       ; the "derived" attribute is stored in input_file_info only
+       do j = 0, ListCount(input_file_info) - 1
+         if (input_file_info[j]@short_name .eq. variables(i)) then
+           if isatt(input_file_info[j], "derive") then
+             if (input_file_info[j]@derive) then
+               mainvarind = i
+               break
+             end if
+           end if
+         end if
+       end do
+    end do
+  else
   end if
 
   var0 = variable_info[mainvarind]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
-  dim_MOD0 = ListCount(info0)
+  dim_MOD = ListCount(info0)
   if (isatt(variable_info[mainvarind], "reference_dataset")) then
     refname = variable_info[mainvarind]@reference_dataset
   end if
@@ -135,22 +157,64 @@ begin
     refname2 = variable_info[mainvarind]@alternative_dataset
   end if
   names = listatts2array(info0, "dataset")
-  infiles = listatts2array(info0, "filename")
+  infiles = listatts2array(input_file_info, "filename")
 
-  if (errvarind .ge. 0) then
-    var1 = variable_info[errvarind]@short_name
-    info1 = select_metadata_by_name(input_file_info, var1)
-    dim_MOD1 = ListCount(info1)
-    names_err = listatts2array(info1, "dataset")
-    infiles_err = listatts2array(info1, "filename")
-  else
-    dim_MOD1 = 0
+  ; check for reference model definition
+
+  if (.not.isvar("refname")) then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
   end if
 
+  ; print info on variable(s) to log file
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
+  log_info(DIAG_SCRIPT)
   log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info("main variable: " + variables(mainvarind))
+  if (errvarind .ge. 0) then
+    log_info("error variable: " + variables(errvarind))
+  else
+    log_info("error variable: none")
+  end if
+  tmp = ispan(0, numvars -1 , 1)
+  auxind = ind(tmp .ne. mainvarind .and. tmp .ne. errvarind)
+  if(.not. all(ismissing(auxind))) then
+    if (estimate_obs_uncertainty) then
+      log_info("aux variable: " + variables(auxind))
+    end if
+  else
+    if (estimate_obs_uncertainty) then
+      log_info("no aux variable(s): cannot estimate obs uncertainty")
+    end if
+  end if
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+
+  delete(tmp)
+  delete(auxind)
+
+  ; optional uncertainty estimates are only supported for the reference
+  ; dataset, i.e. max 1 dataset
+
+  if (estimate_obs_uncertainty) then
+    auxind = ind(ispan(0, numvars -1 , 1) .ne. mainvarind)
+    if (.not. all(ismissing(auxind))) then
+      do i = 0, dimsizes(auxind) - 1
+        tmpinfo = select_metadata_by_name(input_file_info, variables(i))
+        items = ListCount(tmpinfo)
+        if (items .gt. 1) then
+          error_msg("f", DIAG_SCRIPT, "", "uncertainty estimate only " + \
+                    "supported for 1 dataset (i.e. reference dataset)")
+        end if
+        tmpname = listatts2array(tmpinfo, "dataset")
+        if (tmpname .ne. refname) then
+          error_msg("f", DIAG_SCRIPT, "", "uncertainty estimate only " + \
+                    "supported for the reference dataset (" + refname + ")")
+        end if
+        delete(tmpinfo)
+      end do
+    end if
+    delete(auxind)
+  end if
 
   ; ========================================================================
   ; ========================= write references =============================
@@ -165,12 +229,6 @@ begin
 
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
-
-  set_default_att(diag_script_info, "embracelegend", False)
-  set_default_att(diag_script_info, "estimate_obs_uncertainty", False)
-  set_default_att(diag_script_info, "mask_ts_sea_ice", False)
-  set_default_att(diag_script_info, "timemean", "annualclim")
-  set_default_att(diag_script_info, "valid_fraction", 0.5)
 
   timemean = diag_script_info@timemean
   numseas  = 1          ; default
@@ -206,14 +264,7 @@ begin
   ; ========================== initialization ==============================
   ; ========================================================================
 
-  diag_script_base = basename(DIAG_SCRIPT)
-
   ; get reference model
-
-  ; check for reference model definition
-  if (isvar(refname)) then
-    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
-  end if
 
   ref_ind = ind(names .eq. refname)
   if (ismissing(ref_ind)) then
@@ -229,7 +280,6 @@ begin
     mm_ind = -1
   end if
 
-  estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
 
   if (isatt(diag_script_info, "filename_add")) then
@@ -251,7 +301,7 @@ begin
     ; valid_fraction of missing values along the time series is
     ; set to missing.
 
-    data_temp = read_data(ref_ind, var0, field_type0)
+    data_temp = read_data(info0[ref_ind])
 
     ww = data_temp&time
     ww = 1.
@@ -286,22 +336,33 @@ begin
 
   ; read data and calculate time average
 
+  ierridx = 0
+
   do ivar = 0, numvars - 1
-    ; process all models for first variable
-    if (ivar.eq.0) then
-      modelf = 0
-      modell = dim_MOD - 1
-    ; process only reference model for error estimates
-    else
-      modelf = ref_ind
-      modell = ref_ind
+
+    ; ignore auxiliary variables if estimate_obs_uncertainty = False
+
+    if (.not.estimate_obs_uncertainty .and. ivar .ne. mainvarind .and. \
+        ivar .ne. errvarind) then
+      continue
     end if
 
-    do imod = modelf, modell
-      data_temp = read_data(imod, variables(ivar), field_types(ivar))
+    ; process all models for first variable
+    if (ivar.eq.mainvarind) then
+      modelf = 0
+      modell = dim_MOD - 1
+    ; process error estimates / auxiliary variables for error estimate
+    ; (reference model only)
+    else
+      modelf = 0
+      modell = 0
+    end if
 
-      ; ivar.eq.0  ---> variable data
-      ;     .ne.0  ---> uncertainty estimates (observations)
+    info = select_metadata_by_name(input_file_info, variables(ivar))
+
+    do imod = modelf, modell
+      data_temp = read_data(info[imod])
+
       ; The uncertainty estimates are assumed to be given as
       ; 1-sigma of normally distributed error estimates
       ; Note: uncertainty estimates must have "err" in their
@@ -311,14 +372,14 @@ begin
       ; ---> square sigma before averaging over time, then
       ;      calculate square-root to get average sigma
 
-      if ((ivar.ne.0).and.isStrSubset(variables(ivar), "err")) then
+      if (ivar.eq.errvarind) then
         data_temp = data_temp * data_temp
       end if
 
       data1 = time_operations(data_temp, -1, -1, "average", \
                               timemean, True)
 
-      if ((ivar.ne.0).and.isStrSubset(variables(ivar), "err")) then
+      if (ivar.eq.errvarind) then
         data1 = sqrt(data1)
       end if
 
@@ -332,12 +393,12 @@ begin
         end if
       end if
 
-      if (ivar.eq.0) then
+      if (ivar.eq.mainvarind) then
         if (.not.isdefined("data")) then
           dim_data = array_append_record((/dim_MOD/), dimsizes(data1), 0)
           data = new(dim_data, float)
           data!0 = "model"
-          data&model = input_file_info@dataset
+          data&model = names
           if (numseas.eq.1) then
             copy_VarCoords(data1, data(imod, :, :))
           else
@@ -358,12 +419,12 @@ begin
           dim_data = array_append_record((/numvars - 1/), dimsizes(data1), 0)
           err = new(dim_data, float)
           err!0 = "var"
-          err&var = variables(1:numvars - 1)
+          err&var = variables(ind(variables .ne. var0))
         end if
         if (numseas.eq.1) then
-          err(ivar - 1, :, :) = data1
+          err(ierridx, :, :) = data1
         else
-          err(ivar - 1, :, :, :) = data1
+          err(ierridx, :, :, :) = data1
         end if
       end if
 
@@ -371,11 +432,17 @@ begin
 
 ;      debugfile->$input_file_info@dataset(imod)$ = data1
     end do  ; imod loop
+    if (ivar .ne. mainvarind) then
+       ierridx = ierridx + 1
+    end if
   end do  ; ivar loop
 
   ; number of used reference data sets
 
-  dim_REF = 1  ; dimsizes(diag_script_info@reference_dataset)
+  dim_REF = 1
+  if (isvar("refname2")) then
+    dim_REF = dim_REF + 1
+  end if
 
   ; define result variable
 
@@ -383,8 +450,7 @@ begin
   val!0 = "models"
   val!1 = "statistic"
   val!2 = "time"
-  val&models = input_file_info@dataset(ind((input_file_info@dataset .ne. \
-                                            ref_model)))
+  val&models = names(ind((names .ne. refname)))
   val&statistic = (/"stddev_ratio", "correlation"/)
   val&time = ispan(0, numseas - 1, 1)
 
@@ -448,7 +514,7 @@ begin
   ; the reference data can be used to create one for selected data sets
 
   if (estimate_obs_uncertainty) then
-    if (any(ref_model.eq.(/"CERES-EBAF", "MODIS", "MODIS-L3"/))) then
+    if (any(refname.eq.(/"CERES-EBAF", "MODIS", "MODIS-L3"/))) then
       if (numvars.eq.1) then  ; no variable(s) for error estimate
         numvars = 2
         variables0 = (/variables(0), variables(0)/)
@@ -486,103 +552,113 @@ begin
 
     rmsobs(is) = 0.0
 
-    do iv = 0, numvars - 2
-      if (numseas.eq.1) then
-        var = err(iv, :, :)
-      else
-        var = err(iv, is, :, :)
-      end if
+    if (errvarind .ge. 0 .or. estimate_obs_uncertainty) then
+      ierridx = 0
+      do iv = 0, numvars - 1
+        if (iv .eq. mainvarind) then
+          continue
+        end if
 
-      ; If the variable name contains "err", the variable is assumed to
-      ; contain an estimate of the observational uncertainty (e.g. UWisc,
-      ; GPCP-SG, and SSMI-MERIS provide error estimates, MODIS-L3-C6 provides
-      ; error estimates for lwp and iwp but not for clt). In this case, there
-      ; is nothing to do here.
-      ; If the variable name does not contain "err", the variable is assumed
-      ; to be a field (e.g. rsut, rsutcs) used to calculate a derived variable
-      ; (e.g. CRE_SW). In this case, the observational uncertainty can be
-      ; estimated if the fractional average error is known (e.g. CERES-EBAF,
-      ; MODIS).
+        if (numseas.eq.1) then
+          var = err(ierridx, :, :)
+        else
+          var = err(ierridx, is, :, :)
+        end if
 
-      if (isStrSubset(variables(iv + 1), "err")) then
-        ; variable contains error estimate provided by data set
-        ; ---> nothing to do
-        factor = 1.0
-      else
-        ; variable(s) contain(s) fields used to derive the variable plotted
-        ; --> observational uncertainty might be estimated from these fields
-        ;    if the average error(s) of these fields are known
+        ; If the variable name contains "err", the variable is assumed to
+        ; contain an estimate of the observational uncertainty (e.g. UWisc,
+        ; GPCP-SG, and SSMI-MERIS provide error estimates, MODIS-L3-C6 provides
+        ; error estimates for lwp and iwp but not for clt). In this case, there
+        ; is nothing to do here.
+        ; If the variable name does not contain "err", the variable is assumed
+        ; to be a field (e.g. rsut, rsutcs) used to calculate a derived variable
+        ; (e.g. CRE_SW). In this case, the observational uncertainty can be
+        ; estimated if the fractional average error is known (e.g. CERES-EBAF,
+        ; MODIS).
 
-        ; by default, uncertainty cannot be estimated
+        if (errvarind .ge. 0) then
+          ; variable contains error estimate provided by data set
+          ; ---> nothing to do
+          factor = 1.0
+        else
+          ; variable(s) contain(s) fields used to derive the variable plotted
+          ; --> observational uncertainty might be estimated from these fields
+          ;    if the average error(s) of these fields are known
 
-        factor = 0.0
+          ; by default, uncertainty cannot be estimated
 
-        ; for CERES-EBAF, we estimate the errors from the original variables
-        ; (rsut+rsutcs / rlut+rlutcs) assuming variable specific factors
+          factor = 0.0
 
-        if (ref_model.eq."CERES-EBAF") then
-          if (any(variables(iv + 1).eq.(/"rsut", "rsutcs"/))) then
-            ; From the "Technical Note on CERES EBAF Ed2.7":
-            ; rsutcs: 1% ~ 0.5 W/m2
-            ;      estimate total error = 2.6 W/m2 ---> ~5.2%
-            ; rsut: 4-5 W/m2 ---> ~4-5%
-            ;
-            ; ---> use 5% for rsut and rsutcs
-            factor = 0.05
+          ; for CERES-EBAF, we estimate the errors from the original variables
+          ; (rsut+rsutcs / rlut+rlutcs) assuming variable specific factors
+
+          if (refname.eq."CERES-EBAF") then
+            if (any(variables(iv).eq.(/"rsut", "rsutcs"/))) then
+              ; From the "Technical Note on CERES EBAF Ed2.7":
+              ; rsutcs: 1% ~ 0.5 W/m2
+              ;      estimate total error = 2.6 W/m2 ---> ~5.2%
+              ; rsut: 4-5 W/m2 ---> ~4-5%
+              ;
+              ; ---> use 5% for rsut and rsutcs
+              factor = 0.05
+            end if
+            if (any(variables(iv).eq.(/"rlut", "rlutcs"/))) then
+              ; From the Technical Note on CERES EBAF Ed2.7:
+              ; "For CERES, calibration uncertainty is 0.5% (1 sigma)
+              ; which for a typical global mean clear-sky LW flux corresponds
+              ; to ~1 W/m2. [...] The total error in TOA outgoing clear-sky LW
+              ; radiation in a region is estimated as
+              ; sqrt(1^2 + 1.74^2 + 0.7^2 + 1^2 + 2.75^2) or approximately
+              ; 3.6 W/m2."
+              ;
+              ; --> here, we estimate the total error as
+              ;     0.5% * 3.6 W/m2 / 1.0 W/m2 = 1.8%
+              factor = 0.018
+            end if
           end if
-          if (any(variables(iv + 1).eq.(/"rlut", "rlutcs"/))) then
-            ; From the Technical Note on CERES EBAF Ed2.7:
-            ; "For CERES, calibration uncertainty is 0.5% (1 sigma)
-            ; which for a typical global mean clear-sky LW flux corresponds
-            ; to ~1 W/m2. [...] The total error in TOA outgoing clear-sky LW
-            ; radiation in a region is estimated as
-            ; sqrt(1^2 + 1.74^2 + 0.7^2 + 1^2 + 2.75^2) or approximately
-            ; 3.6 W/m2."
-            ;
-            ; --> here, we estimate the total error as
-            ;     0.5% * 3.6 W/m2 / 1.0 W/m2 = 1.8%
-            factor = 0.018
+
+          if (refname.eq."MODIS") then
+            if (any(variables(iv).eq.(/"clt"/))) then
+              ; From the technical note on obs4MIPS MODIS satellite data
+              ; "Moderate Resolution Imaging Spectroradiometer (MODIS)
+              ; Cloud Fraction Technical Document":
+              ;
+              ; Global day/night fractional agreement of cloud detection between
+              ; MODIS and CALIPSO lidar (CALIOP):
+              ; Aug 2006 (clear):  0.84
+              ; Aug 2006 (cloudy): 0.88
+              ; Feb 2006 (clear):  0.85
+              ; Feb 2006 (cloudy): 0.88
+              ;
+              ; ---> using fractional agreement as error estimate (1 sigma)
+              ; ---> average error estimate =
+              ;      sqrt((0.84^2 + 0.88^2 + 0.85^2 + 0.88^2) / 4) = 0.86
+              ; ---> factor = 1 - 0.86 = 0.14
+              factor = 0.14
+            end if
+          end if
+
+          if (refname.eq."MODIS-L3") then
+            if (any(variables(iv).eq.(/"clt"/))) then
+              factor = 0.0  ; no error estimates for clt from MODIS_C6_L3
+            end if
           end if
         end if
 
-        if (ref_model.eq."MODIS") then
-          if (any(variables(iv + 1).eq.(/"clt"/))) then
-            ; From the technical note on obs4MIPS MODIS satellite data
-            ; "Moderate Resolution Imaging Spectroradiometer (MODIS)
-            ; Cloud Fraction Technical Document":
-            ;
-            ; Global day/night fractional agreement of cloud detection between
-            ; MODIS and CALIPSO lidar (CALIOP):
-            ; Aug 2006 (clear):  0.84
-            ; Aug 2006 (cloudy): 0.88
-            ; Feb 2006 (clear):  0.85
-            ; Feb 2006 (cloudy): 0.88
-            ;
-            ; ---> using fractional agreement as error estimate (1 sigma)
-            ; ---> average error estimate =
-            ;      sqrt((0.84^2 + 0.88^2 + 0.85^2 + 0.88^2) / 4) = 0.86
-            ; ---> factor = 1 - 0.86 = 0.14
-            factor = 0.14
-          end if
-        end if
+        ; convert to 1-D arrays
+        var1d = ndtooned(var * factor)
 
-        if (ref_model.eq."MODIS-L3") then
-          if (any(variables(iv + 1).eq.(/"clt"/))) then
-            factor = 0.0  ; no error estimates for clt from MODIS_C6_L3
-          end if
-        end if
-      end if
+        ; --- RMS ---
+        ; in case of derived variables (e.g., SW_CRE), the squared error
+        ; estimates of all input variables are added before calculating
+        ; the square root
 
-      ; convert to 1-D arrays
-      var1d = ndtooned(var * factor)
+        rmsobs(is) = rmsobs(is) + dim_avg_wgt_Wrap(var1d ^ 2, wgt1d, 1)
 
-      ; --- RMS ---
-      ; in case of derived variables (e.g., SW_CRE), the squared error
-      ; estimates of all input variables are added before calculating
-      ; the square root
+        ierridx = ierridx + 1
 
-      rmsobs(is) = rmsobs(is) + dim_avg_wgt_Wrap(var1d ^ 2, wgt1d, 1)
-    end do  ; iv-loop
+      end do  ; iv-loop
+    end if
 
     ; finish calculation of RMS
     rmsobs(is) = sqrt(rmsobs(is))
@@ -616,9 +692,6 @@ begin
   ; ========================================================================
   ; ============================= plotting =================================
   ; ========================================================================
-
-  climofiles = new(dim_MOD, string)
-  climofiles = input_file_info@filename
 
 ;  alltags = array_append_record(tags, (/"PT_taylor", "DM_global",
 ;                                "ST_clim"/), 0)
@@ -820,15 +893,15 @@ begin
 
       ; add meta data to plot (for reporting)
 
-      caption = "Taylor diagram for variable " + variables(0) \
+      caption = "Taylor diagram for variable " + var0 \
                 + " (" + season(is) + "), reference = " \
-                + input_file_info@dataset(ref_ind) + "."
-      id = DIAG_SCRIPT + "_" + variables(0) + "_" + season(is)
+                + refname + "."
+      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, DIAG_SCRIPT, \
+;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
+;               input_file_info@dataset, infiles, DIAG_SCRIPT, \
 ;               contrib_authors)
 
       if (embracelegend.and.(is.eq.(numseas-1))) then

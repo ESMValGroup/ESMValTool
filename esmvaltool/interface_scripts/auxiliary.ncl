@@ -5,7 +5,6 @@
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
-;    function remove_duplicates
 ;    function listatts2array
 ;    procedure copy_VarCoords_l1
 ;    procedure check_min_max_datasets
@@ -31,51 +30,6 @@
 ;    procedure write_ignore_warnings
 ;    function get_ref_dataset_idx
 ;
-; #############################################################################
-undef ("remove_duplicates")
-;
-; Arguments
-;    inarray: an array strings
-;
-; Description
-;    Remove duplicates from a 1-dimensional array of strings *without*
-;    sorting the array (as in NCL function get_unique_values), i.e.
-;    the order is preserved.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20181120-A_laue_ax: written
-;
-
-function remove_duplicates(inarray[*]:string)
-begin
-  funcname = "remove_duplicates"
-  scriptname = "interface_scripts/auxiliary.ncl"
-  enter_msg(scriptname, funcname)
-
-  unique = new(dimsizes(inarray), logical)
-  unique(0) = True
-  do i = 1, dimsizes(inarray) - 1
-    idx = ind(inarray(0:i-1) .eq. inarray(i))
-    if (all(ismissing(idx))) then
-      unique(i) = True
-    else
-      unique(i) = False
-    end if
-    delete(idx)
-  end do
-
-  outarray = inarray(ind(unique))
-
-  leave_msg(scriptname, funcname)
-  return(outarray)
-
-end
-
-
 ; #############################################################################
 undef("listatts2array")
 ;
