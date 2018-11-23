@@ -70,6 +70,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20181120-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -97,26 +98,70 @@ load "./diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  tmp = listatts2array(input_file_info, "short_name")
+  variables = remove_duplicates(tmp)
+  delete(tmp)
+  n = dimsizes(variables)
+
+  if (n.gt.2) then
+    log_info(DIAG_SCRIPT + ": WARNING - max 2 variables supported. " \
+             + "Using only first two variables.")
+  end if
+
+  mainvarind = 0
+  errvarind = -1
+
+  if (n .gt. 1) then
+    do i = 0, 1
+      if (isStrSubset(variables(i), "err")) then
+        errvarind = i
+        exit
+      end if
+    end do
+    if (errvarind .eq. 0) then
+      mainvarind = 1
+    end if
+  end if
+
+  var0 = variable_info[mainvarind]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD0 = ListCount(info0)
+  if (isatt(variable_info[mainvarind], "reference_dataset")) then
+    refname = variable_info[mainvarind]@reference_dataset
+  end if
+  if (isatt(variable_info[mainvarind], "alternative_dataset")) then
+    refname2 = variable_info[mainvarind]@alternative_dataset
+  end if
+  names = listatts2array(info0, "dataset")
+  infiles = listatts2array(info0, "filename")
+
+  if (errvarind .ge. 0) then
+    var1 = variable_info[errvarind]@short_name
+    info1 = select_metadata_by_name(input_file_info, var1)
+    dim_MOD1 = ListCount(info1)
+    names_err = listatts2array(info1, "dataset")
+    infiles_err = listatts2array(info1, "filename")
+  else
+    dim_MOD1 = 0
+  end if
+
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; ========================================================================
   ; ========================= write references =============================
   ; ========================================================================
   ; FIX-ME: to be replaced by new method
-  ; write_references(diag_script,      \  ; script name
+  ; write_references(DIAG_SCRIPT,      \  ; script name
   ;                  "A_laue_ax",      \  ; authors
   ;                  "",               \  ; contributors
   ;                  "D_lauer13jclim", \  ; diag_references
   ;                  "",               \  ; obs_references
   ;                  (/"P_embrace"/))     ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  numvars = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
@@ -161,25 +206,24 @@ begin
   ; ========================== initialization ==============================
   ; ========================================================================
 
-  diag_script_base = basename(diag_script)
+  diag_script_base = basename(DIAG_SCRIPT)
 
   ; get reference model
 
   ; check for reference model definition
-  if (.not.(isatt(variable_info, "reference_dataset"))) then
-    error_msg("f", diag_script, "", "no reference model defined in namelist")
+  if (isvar(refname)) then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
   end if
 
-  ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
-  ref_model = variable_info@reference_dataset
+  ref_ind = ind(names .eq. refname)
   if (ismissing(ref_ind)) then
-    error_msg("f", diag_script, "", "reference dataset (" \
-              + variable_info@reference_dataset + ") is missing")
+    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
+              + refname + ") is missing")
   end if
 
   ; get multi-model mean index (if present)
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
     mm_ind = -1
@@ -393,7 +437,7 @@ begin
 
   val@title = "taylor metrics"
   val@long_name = "Taylor diagram"
-  val@diag_script = (/diag_script/)
+  val@diag_script = (/DIAG_SCRIPT/)
   val@var = "var"
 
   ; ------------------- calculate/estimate RMS of observations ---------------
@@ -590,8 +634,8 @@ begin
   cc = val(:, 1, :)
 
   if (isatt(diag_script_info, "styleset")) then
-    colortab = project_style(diag_script_info, "colors")
-    markertab = project_style(diag_script_info, "markers")
+    colortab = project_style(info0, diag_script_info, "colors")
+    markertab = project_style(info0, diag_script_info, "markers")
   else
     colortab = (/"(/0.00, 0.00, 0.59/)", "(/0.00, 0.39, 1.00/)", \
                  "(/0.20, 1.00, 1.00/)", "(/0.20, 0.88, 0.00/)", \
@@ -616,7 +660,7 @@ begin
       delete(plot)
     end if
 
-    wks = get_wks("dummy_for_wks", diag_script, "clouds_taylor_" + var0 \
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_taylor_" + var0 \
                   + "_" + season(is) + filename_add)
 
     ; create new marker: filled star
@@ -630,7 +674,7 @@ begin
                              1.0, size, angle)
 
     if (embracelegend) then
-      legendwks = get_wks("legend_wks", diag_script, "clouds_taylor_" \
+      legendwks = get_wks("legend_wks", DIAG_SCRIPT, "clouds_taylor_" \
                           + "legend" + filename_add)
       new_index = NhlNewMarker(legendwks, mstring, fontnum, 0.0, 0.0, \
                                1.0, size, angle)
@@ -779,12 +823,12 @@ begin
       caption = "Taylor diagram for variable " + variables(0) \
                 + " (" + season(is) + "), reference = " \
                 + input_file_info@dataset(ref_ind) + "."
-      id = diag_script + "_" + variables(0) + "_" + season(is)
+      id = DIAG_SCRIPT + "_" + variables(0) + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
 ;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, diag_script, \
+;               input_file_info@dataset, climofiles, DIAG_SCRIPT, \
 ;               contrib_authors)
 
       if (embracelegend.and.(is.eq.(numseas-1))) then
@@ -803,6 +847,6 @@ begin
     nc_outfile = ncdf_write(val, nc_filename)
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

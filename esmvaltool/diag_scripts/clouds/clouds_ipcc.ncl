@@ -44,6 +44,7 @@
 ;       my lead to unexpected or undefined results
 ;
 ; Modification history
+;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180529-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -66,26 +67,69 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  tmp = listatts2array(input_file_info, "short_name")
+  variables = remove_duplicates(tmp)
+  delete(tmp)
+  n = dimsizes(variables)
+
+  if (n.gt.2) then
+    log_info(DIAG_SCRIPT + ": WARNING - max 2 variables supported. " \
+             + "Using only first two variables.")
+  end if
+
+  mainvarind = 0
+  errvarind = -1
+
+  if (n .gt. 1) then
+    do i = 0, 1
+      if (isStrSubset(variables(i), "err")) then
+        errvarind = i
+        exit
+      end if
+    end do
+    if (errvarind .eq. 0) then
+      mainvarind = 1
+    end if
+  end if
+
+  var0 = variable_info[mainvarind]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD0 = ListCount(info0)
+  if (isatt(variable_info[mainvarind], "reference_dataset")) then
+    refname = variable_info[mainvarind]@reference_dataset
+  end if
+  if (isatt(variable_info[mainvarind], "alternative_dataset")) then
+    refname2 = variable_info[mainvarind]@alternative_dataset
+  end if
+  names = listatts2array(info0, "dataset")
+  infiles = listatts2array(info0, "filename")
+
+  if (errvarind .ge. 0) then
+    var1 = variable_info[errvarind]@short_name
+    info1 = select_metadata_by_name(input_file_info, var1)
+    dim_MOD1 = ListCount(info1)
+    names_err = listatts2array(info1, "dataset")
+    infiles_err = listatts2array(info1, "filename")
+  else
+    dim_MOD1 = 0
+  end if
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; ========================================================================
   ; ========================= write references =============================
   ; ========================================================================
   ; FIX-ME: to be replaced by new method
-  ; write_references(diag_script,    \   ; script name
+  ; write_references(DIAG_SCRIPT,    \   ; script name
   ;                  "A_laue_ax",    \   ; authors
   ;                  "",             \   ; contributors
   ;                  "",             \   ; diag_references
   ;                  "",             \   ; obs_references
   ;                  (/"P_embrace"/))    ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
@@ -131,36 +175,36 @@ begin
   ; ========================== initialization ==============================
   ; ========================================================================
 
-  diag_script_base = basename(diag_script)
+  diag_script_base = basename(DIAG_SCRIPT)
 
   ; check for reference dataset definition
-  if (.not.(isatt(variable_info, "reference_dataset"))) then
-    error_msg("f", diag_script, "", "no reference dataset defined in recipe")
+  if (.not.(isvar("refname"))) then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
   end if
 
   ; set reference dataset
 
-  ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
-  ref_model = variable_info@reference_dataset
+  ref_ind = ind(names .eq. refname)
   if (ismissing(ref_ind)) then
-    error_msg("f", diag_script, "", "reference dataset (" \
-              + variable_info@reference_dataset + ") is missing")
+    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
+              + refname + ") is missing")
   end if
 
-  if (dimsizes(variable_info@reference_dataset).gt.1) then
-    ref_ind2 = ind(input_file_info@dataset .eq. \
-                   variable_info@reference_dataset(1))
-    ref_model2 = variable_info@reference_dataset(1)
+  if (isvar("refname2")) then
+    ref_ind2 = ind(names .eq. refname2)
+    if (ismissing(ref_ind2)) then
+      ref_ind2 = -1
+    end if
   else
     ref_ind2 = -1
   end if
 
   ; get multi-model mean index
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
-    error_msg("f", diag_script, "", "multi-model mean is missing (required)")
+    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
   end if
 
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
@@ -172,7 +216,7 @@ begin
     ; valid_fraction of missing values along the time series is
     ; set to missing.
 
-    data_temp = read_data(ref_ind, var0, field_type0)
+    data_temp = read_data(info0[ref_ind])
 
     ww = data_temp&time
     ww = 1.
@@ -200,20 +244,16 @@ begin
     delete(data_temp)
   end if
 
-  ; variable(1) (if present) is assumed to be uncertainty
-  ; estimates (usually only observation(s))
+  ; process uncertainty estimate (if present)
 
-  do ivar = 1, dim_VAR - 1
-    do imod = 0, dim_MOD - 1
+  if (errvarind .ge. 0) then
+    do imod = 0, dim_MOD1 - 1
+      log_info("processing error estimate from " + names_err(imod))
 
-      log_info("processing error estimate from " \
-               + input_file_info@dataset(imod))
-
-      A0 = read_data(imod, variable(ivar), field_type(ivar))
+      A0 = read_data(info1[imod])
 
       log_info(" ++++++++++++++ Treating variable " + \
-               variables(ivar) + " as error variable " + \
-               "when averaging ")
+               var1 + " as error variable when averaging ")
       A0 = A0 * A0
 
       ; time mean
@@ -230,11 +270,11 @@ begin
 
       if (.not.isdefined("err_zm")) then
         tmp = dimsizes(err)
-        dims = array_append_record(dim_MOD, tmp, 0)
+        dims = array_append_record(dim_MOD0, tmp, 0)
         delete(tmp)
         err_zm = new(dims, float)
         err_zm!0 = "model"
-        err_zm&model = input_file_info@dataset
+        err_zm&model = names
         if (numseas.eq.1) then
           err_zm!1 = "lat"
           err_zm&lat = err&lat
@@ -247,17 +287,23 @@ begin
         delete(dims)
       end if
 
-      err_zm&model(imod) = input_file_info@dataset(imod)
+      idx = ind(names .eq. names_err(imod))
+      if (all(ismissing(idx)) .or. (dimsizes(idx) .gt. 1)) then
+        error_msg("f", DIAG_SCRIPT, "", "error estimates for dataset " + \
+                  names_err(imod) + " do not have a (unique) corresponding " \
+                  + "dataset for variable " + var0)
+      end if
+;;;      err_zm&model(imod) = names_err(imod)
       if (numseas.gt.1) then
-        err_zm(imod, :, :) = err(:, :)
+        err_zm(idx, :, :) = err(:, :)
       else
-        err_zm(imod, :) = err(:)
+        err_zm(idx, :) = err(:)
       end if
 
       delete(err)
 
     end do  ; imod-loop
-  end do  ; ivar loop
+  end if  ; if error estimate is present
 
   ; ========================================================================
   ; =========================== calculations ===============================
@@ -269,13 +315,13 @@ begin
 ;  debugfile = addfile("debug.nc","c")
 ;  debugfile->mask = global_mask
 
-  ; calculate zonal means, variables(0)
+  ; calculate zonal means (main variable)
 
-  do imod = 0, dim_MOD - 1
+  do imod = 0, dim_MOD0 - 1
     ; note: 1) masking is handled by the backend
     ;       2) multi-model mean is calculated by the backend
 
-    A0 = read_data(imod, variables(0), field_types(0))
+    A0 = read_data(info0[imod])
     data = time_operations(A0, -1, -1, "average", timemean, True)
     delete(A0)
 
@@ -295,11 +341,11 @@ begin
 
     if (.not.isdefined("zm")) then
       tmpdim = dimsizes(tmp)
-      dims = array_append_record(dim_MOD, tmpdim, 0)
+      dims = array_append_record(dim_MOD0, tmpdim, 0)
       delete(tmpdim)
       zm = new(dims, float)
       zm!0 = "model"
-      zm&model = input_file_info@dataset
+      zm&model = names
       if (numseas.eq.1) then
         zm!1 = "lat"
         zm&lat = tmp&lat
@@ -333,7 +379,7 @@ begin
 
     ; debug output
 
-;    debugfile->$input_file_info@dataset(imod)$ = data1
+;    debugfile->$names(imod)$ = data1
 
     delete(data)
 
@@ -359,7 +405,7 @@ begin
 
   ; model indices with no reference model(s) and no multi-model mean
 
-  model_ind = ispan(0, dim_MOD - 1, 1)
+  model_ind = ispan(0, dim_MOD0 - 1, 1)
   model_ind(ref_ind) = -1
   if (ref_ind2 .ge. 0) then
     model_ind(ref_ind2) = -1
@@ -426,11 +472,14 @@ begin
   ; ============================= plotting =================================
   ; ========================================================================
 
-  climofiles = new(dim_MOD, string)
-  climofiles = input_file_info@filename
+  climofiles = new(dim_MOD0 + dim_MOD1, string)
+  climofiles(0:dim_MOD0 - 1) = infiles
+  if (dim_MOD1 .gt. 0) then
+    climofiles(dim_MOD0:dim_MOD0 + dim_MOD1 - 1) = infiles_err
+  end if
 
   if (.not. isatt(diag_script_info, "explicit_cn_levels")) then
-    log_info(diag_script + " (var: " + variables(0) + "):")
+    log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
     log_info("info: using default contour levels")
     cnLevels = fspan(min(diff), max(diff), 20)
   end if
@@ -438,7 +487,7 @@ begin
 ;  alltags = array_append_record(tags, (/"PT_geo", "PT_zonal", "ST_clim", \
 ;                                        "DM_global"/), 0)
 
-  diff@diag_script = diag_script
+  diff@diag_script = DIAG_SCRIPT
   diff@res = True
 
   diff@res_gsnMaximize     = True      ; use full page for the plot
@@ -450,17 +499,12 @@ begin
   diff@res_mpGridLineColor = -1
   diff@res_mpGridAndLimbOn = True
 
-;  diff@res_gsnLeftString   = annots(imod)
   diff@res_gsnLeftStringFontHeightF = 0.015
-;  diff@res_gsnLeftString   = input_file_info@dataset(imod)
   diff@res_cnLevelSelectionMode     = "ExplicitLevels"
   diff@res_mpOutlineOn     = True
   diff@res_cnLevels        = cnLevels
   diff@res_mpFillOn        = False
-;  diff@res_mpLandFillColor = "Black"
-;  pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
 
-;  diff@res_cnFillColors          = pal
   diff@res_lbLabelBarOn          = True
   diff@res_gsnRightString        = ""
   diff@res_mpFillDrawOrder       = "PostDraw"    ; draw map fill last
@@ -473,8 +517,6 @@ begin
   diff@res_tmXBOn                = False
   diff@res_tmXTLabelsOn          = False
   diff@res_tmXTOn                = False
-;  diff@res_gsnRightString        = variable_info@long_name + " in " \
-;                                   + variable_info@units
   diff@res_cnInfoLabelOn         = False    ; turn off cn info label
   diff@res_mpProjection          = diag_script_info@projection
   if (isatt(diag_script_info, "explicit_cn_levels")) then
@@ -486,15 +528,15 @@ begin
   end if
 
   diff@var = var0  ; overwrite existing entry
-  if (.not. isatt(variable_info, "long_name")) then
-    variable_info@long_name = ""
+  if (.not. isatt(variable_info[mainvarind], "long_name")) then
+    variable_info[mainvarind]@long_name = ""
   end if
-  if (.not. isatt(variable_info, "units")) then
-    variable_info@units = ""
+  if (.not. isatt(variable_info[mainvarind], "units")) then
+    variable_info[mainvarind]@units = ""
   end if
 
-  diff@var_long_name = variable_info@long_name
-  diff@var_units     = variable_info@units
+  diff@var_long_name = variable_info[mainvarind]@long_name
+  diff@var_units     = variable_info[mainvarind]@units
 
   if (var0.eq."clt") then
     if (isatt(diff, "res_cnLevels")) then
@@ -511,7 +553,7 @@ begin
     diff = diff * 1000
     zonalmean = zonalmean * 1000
     diff@var_units = "g m-2"
-    variable_info@units = diff@var_units
+    variable_info[mainvarind]@units = diff@var_units
     zonalmean@units = diff@var_units
   end if
 
@@ -533,7 +575,7 @@ begin
       delete(wks)
     end if
 
-    wks = get_wks("dummy_for_wks", diag_script, "clouds_ipcc_" + var0 \
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_ipcc_" + var0 \
                   + "_" + season(is))
 ;    drawNDCGrid(wks) ; debugging option
 
@@ -543,8 +585,8 @@ begin
     diff@res_gsnDraw       = False  ; do not draw yet
     diff@res_gsnFrame      = False  ; don't advance frame
 
-    diff@res_lbTitleString = "~F8~D~F21~" + variable_info@long_name + \
-                             " (" + variable_info@units + ")"
+    diff@res_lbTitleString = "~F8~D~F21~" + diff@var_long_name + \
+                             " (" + diff@var_units + ")"
     diff@res_lbTitlePosition = "Bottom"
     diff@res_lbLabelFontHeightF = 0.015
     diff@res_lbAutoManage    = False
@@ -574,9 +616,9 @@ begin
     zonalmean@long_name = zonalmean@long_name + " (" + \
       zonalmean@units + ")"
 
-    linethickness       = new(dim_MOD, float)
-    linecolor           = new(dim_MOD, string)
-    linedash            = new(dim_MOD, integer)
+    linethickness       = new(dim_MOD0, float)
+    linecolor           = new(dim_MOD0, string)
+    linedash            = new(dim_MOD0, integer)
 
     n = dimsizes(modelsonly_ind) - 1
 
@@ -591,14 +633,14 @@ begin
     ; used (if defined), otherwise use default values
 
     if (isatt(diag_script_info, "styleset")) then
-      colortab     = project_style(diag_script_info, "colors")
-      dashtab      = project_style(diag_script_info, "dashes")
-      thicknesstab = project_style(diag_script_info, "thicks")
-      do i = n + 1, dim_MOD - 1
+      colortab     = project_style(info0, diag_script_info, "colors")
+      dashtab      = project_style(info0, diag_script_info, "dashes")
+      thicknesstab = project_style(info0, diag_script_info, "thicks")
+      do i = n + 1, dim_MOD0 - 1
         if (isdefined("idx")) then
           delete(idx)
         end if
-        idx = ind(input_file_info@dataset.eq.zonalmean&model(i))
+        idx = ind(names .eq. zonalmean&model(i))
         if (all(ismissing(idx))) then
         else
           linecolor(i) = colortab(idx(0))
@@ -607,10 +649,10 @@ begin
         end if
       end do
     else
-      linethickness(n+1:dim_MOD-1) = 4.0      ; reference dataset(s)
-      linethickness(mm_ind)        = 4.0      ; multi-model mean
-      linecolor(n+1:dim_MOD-1)     = "Black"  ; reference data set
-      linecolor(mm_ind)            = "Red"    ; multi-model mean
+      linethickness(n+1:dim_MOD0-1) = 4.0      ; reference dataset(s)
+      linethickness(mm_ind)         = 4.0      ; multi-model mean
+      linecolor(n+1:dim_MOD0-1)     = "Black"  ; reference data set
+      linecolor(mm_ind)             = "Red"    ; multi-model mean
     end if
 
     res                   = True
@@ -618,7 +660,6 @@ begin
     res@xyMonoLineColor   = False
     res@xyLineThicknesses = linethickness
     res@xyLineColors      = linecolor
-;    res@tiMainString      = "...title..."    ; add title
     res@tmXBLabelFontHeightF = 0.023
     res@tmYLLabelFontHeightF = 0.023
     res@gsnDraw           = False  ; donot draw yet
@@ -635,7 +676,7 @@ begin
         y = new((/2, dimsizes(err_zm&lat)/), float)
         res@gsnXYFillColors = "(/1.0, 0.8, 0.8/)"
         res@xyLineColors(:) = "transparent"
-        do imod = 0, dim_MOD - 1
+        do imod = 0, dim_MOD0 - 1
           erridx = ind(err_zm&model.eq.zonalmean&model(imod))
           if (.not.all(ismissing(erridx))) then
             y(0, :) = zonalmean(imod, is, :) - err_zm(erridx, is, :)
@@ -678,14 +719,14 @@ begin
       ; add meta data to plot (for reporting)
 
       caption = "Multi model mean bias (left) and zonal averages (right) " \
-                + "for variable " + variables(0) + " (" + season(is) \
-                + "), reference = " + input_file_info@dataset(ref_ind) + "."
-      id = diag_script + "_" + variables(0) + "_" + season(is)
+                + "for variable " + var0 + " (" + season(is) \
+                + "), reference = " + names(ref_ind) + "."
+      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, diag_script, \
+;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
+;               names, climofiles, DIAG_SCRIPT, \
 ;               contrib_authors)
 
     end if  ; if write_plots
@@ -700,16 +741,16 @@ begin
     nc_outfile = ncdf_write(diff, nc_filename)
     nc_filename = work_dir + "clouds_ipcc_zonal_means_" + var0 + ".nc"
     zonalmean@var = var0
-    zonalmean@diag_script = diag_script
+    zonalmean@diag_script = DIAG_SCRIPT
     nc_outfile = ncdf_write(zonalmean, nc_filename)
     if (isvar("err_zm")) then
       nc_filename = work_dir + "clouds_ipcc_error_zonal_means_" + var0 + ".nc"
-      err_zm@var = variables(1)
-      err_zm@diag_script = diag_script
+      err_zm@var = var1
+      err_zm@diag_script = DIAG_SCRIPT
       nc_outfile = ncdf_write(err_zm, nc_filename)
     end if
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

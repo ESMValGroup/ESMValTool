@@ -50,6 +50,7 @@
 ;     1) get tags from namelist and write meta data to plots
 ;
 ; Modification history
+;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180518-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170621-A_laue_ax: reworked code to add tags for reporting
@@ -70,21 +71,26 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    refname = variable_info[0]@reference_dataset
+  end if
+  names = listatts2array(info0, "dataset")
+  projects = listatts2array(info0, "project")
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; ###########################################
   ; # references                    #
   ; ###########################################
   ; FIX-ME: to be replaced by new method
-  ; write_references(diag_script,      \  ; script name
+  ; write_references(DIAG_SCRIPT,      \  ; script name
   ;                  "A_laue_ax",      \  ; authors
   ;                  "",               \  ; contributors
   ;                  "D_lauer13jclim", \  ; diag_references
@@ -167,14 +173,12 @@ begin
   ref_ind = -1  ; set to invalid value
 
   ; if attribute is present, use it so correlations can be calculated
-  if (isatt(variable_info, "reference_dataset")) then
+  if (isvar("refname")) then
     ; set reference model
-    ref_ind = ind(input_file_info@dataset .eq. \
-                  variable_info@reference_dataset)
+    ref_ind = ind(names .eq. refname)
   end if
 
-  climofiles = new(dim_MOD, string)
-  climofiles = input_file_info@filename
+  climofiles = listatts2array(info0, "filename")
 
 ;  if (isatt(diag_script_info, "region")) then
 ;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_reg"/), 0)
@@ -190,19 +194,17 @@ begin
 ;    difftags = array_append_record(alltags, (/"ST_diff"/), 0)
 
     ; check for reference model definition
-    if (.not.(isatt(variable_info, "reference_dataset"))) then
-      error_msg("f", diag_script, "", \
-                "no reference model defined in namelist")
+    if (.not.isvar("refname")) then
+      error_msg("f", DIAG_SCRIPT, "", \
+                "no reference dataset defined in recipe")
     end if
 
     ; set reference model
 
-    ref_ind = ind(input_file_info@dataset .eq. \
-                  variable_info@reference_dataset)
-    ref_model = variable_info@reference_dataset
+    ref_ind = ind(names .eq. refname)
     if (ismissing(ref_ind)) then
-      error_msg("f", diag_script, "", "reference model (" \
-                + variable_info@reference_dataset + ") is missing")
+      error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
+                + refname + ") is missing")
     end if
   end if
 
@@ -219,8 +221,7 @@ begin
   ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
-    ind_wo_ref = ind(input_file_info@dataset .ne. \
-                     variable_info@reference_dataset)
+    ind_wo_ref = ind(names .ne. refname)
     ind_all_sorted(0) = ref_ind
     ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
@@ -233,7 +234,7 @@ begin
   do ii = 0, dim_MOD - 1
 
     imod = ind_all_sorted(ii)
-    log_info("processing " + input_file_info@dataset(imod))
+    log_info("processing " + names(imod))
 
     if (isvar("data1")) then
       delete(data1)
@@ -243,22 +244,22 @@ begin
       delete(A0)
     end if
 
-    A0 = read_data(imod, var0, field_type0)
+    A0 = read_data(info0[imod])
 
     ; check dimensions
 
     dims = getvardims(A0)
     if (dimsizes(dims) .lt. 2) then
-      error_msg("f", diag_script, "", dimsizes(dims) + \
+      error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
                 " dimensions, need 2 or 3")
     end if
     idx = ind(dims .eq. "lat")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lat dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
     end if
     idx = ind(dims .eq. "lon")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lon dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
     end if
 
     ; average over time
@@ -343,7 +344,7 @@ begin
 
     if (var0.eq."tas") then
       data1@res_cnLevels            = ispan(-30, 30, 3)
-      pal = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas.rgb")
+      pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
       data1@res_cnFillColors        = pal
       ; convert from K to degC
       data1 = data1 - 273.15
@@ -401,7 +402,7 @@ begin
     end if
 
     if (.not. isatt(data1, "res_cnLevels")) then
-      log_info(diag_script + " (var: " + variables(0) + "):")
+      log_info(DIAG_SCRIPT + " (var: " + variables(0) + "):")
       log_info("info: using default contour levels")
       data1@res_cnLevels = fspan(min(data1), max(data1), 20)
     end if
@@ -414,18 +415,19 @@ begin
     if (isatt(data1, "diag_script")) then  ; add to existing entries
       temp = data1@diag_script
       delete(data1@diag_script)
-      data1@diag_script = array_append_record(temp, (/diag_script/), 0)
+      data1@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
       delete(temp)
     else  ; add as new attribute
-      data1@diag_script = (/diag_script/)
+      data1@diag_script = (/DIAG_SCRIPT/)
     end if
 
     data1@var = var0  ; Overwrite existing entry
-    if (isatt(variable_info, "long_name")) then
-      data1@var_long_name = variable_info@long_name
+    if (isatt(variable_info[0], "long_name")) then
+      data1@var_long_name = variable_info[0]@long_name
     end if
-    if (isatt(variable_info, "units")) then
-      data1@var_units = variable_info@units
+
+    if (isatt(variable_info[0], "units")) then
+      data1@var_units = variable_info[0]@units
     else
       data1@var_units = ""
     end if
@@ -449,7 +451,7 @@ begin
 
     if (flag_diff .and. .not.same_grid) then
       flag_diff = False
-      error_msg("f", diag_script, "", \
+      error_msg("f", DIAG_SCRIPT, "", \
                 "Data are not on same grid, cannot calculate differences. " \
                 + "Set showdiff to False in namelist or regrid data to " \
                 + "common grid (check/adjust " \
@@ -495,27 +497,27 @@ begin
       ; note: an array of workspaces (i.e. wks(numseas)) does not work as
       ;       attributes cannot be assigned to each array element
       ;       individually
-      wks0 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+      wks0 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                      "_" + season(0) + filename_add)
       ; difference plots will be saved to a different file
       if (flag_diff) then
-        wks0d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+        wks0d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                         "_diff_" + season(0) + filename_add)
       end if
       if (numseas.gt.1) then
-        wks1 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+        wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                        "_" + season(1) + filename_add)
-        wks2 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+        wks2 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                        "_" + season(2) + filename_add)
-        wks3 = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+        wks3 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                        "_" + season(3) + filename_add)
         ; difference plots will be saved to a different files
         if (flag_diff) then
-          wks1d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+          wks1d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                           "_diff_" + season(1) + filename_add)
-          wks2d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+          wks2d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                           "_diff_" + season(2) + filename_add)
-          wks3d = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 + \
+          wks3d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
                           "_diff_" + season(3) + filename_add)
         end if
       end if
@@ -566,7 +568,7 @@ begin
 
     if (write_nc) then
       nc_filename = work_dir + "clouds_" + var0 + "_" \
-                    + input_file_info@dataset(imod) + ".nc"
+                    + names(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
     end if
 
@@ -722,7 +724,7 @@ begin
         ; ******************************************************
 
         if (.not. isatt(diff, "res_cnLevels")) then
-          log_info(diag_script + " (var: " + variables(0) + "):")
+          log_info(DIAG_SCRIPT + " (var: " + variables(0) + "):")
           log_info("info: using default contour levels")
           diff@res_cnLevels = fspan(min(diff), max(diff), 20)
         end if
@@ -854,7 +856,7 @@ begin
 
       if (write_nc) then
         nc_filename = work_dir + "clouds_" + var0 + "_bias_" \
-                      + input_file_info@dataset(imod) + ".nc"
+                      + names(imod) + ".nc"
         nc_outfile = ncdf_write(diff, nc_filename)
       end if
 
@@ -892,8 +894,8 @@ begin
       if (i.eq.ref_ind) then
         plotind(j) = plottmp(i)
         j = j + 1
-      else if (plottmp(i) .lt. dimsizes(input_file_info@project)) then
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+      else if (plottmp(i) .lt. dimsizes(projects)) then
+        if (isStrSubset(str_lower(projects(plottmp(i))), \
                         "obs")) then
           plotind(j) = plottmp(i)
           j = j + 1
@@ -903,7 +905,7 @@ begin
     end do
 
     do i = 0, dimsizes(plottmp) - 1
-      if ((isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
+      if ((isStrSubset(str_lower(projects(plottmp(i))), \
                        "obs")).or.(i.eq.ref_ind)) then
       else
         plotind(j) = plottmp(i)
@@ -916,7 +918,7 @@ begin
     pres@gsnPanelLabelBar     = True    ; add common colorbar
     if (panel_labels) then
       ; print dataset name on each panel
-      pres@gsnPanelFigureStrings = input_file_info@dataset(plotind)
+      pres@gsnPanelFigureStrings = names(plotind)
     end if
     pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
                                                 / tofloat((dim_MOD + 1) / 2)/))
@@ -976,9 +978,9 @@ begin
         plotsperline = new((dim_MOD + 1) / 2, integer)
         plotsperline = 2
 
-        if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), \
+        if ((isStrSubset(str_lower(projects(plotind(0))), \
                          "obs")).and. \
-           .not.(isStrSubset(str_lower(input_file_info@project(plotind(1))), \
+           .not.(isStrSubset(str_lower(projects(plotind(1))), \
                              "obs"))) then
           plotsperline(0) = 1
         end if
@@ -1026,14 +1028,14 @@ begin
 
       ; add meta data to plot (for reporting)
 
-      caption = "Mean values for variable " + variables(0) \
+      caption = "Mean values for variable " + var0 \
                 + " (" + season(is) + ")."
-      id = diag_script + "_" + variables(0) + "_" + season(is)
+      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;      ESMValMD(outfile(is), alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, diag_script, \
+;      ESMValMD(outfile(is), alltags, caption, id, var0, \
+;               names, climofiles, DIAG_SCRIPT, \
 ;               contrib_authors)
     end do
 
@@ -1077,15 +1079,13 @@ begin
 
       j = 0
       do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
-                        "obs")) then
+        if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
           plotind(j) = plottmp(i)
           j = j + 1
         end if
       end do
       do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(input_file_info@project(plottmp(i))), \
-                        "obs")) then
+        if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
         else
           plotind(j) = plottmp(i)
           j = j + 1
@@ -1096,7 +1096,7 @@ begin
         delete(pres@gsnPanelFigureStrings)
       end if
       if (panel_labels) then
-        pres@gsnPanelFigureStrings = input_file_info@dataset(plotind)
+        pres@gsnPanelFigureStrings = names(plotind)
       end if
 
       if (dimsizes(plotind).eq.1) then
@@ -1134,11 +1134,9 @@ begin
           plotsperline = 2
 
           if (dimsizes(plotind).gt.1) then
-            if ((isStrSubset(str_lower(input_file_info@project(plotind(0))), \
-                             "obs")).and. \
+            if ((isStrSubset(str_lower(projects(plotind(0))), "obs")).and. \
                .not. \
-                (isStrSubset(str_lower(input_file_info@project(plotind(1))), \
-                             "obs"))) then
+                (isStrSubset(str_lower(projects(plotind(1))), "obs"))) then
               plotsperline(0) = 1
             end if
           end if
@@ -1186,15 +1184,15 @@ begin
 
         ; add meta data to plot (for reporting)
 
-        caption = "Differences for variable " + variables(0) \
+        caption = "Differences for variable " + var0 \
                   + " (" + season(is) + "), reference = " \
-                  + input_file_info@dataset(ref_ind) + "."
-        id = diag_script + "_" + variables(0) + "_diff_" + season(is)
+                  + refname + "."
+        id = DIAG_SCRIPT + "_" + var0 + "_diff_" + season(is)
 
         contrib_authors = "A_laue_ax"
 
-;        ESMValMD(outfile_d(is), difftags, caption, id, variables(0), \
-;                 input_file_info@dataset, climofiles, diag_script, \
+;        ESMValMD(outfile_d(is), difftags, caption, id, var0, \
+;                 names, climofiles, DIAG_SCRIPT, \
 ;                 contrib_authors)
       end do
 
@@ -1204,7 +1202,7 @@ begin
 
     if (extralegend) then
       nboxes = dimsizes(data1@res_cnLevels) + 1
-      wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 \
+      wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
                        + "_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
@@ -1250,7 +1248,7 @@ begin
 
       if (flag_diff) then
         nboxes = dimsizes(diff@res_cnLevels) + 1
-        wksleg = get_wks("dummy_for_wks", diag_script, "clouds_" + var0 \
+        wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
                          + "_diff_legend")
 
         labels = tostring(diff@res_cnLevels)
@@ -1294,6 +1292,6 @@ begin
 
   ; ==========================================================================
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

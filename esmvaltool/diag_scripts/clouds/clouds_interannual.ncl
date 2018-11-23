@@ -30,6 +30,7 @@
 ;     1) get tags from namelist and write meta data to plots
 ;
 ; Modification history
+;   20181120-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -57,9 +58,19 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 ; load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    refname = variable_info[0]@reference_dataset
+  end if
+  names = listatts2array(info0, "dataset")
+  infiles = listatts2array(info0, "filename")
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; ###############################
@@ -72,17 +83,12 @@ begin
   ; # references                              #
   ; ###########################################
   ; FIX-ME: to be replaced by new method
-  ; write_references(diag_script,      \  ; script name
+  ; write_references(DIAG_SCRIPT,      \  ; script name
   ;                  "A_laue_ax",      \  ; authors
   ;                  "",               \  ; contributors
   ;                  "D_lauer13jclim", \  ; diag_references
   ;                  "",               \  ; obs_references
   ;                  (/"P_embrace"/))     ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
   set_default_att(diag_script_info, "extrafiles", False)
@@ -109,7 +115,7 @@ begin
 
   ; get multi-model mean index (if present)
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
     mm_ind = -1
@@ -117,10 +123,9 @@ begin
 
   ref_ind = -1  ; set to invalid value
 
-  ; if attribute is present, use it so plots can be sorted
-  if (isatt(variable_info, "reference_dataset")) then
-    ref_ind = ind(input_file_info@dataset .eq. \
-                  variable_info@reference_dataset)
+  ; if reference dataset has been defined, use it so plots can be sorted
+  if (isvar("refname")) then
+    ref_ind = ind(names .eq. refname)
   end if
 
 end
@@ -129,8 +134,7 @@ begin
   ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
-    ind_wo_ref = ind(input_file_info@dataset .ne. \
-                     variable_info@reference_dataset)
+    ind_wo_ref = ind(names .ne. refname)
     ind_all_sorted(0) = ref_ind
     ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
@@ -149,28 +153,28 @@ begin
       delete(data1)
     end if
 
-    log_info("processing " + input_file_info@dataset(imod))
+    log_info("processing " + names(imod))
 
     if (isvar("A0")) then
       delete(A0)
     end if
 
-    A0 = read_data(imod, var0, field_type0)
+    A0 = read_data(info0[imod])
 
     ; check dimensions
 
     dims = getvardims(A0)
     if (dimsizes(dims) .lt. 2) then
-      error_msg("f", diag_script, "", dimsizes(dims) + \
+      error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
                 " dimensions, need 2 or 3")
     end if
     idx = ind(dims .eq. "lat")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lat dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
     end if
     idx = ind(dims .eq. "lon")
       if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lon dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
     end if
 
     ; subtract climatological seasonal cycle from time series
@@ -202,7 +206,7 @@ begin
     ; retrieve unique strings describing the data
     ; function in ./diag_scripts/lib/ncl/style.ncl
 
-    annots = project_style(diag_script_info, "annots")
+    annots = project_style(info0, diag_script_info, "annots")
 
     ; ###########################################
     ; # plot ressources                         #
@@ -223,11 +227,8 @@ begin
 
     ; annotation
 
-;    data1@res_tiMainString         = MyParam  ; Main title
     data1@res_tiMainOn             = False
-;    data1@res_gsnLeftString        = annots(imod)
     data1@res_gsnLeftStringFontHeightF = 0.015
-;    data1@res_gsnLeftString        = input_file_info@dataset(imod)
     data1@res_cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
@@ -279,7 +280,6 @@ begin
     data1@res_tmXBOn               = False
     data1@res_tmXTLabelsOn         = False
     data1@res_tmXTOn               = False
-;    data1@res_gsnRightString       = var0 + " in " + variable_info@units
     data1@res_cnInfoLabelOn        = False    ; turn off cn info label
 
     data1@res_mpProjection         = diag_script_info@projection
@@ -299,10 +299,10 @@ begin
     if (isatt(data1, "diag_script")) then  ; add to existing entries
       temp = data1@diag_script
       delete(data1@diag_script)
-      data1@diag_script = array_append_record(temp, (/diag_script/), 0)
+      data1@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
       delete(temp)
     else  ; add as new attribute
-      data1@diag_script = (/diag_script/)
+      data1@diag_script = (/DIAG_SCRIPT/)
     end if
     data1@var = var0  ; Overwrite existing entry
     if (isatt(variable_info, "long_name")) then
@@ -321,7 +321,7 @@ begin
 
     if (ii.eq.0) then
       if (.not.extrafiles) then
-        wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+        wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                       + var0)
       end if
 ;      drawNDCGrid(wks)  ; debugging option
@@ -331,7 +331,7 @@ begin
       if (isvar("wks")) then
         delete(wks)
       end if
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + "_" + annots(imod))
     end if
 
@@ -343,7 +343,7 @@ begin
 
     if (write_nc) then
       nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
-                    + input_file_info@dataset(imod) + ".nc"
+                    + names(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
     end if
 
@@ -360,14 +360,14 @@ begin
       ; *** add meta data for reporting to plots ***
 
 ;      alltags = array_append_record(tags, diag_tags, 0)
-      caption = "Interannual variability of variable " + variables(0) + \
-        " from dataset " + input_file_info@dataset(imod) + "."
-      id = diag_script + "_" + input_file_info@dataset(imod)
-      climofile = input_file_info@filename(imod)
+      caption = "Interannual variability of variable " + var0 + \
+        " from dataset " + names(imod) + "."
+      id = DIAG_SCRIPT + "_" + names(imod)
+      climofile = infiles(imod)
       contrib_authors = "A_laue_ax"
 
-;      ESMValMD(maps@outfile, alltags, caption, id, variables(0), \
-;               input_file_info@dataset(imod), climofile, diag_script, \
+;      ESMValMD(maps@outfile, alltags, caption, id, var0, \
+;               name(imod), climofile, DIAG_SCRIPT, \
 ;               contrib_authors)
 
 ;      delete([/alltags, caption, id, climofile/])
@@ -391,9 +391,6 @@ begin
     pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
     pres@lbPerimOn                  = False     ; draw line around label
                                                 ; bar area
-;    pres@gsnPanelTop                = 0.96
-;    pres@gsnPanelBottom             = 0.012    ; add space for common
-;                                               ; colorbar (default = 0.0)
     pres@gsnPanelCenter             = False
     pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                                 ; the bottom
@@ -404,7 +401,7 @@ begin
         delete(wks)
       end if
       ; plot legend
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + "_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
@@ -421,15 +418,15 @@ begin
       log_info(" Wrote " + outfile)
 
 ;      alltags = array_append_record(tags, diag_tags, 0)
-        caption = "Interannual variability of variable " + variables(0) + "."
-        id = diag_script + "_" + variables(0) + "_all_models"
+        caption = "Interannual variability of variable " + var0 + "."
+        id = DIAG_SCRIPT + "_" + var0 + "_all_models"
 
         climofiles = new(dim_MOD, string)
-        climofiles = input_file_info@filename
+        climofiles = infiles
         contrib_authors = "A_laue_ax"
 
-;        ESMValMD(outfile, alltags, caption, id, variables(0), \
-;                 input_file_info@dataset, climofiles, diag_script, \
+;        ESMValMD(outfile, alltags, caption, id, var0, \
+;                 names, climofiles, DIAG_SCRIPT, \
 ;                 contrib_authors)
 ;
 ;        delete([/alltags, caption, id, climofiles/])
@@ -437,6 +434,6 @@ begin
     end if
   end if  ; if write_plots
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

@@ -5,6 +5,7 @@
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
+;    function remove_duplicates
 ;    function listatts2array
 ;    procedure copy_VarCoords_l1
 ;    procedure check_min_max_datasets
@@ -31,7 +32,51 @@
 ;    function get_ref_dataset_idx
 ;
 ; #############################################################################
+undef ("remove_duplicates")
+;
+; Arguments
+;    inarray: an array strings
+;
+; Description
+;    Remove duplicates from a 1-dimensional array of strings *without*
+;    sorting the array (as in NCL function get_unique_values), i.e.
+;    the order is preserved.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181120-A_laue_ax: written
+;
 
+function remove_duplicates(inarray[*]:string)
+begin
+  funcname = "remove_duplicates"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  unique = new(dimsizes(inarray), logical)
+  unique(0) = True
+  do i = 1, dimsizes(inarray) - 1
+    idx = ind(inarray(0:i-1) .eq. inarray(i))
+    if (all(ismissing(idx))) then
+      unique(i) = True
+    else
+      unique(i) = False
+    end if
+    delete(idx)
+  end do
+
+  outarray = inarray(ind(unique))
+
+  leave_msg(scriptname, funcname)
+  return(outarray)
+
+end
+
+
+; #############################################################################
 undef("listatts2array")
 ;
 ; Arguments
@@ -47,6 +92,8 @@ undef("listatts2array")
 ; References
 ;
 ; Modification history
+;    20181119-A_laue_ax: missing attributes are now allowed; error message is
+;                        only issued if all attributes are missing
 ;    20180711-A_righ_ma: written
 ;
 function listatts2array(inlist:list,
@@ -60,16 +107,19 @@ begin
 
   out = new(ListCount(inlist), string)
   do ii = 0, ListCount(inlist) - 1
-    if (.not.isatt(inlist[ii], att)) then
-      error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
-                "found in list element " + ii)
+    if (isatt(inlist[ii], att)) then
+      if (typeof(inlist[ii]@$att$).ne."string") then
+        error_msg("f", scriptname, funcname, "non-string attributes not " + \
+                  "supported")
+      end if
+      out(ii) = inlist[ii]@$att$
     end if
-    if (typeof(inlist[ii]@$att$).ne."string") then
-      error_msg("f", scriptname, funcname, "non-string attributes not " + \
-                "supported")
-    end if
-    out(ii) = inlist[ii]@$att$
   end do
+
+  if (all(ismissing(out))) then
+    error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
+              "found in list element(s)")
+  end if
 
   return(out)
   leave_msg(scriptname, funcname)

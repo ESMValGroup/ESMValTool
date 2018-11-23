@@ -29,6 +29,7 @@
 ;   1) get tags from namelist and write meta data to plots
 ;
 ; Modification history
+;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -50,26 +51,31 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    refname = variable_info[0]@reference_dataset
+  end if
+  names = listatts2array(info0, "dataset")
+  infiles = listatts2array(info0, "filename")
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; ========================================================================
   ; ========================= write references =============================
   ; ========================================================================
   ; FIX-ME: to be replaced by new method
-  ; write_references(diag_script,  \   ; script name
+  ; write_references(DIAG_SCRIPT,  \   ; script name
   ;                  "A_laue_ax",  \   ; authors
   ;                  "",  \            ; contributors
   ;                  "",  \            ; diag_references
   ;                  "",  \            ; obs_references
   ;                  (/"P_embrace"/))  ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = 1
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
@@ -116,8 +122,8 @@ begin
 
   ; check for reference dataset definition
 
-  if (.not.(isatt(variable_info, "reference_dataset"))) then
-    error_msg("f", diag_script, "", "no reference dataset is selected")
+  if (.not.(isvar("refname"))) then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
   end if
 
   plot_abs_diff = diag_script_info@plot_abs_diff
@@ -125,24 +131,23 @@ begin
 
   ; get reference dataset
 
-  ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
-  ref_model = variable_info@reference_dataset
+  ref_ind = ind(names .eq. refname)
   if (ismissing(ref_ind)) then
-    error_msg("f", diag_script, "", "reference model (" \
-              + variable_info@reference_dataset + ") is missing")
+    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
+              + refname + ") is missing")
   end if
 
   ; get multi-model mean index
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
-    error_msg("f", diag_script, "", "multi-model mean is missing (required)")
+    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
   end if
 
   ; basename of diag_script
 
-  diag_script_base = basename(diag_script)
+  diag_script_base = basename(DIAG_SCRIPT)
 
   ; ========================================================================
   ; =========================== calculations ===============================
@@ -153,18 +158,18 @@ begin
 
   ; read data
 
-  A0 = read_data(mm_ind, variables(0), field_types(0))
+  A0 = read_data(info0[mm_ind])
   mmdata = time_operations(A0, -1, -1, "average", timemean, True)
   delete(A0)
 
-  A0 = read_data(ref_ind, variables(0), field_types(0))
+  A0 = read_data(info0[ref_ind])
   refdata = time_operations(A0, -1, -1, "average", timemean, True)
   delete(A0)
 
   ; differences between multi-model mean and reference data set
 
   diff = mmdata - refdata
-  mmdata@diag_script = diag_script
+  mmdata@diag_script = DIAG_SCRIPT
   copy_VarMeta(mmdata, diff)
 
   delete(refdata)
@@ -190,8 +195,8 @@ begin
   ; ========================================================================
 
   climofiles = new(2, string)
-  climofiles(0) = input_file_info@filename(mm_ind)
-  climofiles(1) = input_file_info@filename(ref_ind)
+  climofiles(0) = infiles(mm_ind)
+  climofiles(1) = infiles(ref_ind)
 
 ;  alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", \
 ;                                        "DM_global"/), 0)
@@ -220,14 +225,12 @@ begin
   diff@res_tmXBOn  = False
   diff@res_tmXTLabelsOn  = False
   diff@res_tmXTOn  = False
-;  diff@res_gsnRightString  = variable_info@long_name + " in " \
-;                             + diff@units
   diff@res_cnInfoLabelOn  = False  ; turn off cn info label
   diff@res_mpProjection  = diag_script_info@projection
 
   diff@var = var0  ; Overwrite existing entry
-  if (isatt(variable_info, "long_name")) then
-  diff@var_long_name = variable_info@long_name
+  if (isatt(variable_info[0], "long_name")) then
+    diff@var_long_name = variable_info[0]@long_name
   end if
   diff@var_units  = diff@units
 
@@ -240,16 +243,12 @@ begin
   diff@res_gsnFrame  = False  ; Don't advance frame.
   diff@res_mpPerimOn  = False
 
-;  diff@res_lbTitleString  = "~F8~D~F21~" + variable_info@long_name + \
-;                            " (" + diff@units + ")"
   diff@res_lbTitleString  = "(" + diff@units + ")"
   diff@res_lbTitlePosition  = "Bottom"
 
   diff@res_lbLabelFontHeightF  = 0.014
-;  diff@res_lbAutoManage  = False
   diff@res_lbTopMarginF  = 0.1
   diff@res_lbTitleFontHeightF  = 0.014
-;  diff@res_pmLabelBarWidthF  = 0.8
 
   diff@res_tiMainFontHeightF  = 0.016
 
@@ -372,7 +371,7 @@ begin
         delete(wks)
       end if
 
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_bias_" + var0 \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
                     + "_" + season(is))
 
       if (numseas.gt.1) then
@@ -408,15 +407,14 @@ begin
       if (plot_rel_diff) then
         caption = caption + ", relative error"
       end if
-      caption = caption + " for variable " + variables(0) \
-        + " (" + season(is) + "), reference = " + \
-        input_file_info@dataset(ref_ind) + "."
-      id = diag_script + "_" + variables(0) + "_" + season(is)
+      caption = caption + " for variable " + var0 \
+        + " (" + season(is) + "), reference = " + names(ref_ind) + "."
+      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
 
       contrib_authors = "A_laue_ax"
 
-;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, diag_script, \
+;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
+;               names, climofiles, DIAG_SCRIPT, \
 ;               contrib_authors)
 
     end do  ; is-loop (seasons)
@@ -441,6 +439,6 @@ begin
     end if
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end
