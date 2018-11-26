@@ -181,7 +181,7 @@ def data2file(cfg, filename, title, filedata):
             out.write('{:25} : {:8.2f}\n'.format(river, value))
 
 
-def write_plotdata(cfg, plotdata, catch_info, reference):
+def write_plotdata(cfg, plotdata, catchments):
     """Write catchment averaged values for all datasets.
 
     Parameters
@@ -190,10 +190,9 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
         Configuration dictionary of the recipe
     plotdata : dict
         Dictionary containing the catchment averages
-    catch_info : dict
-        Dictionary containing catchment names, IDs, and reference data
-    reference : str
-        String containing name of the reference dataset
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
     """
     ref_vars = []
     metric = "catchment averages"
@@ -209,8 +208,8 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
             # Write reference data
             if var not in ref_vars:
                 filename = '_'.join([var, 'reference']) + '.txt'
-                title = " ".join([reference, metric, unit])
-                filedata = catch_info[var]
+                title = " ".join([catchments['refname'], metric, unit])
+                filedata = catchments[var]
                 data2file(cfg, filename, title, filedata)
                 ref_vars.append(var)
 
@@ -248,23 +247,23 @@ def prep_barplot(title, rivers, var):
     """
     import matplotlib.pyplot as plt
 
-    fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
+    fig, my_axs = plt.subplots(nrows=1, ncols=2, sharex=False)
     fig.suptitle(title)
     fig.subplots_adjust(bottom=0.35)
     plottitle = ['\nBias for ', '\nRelative bias for ']
     ylabel = [var.upper() + ' [mm a-1]', 'Relative bias [%]']
 
-    for iax, ax in enumerate(axs.tolist()):
-        ax.set_title(plottitle[iax] + var.upper())
-        ax.set_ylabel(ylabel[iax])
-        ax.set_xlabel('Catchment')
-        ax.set_xticks(range(len(rivers)))
-        ax.set_xticklabels((rivers), fontsize='small')
-        for tick in ax.get_xticklabels():
+    for iax, axs in enumerate(my_axs.tolist()):
+        axs.set_title(plottitle[iax] + var.upper())
+        axs.set_ylabel(ylabel[iax])
+        axs.set_xlabel('Catchment')
+        axs.set_xticks(range(len(rivers)))
+        axs.set_xticklabels((rivers), fontsize='small')
+        for tick in axs.get_xticklabels():
             tick.set_rotation(90)
-        ax.axhline(c='black', lw=2)
+        axs.axhline(c='black', lw=2)
 
-    return fig, axs
+    return fig, my_axs
 
 
 def prep_scatplot(title, coeftype):
@@ -339,7 +338,7 @@ def finish_plot(fig, pltdir, name, pdf):
         plt.close()
 
 
-def make_catchment_plots(cfg, plotdata, catch_info, reference):
+def make_catchment_plots(cfg, plotdata, catchments):
     """Plot catchment averages for different metrics.
 
     Parameters
@@ -348,10 +347,9 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
         Configuration dictionary of the recipe
     plotdata : dict
         Dictionary containing the catchment averages
-    catch_info : dict
-        Dictionary containing catchment names, IDs, and reference data
-    reference : str
-        String containing name of the reference dataset
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
     """
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_pdf import PdfPages
@@ -375,7 +373,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
         # 1. Variable biases
         for var in plotdata.keys():
             rivers, refdata[var], expdata[var] = get_expdata(
-                plotdata[var][identifier], catch_info[var])
+                plotdata[var][identifier], catchments[var])
             absdiff[var] = expdata[var] - refdata[var]
             reldiff[var] = absdiff[var] / refdata[var] * 100
             xrivers = range(len(rivers))
@@ -388,7 +386,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
         # Plot diagnostics
         # 1. Barplots for single variables
-        title = identifier.upper() + ' vs ' + reference.upper()
+        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         for var in plotdata.keys():
             fig, axs = prep_barplot(title, rivers, var)
             # 1a. Plot absolut bias for every catchment
@@ -398,20 +396,20 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
             finish_plot(fig, pltdir, identifier + '_' + var + '-bias', pdf)
 
         # 2. Runoff coefficient vs relative precipitation bias
-        title = identifier.upper() + ' vs ' + reference.upper()
+        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         fig, axs = prep_scatplot(title, 'prbias')
         marker = cycle(markerlist)
-        for iriv, label in enumerate(rivers):
+        for iriv in range(len(rivers)):
             axs.scatter(prbias[iriv], rocoef[iriv], marker=next(marker))
         format_coef_plot(axs)
         add_legend(fig, rivers, markerlist)
         finish_plot(fig, pltdir, identifier + '_pr-vs-ro', pdf)
 
         # 3. Runoff coefficient vs evaporation coefficient bias
-        title = identifier.upper() + ' vs ' + reference.upper()
+        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         fig, axs = prep_scatplot(title, 'etcoef')
         marker = cycle(markerlist)
-        for iriv, label in enumerate(rivers):
+        for iriv in range(len(rivers)):
             axs.scatter(etcoef[iriv], rocoef[iriv], marker=next(marker))
         format_coef_plot(axs)
         add_legend(fig, rivers, markerlist)
@@ -430,15 +428,17 @@ def get_catchment_data(cfg):
     cfg : dict
         Configuration dictionary of the recipe
     """
+    catchments = get_defaults()
+    catchments['refname'] = 'default'
     catchment_filepath = cfg.get('catchmentmask')
-    catchment_cube = iris.load_cube(catchment_filepath)
-    if catchment_cube.coord('latitude').bounds is None:
-        catchment_cube.coord('latitude').guess_bounds()
-    if catchment_cube.coord('longitude').bounds is None:
-        catchment_cube.coord('longitude').guess_bounds()
-    catchment_areas = iris.analysis.cartography.area_weights(catchment_cube)
+    catchments['cube'] = iris.load_cube(catchment_filepath)
+    if catchments['cube'].coord('latitude').bounds is None:
+        catchments['cube'].coord('latitude').guess_bounds()
+    if catchments['cube'].coord('longitude').bounds is None:
+        catchments['cube'].coord('longitude').guess_bounds()
+    catchments['area'] = iris.analysis.cartography.area_weights(catchments['cube'])
 
-    return catchment_cube, catchment_areas
+    return catchments
 
 
 def get_sim_data(cfg, datapath, catchment_cube):
@@ -488,39 +488,35 @@ def get_sim_data(cfg, datapath, catchment_cube):
     return datainfo['short_name'], identifier, mean_cube_regrid
 
 
-def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
+def get_catch_avg(catchments, sim_cube):
     """Compute area weighted averages for river catchments.
 
     Parameters
     ----------
-    catch_info : dict
-        Dictionary containing catchment names, IDs, and reference data
-    catch_cube : obj
-        iris cube object containing the catchment mask
-    catch_areas: obj
-        numpy array containing the area size for every grid cell
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
     sim_cube : obj
         iris cube object containing the simulation data
     """
     avg = {}
-    for river, rid in catch_info['catchments'].items():
+    for river, rid in catchments['catchments'].items():
         data_catch = np.ma.masked_where(
-            catch_cube.data.astype(np.int) != rid, sim_cube.data)
+            catchments['cube'].data.astype(np.int) != rid, sim_cube.data)
         area_catch = np.ma.masked_where(
-            catch_cube.data.astype(np.int) != rid, catch_areas.data)
+            catchments['cube'].data.astype(np.int) != rid, catchments['area'].data)
         avg[river] = (data_catch * (area_catch / area_catch.sum())).sum()
     return avg
 
 
-def update_reference(catch_info, reference, model, rivervalues, var):
+def update_reference(catchments, model, rivervalues, var):
     """Update reference catchment averages.
 
     Parameters
     ----------
-    catch_info : dict
-        Dictionary containing catchment names, IDs, and reference data
-    reference : str
-        name of the reference dataset
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
     model : str
         name of the data set
     rivervalues : dict
@@ -528,9 +524,10 @@ def update_reference(catch_info, reference, model, rivervalues, var):
     var : str
         short name of the variable
     """
-    if reference != model and reference != 'default':
+    if catchments['refname'] != model and catchments['refname'] != 'default':
         raise ValueError('Reference must be the same for all variables!')
-    catch_info[var] = rivervalues
+    catchments[var] = rivervalues
+    catchments['refname'] = model
 
 
 def update_plotdata(identifier, plotdata, rivervalues, var):
@@ -564,22 +561,17 @@ def main(cfg):
         Configuration dictionary of the recipe.
     """
     # Get dataset and variable information
-    datasets = diag.Datasets(cfg)
-    logging.debug("Found datasets in recipe:\n%s", datasets)
-    varlist = diag.Variables(cfg)
-    logging.debug("Found variables in recipe:\n%s", varlist)
+    logging.debug("Found datasets in recipe:\n%s", diag.Datasets(cfg))
+    logging.debug("Found variables in recipe:\n%s", diag.Variables(cfg))
 
     # Check for correct variables
-    if not varlist.vars_available('pr', 'mrro', 'evspsbl'):
+    if not diag.Variables(cfg).vars_available('pr', 'mrro', 'evspsbl'):
         raise ValueError(
             "Diagnostic requires precipitation, runoff and evaporation data")
 
     # Read catchmentmask
     # to check: Correct way to read auxillary data using recipes?
-    catch_cube, catch_areas = get_catchment_data(cfg)
-
-    catch_info = get_defaults()
-    reference = 'default'
+    my_catch = get_catchment_data(cfg)
 
     # Read data, convert units and compute long term means
     # to check: Shouldn't this be part of preprocessing?
@@ -588,17 +580,16 @@ def main(cfg):
     #           instead of using regrid here?
     allcubes = {}
     plotdata = {}
-    for datapath in datasets:
+    for datapath in diag.Datasets(cfg):
         # Get simulation data
-        var, identifier, cube = get_sim_data(cfg, datapath, catch_cube)
+        var, identifier, cube = get_sim_data(cfg, datapath, my_catch['cube'])
         # Get river catchment averages
-        rivervalues = get_catch_avg(catch_info, catch_cube, catch_areas, cube)
+        rivervalues = get_catch_avg(my_catch, cube)
         # Sort into data dictionaries
         datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
         model = datainfo['dataset']
         if model == datainfo.get('reference_dataset', None):
-            update_reference(catch_info, reference, model, rivervalues, var)
-            reference = model
+            update_reference(my_catch, model, rivervalues, var)
         else:
             update_plotdata(identifier, plotdata, rivervalues, var)
 
@@ -617,10 +608,10 @@ def main(cfg):
             logger.info("Writing %s", filepath)
 
     # Write plotdata as ascii files for user information
-    write_plotdata(cfg, plotdata, catch_info, reference)
+    write_plotdata(cfg, plotdata, my_catch)
 
     # Plot catchment data
-    make_catchment_plots(cfg, plotdata, catch_info, reference)
+    make_catchment_plots(cfg, plotdata, my_catch)
 
 
 if __name__ == '__main__':
