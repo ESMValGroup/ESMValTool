@@ -108,7 +108,7 @@ print(dims)
 #dims <- dims[-c(1, 4)]
 
 dim(data) <- dims
-data <- aperm(data, c(2, 1, 3, 4))
+data <- aperm(data, c(3, 4, 2, 1))
 names(dim(data)) <- c("year", "day", "lat", "lon")
 
 #####################################
