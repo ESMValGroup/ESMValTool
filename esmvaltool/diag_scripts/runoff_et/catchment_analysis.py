@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Catchment specific water flux plots
+"""Catchment specific water flux plots.
 
 ###############################################################
 runoff_et/catchment_analysis.py
@@ -27,106 +27,109 @@ Description
 ###############################################################
 
 """
-import iris
-import numpy as np
 import calendar
-import os
 import logging
-import pdb
-import esmvaltool.diag_scripts.shared as diag
+import os
 from itertools import cycle
-from esmvaltool.preprocessor._regrid import regrid
-from esmvaltool.preprocessor._area_pp import area_average
+
+import iris
 import matplotlib
+import numpy as np
+
+import esmvaltool.diag_scripts.shared as diag
+
 matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class defaults(object):
-    """Class containing default dictionaries for predefined catchments
+def get_defaults():
+    """Return default reference values for predefined catchments.
 
-    The properties are used in the routine analysecatchments. Catchments and
+    The entries are used in the routine analysecatchments. Catchments and
     reference values are specific for the default catchment mask. All reference
     values are given in mm a-1. Precip data is based on WFDEI, runoff is based
     on GRDC, ET is derived as the difference of both. The values are updated
     and differ slightly from the ESMValTool 1 version.
-    Properties are
+    Dictionary entries are
         catchments
         mrro
         pr
         evspsbl
     """
-    catchments = {
-        # Catchments with name as used in make_catchment_plots and
-        # associated ID used in the catchment mask netCDF file
-        "Amazon": 94,
-        "Parana": 98,
-        "Mackenzie": 76,
-        "Mississippi": 86,
-        "Danube": 14,
-        "Congo": 68,
-        "Niger_Malanville": 65,
-        "Nile": 60,
-        "Lena": 40,
-        "Yangtze-Kiang": 52,
-        "Ganges-Brahmaputra": 54,
-        "Murray": 100,
+
+    defaults = {
+        'catchments': {
+            # Catchments with name as used in make_catchment_plots and
+            # associated ID used in the catchment mask netCDF file
+            "Amazon": 94,
+            "Parana": 98,
+            "Mackenzie": 76,
+            "Mississippi": 86,
+            "Danube": 14,
+            "Congo": 68,
+            "Niger_Malanville": 65,
+            "Nile": 60,
+            "Lena": 40,
+            "Yangtze-Kiang": 52,
+            "Ganges-Brahmaputra": 54,
+            "Murray": 100,
+        },
+        'mrro': {
+            'Amazon': 1194.63,
+            'Congo': 365.45,
+            'Danube': 250.75,
+            'Ganges-Brahmaputra': 672.11,
+            'Lena': 199.61,
+            'Mackenzie': 173.87,
+            'Mississippi': 182.12,
+            'Murray': 8.20,
+            'Niger_Malanville': 31.49,
+            'Nile': 48.72,
+            'Parana': 202.87,
+            'Yangtze-Kiang': 531.33,
+        },
+        'pr': {
+            'Amazon': 2210.25,
+            'Congo': 1571.41,
+            'Danube': 808.04,
+            'Ganges-Brahmaputra': 1405.84,
+            'Lena': 387.01,
+            'Mackenzie': 450.16,
+            'Mississippi': 897.18,
+            'Murray': 474.62,
+            'Niger_Malanville': 437.90,
+            'Nile': 655.62,
+            'Parana': 1314.66,
+            'Yangtze-Kiang': 1074.79,
+        },
+        'evspsbl': {
+            'Amazon': 1015.62,
+            'Congo': 1205.96,
+            'Danube': 557.29,
+            'Ganges-Brahmaputra': 733.73,
+            'Lena': 187.40,
+            'Mackenzie': 276.29,
+            'Mississippi': 715.06,
+            'Murray': 466.42,
+            'Niger_Malanville': 406.41,
+            'Nile': 606.90,
+            'Parana': 1111.80,
+            'Yangtze-Kiang': 543.46,
+        }
     }
 
-    mrro = {
-        'Amazon': 1194.63,
-        'Congo': 365.45,
-        'Danube': 250.75,
-        'Ganges-Brahmaputra': 672.11,
-        'Lena': 199.61,
-        'Mackenzie': 173.87,
-        'Mississippi': 182.12,
-        'Murray': 8.20,
-        'Niger_Malanville': 31.49,
-        'Nile': 48.72,
-        'Parana': 202.87,
-        'Yangtze-Kiang': 531.33,
-    }
-
-    pr = {
-        'Amazon': 2210.25,
-        'Congo': 1571.41,
-        'Danube': 808.04,
-        'Ganges-Brahmaputra': 1405.84,
-        'Lena': 387.01,
-        'Mackenzie': 450.16,
-        'Mississippi': 897.18,
-        'Murray': 474.62,
-        'Niger_Malanville': 437.90,
-        'Nile': 655.62,
-        'Parana': 1314.66,
-        'Yangtze-Kiang': 1074.79,
-    }
-
-    evspsbl = {
-        'Amazon': 1015.62,
-        'Congo': 1205.96,
-        'Danube': 557.29,
-        'Ganges-Brahmaputra': 733.73,
-        'Lena': 187.40,
-        'Mackenzie': 276.29,
-        'Mississippi': 715.06,
-        'Murray': 466.42,
-        'Niger_Malanville': 406.41,
-        'Nile': 606.90,
-        'Parana': 1111.80,
-        'Yangtze-Kiang': 543.46,
-    }
+    return defaults
 
 
 def format_coef_plot(ax):
-    """ Moves axis from border to center, adapts ticks and labels accordingly
+    """Move axis from border to center, adapts ticks and labels accordingly.
     Parameters
     ----------
     ax : object
         plot axis object
     """
+
     # Add infos to axis
     ax.xaxis.set_label_coords(0.5, -0.025)
     ax.yaxis.set_label_coords(-0.025, 0.5)
@@ -158,7 +161,7 @@ def format_coef_plot(ax):
 
 
 def data2file(cfg, filename, title, filedata):
-    """ Output data dictionary into ascii file
+    """Write data dictionary into ascii file.
     Parameters
     ----------
     cfg : dict
@@ -173,22 +176,22 @@ def data2file(cfg, filename, title, filedata):
 
     # Write experiment data
     filepath = os.path.join(cfg[diag.names.WORK_DIR], filename)
-    with open(filepath, 'w') as f:
-        f.write(title + '\n\n')
+    with open(filepath, 'w') as out:
+        out.write(title + '\n\n')
         for river, value in sorted(filedata.items()):
-            f.write('{:25} : {:8.2f}\n'.format(river, value))
+            out.write('{:25} : {:8.2f}\n'.format(river, value))
 
 
 def write_plotdata(cfg, plotdata, catch_info, reference):
-    """ Output catchment averaged values for all datasets.
+    """Write catchment averaged values for all datasets.
     Parameters
     ----------
     cfg : dict
         Configuration dictionary of the recipe
     plotdata : dict
         Dictionary containing the catchment averages
-    catch_info : object
-        Object containing catchment names, IDs, and reference data
+    catch_info : dict
+        Dictionary containing catchment names, IDs, and reference data
     reference : str
         String containing name of the reference dataset
     """
@@ -208,13 +211,13 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
             if var not in ref_vars:
                 filename = '_'.join([var, 'reference']) + '.txt'
                 title = " ".join([reference, metric, unit])
-                filedata = getattr(catch_info, var)
+                filedata = catch_info[var]
                 data2file(cfg, filename, title, filedata)
                 ref_vars.append(var)
 
 
 def get_expdata(expdict, refdict):
-    """ Get list with catchment averages for experiment and reference
+    """Get list with catchment averages for experiment and reference.
     sorted according to river list from reference
     Parameters
     ----------
@@ -234,7 +237,7 @@ def get_expdata(expdict, refdict):
 
 
 def prep_barplot(title, rivers, var):
-    """ Prepare barplot
+    """Prepare barplot.
     Parameters
     ----------
     title : str
@@ -244,6 +247,7 @@ def prep_barplot(title, rivers, var):
     var : str
         short name of the actual variable
     """
+
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
@@ -266,7 +270,7 @@ def prep_barplot(title, rivers, var):
 
 
 def prep_scatplot(title, coeftype):
-    """ Prepare scatterplot for different coefficients
+    """Prepare scatterplot for different coefficients.
     Parameters
     ----------
     title : str
@@ -274,6 +278,7 @@ def prep_scatplot(title, coeftype):
     coeftype : str
         string indicting plot type [prbias,etcoef]
     """
+
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
@@ -290,7 +295,7 @@ def prep_scatplot(title, coeftype):
 
 
 def add_legend(fig, rivers, markerlist):
-    """ Prepare scatterplot for different coefficients
+    """Add scatter plot legend with separate axis.
     Parameters
     ----------
     fig : obj
@@ -305,14 +310,14 @@ def add_legend(fig, rivers, markerlist):
     fig.subplots_adjust(bottom=0.30)
     marker = cycle(markerlist)
     caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-    for i, label in enumerate(rivers):
+    for label in rivers:
         caxe.scatter([], [], marker=next(marker), label=label)
     caxe.legend(ncol=3, numpoints=1, loc="lower center", mode="expand")
     caxe.set_axis_off()
 
 
 def finish_plot(fig, pltdir, name, pdf):
-    """ Save actual figure to either png or pdf
+    """Save actual figure to either png or pdf.
     Parameters
     ----------
     fig : obj
@@ -324,6 +329,7 @@ def finish_plot(fig, pltdir, name, pdf):
     pdf : obj
         pdf object collection all pages in case of pdf output
     """
+
     import matplotlib.pyplot as plt
     if '-bias' in name:
         plt.tight_layout()
@@ -336,19 +342,19 @@ def finish_plot(fig, pltdir, name, pdf):
 
 
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
-    """ Plot catchment averages for precipitation, evaporation
-        runoff as bar plots and relation of derived quantities.
+    """Plot catchment averages for different metrics.
     Parameters
     ----------
     cfg : dict
         Configuration dictionary of the recipe
     plotdata : dict
         Dictionary containing the catchment averages
-    catch_info : object
-        Object containing catchment names, IDs, and reference data
+    catch_info : dict
+        Dictionary containing catchment names, IDs, and reference data
     reference : str
         String containing name of the reference dataset
     """
+
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_pdf import PdfPages
 
@@ -371,7 +377,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
         # 1. Variable biases
         for var in plotdata.keys():
             rivers, refdata[var], expdata[var] = get_expdata(
-                plotdata[var][identifier], getattr(catch_info, var))
+                plotdata[var][identifier], catch_info[var])
             absdiff[var] = expdata[var] - refdata[var]
             reldiff[var] = absdiff[var] / refdata[var] * 100
             xrivers = range(len(rivers))
@@ -419,7 +425,7 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
 
 def get_catchment_data(cfg):
-    """ Read and prepare catchment mask
+    """read and prepare catchment mask.
     Parameters
     ----------
     cfg : dict
@@ -438,8 +444,9 @@ def get_catchment_data(cfg):
 
 
 def get_sim_data(cfg, datapath, catchment_cube):
-    """ Read netcdf data, check units, aggregate to long term mean
-    yearly sum and regrid to resolution of catchment mask
+    """Read and postprocess netcdf data from experiments.
+    Check units, aggregate to long term mean yearly sum and
+    regrid to resolution of catchment mask.
     Parameters
     ----------
     cfg : dict
@@ -451,12 +458,10 @@ def get_sim_data(cfg, datapath, catchment_cube):
     """
 
     datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
-    varlist = diag.Variables(cfg)
-    var = datainfo['short_name']
     identifier = "_".join(
         [datainfo['dataset'].upper(), datainfo['exp'], datainfo['ensemble']])
     # Load data into iris cube
-    new_cube = iris.load(datapath, varlist.standard_names())[0]
+    new_cube = iris.load(datapath, diag.Variables(cfg).standard_names())[0]
     # Check for expected unit
     if new_cube.units != 'kg m-2 s-1':
         raise ValueError('Unit [kg m-2 s-1] is expected for ',
@@ -482,15 +487,15 @@ def get_sim_data(cfg, datapath, catchment_cube):
     m_grid = [iris.analysis.Linear(), iris.analysis.AreaWeighted()]
     mean_cube_regrid = mean_cube.regrid(catchment_cube, m_grid[1])
 
-    return var, identifier, mean_cube_regrid
+    return datainfo['short_name'], identifier, mean_cube_regrid
 
 
 def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
-    """ Computes area weighted averages for river catchments
+    """Compute area weighted averages for river catchments.
     Parameters
     ----------
-    catch_info : object
-        Object containing catchment names, IDs, and reference data
+    catch_info : dict
+        Dictionary containing catchment names, IDs, and reference data
     catch_cube : obj
         iris cube object containing the catchment mask
     catch_areas: obj
@@ -498,9 +503,8 @@ def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
     sim_cube : obj
         iris cube object containing the simulation data
     """
-
     avg = {}
-    for river, rid in catch_info.catchments.items():
+    for river, rid in catch_info['catchments'].items():
         data_catch = np.ma.masked_where(
             catch_cube.data.astype(np.int) != rid, sim_cube.data)
         area_catch = np.ma.masked_where(
@@ -510,11 +514,11 @@ def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
 
 
 def update_reference(catch_info, reference, model, rivervalues, var):
-    """ Updates reference catchment averages
+    """Update reference catchment averages.
     Parameters
     ----------
-    catch_info : object
-        Object containing catchment names, IDs, and reference data
+    catch_info : dict
+        Dictionary containing catchment names, IDs, and reference data
     reference : str
         name of the reference dataset
     model : str
@@ -527,11 +531,11 @@ def update_reference(catch_info, reference, model, rivervalues, var):
 
     if reference != model and reference != 'default':
         raise ValueError('Reference must be the same for all variables!')
-    setattr(catch_info, var, rivervalues)
+    catch_info[var] = rivervalues
 
 
 def update_plotdata(identifier, plotdata, rivervalues, var):
-    """ Updates reference catchment averages
+    """Update simulation catchment averages.
     identifier : str
         string consisting of dataset, experiment and ensemble information
     plotdata : dict
@@ -541,17 +545,17 @@ def update_plotdata(identifier, plotdata, rivervalues, var):
     var : str
         short name of the variable
     """
+
     if var not in plotdata.keys():
         plotdata[var] = {}
     if identifier in plotdata[var].keys():
-        raise StandardError('Variable', var, 'already exists in plot dict')
+        raise ValueError('Variable', var, 'already exists in plot dict')
     else:
         plotdata[var][identifier] = rivervalues
 
 
 def main(cfg):
     """Run the diagnostic.
-
     Parameters
     ----------
     cfg : dict
@@ -573,7 +577,7 @@ def main(cfg):
     # to check: Correct way to read auxillary data using recipes?
     catch_cube, catch_areas = get_catchment_data(cfg)
 
-    catch_info = defaults()
+    catch_info = get_defaults()
     reference = 'default'
 
     # Read data, convert units and compute long term means
@@ -604,11 +608,11 @@ def main(cfg):
 
     # Write regridded and temporal aggregated netCDF data files (one per model)
     # to do: update attributes, something fishy with unlimited dimension
-    for model in allcubes.keys():
+    for model, mcube in allcubes.items():
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join(['postproc', model]) + '.nc')
         if cfg[diag.names.WRITE_NETCDF]:
-            iris.save(allcubes[model], filepath)
+            iris.save(mcube, filepath)
             logger.info("Writing %s", filepath)
 
     # Write plotdata as ascii files for user information
