@@ -252,7 +252,7 @@ for (i in 1 : length(projection_files)){
 ### SON
 dtr_rcp <- array(dim = c(4, length(lon), length(lat)))
 for (j in 1 : 4){
-    dtr_rcp[j,, ] <- Mean1Dim(dtr_indicator$indicator[, j,,,, ], 1)
+    dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , , , ], 1)#nolint
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
 PlotLayout( # nolint
@@ -309,7 +309,7 @@ defdata <- ncvar_def(
 file <- nc_create(
   paste0(
     plot_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
-    start_projection, "_", end_projection,"_",
+    start_projection, "_", end_projection, "_",
     start_historical, "_", end_historical, ".nc"
   ),
   list(defdata)

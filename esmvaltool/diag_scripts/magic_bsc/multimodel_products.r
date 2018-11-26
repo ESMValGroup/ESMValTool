@@ -23,7 +23,7 @@ library(abind)
 library(ggplot2)
 library(yaml)
 library(ncdf4)
-library(multiApply)
+library(multiApply)# nolint
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -86,20 +86,22 @@ time_series_plot <- params$time_series_plot
 var0 <- unlist(var0)
 climatology_filenames <- fullpath_filenames[climatology_files]
 ref_nc <- nc_open(fullpath_filenames[climatology_files][1])
-lat <- ncvar_get(ref_nc,"lat")
-lon <- ncvar_get(ref_nc,"lon")
+lat <- ncvar_get(ref_nc, "lat")
+lon <- ncvar_get(ref_nc, "lon")
 units <- ncatt_get(ref_nc, var0, "units")$value
 calendar <- ncatt_get(ref_nc, "time", "calendar")$value
-long_names <-  ncatt_get(ref_nc,var0,"long_name")$value
-time <-  ncvar_get(ref_nc,"time")
-reference_data <- InsertDim(ncvar_get(ref_nc, var0),1,1)
-start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time", "units")$value,11, 29 ))
+long_names <-  ncatt_get(ref_nc, var0, "long_name")$value
+time <-  ncvar_get(ref_nc, "time")
+reference_data <- InsertDim(ncvar_get(ref_nc, var0), 1, 1) # nolint
+start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time",
+                                        "units")$value, 11, 29))
 time <- as.Date(time, origin = start_date, calendar = calendar)
 projection <- "NULL"
 nc_close(ref_nc)
 for (i in 2 : length(fullpath_filenames[climatology_files])) {
   ref_nc <- nc_open(fullpath_filenames[climatology_files][i])
-  reference_data <- abind(reference_data, InsertDim(ncvar_get(ref_nc, var0),1,1),along = 1)
+  reference_data <- abind(reference_data,
+                InsertDim(ncvar_get(ref_nc, var0), 1, 1), along = 1) # nolint
   nc_close(ref_nc)
 }
 attr(reference_data, "Variables")$dat1$time <- time
@@ -114,7 +116,7 @@ names(dim(reference_data)) <- c("model", "lon", "lat", "time")
 # nolint end
 time <- attr(reference_data, "Variables")$dat1$time
 attributes(time)$variables$time$calendar <- calendar
-if ((end_climatology-start_climatology + 1) * 12 == length(time)) {
+if ( (end_climatology - start_climatology + 1) * 12 == length(time) ) {
   time <- seq(
     as.Date(
       paste(start_climatology, "01", "01", sep = "-"),
@@ -128,7 +130,7 @@ if ((end_climatology-start_climatology + 1) * 12 == length(time)) {
   )
 }
 
-num_models <- dim(reference_data)[which(names(dim(reference_data))=="model")]
+num_models <- dim(reference_data)[which(names(dim(reference_data)) == "model")]
 reference_data <- as.vector(reference_data)
 dim(reference_data) <- c(
   num_models,
@@ -137,7 +139,7 @@ dim(reference_data) <- c(
   lat = length(lat),
   time = length(time)
 )
-reference_data <- aperm(reference_data, c(1,2,5,4,3))
+reference_data <- aperm(reference_data, c(1, 2, 5, 4, 3))
 attr(reference_data, "Variables")$dat1$time <- time
 names(dim(reference_data)) <- c("model", "var", "time", "lat", "lon")
 # nolint start
@@ -171,14 +173,14 @@ if (moninf <= monsup) {
   reference_seasonal_mean <- adrop(adrop(reference_seasonal_mean, 2), 2)
 } else {
   if (monsup == 2 & moninf == 12) {
-    reference_seasonal_mean <- SeasonSelect(
+    reference_seasonal_mean <- SeasonSelect( #nolint
       reference_data, season = "DJF", dates = time, calendar = calendar
     )$data
             # Adding one NA december at the begining
     time_dim <- which(names(dim(reference_seasonal_mean)) == "time")
     dims <- dim(reference_seasonal_mean)
     empty_array <- rep(NA, prod(dims[-time_dim]))
-    dims[time_dim] = 1
+    dims[time_dim] <- 1
     dim(empty_array) <- dims[-time_dim]
     nom <- names(dim(reference_seasonal_mean))
     reference_seasonal_mean <- abind(
@@ -190,38 +192,43 @@ if (moninf <= monsup) {
     reference_seasonal_mean <- Apply(
       reference_seasonal_mean,
       target_dims = time_dim,
-      fun = function(x){x[1 : (length(x) -1)]}
+      fun = function (x) {
+            x[1 : (length(x) - 1)]
+            }
     )$output1
     dims <- dim(reference_seasonal_mean)
     time_dim <- which(names(dim(reference_seasonal_mean)) == "time")
     dims <- append(dims, c(3, dims[time_dim] / 3), after = time_dim)
     dims <- dims[-time_dim]
     dim(reference_seasonal_mean) <- dims
-    names(dim(reference_seasonal_mean))[c(time_dim, time_dim + 1)] <- c("season", "year")
-    reference_seasonal_mean <- Mean1Dim(reference_seasonal_mean, posdim = time_dim)
+    names(dim(reference_seasonal_mean))[c(time_dim, time_dim + 1)] <-
+                                                            c("season", "year")
+    reference_seasonal_mean <- Mean1Dim(reference_seasonal_mean,
+                                        posdim = time_dim)
   }
 }
 
 margins <- list(c(1 : length(dim(reference_seasonal_mean)))[-c(time_dim + 1)])
 years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
-climatology <- Mean1Dim(reference_seasonal_mean, years_dim)
-
+climatology <- Mean1Dim(reference_seasonal_mean, years_dim) #nolint
 anomaly_filenames <- fullpath_filenames[anomaly_files]
 rcp_nc <- nc_open(anomaly_filenames[1])
-lat <- ncvar_get(rcp_nc,"lat")
-lon <- ncvar_get(rcp_nc,"lon")
+lat <- ncvar_get(rcp_nc, "lat")
+lon <- ncvar_get(rcp_nc, "lon")
 units <- ncatt_get(rcp_nc, var0, "units")$value
 calendar <- ncatt_get(rcp_nc, "time", "calendar")$value
-long_names <-  ncatt_get(rcp_nc,var0,"long_name")$value
-time <-  ncvar_get(rcp_nc,"time")
-rcp_data <- InsertDim(ncvar_get(rcp_nc, var0),1,1)
-start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time", "units")$value,11, 29 ))
+long_names <-  ncatt_get(rcp_nc, var0, "long_name")$value
+time <-  ncvar_get(rcp_nc, "time")
+rcp_data <- InsertDim(ncvar_get(rcp_nc, var0), 1, 1) # nolint
+start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time",
+                                        "units")$value, 11, 29))
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
 nc_close(rcp_nc)
 for (i in 2 : length(anomaly_filenames)) {
   rcp_nc <- nc_open(anomaly_filenames[i])
-  rcp_data <- abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0),1,1),along = 1)
+  rcp_data <- abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0), 1, 1), #nolint
+                                        along = 1)
   nc_close(rcp_nc)
 }
 attr(rcp_data, "Variables")$dat1$time <- time
@@ -232,12 +239,12 @@ names(dim(rcp_data)) <- c("model", "lon", "lat", "time")
 #PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
 #dev.off()
 # ------------------------------
-# Provisional solution to error in dimension order:
-# nolint end
+# Provisional solution to error in dimension order
 #if (attributes(time)$variables$time$calendar != calendar) {
 #  print("Different calendars between climatology and anomaly.")
 #}
-if ( (end_anomaly-start_anomaly + 1) * 12 == length(time)) {
+# nolint end
+if ( (end_anomaly - start_anomaly + 1) * 12 == length(time)) {
   time <- seq(
     as.Date(
       paste(start_anomaly, "01", "01", sep = "-"),
@@ -250,7 +257,7 @@ if ( (end_anomaly-start_anomaly + 1) * 12 == length(time)) {
     "month"
   )
 }
-num_models <- dim(rcp_data)[which(names(dim(rcp_data))=="model")]
+num_models <- dim(rcp_data)[which(names(dim(rcp_data)) == "model")]
 rcp_data <- as.vector(rcp_data)
 dim(rcp_data) <- c(
   num_models,
@@ -259,7 +266,7 @@ dim(rcp_data) <- c(
   lat = length(lat),
   time = length(time)
 )
-rcp_data <- aperm(rcp_data, c(1,2,5,4,3))
+rcp_data <- aperm(rcp_data, c(1, 2, 5, 4, 3))
 names(dim(rcp_data)) <- c("model", "var", "time", "lat", "lon")
 attr(rcp_data, "Variables")$dat1$time <- time
 
@@ -298,7 +305,7 @@ if (moninf <= monsup) {
   rcp_seasonal_mean <- adrop(adrop(rcp_seasonal_mean, 2), 2)
 } else {
   if (monsup == 2 & moninf == 12) {
-    rcp_seasonal_mean <- SeasonSelect(
+    rcp_seasonal_mean <- SeasonSelect( #nolint
       rcp_data, season = "DJF",
       dates = time,
       calendar = calendar
@@ -306,7 +313,7 @@ if (moninf <= monsup) {
     time_dim <- which(names(dim(rcp_seasonal_mean)) == "time")
     dims <- dim(rcp_seasonal_mean)
     empty_array <- rep(NA, prod(dims[-time_dim]))
-    dims[time_dim] = 1
+    dims[time_dim] <- 1
     dim(empty_array) <- dims[-time_dim]
     nom <- names(dim(rcp_seasonal_mean))
     rcp_seasonal_mean <- abind(
@@ -315,23 +322,26 @@ if (moninf <= monsup) {
     borrar <- dim(rcp_seasonal_mean)[time_dim]
     names(dim(rcp_seasonal_mean)) <- nom
     dimensiones <- 1 : length(dim(rcp_seasonal_mean))
-    rcp_seasonal_mean <- Apply(
+    rcp_seasonal_mean <- Apply( # nolint
       rcp_seasonal_mean,
       target_dims = time_dim,
-      fun = function(x){x[1 : (length(x) -1)]}
+      fun = function (x) {
+            x[1 : (length(x) - 1)]
+            }
     )$output1
     dims <- dim(rcp_seasonal_mean)
     time_dim <- which(names(dim(rcp_seasonal_mean)) == "time")
     dims <- append(dims, c(3, dims[time_dim] / 3), after = time_dim)
     dims <- dims[-time_dim]
     dim(rcp_seasonal_mean) <- dims
-    names(dim(rcp_seasonal_mean))[c(time_dim, time_dim + 1)] <- c("season", "year")
+    names(dim(rcp_seasonal_mean))[c(time_dim, time_dim + 1)] <-
+                                                            c("season", "year")
     rcp_seasonal_mean <- Mean1Dim(rcp_seasonal_mean, posdim = time_dim)
     rcp_seasonal_mean <- aperm(rcp_seasonal_mean, c(2, 1, 3, 4))
   }
 }
 years_dim <- which(names(dim(rcp_seasonal_mean)) == "year")
-climatology <- InsertDim(
+climatology <- InsertDim( # nolint
   climatology,
   years_dim,
   lendim = dim(rcp_seasonal_mean)[years_dim]
@@ -356,18 +366,17 @@ metadata <- list(time = list(
   long_name = "time",
   units = "days since 1970-01-01 00:00:00",
   prec = "double",
-  dim = list(list(name="time", unlim = FALSE))
+  dim = list(list(name = "time", unlim = FALSE))
 ))
 attr(time, "variables") <- metadata
 
 #Save the single model anomalies
 for (mod in 1 : length(model_names)) {
-    data <- anomaly[mod, , , ]
-  #data <- anomaly[mod,1,1, , ,]
+    data <- anomaly[mod, , , ] # nolint
   data <- aperm(data, c(2, 3, 1))
   names(dim(data)) <- c("lat", "lon", "time")
   metadata <- list(variable = list(
-    dim = list(list(name="time", unlim = FALSE)),
+    dim = list(list(name = "time", unlim = FALSE)),
     units = units
   ))
   names(metadata)[1] <- var0
@@ -379,30 +388,30 @@ for (mod in 1 : length(model_names)) {
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
 
-  ArrayToNetCDF(
+  ArrayToNetCDF( # nolint
     variable_list,
     paste0(
       plot_dir,  "/", var0, "_", months, "_anomaly_", model_names[mod],
-      "_", start_anomaly, "_", end_anomaly,"_", start_climatology, "_",
+      "_", start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
       end_climatology, ".nc"
     )
   )
 }
 
-model_anomalies <- WeightedMean(
+model_anomalies <- WeightedMean( # nolint
   anomaly,
   lon = as.vector(lon),
   lat = as.vector(lat),
   mask = NULL
 )
 if (!is.null(params$running_mean)) {
-  model_anomalies <- Smoothing(
+  model_anomalies <- Smoothing( # nolint
     model_anomalies,
     runmeanlen = params$running_mean,
     numdimt = 2
   )
 }
-data_frame <- as.data.frame.table(t(model_anomalies[,]))
+data_frame <- as.data.frame.table(t(model_anomalies[, ]))
 years <- rep(start_anomaly : end_anomaly, dim(model_anomalies)[1])
 data_frame$Year <- c(years)
 names(data_frame)[2] <- "Model"
@@ -415,24 +424,39 @@ if (!is.null(time_series_plot)) {
   g <- ggplot(
     data_frame,
     aes(x = Year, y = Freq, color = Model)) + theme_bw() +
-        geom_line() + ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") + theme(text=element_text(size = font_size),legend.text=element_text(size = font_size),
-                                                                                    axis.title=element_text(size = font_size)) +
-         stat_summary(data =  data_frame, fun.y= "mean", mapping = aes(x = data_frame$Year, y = data_frame$Freq, group = interaction(data_frame[2,3]),
-                                                                       color = data_frame$Model), geom = "line", size = 1) +
-         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly,") - ", "(", start_climatology, "-", end_climatology,")"))
+        geom_line() + ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") +
+      theme(text = element_text(size = font_size),
+            legend.text = element_text(size = font_size),
+            axis.title = element_text(size = font_size)) +
+      stat_summary(data =  data_frame, fun.y = "mean",
+            mapping = aes(x = data_frame$Year, y = data_frame$Freq,
+            group = interaction(data_frame[2, 3]),
+            color = data_frame$Model), geom = "line", size = 1) +
+         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-",
+         end_anomaly, ") - ", "(", start_climatology, "-", end_climatology,
+         ")"))
 } else {
   g <- ggplot(data_frame, aes(x = Year, y = Freq)) + theme_bw() +
-        ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") + theme(text=element_text(size = font_size),legend.text=element_text(size = font_size),
-                                                                      axis.title=element_text(size = font_size)) +
-        stat_summary(data =  data_frame, fun.y= "mean", mapping = aes(x = data_frame$Year, y = data_frame$Freq, group = interaction(data_frame[2,3]),
-                                                                       color = data_frame$Model), geom = "line", size = 0.8) +
-        stat_summary(data =  data_frame, geom = "ribbon", fun.ymin = "min", fun.ymax = "max", mapping = aes(x = data_frame$Year, y = data_frame$Freq, group = interaction(data_frame[2,3])), alpha = 0.3, color = "red", fill = "red") +
-         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly,") - ", "(", start_climatology, "-", end_climatology,")"))
+        ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") +
+      theme(text = element_text(size = font_size),
+            legend.text = element_text(size = font_size),
+            axis.title = element_text(size = font_size)) +
+        stat_summary(data =  data_frame, fun.y = "mean",
+            mapping = aes(x = data_frame$Year, y = data_frame$Freq,
+            group = interaction(data_frame[2, 3]),
+            color = data_frame$Model), geom = "line", size = 0.8) +
+        stat_summary(data =  data_frame, geom = "ribbon", fun.ymin = "min",
+            fun.ymax = "max", mapping = aes(x = data_frame$Year,
+            y = data_frame$Freq, group = interaction(data_frame[2, 3])),
+            alpha = 0.3, color = "red", fill = "red") +
+         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-",
+         end_anomaly, ") - ", "(", start_climatology, "-", end_climatology,
+         ")"))
 }
 ggsave(
   filename = paste0(
-    plot_dir, "/", "Area-averaged ", var0, "_",months, "_multimodel-anomaly_",
-    start_anomaly, "_", end_anomaly,"_", start_climatology, "_",
+    plot_dir, "/", "Area-averaged ", var0, "_", months, "_multimodel-anomaly_",
+    start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
     end_climatology, ".png"),
   g,
   device = NULL
@@ -440,8 +464,8 @@ ggsave(
 
 if (!is.null(agreement_threshold)) {
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
-  agreement <- AnoAgree(
-    multi_year_anomaly + rnorm(length(unique(model_names)) * length(lat) * length(lon)),
+  agreement <- AnoAgree(multi_year_anomaly + # nolint
+    rnorm(length(unique(model_names)) * length(lat) * length(lon)),
     membersdim = model_dim
   )
 } else {
@@ -449,7 +473,7 @@ if (!is.null(agreement_threshold)) {
   agreement <- NULL
 }
 
-colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)),abs(min(data))))
+colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)), abs(min(data))))
 brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
 title <- paste0(
   months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly,
@@ -457,7 +481,7 @@ title <- paste0(
 )
 data <- drop(Mean1Dim(multi_year_anomaly, model_dim))
 
-PlotEquiMap(
+PlotEquiMap( # nolint
   data,
   lat = lat,
   lon = lon,
@@ -467,8 +491,8 @@ PlotEquiMap(
   filled.continents = FALSE,
   dots = drop(agreement) >= agreement_threshold,
   fileout = paste0(
-    plot_dir, "/", var0, "_",months, "_multimodel-anomaly_", start_anomaly,
-    "_", end_anomaly,"_", start_climatology, "_", end_climatology, ".png"
+    plot_dir, "/", var0, "_", months, "_multimodel-anomaly_", start_anomaly,
+    "_", end_anomaly, "_", start_climatology, "_", end_climatology, ".png"
   )
 )
 model_names_filename <- paste(model_names, collapse = "_")
@@ -494,7 +518,7 @@ defdata <- ncvar_def(
   name = "data",
   units = units,
   dim = list(lat = dimlat, lon = dimlon),
-  longname = paste("Mean",long_names)
+  longname = paste("Mean", long_names)
 )
 defagreement <- ncvar_def(
   name = "agreement",
@@ -504,8 +528,8 @@ defagreement <- ncvar_def(
 
 file <- nc_create(
   paste0(
-    plot_dir, "/", var0, "_",months, "_multimodel-anomaly_",
-    model_names_filename,"_", start_anomaly, "_", end_anomaly,"_",
+    plot_dir, "/", var0, "_", months, "_multimodel-anomaly_",
+    model_names_filename, "_", start_anomaly, "_", end_anomaly, "_",
     start_climatology, "_", end_climatology, ".nc"),
   list(defdata, defagreement)
 )

@@ -1,2 +1,14 @@
 yaml
 lintr
+Rcpp
+dotCall64
+abind
+climdex.pcic
+ClimProjDiags
+ggplot2
+gridExtra
+multiApply
+ncdf4
+RColorBrewer
+s2dverification
+plyr

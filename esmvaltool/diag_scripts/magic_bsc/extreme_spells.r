@@ -3,20 +3,16 @@ library(s2dverification)
 library(multiApply) # nolint
 library(ncdf4)
 library(climdex.pcic)
-#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Threshold.R")
 library(parallel)
-#source("https://earth.bsc.es/gitlab/es/s2dverification/raw/develop-Climdex/R/Heatwaves.R")
-
-#library("magic.bsc", lib.loc = "/home/Earth/nperez/git/magic.bsc.Rcheck")
 library(ClimProjDiags) # nolint
 
-#Parsing input file paths and creating output dirs
+
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
-## Create working dirs if they do not exist
+
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
@@ -63,13 +59,14 @@ var0 <- unlist(var0)
 historical_data <- ncvar_get(hist_nc, var0)
 
 names(dim(historical_data)) <- rev(names(hist_nc$dim))[-1]
-lat <- ncvar_get(hist_nc,"lat")
-lon <- ncvar_get(hist_nc,"lon")
+lat <- ncvar_get(hist_nc, "lat")
+lon <- ncvar_get(hist_nc, "lon")
 units <- ncatt_get(hist_nc, var0, "units")$value
 calendar <- ncatt_get(hist_nc, "time", "calendar")$value
-long_names <-  ncatt_get(hist_nc,var0,"long_name")$value
-time <-  ncvar_get(hist_nc,"time")
-start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time", "units")$value,11, 29 ))
+long_names <-  ncatt_get(hist_nc, var0, "long_name")$value
+time <-  ncvar_get(hist_nc, "time")
+start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time",
+                                    "units")$value, 11, 29))
 nc_close(hist_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
@@ -94,16 +91,17 @@ base_range <- c(
   as.numeric(substr(start_reference, 1, 4)),
   as.numeric(substr(end_reference, 1, 4))
 )
-threshold <- Threshold(
-  historical_data, base.range = base_range, calendar = calendar, qtiles = qtile, ncores = NULL
+threshold <- Threshold(historical_data, base.range = base_range,
+                       calendar = calendar, qtiles = qtile, ncores = NULL
 )
 
 projection_filenames <-  fullpath_filenames[projection_files]
 for (i in 1 : length(projection_filenames)) {
   proj_nc <- nc_open(projection_filenames[i])
   projection_data <- ncvar_get(proj_nc, var0)
-  time <-  ncvar_get(proj_nc,"time")
-  start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time", "units")$value,11, 29 ))
+  time <-  ncvar_get(proj_nc, "time")
+  start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time",
+                                            "units")$value, 11, 29))
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   time <- as.Date(time, origin = start_date, calendar = calendar)
   nc_close(proj_nc)
@@ -132,17 +130,20 @@ for (i in 1 : length(projection_filenames)) {
   )
 
   if (season == "summer") {
-    heatwave_season <- heatwave$result[seq(2, dim(heatwave$result)[1] - 2, by = 4), 1, 1,, ]
+    heatwave_season <- heatwave$result[seq(2, dim(heatwave$result)[1] - 2,
+                                            by = 4), 1, 1, , ]#nolint
     years <-  heatwave$years[seq(2, length(heatwave$years) - 2, by = 4)]
-  } else if (season == "winter"){
-  ##Select winter season
-    heatwave_season <- heatwave$result[seq(1, dim(heatwave$result)[1] - 2, by = 4), 1, 1,, ]
+  } else if (season == "winter") {
+    heatwave_season <- heatwave$result[seq(1, dim(heatwave$result)[1] - 2,
+                                            by = 4), 1, 1, , ]#nolint
     years <-  heatwave$years[seq(1, length(heatwave$years) - 1, by = 4)]
   } else if (season == "spring") {
-    heatwave_season <- heatwave$result[seq(3, dim(heatwave$result)[1] - 2, by = 4), 1, 1,, ]
+    heatwave_season <- heatwave$result[seq(3, dim(heatwave$result)[1] - 2,
+                                            by = 4), 1, 1, , ]#nolint
     years <-  heatwave$years[seq(3, length(heatwave$years) - 2, by = 4)]
   } else {
-    heatwave_season <- heatwave$result[seq(4, dim(heatwave$result)[1] - 2, by = 4), 1, 1,, ]
+    heatwave_season <- heatwave$result[seq(4, dim(heatwave$result)[1] - 2,
+                                            by = 4), 1, 1, , ]#nolint
     years <-  heatwave$years[seq(4, length(heatwave$years) - 2, by = 4)]
   }
 
@@ -163,29 +164,26 @@ for (i in 1 : length(projection_filenames)) {
 
   dimlon <- ncdim_def(
     name = "lon", units = "degrees_east",
-    vals = as.vector(lon), longname = "longitude"
-  )
+    vals = as.vector(lon), longname = "longitude")
   dimlat <- ncdim_def(
     name = "lat", units = "degrees_north",
-    vals = as.vector(lat), longname = "latitude"
-  )
+    vals = as.vector(lat), longname = "latitude")
   dimtime <- ncdim_def(
     name = "time",  units = "years since 0-0-0 00:00:00",
-    vals = time, longname = "time"
-  )
+    vals = time, longname = "time")
   defdata <- ncvar_def(
     name = "duration", units = "days",
     dim = list(season = dimtime, lat = dimlat, lon = dimlon),
     longname = paste(
-      "Number of days during the peiode", start_projection, "-", end_projection,
+     "Number of days during the peiode", start_projection, "-", end_projection,
       "for", season, "in which", var0, "is", op, "than the", qtile,
       "quantile obtained from", start_reference, "-", end_reference
     )
   )
   file <- nc_create(
     paste0(
-      plot_dir, "/" , var0, "_extreme_spell_duration", season,
-      "_", model_names,"_", rcp_scenario[i], "_", start_projection, "_",
+      plot_dir, "/", var0, "_extreme_spell_duration", season,
+      "_", model_names, "_", rcp_scenario[i], "_", start_projection, "_",
       end_projection, ".nc"
     ),
     list(defdata)
@@ -195,7 +193,7 @@ for (i in 1 : length(projection_filenames)) {
   brks <- seq(0, 40, 4)
   title <- paste0(
     "Days ", season, " ", var0, " ", substr(start_projection, 1, 4), "-",
-    substr(end_projection, 1, 4), " ",op, " the ", qtile * 100,
+    substr(end_projection, 1, 4), " ", op, " the ", qtile * 100,
     "th quantile for ", substr(start_reference, 1, 4), "-",
     substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"
   )
@@ -208,7 +206,7 @@ for (i in 1 : length(projection_filenames)) {
     units = "Days",
     toptitle = title,
     fileout = paste0(
-      plot_dir,"/", var0, "_extreme_spell_duration", season, "_",
+      plot_dir, "/", var0, "_extreme_spell_duration", season, "_",
       model_names, "_", rcp_scenario[i], "_", start_projection, "_",
       end_projection, ".png"
     ),

@@ -285,27 +285,17 @@ if (!is.null(region)) {
   ncvar_put(file, defdata, data)
   nc_close(file)
 } else {
-  data <- data[1, 1,,, ]
+  data <- data[1, 1, , , ] # nolint
   data <- aperm(data, c(3, 2, 1))
   names(dim(data)) <- c("lon", "lat", "time")
   metadata <- list(
     index = list(
-      dim = list(list(name = "time", unlim = FALSE, prec = "double"))
-    )
-  )
+      dim = list(list(name = "time", unlim = FALSE, prec = "double"))))
   names(metadata)[1] <- var0
   attr(data, "variables") <- metadata
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
 
-  # ArrayToNetCDF(
-  #   variable_list,
-  #   paste0(
-  #     plot_dir, "/", var0, "_", paste(model_names, sep="", collapse="_"),
-  #     "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year, "_",
-  #     ".nc"
-  #   )
-  # )
 
   print(paste(
     "Attribute projection from climatological data is saved and,",

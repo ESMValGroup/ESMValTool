@@ -69,13 +69,15 @@ data_nc <- nc_open(fullpath_filenames)
 data <- ncvar_get(data_nc, var0)
 
 names(dim(data)) <- c("lon", "lat", "time")
-lat <- ncvar_get(data_nc,"lat")
-lon <- ncvar_get(data_nc,"lon")
+lat <- ncvar_get(data_nc, "lat")
+lon <- ncvar_get(data_nc, "lon")
 units <- ncatt_get(data_nc, var0, "units")$value
 calendar <- ncatt_get(data_nc, "time", "calendar")$value
-long_names <-  ncatt_get(data_nc,var0,"long_name")$value
-time <-  ncvar_get(data_nc,"time")
-start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time", "units")$value,11, 29 ))
+long_names <-  ncatt_get(data_nc, var0, "long_name")$value
+time <-  ncvar_get(data_nc, "time")
+start_date <- as.POSIXct(
+  substr(ncatt_get(data_nc, "time", "units")$value, 11, 29 )
+)
 nc_close(data_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
@@ -101,11 +103,11 @@ print(length(days))
 print(no_of_years)
 dims <- dim(data)
 dims <- append(
-    dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1
+  dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1
 )
 print("CC")
 print(dims)
-#dims <- dims[-c(1, 4)]
+
 
 dim(data) <- dims
 data <- aperm(data, c(3, 4, 2, 1))
@@ -213,7 +215,7 @@ PlotLayout( #nolint
     Mean1Dim(anom_data_cf_all, 2),
     lon,
     lat,
-    filled.continents = F,
+    filled.continents = FALSE,
     toptitle = paste0(
         seasons, " CF Anomaly from ", model_names,
         " (", start_year, "-", end_year, ")"
@@ -223,7 +225,7 @@ PlotLayout( #nolint
     brks = seq(-0.25, 0.25, 0.05),
     bar_scale = 0.5,
     title_scale = 0.7,
-    axelab = F,
+    axelab = FALSE,
     fileout = paste0(
         plot_dir, "/", "capacity_factor_anomaly_", model_names,
         "_", start_year, "-", end_year, ".png"
@@ -258,7 +260,7 @@ PlotLayout( # nolint
     c(1, 2),
     list(cor13 ^ 2, cor35 ^ 2, cor24 ^ 2, cor15 ^ 2),
     lon, lat, nrow = 2, ncol = 2,
-    filled.continents = F,
+    filled.continents = FALSE,
     toptitle = "Seasonal CF determination coef.",
     titles = c(
         "between cf1 and cf3",
@@ -269,7 +271,7 @@ PlotLayout( # nolint
     brks = c(0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.96, 0.98, 0.99, 1),
     bar_scale = 0.5,
     title_scale = 0.7,
-    axelab = F,
+    axelab = FALSE,
     color_fun = p,
     fileout = paste0(
         plot_dir, "/", "capacity_factor_correlation_maps_", model_names,
@@ -285,7 +287,7 @@ rmse <- function(data, i, j){
     data,
     c(3, 4),
     function(x, y){
-      sqrt(mean( (x[i, ] - x[j, ]) ^ 2, na.rm = T))
+      sqrt(mean( (x[i, ] - x[j, ]) ^ 2, na.rm = TRUE))
     }
   )
 }
@@ -314,7 +316,7 @@ PlotLayout( # nolint
     brks = seq(0, 0.08, 0.01),
     bar_scale = 0.5,
     title_scale = 0.7,
-    axelab = F,
+    axelab = FALSE,
     color_fun = p,
     fileout = paste0(
         plot_dir, "/", "capacity_factor_rmse_maps_", model_names,
