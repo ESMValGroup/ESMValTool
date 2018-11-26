@@ -8,9 +8,7 @@ import shutil
 import sys
 import time
 from collections import OrderedDict
-from datetime import datetime
 
-import iris
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -205,31 +203,6 @@ def variables_available(cfg, short_names):
         if var not in available_short_names:
             return False
     return True
-
-
-def save_iris_cube(cube, path, cfg):
-    """Save iris cube and append ESMValTool information.
-
-    Parameters
-    ----------
-    cube : iris.cube.Cube
-        Cube to be saved.
-    path : str
-        Desired path.
-    cfg : dict
-        Diagnostic script configuration.
-
-    """
-    attr = {
-        'created_by':
-        'ESMValTool version {}'.format(cfg['version']) +
-        ', diagnostic {}'.format(cfg['script']),
-        'creation_date':
-        datetime.utcnow().isoformat(' ') + 'UTC'
-    }
-    cube.attributes.update(attr)
-    iris.save(cube, path)
-    logger.info("Wrote %s", path)
 
 
 def get_cfg(filename=None):

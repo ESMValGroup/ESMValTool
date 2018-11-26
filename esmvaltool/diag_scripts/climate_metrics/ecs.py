@@ -17,10 +17,10 @@ CRESCENDO
 
 Configuration options in recips
 -------------------------------
-plot_ecs_regression : bool, optional
-    Plot the linear regression graph (default: False).
-output_name : str, optional
-    Name of the output netcdf file (default: ecs.nc).
+plot_ecs_regression : bool, optional (default: False)
+    Plot the linear regression graph.
+output_name : str, optional (default: ecs)
+    Name of the output netcdf file.
 
 """
 
@@ -32,8 +32,8 @@ import numpy as np
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    group_metadata, plot, run_diagnostic, save_iris_cube, select_metadata,
-    variables_available, extract_variables)
+    group_metadata, plot, run_diagnostic, save_iris_cube, save_scalar_data,
+    select_metadata, variables_available, extract_variables)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -117,9 +117,6 @@ def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
 
-    print(extract_variables(cfg))
-    print(extract_variables(cfg, as_iris=True))
-
     # Check if tas and rtmt are available
     if not variables_available(cfg, ['tas', 'rtmt']):
         raise ValueError("This diagnostic needs 'tas' and 'rtmt' variables")
@@ -162,20 +159,16 @@ def main(cfg):
         # Save data
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
 
-    # Write data if desired
-    if cfg['write_netcdf']:
-        dataset_coord = iris.coords.AuxCoord(list(ecs), long_name='dataset')
-        cube = iris.cube.Cube(
-            list(ecs.values()),
-            var_name='ecs',
-            long_name='equilibrium_climate_sensitivity',
-            units=cubes['tas_4x'].units,
-            aux_coords_and_dims=[(dataset_coord, 0)])
-
-        # Save file
-        filepath = os.path.join(cfg['work_dir'],
-                                cfg.get('output_name', 'ecs') + '.nc')
-        save_iris_cube(cube, filepath, cfg)
+    # Write data
+    cube_atts = {
+        'var_name': 'ecs',
+        'long_name': 'Equilibrium Climate Sensitivity (ECS)',
+        'units': cubes['tas_4x'].units,
+    }
+    save_scalar_data(ecs,
+                     cfg.get('output_name', 'ecs'),
+                     cfg,
+                     **cube_atts)
 
 
 if __name__ == '__main__':
