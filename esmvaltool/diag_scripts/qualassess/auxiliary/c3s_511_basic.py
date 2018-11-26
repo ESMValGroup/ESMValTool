@@ -38,6 +38,7 @@ from .libs.MD_old.ESMValMD import ESMValMD
 import logging
 from pprint import pprint
 from .libs.predef.ecv_lookup_table import ecv_lookup
+from .libs.predef.color_lookup_table import color_lookup
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -383,11 +384,14 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         # save GCOS requirements
         self.__gcos_dict__ = dict()
-        self.__gcos_dict__.update({"Frequency": {"value": None, "unit": None}})
         self.__gcos_dict__.update(
-            {"Resolution": {"value": None, "unit": None}})
-        self.__gcos_dict__.update({"Accuracy": {"value": None, "unit": None}})
-        self.__gcos_dict__.update({"Stability": {"value": None, "unit": None}})
+                {"Frequency": {"value": None, "unit": None}})
+        self.__gcos_dict__.update(
+                {"Resolution": {"value": None, "unit": None}})
+        self.__gcos_dict__.update(
+                {"Accuracy": {"value": None, "unit": None}})
+        self.__gcos_dict__.update(
+                {"Stability": {"value": None, "unit": None}})
 
     def set_info(self, **kwargs):
         """
@@ -418,15 +422,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             self.levels = self.__cfg__['levels']
         except BaseException:
             pass
-        
-        try:
-            matplotlib.cm.get_cmap(self.__cfg__['data_colors'])
-            self.colormaps.update({"Data": self.__cfg__['data_colors']})
-        except:
-            print("There is no usable specification of data colors. " + 
-                  "Falling back to default.")
-        self.colormaps.update({"Sequential":"YlGn"})
-        self.colormaps.update({"Diverging":"BrBG"})
 
         self.__plot_dir__ = self.__cfg__['plot_dir']
         self.__work_dir__ = self.__cfg__['work_dir']
@@ -440,7 +435,15 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         fileinfo = self.__cfg__['input_data'][self.__infile__]
         self.__varname__ = fileinfo['short_name']
-#
+        
+        try:
+            for c in color_lookup(self.__varname__).keys():
+                matplotlib.cm.get_cmap(color_lookup(self.__varname__)[c])
+            self.colormaps = color_lookup(self.__varname__)
+        except:
+            logging.warning("There is no usable specification of data " + 
+                            "colors. Falling back to default.")
+
 #        self.__output_type__ = self.__cfg__['output_file_type']  # default ouput file type for the basic diagnostics
 #        if not self.__output_type__ == 'png':
 #            raise ConfigurationError("self.__output_type__", "Only png is currently supported.")
@@ -740,7 +743,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 (fig, ax, _) = plot_setup(d=d, fig=fig)
                 x.plot(ax=ax,
                        vminmax=[0., 1.],
-                       color=self.colormaps,
+                       color={"Sequential": "YlGn"},
                        color_type="Sequential",
                        title=" ".join([self.__dataset_id__[idx] for 
                                        idx in [0, 2, 1, 3]]) + " (" + 

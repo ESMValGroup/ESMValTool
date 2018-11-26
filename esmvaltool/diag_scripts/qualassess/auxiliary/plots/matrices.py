@@ -123,7 +123,7 @@ def do_smm_table(csv_expert, csv_definitions):
     x_grid, y_grid = np.meshgrid(np.arange(nx + 1), np.arange(ny, -1, -1))
 
     # The color map
-    cmap = plt.get_cmap('RdYlGn', max_grade + 2)
+    cmap = plt.get_cmap('PuBuGn', max_grade + 2)
 
     # Plot the cells in color
     plt.pcolor(

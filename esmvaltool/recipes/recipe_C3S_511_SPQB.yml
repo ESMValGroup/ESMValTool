@@ -20,7 +20,9 @@
 datasets:
 #  - {model: CDS-XCO2, project: OBS,    tier: L3,    type: sat,       start_year: 2003,  end_year: 2016}
   - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
-
+#  - {dataset: XCH4, obssystem: sat, project: CDS-OBS,  level: L3, start_year: 2003,  end_year: 2016}
+#[project]_[dataset]_[type]_[version]_[field]_[short_name]
+#OBS_sat_CDS-XCH4_L3_T2Ms_xch4_2003-2016
 preprocessors:
   noop: {}
 
@@ -31,12 +33,14 @@ diagnostics:
       ta:
         preprocessor: noop
         field: T3Ms
+#        derive: True
+        mip: Amip
     scripts:
       SPQB_basic_report:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         data_colors: RdYlGn
-        levels: [40.,300.,3000.,30000.,100000.]
-        show_latex: no_latex #options are: True/False/no_latex
+        levels: [30000.]
+        show_latex: False #options are: True/False/no_latex
         
 #  diagnostic1:
 #    description: Multi-product quality brief.
