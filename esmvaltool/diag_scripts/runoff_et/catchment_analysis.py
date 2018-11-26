@@ -121,42 +121,42 @@ def get_defaults():
     return defaults
 
 
-def format_coef_plot(ax):
+def format_coef_plot(my_ax):
     """Move axis from border to center, adapts ticks and labels accordingly.
 
     Parameters
     ----------
-    ax : object
+    my_ax : object
         plot axis object
     """
     # Add infos to axis
-    ax.xaxis.set_label_coords(0.5, -0.025)
-    ax.yaxis.set_label_coords(-0.025, 0.5)
+    my_ax.xaxis.set_label_coords(0.5, -0.025)
+    my_ax.yaxis.set_label_coords(-0.025, 0.5)
     # Adapt axis range to center zero
     xmax = np.ceil(
-        (np.absolute(np.array(ax.get_xlim())).max() + 5) / 10.0) * 10.0 - 5.0
-    ax.set_xlim(xmax * -1, xmax)
+        (np.absolute(np.array(my_ax.get_xlim())).max() + 5) / 10.0) * 10 - 5
+    my_ax.set_xlim(xmax * -1, xmax)
     ymax = np.ceil(
-        (np.absolute(np.array(ax.get_ylim())).max() + 5) / 10.0) * 10.0 - 5.0
-    ax.set_ylim(ymax * -1, ymax)
+        (np.absolute(np.array(my_ax.get_ylim())).max() + 5) / 10.0) * 10 - 5
+    my_ax.set_ylim(ymax * -1, ymax)
     # remove 0 from y and x axis
     for key in ['x', 'y']:
-        ticks = list(getattr(ax, 'get_%sticks' % key)())
+        ticks = list(getattr(my_ax, 'get_%sticks' % key)())
         try:
             ticks.remove(0)
         except ValueError:
             pass
-        getattr(ax, 'set_%sticks' % key)(ticks)
+        getattr(my_ax, 'set_%sticks' % key)(ticks)
 
     # Move left y-axis and bottim x-axis to centre, passing through (0,0)
-    ax.spines['left'].set_position('center')
-    ax.spines['bottom'].set_position('center')
+    my_ax.spines['left'].set_position('center')
+    my_ax.spines['bottom'].set_position('center')
     # Eliminate upper and right axes
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
+    my_ax.spines['right'].set_color('none')
+    my_ax.spines['top'].set_color('none')
     # Show ticks in the left and lower axes only
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
+    my_ax.xaxis.set_ticks_position('bottom')
+    my_ax.yaxis.set_ticks_position('left')
 
 
 def data2file(cfg, filename, title, filedata):
@@ -254,9 +254,9 @@ def prep_barplot(title, rivers, var):
     plottitle = ['\nBias for ', '\nRelative bias for ']
     ylabel = [var.upper() + ' [mm a-1]', 'Relative bias [%]']
 
-    for ia, ax in enumerate(axs.tolist()):
-        ax.set_title(plottitle[ia] + var.upper())
-        ax.set_ylabel(ylabel[ia])
+    for iax, ax in enumerate(axs.tolist()):
+        ax.set_title(plottitle[iax] + var.upper())
+        ax.set_ylabel(ylabel[iax])
         ax.set_xlabel('Catchment')
         ax.set_xticks(range(len(rivers)))
         ax.set_xticklabels((rivers), fontsize='small')
@@ -279,17 +279,17 @@ def prep_scatplot(title, coeftype):
     """
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
-    ax.set_title(title)
-    ax.set_ylabel('Bias of runoff coefficient [%]')
+    fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
+    axs.set_title(title)
+    axs.set_ylabel('Bias of runoff coefficient [%]')
     if coeftype == 'prbias':
-        ax.set_xlabel('Relative bias of precipitation [%]')
+        axs.set_xlabel('Relative bias of precipitation [%]')
     elif coeftype == 'etcoef':
-        ax.set_xlabel('Bias of ET coefficient [%]')
+        axs.set_xlabel('Bias of ET coefficient [%]')
     else:
         raise ValueError('Unexpected coefficient combination in prep_scatplot')
 
-    return fig, ax
+    return fig, axs
 
 
 def add_legend(fig, rivers, markerlist):
@@ -390,30 +390,30 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
         # 1. Barplots for single variables
         title = identifier.upper() + ' vs ' + reference.upper()
         for var in plotdata.keys():
-            fig, ax = prep_barplot(title, rivers, var)
+            fig, axs = prep_barplot(title, rivers, var)
             # 1a. Plot absolut bias for every catchment
-            ax[0].bar(xrivers, absdiff[var], color="C{}".format(0))
+            axs[0].bar(xrivers, absdiff[var], color="C{}".format(0))
             # 1b. Plot relative bias for every catchment
-            ax[1].bar(xrivers, reldiff[var], color="C{}".format(1))
+            axs[1].bar(xrivers, reldiff[var], color="C{}".format(1))
             finish_plot(fig, pltdir, identifier + '_' + var + '-bias', pdf)
 
         # 2. Runoff coefficient vs relative precipitation bias
         title = identifier.upper() + ' vs ' + reference.upper()
-        fig, ax = prep_scatplot(title, 'prbias')
+        fig, axs = prep_scatplot(title, 'prbias')
         marker = cycle(markerlist)
-        for i, label in enumerate(rivers):
-            ax.scatter(prbias[i], rocoef[i], marker=next(marker))
-        format_coef_plot(ax)
+        for iriv, label in enumerate(rivers):
+            axs.scatter(prbias[iriv], rocoef[iriv], marker=next(marker))
+        format_coef_plot(axs)
         add_legend(fig, rivers, markerlist)
         finish_plot(fig, pltdir, identifier + '_pr-vs-ro', pdf)
 
         # 3. Runoff coefficient vs evaporation coefficient bias
         title = identifier.upper() + ' vs ' + reference.upper()
-        fig, ax = prep_scatplot(title, 'etcoef')
+        fig, axs = prep_scatplot(title, 'etcoef')
         marker = cycle(markerlist)
-        for i, label in enumerate(rivers):
-            ax.scatter(etcoef[i], rocoef[i], marker=next(marker))
-        format_coef_plot(ax)
+        for iriv, label in enumerate(rivers):
+            axs.scatter(etcoef[iriv], rocoef[iriv], marker=next(marker))
+        format_coef_plot(axs)
         add_legend(fig, rivers, markerlist)
         finish_plot(fig, pltdir, identifier + '_et-vs-ro', pdf)
 
@@ -423,7 +423,8 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
 
 
 def get_catchment_data(cfg):
-    """read and prepare catchment mask.
+    """Read and prepare catchment mask.
+
     Parameters
     ----------
     cfg : dict
