@@ -57,7 +57,6 @@ def get_defaults():
         pr
         evspsbl
     """
-
     defaults = {
         'catchments': {
             # Catchments with name as used in make_catchment_plots and
@@ -124,12 +123,12 @@ def get_defaults():
 
 def format_coef_plot(ax):
     """Move axis from border to center, adapts ticks and labels accordingly.
+
     Parameters
     ----------
     ax : object
         plot axis object
     """
-
     # Add infos to axis
     ax.xaxis.set_label_coords(0.5, -0.025)
     ax.yaxis.set_label_coords(-0.025, 0.5)
@@ -162,6 +161,7 @@ def format_coef_plot(ax):
 
 def data2file(cfg, filename, title, filedata):
     """Write data dictionary into ascii file.
+
     Parameters
     ----------
     cfg : dict
@@ -173,7 +173,6 @@ def data2file(cfg, filename, title, filedata):
     filedata : dict
         Dictionary of catchment averages per river
     """
-
     # Write experiment data
     filepath = os.path.join(cfg[diag.names.WORK_DIR], filename)
     with open(filepath, 'w') as out:
@@ -184,6 +183,7 @@ def data2file(cfg, filename, title, filedata):
 
 def write_plotdata(cfg, plotdata, catch_info, reference):
     """Write catchment averaged values for all datasets.
+
     Parameters
     ----------
     cfg : dict
@@ -195,7 +195,6 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
     reference : str
         String containing name of the reference dataset
     """
-
     ref_vars = []
     metric = "catchment averages"
     unit = "[mm a-1]"
@@ -218,7 +217,7 @@ def write_plotdata(cfg, plotdata, catch_info, reference):
 
 def get_expdata(expdict, refdict):
     """Get list with catchment averages for experiment and reference.
-    sorted according to river list from reference
+
     Parameters
     ----------
     expdict : dict
@@ -226,7 +225,6 @@ def get_expdata(expdict, refdict):
     refdict : dict
         the catchment averages reference dictionary
     """
-
     expdata, refdata, rivers = [], [], []
     for riv, ref in sorted(refdict.items()):
         rivers.append(riv)
@@ -238,6 +236,7 @@ def get_expdata(expdict, refdict):
 
 def prep_barplot(title, rivers, var):
     """Prepare barplot.
+
     Parameters
     ----------
     title : str
@@ -247,7 +246,6 @@ def prep_barplot(title, rivers, var):
     var : str
         short name of the actual variable
     """
-
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(nrows=1, ncols=2, sharex=False)
@@ -271,6 +269,7 @@ def prep_barplot(title, rivers, var):
 
 def prep_scatplot(title, coeftype):
     """Prepare scatterplot for different coefficients.
+
     Parameters
     ----------
     title : str
@@ -278,7 +277,6 @@ def prep_scatplot(title, coeftype):
     coeftype : str
         string indicting plot type [prbias,etcoef]
     """
-
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
@@ -296,6 +294,7 @@ def prep_scatplot(title, coeftype):
 
 def add_legend(fig, rivers, markerlist):
     """Add scatter plot legend with separate axis.
+
     Parameters
     ----------
     fig : obj
@@ -305,7 +304,6 @@ def add_legend(fig, rivers, markerlist):
     markerlist : list
         list of marker strings for scatterplot legend
     """
-
     # Define legend
     fig.subplots_adjust(bottom=0.30)
     marker = cycle(markerlist)
@@ -318,6 +316,7 @@ def add_legend(fig, rivers, markerlist):
 
 def finish_plot(fig, pltdir, name, pdf):
     """Save actual figure to either png or pdf.
+
     Parameters
     ----------
     fig : obj
@@ -329,7 +328,6 @@ def finish_plot(fig, pltdir, name, pdf):
     pdf : obj
         pdf object collection all pages in case of pdf output
     """
-
     import matplotlib.pyplot as plt
     if '-bias' in name:
         plt.tight_layout()
@@ -343,6 +341,7 @@ def finish_plot(fig, pltdir, name, pdf):
 
 def make_catchment_plots(cfg, plotdata, catch_info, reference):
     """Plot catchment averages for different metrics.
+
     Parameters
     ----------
     cfg : dict
@@ -354,7 +353,6 @@ def make_catchment_plots(cfg, plotdata, catch_info, reference):
     reference : str
         String containing name of the reference dataset
     """
-
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_pdf import PdfPages
 
@@ -431,7 +429,6 @@ def get_catchment_data(cfg):
     cfg : dict
         Configuration dictionary of the recipe
     """
-
     catchment_filepath = cfg.get('catchmentmask')
     catchment_cube = iris.load_cube(catchment_filepath)
     if catchment_cube.coord('latitude').bounds is None:
@@ -445,6 +442,7 @@ def get_catchment_data(cfg):
 
 def get_sim_data(cfg, datapath, catchment_cube):
     """Read and postprocess netcdf data from experiments.
+
     Check units, aggregate to long term mean yearly sum and
     regrid to resolution of catchment mask.
     Parameters
@@ -456,7 +454,6 @@ def get_sim_data(cfg, datapath, catchment_cube):
     catchment_cube : obj
         iris cube object containing simulation data
     """
-
     datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
     identifier = "_".join(
         [datainfo['dataset'].upper(), datainfo['exp'], datainfo['ensemble']])
@@ -492,6 +489,7 @@ def get_sim_data(cfg, datapath, catchment_cube):
 
 def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
     """Compute area weighted averages for river catchments.
+
     Parameters
     ----------
     catch_info : dict
@@ -515,6 +513,7 @@ def get_catch_avg(catch_info, catch_cube, catch_areas, sim_cube):
 
 def update_reference(catch_info, reference, model, rivervalues, var):
     """Update reference catchment averages.
+
     Parameters
     ----------
     catch_info : dict
@@ -528,7 +527,6 @@ def update_reference(catch_info, reference, model, rivervalues, var):
     var : str
         short name of the variable
     """
-
     if reference != model and reference != 'default':
         raise ValueError('Reference must be the same for all variables!')
     catch_info[var] = rivervalues
@@ -536,6 +534,9 @@ def update_reference(catch_info, reference, model, rivervalues, var):
 
 def update_plotdata(identifier, plotdata, rivervalues, var):
     """Update simulation catchment averages.
+
+    Parameters
+    ----------
     identifier : str
         string consisting of dataset, experiment and ensemble information
     plotdata : dict
@@ -545,7 +546,6 @@ def update_plotdata(identifier, plotdata, rivervalues, var):
     var : str
         short name of the variable
     """
-
     if var not in plotdata.keys():
         plotdata[var] = {}
     if identifier in plotdata[var].keys():
@@ -556,12 +556,12 @@ def update_plotdata(identifier, plotdata, rivervalues, var):
 
 def main(cfg):
     """Run the diagnostic.
+
     Parameters
     ----------
     cfg : dict
         Configuration dictionary of the recipe.
     """
-
     # Get dataset and variable information
     datasets = diag.Datasets(cfg)
     logging.debug("Found datasets in recipe:\n%s", datasets)
