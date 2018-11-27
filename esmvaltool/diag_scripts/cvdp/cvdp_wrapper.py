@@ -15,9 +15,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def main(cfg):
     """Main function."""
-    if not _cvdp_available():
-        raise DiagnosticError("CVDP is not available.")
-
     setup_driver(cfg)
     setup_namelist(cfg)
     subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['work_dir']))
@@ -25,7 +22,9 @@ def main(cfg):
 
 def setup_driver(cfg):
     """Setup the driver.ncl file of the cvdp package."""
-    cvdp_root = os.environ['CVDP_ROOT']
+    cvdp_root = os.path.join(os.path.dirname(__file__), '../../cvdp')
+    if not os.path.isdir(cvdp_root):
+        raise DiagnosticError("CVDP is not available.")
 
     SETTINGS = {
         'outdir': "{0}/".format(cfg['work_dir']),
@@ -64,8 +63,8 @@ def create_link(cfg, p):
     """Create link for the input file that matches the naming convention
     of the cvdp package. Return the path to the link.
 
-    p: path to infile
     cfg: configuration dict
+    p: path to infile
 
     """
 
@@ -75,8 +74,18 @@ def create_link(cfg, p):
         s = re.search(r'[0-9]{4}-[0-9]{4}', t).group(0)
         return t.replace(s, "{0}01-{1}12".format(*s.split('-')))
 
-    link = os.path.join(cfg['run_dir'], "links", _create_link_name(p))
+    if not os.path.isdir(p):
+        #raise DiagnosticError("Path {0} does not exist".format(p))
+        logger.debug("Path %s does not exist! Continue", p)
+
+    lnk_dir = os.path.join(cfg['work_dir'], "links")
+
+    if not os.path.isdir(lnk_dir):
+        os.mkdir(lnk_dir)
+
+    link = os.path.join(lnk_dir, _create_link_name(p))
     os.symlink(p, link)
+
     return link
 
 
@@ -87,9 +96,9 @@ def setup_namelist(cfg):
     grouped_selection = group_metadata(selection, 'dataset')
 
     content = []
-    datasets = range(1, 10)
     for k, v in grouped_selection.items():
-        head, tail = os.path.split(v[0]["filename"])
+        links = [create_link(cfg, item["filename"]) for item in v]
+        head, tail = os.path.split(links[0])
         head, tail = os.path.split(head)
         tail = "_".join(tail.split('_')[:-1])
         ppath = "{}*/".format(os.path.join(head, tail))
@@ -111,16 +120,6 @@ def log_functions(func):
         return ret
 
     return inner
-
-
-@log_functions
-def _cvdp_available():
-    """Check if cvdp is present."""
-    if "CVDP_ROOT" not in os.environ:
-        return False
-    if not os.path.exists(os.environ['CVDP_ROOT']):
-        return False
-    return True
 
 
 @log_functions
