@@ -76,7 +76,8 @@ def test_get_input_filelist(root, cfg):
     # Find files
     rootpath = {cfg['variable']['project']: [root]}
     drs = {cfg['variable']['project']: cfg['drs']}
-    input_filelist = get_input_filelist(cfg['variable'], rootpath, drs)
+    input_filelist = get_input_filelist(cfg['variable'], rootpath, drs,
+                                        **cfg.get('kwargs', {}))
 
     # Test result
     reference = [os.path.join(root, file) for file in cfg['found_files']]

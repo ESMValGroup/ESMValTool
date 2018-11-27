@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 def find_files(dirnames, filename):
     """Find files matching filename in dirnames."""
     logger.debug("Looking for files matching %s in %s", filename, dirnames)
-
     result = []
     for dirname in dirnames:
         for path, _, files in os.walk(dirname, followlinks=True):
@@ -94,7 +93,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def _replace_tags(path, variable, fx_var=None):
+def _replace_tags(path, variable, fx_var=None, concatenate_exps=True):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -109,6 +108,11 @@ def _replace_tags(path, variable, fx_var=None):
             replacewith = fx_var
         elif tag == 'latestversion':  # handled separately later
             continue
+        elif tag == 'exp':
+            replacewith = [variable['exp']]
+            if concatenate_exps:
+                for exp in variable.get('concatenate_exps', []):
+                    replacewith.append(exp)
         elif tag in variable:
             replacewith = variable[tag]
         else:
@@ -197,7 +201,11 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _find_input_dirs(variable, rootpath, drs, fx_var=None):
+def _find_input_dirs(variable,
+                     rootpath,
+                     drs,
+                     fx_var=None,
+                     concatenate_exps=True):
     """Return a the full paths to input directories."""
     project = variable['project']
 
@@ -206,7 +214,8 @@ def _find_input_dirs(variable, rootpath, drs, fx_var=None):
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in _replace_tags(path_template, variable, fx_var):
+    for dirname_template in _replace_tags(path_template, variable, fx_var,
+                                          concatenate_exps):
         for base_path in root:
             dirname = os.path.join(base_path, dirname_template)
             dirname = _resolve_latestversion(dirname)
@@ -219,30 +228,40 @@ def _find_input_dirs(variable, rootpath, drs, fx_var=None):
     return dirnames
 
 
-def _get_filename_glob(variable, drs, fx_var=None):
-    """Return a pattern that can be used to look for input files."""
+def _get_filenames_glob(variable, drs, fx_var=None, concatenate_exps=True):
+    """Return patterns that can be used to look for input files."""
     input_type = 'input_{}file'.format('fx_' if fx_var else '')
     path_template = _select_drs(input_type, drs, variable['project'])
-    filename_glob = _replace_tags(path_template, variable, fx_var)[0]
-    return filename_glob
+    filenames_glob = _replace_tags(path_template, variable, fx_var,
+                                   concatenate_exps)
+    return filenames_glob
 
 
-def _find_input_files(variable, rootpath, drs, fx_var=None):
+def _find_input_files(variable,
+                      rootpath,
+                      drs,
+                      fx_var=None,
+                      concatenate_exps=True):
     logger.debug("Looking for input %sfiles for variable %s of dataset %s",
                  fx_var + ' fx ' if fx_var else '', variable['short_name'],
                  variable['dataset'])
 
-    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
-    filename_glob = _get_filename_glob(variable, drs, fx_var)
-    files = find_files(input_dirs, filename_glob)
+    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var,
+                                  concatenate_exps)
+    filenames_glob = _get_filenames_glob(variable, drs, fx_var,
+                                         concatenate_exps)
+    files = []
+    for filename in filenames_glob:
+        files.extend(find_files(input_dirs, filename))
 
     return files
 
 
-def get_input_filelist(variable, rootpath, drs):
+def get_input_filelist(variable, rootpath, drs, concatenate_exps=True):
     """Return the full path to input files."""
     variable['institute'] = get_institutes(variable)
-    files = _find_input_files(variable, rootpath, drs)
+    files = _find_input_files(
+        variable, rootpath, drs, concatenate_exps=concatenate_exps)
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
 
@@ -259,26 +278,28 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var['modeling_realm'] = realm if realm else table.realm
         var['institute'] = get_institutes(variable)
 
-        files = _find_input_files(var, rootpath, drs, fx_var)
+        files = _find_input_files(
+            var, rootpath, drs, fx_var, concatenate_exps=False)
         fx_files[fx_var] = files[0] if files else None
 
     return fx_files
 
 
 def get_output_file(variable, preproc_dir):
-    """Return the full path to the output (preprocessed) file"""
+    """Return the full path to the output (preprocessed) file."""
     cfg = get_project_config(variable['project'])
 
     outfile = os.path.join(
         preproc_dir,
         '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
+        _replace_tags(cfg['output_file'], variable,
+                      concatenate_exps=False)[0] + '.nc')
 
     return outfile
 
 
 def get_statistic_output_file(variable, statistic, preproc_dir):
-    """Get multi model statistic filename depending on settings"""
+    """Get multi model statistic filename depending on settings."""
     values = dict(variable)
     values['stat'] = statistic.title()
 

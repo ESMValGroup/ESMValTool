@@ -1,4 +1,4 @@
-"""Functions for loading and saving cubes"""
+"""Functions for loading and saving cubes."""
 import logging
 import os
 import shutil
@@ -6,7 +6,6 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
-import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -49,7 +48,12 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, filename, metadata, constraints=None, callback=None):
+def load_cubes(files,
+               filename,
+               metadata,
+               constraints=None,
+               callback=None,
+               ref_attributes_file=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
@@ -58,6 +62,23 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
         raise Exception('Can not load cubes from {0}'.format(files))
 
     for cube in cubes:
+        if ref_attributes_file:
+            ref_cubes = iris.load_raw(
+                ref_attributes_file,
+                constraints=constraints,
+                callback=callback)
+            if ref_cubes:
+                cube.attributes = ref_cubes[0].attributes
+                logger.debug(
+                    "Reading reference attributes for cube loading "
+                    "from %s", ref_attributes_file)
+            else:
+                logger.warning("Cannot load attributes from file %s",
+                               ref_attributes_file)
+        if isinstance(metadata, dict):
+            if 'concatenate_exps' in metadata:
+                cube.attributes['concatenate_exps'] = (
+                    metadata['concatenate_exps'])
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
 
@@ -72,6 +93,10 @@ def concatenate(cubes):
     except iris.exceptions.ConcatenateError as ex:
         logger.error('Can not concatenate cubes: %s', ex)
         logger.error('Differences: %s', ex.differences)
+        if 'concatenate_exps' in cubes[0].attributes:
+            logger.error("Note: Time dimensions in input data for the "
+                         "different experiments must not overlap "
+                         "('concatenate_exps' option)")
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
@@ -121,7 +146,7 @@ def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
     """
     Save iris cubes to file.
 
-    Path is taken from the _filename attributte in the code.
+    Path is taken from the _filename attribute in the code.
 
     Parameters
     ----------

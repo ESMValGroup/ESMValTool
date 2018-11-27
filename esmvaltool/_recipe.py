@@ -417,6 +417,18 @@ def _limit_datasets(variables, profile, max_datasets=None):
     return limited
 
 
+def _get_ref_attributes_file(variable, config_user):
+    """Get file with reference attributes for cube loading."""
+    if 'concatenate_exps' in variable:
+        files = get_input_filelist(variable,
+                                   config_user['rootpath'],
+                                   config_user['drs'],
+                                   concatenate_exps=False)
+        if files:
+            return files[0]
+    return None
+
+
 def _get_default_settings(variable, config_user, derive=False):
     """Get default preprocessor settings."""
     settings = {}
@@ -434,6 +446,7 @@ def _get_default_settings(variable, config_user, derive=False):
         'callback': concatenate_callback,
         'filename': variable['filename'],
         'metadata': variable,
+        'ref_attributes_file': _get_ref_attributes_file(variable, config_user),
     }
     if not derive:
         settings['load_cubes']['constraints'] = variable['standard_name']
