@@ -5,7 +5,7 @@ import logging
 import os
 import numpy as np
 import iris
-
+from esmvaltool.preprocessor import extract_region, extract_season
 
 # set up logging
 logger = logging.getLogger(__name__)
@@ -39,6 +39,11 @@ def get_args():
         nargs='+',
         help='hadslp files')
     parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        help='Output directory [FULLPATH]')
+    parser.add_argument(
         '-l',
         '--log-level',
         default='info',
@@ -64,7 +69,7 @@ def _set_logger(logging, out_dir, log_file, log_level):
     root_logger.addHandler(console_handler)
 
 
-def _yearly_data(cube):
+def _extract_yearly_data(cube):
     """Return yearly data."""
     # get time cells
     time_cells = [
@@ -91,6 +96,32 @@ def _yearly_data(cube):
     return yearly_cube, measurements
 
 
+def _yearly_mean(data_file, variable, var_constraint):
+    """Process needed data."""
+    cube = iris.load(data_file, constraints=var_constraint)[0]
+    datas, no_measurements = _extract_yearly_data(cube)
+    for y_r, ydat in datas.items():
+        logger.info('For year %s : %s number of measurements: %s',
+                    y_r, variable, no_measurements[y_r])
+        moc_yearly_mean = np.ma.mean(ydat.data)
+        logger.info('For year %s : %s yearly average: %s',
+                    y_r, variable, moc_yearly_mean)
+
+
+def _djf_greenland_iceland(data_file, var_constraint, season):
+    """Get the DJF mean for Greenland-Iceland."""
+    cube = iris.load(data_file, constraints=var_constraint)[0]
+    greenland = extract_region(cube, 25., 35., 30., 40.)
+    iceland = extract_region(cube, 15., 25., 60., 70.)
+    greenland = greenland.collapsed(['longitude', 'latitude'],
+                                    iris.analysis.MEAN)
+    iceland = iceland.collapsed(['longitude', 'latitude'],
+                                iris.analysis.MEAN)
+    diff = greenland - iceland
+    season_geo_diff = extract_season(diff, season)
+    return season_geo_diff
+
+
 def main():
     """Run the the meat of the code."""
     args = get_args()
@@ -112,27 +143,18 @@ def main():
     moc_constraint = iris.Constraint(
         cube_func=(lambda c: c.var_name == 'moc_mar_hc10')
     )
-    moc_cube = iris.load(moc_file, constraints=moc_constraint)[0]
-    moc_datas, moc_no_measurements = _yearly_data(moc_cube)
-    for y_r, ydat in moc_datas.items():
-        logger.info('For year %s : MOC number of measurements: %s',
-                    y_r, moc_no_measurements[y_r])
-        moc_yearly_mean = np.ma.mean(ydat.data)
-        logger.info('For year %s : MOC yearly average: %s',
-                    y_r, moc_yearly_mean)
+    _yearly_mean(moc_file, 'moc_mar_hc10', moc_constraint)
 
     # then vn405
     vn_constraint = iris.Constraint(
         cube_func=(lambda c: c.var_name == 'UM_0_fc8_vn405')
     )
-    vn_cube = iris.load(hadslp_file, constraints=vn_constraint)[0]
-    vn_datas, vn_no_measurements = _yearly_data(vn_cube)
-    for y_r, ydat in vn_datas.items():
-        logger.info('For year %s : VN405 number of measurements: %s',
-                    y_r, vn_no_measurements[y_r])
-        vn_yearly_mean = np.ma.mean(ydat.data)
-        logger.info('For year %s : VN405 yearly average: %s',
-                    y_r, vn_yearly_mean)
+    _yearly_mean(hadslp_file, 'UM_0_fc8_vn405', vn_constraint)
+
+    # now get greenland-iceland
+    gre_ic_djf = _djf_greenland_iceland(hadslp_file, vn_constraint, 'DJF')
+    iris.save(gre_ic_djf, os.path.join(args.output,
+                                       'DJF_GreIce_UM_0_fc8_vn405.nc'))
 
 
 if __name__ == '__main__':
