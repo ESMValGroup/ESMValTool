@@ -8,6 +8,7 @@ from pprint import pformat
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
 from esmvaltool.diag_scripts.shared.plot import quickplot
+from esmvaltool._task import DiagnosticError
 
 logger = logging.getLogger(os.path.basename(__file__))
 
