@@ -287,16 +287,13 @@ def setup_pdf(pltdir, identifier, outtype):
     return pdf
 
 
-def prep_barplot(diags, catchments, defs, identifier, var, pdf):
+def prep_barplot(diags, defs, identifier, var, pdf):
     """Prepare barplot.
 
     Parameters
     ----------
     diags : dict
         Dictionary containing all metrics for plotting
-    catchments : dict
-        Dictionary containing infomation about catchment mask,
-        grid cell size, and reference values
     defs : dict
         Dictionary containing plot settings
     identifier : str
@@ -309,7 +306,7 @@ def prep_barplot(diags, catchments, defs, identifier, var, pdf):
     import matplotlib.pyplot as plt
 
     fig, my_axs = plt.subplots(nrows=1, ncols=2, sharex=False)
-    fig.suptitle(identifier.upper() + ' vs ' + catchments['refname'].upper())
+    fig.suptitle(identifier.upper() + ' vs ' + defs['refname'].upper())
     fig.subplots_adjust(bottom=0.35)
     plottitle = ['\nBias for ', '\nRelative bias for ']
     ylabel = [var.upper() + ' [mm a-1]', 'Relative bias [%]']
@@ -333,7 +330,7 @@ def prep_barplot(diags, catchments, defs, identifier, var, pdf):
     finish_plot(fig, defs['pltdir'], identifier + '_' + var + '-bias', pdf)
 
 
-def prep_scatplot(coeftype, diags, catchments, defs, identifier, pdf):
+def prep_scatplot(coeftype, diags, defs, identifier, pdf):
     """Prepare scatterplot for different coefficients.
 
     Parameters
@@ -342,9 +339,6 @@ def prep_scatplot(coeftype, diags, catchments, defs, identifier, pdf):
         string indicting plot type [prbias,etcoef]
     diags : dict
         Dictionary containing all metrics for plotting
-    catchments : dict
-        Dictionary containing infomation about catchment mask,
-        grid cell size, and reference values
     defs : dict
         Dictionary containing plot settings
     identifier : str
@@ -355,7 +349,7 @@ def prep_scatplot(coeftype, diags, catchments, defs, identifier, pdf):
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
-    axs.set_title(identifier.upper() + ' vs ' + catchments['refname'].upper())
+    axs.set_title(identifier.upper() + ' vs ' + defs['refname'].upper())
     axs.set_ylabel('Bias of runoff coefficient [%]')
 
     marker = cycle(defs['markerlist'])
@@ -445,7 +439,8 @@ def make_catchment_plots(cfg, plotdata, catchments):
         'colorscheme': cfg.get('colorscheme', 'default'),
         'markerlist': ('s', '+', 'o', '*', 'x', 'D'),
         'pltdir': cfg[diag.names.PLOT_DIR],
-        'plttype': 'png'  # cfg.get('output_file_type', 'png')
+        'plttype': cfg.get('output_file_type', 'png'),
+        'refname': catchments['refname']
     }
     plt.style.use(defs['colorscheme'])
 
@@ -459,13 +454,13 @@ def make_catchment_plots(cfg, plotdata, catchments):
 
         # Barplots for single variables
         for var in plotdata.keys():
-            prep_barplot(diags, catchments, defs, identifier, var, pdf)
+            prep_barplot(diags, defs, identifier, var, pdf)
 
         # Runoff coefficient vs relative precipitation bias
-        prep_scatplot('prbias', diags, catchments, defs, identifier, pdf)
+        prep_scatplot('prbias', diags, defs, identifier, pdf)
 
         # Runoff coefficient vs evaporation coefficient bias
-        prep_scatplot('etcoef', diags, catchments, defs, identifier, pdf)
+        prep_scatplot('etcoef', diags, defs, identifier, pdf)
 
         # Finish pdf if it is the chosen output
         if pdf is not None:
