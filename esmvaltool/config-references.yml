@@ -138,6 +138,10 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
+  lee_dm:
+    name: de Mora, Lee
+    institute: PML, UK
+    email: ledm 'at' pml.ac.uK
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -413,6 +417,7 @@ references:
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030, doi:10.1175/2008JCLI2731.1, 2009."
+  demora2018: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, https://doi.org/10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
   duemenil00mpimr: "Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
@@ -511,6 +516,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
+  ukesm: UKESM, UK Earth System Model project (NERC)
 
 realms:
   aerosol: aerosol
