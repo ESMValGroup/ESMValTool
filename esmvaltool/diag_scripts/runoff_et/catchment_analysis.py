@@ -436,7 +436,8 @@ def get_catchment_data(cfg):
         catchments['cube'].coord('latitude').guess_bounds()
     if catchments['cube'].coord('longitude').bounds is None:
         catchments['cube'].coord('longitude').guess_bounds()
-    catchments['area'] = iris.analysis.cartography.area_weights(catchments['cube'])
+    catchments['area'] = iris.analysis.cartography.area_weights(
+        catchments['cube'])
 
     return catchments
 
@@ -504,7 +505,8 @@ def get_catch_avg(catchments, sim_cube):
         data_catch = np.ma.masked_where(
             catchments['cube'].data.astype(np.int) != rid, sim_cube.data)
         area_catch = np.ma.masked_where(
-            catchments['cube'].data.astype(np.int) != rid, catchments['area'].data)
+            catchments['cube'].data.astype(np.int) != rid,
+            catchments['area'].data)
         avg[river] = (data_catch * (area_catch / area_catch.sum())).sum()
     return avg
 
