@@ -287,62 +287,95 @@ def setup_pdf(pltdir, identifier, outtype):
     return pdf
 
 
-def prep_barplot(title, rivers, var):
+def prep_barplot(diags, catchments, defs, identifier, var, pdf):
     """Prepare barplot.
 
     Parameters
     ----------
-    title : str
-        multipanel plot title
-    rivers : list
-        list of river catchment names
+    diags : dict
+        Dictionary containing all metrics for plotting
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
+    defs : dict
+        Dictionary containing plot settings
+    identifier : str
+        Dataset name
     var : str
         short name of the actual variable
+    pdf : obj
+        pdf oject is pdf output is chosen, None otherwise
     """
     import matplotlib.pyplot as plt
 
     fig, my_axs = plt.subplots(nrows=1, ncols=2, sharex=False)
-    fig.suptitle(title)
+    fig.suptitle(identifier.upper() + ' vs ' + catchments['refname'].upper())
     fig.subplots_adjust(bottom=0.35)
     plottitle = ['\nBias for ', '\nRelative bias for ']
     ylabel = [var.upper() + ' [mm a-1]', 'Relative bias [%]']
 
+    # Setup both plot axis
     for iax, axs in enumerate(my_axs.tolist()):
         axs.set_title(plottitle[iax] + var.upper())
         axs.set_ylabel(ylabel[iax])
         axs.set_xlabel('Catchment')
-        axs.set_xticks(range(len(rivers)))
-        axs.set_xticklabels((rivers), fontsize='small')
+        axs.set_xticks(diags['xrv'])
+        axs.set_xticklabels((diags['riv']), fontsize='small')
         for tick in axs.get_xticklabels():
             tick.set_rotation(90)
         axs.axhline(c='black', lw=2)
 
-    return fig, my_axs
+    # Plot absolut bias for every catchment
+    my_axs[0].bar(diags['xrv'], diags['abs'][var], color="C{}".format(0))
+    # Plot relative bias for every catchment
+    my_axs[1].bar(diags['xrv'], diags['ref'][var], color="C{}".format(1))
+    # Finish plot
+    finish_plot(fig, defs['pltdir'], identifier + '_' + var + '-bias', pdf)
 
 
-def prep_scatplot(title, coeftype):
+def prep_scatplot(coeftype, diags, catchments, defs, identifier, pdf):
     """Prepare scatterplot for different coefficients.
 
     Parameters
     ----------
-    title : str
-        multipanel plot title
     coeftype : str
         string indicting plot type [prbias,etcoef]
+    diags : dict
+        Dictionary containing all metrics for plotting
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
+    defs : dict
+        Dictionary containing plot settings
+    identifier : str
+        Dataset name
+    pdf : obj
+        pdf oject is pdf output is chosen, None otherwise
     """
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
-    axs.set_title(title)
+    axs.set_title(identifier.upper() + ' vs ' + catchments['refname'].upper())
     axs.set_ylabel('Bias of runoff coefficient [%]')
+
+    marker = cycle(defs['markerlist'])
+
     if coeftype == 'prbias':
+        for prbias, rocoef in zip(diags['prbias'], diags['rocoef']):
+            axs.scatter(prbias, rocoef, marker=next(marker))
         axs.set_xlabel('Relative bias of precipitation [%]')
+        tag = '_pr-vs-ro'
     elif coeftype == 'etcoef':
+        for etcoef, rocoef in zip(diags['etcoef'], diags['rocoef']):
+            axs.scatter(etcoef, rocoef, marker=next(marker))
         axs.set_xlabel('Bias of ET coefficient [%]')
+        tag = '_et-vs-ro'
     else:
         raise ValueError('Unexpected coefficient combination in prep_scatplot')
 
-    return fig, axs
+    format_coef_plot(axs)
+    add_legend(fig, diags['riv'], defs['markerlist'])
+    finish_plot(fig, defs['pltdir'], identifier + tag, pdf)
 
 
 def add_legend(fig, rivers, markerlist):
@@ -412,47 +445,27 @@ def make_catchment_plots(cfg, plotdata, catchments):
         'colorscheme': cfg.get('colorscheme', 'default'),
         'markerlist': ('s', '+', 'o', '*', 'x', 'D'),
         'pltdir': cfg[diag.names.PLOT_DIR],
-        'plttype': cfg.get('output_file_type', 'png')
+        'plttype': 'png'  # cfg.get('output_file_type', 'png')
     }
     plt.style.use(defs['colorscheme'])
 
     # Loop over datasets
     for identifier in plotdata[list(plotdata.keys())[0]].keys():
+        # Prepare pdf file if output type chosen
         pdf = setup_pdf(defs['pltdir'], identifier, defs['plttype'])
 
         # Compute diagnostics for plots
         diags = compute_diags(plotdata, identifier, catchments)
-        # Plot diagnostics
-        # 1. Barplots for single variables
-        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
+
+        # Barplots for single variables
         for var in plotdata.keys():
-            fig, axs = prep_barplot(title, diags['riv'], var)
-            # 1a. Plot absolut bias for every catchment
-            axs[0].bar(diags['xrv'], diags['abs'][var], color="C{}".format(0))
-            # 1b. Plot relative bias for every catchment
-            axs[1].bar(diags['xrv'], diags['ref'][var], color="C{}".format(1))
-            finish_plot(fig, defs['pltdir'], identifier + '_' + var + '-bias',
-                        pdf)
+            prep_barplot(diags, catchments, defs, identifier, var, pdf)
 
-        # 2. Runoff coefficient vs relative precipitation bias
-        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
-        fig, axs = prep_scatplot(title, 'prbias')
-        marker = cycle(defs['markerlist'])
-        for prbias, rocoef in zip(diags['prbias'], diags['rocoef']):
-            axs.scatter(prbias, rocoef, marker=next(marker))
-        format_coef_plot(axs)
-        add_legend(fig, diags['riv'], defs['markerlist'])
-        finish_plot(fig, defs['pltdir'], identifier + '_pr-vs-ro', pdf)
+        # Runoff coefficient vs relative precipitation bias
+        prep_scatplot('prbias', diags, catchments, defs, identifier, pdf)
 
-        # 3. Runoff coefficient vs evaporation coefficient bias
-        title = identifier.upper() + ' vs ' + catchments['refname'].upper()
-        fig, axs = prep_scatplot(title, 'etcoef')
-        marker = cycle(defs['markerlist'])
-        for etcoef, rocoef in zip(diags['etcoef'], diags['rocoef']):
-            axs.scatter(etcoef, rocoef, marker=next(marker))
-        format_coef_plot(axs)
-        add_legend(fig, diags['riv'], defs['markerlist'])
-        finish_plot(fig, defs['pltdir'], identifier + '_et-vs-ro', pdf)
+        # Runoff coefficient vs evaporation coefficient bias
+        prep_scatplot('etcoef', diags, catchments, defs, identifier, pdf)
 
         # Finish pdf if it is the chosen output
         if pdf is not None:
