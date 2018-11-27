@@ -45,7 +45,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean]
-      exclude: [reference_dataset] 
+      exclude: [reference_dataset, alternative_dataset] 
 
 diagnostics:
 
@@ -62,6 +62,7 @@ diagnostics:
       tas:
         preprocessor: clim_ref   
         reference_dataset: HadCRUT4   
+        alternative_dataset: HadCRUT4-clim
         mip: Amon
         field: T2Ms
         project: CMIP5
@@ -122,6 +123,8 @@ diagnostics:
       - {dataset: NorESM1-ME}
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1870, end_year: 2017, tier: 2}
+      - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
+         start_year: 1990, end_year: 1990, tier: 2}
     scripts:
       fig09-8: 
         script: ipcc_ar5/tsline.ncl
