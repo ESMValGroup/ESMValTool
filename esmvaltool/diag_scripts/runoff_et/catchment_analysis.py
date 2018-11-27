@@ -233,6 +233,60 @@ def get_expdata(expdict, refdict):
     return rivers, np.array(refdata), np.array(expdata)
 
 
+def compute_diags(plotdata, identifier, catchments):
+    """Compute diagnostics for all variables of an experiment.
+
+    Parameters
+    ----------
+    plotdata : dict
+        Dictionary containing the catchment averages
+    identifier : str
+        Dataset name
+    catchments : dict
+        Dictionary containing infomation about catchment mask,
+        grid cell size, and reference values
+    """
+    diags = {'ref': {}, 'exp': {}, 'abs': {}, 'rel': {}}
+    # 1. Absolute and relative variable biases
+    for var in plotdata.keys():
+        diags['riv'], diags['ref'][var], diags['exp'][var] = get_expdata(
+            plotdata[var][identifier], catchments[var])
+        diags['abs'][var] = diags['exp'][var] - diags['ref'][var]
+        diags['rel'][var] = diags['exp'][var] / diags['ref'][var] * 100
+        diags['xrv'] = range(len(diags['riv']))
+
+    # 2. Coefficients
+    diags['prbias'] = diags['abs']['pr'] / diags['ref']['pr'] * 100
+    diags['rocoef'] = (diags['exp']['mrro'] / diags['exp']['pr'] * 100) - (
+        diags['ref']['mrro'] / diags['ref']['pr'] * 100)
+    diags['etcoef'] = (diags['exp']['evspsbl'] / diags['exp']['pr'] * 100) - (
+        diags['ref']['evspsbl'] / diags['ref']['pr'] * 100)
+
+    return diags
+
+
+def setup_pdf(pltdir, identifier, outtype):
+    """Prepare pdf output.
+
+    Parameters
+    ----------
+    pltdir : str
+        Output directory for pdf plot
+    identifier : str
+        Dataset name
+    outtype : str
+        Plot file type [pdf,other]
+    """
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    if outtype == 'pdf':
+        filepath = os.path.join(pltdir, identifier + ".pdf")
+        pdf = PdfPages(filepath)
+    else:
+        pdf = None
+    return pdf
+
+
 def prep_barplot(title, rivers, var):
     """Prepare barplot.
 
@@ -352,68 +406,53 @@ def make_catchment_plots(cfg, plotdata, catchments):
         grid cell size, and reference values
     """
     import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_pdf import PdfPages
 
     # Get colorscheme from recipe
-    colorscheme = cfg.get('colorscheme', 'default')
-    plt.style.use(colorscheme)
-    pltdir = cfg[diag.names.PLOT_DIR]
-    markerlist = ('s', '+', 'o', '*', 'x', 'D')
+    defs = {
+        'colorscheme': cfg.get('colorscheme', 'default'),
+        'markerlist': ('s', '+', 'o', '*', 'x', 'D'),
+        'pltdir': cfg[diag.names.PLOT_DIR],
+        'plttype': cfg.get('output_file_type', 'png')
+    }
+    plt.style.use(defs['colorscheme'])
 
-    first = list(plotdata.keys())[0]
-    for identifier in plotdata[first].keys():
-        if cfg.get('output_file_type', 'png') == 'pdf':
-            filepath = os.path.join(pltdir, identifier + ".pdf")
-            pdf = PdfPages(filepath)
-        else:
-            pdf = None
+    # Loop over datasets
+    for identifier in plotdata[list(plotdata.keys())[0]].keys():
+        pdf = setup_pdf(defs['pltdir'], identifier, defs['plttype'])
 
         # Compute diagnostics for plots
-        expdata, refdata, absdiff, reldiff = {}, {}, {}, {}
-        # 1. Variable biases
-        for var in plotdata.keys():
-            rivers, refdata[var], expdata[var] = get_expdata(
-                plotdata[var][identifier], catchments[var])
-            absdiff[var] = expdata[var] - refdata[var]
-            reldiff[var] = absdiff[var] / refdata[var] * 100
-            xrivers = range(len(rivers))
-        # 2. Coefficients
-        prbias = (expdata['pr'] - refdata['pr']) / refdata['pr'] * 100
-        rocoef = (expdata['mrro'] / expdata['pr'] * 100) - (
-            refdata['mrro'] / refdata['pr'] * 100)
-        etcoef = (expdata['evspsbl'] / expdata['pr'] * 100) - (
-            refdata['evspsbl'] / refdata['pr'] * 100)
-
+        diags = compute_diags(plotdata, identifier, catchments)
         # Plot diagnostics
         # 1. Barplots for single variables
         title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         for var in plotdata.keys():
-            fig, axs = prep_barplot(title, rivers, var)
+            fig, axs = prep_barplot(title, diags['riv'], var)
             # 1a. Plot absolut bias for every catchment
-            axs[0].bar(xrivers, absdiff[var], color="C{}".format(0))
+            axs[0].bar(diags['xrv'], diags['abs'][var], color="C{}".format(0))
             # 1b. Plot relative bias for every catchment
-            axs[1].bar(xrivers, reldiff[var], color="C{}".format(1))
-            finish_plot(fig, pltdir, identifier + '_' + var + '-bias', pdf)
+            axs[1].bar(diags['xrv'], diags['ref'][var], color="C{}".format(1))
+            finish_plot(fig, defs['pltdir'], identifier + '_' + var + '-bias',
+                        pdf)
 
         # 2. Runoff coefficient vs relative precipitation bias
         title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         fig, axs = prep_scatplot(title, 'prbias')
-        marker = cycle(markerlist)
-        for iriv in range(len(rivers)):
-            axs.scatter(prbias[iriv], rocoef[iriv], marker=next(marker))
+        marker = cycle(defs['markerlist'])
+        for prbias, rocoef in zip(diags['prbias'], diags['rocoef']):
+            axs.scatter(prbias, rocoef, marker=next(marker))
         format_coef_plot(axs)
-        add_legend(fig, rivers, markerlist)
-        finish_plot(fig, pltdir, identifier + '_pr-vs-ro', pdf)
+        add_legend(fig, diags['riv'], defs['markerlist'])
+        finish_plot(fig, defs['pltdir'], identifier + '_pr-vs-ro', pdf)
 
         # 3. Runoff coefficient vs evaporation coefficient bias
         title = identifier.upper() + ' vs ' + catchments['refname'].upper()
         fig, axs = prep_scatplot(title, 'etcoef')
-        marker = cycle(markerlist)
-        for iriv in range(len(rivers)):
-            axs.scatter(etcoef[iriv], rocoef[iriv], marker=next(marker))
+        marker = cycle(defs['markerlist'])
+        for etcoef, rocoef in zip(diags['etcoef'], diags['rocoef']):
+            axs.scatter(etcoef, rocoef, marker=next(marker))
         format_coef_plot(axs)
-        add_legend(fig, rivers, markerlist)
-        finish_plot(fig, pltdir, identifier + '_et-vs-ro', pdf)
+        add_legend(fig, diags['riv'], defs['markerlist'])
+        finish_plot(fig, defs['pltdir'], identifier + '_et-vs-ro', pdf)
 
         # Finish pdf if it is the chosen output
         if pdf is not None:
