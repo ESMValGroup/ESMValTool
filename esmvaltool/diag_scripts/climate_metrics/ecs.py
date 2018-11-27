@@ -127,6 +127,7 @@ def main(cfg):
 
     # Iterate over all datasets and save ECS
     ecs = {}
+    alpha = {}
     for (dataset, data) in group_metadata(tas_data, 'dataset').items():
         logger.info("Processing %s", dataset)
         paths = {
@@ -158,17 +159,23 @@ def main(cfg):
 
         # Save data
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
+        alpha[dataset] = -reg.slope
 
     # Write data
+    path = os.path.join(cfg['work_dir'], 'ecs.nc')
     cube_atts = {
         'var_name': 'ecs',
         'long_name': 'Equilibrium Climate Sensitivity (ECS)',
         'units': cubes['tas_4x'].units,
     }
-    save_scalar_data(ecs,
-                     cfg.get('output_name', 'ecs'),
-                     cfg,
-                     **cube_atts)
+    save_scalar_data(ecs, path, cfg, **cube_atts)
+    path = os.path.join(cfg['work_dir'], 'lambda.nc')
+    cube_atts = {
+        'var_name': 'lambda',
+        'long_name': 'Climate Sensitivity',
+        'units': cubes['rtmt_4x'].units / cubes['tas_4x'].units,
+    }
+    save_scalar_data(alpha, path, cfg, **cube_atts)
 
 
 if __name__ == '__main__':

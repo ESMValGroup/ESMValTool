@@ -18,12 +18,8 @@ CRESCENDO
 
 Configuration options in recips
 -------------------------------
-ecs_filename : str, optional
-    Name of the netcdf in which the ECS data is saved (default: ecs.nc).
-output_name : str, optional
-    Name of the output netcdf file (default: fig09-42a.*.
 save : dict, optional
-    Keyword arguments for the fig.saveplot() function.
+    Keyword arguments for the `fig.saveplot()` function.
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
 
@@ -79,7 +75,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     # Plot data
     filepath = os.path.join(
         cfg['plot_dir'],
-        cfg.get('output_name', 'fig09-42a') + '.' + cfg['output_file_type'])
+        'ch09_fig09_42a.' + cfg['output_file_type'])
     plot.multi_dataset_scatterplot(
         x_data,
         y_data,
@@ -123,8 +119,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
                                  (tas_picontrol_coord, 0)])
 
         # Save file
-        filepath = os.path.join(cfg['work_dir'],
-                                cfg.get('output_name', 'fig09_42a') + '.nc')
+        filepath = os.path.join(cfg['work_dir'], 'ch09_fig09_42a.nc')
         save_iris_cube(cube, filepath, cfg)
 
 
@@ -143,8 +138,8 @@ def main(cfg):
     if len(input_dirs) != 1:
         logging.error("Input files directory from ancestors should contain "
                       "exactly one directory (ECS directory)")
-    ecs_filepath = os.path.join(input_dirs[0],
-                                cfg.get('ecs_filename', 'ecs') + '.nc')
+    ecs_filepath = os.path.join(input_dirs[0], 'ecs.nc')
+    ecs_cube = iris.load_cube(ecs_filepath)
 
     # Create iris cubes for each dataset
     hist_cubes = {}
@@ -165,9 +160,6 @@ def main(cfg):
             pi_cubes[name] = cube
         else:
             pass
-
-    # Create iris cube for ECS data
-    ecs_cube = iris.load_cube(ecs_filepath)
 
     # Plot data
     plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)

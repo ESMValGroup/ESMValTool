@@ -1,6 +1,5 @@
 """Convenience functions for writing netcdf files."""
 import logging
-import os
 from datetime import datetime
 
 import iris
@@ -37,7 +36,7 @@ def save_iris_cube(cube, path, cfg):
     logger.info("Wrote %s", path)
 
 
-def save_scalar_data(data, filename, cfg, **cube_atts):
+def save_scalar_data(data, path, cfg, **cube_atts):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -47,8 +46,8 @@ def save_scalar_data(data, filename, cfg, **cube_atts):
     ----------
     data : dict
         Scalar data (values) and corresponding datasets (keys).
-    filename : str
-        Desired name of the file (without extension).
+    path : str
+        Desired path.
     cfg : dict
         Diagnostic script configuration.
     cube_atts : optional keyword arguments
@@ -61,5 +60,4 @@ def save_scalar_data(data, filename, cfg, **cube_atts):
         list(data.values()),
         aux_coords_and_dims=[(dataset_coord, 0)],
         **cube_atts)
-    path = os.path.join(cfg['work_dir'], filename + '.nc')
     save_iris_cube(cube, path, cfg)
