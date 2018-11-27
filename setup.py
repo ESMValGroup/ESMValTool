@@ -221,7 +221,7 @@ with open('README.md') as readme:
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
-                'acsismoc = esmvaltool.utils.acsis.acsis-moc:main',
+                'acsismoc = esmvaltool.utils.acsis.acsismoc:main',
             ],
         },
         cmdclass={
