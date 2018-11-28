@@ -21,15 +21,16 @@ def save_iris_cube(cube, path, cfg):
 
     """
     if not cfg['write_netcdf']:
-        logger.warning("Could not write netcdf file '%s', 'write_netcdf' is "
-                       "set to 'False' in user configuration file.", path)
+        logger.warning(
+            "Could not write netcdf file '%s', 'write_netcdf' is "
+            "set to 'False' in user configuration file.", path)
         return
     attr = {
         'created_by':
         'ESMValTool version {}'.format(cfg['version']) +
         ', diagnostic {}'.format(cfg['script']),
         'creation_date':
-        datetime.utcnow().isoformat(' ') + 'UTC'
+        datetime.utcnow().isoformat(' ') + ' UTC',
     }
     cube.attributes.update(attr)
     iris.save(cube, path)

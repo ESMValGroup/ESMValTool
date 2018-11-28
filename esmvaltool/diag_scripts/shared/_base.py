@@ -1,6 +1,7 @@
 """Convenience functions for running a diagnostic script."""
 import argparse
 import contextlib
+import fnmatch
 import glob
 import logging
 import os
@@ -203,6 +204,63 @@ def variables_available(cfg, short_names):
         if var not in available_short_names:
             return False
     return True
+
+
+def get_all_ancestor_files(cfg, pattern=None):
+    """Return a list of all files in the ancestor directories.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    pattern : str, optional
+        Only return files which match a certain pattern.
+
+    Returns
+    -------
+    list of str
+        Full paths to the ancestor files.
+
+    """
+    ancestor_files = []
+    input_dirs = [
+        d for d in cfg['input_files'] if not d.endswith('metadata.yml')
+    ]
+    for input_dir in input_dirs:
+        for (root, _, files) in os.walk(input_dir):
+            if pattern is not None:
+                files = fnmatch.filter(files, pattern)
+            files = [os.path.join(root, f) for f in files]
+            ancestor_files.extend(files)
+    return ancestor_files
+
+
+def get_file_from_ancestors(cfg, filename):
+    """Search a file in the ancestor directories.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    filename : str
+        Name of the file.
+
+    Returns
+    -------
+    str or None
+        Full path to the file or `None` if file not found.
+
+    """
+    files = get_all_ancestor_files(cfg, pattern=filename)
+    if not files:
+        logger.warning("Requested file %s not found in ancestor directories",
+                       filename)
+        return None
+    if len(files) != 1:
+        logger.warning(
+            "Requested file %s was found multiple times (%s), "
+            "returning first appearance", filename, files)
+    return files[0]
 
 
 def get_cfg(filename=None):
