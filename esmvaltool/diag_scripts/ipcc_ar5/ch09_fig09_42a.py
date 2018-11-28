@@ -23,8 +23,6 @@ save : dict, optional
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
 
-###############################################################################
-
 """
 
 import logging
@@ -33,9 +31,10 @@ import os
 import iris
 from iris import Constraint
 
-from esmvaltool.diag_scripts.shared import (
-    plot, run_diagnostic, save_iris_cube, variables_available,
-    extract_variables)
+from esmvaltool.diag_scripts.shared import (extract_variables,
+                                            get_file_from_ancestors, plot,
+                                            run_diagnostic, save_iris_cube,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -73,9 +72,8 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         })
 
     # Plot data
-    filepath = os.path.join(
-        cfg['plot_dir'],
-        'ch09_fig09_42a.' + cfg['output_file_type'])
+    filepath = os.path.join(cfg['plot_dir'],
+                            'ch09_fig09_42a.' + cfg['output_file_type'])
     plot.multi_dataset_scatterplot(
         x_data,
         y_data,
@@ -131,14 +129,8 @@ def main(cfg):
     if not variables_available(cfg, ['tas']):
         raise ValueError("This diagnostic needs 'tas' variable")
 
-    # Get ECS data (ignore metadata.yml files)
-    input_dirs = [
-        d for d in cfg['input_files'] if not d.endswith('metadata.yml')
-    ]
-    if len(input_dirs) != 1:
-        logging.error("Input files directory from ancestors should contain "
-                      "exactly one directory (ECS directory)")
-    ecs_filepath = os.path.join(input_dirs[0], 'ecs.nc')
+    # Get ECS data
+    ecs_filepath = get_file_from_ancestors(cfg, 'ecs.nc')
     ecs_cube = iris.load_cube(ecs_filepath)
 
     # Create iris cubes for each dataset

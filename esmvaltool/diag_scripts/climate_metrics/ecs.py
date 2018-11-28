@@ -19,8 +19,6 @@ Configuration options in recips
 -------------------------------
 plot_ecs_regression : bool, optional (default: False)
     Plot the linear regression graph.
-output_name : str, optional (default: ecs)
-    Name of the output netcdf file.
 
 """
 
@@ -31,9 +29,11 @@ import iris
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (
-    group_metadata, plot, run_diagnostic, save_iris_cube, save_scalar_data,
-    select_metadata, variables_available, extract_variables)
+from esmvaltool.diag_scripts.shared import (extract_variables, group_metadata,
+                                            plot, run_diagnostic,
+                                            save_iris_cube, save_scalar_data,
+                                            select_metadata,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -53,7 +53,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
 
     # Plot data
     text = 'r = {:.2f}, '.format(regression_stats.rvalue) + \
-           r'$\alpha$ = {:.2f}, '.format(-regression_stats.slope) + \
+           r'$\lambda$ = {:.2f}, '.format(-regression_stats.slope) + \
            'F = {:.2f}, '.format(regression_stats.intercept) + \
            'ECS = {:.2f}'.format(ecs)
     plot.scatterplot(
@@ -127,7 +127,7 @@ def main(cfg):
 
     # Iterate over all datasets and save ECS
     ecs = {}
-    alpha = {}
+    clim_sens = {}
     for (dataset, data) in group_metadata(tas_data, 'dataset').items():
         logger.info("Processing %s", dataset)
         paths = {
@@ -159,7 +159,7 @@ def main(cfg):
 
         # Save data
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
-        alpha[dataset] = -reg.slope
+        clim_sens[dataset] = -reg.slope
 
     # Write data
     path = os.path.join(cfg['work_dir'], 'ecs.nc')
@@ -175,7 +175,7 @@ def main(cfg):
         'long_name': 'Climate Sensitivity',
         'units': cubes['rtmt_4x'].units / cubes['tas_4x'].units,
     }
-    save_scalar_data(alpha, path, cfg, **cube_atts)
+    save_scalar_data(clim_sens, path, cfg, **cube_atts)
 
 
 if __name__ == '__main__':
