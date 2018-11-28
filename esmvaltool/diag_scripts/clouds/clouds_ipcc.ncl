@@ -70,7 +70,7 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   tmp = listatts2array(input_file_info, "short_name")
-  variables = remove_duplicates(tmp)
+  variables = get_unique_values(tmp)
   delete(tmp)
   n = dimsizes(variables)
 
