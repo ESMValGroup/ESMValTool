@@ -35,9 +35,16 @@ class TestGetFileLevels(unittest.TestCase):
         os.remove(self.path)
 
     def test_get_coord(self):
-        self.assertListEqual(_regrid.get_reference_levels(self.path, 'coord'),
-                             [0., 1])
+        self.assertListEqual(
+            _regrid.get_reference_levels(
+                self.path, 'project', 'dataset', 'short_name', 'output_dir',
+                'coord'),
+            [0., 1]
+        )
 
     def test_bad_coord(self):
         with self.assertRaises(ValueError):
-            _regrid.get_reference_levels(self.path, 'bad_coord')
+            _regrid.get_reference_levels(
+                self.path, 'project', 'dataset', 'short_name', 'output_dir',
+                'bad_coord'
+            )
