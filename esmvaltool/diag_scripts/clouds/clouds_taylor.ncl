@@ -127,22 +127,22 @@ begin
     ; now find the main variable:
     ; it is assumed that the main variable is either the first non-error
     ; variable or the first "derived" variable
-    idx = ind(ispan(0, numvars -1, 1) .ne. errvarind)
+    idx = ind(ispan(0, numvars - 1, 1) .ne. errvarind)
     mainvarind = idx(0)  ; first non-error variable
     ; now check for possibly derived variables
     do ii = 1, dimsizes(idx) - 1
-       i = idx(ii)
-       ; the "derived" attribute is stored in input_file_info only
-       do j = 0, ListCount(input_file_info) - 1
-         if (input_file_info[j]@short_name .eq. variables(i)) then
-           if isatt(input_file_info[j], "derive") then
-             if (input_file_info[j]@derive) then
-               mainvarind = i
-               break
-             end if
-           end if
-         end if
-       end do
+      i = idx(ii)
+      ; the "derived" attribute is stored in input_file_info only
+      do j = 0, ListCount(input_file_info) - 1
+        if (input_file_info[j]@short_name .eq. variables(i)) then
+          if isatt(input_file_info[j], "derive") then
+            if (input_file_info[j]@derive) then
+              mainvarind = i
+              break
+            end if
+          end if
+        end if
+      end do
     end do
   else
   end if
@@ -176,7 +176,7 @@ begin
   else
     log_info("error variable: none")
   end if
-  tmp = ispan(0, numvars -1 , 1)
+  tmp = ispan(0, numvars - 1, 1)
   auxind = ind(tmp .ne. mainvarind .and. tmp .ne. errvarind)
   if(.not. all(ismissing(auxind))) then
     if (estimate_obs_uncertainty) then
@@ -196,7 +196,7 @@ begin
   ; dataset, i.e. max 1 dataset
 
   if (estimate_obs_uncertainty) then
-    auxind = ind(ispan(0, numvars -1 , 1) .ne. mainvarind)
+    auxind = ind(ispan(0, numvars - 1, 1) .ne. mainvarind)
     if (.not. all(ismissing(auxind))) then
       do i = 0, dimsizes(auxind) - 1
         tmpinfo = select_metadata_by_name(input_file_info, variables(i))
@@ -329,10 +329,10 @@ begin
     delete(data_temp)
   end if
 
-;  ; debug output
-;  system ("rm debug.nc")
-;  debugfile = addfile("debug.nc","c")
-;  debugfile->mask = global_mask
+  ;  ; debug output
+  ;  system ("rm debug.nc")
+  ;  debugfile = addfile("debug.nc","c")
+  ;  debugfile->mask = global_mask
 
   ; read data and calculate time average
 
@@ -430,10 +430,10 @@ begin
 
       ; debug output
 
-;      debugfile->$input_file_info@dataset(imod)$ = data1
+    ; debugfile->$input_file_info@dataset(imod)$ = data1
     end do  ; imod loop
     if (ivar .ne. mainvarind) then
-       ierridx = ierridx + 1
+      ierridx = ierridx + 1
     end if
   end do  ; ivar loop
 
@@ -485,12 +485,12 @@ begin
 
       ; calculate rate of standard deviations
 
-;      val(mod_i, 0, is) = calculate_metric(var, ref, "stddev_ratio_nowgt")
+      ; val(mod_i, 0, is) = calculate_metric(var, ref, "stddev_ratio_nowgt")
       val(mod_i, 0, is) = calculate_metric(var, ref, "stddev_ratio")
 
       ; calculate pattern correlation
 
-;      val(mod_i, 1, is) = calculate_metric(var, ref, "correlation_nowgt")
+      ; val(mod_i, 1, is) = calculate_metric(var, ref, "correlation_nowgt")
       val(mod_i, 1, is) = calculate_metric(var, ref, "correlation")
 
       delete(var)
@@ -543,7 +543,7 @@ begin
     ; (statistics.ncl)
     weights = map_area(ref&lat, ref&lon)
     ; optional: no weights --> reset weights
-;    wgt1d = 1.0
+    ; wgt1d = 1.0
 
     ; convert to 1-D arrays
     ref1d = ndtooned(ref)
@@ -571,10 +571,10 @@ begin
         ; error estimates for lwp and iwp but not for clt). In this case, there
         ; is nothing to do here.
         ; If the variable name does not contain "err", the variable is assumed
-        ; to be a field (e.g. rsut, rsutcs) used to calculate a derived variable
-        ; (e.g. CRE_SW). In this case, the observational uncertainty can be
-        ; estimated if the fractional average error is known (e.g. CERES-EBAF,
-        ; MODIS).
+        ; to be a field (e.g. rsut, rsutcs) used to calculate a derived
+        ; variable (e.g. swcre). In this case, the observational uncertainty
+        ; can be estimated if the fractional average error is known
+        ; (e.g. CERES-EBAF, MODIS).
 
         if (errvarind .ge. 0) then
           ; variable contains error estimate provided by data set
@@ -623,8 +623,8 @@ begin
               ; "Moderate Resolution Imaging Spectroradiometer (MODIS)
               ; Cloud Fraction Technical Document":
               ;
-              ; Global day/night fractional agreement of cloud detection between
-              ; MODIS and CALIPSO lidar (CALIOP):
+              ; Global day/night fractional agreement of cloud detection
+              ; between MODIS and CALIPSO lidar (CALIOP):
               ; Aug 2006 (clear):  0.84
               ; Aug 2006 (cloudy): 0.88
               ; Feb 2006 (clear):  0.85

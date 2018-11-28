@@ -293,7 +293,7 @@ begin
                   names_err(imod) + " do not have a (unique) corresponding " \
                   + "dataset for variable " + var0)
       end if
-;;;      err_zm&model(imod) = names_err(imod)
+      ; err_zm&model(imod) = names_err(imod)
       if (numseas.gt.1) then
         err_zm(idx, :, :) = err(:, :)
       else
