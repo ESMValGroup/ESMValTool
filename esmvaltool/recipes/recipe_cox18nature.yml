@@ -85,8 +85,9 @@ diagnostics:
         <<: *ecs_variable_settings
         exp: historical
         start_year: 1880
-        end_year: 2015
-    additional_datasets: &tas_datasets
+        end_year: 2005
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0}
       - {dataset: bcc-csm1-1}
@@ -95,7 +96,6 @@ diagnostics:
       - {dataset: CCSM4}
       - {dataset: CNRM-CM5}
       - {dataset: CSIRO-Mk3-6-0}
-      # Missing rtmt
       # - {dataset: GFDL-ESM2M}
       # - {dataset: HadGEM2-ES}
       - {dataset: GISS-E2-R}
@@ -103,79 +103,20 @@ diagnostics:
       - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
       - {dataset: MPI-ESM-LR}
-      # Missing rtmt
       # - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
     scripts:
-      ecs:
-        script: climate_metrics/ecs.py
+      psi:
+        script: climate_metrics/psi.py
         plot_ecs_regression: True
-        output_name: 'ecs'
 
-  # fig09-42a:
-  #   description: Plot ECS vs. GMSAT.
-  #   variables:
-  #     tas:
-  #       <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
-  #   additional_datasets:
-  #     - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-  #     - {dataset: bcc-csm1-1, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-  #     - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961,
-  #        end_year: 1990}
-  #     - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-  #     - {dataset: CanESM2, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-  #     - {dataset: CCSM4, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-  #     - {dataset: CNRM-CM5, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-  #     - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961,
-  #        end_year: 1990}
-  #     - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-  #     - {dataset: GFDL-CM3, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-  #     - {dataset: GISS-E2-H, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-  #     - {dataset: GISS-E2-R, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-  #     - {dataset: inmcm4, exp: historical, start_year: 1961, end_year: 1990}
-  #     # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-  #     #    end_year: 1999}
-  #     # - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961,
-  #     #    end_year: 1990}
-  #     - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-  #        end_year: 1999}
-  #     - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961,
-  #        end_year: 1990}
-  #     - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-  #     - {dataset: MIROC5, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-  #     - {dataset: MIROC-ESM, exp: historical, start_year: 1961, end_year: 1990}
-  #     - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-  #     - {dataset: MPI-ESM-LR, exp: historical, start_year: 1961, end_year: 1990}
-  #     # Day is out of range for month (wait for iris > 2.0)
-  #     # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-  #     # - {dataset: ACCESS1-0, exp: historical, start_year: 1961,
-  #     #    end_year: 1990}
-  #   scripts:
-  #     fig09-42a:
-  #       script: ipcc_ar5/ch09_fig09_42a.py
-  #       ancestors: ['tas', 'ecs/ecs']
-  #       ecs_filename: 'ecs'
-  #       output_name: 'ch09_fig09-42a'
-  #       tas_units: celsius
-  #       save:
-  #         bbox_inches: tight
-  #         orientation: landscape
-  #       axes_functions:
-  #         set_title: GMSAT vs. ECS for CMIP5 models
-  #         set_xlabel: ECS / °C
-  #         set_ylabel: GMSAT / °C
-  #         set_xlim: [1.5, 5.0]
-  #         legend:
-  #           kwargs:
-  #             loc: center left
-  #             bbox_to_anchor: [1.05, 0.5]
-  #             borderaxespad: 0.0
-  #             ncol: 2
+  diag_cox18nature:
+    description: Plot emergent relationship between ECS ans psi
+    scripts:
+      cox18nature:
+        script: emergent_constraints/cox18nature.py
+        ancestors: [
+          'diag_ecs/ecs',
+          'diag_psi/psi',
+          'diag_psi/tas',
+        ]
