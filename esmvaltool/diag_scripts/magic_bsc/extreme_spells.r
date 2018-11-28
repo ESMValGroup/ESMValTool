@@ -45,7 +45,7 @@ start_projection <- c(unlist(unname(start_projection))[projection_files])[1]
 end_projection <- lapply(input_files_per_var, function(x) x$end_year)
 end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
 
-# Which metric to be computed
+
 op <- as.character(params$operator)
 qtile <- params$quantile
 spell_length <- params$min_duration
@@ -70,8 +70,7 @@ start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time",
 nc_close(hist_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
-# ------------------------------
-# Provisional solution to error in dimension order:
+
 historical_data <- as.vector(historical_data)
 dim(historical_data) <- c(
   model = 1,
@@ -83,7 +82,7 @@ dim(historical_data) <- c(
 historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
 attr(historical_data, "Variables")$dat1$time <- time
 print(dim(historical_data))
-# ------------------------------
+
 names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
 
@@ -91,9 +90,8 @@ base_range <- c(
   as.numeric(substr(start_reference, 1, 4)),
   as.numeric(substr(end_reference, 1, 4))
 )
-threshold <- Threshold(historical_data, base.range = base_range,
-                       calendar = calendar, qtiles = qtile, ncores = NULL
-)
+threshold <- Threshold(historical_data, base.range = base_range, #nolint
+                     calendar = calendar, qtiles = qtile, ncores = NULL)
 
 projection_filenames <-  fullpath_filenames[projection_files]
 for (i in 1 : length(projection_filenames)) {
@@ -105,8 +103,7 @@ for (i in 1 : length(projection_filenames)) {
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   time <- as.Date(time, origin = start_date, calendar = calendar)
   nc_close(proj_nc)
-  # ------------------------------
-  # Provisional solution to error in dimension order:
+  
   projection_data <- as.vector(projection_data)
   dim(projection_data) <- c(
     model = 1,
