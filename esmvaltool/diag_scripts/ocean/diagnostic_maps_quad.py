@@ -46,7 +46,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def match_moddel_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
     """
     Match up the three models and observations dataset from the configs.
 
@@ -107,9 +107,9 @@ def multi_model_maps(
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = match_moddel_to_key(model_type,
-                                                    cfg[model_type],
-                                                    input_files)
+        filenames[model_type] = match_model_to_key(model_type,
+                                                   cfg[model_type],
+                                                   input_files)
 
     # ####
     # Load the data for each layer as a separate cube
