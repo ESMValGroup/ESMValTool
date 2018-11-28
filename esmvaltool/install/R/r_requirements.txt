@@ -1,2 +1,8 @@
 yaml
 lintr
+maps
+ncdf4
+PCICt
+akima
+mapproj
+
