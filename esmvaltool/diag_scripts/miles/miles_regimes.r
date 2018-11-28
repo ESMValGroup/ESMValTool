@@ -86,7 +86,7 @@ if (write_plots) {
          year1=models_start_year[model_idx]
          year2=models_end_year[model_idx]
          for (seas in seasons) {
-            miles.regimes.figures( year1=year1, year2=year2, exp=exp, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir,CFGSCRIPT=diag_script_cfg,nclusters=nclusters)
+            miles.regimes.figures( year1=year1, year2=year2, exp=exp, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir,nclusters=nclusters)
          }
       }
    }

@@ -451,9 +451,8 @@ ncdf.opener<-function(namefile,namevar=NULL,namelon=NULL,namelat=NULL,tmonths=NU
 ##########################################################
 
 # function to open devices
-open.plot.device <- function(figname,output_file_type,CFGSCRIPT,special=FALSE) {
+open.plot.device <- function(figname,output_file_type,special=FALSE) {
     # Chose output format for figure - by JvH
-    source(CFGSCRIPT)
     if (special==FALSE) {
      if (tolower(output_file_type) == "png") {
            png(filename = figname, width=png_width, height=png_height)

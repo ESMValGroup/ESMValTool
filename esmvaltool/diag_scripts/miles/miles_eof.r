@@ -90,8 +90,7 @@ if (write_plots) {
             for (seas in seasons) {
                miles.eof.figures(exp,year1,year2,dataset_ref,year1_ref,
                   year2_ref,season=seas,tele=tele,FIGDIR=plot_dir,
-                  FILESDIR=work_dir,REFDIR=work_dir,
-                  CFGSCRIPT=diag_script_cfg)
+                  FILESDIR=work_dir,REFDIR=work_dir)
             }
          }
       }

@@ -6,13 +6,7 @@
 #DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 miles.block.figures<-function(dataset,expid,ens,year1,year2,
 			      dataset_ref,expid_ref,ens_ref,year1_ref,year2_ref,
-			      season,FIGDIR,FILESDIR,REFDIR,CFGSCRIPT,PROGDIR) {
-
-#source function scripts
-source(file.path(PROGDIR,"script/basis_functions.R"))
-
-#figures configuration files
-source(CFGSCRIPT)
+			      season,FIGDIR,FILESDIR,REFDIR) {
 
 #which fieds to load/plot
 fieldlist=c("InstBlock","ExtraBlock","Z500","MGI","BI","CN","ACN","BlockEvents","LongBlockEvents","DurationEvents","NumberEvents","TM90")
@@ -71,7 +65,7 @@ for (field in fieldlist) {
 	#special treatment for TM90: it is a 1D field!
 	if (field=="TM90") {
 
-        	open.plot.device(figname,output_file_type,CFGSCRIPT,special=TRUE)
+        	open.plot.device(figname,output_file_type,special=TRUE)
 
 		#panels option
 	        par(cex.main=2,cex.axis=1.5,cex.lab=1.5,mar=c(5,5,4,3),oma=c(0,0,0,0))
@@ -102,7 +96,7 @@ for (field in fieldlist) {
 	}
 	
 	# Chose output format for figure - by JvH
-    	open.plot.device(figname,output_file_type,CFGSCRIPT)
+    	open.plot.device(figname,output_file_type)
 
 	#plot options	
 	par(plotpar)
@@ -130,30 +124,4 @@ for (field in fieldlist) {
 
 
 }
-
-#blank line
-cat("\n\n\n")
-
-# REAL EXECUTION OF THE SCRIPT 
-# read command line
-args <- commandArgs(TRUE)
-
-# number of required arguments from command line
-name_args=c("dataset","expid","ens","year1","year2","dataset_ref","expid_ref","ens_ref","year1_ref","year2_ref","season","FIGDIR","FILESDIR","REFDIR","CFGSCRIPT","PROGDIR")
-req_args=length(name_args)
-
-# print error message if uncorrect number of command 
-if (length(args)!=0) {
-    if (length(args)!=req_args) {
-    	print(paste("Not enough or too many arguments received: please specify the following",req_args,"arguments:"))
-		print(name_args)
-    } else {
-# when the number of arguments is ok run the function()
-	for (k in 1:req_args) {assign(name_args[k],args[k])}
-	miles.block.figures(dataset,expid,ens,year1,year2,
-			    dataset_ref,expid_ref,ens_ref,year1_ref,year2_ref,
-			    season,FIGDIR,FILESDIR,REFDIR,CFGSCRIPT,PROGDIR) 
-    }
-}
-
 

@@ -80,7 +80,7 @@ for (model_idx in c(1:(length(models_name)))) {
     #zdirfile=paste0(regridding_dir,"/",exp,"/",exp,"_",toString(year1),"-",toString(year2),"_Z500_regrid.nc")
     #system2(paste0(spath,'z500_prepare.sh'),c(exp,toString(year1),toString(year2), infile, zdirfile, var0))
     for (seas in seasons) {
-      miles.block.fast( year1=year1, year2=year2, expid=exp, ens=1, season=seas,z500filename=infile,FILESDIR=work_dir,dataset="dataset",doforce=false)
+      miles.block.fast( year1=year1, year2=year2, expid=exp, ens=1, season=seas,z500filename=infile,FILESDIR=work_dir,dataset=exp,doforce=TRUE)
     }
 }
 
@@ -88,7 +88,7 @@ for (model_idx in c(1:(length(models_name)))) {
 ## Make the plots
 ##
 if (write_plots) { 
-   ref_idx=which(models_name == var_attr_ref)
+   ref_idx=which(models_name == reference_model)
    if(length(ref_idx)==0) {
       ref_idx=length(models_name);
    }
@@ -102,7 +102,7 @@ if (write_plots) {
          year1=models_start_year[model_idx]
          year2=models_end_year[model_idx]
          for (seas in seasons) {
-            miles.block.figures( year1=year1, year2=year2, exp=exp, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir,CFGSCRIPT=diag_script_cfg)
+            miles.block.figures( year1=year1, year2=year2, expid=exp, dataset=exp, ens=1, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, expid_ref=dataset_ref, ens_ref=1, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir)
          }
       }
    }

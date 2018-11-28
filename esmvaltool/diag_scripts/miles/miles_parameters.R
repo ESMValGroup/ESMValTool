@@ -1,18 +1,20 @@
-## Analysis options
-# seasons <- c("DJF") # set in namelist
+##########################################################
+#-------------Plot configurations------------------------#
+##########################################################
 
-# select which EOFs you want to compute
-# "NAO": the 4 first  EOFs of North Atlantic, i.e. North Atlantic Oscillation as EOF1
-# "AO" : the 4 first EOFs of Northern Hemispiere, i.e. Arctic Oscillation as EOF1 
-# teles <- c("NAO") # set in namelist
+#plot all the warnings
+options(warn=1)
 
-# select how many clusters for k-means over the North Atlantic
-# NB: only 4 clusters supported so far.  
-nclusters=4
+# filetype
+output_file_type=Sys.getenv(c("output_file_type"))
+if (nchar(output_file_type)==0) {
+        output_file_type="pdf"
+}
+print(paste("Writing output as",output_file_type))
 
 # Specific settings for PNG output
-png_width=960
-png_height=960
+png_width=1280
+png_height=1280
 png_units="px"
 png_pointsize=12
 png_bg="white"
@@ -20,6 +22,45 @@ png_bg="white"
 # Specific settings for PDF and EPS output (in inches)
 pdf_width=12
 pdf_height=12
+
+#aspect ratio
+af=1
+
+# Type of projection ("no" for standard plotting")
+# All projection from mapproj package should be supported
+# but error may arise for non-polar plots
+# DEFAULT IS POLAR PLOT
+map_projection=Sys.getenv(c("map_projection"))
+if (nchar(map_projection)==0) {
+        map_projection="azequalarea"
+}
+print(paste(map_projection,"projection is chosen"))
+
+#Number of panels per figure (rows and column): default for polar plots
+panels=c(3,1)
+
+# Latitudinal range for plots
+lat_lim=c(25,90)
+
+# if not regular projection (i.e. if using polar)
+if (map_projection!="no") {
+        af=round(sqrt(3),2)
+        pdf_height=pdf_height/af; pdf_width=3*pdf_width/af
+        png_height=png_height/af; png_width=3*png_width/af
+        panels=rev(panels)
+}
+
+
+# Custom paramteres for plots
+zero<-par(mfrow=panels,cex.main=2.5,cex.axis=1.5,cex.lab=1.5,mar=c(5,5,5,7),oma=c(1,1,3,2))
+plotpar<-par(no.readonly=T)
+dev.off()
+
+
+# imagescale3 color bar details
+imgscl_colorbar=1.4
+imgscl_label=1.5
+imgscl_line=3
 
 #color palette to be used
 #palette0 is taken from tim.colors of field to avoid library dependencies...
@@ -39,4 +80,8 @@ palette0=colorRampPalette(c("#00008F", "#00009F", "#0000AF", "#0000BF", "#0000CF
 palette1=colorRampPalette(c("white","orange","darkred"))
 palette2=colorRampPalette(c("blue","white","red"))
 palette3=colorRampPalette(c("darkblue","blue","dodgerblue","white","orange","red","darkred"))
+
+#additional color palette used for extradiagnostics histogram
+KOL=c("black","darkgreen","blue","darkorange","red","violet","grey50","black")
+
 
