@@ -6,7 +6,13 @@
 ; preprocessor set. These files contains the NCL logical _info varialbe with
 ; all the required information to run the diagnostic script
 ;
-; No functions/procedures shall be further added to this script.
+; Contents:
+;    function select_metadata_by_atts
+;    function select_metadata_by_name
+;    function metadata_att_as_array
+;
+; No further functions/procedures shall be added to this script.
+;
 ; #############################################################################
 
 ; Load config_user_info and diag_script_info from settings.ncl
@@ -53,7 +59,7 @@ load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 
 ; #############################################################################
-; Convenience functions for selecting input_file_info
+; Convenience functions for selecting input_file_info and related attributes
 
 undef("select_metadata_by_atts")
 function select_metadata_by_atts(info:list,
@@ -115,7 +121,6 @@ end
 undef("select_metadata_by_name")
 function select_metadata_by_name(info:list,
                                  variable:string)
-
 ;
 ; Arguments
 ;    info: the input_file_info logical containing all metadata
@@ -150,5 +155,55 @@ begin
 
   leave_msg(scriptname, funcname)
   return(item)
+
+end
+
+; #############################################################################
+undef("metadata_att_as_array")
+function metadata_att_as_array(inlist:list,
+                               att[1]:string)
+;
+; Arguments
+;    inlist: a list
+;    att: a string with the attribute to be searched for
+;
+; Description
+;    This function retrieves the values of the attribute att from each element
+;    of the list and returns them as an array.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181119-A_laue_ax: missing attributes are now allowed; error message is
+;                        only issued if all attributes are missing
+;    20180711-A_righ_ma: written
+;
+local funcname, scriptname
+begin
+
+  funcname = "metadata_att_as_array"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  out = new(ListCount(inlist), string)
+  do ii = 0, ListCount(inlist) - 1
+    if (isatt(inlist[ii], att)) then
+      if (typeof(inlist[ii]@$att$).ne."string") then
+        error_msg("f", scriptname, funcname, "non-string attributes not " + \
+                  "supported")
+      end if
+      out(ii) = inlist[ii]@$att$
+    end if
+  end do
+
+  if (all(ismissing(out))) then
+    error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
+              "found in list element(s)")
+  end if
+
+  return(out)
+  leave_msg(scriptname, funcname)
 
 end

@@ -66,8 +66,8 @@ begin
   if (isatt(variable_info[0], "reference_dataset")) then
     refname = variable_info[0]@reference_dataset
   end if
-  names = listatts2array(info0, "dataset")
-  infiles = listatts2array(info0, "filename")
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(info0, "filename")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")

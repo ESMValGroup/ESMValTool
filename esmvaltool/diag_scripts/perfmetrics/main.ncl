@@ -173,7 +173,7 @@ begin
   end if
 
   ; Set dataset names
-  datasetnames = listatts2array(info_items, "dataset")
+  datasetnames = metadata_att_as_array(info_items, "dataset")
 
   ; Check for reference dataset definition
   if (variable_info[0]@reference_dataset.eq."None") then

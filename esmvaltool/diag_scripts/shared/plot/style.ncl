@@ -112,7 +112,9 @@ begin
   ; Model annotations, return unique model names based on dict keys
   if (flag.eq."annots") then
 
-    result = listatts2array(items, ckeys(0))  ; start with highest priority
+    ; Start with highest priority
+    result = metadata_att_as_array(items, ckeys(0))
+
     unique = get_unique_values(result)
     iprio = 1
     do while (dimsizes(unique) .ne. dimsizes(result))
@@ -124,7 +126,7 @@ begin
         do i = 0, dimsizes(unique) - 1
           index = ind(result .eq. unique(i))
           if (dimsizes(index) .gt. 1) then  ; More than one occurence
-            append = listatts2array(items, ckeys(iprio))
+            append = metadata_att_as_array(items, ckeys(iprio))
             result(index) = result(index) + "_" + append(index)
           end if
           delete(index)
@@ -151,7 +153,7 @@ begin
   if (ismissing(col)) then
     error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
   end if
-  datasets = listatts2array(items, "dataset")
+  datasets = metadata_att_as_array(items, "dataset")
   ndatasets = dimsizes(datasets)
   column = new(ndatasets, string)
   wildcard_cnt = 0

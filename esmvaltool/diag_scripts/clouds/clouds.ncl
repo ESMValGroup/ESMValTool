@@ -79,8 +79,8 @@ begin
   if (isatt(variable_info[0], "reference_dataset")) then
     refname = variable_info[0]@reference_dataset
   end if
-  names = listatts2array(info0, "dataset")
-  projects = listatts2array(info0, "project")
+  names = metadata_att_as_array(info0, "dataset")
+  projects = metadata_att_as_array(info0, "project")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
@@ -178,7 +178,7 @@ begin
     ref_ind = ind(names .eq. refname)
   end if
 
-  climofiles = listatts2array(info0, "filename")
+  climofiles = metadata_att_as_array(info0, "filename")
 
 ;  if (isatt(diag_script_info, "region")) then
 ;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_reg"/), 0)

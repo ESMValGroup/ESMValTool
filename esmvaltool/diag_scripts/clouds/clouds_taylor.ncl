@@ -107,7 +107,7 @@ begin
 
   estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
 
-  variables = listatts2array(variable_info, "short_name")
+  variables = metadata_att_as_array(variable_info, "short_name")
   numvars = dimsizes(variables)
 
   ; find "main" variable and if present uncertainty estimates or auxiliary
@@ -156,8 +156,8 @@ begin
   if (isatt(variable_info[mainvarind], "alternative_dataset")) then
     refname2 = variable_info[mainvarind]@alternative_dataset
   end if
-  names = listatts2array(info0, "dataset")
-  infiles = listatts2array(input_file_info, "filename")
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(input_file_info, "filename")
 
   ; check for reference model definition
 
@@ -205,7 +205,7 @@ begin
           error_msg("f", DIAG_SCRIPT, "", "uncertainty estimate only " + \
                     "supported for 1 dataset (i.e. reference dataset)")
         end if
-        tmpname = listatts2array(tmpinfo, "dataset")
+        tmpname = metadata_att_as_array(tmpinfo, "dataset")
         if (tmpname .ne. refname) then
           error_msg("f", DIAG_SCRIPT, "", "uncertainty estimate only " + \
                     "supported for the reference dataset (" + refname + ")")

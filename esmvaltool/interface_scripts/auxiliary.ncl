@@ -5,7 +5,6 @@
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
-;    function listatts2array
 ;    procedure copy_VarCoords_l1
 ;    procedure check_min_max_datasets
 ;    function tstep
@@ -31,57 +30,7 @@
 ;    function get_ref_dataset_idx
 ;
 ; #############################################################################
-undef("listatts2array")
-;
-; Arguments
-;    inlist: a list
-;    att: a string with the attribute to be searched for
-;
-; Description
-;    This function retrieves the values of the attribute att from each element
-;    of the list and returns them as an array.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20181119-A_laue_ax: missing attributes are now allowed; error message is
-;                        only issued if all attributes are missing
-;    20180711-A_righ_ma: written
-;
-function listatts2array(inlist:list,
-                        att[1]:string)
-local funcname, scriptname
-begin
 
-  funcname = "listatts2array"
-  scriptname = "interface_scripts/auxiliary.ncl"
-  enter_msg(scriptname, funcname)
-
-  out = new(ListCount(inlist), string)
-  do ii = 0, ListCount(inlist) - 1
-    if (isatt(inlist[ii], att)) then
-      if (typeof(inlist[ii]@$att$).ne."string") then
-        error_msg("f", scriptname, funcname, "non-string attributes not " + \
-                  "supported")
-      end if
-      out(ii) = inlist[ii]@$att$
-    end if
-  end do
-
-  if (all(ismissing(out))) then
-    error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
-              "found in list element(s)")
-  end if
-
-  return(out)
-  leave_msg(scriptname, funcname)
-
-end
-
-
-; #############################################################################
 undef("copy_VarCoords_l1")
 procedure copy_VarCoords_l1(var_from,
                             var_to)

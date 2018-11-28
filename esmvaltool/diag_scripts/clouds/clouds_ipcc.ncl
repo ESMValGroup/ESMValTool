@@ -69,7 +69,7 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
-  tmp = listatts2array(input_file_info, "short_name")
+  tmp = metadata_att_as_array(input_file_info, "short_name")
   variables = get_unique_values(tmp)
   delete(tmp)
   n = dimsizes(variables)
@@ -103,15 +103,15 @@ begin
   if (isatt(variable_info[mainvarind], "alternative_dataset")) then
     refname2 = variable_info[mainvarind]@alternative_dataset
   end if
-  names = listatts2array(info0, "dataset")
-  infiles = listatts2array(info0, "filename")
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(info0, "filename")
 
   if (errvarind .ge. 0) then
     var1 = variable_info[errvarind]@short_name
     info1 = select_metadata_by_name(input_file_info, var1)
     dim_MOD1 = ListCount(info1)
-    names_err = listatts2array(info1, "dataset")
-    infiles_err = listatts2array(info1, "filename")
+    names_err = metadata_att_as_array(info1, "dataset")
+    infiles_err = metadata_att_as_array(info1, "filename")
   else
     dim_MOD1 = 0
   end if
