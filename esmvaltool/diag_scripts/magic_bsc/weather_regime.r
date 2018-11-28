@@ -1,18 +1,19 @@
 library(s2dverification)
 library(ggplot2)
-library(multiApply)
+library(multiApply) #nolint
 library(ncdf4)
-library(startR)
-library(gridExtra)
-library(ClimProjDiags)
+library(startR) #nolint
+library(gridExtra) #nolint
+library(ClimProjDiags) #nolint
 
 
-initial.options <- commandArgs(trailingOnly = FALSE)
-file.arg.name <- "--file="
-script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
-script.dirname <- dirname(script.name)
-source(paste0(script.dirname,"/WeatherRegime.r"))
-source(paste0(script.dirname,"/RegimesAssign.r"))
+initial_options <- commandArgs(trailingOnly = FALSE)
+file_arg_name <- "--file="
+script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
+							initial_options)])
+script_dirname <- dirname(script_name)
+source(paste0(script_dirname, "/WeatherRegime.r"))
+source(paste0(script_dirname, "/RegimesAssign.r"))
 
 ## Regimes namelist
 args <- commandArgs(trailingOnly = TRUE)
@@ -101,11 +102,12 @@ if (length(dates_historical) != length(time)) {
     calendario == "365" | calendario == "365_days" |
     calendario == "365_day" | calendario == "noleap"
   ) {
-	  dates_historical <- dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
+	  dates_historical <-
+	dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]
   }
 }
 if (length(dates_historical) != length(time)) {
-print("Time problems 1")
+	print("Time problems 1")
 }
 reference_data <- as.vector(reference_data)
 dim(reference_data) <- c(
@@ -208,10 +210,10 @@ clim_frequencies <- paste0(
     "freq = ",
     round(Mean1Dim(WR_obs$frequency, 1), 1), "%"
 )
-cosa <- aperm(drop(WR_obs$composite), c(3,1,2))
+cosa <- aperm(drop(WR_obs$composite), c(3, 1, 2))
 
 
-lim <- max(abs(cosa/100))
+lim <- max(abs(cosa / 100))
 if(lim < 1) {
     x <- floor(log10(lim)) + 1
     lim <- 10 ^ x
@@ -225,8 +227,8 @@ if (region == "Polar") {
     c(2, 3),
     lon = lon,
     lat = lat,
-    var = cosa/100,
-    titles = paste0(paste0("Cluster ", 1:4)," (", clim_frequencies, " )"),
+    var = cosa / 100,
+    titles = paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )"),
     filled.continents = FALSE,
     axelab = FALSE,
     draw_separators = TRUE,
@@ -242,15 +244,15 @@ if (region == "Polar") {
     c(2, 3),
     lon = lon,
     lat = lat,
-    var = cosa/100,
-    titles = paste0(paste0("Cluster ", 1:4)," (",clim_frequencies," )"),
+    var = cosa / 100,
+    titles = paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )"),
     filled.continents = FALSE,
     axelab = FALSE,
     draw_separators = TRUE,
     subsampleg = 1,
-    brks = seq(-1 *lim, lim, by = lim / 10),
+    brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = paste0(
-      plot_dir, "/", frequency, "-",var0,"_observed_regimes.png"
+      plot_dir, "/", frequency, "-", var0, "_observed_regimes.png"
     )
   )
 }
@@ -271,7 +273,7 @@ attributes(lon) <- NULL
 attributes(lat) <- NULL
 dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
-metadata <- list(variable = list(dim = list(list(name="time", unlim = FALSE))))
+metadata <- list(variable = list(dim = list(list(name = "time", unlim = FALSE))))
 
 dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
 dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
@@ -292,7 +294,7 @@ ArrayToNetCDF(
   variable_list,
   paste0(
     plot_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
-    start_projection, "_", end_projection,"_", start_historical, "_",
+    start_projection, "_", end_projection, "_", start_historical, "_",
     end_historical, ".nc"
   )
 )
@@ -317,12 +319,14 @@ time <- attr(projection_data, "Variables")$dat1$time
 dates_projection <- seq(start_projection, end_projection, data_type)
 calendario <- attributes(time)$variables$time$calendar
 if (length(dates_projection) != length(time)) {
-   if (calendario == "365" | calendario == "365_days"| calendario == "365_day" | calendario == "noleap") {
-        dates_projection <- dates_projection[-which(substr(dates_projection, 6, 10) == "02-29")]
+   if (calendario == "365" | calendario == "365_days"|
+	calendario == "365_day" | calendario == "noleap") {
+        dates_projection <-
+	 dates_projection[-which(substr(dates_projection, 6, 10) == "02-29")]
     }
 }
 if (length(dates_projection) != length(time)) {
-print("Time problems 2")
+	print("Time problems 2")
 }
 data <- as.vector(projection_data)
 dim(projection_data) <- c(
@@ -368,7 +372,7 @@ if (!is.na(mes)) {
   dims <- dim(projection_data)
   dims <- append(
     dims,
-    c(length(time)/length(years), length(years)),
+    c(length(time) / length(years), length(years)),
     after = time_dim
   )
 }
@@ -394,7 +398,7 @@ print(dim(projection_data))
 anom_exp <- Ano(projection_data, clim_ref)
 
 reference <- drop(WR_obs$composite)
-names(dim(reference))<-c("lat","lon","nclust")
+names(dim(reference))<-c("lat", "lon", "nclust")
 
 WR_exp <- RegimesAssign(
   var_ano = anom_exp, ref_maps = reference, lats = lat, method = "distance"
@@ -406,7 +410,7 @@ WR_exp <- RegimesAssign(
 cosa <- aperm(WR_exp$composite, c(3, 2, 1))
 names(dim(WR_exp$composite))[3] <- "cluster"
 
-lim <- max(abs(cosa/100))
+lim <- max(abs(cosa / 100))
 if(lim < 1) {
     x <- floor(log10(lim)) + 1
     lim <- 10 ^ x
@@ -416,7 +420,7 @@ if(lim < 1) {
 if (region == "Polar") {
   PlotLayout(
     PlotStereoMap,
-    c(2 ,3),
+    c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
@@ -428,16 +432,16 @@ if (region == "Polar") {
       )
     ),
     filled.continents = FALSE,
-    draw_separators = T, subsampleg = 1,
+    draw_separators = TRUE, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = paste0(
-      plot_dir, "/", frequency, "-",var0,"_predicted_regimes.png"
+      plot_dir, "/", frequency, "-",var0, "_predicted_regimes.png"
     )
   )
 } else {
   PlotLayout(
     PlotEquiMap,
-    c(2 ,3),
+    c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
@@ -449,10 +453,10 @@ if (region == "Polar") {
       )
     ),
     filled.continents = FALSE,
-    axelab = FALSE, draw_separators = T, subsampleg = 1,
+    axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = paste0(
-      plot_dir, "/", frequency, "-",var0,"_predicted_regimes.png"
+      plot_dir, "/", frequency, "-", var0, "_predicted_regimes.png"
     )
   )
 }
@@ -490,7 +494,7 @@ variable_list <- list(
 names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
 
-ArrayToNetCDF(
+ArrayToNetCDF( #nolint
   variable_list,
   paste0(
     plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
@@ -505,7 +509,8 @@ cosa <- aperm(WR_exp$composite, c(2, 1, 3))
 rmse <- NULL
 for (i in 1 : ncenters) {
   for (j in 1 : ncenters) {
-      rmse <- c(rmse, sqrt(mean((reference[,,i ] - cosa[,,j]) ^ 2, na.rm = T)))
+      rmse <- c(rmse, sqrt(mean((reference[, , i] - cosa[, , j]) ^ 2,
+				na.rm = T)))
   }
 }
 dim(rmse) <- c(ncenters, ncenters)
@@ -514,7 +519,7 @@ print(rmse)
 dimpattern <- ncdim_def(
   name = "pattern",
   units = "undim",
-  vals = 1:ncenters,
+  vals = 1 : ncenters,
   longname = "Pattern"
 )
 defrmse <- ncvar_def(
