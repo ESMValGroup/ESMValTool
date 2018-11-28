@@ -1895,10 +1895,6 @@ begin
   ; panel first two plots
   ; ***************************************
 
-printVarSummary(annots)
-printVarSummary(source_x)
-printVarSummary(source)
-
   plot(0) = gsn_csm_xy(wks, source_x, source, res)  ; create plot
 
   ; Add right panel with mean values in anomaly plot
@@ -1909,7 +1905,6 @@ printVarSummary(source)
   mean(:, 1) = source_mean(:)
   mean(:, 2) = source_mean(:)
 
-printVarSummary(mean)
   plot2 = gsn_csm_xy(wks, var, mean, res0)  ; create plot
 
   ; ---------------------------------------------------------------------
@@ -1960,7 +1955,6 @@ printVarSummary(mean)
   lgres@lgLineColors      = colors
   lgres@lgDashIndexes     = dashes
   lgres@lgLineThicknesses = thicks + 0.5
-print("annots = " + annots)
   labels = annots
   nitems = dimsizes(labels)
   lgres@lgItemOrder = ispan(nitems - 1, 0, 1)
