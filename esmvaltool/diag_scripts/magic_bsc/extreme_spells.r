@@ -103,7 +103,6 @@ for (i in 1 : length(projection_filenames)) {
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   time <- as.Date(time, origin = start_date, calendar = calendar)
   nc_close(proj_nc)
-  
   projection_data <- as.vector(projection_data)
   dim(projection_data) <- c(
     model = 1,

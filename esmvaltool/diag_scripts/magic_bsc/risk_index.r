@@ -76,7 +76,7 @@ time <- as.Date(time, origin = start_date, calendar = calendar)
 # ------------------------------
 # Provisional solution to error in dimension order:
 # nolint end
-if ((end_reference - start_reference + 1) * 12 == length(time)) {
+if ( (end_reference - start_reference + 1) * 12 == length(time) ) {
   time <- seq(
     as.Date(
       paste(start_reference, "01", "01", sep = "-"),
@@ -136,7 +136,7 @@ for (m in 1 : length(metric)) {
       historical_data,
       calendar = calendar,
       qtiles = quantile,
-      ncores = detectCores() -1
+      ncores = detectCores() - 1
     )
   str(thresholds)
     base_index <- Climdex( #nolint
@@ -191,7 +191,7 @@ for (i in 1 : length(projection_filenames)) {
   time <- as.Date(time, origin = start_date, calendar = calendar)
   nc_close(proj_nc)
 
-  if ((end_projection-start_projection + 1) * 12 == length(time)) {
+  if ( (end_projection - start_projection + 1) * 12 == length(time) ) {
     time <- seq(
       as.Date(
         paste(start_projection, "01", "01", sep = "-"),
@@ -290,7 +290,7 @@ for (i in 1 : length(projection_filenames)) {
 
       breaks <- seq(-1 * ceiling(max(abs(data))), ceiling(max(abs(data))),
                     2 * ceiling(max(abs(data))) / 16)
-      PlotEquiMap(
+      PlotEquiMap( #nolint
         data,
         lon = lon,
         lat = lat,
@@ -298,8 +298,9 @@ for (i in 1 : length(projection_filenames)) {
         toptitle = title,
         brks = breaks,
         fileout = paste0(
-          plot_dir, "/", metric[m], "_", model_names[mod],"_", rcp_scenario[i],
-          "_", start_projection, "_", end_projection, ".png"
+            plot_dir, "/", metric[m], "_", model_names[mod], "_",
+            rcp_scenario[i],
+            "_", start_projection, "_", end_projection, ".png"
         )
       )
     }

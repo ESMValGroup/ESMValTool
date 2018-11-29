@@ -26,7 +26,8 @@ library(yaml)
 library(s2dverification)
 library(climdex.pcic)
 library(ncdf4)
-library("XML", lib.loc = "/shared/earth/software/R/3.2.0-foss-2015a-bare/lib64/R/library")
+library("XML", lib.loc =
+    "/shared/earth/software/R/3.2.0-foss-2015a-bare/lib64/R/library") #nolint
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])

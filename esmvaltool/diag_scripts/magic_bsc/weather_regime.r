@@ -6,11 +6,10 @@ library(startR) #nolint
 library(gridExtra) #nolint
 library(ClimProjDiags) #nolint
 
-
 initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
 script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
-							initial_options)])
+    initial_options)])
 script_dirname <- dirname(script_name)
 source(paste0(script_dirname, "/WeatherRegime.r"))
 source(paste0(script_dirname, "/RegimesAssign.r"))
@@ -88,12 +87,10 @@ reference_data <- Start(
   return_vars = list(time = "model", lon = "model", lat = "model"),
   retrieve = TRUE
 
-
-# Provisional solution to error in dimension order:
- lon <- attr(reference_data, "Variables")$dat1$lon
- lat <- attr(reference_data, "Variables")$dat1$lat
- time <- attr(reference_data, "Variables")$dat1$time
- calendario <- attributes(time)$variables$time$calendar
+lon <- attr(reference_data, "Variables")$dat1$lon
+lat <- attr(reference_data, "Variables")$dat1$lat
+time <- attr(reference_data, "Variables")$dat1$time
+calendario <- attributes(time)$variables$time$calendar
 
 data_type <- ifelse(grepl("Amon", fullpath_filenames[1]), "Amon", "day")
 dates_historical <- seq(start_historical, end_historical, data_type)
@@ -537,7 +534,7 @@ file <- nc_create(paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
                          end_projection, "_", start_historical, "_",
                          end_historical, ".nc"), list(defrmse))
 ncvar_put(file, defrmse, rmse)
-#ncatt_put(file, 0, "Conventions", "CF-1.5")
+
 nc_close(file)
 
 colnames(rmse) <- paste("Obs", 1 : ncenters)
@@ -549,4 +546,3 @@ png(paste0(plot_dir, "/Table_", var0, "_", frequency, "_rmse_", model_names,
     height = 6, width = 18, units = "cm", res = 100)
 grid.table(round(rmse, 2))
 dev.off()
-
