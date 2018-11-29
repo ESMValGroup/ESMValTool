@@ -19,77 +19,98 @@
 # Modification history
 #
 # ############################################################################
-source('diag_scripts/aux/miles/basis_functions.R')
-source('diag_scripts/aux/miles/eof_figures.R')
-
-source('interface_data/r.interface')
-source('diag_scripts/lib/R/info_output.r')
-source(diag_script_cfg)
-
-## Do not print warnings
-options(warn=-1)
-
-var0 <- variables[1]
-field_type0 <- field_types[1]
-
-info_output(paste0("<<<<<<<< Entering ", diag_script), verbosity, 4)
-info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-info_output(paste0("plot - ", diag_script, " (var: ", variables[1], ")"), verbosity, 1)
-info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
 
 library(tools)
-#diag_base = file_path_sans_ext(diag_script)
-diag_base="MiLES"
+library(yaml)
 
-## Create working dirs if they do not exist
-work_dir=file.path(work_dir, diag_base)
-plot_dir=file.path(plot_dir, diag_base)
-zdir=paste0(work_dir,"/","Z500/")
+spath='./esmvaltool/diag_scripts/miles/'
 
-dir.create(plot_dir, showWarnings = FALSE)
-dir.create(work_dir, showWarnings = FALSE)
-dir.create(climo_dir, showWarnings = FALSE)
-dir.create(zdir, showWarnings = FALSE)
+source(paste0(spath,'basis_functions.R'))
+source(paste0(spath,'eof_figures.R'))
+source(paste0(spath,'eof_fast.R'))
+source(paste0(spath,'miles_parameters.R'))
+
+# read settings and metadata files
+args <- commandArgs(trailingOnly = TRUE)
+settings <- yaml::read_yaml(args[1])
+metadata <- yaml::read_yaml(settings$input_files)
+for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)}
+
+field_type0 <- "T2Ds"
+
+# get first variable and list associated to pr variable
+var0 <- "zg"
+list0 <- metadata
+
+# get name of climofile for first variable and list associated to first climofile
+climofiles <- names(list0)
+climolist0 <- get(climofiles[1],list0)
+
+diag_base = climolist0$diagnostic
+print(paste(diag_base,": starting routine"))
+
+# create working dirs if they do not exist
+work_dir=settings$work_dir
+regridding_dir=settings$run_dir
+plot_dir=settings$plot_dir
+dir.create(work_dir, recursive = T, showWarnings = F)
+dir.create(regridding_dir, recursive = T, showWarnings = F)
+dir.create(plot_dir, recursive = T, showWarnings = F)
+
+# extract metadata
+models_dataset=unname(sapply(list0, '[[', 'dataset'))
+models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+models_exp=unname(sapply(list0, '[[', 'exp'))
+reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
+models_start_year=unname(sapply(list0, '[[', 'start_year'))
+models_end_year=unname(sapply(list0, '[[', 'end_year'))
+models_experiment=unname(sapply(list0, '[[', 'exp'))
+models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
 
 ##
 ## Run it all
 ##
 
-for (model_idx in c(1:(length(models_name)))) {
-    exp <- models_name[model_idx]
+for (model_idx in c(1:(length(models_dataset)))) {
+    exp <- models_exp[model_idx]
+    dataset <- models_dataset[model_idx]
+    ensemble <- models_ensemble[model_idx]
     year1=models_start_year[model_idx]
     year2=models_end_year[model_idx]
-    infile <- interface_get_fullpath(var0, field_type0, model_idx)
-    zdirfile=paste0(regridding_dir,"/",exp,"/",exp,"_",toString(year1),
-                    "-",toString(year2),"_Z500_regrid.nc")
-    system2('diag_scripts/aux/miles/z500_prepare.sh',c(exp,
-                    toString(year1),toString(year2), infile,zdirfile))
-    system(paste("diag_scripts/aux/miles/eof_fast.sh",exp ,year1 ,year2,
-             "\"",paste(seasons,collapse = " "),"\"","\"",
-             paste(teles,collapse = " "),"\"",zdirfile,work_dir))
+    infile <- climofiles[model_idx]
+    for (tele in teles) {
+      for (seas in seasons) {
+        miles.eofs.fast(dataset=dataset,expid=exp,ens=ensemble,year1=year1,year2=year2,season=seas,tele=tele,z500filename=infile,FILESDIR=work_dir,doforce=TRUE)
+      }
+    }
 }
 
 ##
 ## Make the plots
 ##
 if (write_plots) {
-   ref_idx=which(models_name == var_attr_ref)
+   ref_idx=which(models_dataset == reference_model)
    if(length(ref_idx)==0) {
-      ref_idx=length(models_name);
+      ref_idx=length(models_dataset);
    }
-   dataset_ref=models_name[ref_idx]
+   dataset_ref=models_dataset[ref_idx]
+   exp_ref=models_exp[ref_idx]
+   ensemble_ref=models_ensemble[ref_idx]
    year1_ref=models_start_year[ref_idx]
    year2_ref=models_end_year[ref_idx]
 
-   for (model_idx in c(1:(length(models_name)))) {
+   for (model_idx in c(1:(length(models_dataset)))) {
       if(model_idx != ref_idx) {
-         exp <- models_name[model_idx]
+	 exp <- models_exp[model_idx]
+         dataset <- models_dataset[model_idx]
+         ensemble <- models_ensemble[model_idx]
          year1=models_start_year[model_idx]
          year2=models_end_year[model_idx]
          for (tele in teles) {
             for (seas in seasons) {
-               miles.eof.figures(exp,year1,year2,dataset_ref,year1_ref,
-                  year2_ref,season=seas,tele=tele,FIGDIR=plot_dir,
+               miles.eof.figures(expid=exp,year1=year1,year2=year2,dataset=dataset,ens=ensemble,
+		  dataset_ref=dataset_ref,expid_ref=exp_ref,year1_ref=year1_ref,ens_ref=ensemble_ref,
+                  year2_ref=year2_ref,season=seas,tele=tele,FIGDIR=plot_dir,
                   FILESDIR=work_dir,REFDIR=work_dir)
             }
          }
@@ -97,4 +118,3 @@ if (write_plots) {
    }
 }
 
-info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)

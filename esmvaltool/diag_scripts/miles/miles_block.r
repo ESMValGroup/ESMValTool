@@ -60,7 +60,9 @@ dir.create(regridding_dir, recursive = T, showWarnings = F)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'dataset'))
+models_dataset=unname(sapply(list0, '[[', 'dataset'))
+models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+models_exp=unname(sapply(list0, '[[', 'exp'))
 reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
 models_start_year=unname(sapply(list0, '[[', 'start_year'))
 models_end_year=unname(sapply(list0, '[[', 'end_year'))
@@ -71,16 +73,15 @@ models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
 ## Run it all
 ##
 
-for (model_idx in c(1:(length(models_name)))) {
-    exp <- models_name[model_idx]
+for (model_idx in c(1:(length(models_dataset)))) {
+    exp <- models_exp[model_idx]
+    dataset <- models_dataset[model_idx]
+    ensemble <- models_ensemble[model_idx]
     year1=models_start_year[model_idx]
     year2=models_end_year[model_idx]
-    #infile <- interface_get_fullpath(var0, field_type0, model_idx)
     infile <- climofiles[model_idx]
-    #zdirfile=paste0(regridding_dir,"/",exp,"/",exp,"_",toString(year1),"-",toString(year2),"_Z500_regrid.nc")
-    #system2(paste0(spath,'z500_prepare.sh'),c(exp,toString(year1),toString(year2), infile, zdirfile, var0))
     for (seas in seasons) {
-      miles.block.fast( year1=year1, year2=year2, expid=exp, ens=1, season=seas,z500filename=infile,FILESDIR=work_dir,dataset=exp,doforce=TRUE)
+      miles.block.fast( year1=year1, year2=year2, expid=exp, ens=ensemble, dataset=dataset, season=seas,z500filename=infile,FILESDIR=work_dir,doforce=TRUE)
     }
 }
 
@@ -88,21 +89,25 @@ for (model_idx in c(1:(length(models_name)))) {
 ## Make the plots
 ##
 if (write_plots) { 
-   ref_idx=which(models_name == reference_model)
+   ref_idx=which(models_dataset == reference_model)
    if(length(ref_idx)==0) {
-      ref_idx=length(models_name);
+      ref_idx=length(models_dataset);
    }
-   dataset_ref=models_name[ref_idx]
+   dataset_ref=models_dataset[ref_idx]
+   exp_ref=models_exp[ref_idx]
+   ensemble_ref=models_ensemble[ref_idx]
    year1_ref=models_start_year[ref_idx]
    year2_ref=models_end_year[ref_idx]
 
-   for (model_idx in c(1:(length(models_name)))) {
+   for (model_idx in c(1:(length(models_dataset)))) {
       if(model_idx != ref_idx) {
-         exp <- models_name[model_idx]
+         exp <- models_exp[model_idx]
+         dataset <- models_dataset[model_idx]
+         ensemble <- models_ensemble[model_idx]
          year1=models_start_year[model_idx]
          year2=models_end_year[model_idx]
          for (seas in seasons) {
-            miles.block.figures( year1=year1, year2=year2, expid=exp, dataset=exp, ens=1, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, expid_ref=dataset_ref, ens_ref=1, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir)
+            miles.block.figures( year1=year1, year2=year2, expid=exp, dataset=dataset, ens=ensemble, dataset_ref=dataset_ref, year1_ref=year1_ref, year2_ref=year2_ref, expid_ref=exp_ref, ens_ref=ensemble_ref, season=seas,FIGDIR=plot_dir,FILESDIR=work_dir,REFDIR=work_dir)
          }
       }
    }

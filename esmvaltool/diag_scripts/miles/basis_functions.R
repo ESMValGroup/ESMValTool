@@ -110,7 +110,7 @@ info.builder<-function(dataset,expid,ens,year1,year2,season)  {
         descriptors=c(dataset,expid,ens,paste0(year1,"-",year2),season)
         info=NULL
         for (dcode in descriptors) {
-                if (dcode!="NO") {
+		if (length(dcode)>0) {
                         info=paste(info,dcode)
                 }
         }
@@ -121,9 +121,9 @@ info.builder<-function(dataset,expid,ens,year1,year2,season)  {
 file.builder<-function(DATADIR,dir_name,file_name,dataset,expid,ens,year1,year2,season) {
 
 	# loop on descriptors that are concatenated to create dir and file name	
-	descriptors=c(dataset,expid,ens,paste0(year1,"_",year2),season)
+	descriptors=c(dataset,expid,ens,paste0(year1,"-",year2),season)
 	for (dcode in descriptors) {
-		if (dcode!="NO") {
+		if (length(dcode)>0) {
 			DATADIR=file.path(DATADIR,dcode)
 			file_name=paste0(file_name,"_",dcode)
 		}
