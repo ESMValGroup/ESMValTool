@@ -1,4 +1,3 @@
-Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
 library(ncdf4)
 library(multiApply) #nolint

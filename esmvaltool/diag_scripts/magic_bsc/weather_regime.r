@@ -11,8 +11,8 @@ file_arg_name <- "--file="
 script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
     initial_options)])
 script_dirname <- dirname(script_name)
-source(paste0(script_dirname, "/WeatherRegime.r"))
-source(paste0(script_dirname, "/RegimesAssign.r"))
+source(file.path(script_dirname, "WeatherRegime.r"))
+source(file.path(script_dirname, "RegimesAssign.r"))
 
 ## Regimes namelist
 args <- commandArgs(trailingOnly = TRUE)
@@ -85,7 +85,7 @@ reference_data <- Start(
   lon_var = "lon",
   lon_reorder = CircularSort(0, 360), # nolint
   return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
+  retrieve = TRUE)
 
 lon <- attr(reference_data, "Variables")$dat1$lon
 lat <- attr(reference_data, "Variables")$dat1$lat

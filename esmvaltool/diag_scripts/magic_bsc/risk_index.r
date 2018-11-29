@@ -1,4 +1,3 @@
-Sys.setenv(TAR = "/bin/tar")
 library(s2dverification)
 library(multiApply) #nolint
 library(yaml)
