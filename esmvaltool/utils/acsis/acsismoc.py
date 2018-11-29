@@ -26,7 +26,7 @@ Arguments:
 -m --moc-file     [OPTIONAL]   full path to the moc_transport file (netCDF);
 -s --hadslp-file  [OPTIONAL]   full path to the hadslp file (netCDF);
 -o --output       [OPTIONAL]   full path to output dir;
-                               DEFAULT $HOME/$USER/ACSIS;
+                               DEFAULT $HOME/$USER/ACSIS-MOC;
 -l --log-level    [OPTIONAL]   logging level;
                                OPTIONS: 'debug', 'info', 'warning', 'error';
                                DEFAULT: 'info';
@@ -82,7 +82,7 @@ def get_args():
         '-o',
         '--output',
         type=str,
-        default=os.path.join(os.environ['HOME'], 'ACSIS'),
+        default=os.path.join(os.environ['HOME'], 'ACSIS-MOC'),
         help='Output directory [FULLPATH]')
     parser.add_argument(
         '-l',
