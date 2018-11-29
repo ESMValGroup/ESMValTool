@@ -34,7 +34,7 @@ Arguments:
 
 -m --era-file     [OPTIONAL]   full path to the ERA file (netCDF);
 -o --output       [OPTIONAL]   full path to output dir;
-                               DEFAULT $HOME/$USER/ACSIS;
+                               DEFAULT $HOME/$USER/ACSIS-JET;
 -l --log-level    [OPTIONAL]   logging level;
                                OPTIONS: 'debug', 'info', 'warning', 'error';
                                DEFAULT: 'info';
