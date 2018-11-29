@@ -15,6 +15,24 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
+VAR_KEYS = [
+    'long_name',
+    'standard_name',
+    'units',
+]
+NECESSARY_KEYS = VAR_KEYS + [
+    'dataset',
+    'filename',
+    'short_name',
+    'var_type',
+]
+
+
+def _datasets_have_necessary_attributes(dataset, log_level='debug'):
+    """Check if datasets have necessary attributes."""
+    pass
+
+
 def select_metadata(metadata, **attributes):
     """Select specific metadata describing preprocessed data.
 
@@ -261,6 +279,53 @@ def get_file_from_ancestors(cfg, filename):
             "Requested file %s was found multiple times (%s), "
             "returning first appearance", filename, files)
     return files[0]
+
+
+def netcdf_to_metadata(cfg, pattern=None, root=None):
+    """Convert attributes of netcdf files to list of metadata.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    pattern : str, optional
+        Only consider files which match a certain pattern.
+    root : str, optional (default: ancestor directories)
+        Root directory for the search.
+
+    Returns
+    -------
+    list of dict
+        List of metadata.
+
+    """
+    if root is None:
+        all_files = get_all_ancestor_files(cfg, pattern)
+    else:
+        all_files = []
+        for (base, _, files) in os.walk(root):
+            if pattern is not None:
+                files = fnmatch.filter(files, pattern)
+            files = fnmatch.filter('*.nc')
+            files = [os.path.join(base, f) for f in files]
+            all_files.extend(files)
+
+    # Iterate over netcdf files
+    for path in all_files:
+        cube = iris.load_cube(path)
+        dataset_info = dict(cube.attributes)
+        for var_key in VAR_KEYS:
+            dataset_info[var_key] = getattr(cube, var_key)
+        dataset_info['short_name'] = getattr(cube, 'var_name')
+
+                    # Check if necessary keys are available
+                    if datasets_have_gbrt_attributes([dataset_info]):
+                        datasets.append(dataset_info)
+                    else:
+                        logger.debug("Skipping %s", path)
+
+
+
 
 
 def get_cfg(filename=None):
