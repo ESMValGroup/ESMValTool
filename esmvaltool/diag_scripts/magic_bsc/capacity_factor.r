@@ -26,7 +26,7 @@ library(yaml)
 library(s2dverification)
 library(climdex.pcic)
 library(ncdf4)
-library("XML", lib.loc = "/shared/earth/software/R/3.2.0-foss-2015a-bare/lib64/R/library")
+library("XML")
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -37,7 +37,6 @@ script_name <- sub(
 )
 script_dirname <- dirname(script_name)
 source(file.path(script_dirname, "PC.r"))
-
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
@@ -81,8 +80,6 @@ start_date <- as.POSIXct(
 nc_close(data_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
-
-
 time_dim <- which(names(dim(data)) == "time")
 
 # nolint start
@@ -98,21 +95,16 @@ time_dim <- which(names(dim(data)) == "time")
 # nolint end
 
 days <- time
-print(dim(data))
-print(length(days))
-print(no_of_years)
 dims <- dim(data)
 dims <- append(
-  dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 1
+  dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 2
 )
 print("CC")
-print(dims)
-
 
 dim(data) <- dims
+
 data <- aperm(data, c(3, 4, 2, 1))
 names(dim(data)) <- c("year", "day", "lat", "lon")
-
 #####################################
 # Cross with PC
 #####################################
@@ -187,7 +179,6 @@ pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim( # nolint
 #---------------------------
 # Plot seasonal CF maps
 #---------------------------
-
 PlotLayout( # nolint
     PlotEquiMap, # nolint
     c(3, 2),
@@ -249,7 +240,7 @@ corr <- function(data, i, j){
   )
 }
 cor12 <- corr(data, 1, 2)
-cor12 <- corr(data, 1, 3)
+cor13 <- corr(data, 1, 3)
 cor14 <- corr(data, 1, 4)
 cor15 <- corr(data, 1, 5)
 cor24 <- corr(data, 2, 4)
