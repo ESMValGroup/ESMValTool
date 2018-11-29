@@ -1,0 +1,82 @@
+SOURCE: CMIP5
+!============
+variable_entry:    xch4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     column_averaged_methane
+units:             1e-6
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Column Averaged CH4
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          xch4
+type:              real
+!----------------------------------
+!
+
+
+# {
+#     "Header": {
+#         "data_specs_version": "01.00.10", 
+#         "table_id": "Table Amon", 
+#         "realm": "atmos atmosChem", 
+#         "frequency": "mon", 
+#         "cmor_version": "3.2", 
+#         "table_date": "10 May 2017", 
+#         "missing_value": "1e20", 
+#         "product": "CDS", 
+#         "approx_interval": "30.00000", 
+#         "generic_levels": "", 
+#         "mip_era": "", 
+#         "Conventions": "CF-1.7 CMIP-6.0"
+#     }, 
+#     "variable_entry": {
+#         "xch4": {
+#             "modeling_realm": "atmos", 
+#             "standard_name": "column_averaged_methane", 
+#             "units": "1e-6", 
+#             "cell_methods": "area: time: mean", 
+#             "cell_measures": "area: areacella", 
+#             "long_name": "Column Averaged CH4", 
+#             "comment": "", 
+#             "dimensions": "longitude latitude time", 
+#             "out_name": "xch4", 
+#             "type": "real", 
+#             "positive": "", 
+#             "valid_min": "", 
+#             "valid_max": "", 
+#             "ok_min_mean_abs": "", 
+#             "ok_max_mean_abs": ""
+#         }, 
+#     }
+# }
+
+
+
+# SOURCE: CMIP5
+# !============
+# variable_entry:    xch4
+# !============
+# modeling_realm:    atmos
+# !----------------------------------
+# ! Variable attributes:
+# !----------------------------------
+# standard_name:     column_averaged_methane
+# units:             1e-6
+# cell_methods:      time: mean
+# cell_measures:     area: areacella
+# long_name:         Column Averaged CH4
+# !----------------------------------
+# ! Additional variable information:
+# !----------------------------------
+# dimensions:        longitude latitude time
+# out_name:          xch4
+# type:              real
+# !----------------------------------
+# !
