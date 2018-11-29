@@ -40,12 +40,12 @@ AtomicWeatherRegime <- function( # nolint
     }
   } else {
     cluster_input <- data
-    latWeights <- InsertDim(
-      InsertDim(cos(lat * pi / 180), 1, nftimes * nsdates),
+    latWeights <- InsertDim( #nolint
+      InsertDim(cos(lat * pi / 180), 1, nftimes * nsdates), #nolint
       3,
       nlon
     )
-    cluster_input <- cluster_input * latWeights
+    cluster_input <- cluster_input * latWeights #nolint
     dim(cluster_input) <- c(nftimes * nsdates, nlat * nlon)
   }
   if (method == "kmeans") {
@@ -67,13 +67,13 @@ AtomicWeatherRegime <- function( # nolint
       )
       for (j in 1 : ncenters) {
         total <- sum(occurences$lengths[occurences$values == j])
-        frequency[i,j] <- (total /  nftimes) * 100
-        persistence[i,j] <- mean(occurences$lengths[occurences$values == j])
+        frequency[i, j] <- (total /  nftimes) * 100
+        persistence[i, j] <- mean(occurences$lengths[occurences$values == j])
       }
     }
   } else {
     result <- hclust(dist(cluster_input), method = method)
-    clusterCut <- cutree(result, ncenters)
+    clusterCut <- cutree(result, ncenters) #nolint
     data <- aperm(data, c(3, 2, 1))
     result <- Composite(data, clusterCut) # nolint
   }
