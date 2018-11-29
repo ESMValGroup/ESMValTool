@@ -1,81 +1,143 @@
 """
 Look at this module for guidance how to write your own.
 
+Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
+
 Module for personal diagnostics (example).
 Internal imports from exmvaltool work e.g.:
 
-from esmvaltool.preprocessor._regrid import regrid
-from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+from esmvaltool.preprocessor import regrid
+from esmvaltool.diag_scripts.shared.supermeans import get_supermean
 
 Pipe output through logger;
+
+Please consult the documentation for help with esmvaltool's functionalities
+and best coding practices.
 """
+# place your module imports here:
+
+# operating system manipulations (e.g. path constructions)
 import os
 
+# for plotting
 import matplotlib
 # use this everytime you import matplotlib
 # modules; some machines dont have graphical interface (X)
 matplotlib.use('Agg')  # noqa
-
-import iris
 import matplotlib.pyplot as plt
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.preprocessor._area_pp import area_average
+# to manipulate iris cubes
+import iris
+
+# import internal esmvaltool modules here
+from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
+from esmvaltool.preprocessor import average_region
 
 
-def _get_my_files(cfg):
-    """Put files in dicts of datasets and return them."""
-    files_dict = {}
-    for filename, attributes in cfg['input_data'].items():
-        base_file = os.path.basename(filename)
-        dataset = base_file.split('_')[1]
-        files_dict[dataset] = {}
-        files_dict[dataset]['file'] = filename
-        if 'fx_files' in attributes:
-            for fx_var in attributes['fx_files']:
-                files_dict[dataset][fx_var] = attributes['fx_files'][fx_var]
-
-    return files_dict
-
-
-def plot_time_series(cfg):
+def _plot_time_series(cfg, cube, dataset):
     """
-    Example of personal diagnostic function.
+    Example of personal diagnostic plotting function.
 
     Arguments:
-        run - dictionary of data files
+        cfg - nested dictionary of metadata
+        cube - the cube to plot
+        dataset - name of the dataset to plot
 
     Returns:
         string; makes some time-series plots
 
+    Note: this function is private; remove the '_'
+    so you can make it public.
     """
-    # local path for e.g. plots: user input
-    root_dir = '/group_workspaces/jasmin2/cmip6_prep/'  # edit as per need
-    out_path = 'esmvaltool_users/valeriu/'   # edit as per need
-    local_path = os.path.join(root_dir, out_path)
+    # custom local paths for e.g. plots are supported -
+    # here is an example
+    # root_dir = '/group_workspaces/jasmin2/cmip6_prep/'  # edit as per need
+    # out_path = 'esmvaltool_users/valeriu/'   # edit as per need
+    # local_path = os.path.join(root_dir, out_path)
+    # but one can use the already defined esmvaltool output paths
+    local_path = cfg['plot_dir']
 
-    # get the files (simple case, one-variable only)
-    my_files_dict = _get_my_files(cfg)
+    # do the plotting dance
+    plt.plot(cube.data, label=dataset)
+    plt.xlabel('Time (months)')
+    plt.ylabel('Area average')
+    plt.title('Time series at (ground level - first level)')
+    plt.tight_layout()
+    plt.grid()
+    plt.legend()
+    png_name = 'Time_series_' + dataset + '.png'
+    plt.savefig(os.path.join(local_path, png_name))
+    plt.close()
 
-    # iterate through preprocessed model data
-    for key, value in my_files_dict.items():
-        cube = iris.load_cube(value['file'])
-        area_avg_cube = area_average(cube, 'latitude', 'longitude')
-        plt.plot(area_avg_cube.data[:, 0], label=key)
-        plt.xlabel('Time (months)')
-        plt.ylabel(cube.standard_name)
-        plt.title('Time series at ground level')
-        plt.tight_layout()
-        plt.grid()
-        plt.legend()
-        png_name = 'Time_series_' + key + '.png'
-        plt.savefig(os.path.join(local_path, png_name))
-        plt.close()
-
+    # no need to brag :)
     return 'I made some plots!'
 
 
-if __name__ == '__main__':
+def run_my_diagnostic(cfg):
+    """
+    Simple example of a diagnostic.
 
+    This is a basic (and rather esotherical) diagnostic that firstly
+    loads the needed model data as iris cubes, performs a difference between
+    values at ground level and first vertical level, then squares the
+    result.
+
+    Before plotting, we grab the squared result (not all operations on cubes)
+    and apply an area average on it. This is a useful example of how to use
+    standard esmvaltool-preprocessor functionality within a diagnostic, and
+    especially after a certain (custom) diagnostic has been run and the user
+    needs to perform an operation that is already part of the preprocessor
+    standard library of functions.
+
+    The user will implement their own (custom) diagnostics, but this
+    example shows that once the preprocessor has finished a whole lot of
+    user-specific metrics can be computed as part of the diagnostic,
+    and then plotted in various manners.
+
+    Arguments:
+        cfg - nested dictionary of metadata
+
+    Returns:
+        string; runs the user diagnostic
+
+    """
+    # assemble the data dictionary keyed by dataset name
+    # this makes use of the handy group_metadata function that
+    # orders the data by 'dataset'; the resulting dictionary is
+    # keyed on datasets e.g. dict = {'MPI-ESM-LR': [var1, var2...]}
+    # where var1, var2 are dicts holding all needed information per variable
+    my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
+
+    # iterate over key(dataset) and values(list of vars)
+    for key, value in my_files_dict.items():
+        # load the cube from data files only
+        # using a single variable here so just grab the first (and only)
+        # list element
+        cube = iris.load_cube(value[0]['filename'])
+
+        # the first data analysis bit: simple cube difference:
+        # perform a difference between ground and first levels
+        diff_cube = cube[:, 0, :, :] - cube[:, 1, :, :]
+        # square the difference'd cube just for fun
+        squared_cube = diff_cube ** 2.
+
+        # the second data analysis bit (slightly more advanced):
+        # compute an area average over the squared cube
+        # to apply the area average use a preprocessor function
+        # rather than writing your own function
+        area_avg_cube = average_region(squared_cube, 'latitude', 'longitude')
+
+        # finalize your analysis by plotting a time series of the
+        # diffed, squared and area averaged cube; call the plot function:
+        _plot_time_series(cfg, area_avg_cube, key)
+
+    # that's it, we're done!
+    return 'I am done with my first ESMValTool diagnostic!'
+
+
+if __name__ == '__main__':
+    # always use run_diagnostic() to get the config (the preprocessor
+    # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
-        plot_time_series(config)
+        # list here the functions that need to run
+        run_my_diagnostic(config)

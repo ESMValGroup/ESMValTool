@@ -21,9 +21,11 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        lat = cube.coord('latitude')
-        lat.points = np.clip(lat.points, -90., 90.)
-        lat.bounds = np.clip(lat.bounds, -90., 90.)
+        lats = cube.coords('latitude')
+        if lats:
+            lat = cube.coord('latitude')
+            lat.points = np.clip(lat.points, -90., 90.)
+            lat.bounds = np.clip(lat.bounds, -90., 90.)
 
         return cube
 
