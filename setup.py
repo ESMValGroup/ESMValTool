@@ -222,6 +222,7 @@ with open('README.md') as readme:
                 'esmvaltool = esmvaltool._main:run',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
                 'acsismoc = esmvaltool.utils.acsis.acsismoc:main',
+                'acsisjet = esmvaltool.utils.acsis.acsisjet:main',
             ],
         },
         cmdclass={
