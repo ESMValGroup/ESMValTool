@@ -1,3 +1,4 @@
+
 #!/bin/bash -e
 ###############################################################################
 ### BATCH SCRIPT TO RUN THE ESMVALTOOL AT DKRZ MISTRAL
@@ -15,21 +16,15 @@
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
 
 # Input arguments
-RECIPE=recipe_flato13ipcc_9_8.yml
-CONFIG=config-user-dkrz.yml
+RECIPE=recipe_perfmetrics_CMIP5.yml
+CONFIG=config-user.yml
 
-cd ..
-python setup.py install
-cd esmvaltool
-#esmvaltool -c $CONFIG --max-datasets 5 $RECIPE
-esmvaltool -c $CONFIG $RECIPE
+# Set environment
+CONDAPATH=  # e.g. /home/soft/miniconda3/
+CONDAENV=   # e.g. $CONDAPATH/envs/esmvaltool/bin
+ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
 
-## Set environment
-#CONDAPATH=  # e.g. /home/soft/miniconda3/
-#CONDAENV=   # e.g. $CONDAPATH/envs/esmvaltool/bin
-#ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
-#
-## Changes below this line should not be required
-#export PATH=$PATH:$CONDAPATH/bin/
-#conda info --envs
-#$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG
+# Changes below this line should not be required
+export PATH=$PATH:$CONDAPATH/bin/
+conda info --envs
+$CONDAENV/esmvaltool $ESMVALPATH/recipes/$RECIPE -c $ESMVALPATH/$CONFIG
