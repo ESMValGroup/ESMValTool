@@ -430,8 +430,6 @@ class CMIP5Info(object):
             self._read_line()
             while True:
                 key, value = self._last_line_read
-                logger.warning("key: " + key)
-                logger.warning("value: " + value)
                 if key == 'table_id':
                     table = TableInfo()
                     table.name = value[len('Table '):]
