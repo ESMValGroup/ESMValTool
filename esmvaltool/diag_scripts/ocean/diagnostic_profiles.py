@@ -91,8 +91,7 @@ def make_profiles_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
-    times = cube.coord('time')
-    times_float = diagtools.timecoord_to_float(times)
+    times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
     cmap = plt.cm.get_cmap('jet')

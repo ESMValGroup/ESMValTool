@@ -94,5 +94,6 @@ doc/sphinx/build
 *.grib
 *.RData
 *.Rdata
+*.Rhistory
 *.rdata
 *.pkl
