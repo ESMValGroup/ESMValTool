@@ -2,13 +2,14 @@
 
 from __future__ import absolute_import, division, print_function
 
-import unittest
 import os
 import tempfile
-import numpy as np
+import unittest
+
 import iris
-from iris.cube import Cube
+import numpy as np
 from iris.coords import DimCoord
+from iris.cube import Cube
 
 from esmvaltool.preprocessor import _io
 
@@ -89,27 +90,3 @@ class TestLoad(unittest.TestCase):
                                                                     2])).all())
         self.assertEqual(cube.attributes['_filename'], 'filename')
         self.assertEqual(cube.coord('latitude').units, 'degrees_north')
-
-    def test_concatenate_exps(self):
-        """Test concatenation of different experiments."""
-        ref_cube = _create_sample_cube()
-        ref_cube.attributes = {
-            'test': 1,
-            'test2': [0, 1],
-        }
-        ref_cube_file = self._save_cube(ref_cube)
-        cube = _create_sample_cube()
-        self._save_cube(cube)
-        metadata = {
-            'concatenate_exps': ['rcp85', 'rcp45'],
-            'exp': 'historical',
-        }
-
-        cubes = _io.load_cubes(
-            self.temp_files,
-            'filename',
-            metadata,
-            ref_attributes_file=ref_cube_file)
-        for cube in cubes:
-            for attr in ref_cube.attributes:
-                self.assertTrue(attr in cube.attributes)

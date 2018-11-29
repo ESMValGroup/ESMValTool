@@ -14,11 +14,10 @@ diagnostics:
         project: CMIP5
         mip: Amon
         ensemble: r1i1p1
-        exp: historical
+        exp: [historical, rcp85]
         start_year: 1950
         end_year: 2050
         field: T2Ms
-        concatenate_exps: [rcp85]
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1980, end_year: 2000}
     scripts: null

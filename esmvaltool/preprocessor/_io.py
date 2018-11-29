@@ -6,6 +6,7 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -48,12 +49,7 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files,
-               filename,
-               metadata,
-               constraints=None,
-               callback=None,
-               ref_attributes_file=None):
+def load_cubes(files, filename, metadata, constraints=None, callback=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
@@ -62,41 +58,36 @@ def load_cubes(files,
         raise Exception('Can not load cubes from {0}'.format(files))
 
     for cube in cubes:
-        if ref_attributes_file:
-            ref_cubes = iris.load_raw(
-                ref_attributes_file,
-                constraints=constraints,
-                callback=callback)
-            if ref_cubes:
-                cube.attributes = ref_cubes[0].attributes
-                logger.debug(
-                    "Reading reference attributes for cube loading "
-                    "from %s", ref_attributes_file)
-            else:
-                logger.warning("Cannot load attributes from file %s",
-                               ref_attributes_file)
-        if isinstance(metadata, dict):
-            if 'concatenate_exps' in metadata:
-                cube.attributes['concatenate_exps'] = (
-                    metadata['concatenate_exps'])
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
 
     return cubes
 
 
+def _fix_cube_attributes(cubes):
+    """Unify attributes of different cubes to allow concatenation."""
+    attributes = {}
+    for cube in cubes:
+        for (attr, val) in cube.attributes.items():
+            if attr not in attributes:
+                attributes[attr] = val
+            else:
+                if not np.array_equal(val, attributes[attr]):
+                    attributes[attr] = '{};{}'.format(
+                        str(attributes[attr]), str(val))
+    for cube in cubes:
+        cube.attributes = attributes
+
+
 def concatenate(cubes):
     """Concatenate all cubes after fixing metadata."""
+    _fix_cube_attributes(cubes)
     try:
         cube = iris.cube.CubeList(cubes).concatenate_cube()
         return cube
     except iris.exceptions.ConcatenateError as ex:
         logger.error('Can not concatenate cubes: %s', ex)
         logger.error('Differences: %s', ex.differences)
-        if 'concatenate_exps' in cubes[0].attributes:
-            logger.error("Note: Time dimensions in input data for the "
-                         "different experiments must not overlap "
-                         "('concatenate_exps' option)")
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)

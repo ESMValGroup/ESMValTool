@@ -11,20 +11,22 @@ import re
 
 import six
 
-from ._config import get_project_config, get_institutes, replace_mip_fx
+from ._config import get_institutes, get_project_config, replace_mip_fx
 from .cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
 
-def find_files(dirnames, filename):
-    """Find files matching filename in dirnames."""
-    logger.debug("Looking for files matching %s in %s", filename, dirnames)
+def find_files(dirnames, filenames):
+    """Find files matching filenames in dirnames."""
+    logger.debug("Looking for files matching %s in %s", filenames, dirnames)
+
     result = []
     for dirname in dirnames:
         for path, _, files in os.walk(dirname, followlinks=True):
-            files = fnmatch.filter(files, filename)
-            result.extend(os.path.join(path, f) for f in files)
+            for filename in filenames:
+                matches = fnmatch.filter(files, filename)
+                result.extend(os.path.join(path, f) for f in matches)
 
     return result
 
@@ -93,7 +95,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def _replace_tags(path, variable, fx_var=None, concatenate_exps=True):
+def _replace_tags(path, variable, fx_var=None):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -108,11 +110,6 @@ def _replace_tags(path, variable, fx_var=None, concatenate_exps=True):
             replacewith = fx_var
         elif tag == 'latestversion':  # handled separately later
             continue
-        elif tag == 'exp':
-            replacewith = [variable['exp']]
-            if concatenate_exps:
-                for exp in variable.get('concatenate_exps', []):
-                    replacewith.append(exp)
         elif tag in variable:
             replacewith = variable[tag]
         else:
@@ -201,11 +198,7 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _find_input_dirs(variable,
-                     rootpath,
-                     drs,
-                     fx_var=None,
-                     concatenate_exps=True):
+def _find_input_dirs(variable, rootpath, drs, fx_var=None):
     """Return a the full paths to input directories."""
     project = variable['project']
 
@@ -214,8 +207,7 @@ def _find_input_dirs(variable,
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in _replace_tags(path_template, variable, fx_var,
-                                          concatenate_exps):
+    for dirname_template in _replace_tags(path_template, variable, fx_var):
         for base_path in root:
             dirname = os.path.join(base_path, dirname_template)
             dirname = _resolve_latestversion(dirname)
@@ -228,40 +220,30 @@ def _find_input_dirs(variable,
     return dirnames
 
 
-def _get_filenames_glob(variable, drs, fx_var=None, concatenate_exps=True):
+def _get_filenames_glob(variable, drs, fx_var=None):
     """Return patterns that can be used to look for input files."""
     input_type = 'input_{}file'.format('fx_' if fx_var else '')
     path_template = _select_drs(input_type, drs, variable['project'])
-    filenames_glob = _replace_tags(path_template, variable, fx_var,
-                                   concatenate_exps)
+    filenames_glob = _replace_tags(path_template, variable, fx_var)
     return filenames_glob
 
 
-def _find_input_files(variable,
-                      rootpath,
-                      drs,
-                      fx_var=None,
-                      concatenate_exps=True):
+def _find_input_files(variable, rootpath, drs, fx_var=None):
     logger.debug("Looking for input %sfiles for variable %s of dataset %s",
                  fx_var + ' fx ' if fx_var else '', variable['short_name'],
                  variable['dataset'])
 
-    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var,
-                                  concatenate_exps)
-    filenames_glob = _get_filenames_glob(variable, drs, fx_var,
-                                         concatenate_exps)
-    files = []
-    for filename in filenames_glob:
-        files.extend(find_files(input_dirs, filename))
+    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
+    filenames_glob = _get_filenames_glob(variable, drs, fx_var)
+    files = find_files(input_dirs, filenames_glob)
 
     return files
 
 
-def get_input_filelist(variable, rootpath, drs, concatenate_exps=True):
+def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     variable['institute'] = get_institutes(variable)
-    files = _find_input_files(
-        variable, rootpath, drs, concatenate_exps=concatenate_exps)
+    files = _find_input_files(variable, rootpath, drs)
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
 
@@ -278,8 +260,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var['modeling_realm'] = realm if realm else table.realm
         var['institute'] = get_institutes(variable)
 
-        files = _find_input_files(
-            var, rootpath, drs, fx_var, concatenate_exps=False)
+        files = _find_input_files(var, rootpath, drs, fx_var)
         fx_files[fx_var] = files[0] if files else None
 
     return fx_files
@@ -292,8 +273,7 @@ def get_output_file(variable, preproc_dir):
     outfile = os.path.join(
         preproc_dir,
         '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        _replace_tags(cfg['output_file'], variable,
-                      concatenate_exps=False)[0] + '.nc')
+        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
 
     return outfile
 
