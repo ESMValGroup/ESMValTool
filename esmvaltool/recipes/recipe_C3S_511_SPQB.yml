@@ -35,8 +35,8 @@ diagnostics:
         preprocessor: noop
         field: T2Ms
 #        field: T3Ms
-        derive: False
-#        mip: Amip
+        derive: True
+        mip: Amip
     scripts:
       SPQB_basic_report:
         script: qualassess/DUMMY_C3S_511_SPQB.py
