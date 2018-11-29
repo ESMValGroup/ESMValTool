@@ -167,3 +167,10 @@ EMAC:
   input_file: ''
   output_file: '[dataset]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
+  
+CDS-OBS:
+  input_dir:
+    default: '/'
+  input_file: '[project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*'
+  output_file: '[project]_[obssystem]_[dataset]_[level]_[field]_[short_name]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'

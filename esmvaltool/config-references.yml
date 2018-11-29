@@ -501,6 +501,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
+  c3s_511: ECMWF C3S_511
 
 realms:
   aerosol: aerosol
