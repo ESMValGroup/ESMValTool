@@ -74,7 +74,7 @@ def calculate_psi(cube, cfg):
         np.array(psis),
         var_name='psi',
         long_name='Temperature variability metric',
-        units=cf_units.Unit('1'),
+        units=cf_units.Unit('K'),
         dim_coords_and_dims=[(year_coord, 0)],
         attributes={
             'window_length': window_length,
@@ -115,7 +115,7 @@ def main(cfg):
     cube_atts = {
         'var_name': 'psi',
         'long_name': 'Temperature variability metric',
-        'units': cf_units.Unit('1'),
+        'units': cf_units.Unit('K'),
     }
     save_scalar_data(psis, path, cfg, **cube_atts)
 

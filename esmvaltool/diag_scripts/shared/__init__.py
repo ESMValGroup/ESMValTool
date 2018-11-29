@@ -1,5 +1,5 @@
 """Code that is shared between multiple diagnostic scripts."""
-from . import emergent_constraints, names, plot
+from . import names, plot
 from ._base import (get_cfg, group_metadata, run_diagnostic, select_metadata,
                     sorted_group_metadata, sorted_metadata, extract_variables,
                     variables_available, get_all_ancestor_files,
@@ -9,7 +9,6 @@ from ._validation import (get_control_exper_obs, apply_supermeans)
 from ._diag import Datasets, Variable, Variables
 
 __all__ = [
-    'emergent_constraints',
     'names',
     'get_cfg',
     'plot',

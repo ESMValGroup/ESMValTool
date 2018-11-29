@@ -208,6 +208,14 @@ NorESM1-M:
   size: 10
   avgstd: 0
   facecolor: none
+HadCRUT4:
+  color: '#000000'
+  dash: '-'
+  thick: 1
+  mark: o
+  size: 8
+  avgstd: 0
+  facecolor: '#000000'
 OBS:
   color: '#000000'
   dash: '-'
