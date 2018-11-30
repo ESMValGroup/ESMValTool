@@ -434,12 +434,15 @@ class DiagnosticTask(AbstractTask):
 
         cmd = list(self.cmd)
         cwd = None
-        env = None
+        env = dict(os.environ)
 
         settings_file = self.write_settings()
 
-        if not self.script.lower().endswith('.py'):
-            env = dict(os.environ)
+        if self.script.lower().endswith('.py'):
+            # Set non-interactive matplotlib backend
+            env['MPLBACKEND'] = 'Agg'
+        else:
+            # Make diag_scripts path available to diagostics scripts
             env['diag_scripts'] = os.path.join(
                 os.path.dirname(__file__), 'diag_scripts')
 
