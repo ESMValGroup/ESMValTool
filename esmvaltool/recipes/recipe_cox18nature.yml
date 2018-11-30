@@ -87,7 +87,7 @@ diagnostics:
         start_year: 1880
         end_year: 2005
     additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
+      - {dataset: HadCRUT, project: OBS, type: ground, version: 3v, tier: 2}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0}
       - {dataset: bcc-csm1-1}

@@ -68,7 +68,7 @@ def calculate_psi(cube, cfg):
     year_coord = iris.coords.DimCoord(
         np.array(psi_years),
         var_name='year',
-        long_name='Year',
+        long_name='year',
         units=cf_units.Unit('year'))
     psi_cube = iris.cube.Cube(
         np.array(psis),

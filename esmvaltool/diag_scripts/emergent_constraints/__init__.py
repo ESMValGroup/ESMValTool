@@ -153,8 +153,8 @@ def regression_line(x_data, y_data, n_points=100):
     Returns
     -------
     dict
-        `numpy.array`s for the keys `x`, `y_best_estim`, `y_minus_err` and
-        `y_plus_err'.
+        `numpy.array`s for the keys `x`, `y_best_estim`, `y_minus_err`,
+        `y_plus_err', 'rvalue', 'slope' and 'intercept'.
 
     """
     _check_input_arrays(x_data, y_data)
@@ -167,6 +167,9 @@ def regression_line(x_data, y_data, n_points=100):
     out['y_minus_err'] = out['y_best_estim'] - spe(x_lin)
     out['y_plus_err'] = out['y_best_estim'] + spe(x_lin)
     out['x'] = x_lin
+    out['rvalue'] = reg.rvalue
+    out['slope'] = reg.slope
+    out['intercept'] = reg.intercept
     return out
 
 
