@@ -52,20 +52,24 @@ def concatenate_callback(raw_cube, field, _):
 def load_cubes(files, filename, metadata, constraints=None, callback=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
-    cubes = iris.load_raw(files, constraints=constraints['standard_name'],
-                          callback=callback)
-    # test for long name
-    if not cubes:
-        iris_constraint = iris.Constraint(
-            cube_func=(lambda c: c.long_name == constraints['long_name']))
-        cubes = iris.load(files, constraints=iris_constraint,
-                          callback=callback)
-    # last resort - test for short name
-    if not cubes:
-        iris_constraint = iris.Constraint(
-            cube_func=(lambda c: c.var_name == constraints['short_name']))
-        cubes = iris.load(files, constraints=iris_constraint,
-                          callback=callback)
+    if constraints is not None:
+        cubes = iris.load_raw(files, constraints=constraints['standard_name'],
+                              callback=callback)
+        # test for long name
+        if not cubes:
+            iris_constraint = iris.Constraint(
+                cube_func=(lambda c: c.long_name == constraints['long_name']))
+            cubes = iris.load(files, constraints=iris_constraint,
+                              callback=callback)
+        # last resort - test for short name
+        if not cubes:
+            iris_constraint = iris.Constraint(
+                cube_func=(lambda c: c.var_name == constraints['short_name']))
+            cubes = iris.load(files, constraints=iris_constraint,
+                              callback=callback)
+    else:
+        cubes = iris.load_raw(files, constraints=constraints,
+                              callback=callback)
     iris.util.unify_time_units(cubes)
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
