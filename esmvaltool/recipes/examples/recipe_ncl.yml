@@ -1,4 +1,16 @@
 ---
+documentation:
+  description: |
+    Example recipe that plots the mean precipitation and temperature.
+
+  authors:
+    - righ_ma
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
 
 datasets:
   - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
