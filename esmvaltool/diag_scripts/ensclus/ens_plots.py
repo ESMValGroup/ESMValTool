@@ -68,7 +68,6 @@ def ens_plots(dir_OUTPUT,dir_PLOT,name_outputs,numclus,field_to_plot):
     x=int(np.ceil(np.sqrt(numens*1.6)))
     y=int(np.ceil(numens/x))
     print(x,y)
-
     fig = plt.figure(figsize=(24,14))
     for nens in range(numens):
         #print('//////////ENSEMBLE MEMBER {0}'.format(nens))
@@ -115,7 +114,7 @@ def ens_plots(dir_OUTPUT,dir_PLOT,name_outputs,numclus,field_to_plot):
     # plot the selected fields
     namef=os.path.join(dir_PLOT,'{0}_{1}.eps'.format(field_to_plot,name_outputs))
     fig.savefig(namef)#bbox_inches='tight')
-    print('An eps figure for the selected fields is saved in {0}'.format(dir_OUTPUT))
+    print('An eps figure for the selected fields is saved in {0}'.format(dir_PLOT))
     print('____________________________________________________________________________________________________________________')
 
     return
