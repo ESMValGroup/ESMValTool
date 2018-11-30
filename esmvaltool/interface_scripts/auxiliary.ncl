@@ -639,7 +639,7 @@ function ncdf_define(ncdf, data)
 ;    20131112-A_gott_kl: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim
+  dimUnlim, atts
 begin
 
   funcname = "ncdf_define"
@@ -1383,7 +1383,7 @@ begin
 end
 
 ; #############################################################################
-undef("write_ignore_warnings")
+undef("write_ignore_warnings")  ; FIX-ME: to be removed
 procedure write_ignore_warnings(warnings[*]:string,
                                 warn_file_str[1]:string)
 ;
@@ -1419,7 +1419,7 @@ begin
 end
 
 ; #############################################################################
-undef("get_ref_dataset_idx")
+undef("get_ref_dataset_idx")  ; FIX-ME to be removed
 function get_ref_dataset_idx(datasets[1]:logical,\
                              dataset_ref_name:string)
 ;
@@ -1449,7 +1449,7 @@ begin
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
     idx_ref(ii) = \
-      ind(input_file_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
+      ind(datasets@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")
