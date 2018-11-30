@@ -604,10 +604,10 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
+      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
+      #    end_year: 1999}
+      # - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850,
+      #    end_year: 1999}
       - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
          end_year: 1999}
       - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
@@ -625,8 +625,7 @@ diagnostics:
     scripts:
       ecs:
         script: climate_metrics/ecs.py
-        plot_ecs_regression: 'True'
-        output_name: 'ecs'
+        plot_ecs_regression: True
 
   fig09-42a:
     description: Plot ECS vs. GMSAT.
@@ -656,10 +655,10 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961,
-         end_year: 1990}
+      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
+      #    end_year: 1999}
+      # - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961,
+      #    end_year: 1990}
       - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
          end_year: 1999}
       - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961,
@@ -678,8 +677,6 @@ diagnostics:
       fig09-42a:
         script: ipcc_ar5/ch09_fig09_42a.py
         ancestors: ['tas', 'ecs/ecs']
-        ecs_filename: 'ecs'
-        output_name: 'ch09_fig09-42a'
         tas_units: celsius
         save:
           bbox_inches: tight
