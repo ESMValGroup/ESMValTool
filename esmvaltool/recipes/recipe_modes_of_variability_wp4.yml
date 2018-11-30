@@ -30,14 +30,13 @@
 ---
 
 datasets:
-  - {dataset: MIROC5, type: exp,  project: CMIP5,  exp: historical,  ensemble: i0p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MIROC5, type: exp,  project: CMIP5,  exp: historical,  ensemble: i0p1,  start_year: 1981,  end_year: 1990}
   - {dataset: MIROC5, type: exp,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
   #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
   #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
-
 preprocessors:
   preproc:
     regrid:
@@ -45,7 +44,11 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
-
+    extract_region:
+      start_longitude: -60
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 70
 diagnostics:
   weather_regime:
     description: Compute modes of variability.

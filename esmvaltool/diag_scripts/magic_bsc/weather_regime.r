@@ -75,25 +75,25 @@ detrend_order <- params$detrend_order
 # ---------------------------
 # Reading and formating
 # ---------------------------
-reference_data <- Start(
-  model = fullpath_filenames[reference_files],
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = values(list(lat.min, lat.max)),
-  lon = values(list(lon.min, lon.max)),
-  lon_var = "lon",
-  lon_reorder = CircularSort(0, 360), # nolint
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE)
+ref_nc <- nc_open(fullpath_filenames[reference_files])
+var0 <- unlist(var0)
+reference_data <- ncvar_get(ref_nc, var0)
 
-lon <- attr(reference_data, "Variables")$dat1$lon
-lat <- attr(reference_data, "Variables")$dat1$lat
-time <- attr(reference_data, "Variables")$dat1$time
-calendario <- attributes(time)$variables$time$calendar
-
+names(dim(reference_data)) <- rev(names(ref_nc$dim))[-1]
+lat <- ncvar_get(ref_nc, "lat")
+lon <- ncvar_get(ref_nc, "lon")
+units <- ncatt_get(ref_nc, var0, "units")$value
+calendario <- ncatt_get(ref_nc, "time", "calendar")$value
+long_names <-  ncatt_get(ref_nc, var0, "long_name")$value
+time <-  ncvar_get(ref_nc, "time")
+start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time",
+                                          "units")$value, 11, 29))
+nc_close(ref_nc)
+time <- as.Date(time, origin = start_date, calendar = calendar)
+print(dim(reference_data))
 data_type <- ifelse(grepl("Amon", fullpath_filenames[1]), "Amon", "day")
-dates_historical <- seq(start_historical, end_historical, data_type)
+dates_historical <- time # seq(start_historical, end_historical, data_type)
+
 if (length(dates_historical) != length(time)) {
   if (
     calendario == "365" | calendario == "365_days" |
@@ -114,8 +114,13 @@ dim(reference_data) <- c(
   lat = length(lat),
   time = length(time)
 )
-reference_data <- aperm(reference_data, c(1, 2, 5, 4, 3))
+reference_data <- aperm(reference_data, c(1, 2, 5, 3, 4))
 attr(reference_data, "Variables")$dat1$time <- time
+
+
+names(dim(reference_data)) <- c("model", "var", "time", "lon", "lat")
+time_dimension <- which(names(dim(reference_data)) == "time")
+
 
 # -------------------------------
 ## Selecting the season or month
@@ -141,6 +146,8 @@ if (!is.na(mes)) {
   )
 } else if (!is.na(sea)) {
   print("Seasonal")
+  print(dim(reference_data))
+  print(length(dates_historical))
   reference_data <- SeasonSelect(
     reference_data,
     season = frequency,
@@ -188,7 +195,8 @@ clim_obs <- aperm(
 )
 
 anom_obs <- Ano(reference_data, clim_obs)
-
+print(length(lon))
+print(length(lat))
 WR_obs <- WeatherRegime(
   data = anom_obs,
   EOFS = EOFS,
@@ -299,32 +307,17 @@ ArrayToNetCDF(
 # ---------------------------
 # Reading and formating
 # ---------------------------
-projection_data <- Start(
-  model = fullpath_filenames[projection_files],
-  var = var0,
-  var_var = "var_names",
-  time ="all",
-  time_tolerance = as.difftime(15, units = "days"),
-  lat = values(list(lat.min, lat.max)),
-  lon = values(list(lon.min, lon.max)),
-  lon_var = "lon", # nolint
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
-# Provisional solution to error in dimension order:
-time <- attr(projection_data, "Variables")$dat1$time
-dates_projection <- seq(start_projection, end_projection, data_type)
-calendario <- attributes(time)$variables$time$calendar
-if (length(dates_projection) != length(time)) {
-   if (calendario == "365" | calendario == "365_days"|
-	calendario == "365_day" | calendario == "noleap") {
-        dates_projection <-
-	 dates_projection[-which(substr(dates_projection, 6, 10) == "02-29")]
-    }
-}
-if (length(dates_projection) != length(time)) {
-	print("Time problems 2")
-}
+proj_nc <- nc_open(fullpath_filenames[projection_files])
+projection_data <- ncvar_get(proj_nc, var0)
+names(dim(projection_data)) <- rev(names(proj_nc$dim))[-1]
+time <-  ncvar_get(proj_nc, "time")
+start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time",
+                                          "units")$value, 11, 29))
+nc_close(proj_nc)
+dates_projection <- as.Date(time, origin = start_date, calendar = calendar)
+nc_close(proj_nc)
+
+
 data <- as.vector(projection_data)
 dim(projection_data) <- c(
   model = 1,
@@ -333,6 +326,7 @@ dim(projection_data) <- c(
   lat = length(lat),
   time = length(time)
 )
+print(dim(projection_data))
 projection_data <- aperm(projection_data, c(1, 2, 5, 4, 3))
 attr(projection_data, "Variables")$dat1$time <- time
 
