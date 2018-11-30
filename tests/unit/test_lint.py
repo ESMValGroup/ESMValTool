@@ -15,9 +15,7 @@ def test_pep8_conformance():
         'esmvaltool',
         'tests',
     ]
-    exclude_paths = [
-        'esmvaltool/doc',
-    ]
+    exclude_paths = ['esmvaltool/doc', 'esmvaltool/cvdp']
 
     print("PEP8 check of directories: {}\n".format(', '.join(check_paths)))
 
@@ -33,7 +31,8 @@ def test_pep8_conformance():
     success = style.check_files(check_paths).total_errors == 0
 
     if not success:
-        print(textwrap.dedent("""
+        print(
+            textwrap.dedent("""
             Your Python code does not conform to the official Python style
             guide (PEP8), see https://www.python.org/dev/peps/pep-0008
 
@@ -56,16 +55,27 @@ def test_nclcodestyle():
         'tests',
     ]
 
+    exclude_paths = [
+        'esmvaltool/cvdp',
+    ]
+
     print("Formatting check of NCL code in directories: {}\n".format(
         ', '.join(check_paths)))
 
-    style = nclcodestyle.StyleGuide()
+    # Get paths wrt package root
     package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    check_paths = [os.path.join(package_root, path) for path in check_paths]
+    for paths in (check_paths, exclude_paths):
+        for i, path in enumerate(paths):
+            paths[i] = os.path.join(package_root, path)
+
+    style = nclcodestyle.StyleGuide()
+    style.options.exclude.extend(exclude_paths)
+
     success = style.check_files(check_paths).total_errors == 0
 
     if not success:
-        print(textwrap.dedent("""
+        print(
+            textwrap.dedent("""
             Your NCL code does not follow our formatting standards.
 
             A list of warning and error messages can be found above,
