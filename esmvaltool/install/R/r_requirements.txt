@@ -12,3 +12,4 @@ ncdf4
 RColorBrewer
 s2dverification
 plyr
+XML

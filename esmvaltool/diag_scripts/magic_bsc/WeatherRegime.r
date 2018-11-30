@@ -59,7 +59,7 @@ AtomicWeatherRegime <- function( # nolint
     frequency <- persistence <- matrix(NA, nsdates, ncenters)
     for (i in 1 : nsdates) {
       occurences <- rle(
-        result$cluster[((i * nftimes) + 1 - nftimes) : (i * nftimes)]
+        result$cluster[((i * nftimes) + 1 - nftimes) : (i * nftimes)] #nolint
       )
       cluster_timeseries <- list(
         lengths = c(cluster_timeseries$lengths, occurences$lengths),

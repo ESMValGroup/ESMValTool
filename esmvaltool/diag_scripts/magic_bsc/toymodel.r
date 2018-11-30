@@ -97,7 +97,6 @@ ToyModel <- function ( #nolint
         stop("Parameter fxerr must be numeric.")
     }
   }
-  time <- seq(1, nstartd)
   if (nstartd < 0) {
       stop("Number of start dates must be positive")
   }
