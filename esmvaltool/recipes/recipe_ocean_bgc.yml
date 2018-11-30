@@ -223,6 +223,13 @@ diagnostics:
   diag_timeseries_volume_average_no_obs:
     description: Global volume average time series (No observations)
     variables:
+      gtfgco2: # Global Total flux co2
+        preprocessor: prep_timeseries_scalar
+        field: TOM
+        mip: Omon
+        derive: true
+        force_derivation: false
+        fx_files: [areacello, ]
       chl: # chlorophyll
         preprocessor: prep_timeseries_global_volume_average
         field: TO3Y
