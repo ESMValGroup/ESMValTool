@@ -75,7 +75,8 @@ def create_link(cfg, p):
         return t.replace(s, "{0}01-{1}12".format(*s.split('-')))
 
     if not os.path.isdir(p):
-        #raise DiagnosticError("Path {0} does not exist".format(p))
+        # TODO: Exception if p doesn't exists
+        # raise DiagnosticError("Path {0} does not exist".format(p))
         logger.debug("Path %s does not exist! Continue", p)
 
     lnk_dir = os.path.join(cfg['work_dir'], "links")
