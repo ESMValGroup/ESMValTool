@@ -1,11 +1,12 @@
 library(yaml)
 library(s2dverification)
-library(startR) # nolint
 library(multiApply) # nolint
 library(climdex.pcic)
 library(ClimProjDiags) #nolint
 library(parallel)
 library(ncdf4)
+source("/home/Earth/nperez/git/ClimProjDiags/R/DTRRef.R") #nolint
+source("/home/Earth/nperez/git/ClimProjDiags/R/DTRIndicator.R") #nolint
 
 ## Insurance products
 args <- commandArgs(trailingOnly = TRUE)
@@ -60,199 +61,89 @@ rcp2.6 <- params$rcp2.6
 rcp_scenario <- c(rcp8.5, rcp2.6)
 
 fullpath_hist_tasmax <- filename_tasmax[[reference_files]]
-historical_tasmax <- Start(
-  model = fullpath_hist_tasmax,
-  var = "tasmax",
-  var_var = "var_names",
-  time = "all",
-  lon = "all",
-  lat = "all",
-  lon_var = "lon",
-  lon_reorder = CircularSort(0, 360), # nolint
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
+file <- nc_open(fullpath_hist_tasmax)
+historical_tasmax <- ncvar_get(file, "tasmax")
+names(dim(historical_tasmax)) <- rev(names(file$dim))[-1]
+lat <- ncvar_get(file, "lat")
+lon <- ncvar_get(file, "lon")
+units <- ncatt_get(file, "tasmax", "units")$value
+calendario <- ncatt_get(file, "time", "calendar")$value
+long_names <-  ncatt_get(file, "tasmax", "long_name")$value
+time <-  ncvar_get(file, "time")
+start_date <- as.POSIXct(substr(ncatt_get(file, "time",
+                                          "units")$value, 11, 29))
+nc_close(file)
 
 fullpath_hist_tasmin <- filename_tasmin[[reference_files]]
-historical_tasmin <- Start(
-  model = fullpath_hist_tasmin,
-  var = "tasmin",
-  var_var = "var_names",
-  time = "all",
-  lon = "all",
-  lat = "all",
-  lon_var = "lon",
-  lon_reorder = CircularSort(0, 360), # nolint
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
-lat <- attr(historical_tasmax, "Variables")$dat1$lat
-lon <- attr(historical_tasmax, "Variables")$dat1$lon
+file <- nc_open(fullpath_hist_tasmin)
+historical_tasmin <- ncvar_get(file, "tasmin")
+names(dim(historical_tasmin)) <- rev(names(file$dim))[-1]
+lat <- ncvar_get(file, "lat")
+lon <- ncvar_get(file, "lon")
+units <- ncatt_get(file, "tasmin", "units")$value
+calendario <- ncatt_get(file, "time", "calendar")$value
+long_names <-  ncatt_get(file, "tasmin", "long_name")$value
+tunits <- ncatt_get(file, "time", "units")$value
+time <-  ncvar_get(file, "time")
+start_date <- as.POSIXct(substr(ncatt_get(file, "time",
+                                          "units")$value, 11, 29))
+nc_close(file)
+dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
+time <- time + dia
 
-# nolint start
-#jpeg(paste0(plot_dir, "/plot1tasmax.jpg"))
-#PlotEquiMap(historical_tasmax[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
-# ------------------------------------------------------------
-# Provisional solution to error in dimension order and time values:
-# nolint end
-time <- attr(historical_tasmin, "Variables")$dat1$time
-calendar <- attributes(time)$variables$time$calendar
-time_his <- time
-if ( (end_historical - start_historical + 1) * 12 == length(time)) {
-  time <- seq(
-    as.Date(
-      paste(start_historical, "01", "01", sep = "-"),
-      format = "%Y-%m-%d"
-    ),
-    as.Date(
-      paste(end_historical, "12", "01", sep = "-"),
-      format = "%Y-%m-%d"
-    ),
-    "day")
-}
-historical_tasmin <- as.vector(historical_tasmin)
-historical_tasmax <- as.vector(historical_tasmax)
-dim(historical_tasmin) <- c(
-  model = 1,
-  var = 1,
-  lon = length(lon),
-  lat = length(lat),
-  time = length(time)
-)
-dim(historical_tasmax) <- c(
-  model = 1,
-  var = 1,
-  lon = length(lon),
-  lat = length(lat),
-  time = length(time)
-)
-historical_tasmin <- aperm(historical_tasmin, c(1, 2, 5, 4, 3))
-historical_tasmax <- aperm(historical_tasmax, c(1, 2, 5, 4, 3))
-attr(historical_tasmin, "Variables")$dat1$time <- time
-attr(historical_tasmax, "Variables")$dat1$time <- time
-# nolint start
-# ------------------------------------------------------------
-#jpeg(paste0(plot_dir, "/plot2tasmax.jpg"))
-#PlotEquiMap(historical_tasmax[1,1,1, , ], lon = lon, lat = lat, filled = F)
-#dev.off()
-# nolint end
-
-long_names <- attr(historical_tasmin, "Variables")$common$tas$long_name
-projection <- attr(historical_tasmin, "Variables")$common$tas$coordinates
-units <- (attr(historical_tasmin, "Variables")$common)[[2]]$units
 
 dtr_base <- DTRRef( # nolint
   tmax = historical_tasmax,
   tmin = historical_tasmin,
   by.seasons = TRUE,
-  ncores = NULL
+  ncores = NULL,
+    dates = time,
+    calendar = calendario
 )
 
-# nolint start
-#print(str(dtr_base))
-#jpeg(paste0(plot_dir, "/plotBASE.jpg"))
-#PlotEquiMap(dtr_base$dtr.ref[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
-# nolint end
 
-for (i in 1 : length(projection_files)){
-  fullpath_projection_tasmax <- filename_tasmax[[projection_files[i]]]
-  rcp_tasmax <- Start(
-    model = fullpath_projection_tasmax,
-    var = "tasmax",
-    var_var = "var_names",
-    time = "all",
-    lon = "all",
-    lat = "all",
-    lon_var = "lon",
-    lon_reorder = CircularSort(0, 360), # nolint
-    return_vars = list(time = "model", lon = "model", lat = "model"),
-    retrieve = TRUE
+for (i in 1 : length(projection_files)) {
+    fullpath_projection_tasmax <- filename_tasmax[[projection_files[i]]]
+    file <- nc_open(fullpath_projection_tasmax)
+    rcp_tasmax <- ncvar_get(file, "tasmax")
+    names(dim(rcp_tasmax)) <- rev(names(file$dim))[-1]
+    lat <- ncvar_get(file, "lat")
+    lon <- ncvar_get(file, "lon")
+    units <- ncatt_get(file, "tasmax", "units")$value
+    calendario <- ncatt_get(file, "time", "calendar")$value
+    long_names <-  ncatt_get(file, "tasmax", "long_name")$value
+    time <-  ncvar_get(file, "time")
+    start_date <- as.POSIXct(substr(ncatt_get(file, "time",
+                                          "units")$value, 11, 29))
+    nc_close(file)
+
+    fullpath_projection_tasmin <- filename_tasmin[[projection_files[i]]]
+    file <- nc_open(fullpath_projection_tasmin)
+    rcp_tasmin <- ncvar_get(file, "tasmin")
+    names(dim(rcp_tasmin)) <- rev(names(file$dim))[-1]
+    lat <- ncvar_get(file, "lat")
+    lon <- ncvar_get(file, "lon")
+    units <- ncatt_get(file, "tasmin", "units")$value
+    calendario <- ncatt_get(file, "time", "calendar")$value
+    long_names <-  ncatt_get(file, "tasmin", "long_name")$value
+    tunits <- ncatt_get(file, "time", "units")$value
+    time <-  ncvar_get(file, "time")
+    start_date <- as.POSIXct(substr(ncatt_get(file, "time",
+                                          "units")$value, 11, 29))
+    nc_close(file)
+
+    dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
+    time <- time + dia
+
+dtr_indicator <- DTRIndicator(
+    rcp_tasmax, rcp_tasmin, ref = dtr_base, by.seasons = TRUE, ncores = NULL,
+      dates = time, calendar = calendario
   )
 
-  fullpath_projection_tasmin <- filename_tasmin[[projection_files[i]]]
-  rcp_tasmin <- Start(
-    model = fullpath_projection_tasmin,
-    var = "tasmin",
-    var_var = "var_names",
-    time = "all",
-    lon = "all",
-    lat = "all",
-    lon_var = "lon",
-    lon_reorder = CircularSort(0, 360), # nolint
-    return_vars = list(time = "model", lon = "model", lat = "model"),
-    retrieve = TRUE
-  )
-  lat <- attr(rcp_tasmax, "Variables")$dat1$lat
-  lon <- attr(rcp_tasmax, "Variables")$dat1$lon
 
-  # nolint start
-  #jpeg(paste0(plot_dir, "/plot3tasmin.jpg"))
-  #PlotEquiMap(rcp_tasmin[1,1,1,,], lon = lon, lat = lat, filled = F)
-  #dev.off()
-  # ------------------------------------------------------------
-  # Provisional solution to error in dimension order and time values:
-  # nolint end
-  time <- attr(rcp_tasmin, "Variables")$dat1$time
-  calendar <- attributes(time)$variables$time$calendar
-  if ( (end_projection - start_projection + 1) * 12 == length(time)) {
-    time <-  seq(
-      as.Date(
-        paste(start_projection, "01", "01", sep = "-"),
-        format = "%Y-%m-%d"
-      ),
-      as.Date(
-        paste(end_projection, "12", "01", sep = "-"),
-        format = "%Y-%m-%d"
-      ),
-      "day"
-    )
-  }
-
-  rcp_tasmin <- as.vector(rcp_tasmin)
-  rcp_tasmax <- as.vector(rcp_tasmax)
-  dim(rcp_tasmin) <- c(
-    model = 1,
-    var = 1,
-    lon = length(lon),
-    lat = length(lat),
-    time = length(time)
-  )
-  dim(rcp_tasmax) <- c(
-    model = 1,
-    var = 1,
-    lon = length(lon),
-    lat = length(lat),
-    time = length(time)
-  )
-  rcp_tasmin <- aperm(rcp_tasmin, c(1, 2, 5, 4, 3))
-  rcp_tasmax <- aperm(rcp_tasmax, c(1, 2, 5, 4, 3))
-  attr(rcp_tasmin, "Variables")$dat1$time <- time
-  attr(rcp_tasmax, "Variables")$dat1$time <- time
-  # nolint start
-  #jpeg(paste0(plot_dir, "/plot4tasmin.jpg"))
-  #PlotEquiMap(rcp_tasmin[1,1,1,,], lon = lon, lat = lat, filled = F)
-  #dev.off()
-  # nolint end
-
-  dtr_indicator <- DTRIndicator(
-    rcp_tasmax, rcp_tasmin, ref = dtr_base, by.seasons = TRUE, ncores = NULL
-  )
-  # nolint start
-  # jpeg(paste0(plot_dir, "/plotIndicator.jpg"))
-  # PlotEquiMap(
-  #   dtr_indicator$indicator[1,1,1,1,,], lon = lon, lat = lat, filled = F
-  # )
-  #dev.off()
-  # nolint end
-}
-
-### Plots
-### SON
 dtr_rcp <- array(dim = c(4, length(lon), length(lat)))
 for (j in 1 : 4){
-    dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , , , ], 1)#nolint
+    dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , ], 1)#nolint
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
 PlotLayout( # nolint
@@ -272,12 +163,6 @@ PlotLayout( # nolint
   bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
   fileout = file.path(plot_dir, "rcp85.png")
 )
-
-print(paste(
-  "Attribute projection from climatological data is saved and, ",
-  "if it's correct, it can be added to the final output:",
-  projection
-))
 
 dimlon <- ncdim_def(
   name = "lon",
@@ -316,3 +201,4 @@ file <- nc_create(
 )
 ncvar_put(file, defdata, dtr_rcp)
 nc_close(file)
+}
