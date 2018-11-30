@@ -35,10 +35,10 @@ diagnostics:
         ## If you want to leave the field empty write 'no' 
         path_diag_aux: '/work/users/irene/EnsClusTOOL/ESMValTool/esmvaltool/diag_scripts/aux/EnsClus/' 
         diag_script_info: True
-        varunits: "kg m-2 s-1"       #variable units (K, 'kg m-2 s-1')
+        varunits: "kg m-2 s-1"      #variable units (K, 'kg m-2 s-1')
         numens: 5                   #total number of ensemble members
-        season: 'JJA'                #seasonal average
-        area: 'Eu'                   #regional average (examples:'EAT':Euro-Atlantic
+        season: 'JJA'               #seasonal average
+        area: 'Eu'                  #regional average (examples:'EAT':Euro-Atlantic
                                     #                           'PNA': Pacific North American
                                     #                           'NH': Northern Hemisphere)
                                     #                           'Eu': Europe)

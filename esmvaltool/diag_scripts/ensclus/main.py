@@ -20,6 +20,8 @@
 import yaml
 import sys
 import cartopy.crs as ccrs
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 import iris
@@ -55,8 +57,8 @@ def main():
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
-    os.makedirs(cfg['plot_dir'])
-    os.makedirs(cfg['work_dir'])
+    os.makedirs(cfg['plot_dir'],exist_ok=True)
+    os.makedirs(cfg['work_dir'],exist_ok=True)
     
     out_dir=cfg['work_dir']
 
@@ -66,18 +68,14 @@ def main():
     from ens_eof_kmeans import ens_eof_kmeans
     from ens_plots import ens_plots
 
-    for variable_name, filenames in input_files.items():
-        logger.info("Processing variable %s", variable_name)
-
     filenames_cat=[]
-    print('_____________________________\n{0} INPUT FILES:'.format(len(filenames)))
-    for i in filenames:
-        print(i)
-        filenames_cat.append(i)
-    print('_____________________________\n')
+    for element in input_files.values():
+        logger.info("Processing file %s", element['filename'])
+        filenames_cat.append(element['filename'])
+    name_outputs=element['short_name']+'_'+str(cfg['numens'])+'ens_'+cfg['season']+'_'+cfg['area']+'_'+cfg['kind']
+    variable_name=element['short_name']
 
     #____________Building the name of output files
-    name_outputs=variable_name+'_'+str(cfg['numens'])+'ens_'+cfg['season']+'_'+cfg['area']+'_'+cfg['kind']
     print('The name of the output files will be <variable>_{0}.txt'.format(name_outputs))
    
     ####################### PRECOMPUTATION #######################
