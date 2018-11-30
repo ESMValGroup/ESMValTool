@@ -181,6 +181,7 @@ class TrackedFile(object):
     def _select_for_include(self):
         attributes = {
             'provenance': self.provenance.serialize(format='xml'),
+            'software': "Created with ESMValTool v{}".format(__version__),
         }
         if 'caption' in self.attributes:
             attributes['caption'] = self.attributes['caption']
@@ -198,6 +199,7 @@ class TrackedFile(object):
         exif_tags = {
             'provenance': 'ImageHistory',
             'caption': 'ImageDescription',
+            'software': 'Software',
         }
         for key, value in attributes.items():
             pnginfo.add_text(exif_tags.get(key, key), value, zip=True)
