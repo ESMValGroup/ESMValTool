@@ -47,8 +47,8 @@ preprocessors:
 
 diagnostics:
 
-  miles_blocking_diagnostics:
-    description: MiLES Blocking Diagnostic
+  miles_diagnostics:
+    description: MiLES Diagnostics 
     variables:
       zg:
         preprocessor: preproc1
@@ -61,8 +61,8 @@ diagnostics:
             seasons: DJF # Select season ('DJF','MAM','JJA','SON')
         miles_eof: 
             script: miles/miles_eof.r
-            seasons: DJF # Select season ('DJF','MAM','JJA','SON')
-            teles: NAO   # Select EOFs ('NAO','AO') 
+            seasons: DJF # Select season ('DJF','MAM','JJA','SON','ALL') or your period as e.g. 'Jan_Feb_Mar'
+            teles: NAO   # Select EOFs ('NAO','AO','PNA') or specify custom area as lon1_lon2_lat1_lat2
         
         
 
