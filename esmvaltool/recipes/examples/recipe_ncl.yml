@@ -1,7 +1,7 @@
 ---
 documentation:
   description: |
-    Example recipe that plots the mean precipitation and temperature.
+    Example recipe that plots air temperature.
 
   authors:
     - righ_ma
