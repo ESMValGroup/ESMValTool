@@ -1,4 +1,13 @@
 ---
+documentation:
+  description: |
+    Various example preprocessors.
+  authors:
+    - righ_ma
+    - ande_bo
+    - schl_ma
+  projects:
+    - c3s-magic
 
 datasets:
   - {dataset: MPI-ESM-LR,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
