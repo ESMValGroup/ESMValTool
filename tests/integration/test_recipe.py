@@ -458,8 +458,10 @@ def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
     recipe = get_recipe(tmpdir, content, config_user)
 
     assert len(recipe.tasks) == 2
-    custom = [t for t in recipe.tasks if t.order != DEFAULT_ORDER][0]
-    default = [t for t in recipe.tasks if t is not custom][0]
+
+    default = next(t for t in recipe.tasks if tuple(t.order) == DEFAULT_ORDER)
+    custom = next(t for t in recipe.tasks if tuple(t.order) != DEFAULT_ORDER)
+
     assert custom.order.index('average_region') < custom.order.index(
         'multi_model_statistics')
     assert default.order.index('average_region') > default.order.index(
