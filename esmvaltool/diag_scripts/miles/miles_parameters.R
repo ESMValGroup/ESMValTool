@@ -5,16 +5,9 @@
 #plot all the warnings
 options(warn=1)
 
-# filetype
-output_file_type=Sys.getenv(c("output_file_type"))
-if (nchar(output_file_type)==0) {
-        output_file_type="pdf"
-}
-print(paste("Writing output as",output_file_type))
-
 # Specific settings for PNG output
-png_width=1280
-png_height=1280
+png_width=900
+png_height=900
 png_units="px"
 png_pointsize=12
 png_bg="white"
@@ -30,11 +23,8 @@ af=1
 # All projection from mapproj package should be supported
 # but error may arise for non-polar plots
 # DEFAULT IS POLAR PLOT
-map_projection=Sys.getenv(c("map_projection"))
-if (nchar(map_projection)==0) {
-        map_projection="azequalarea"
-}
-print(paste(map_projection,"projection is chosen"))
+map_projection="azequalarea"
+#        map_projection="azequidistant"
 
 #Number of panels per figure (rows and column): default for polar plots
 panels=c(3,1)
@@ -55,7 +45,6 @@ if (map_projection!="no") {
 zero<-par(mfrow=panels,cex.main=2.5,cex.axis=1.5,cex.lab=1.5,mar=c(5,5,5,7),oma=c(1,1,3,2))
 plotpar<-par(no.readonly=T)
 dev.off()
-
 
 # imagescale3 color bar details
 imgscl_colorbar=1.4
