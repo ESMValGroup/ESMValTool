@@ -26,18 +26,14 @@ import logging
 import os
 
 import iris
+import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
 import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 from esmvaltool.diag_scripts.shared import (
     get_file_from_ancestors, group_metadata, netcdf_to_metadata, plot,
     run_diagnostic, variables_available)
-
-import matplotlib  # noqa
-matplotlib.use('Agg')  # noqa
-import matplotlib.lines as mlines  # noqa
-import matplotlib.pyplot as plt  # noqa
-
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
