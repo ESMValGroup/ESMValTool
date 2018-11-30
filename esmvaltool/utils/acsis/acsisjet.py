@@ -54,7 +54,7 @@ import yaml
 import iris
 from esmvaltool.preprocessor import extract_region, \
     extract_levels, extract_season
-
+from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
 
 seasons = ['DJF', 'MAM', 'JJA', 'SON']
 
@@ -95,23 +95,6 @@ def get_args():
         choices=['debug', 'info', 'warning', 'error'])
     args = parser.parse_args()
     return args
-
-
-def _set_logger(logging, out_dir, log_file, log_level):
-    # set logging for screen and file output
-    root_logger = logging.getLogger()
-    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
-    logging.basicConfig(
-        filename=os.path.join(out_dir, log_file),
-        filemode='a',
-        format=out_fmt,
-        datefmt='%H:%M:%S',
-        level=logging.DEBUG)
-    root_logger.setLevel(log_level.upper())
-    logfmt = logging.Formatter(out_fmt)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logfmt)
-    root_logger.addHandler(console_handler)
 
 
 def _make_dir_tree(base_dir):
@@ -194,6 +177,16 @@ def main():
     # compute and save
     season_dict = _extract_u850(era_file)
     jet_speeds, jet_lats = _get_jets(season_dict)
+
+    # save output
+    # netCDF
+    for season in seasons:
+        _save_cubes('seasons', jet_speeds[season], 'u850',
+                    speed_dir, '_'.join((season, 'u850_jet-speed.nc')))
+        _save_cubes('seasons', jet_lats[season], 'latitude',
+                    lats_dir, '_'.join((season, 'latitude_jet-latitude.nc')))
+
+    # yaml files; for easy access
     # make them strings for output
     for season in seasons:
         jet_speeds[season] = str(list(jet_speeds[season]))
@@ -206,6 +199,7 @@ def main():
     logger.info('Writing seasonal jet lats in %s', jets_file)
     with open(lats_file, 'w') as lats_yamlfile:
         yaml.safe_dump(jet_lats, lats_yamlfile)
+
     logger.info('Finished computing ACSIS jets!')
 
 
