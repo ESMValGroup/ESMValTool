@@ -82,7 +82,7 @@ for (field in fieldlist) {
 		plot(ics2,field_exp2,type="l",lwd=lwdline,ylim=fp$lev_field,main=fp$title_name,xlab="Longitude",ylab=fp$legend_unit,col=tm90cols[1])
 		points(ics2,field_ref2,type="l",lwd=lwdline,lty=1,col=tm90cols[2])
 		grid()
-        	legend(100,30,legend=c(info_exp,info_ref),lwd=lwdline,lty=c(1,1),col=tm90cols,bg="white",cex=1.5)
+        	legend(100,30,legend=c(info_exp,info_ref),lwd=lwdline,lty=c(1,1),col=tm90cols,bg="white",cex=1.)
 	
 		#par(new=TRUE)	
 		#plot(ics2,field_exp2,type="n",ylim=c(0,90),xlab="",ylab="",axes=F)
