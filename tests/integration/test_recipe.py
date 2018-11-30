@@ -97,8 +97,8 @@ def patched_datafinder(tmpdir, monkeypatch):
 
         filename = str(tmpdir / 'input' / filename)
         filenames = []
-        if filename.endswith('*'):
-            filename = filename.rstrip('*')
+        if filename.endswith('*.nc'):
+            filename = filename[:-len('*.nc')]
             intervals = [
                 '1990_1999',
                 '2000_2009',
