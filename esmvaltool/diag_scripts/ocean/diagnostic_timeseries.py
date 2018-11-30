@@ -51,12 +51,10 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
+import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic

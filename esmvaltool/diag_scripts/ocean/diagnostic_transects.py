@@ -32,7 +32,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import iris
-
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 

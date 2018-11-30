@@ -30,6 +30,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+<<<<<<< HEAD
 from itertools import product
 import matplotlib
 matplotlib.use('Agg')  # noqa
