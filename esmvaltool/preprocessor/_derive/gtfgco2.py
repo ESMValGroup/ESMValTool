@@ -7,6 +7,7 @@ import cf_units
 
 from ._derived_variable_base import DerivedVariableBase
 
+
 def calculate_total_flux(fgco2_cube, cube_area):
     """
     Calculate the area of unmasked cube cells.
@@ -36,14 +37,14 @@ def calculate_total_flux(fgco2_cube, cube_area):
         total_flux = fgco2_cube[time_itr].data * cube_area.data
 
         total_flux = np.ma.masked_where(fgco2_cube[time_itr].data.mask,
-                                       total_flux)
+                                        total_flux)
         # print (time_itr, time, total_flux.sum())
         data.append(total_flux.sum())
 
     ######
     # Create a small dummy output array
     data = np.array(data)
-    return  data
+    return data
 
 
 class DerivedVariable(DerivedVariableBase):
@@ -61,7 +62,8 @@ class DerivedVariable(DerivedVariableBase):
     def calculate(self, cubes, use_fx_files=False, fx_files={None}):
         """Compute longwave cloud radiative effect."""
         fgco2_cube = cubes.extract_strict(
-            Constraint(name='surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon'))
+            Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'
+                            '_expressed_as_carbon'))
 
         try:
             cube_area = cubes.extract_strict(
@@ -72,7 +74,7 @@ class DerivedVariable(DerivedVariableBase):
         total_flux = calculate_total_flux(fgco2_cube, cube_area)
 
         result = fgco2_cube.collapsed(['latitude', 'longitude'],
-                                iris.analysis.MEAN,)
+                                      iris.analysis.MEAN,)
         result.units = fgco2_cube.units * cube_area.units
 
         result.data = total_flux
