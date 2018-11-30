@@ -7,9 +7,9 @@ import tempfile
 import unittest
 
 import iris
-import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
+import numpy as np
 
 from esmvaltool.preprocessor import _io
 

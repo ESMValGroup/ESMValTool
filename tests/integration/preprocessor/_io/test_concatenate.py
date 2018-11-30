@@ -98,7 +98,6 @@ class TestConcatenate(unittest.TestCase):
             },
         ]
         resulting_attrs = {
-            **identical_attrs,
             'new_int': '0;1',
             'new_str': 'hello;world;!',
             'new_nparray': '[0 1 2];[0 1]',
@@ -107,6 +106,7 @@ class TestConcatenate(unittest.TestCase):
             'new_dict': "{0: 'zero'};{0: 'zeroo', 1: 'one'}",
             'mix': "[0 1];{1: 'one'};False",
         }
+        resulting_attrs.update(identical_attrs)
 
         for idx in range(3):
             self.raw_cubes[idx].attributes = identical_attrs
