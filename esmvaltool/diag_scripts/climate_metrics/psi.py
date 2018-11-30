@@ -32,8 +32,8 @@ import iris
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            save_iris_cube, save_scalar_data,
+from esmvaltool.diag_scripts.shared import (group_metadata, metadata_to_netcdf,
+                                            run_diagnostic, save_scalar_data,
                                             variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -72,9 +72,6 @@ def calculate_psi(cube, cfg):
         units=cf_units.Unit('year'))
     psi_cube = iris.cube.Cube(
         np.array(psis),
-        var_name='psi',
-        long_name='Temperature variability metric',
-        units=cf_units.Unit('K'),
         dim_coords_and_dims=[(year_coord, 0)],
         attributes={
             'window_length': window_length,
@@ -92,32 +89,31 @@ def main(cfg):
         raise ValueError("This diagnostics needs 'tas' variable")
 
     # Calculate psi for every dataset
-    grouped_data = group_metadata(input_data, 'dataset')
     psis = {}
+    psi_attrs = {
+        'short_name': 'psi',
+        'standard_name': 'temperature_variability_metric',
+        'long_name': 'Temperature variability metric',
+        'units': cf_units.Unit('K'),
+    }
+    grouped_data = group_metadata(input_data, 'dataset')
     for (dataset, [data]) in grouped_data.items():
         cube = iris.load_cube(data['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
-        psi_cube.attributes.update({
-            'project': data['project'],
-            'dataset': dataset,
-        })
+        data.update(psi_attrs)
 
         # Save psi for every dataset
         path = os.path.join(cfg['work_dir'], 'psi_{}.nc'.format(dataset))
-        save_iris_cube(psi_cube, path, cfg)
+        data['filename'] = path
+        metadata_to_netcdf(psi_cube, data, cfg)
 
         # Save averaged psi
         psis[dataset] = np.mean(psi_cube.data)
 
     # Save averaged psis for every dataset in one file
     path = os.path.join(cfg['work_dir'], 'psi.nc')
-    cube_atts = {
-        'var_name': 'psi',
-        'long_name': 'Temperature variability metric',
-        'units': cf_units.Unit('K'),
-    }
-    save_scalar_data(psis, path, cfg, **cube_atts)
+    save_scalar_data(psis, path, cfg, **psi_attrs)
 
 
 if __name__ == '__main__':

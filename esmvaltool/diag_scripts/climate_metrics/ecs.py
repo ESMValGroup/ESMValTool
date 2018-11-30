@@ -29,11 +29,9 @@ import iris
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (extract_variables, group_metadata,
-                                            plot, run_diagnostic,
-                                            save_iris_cube, save_scalar_data,
-                                            select_metadata,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    extract_variables, group_metadata, plot, run_diagnostic, save_iris_cube,
+    save_scalar_data, select_metadata, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -163,19 +161,21 @@ def main(cfg):
 
     # Write data
     path = os.path.join(cfg['work_dir'], 'ecs.nc')
-    cube_atts = {
-        'var_name': 'ecs',
+    var_attrs = {
+        'short_name': 'ecs',
+        'standard_name': 'equilibrium_climate_sensitivity',
         'long_name': 'Equilibrium Climate Sensitivity (ECS)',
         'units': cubes['tas_4x'].units,
     }
-    save_scalar_data(ecs, path, cfg, **cube_atts)
+    save_scalar_data(ecs, path, cfg, **var_attrs)
     path = os.path.join(cfg['work_dir'], 'lambda.nc')
-    cube_atts = {
-        'var_name': 'lambda',
+    var_attrs = {
+        'short_name': 'lambda',
+        'standard_name': 'climate_sensitivity',
         'long_name': 'Climate Sensitivity',
         'units': cubes['rtmt_4x'].units / cubes['tas_4x'].units,
     }
-    save_scalar_data(clim_sens, path, cfg, **cube_atts)
+    save_scalar_data(clim_sens, path, cfg, **var_attrs)
 
 
 if __name__ == '__main__':
