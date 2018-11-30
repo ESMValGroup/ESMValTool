@@ -13,6 +13,7 @@ dependencies:
   - ncl
   - ncurses>5
   # TODO: add R, julia
+  - nco
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py
