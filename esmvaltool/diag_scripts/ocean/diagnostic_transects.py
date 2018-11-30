@@ -26,10 +26,8 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import iris
 
+import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
