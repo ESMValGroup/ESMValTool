@@ -13,10 +13,8 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import cftime
-import matplotlib
-matplotlib.use('Agg')  # noqa
 
+import cftime
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
