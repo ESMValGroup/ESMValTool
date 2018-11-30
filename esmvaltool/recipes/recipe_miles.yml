@@ -25,6 +25,23 @@
 # multi_model_statistics: false
 # reference_dataset: "EC-Earth"
 ---
+documentation:
+  description: |
+    Recipe for computing and plotting blocking statistics and EOFs using 
+    the MiLES (Mid-Latitude Evaluation System) package
+
+  authors:
+    - hard_jo
+    - davi_pa
+    - arno_en
+
+  references:
+    - davini18
+    - davini12jclim
+    - tibaldi1990tel
+
+  projects:
+    - c3s-magic
 
 datasets:
    - {dataset: EC-Earth,    project: CMIP5,  exp: historical,  ensemble: r8i1p1,  start_year: 1980,  end_year: 1989}
