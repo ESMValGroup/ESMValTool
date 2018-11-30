@@ -45,6 +45,7 @@ import collections
 import numpy as np
 import iris
 from esmvaltool.preprocessor import extract_region, extract_season
+from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
 
 # decalre the global variables for analysis
 # TODO Ed Hawkins - check these
@@ -91,23 +92,6 @@ def get_args():
         choices=['debug', 'info', 'warning', 'error'])
     args = parser.parse_args()
     return args
-
-
-def _set_logger(logging, out_dir, log_file, log_level):
-    # set logging for screen and file output
-    root_logger = logging.getLogger()
-    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
-    logging.basicConfig(
-        filename=os.path.join(out_dir, log_file),
-        filemode='a',
-        format=out_fmt,
-        datefmt='%H:%M:%S',
-        level=logging.DEBUG)
-    root_logger.setLevel(log_level.upper())
-    logfmt = logging.Formatter(out_fmt)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logfmt)
-    root_logger.addHandler(console_handler)
 
 
 def _make_dir_tree(base_dir):
@@ -165,18 +149,9 @@ def _yearly_mean(data_file, output_dir, variable, var_constraint):
 
     # assemble output cube and save it
     data_dict = collections.OrderedDict(sorted(data_dict.items()))
-    times = iris.coords.DimCoord(
-        np.array([f for f in data_dict.keys()]),
-        standard_name='time',
-        units='years')
-    cspec = [(times, 0)]
-    stats_cube = iris.cube.Cube(
-        np.array([f for f in data_dict.values()]),
-        dim_coords_and_dims=cspec,
-        long_name=variable)
     cube_name = '_'.join((variable, 'AnnualMean.nc'))
     logger.info('Saving %s', os.path.join(output_dir, cube_name))
-    iris.save(stats_cube, os.path.join(output_dir, cube_name))
+    _save_cubes('years', data_dict, variable, output_dir, cube_name)
 
 
 def _djf_greenland_iceland(data_file, output_dir, var_constraint, season):
