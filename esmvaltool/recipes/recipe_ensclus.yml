@@ -1,5 +1,23 @@
-# recipe_EnsClus_CMIP5.yml
+# recipe_EnsClus.yml
 ---
+documentation:
+  description: |
+    Recipe for sub-ensemble selection.
+    The diagnostics groups ensemble members according to similar 
+    characteristics and selects the most representative member 
+    for each cluster based on a k-means algorithm
+
+  authors:
+    - mavi_ir
+    - hard_jo
+    - arno_en
+    - cort_su
+
+  references:
+    - straus07jcli
+
+  projects:
+    - c3s-magic
 
 datasets:
   - {dataset: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 2005}
