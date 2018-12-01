@@ -2,7 +2,7 @@
 ## namelist_miles.xml
 ##
 ## Description
-## Namelist for the MiLES (Blocking and EOFs) package by P. Davini (ISAC-CNR)
+## Namelist for computing blocking using the MiLES package by P. Davini (ISAC-CNR)
 ## MiLES (Mid-Latitude Evaluation System) v0.31
 ##
 ## Authors
@@ -27,7 +27,7 @@
 ---
 documentation:
   description: |
-    Recipe for computing and plotting blocking statistics and EOFs using 
+    Recipe for computing and plotting blocking statistics using 
     the MiLES (Mid-Latitude Evaluation System) package
 
   authors:
@@ -65,7 +65,7 @@ preprocessors:
 diagnostics:
 
   miles_diagnostics:
-    description: MiLES Diagnostics 
+    description: MiLES Blocking Diagnostics 
     variables:
       zg:
         preprocessor: preproc1
@@ -76,10 +76,6 @@ diagnostics:
         miles_block: 
             script: miles/miles_block.r
             seasons: DJF # Select season ('DJF','MAM','JJA','SON')
-        miles_eof: 
-            script: miles/miles_eof.r
-            seasons: DJF # Select season ('DJF','MAM','JJA','SON','ALL') or your period as e.g. 'Jan_Feb_Mar'
-            teles: NAO   # Select EOFs ('NAO','AO','PNA') or specify custom area as "lon1_lon2_lat1_lat2"
         
         
 
