@@ -6,7 +6,7 @@ library(RColorBrewer)
 getnc <- function(yml, m, lat = FALSE) {
   id <- nc_open(yml[m][[1]]$filename, readunlim = FALSE)
   if (lat){
-    v <- ncvar_get(id, 'lat')
+    v <- ncvar_get(id, "lat")
   }else{
     v <- ncvar_get(id, yml[m][[1]]$short_name)
   }
@@ -85,7 +85,7 @@ for (mod in 1:nmods){
    histarr[mod, ] <- h / sum(h)
 }#mod
 save(histarr, file = paste0(params$work_dir,
-                          "/histarr.rsav"))
+                          "/", "histarr.rsav"))
 
 bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]
@@ -104,7 +104,7 @@ col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors,
                            rownames(qual_col_pals)))
 cols <- c("black", sample(col_vector, nmods - 1))
 
-png(paste0(params$plot_dir, "/histplot.png"),
+png(paste0(params$plot_dir, "/", "histplot.png"),
     width = 1000, height = 500)
  par(mfrow = c(2, 1), oma = c(3, 3, 3, 13), mar = c(2, 1, 1, 1))
  barplot(histarr[parr, ], beside = 1, names.arg = histnams,

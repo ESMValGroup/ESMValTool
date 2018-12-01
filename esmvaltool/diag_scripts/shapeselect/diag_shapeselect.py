@@ -8,12 +8,12 @@ import fiona
 import iris
 import numpy as np
 import xlsxwriter
-from matplotlib import pyplot as p
+import matplotlib
 from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 from esmvaltool.diag_scripts.shared import run_diagnostic
-# from esmvaltool.diag_scripts.shared.plot import quickplot
+matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -92,7 +92,6 @@ def writexls(cfg, filename, ncts, nclon, nclat):
     worksheet.set_column(0, 0, 20)
     row = 0
     for key, value in cfg.items():
-        print(key, value)
         row = write_keyvalue_toxlsx(worksheet, row, key, value)
     workbook.close()
 
@@ -105,8 +104,12 @@ def shapeselect(cfg, cube, filename):
          and cube.coord('longitude').ndim == 1)):
         coordpoints = [(x, y) for x in cube.coord('longitude').points
                        for y in cube.coord('latitude').points]
+        for i, crd in enumerate(coordpoints):
+            if crd[0] > 180:
+                coordpoints[i] = (coordpoints[i][0] - 360.,
+                                  coordpoints[i][1])
     else:
-        logger.info("Support for 2-d coords not yet implemented!")
+        logger.info("Support for 2-d coords not implemented!")
         sys.exit(1)
     points = MultiPoint(coordpoints)
     if cfg['evalplot']:
@@ -119,20 +122,20 @@ def shapeselect(cfg, cube, filename):
         alons = []
         alats = []
         for lon, lat in coordpoints:
-            if (lat > llcrnrlat and lat < urcrnrlat and lon > llcrnrlon
-                    and lon < urcrnrlon):
+            if (lat > llcrnrlat and lat < urcrnrlat and
+                    lon > llcrnrlon and lon < urcrnrlon):
                 alons.append(lon)
                 alats.append(lat)
         cnt = 0
-        p.gcf().clear()
+        matplotlib.pyplot.gcf().clear()
         for shapp in shap:
             xxm = [i[0] for i in shapp['geometry']['coordinates'][0][:]]
             yym = [i[1] for i in shapp['geometry']['coordinates'][0][:]]
-            p.plot(xxm, yym)
-            p.plot(alons, alats, 'ro', markersize=2)
+            matplotlib.pyplot.plot(xxm, yym)
+            matplotlib.pyplot.plot(alons, alats, 'ro', markersize=2)
             cnt += 1
-        p.xlabel('Longitude')
-        p.ylabel('Latitude')
+        matplotlib.pyplot.xlabel('Longitude')
+        matplotlib.pyplot.ylabel('Latitude')
     with fiona.open(shppath) as shp:
         gpx = []
         gpy = []
@@ -145,7 +148,7 @@ def shapeselect(cfg, cube, filename):
             multi = shape(multipol['geometry'])
             if wgtmet == 'mean_inside':
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
-                if len(gpx) == 0:
+                if not gpx:
                     gpx, gpy = representative(gpx, gpy, points, multi, cube)
                     pth = 'g+'
                 else:
@@ -153,11 +156,15 @@ def shapeselect(cfg, cube, filename):
             elif wgtmet == 'representative':
                 gpx, gpy = representative(gpx, gpy, points, multi, cube)
             if cfg['evalplot']:
-                p.plot(
-                    cube.coord('longitude').points[gpx],
-                    cube.coord('latitude').points[gpy],
-                    pth,
-                    markersize=10)
+                for pnt, val in enumerate(gpx):
+                    xpnt = cube.coord('longitude').points[val]
+                    if xpnt > 180:
+                        xpnt = xpnt - 360.
+                    matplotlib.pyplot.plot(
+                        xpnt,
+                        cube.coord('latitude').points[gpy[pnt]],
+                        pth,
+                        markersize=10)
             if len(gpx) == 1:
                 ncts[:, ishp] = np.reshape(cube.data[:, gpy, gpx],
                                            (cube.data.shape[0], ))
@@ -169,7 +176,7 @@ def shapeselect(cfg, cube, filename):
     if cfg['evalplot']:
         name = os.path.splitext(os.path.basename(filename))[0]
         path = os.path.join(cfg['plot_dir'], name + '.png')
-        p.savefig(path)
+        matplotlib.pyplot.savefig(path)
     return ncts, nclon, nclat
 
 
@@ -177,7 +184,7 @@ def mean_inside(gpx, gpy, points, multi, cube):
     """Find points inside shape."""
     for point in points:
         if point.within(multi):
-            if point.x < 0 and np.min(cube.coord('longitude').points) >= 0:
+            if point.x < 0:
                 addx = 360.
             else:
                 addx = 0.
@@ -195,11 +202,13 @@ def representative(gpx, gpy, points, multi, cube):
     nearest = nearest_points(reprpoint, points)
     npx = nearest[1].coords[0][0]
     npy = nearest[1].coords[0][1]
-    if npx < 0 and np.min(cube.coord('longitude').points) >= 0:
-        npx = npx + 360.
+    if npx < 0:
+        addx = 360.
+    else:
+        addx = 0.
     xxx, yyy = best_match(
         cube.coord('longitude').points,
-        cube.coord('latitude').points, npx, npy)
+        cube.coord('latitude').points, npx + addx, npy)
     gpx.append(xxx)
     gpy.append(yyy)
     return gpx, gpy
@@ -227,14 +236,11 @@ def best_match(iin, jin, pex, pey):
 def write_netcdf(path, var, plon, plat, cube, cfg):
     """Write results to a netcdf file."""
     shppath = cfg['shppath']
-    # wgtmet = cfg['wgtmet']
     polyid = []
     for row in range(var.shape[1]):
         polyid.append(
             str("%#.3f" % round(plon[row], 3)) + '_' +
             str("%#.3f" % round(plat[row], 3)))
-    # polyid = stringtochar(np.array(polyid, 'S4'))
-    # print(polyid)
     ncout = Dataset(path, mode='w')
     ncout.createDimension('time', None)
     ncout.createDimension('polygon', len(polyid))

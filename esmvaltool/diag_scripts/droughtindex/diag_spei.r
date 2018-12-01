@@ -4,7 +4,7 @@ library(SPEI)
 library(RColorBrewer)
 
 leap_year <- function(year) {
-  return(ifelse( (year %% 4 == 0 & year %% 100 != 0) | 
+  return(ifelse( (year %% 4 == 0 & year %% 100 != 0) |
                   year %% 400 == 0, TRUE, FALSE))
 }
 
@@ -36,10 +36,10 @@ getnc <- function(yml, m, lat = FALSE) {
        date <- stdate
        while (date <= nddate){
          year <- as.numeric(substr(date, 1, 4))
-	 lpyear <- leap_year(year)
+         lpyear <- leap_year(year)
          month <- as.numeric(substr(date, 6, 7))
          mdays <- monarr[month]
-	 pdays <- mdays
+         pdays <- mdays
          if (tcal$value != "365_day" & month == 2 & lpyear == TRUE){
            mdays <- 29
            pdays <- 29
@@ -150,7 +150,7 @@ for (mod in 1:nmods){
    histarr[mod,] <- h / sum(h)
 }#mod
 save(histarr, file = paste0(params$work_dir,
-                          "/histarr.rsav"))
+                          "/", "histarr.rsav"))
 
 bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]
@@ -164,12 +164,12 @@ parr <- c(nref, marr)
 mnam <- c(1:nmods) * NA
 for (m in 1:nmods) mnam[m] <- var1_input[m][[1]]$dataset
 
-qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
+qual_col_pals <- brewer.pal.info[brewer.pal.info$category == "qual",]
 col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors,
                            rownames(qual_col_pals)))
 cols <- c("black", sample(col_vector, nmods - 1))
 
-png(paste0(params$plot_dir, "/histplot.png"),
+png(paste0(params$plot_dir, "/", "histplot.png"),
     width = 1000, height = 500)
  par(mfrow = c(2, 1), oma = c(3, 3, 3, 13), mar = c(2, 1, 1, 1))
  barplot(histarr[parr,], beside = 1, names.arg = histnams,
