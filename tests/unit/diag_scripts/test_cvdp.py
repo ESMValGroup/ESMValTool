@@ -1,11 +1,9 @@
-"""
-Provides tests for the cvdp diagnostic
+"""Provides tests for the cvdp diagnostic."""
 
-"""
 import os
 import pytest
 
-from esmvaltool.diag_scripts.cvdp.cvdp_wrapper import *
+from esmvaltool.diag_scripts.cvdp.cvdp_wrapper import create_link
 
 
 # def test_setup_driver():
@@ -13,14 +11,14 @@ from esmvaltool.diag_scripts.cvdp.cvdp_wrapper import *
 #
 @pytest.fixture(scope='session')
 def test_create_links(tmpdir_factory):
-
+    """Test create_link function."""
     cfg = dict()
     link_dir = tmpdir_factory.mkdir("link")
     cfg['run_dir'] = os.path.join(link_dir.dirname)
 
-    p = tmpdir_factory.mkdir("sub").join("file_2009-2010.nc")
-    p.write("Test")
-    filepath = os.path.join(p.dirname, p.basename)
+    testfile = tmpdir_factory.mkdir("sub").join("file_2009-2010.nc")
+    testfile.write("Test")
+    filepath = os.path.join(testfile.dirname, testfile.basename)
 
     link = create_link(cfg, filepath)
     assert os.path.islink(link)
