@@ -40,7 +40,7 @@ class Lorenz_cycle():
     
     from lorenz_cycle import * 
         
-    def lorenz(self, outpath, model, year, filesrv, filenc, plotfile, logfile):    
+    def lorenz(self, outpath, model, year, filenc, plotfile, logfile):    
     #    PROGRAM MAIN
     #C
     #C***  *MAIN* MAIN PROGRAM
@@ -130,42 +130,46 @@ class Lorenz_cycle():
         log.write('#                                                      #\n')
         log.write('########################################################\n')
      
-        filename = filesrv
+        #filename = filesrv
         filep    = filenc
         
     #    f=srv.srvfile(filename,hbyte="4",fbyte="4")
-        f=srv.srvfile(filename,hbyte="8",fbyte="8")
+    #    f=srv.srvfile(filename,hbyte="8",fbyte="8")
+
+        dataset0 = Dataset(filenc)
+        ta    = dataset0.variables['ta'][:,:, :, :]
+        ua    = dataset0.variables['ua'][:,:, :, :]
+        va    = dataset0.variables['va'][:,:, :, :]
+        wap   = dataset0.variables['wap'][:,:, :, :]
     
-        
-        f.read_all()
-    
-    #    ta=f.field['130']
-    #    ua=f.field['131']
-    #    va=f.field['132']
-    #    wap=f.field['135']
-        ta=f.field['-1']
-        ua=f.field['-2']
-        va=f.field['-3']
-        wap=f.field['-4']
-    
-        lev   = f.levels
+        #lats  = dataset0.variables['y'][:]
+        nlat  = np.shape(ta)[2]
+#        print(np.shape(ta))
+        #fc  = dataset0.variables['x'][:]
+        nfc  = np.shape(ta)[3]
+        lev  = dataset0.variables['plev'][:]
+        nlev  = len(lev)
+        time  = dataset0.variables['time'][:]
+        ntime = len(time)
+        lat = dataset0.variables['lat'][:]
+        nlat  = len(lat)
         if(max(lev)<1000):
             lev=lev*100
             wap=wap*100
-        #print(lev)
-        nlev  = len(lev)
-        nfc   = f.dim1
-        nlat  = f.dim2
-        lat = np.linspace(89.99,-89.99,num=nlat)
-        dims  = np.shape(ta)
-        ntime = dims[1]
+#        print(lev)
+        #lat = np.linspace(89.99,-89.99,num=nlat)
         
+        ta = np.transpose(ta, (1, 0, 2, 3))
         ta_r=ta[:,:,:,0::2]
+        #np.where(ta_r[0,:,:,:]==ta_r[1,:,:,:])
         ta_i=ta[:,:,:,1::2]
+        ua = np.transpose(ua, (1, 0, 2, 3))
         ua_r=ua[:,:,:,0::2]
         ua_i=ua[:,:,:,1::2]
+        va = np.transpose(va, (1, 0, 2, 3))
         va_r=va[:,:,:,0::2]
         va_i=va[:,:,:,1::2]
+        wap = np.transpose(wap, (1, 0, 2, 3))
         wap_r=wap[:,:,:,0::2]
         wap_i=wap[:,:,:,1::2]
         
@@ -173,16 +177,7 @@ class Lorenz_cycle():
         ua_c=ua_r + 1j * ua_i
         va_c=va_r + 1j * va_i
         wap_c=wap_r + 1j * wap_i
-      
-        ta_cinv=ta_c[::-1,:,:,:]
-        ua_cinv=ua_c[::-1,:,:,:]
-        va_cinv=va_c[::-1,:,:,:]
-        wap_cinv=wap_c[::-1,:,:,:]
-        ta_c=ta_cinv
-        ua_c=ua_cinv
-        va_c=va_cinv
-        wap_c=wap_cinv
-        
+           
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -213,12 +208,14 @@ class Lorenz_cycle():
         ds[0]=sig[0]+0.5*abs(sig[1]-sig[0])
         ds[nlev-1]=1-sig[nlev-1]+0.5*abs(sig[nlev-1]-sig[nlev-2])
     #Compute Gaussian weights
-        [pa,pw]=lorenz.gauaw(nlat)    
+        #[pa,pw]=lorenz.gauaw(nlat)    
         gw=np.zeros(nlat)
         y=np.zeros(nlat)
         for jy in range(nlat): 
-            gw[jy]=pw[jy]
+            #gw[jy]=pw[jy]
             y[jy]=np.deg2rad(lat[jy])
+            gw[jy]=np.cos(y[jy])
+        
         log.write(' \n')
         log.write('GLOBAL DIAGNOSTIC: \n')
         log.write('  \n')
@@ -231,22 +228,24 @@ class Lorenz_cycle():
         va_tmn  = np.nanmean(va_c, axis=1)
         wap_tmn = np.nanmean(wap_c,axis=1)
     #Compute zonal mean of time means
-        ta_zmn   = np.squeeze(np.real(ta_tmn[:,:,0])) 
-        ua_zmn   = np.squeeze(np.real(ua_tmn[:,:,0])) 
-        va_zmn   = np.squeeze(np.real(va_tmn[:,:,0]))
-        wap_zmn  = np.squeeze(np.real(wap_tmn[:,:,0])) 
+        ta_ztmn   = np.squeeze(np.real(ta_tmn[:,:,0])) 
+        ua_ztmn   = np.squeeze(np.real(ua_tmn[:,:,0])) 
+        va_ztmn   = np.squeeze(np.real(va_tmn[:,:,0]))
+        wap_ztmn  = np.squeeze(np.real(wap_tmn[:,:,0])) 
     #Compute global mean of time means
         ta_gmn=np.zeros(len(lev))
         ua_gmn=np.zeros(len(lev))
         va_gmn=np.zeros(len(lev))
         wap_gmn=np.zeros(len(lev))
         for j in range(nlev):
-            #wap_gmn[j]  = np.nansum(wap_zmn[j,:]*gw)/np.nansum(gw)
-            ta_gmn[j]   = np.nansum(ta_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
-            ua_gmn[j]   = np.nansum(ua_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
-            va_gmn[j]   = np.nansum(va_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
-            wap_gmn[j]  = np.nansum(wap_zmn[j,:]*np.cos(np.deg2rad(lat)))/np.nansum(np.cos(np.deg2rad(lat)))
-    #Compute stability parameter    
+            ta_gmn[j]   = np.nansum(ta_ztmn[j,:]*gw)/np.nansum(gw)
+            ua_gmn[j]   = np.nansum(ua_ztmn[j,:]*gw)/np.nansum(gw)
+            va_gmn[j]   = np.nansum(va_ztmn[j,:]*gw)/np.nansum(gw)
+            wap_gmn[j]  = np.nansum(wap_ztmn[j,:]*gw)/np.nansum(gw)
+    #Compute stability parameter
+        gam_ztmn=np.zeros([nlev,nlat])
+        for l in range(nlat):
+            gam_ztmn[:,l] = lorenz.stabil(ta_ztmn[:,l],lev,nlev)    
         gam_tmn = lorenz.stabil(ta_gmn,lev,nlev)
         
         ek=np.zeros([nlev,ntime,nlat,ntp-1])
@@ -305,7 +304,8 @@ class Lorenz_cycle():
          #Compute conversion between zonal and eddy KE
             ke2kz[:,t,:,:]=lorenz.mkkekz(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
         #Compute conversion between stationary and transient eddy APE
-            at2as[:,t,:,:]=lorenz.mkatas(ua_tan,va_tan,wap_tan,ta_tan,ta_tmn,gam_tmn,lev,y,nlat,ntp,nlev)   
+            #at2as[:,t,:,:]=lorenz.mkatas(ua_t,va_t,wap_t,ta_t,ta_ztmn,gam_ztmn,lev,y,nlat,ntp,nlev)   
+            at2as[:,t,:,:]=lorenz.mkatas(ua_tan,va_tan,wap_tan,ta_tan,ta_ztmn,gam_ztmn,lev,y,nlat,ntp,nlev)   
         #Compute conversion between stationary and transient eddy KE
             kt2ks[:,t,:,:]=lorenz.mkktks(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,wap_tmn,lev,y,nlat,ntp,nlev)
         ##Average transient terms over time to obtain variables from 4001 to 4007 (transient eddies
@@ -363,7 +363,7 @@ class Lorenz_cycle():
         
         #This part is for the flux diagram as in Ulbrich and Speth 1991
         apz    = '{:.2f}'.format(ape_tgmn[0,0]+ape_stgmn[0,0])
-        az2kz  = '{:.2f}'.format(-1e5*(a2k_tgmn[0,0]+a2k_stgmn[0,0]))
+        az2kz  = '{:.2f}'.format(-1e5*(a2k_tgmn[0,0]))
         az2at  = '{:.2f}'.format(-1e5*np.nansum(ae2az_tgmn[0,1:ntp-1]))
         aps    = '{:.2f}'.format(np.nansum(ape_stgmn[0,1:ntp-1]))
         as2ks  = '{:.2f}'.format(1e5*np.nansum(a2k_stgmn[0,1:ntp-1]))
@@ -585,10 +585,13 @@ class Lorenz_cycle():
     #C     CALCULATE SPECTRAL COMPONENTS OF CONVERSION A->K
     #C
     #C
-        
-        a2k=-R/p[:,np.newaxis,np.newaxis]*np.real(t*np.conj(wap)+np.conj(t)*wap)
-        a2k[:,:,0]=-R/p[:,np.newaxis]*np.real((t[:,:,0]-tg[:,np.newaxis])*(wap[:,:,0]-wg[:,np.newaxis]))
-        
+        a2k=-R/p[:,np.newaxis,np.newaxis]*(t*np.conj(wap)+np.conj(t)*wap)
+#        a2k=-R/p[:,np.newaxis,np.newaxis]*((t-tg[:,np.newaxis,np.newaxis])\
+#                *np.conj(wap)+np.conj(t-tg[:,np.newaxis,np.newaxis])*(wap))
+        #a2k[:,:,0]=-R/p[:,np.newaxis]*np.real((t[:,:,0])*(wap[:,:,0]))
+        #a2k[:,:,0]=-R/p[:,np.newaxis]*np.real((t[:,:,0]-tg[:,np.newaxis])*(wap[:,:,0]-wg[:,np.newaxis]))
+        a2k[:,:,0]=-R/p[:,np.newaxis]*(t[:,:,0]-tg[:,np.newaxis])*(wap[:,:,0]-wg[:,np.newaxis])
+
         return(a2k)
         
     
@@ -738,45 +741,54 @@ class Lorenz_cycle():
     #C     -----------
     #C     ULBRICH, U. AND P. SPETH (1991) METEOROL. ATMOS. PHYS. 45 125-138
     
-        tr=np.fft.irfft(t,axis=1)
-        ur=np.fft.irfft(u,axis=1)
-        vr=np.fft.irfft(v,axis=1)
-        wr=np.fft.irfft(wap,axis=1)
+        tr=np.fft.ifft(t,axis=2)
+        ur=np.fft.ifft(u,axis=2)
+        vr=np.fft.ifft(v,axis=2)
+        wr=np.fft.ifft(wap,axis=2)
         tur=tr*ur
         tvr=tr*vr
         twr=tr*wr
-        tu=np.fft.rfft(tur,axis=1)
-        tv=np.fft.rfft(tvr,axis=1)
-        tw=np.fft.rfft(twr,axis=1)
+        tu=np.fft.fft(tur,axis=2)
+        tv=np.fft.fft(tvr,axis=2)
+        tw=np.fft.fft(twr,axis=2)
         
-        c1=tu*np.conj(tt)-tt*np.conj(tu)
-        c6=tw*np.conj(tt)-tt*np.conj(tw)
+        c1=np.zeros([nlev,nlat,ntp-1])
+        c6=np.zeros([nlev,nlat,ntp-1])
+        c1=tu*np.conj(tt[:,:,np.newaxis])-tt[:,:,np.newaxis]*np.conj(tu)
+        c6=tw*np.conj(tt[:,:,np.newaxis])-tt[:,:,np.newaxis]*np.conj(tw)
         c2=np.zeros([nlev,nlat,ntp-1])
         c3=np.zeros([nlev,nlat,ntp-1])
         c5=np.zeros([nlev,nlat,ntp-1])
+    
         for i in range(nlat):
-            if i == 0:
-                c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,:]-tt[:,i,:])/(aa*(lat[i+1]-lat[i]))
-                c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,:]-tt[:,i,:])/(aa*(lat[i+1]-lat[i]))
-            elif i == nlat-1:
-                c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i,:]-tt[:,i-1,:])/(aa*(lat[i]-lat[i-1]))
-                c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i,:]-tt[:,i-1,:])/(aa*(lat[i]-lat[i-1]))
-            else:
-                c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,:]-tt[:,i-1,:])/(aa*(lat[i+1]-lat[i-1]))
-                c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,:]-tt[:,i-1,:])/(aa*(lat[i+1]-lat[i-1]))
-        
+                if i == 0:
+                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,np.newaxis] - \
+                      tt[:,i,np.newaxis])/(aa*(lat[i+1]-lat[i]))
+                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,np.newaxis] - \
+                      tt[:,i,np.newaxis])/(aa*(lat[i+1]-lat[i]))
+                elif i == nlat-1:
+                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i,np.newaxis] - \
+                      tt[:,i-1,np.newaxis])/(aa*(lat[i]-lat[i-1]))
+                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i,np.newaxis] - \
+                      tt[:,i-1,np.newaxis])/(aa*(lat[i]-lat[i-1]))
+                else:
+                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,np.newaxis] - \
+                      tt[:,i-1,np.newaxis])/(aa*(lat[i+1]-lat[i-1]))
+                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,np.newaxis] - \
+                      tt[:,i-1,np.newaxis])/(aa*(lat[i+1]-lat[i-1]))
+            
         for l in range(nlev):
             if l == 0:
-                c5[l,:,:]  = (tt[l+1,:,:]-t[l,:,:])/(p[l+1]-p[l])
+                c5[l,:,:]  = (tt[l+1,:,np.newaxis]-tt[l,:,np.newaxis])/(p[l+1]-p[l])
             elif l == nlev-1:
-                c5[l,:,:]  = (tt[l,:,:]-t[l-1,:,:])/(p[l]-p[l-1])
+                c5[l,:,:]  = (tt[l,:,np.newaxis]-tt[l-1,:,np.newaxis])/(p[l]-p[l-1])
             else:
-                c51  = (tt[l+1,:,:]-t[l,:,:])/(p[l+1]-p[l])
-                c52  = (tt[l,:,:]-t[l-1,:,:])/(p[l]-p[l-1])
-                c5[l,:,:]  = (c51*(p[l]-p[l-1])+c52*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
-                
+                c51  = (tt[l+1,:,np.newaxis]-tt[l,:,np.newaxis])/(p[l+1]-p[l])
+                c52  = (tt[l,:,np.newaxis]-tt[l-1,:,np.newaxis])/(p[l]-p[l-1])
+                c5[l,:,:]  = (c51*(p[l]-p[l-1])+c52*(p[l+1]-p[l]))/(p[l+1]-p[l-1])  
+        
         K = np.arange(0,ntp-1)            
-        at2as=gw[:,np.newaxis,np.newaxis]*((K-1)[np.newaxis,np.newaxis,:]*
+        at2as=gw[:,:,np.newaxis]*((K-1)[np.newaxis,np.newaxis,:]*
              np.imag(c1)/(aa*np.cos(lat[np.newaxis,:,np.newaxis])) \
             + np.real(c2+c3)+np.real(tw*np.conj(c5)+\
             np.conj(tw)*c5)+R/(cp*p[:,np.newaxis,np.newaxis])*np.real(c6))        
@@ -809,14 +821,14 @@ class Lorenz_cycle():
         dvt = np.zeros([nlev,nlat,ntp-1])
         dlat=np.zeros([nlat])
         
-        ur=np.fft.irfft(u,axis=1)
-        vr=np.fft.irfft(v,axis=1)
+        ur=np.fft.irfft(u,axis=2)
+        vr=np.fft.irfft(v,axis=2)
         uur=ur*ur
         uvr=ur*vr
         vvr=vr*vr
-        uu=np.fft.rfft(uur,axis=1)
-        vv=np.fft.rfft(vvr,axis=1)
-        uv=np.fft.rfft(uvr,axis=1)
+        uu=np.fft.rfft(uur,axis=2)
+        vv=np.fft.rfft(vvr,axis=2)
+        uv=np.fft.rfft(uvr,axis=2)
         
         c1=uu*np.conj(ut)-ut*np.conj(uu)
         c3=uv*np.conj(ut)+ut*np.conj(uv)

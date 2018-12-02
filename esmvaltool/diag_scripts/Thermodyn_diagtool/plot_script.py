@@ -539,6 +539,9 @@ class Plot_script():
             cm           = 'YlOrBr'
         elif ext_name == 'Phase changes vapor -> snow entropy production':
             rangec       = [0,0.001]
+            cm           = 'YlOrBr'        
+        elif ext_name == 'Snow melting entropy production':
+            rangec       = [0,0.05]
             cm           = 'YlOrBr'
         elif ext_name == 'Potential energy entropy production':
             rangec       = [0,0.1]
@@ -553,7 +556,7 @@ class Plot_script():
         var   = dataset.variables[name][:, :, :]
         lats  = dataset.variables['lat'][:]
         lons  = dataset.variables['lon'][:]
-        time  = dataset.variables['time'][:]
+        #time  = dataset.variables['time'][:]
         
         #Compute the climatological mean map
         tmean = np.nanmean(var, axis=0)
@@ -593,7 +596,8 @@ class Plot_script():
             else:
                 distances = np.linspace(0,20,20001)
                 chi2_cdf = plotsmod.chi2.cdf(distances,df=2)
-                multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf-mass_level)==np.abs(chi2_cdf-mass_level).min())[0][0]])
+                multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf-mass_level) \
+                                    ==np.abs(chi2_cdf-mass_level).min())[0][0]])
             semimaj *= multiplier
             semimin *= multiplier
             phi = np.arccos(np.dot(eig_vec[0],np.array([1,0])))
