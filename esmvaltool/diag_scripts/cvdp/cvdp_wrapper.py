@@ -11,15 +11,8 @@ from esmvaltool._task import DiagnosticError
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def main(cfg):
-    """Main function."""
-    setup_driver(cfg)
-    setup_namelist(cfg)
-    subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['work_dir']))
-
-
 def setup_driver(cfg):
-    """Setup the driver.ncl file of the cvdp package."""
+    """Write the driver.ncl file of the cvdp package."""
     cvdp_root = os.path.join(os.path.dirname(__file__), '../../cvdp')
     if not os.path.isdir(cvdp_root):
         raise DiagnosticError("CVDP is not available.")
@@ -59,19 +52,19 @@ def setup_driver(cfg):
 
 
 def create_link(cfg, inpath):
-    """Create link for the input file that matches the naming convention
-    of the cvdp package. Return the path to the link.
+    """Create link for the input file.
+
+    The link matches the naming convention of the cvdp package.
+    Returns the path to the link.
 
     cfg: configuration dict
     inpath: path to infile
-
     """
-
     def _create_link_name(inpath):
-        head, tail = os.path.split(inpath)
+        tail = os.path.split(inpath)[1]
         search_result = re.search(r'[0-9]{4}-[0-9]{4}', tail).group(0)
-        return t.replace(search_result,
-                         "{0}01-{1}12".format(*search_result.split('-')))
+        return tail.replace(search_result,
+                            "{0}01-{1}12".format(*search_result.split('-')))
 
     if not os.path.isdir(inpath):
         raise DiagnosticError("Path {0} does not exist".format(inpath))
@@ -88,7 +81,7 @@ def create_link(cfg, inpath):
 
 
 def setup_namelist(cfg):
-    """Setup the namelist file of the cvdp package."""
+    """Set the namelist file of the cvdp package."""
     input_data = cfg['input_data'].values()
     selection = select_metadata(input_data, project='CMIP5')
     grouped_selection = group_metadata(selection, 'dataset')
@@ -101,7 +94,7 @@ def setup_namelist(cfg):
         tail = "_".join(tail.split('_')[:-1])
         ppath = "{}*/".format(os.path.join(head, tail))
         content.append("{0} | {1} | {2} | {3}\n".format(
-            key, ppath, value[0]["start_year"], v[0]["end_year"]))
+            key, ppath, value[0]["start_year"], value[0]["end_year"]))
 
     namelist = os.path.join(cfg['work_dir'], "namelist")
 
@@ -111,7 +104,6 @@ def setup_namelist(cfg):
 
 def log_functions(func):
     """Decorater to check functions."""
-
     def inner():
         """Inner function."""
         ret = func()
@@ -127,11 +119,19 @@ def _nco_available():
     try:
         retcode = subprocess.call("which ncks", shell=True)
         if retcode < 0:
-            return False
+            ret = False
         else:
-            return True
+            ret = True
     except OSError:
-        return False
+        ret = False
+    return ret
+
+
+def main(cfg):
+    """Set and execute the cvdp package."""
+    setup_driver(cfg)
+    setup_namelist(cfg)
+    subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['work_dir']))
 
 
 if __name__ == '__main__':
