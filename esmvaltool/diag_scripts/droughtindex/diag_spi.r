@@ -1,7 +1,7 @@
 library(yaml)
 library(ncdf4)
 library(SPEI)
-library(RColorBrewer)
+library(RColorBrewer) # nolint
 
 getnc <- function(yml, m, lat = FALSE) {
   id <- nc_open(yml[m][[1]]$filename, readunlim = FALSE)
@@ -99,8 +99,8 @@ parr <- c(nref, marr)
 mnam <- c(1:nmods) * NA
 for (m in 1:nmods) mnam[m] <- var1_input[m][[1]]$dataset
 
-qual_col_pals <- brewer.pal.info[brewer.pal.info$category == "qual", ]
-col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors,
+qual_col_pals <- brewer.pal.info[brewer.pal.info$category == "qual", ] # nolint
+col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors, # nolint
                            rownames(qual_col_pals)))
 cols <- c("black", sample(col_vector, nmods - 1))
 
