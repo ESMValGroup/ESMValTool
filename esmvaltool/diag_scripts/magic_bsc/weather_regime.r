@@ -2,7 +2,6 @@ library(s2dverification)
 library(ggplot2)
 library(multiApply) #nolint
 library(ncdf4)
-library(startR) #nolint
 library(gridExtra) #nolint
 library(ClimProjDiags) #nolint
 
