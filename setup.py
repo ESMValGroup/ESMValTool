@@ -56,6 +56,7 @@ REQUIREMENTS = {
         'pycodestyle',
         'pytest',
         'pytest-cov',
+        'pytest-env',
         'pytest-html',
         'pytest-metadata>=1.5.1',
     ],

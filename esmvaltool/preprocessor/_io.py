@@ -1,4 +1,4 @@
-"""Functions for loading and saving cubes"""
+"""Functions for loading and saving cubes."""
 import copy
 import logging
 import os
@@ -7,6 +7,7 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -60,8 +61,24 @@ def load(files, constraints=None, callback=None):
     return cubes
 
 
+def _fix_cube_attributes(cubes):
+    """Unify attributes of different cubes to allow concatenation."""
+    attributes = {}
+    for cube in cubes:
+        for (attr, val) in cube.attributes.items():
+            if attr not in attributes:
+                attributes[attr] = val
+            else:
+                if not np.array_equal(val, attributes[attr]):
+                    attributes[attr] = '{};{}'.format(
+                        str(attributes[attr]), str(val))
+    for cube in cubes:
+        cube.attributes = attributes
+
+
 def concatenate(cubes):
     """Concatenate all cubes after fixing metadata."""
+    _fix_cube_attributes(cubes)
     try:
         cube = iris.cube.CubeList(cubes).concatenate_cube()
         return cube

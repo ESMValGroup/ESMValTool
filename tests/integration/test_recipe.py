@@ -90,11 +90,13 @@ def patched_datafinder(tmpdir, monkeypatch):
 
     tracking_id = tracking_ids()
 
-    def find_files(_, filename):
+    def find_files(_, filenames):
         # Any occurrence of [something] in filename should have
         # been replaced before this function is called.
-        assert '[' not in filename
+        for filename in filenames:
+            assert '[' not in filename
 
+        filename = filenames[0]
         filename = str(tmpdir / 'input' / filename)
         filenames = []
         if filename.endswith('*.nc'):
