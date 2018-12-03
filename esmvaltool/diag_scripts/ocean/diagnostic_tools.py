@@ -83,7 +83,7 @@ def bgc_units(cube, name):
     if name in ['chl', ]:
         new_units = 'mg m-3'
 
-    if name in ['mfo', ]:
+    if name in ['mfo', 'amoc', 'msftmyz']:
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
 
@@ -169,6 +169,41 @@ def guess_calendar_datetime(cube):
                        time_coord.units.calendar)
         datetime = cftime.DatetimeGregorian
     return datetime
+
+
+def load_thresholds(cfg, metadata):
+    """
+    Load the thresholds for contour plots from the config files
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+
+    Returns
+    -------
+    list:
+        List of thresholds
+    """
+    thresholds = []
+
+    if 'threshold' in cfg.keys():
+        thresholds.append(float(cfg['threshold']))
+
+    if 'threshold' in metadata.keys():
+        thresholds.append(float(metadata['threshold']))
+
+    if 'thresholds' in cfg.keys():
+        thresholds.extend([float(thres) for thres in cfg['thresholds']])
+
+    if 'thresholds' in metadata.keys():
+        thresholds.extend([float(thres) for thres in metadata['thresholds']])
+
+    thresholds = {threshold: True for threshold in thresholds}
+
+    return sorted(thresholds.keys())
 
 
 def add_legend_outside_right(
@@ -336,10 +371,12 @@ def make_cube_layer_dict(cube):
         cubes[''] = cube
         return cubes
 
-    if len(layers) > 1:
-        # This field has a strange number of layer dimensions.
-        # depth and regions?
-        raise ValueError('This cube has both `depth` & `region` coordinates.')
+    # if len(layers) > 1:
+    #     # This field has a strange number of layer dimensions.
+    #     # depth and regions?
+    #     print(cube)
+    #     raise ValueError('This cube has both `depth` & `region` coordinates:'
+    #                      ' %s', layers)
 
     # iris stores coords as a list with one entry:
     layer_dim = layers[0]
