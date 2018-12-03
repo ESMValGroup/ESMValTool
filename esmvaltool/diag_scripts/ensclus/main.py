@@ -61,6 +61,7 @@ def main():
     os.makedirs(cfg['work_dir'],exist_ok=True)
     
     out_dir=cfg['work_dir']
+    write_plots=cfg['write_plots']
 
     sys.path.append(cfg['path_diag_aux'])
     # Import full diagnostic routines
@@ -88,7 +89,8 @@ def main():
     
     ####################### PLOT AND SAVE FIGURES ################################
     #____________run ens_plots as a module
-    ens_plots(out_dir,cfg['plot_dir'],name_outputs,cfg['numclus'],cfg['field_to_plot'])
+    if write_plots:
+        ens_plots(out_dir,cfg['plot_dir'],name_outputs,cfg['numclus'],cfg['field_to_plot'])
     
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')
