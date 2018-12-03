@@ -88,7 +88,7 @@ def test_get_input_filelist(root, cfg):
 
 @pytest.mark.parametrize('cfg', CONFIG['get_input_fx_filelist'])
 def test_get_input_fx_filelist(root, cfg):
-    """Tests retrieving fx filelist."""
+    """Test retrieving fx filelist."""
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 
