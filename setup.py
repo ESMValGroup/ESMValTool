@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-"""ESMValTool installation script"""
+"""ESMValTool installation script."""
 # This script only installs dependencies available on PyPI
 #
 # Dependencies that need to be installed some other way (e.g. conda):
 # - ncl
 # - iris
 # - python-stratify
-# - basemap
 
 import os
 import re
@@ -28,13 +27,12 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'basemap',
         'cartopy',
         'cdo',
         'cf_units',
         'cython',
         # 'scitools-iris',  # Only iris 2 is on PyPI
-        'matplotlib',
+        'matplotlib<3',
         'netCDF4',
         'numba',
         'numpy',
@@ -72,6 +70,7 @@ REQUIREMENTS = {
         'pydocstyle',
         'pylint',
         'sphinx',
+        'sphinx_rtd_theme',
         'yamllint',
         'yapf',
     ],
@@ -79,7 +78,7 @@ REQUIREMENTS = {
 
 
 def discover_python_files(paths, ignore):
-    """Discover Python files"""
+    """Discover Python files."""
 
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
@@ -97,7 +96,7 @@ def discover_python_files(paths, ignore):
 
 
 class CustomCommand(Command):
-    """Custom Command class"""
+    """Custom Command class."""
 
     def install_deps_temp(self):
         """Try to temporarily install packages needed to run the command."""
@@ -111,13 +110,15 @@ class CustomCommand(Command):
 class RunTests(CustomCommand):
     """Class to run tests and generate reports."""
 
-    user_options = []
+    user_options = [('installation', None,
+                     'Run tests that require installation.')]
 
     def initialize_options(self):
-        """Do nothing"""
+        """Initialize custom options."""
+        self.installation = False
 
     def finalize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def run(self):
         """Run tests and generate a coverage report."""
@@ -127,7 +128,7 @@ class RunTests(CustomCommand):
 
         version = sys.version_info[0]
         report_dir = 'test-reports/python{}'.format(version)
-        errno = pytest.main([
+        args = [
             'tests',
             'esmvaltool',  # for doctests
             '--doctest-modules',
@@ -137,7 +138,10 @@ class RunTests(CustomCommand):
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
-        ])
+        ]
+        if self.installation:
+            args.append('--installation')
+        errno = pytest.main(args)
 
         sys.exit(errno)
 
@@ -148,10 +152,10 @@ class RunLinter(CustomCommand):
     user_options = []
 
     def initialize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def finalize_options(self):
-        """Do nothing"""
+        """Do nothing."""
 
     def run(self):
         """Run prospector and generate a report."""

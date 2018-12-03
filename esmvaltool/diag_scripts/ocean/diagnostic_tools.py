@@ -1,5 +1,6 @@
 """
 Diagnostic tools:
+-----------------
 
 This module contains several python tools used elsewhere by the ocean
 diagnostics package.
@@ -12,15 +13,28 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import yaml
+import cftime
 import matplotlib
 matplotlib.use('Agg')  # noqa
 
 import matplotlib.pyplot as plt
 
+from esmvaltool.diag_scripts.shared._base import _get_input_data_files
+
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+
+def get_obs_projects():
+    """
+    Return a list of strings with the names of observations projects.
+
+    Please keep this list up to date, or replace it with something more
+    sensible.
+    """
+    obs_projects = ['obs4mips', ]
+    return obs_projects
 
 
 def folder(name):
@@ -44,14 +58,13 @@ def folder(name):
 
 def get_input_files(cfg, index=0):
     """
-    Load input configuration file.
+    Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
+    This is a wrappper for the _get_input_data_files function from
+    diag_scripts.shared._base.
     """
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as input_file:
-        metadata = yaml.safe_load(input_file)
-    return metadata
+    return _get_input_data_files(cfg)
 
 
 def bgc_units(cube, name):
@@ -66,15 +79,15 @@ def bgc_units(cube, name):
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
-    if name in [
-            'no3',
-    ]:
+    if name in ['no3', ]:
         new_units = 'mmol m-3'
 
-    if name in [
-            'chl',
-    ]:
+    if name in ['chl', ]:
         new_units = 'mg m-3'
+
+    if name in ['mfo', ]:
+        # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
+        new_units = 'Tg s-1'
 
     if new_units != '':
         logger.info(' '.join(
@@ -85,27 +98,87 @@ def bgc_units(cube, name):
     return cube
 
 
-def timecoord_to_float(times):
+def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
+    """
+    Match up model or observations dataset dictionairies from config file.
+
+    This function checks that the control_model, exper_model and
+    observational_dataset dictionairies from the recipe are matched with the
+    input file dictionairy in the cfg metadata.
+    """
+    for input_file, intput_dict in input_files_dict.items():
+        intersect_keys = intput_dict.keys() & cfg_dict.keys()
+        match = True
+        for key in intersect_keys:
+            if intput_dict[key] == cfg_dict[key]:
+                continue
+            match = False
+        if match:
+            return input_file
+    logger.warning("Unable to match model: %s", model_type)
+    return ''
+
+
+def cube_time_to_float(cube):
     """
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
     """
+    times = cube.coord('time')
+    datetime = guess_calendar_datetime(cube)
+
     dtimes = times.units.num2date(times.points)
     floattimes = []
     for dtime in dtimes:
         # TODO: it would be better to have a calendar dependent value
         # for daysperyear, as this is not accurate for 360 day calendars.
         daysperyear = 365.25
-        floattime = dtime.year + dtime.dayofyr / daysperyear + dtime.hour / (
+
+        try:
+            dayofyr = dtime.dayofyr
+        except AttributeError:
+            time = datetime(dtime.year, dtime.month, dtime.day)
+            time0 = datetime(dtime.year, 1, 1, 0, 0)
+            dayofyr = (time - time0).days
+
+        floattime = dtime.year + dayofyr / daysperyear + dtime.hour / (
             24. * daysperyear)
+        if dtime.hour:
+            floattime += dtime.hour / (24. * daysperyear)
         if dtime.minute:
             floattime += dtime.minute / (24. * 60. * daysperyear)
         floattimes.append(floattime)
     return floattimes
 
 
-def add_legend_outside_right(plot_details, ax1, column_width=0.1):
+def guess_calendar_datetime(cube):
+    """Guess the cftime.datetime form to create datetimes."""
+    time_coord = cube.coord('time')
+
+    if time_coord.units.calendar in ['360_day', ]:
+        datetime = cftime.Datetime360Day
+    elif time_coord.units.calendar in ['365_day', 'noleap']:
+        datetime = cftime.DatetimeNoLeap
+    elif time_coord.units.calendar in ['julian', ]:
+        datetime = cftime.DatetimeJulian
+    elif time_coord.units.calendar in ['gregorian', ]:
+        datetime = cftime.DatetimeGregorian
+    elif time_coord.units.calendar in ['proleptic_gregorian', ]:
+        datetime = cftime.DatetimeProlepticGregorian
+    else:
+        logger.warning('Calendar set to Gregorian, instead of %s',
+                       time_coord.units.calendar)
+        datetime = cftime.DatetimeGregorian
+    return datetime
+
+
+def add_legend_outside_right(
+        plot_details,
+        ax1,
+        column_width=0.1,
+        loc='right'
+):
     """
     Add a legend outside the plot, to the right.
 
@@ -113,33 +186,60 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1):
     where the first level is some key (which is hidden)
     and the 2nd level contains the keys:
         'c': color
-        'lw': line width
+        'lw': line width (optional)
+        'ls': line style (optional)
         'label': label for the legend.
     ax1 is the axis where the plot was drawn.
     """
-    #####
+    # ####
     # Create dummy axes:
     legend_size = len(plot_details.keys()) + 1
-    ncols = int(legend_size / 25) + 1
     box = ax1.get_position()
-    ax1.set_position(
-        [box.x0, box.y0, box.width * (1. - column_width * ncols), box.height])
+    if loc.lower() == 'right':
+        nrows = 25
+        ncols = int(legend_size / nrows) + 1
+        ax1.set_position([box.x0,
+                          box.y0,
+                          box.width * (1. - column_width * ncols),
+                          box.height])
+
+    if loc.lower() == 'below':
+        ncols = 4
+        nrows = int(legend_size / ncols) + 1
+        ax1.set_position([box.x0,
+                          box.y0 + (nrows * column_width),
+                          box.width,
+                          box.height - (nrows * column_width)])
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
+        colour = plot_details[index]['c']
+
+        linewidth = plot_details[index].get('lw', 1)
+
+        linestyle = plot_details[index].get('ls', '-')
+
+        label = plot_details[index].get('label', str(index))
 
         plt.plot(
             [], [],
-            c=plot_details[index]['c'],
-            lw=plot_details[index]['lw'],
-            ls=plot_details[index]['ls'],
-            label=plot_details[index]['label'])
+            c=colour,
+            lw=linewidth,
+            ls=linestyle,
+            label=label)
 
-    legd = ax1.legend(
-        loc='center left',
-        ncol=ncols,
-        prop={'size': 10},
-        bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'right':
+        legd = ax1.legend(
+            loc='center left',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(1., 0.5))
+    if loc.lower() == 'below':
+        legd = ax1.legend(
+            loc='upper center',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(0.5, -2. * column_width))
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
 
@@ -208,6 +308,8 @@ def get_image_path(cfg,
     if path.find(image_extention) == -1:
         path += image_extention
 
+    path = path.replace(' ', '_')
+
     logger.info("Image path will be: %s", path)
     return path
 
@@ -225,22 +327,40 @@ def make_cube_layer_dict(cube):
     """
     #####
     # Check layering:
-    depth = cube.coords('depth')
-    cubes = {}
+    coords = cube.coords()
+    layers = []
+    for coord in coords:
+        if coord.standard_name in ['depth', 'region']:
+            layers.append(coord)
 
-    if depth == []:
+    cubes = {}
+    if layers == []:
         cubes[''] = cube
-    else:
-        # iris stores coords as a list with one entry:
-        depth = depth[0]
-        if len(depth.points) in [
-                1,
-        ]:
-            cubes[''] = cube
-        else:
-            coord_dim = cube.coord_dims('depth')[0]
-            for layer_index, layer in enumerate(depth.points):
-                slices = [slice(None) for index in cube.shape]
-                slices[coord_dim] = layer_index
-                cubes[layer] = cube[tuple(slices)]
+        return cubes
+
+    if len(layers) > 1:
+        # This field has a strange number of layer dimensions.
+        # depth and regions?
+        raise ValueError('This cube has both `depth` & `region` coordinates.')
+
+    # iris stores coords as a list with one entry:
+    layer_dim = layers[0]
+    if len(layer_dim.points) in [1, ]:
+        cubes[''] = cube
+        return cubes
+
+    if layer_dim.standard_name == 'depth':
+        coord_dim = cube.coord_dims('depth')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            cubes[layer] = cube[tuple(slices)]
+
+    if layer_dim.standard_name == 'region':
+        coord_dim = cube.coord_dims('region')[0]
+        for layer_index, layer in enumerate(layer_dim.points):
+            slices = [slice(None) for index in cube.shape]
+            slices[coord_dim] = layer_index
+            layer = layer.replace('_', ' ').title()
+            cubes[layer] = cube[tuple(slices)]
     return cubes

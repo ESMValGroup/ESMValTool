@@ -203,6 +203,15 @@ begin
     end if
   end if
 
+  if (units_from.eq."K") then
+    if (units_to.eq."degC") then
+      out = out - 273.15
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
             " to " + units_to + " not defined")
 
