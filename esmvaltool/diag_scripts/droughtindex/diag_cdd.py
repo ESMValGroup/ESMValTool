@@ -2,8 +2,10 @@
 import logging
 import os
 from copy import deepcopy
+
 import iris
 import numpy as np
+
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
 

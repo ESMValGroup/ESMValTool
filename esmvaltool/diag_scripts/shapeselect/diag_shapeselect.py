@@ -6,14 +6,14 @@ from copy import deepcopy
 
 import fiona
 import iris
+import matplotlib
 import numpy as np
 import xlsxwriter
-import matplotlib
 from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
+
 from esmvaltool.diag_scripts.shared import run_diagnostic
-matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -106,8 +106,7 @@ def shapeselect(cfg, cube, filename):
                        for y in cube.coord('latitude').points]
         for i, crd in enumerate(coordpoints):
             if crd[0] > 180:
-                coordpoints[i] = (coordpoints[i][0] - 360.,
-                                  coordpoints[i][1])
+                coordpoints[i] = (coordpoints[i][0] - 360., coordpoints[i][1])
     else:
         logger.info("Support for 2-d coords not implemented!")
         sys.exit(1)
@@ -122,8 +121,8 @@ def shapeselect(cfg, cube, filename):
         alons = []
         alats = []
         for lon, lat in coordpoints:
-            if (lat > llcrnrlat and lat < urcrnrlat and
-                    lon > llcrnrlon and lon < urcrnrlon):
+            if (lat > llcrnrlat and lat < urcrnrlat and lon > llcrnrlon
+                    and lon < urcrnrlon):
                 alons.append(lon)
                 alats.append(lat)
         cnt = 0
