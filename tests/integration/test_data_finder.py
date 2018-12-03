@@ -74,7 +74,7 @@ def test_get_input_filelist(root, cfg):
                 cfg.get('available_symlinks'))
 
     # Find files
-    rootpath = {cfg['variable']['project']: root}
+    rootpath = {cfg['variable']['project']: [root]}
     drs = {cfg['variable']['project']: cfg['drs']}
     input_filelist = get_input_filelist(cfg['variable'], rootpath, drs)
 
@@ -90,7 +90,7 @@ def test_get_input_fx_filelist(root, cfg):
                 cfg.get('available_symlinks'))
 
     # Find files
-    rootpath = {cfg['variable']['project']: root}
+    rootpath = {cfg['variable']['project']: [root]}
     drs = {cfg['variable']['project']: cfg['drs']}
     fx_files = get_input_fx_filelist(cfg['variable'], rootpath, drs)
 

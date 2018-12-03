@@ -500,16 +500,16 @@ class CMIP5Info(object):
     def _read_variable(self, short_name, frequency):
         var = VariableInfo('CMIP5', short_name)
         var.frequency = frequency
-        for dim in var.dimensions:
-            var.coordinates[dim] = self.coords[dim]
         while self._read_line():
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
-                return var
+                break
             if key in ('dimensions', 'modeling_realm'):
                 setattr(var, key, value.split(' '))
             elif hasattr(var, key):
                 setattr(var, key, value)
+        for dim in var.dimensions:
+            var.coordinates[dim] = self.coords[dim]
         return var
 
     def get_table(self, table):
