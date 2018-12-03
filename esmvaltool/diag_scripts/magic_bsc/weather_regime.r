@@ -206,7 +206,7 @@ WR_obs <- WeatherRegime( #nolint
   method = cluster_method
 )
 names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
-
+names(dim(WR_obs$cluster))[1] <- "Evolution"
 # -------------------------------
 ## Plotting the WR_obs output
 # -------------------------------
