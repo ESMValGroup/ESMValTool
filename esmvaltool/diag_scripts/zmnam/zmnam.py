@@ -51,8 +51,8 @@ def get_cfg():
 
 
 def main(config):
-    #cfg = get_cfg()
-    cfg = config
+    cfg = get_cfg()
+    #cfg = config
     """
     print('(1)@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')  
     print(cfg)
