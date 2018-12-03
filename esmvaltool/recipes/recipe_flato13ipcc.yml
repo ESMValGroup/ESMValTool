@@ -38,7 +38,7 @@ preprocessors:
       coord1: latitude
       coord2: longitude
 
-    clim_ref:
+  clim_ref:
     regrid:
       target_grid: reference_dataset
       scheme: linear
