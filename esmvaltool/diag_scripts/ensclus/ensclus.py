@@ -54,8 +54,7 @@ def get_input_files(cfg, index=0):
     return metadata
 
 
-def main():
-    cfg = get_cfg()
+def main(cfg):
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
