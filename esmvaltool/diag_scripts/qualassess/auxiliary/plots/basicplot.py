@@ -469,12 +469,18 @@ class Plot2D(object):
             if color_type is None or color_type not in color.keys():
                 if color_reverse:
                     col_save = color["default"]
-                    color["default"] = color["default"] + "_r"
+                    if color["default"][-2:] == "_r":
+                        color["default"] = color["default"][:-2]
+                    else:
+                        color["default"] = color["default"] + "_r"
                 brewer_cmap = mpl_cm.get_cmap(color["default"], lut=11)
             else:
                 if color_reverse:
                     col_save = color[color_type]
-                    color[color_type] = color[color_type] + "_r"
+                    if color[color_type][-2:] == "_r":
+                        color[color_type] = color[color_type][:-2]
+                    else:
+                        color[color_type] = color[color_type] + "_r"
                 brewer_cmap = mpl_cm.get_cmap(color[color_type], lut=11)
 
         brewer_cmap.set_bad("grey", 0.1)

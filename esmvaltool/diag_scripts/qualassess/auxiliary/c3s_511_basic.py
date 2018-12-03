@@ -108,14 +108,16 @@ class __Diagnostic_skeleton__(object):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         raise ImplementationError(
-            "set_info", "This method has to be implemented.")
+            "set_info",
+            "This method has to be implemented.")
         return
 
     def read_data(self):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         raise ImplementationError(
-            "read_data", "This method has to be implemented.")
+            "read_data",
+            "This method has to be implemented.")
         return
 
     def run_diagnostic(self):
@@ -128,7 +130,9 @@ class __Diagnostic_skeleton__(object):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         self.__do_report__(content={}, filename="do_overview_default")
-#        raise ImplementationError("__do_overview__","This method has to be implemented.")
+        raise ImplementationError(
+            "__do_overview__",
+            "This method has to be implemented.")
         return
 
     def __do_mean_var__(self):
@@ -615,9 +619,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         overview_dict = collections.OrderedDict()
 
-        overview_dict.update(
-                {'longitude range [' + str(
-                        self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
+        overview_dict.update({'longitude range [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
             [("min", str(lon_range_spec[0])), ("max", str(lon_range_spec[2]))])})
         overview_dict.update({'longitude frequency [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
             [("min", str(lon_freq_spec[0])), ("average", str(lon_freq_spec[1])), ("max", str(lon_freq_spec[2]))])})
@@ -901,9 +903,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         maths = ["MEAN",
                  "STD_DEV",
-                 #                 "LOG_COV",
+                 #"LOG_COV",
                  "PERCENTILE",
-                 "CLIMATOLOGY"]
+                 "CLIMATOLOGY",
+                 ]
 
         percentiles = [1., 5., 10., 50., 90., 95., 99.]
 
@@ -1114,7 +1117,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 # plotting routine
                 vminmax = None
                 ctype = None
-
+                
                 if np.any([m_typ in m for m_typ in [
                           "MEAN", "PERCENTILE", "CLIMATOLOGY"]]):
                     vminmax = disp_min_max["abs_vals"]
@@ -1259,10 +1262,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             short_left_over = np.array([sl[0:3] for sl in long_left_over])
             
             stat_dict[d].update({"slo":short_left_over,"llo":long_left_over})
+            weights=iris.analysis.cartography.area_weights(cube)
             
-            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))})
+            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg, iris.analysis.MEAN, weights=weights)})
             vminmaxmean=np.nanpercentile(np.concatenate([vminmaxmean,np.nanpercentile(stat_dict[d]["level_dim_mean"].data,[5,95])]),[0,100])
-            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube,long_agg,weights=iris.analysis.cartography.area_weights(cube))})
+            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube, long_agg, weights=weights)})
             vminmaxstd=np.nanpercentile(np.concatenate([vminmaxstd,np.nanpercentile(stat_dict[d]["level_dim_std"].data,[5,95])]),[0,100])
             
         for d in reg_dimensions:
@@ -1308,9 +1312,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
-                print(stat_dict[d]["level_dim_mean"])
-                print('Warning: blank figure!')
+                self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
+                self.__logger__.error(stat_dict[d]["level_dim_mean"])
+                self.__logger__.error('Warning: blank figure!')
                 
                 x=Plot2D_blank(stat_dict[d]["level_dim_mean"])
                 
