@@ -98,8 +98,8 @@ if (length(dates_historical) != length(time)) {
     calendario == "365" | calendario == "365_days" |
     calendario == "365_day" | calendario == "noleap"
   ) {
-	  dates_historical <-
-	dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]#nolint
+dates_historical <-
+dates_historical[-which(substr(dates_historical, 6, 10) == "02-29")]#nolint
   }
 }
 if (length(dates_historical) != length(time)) {
