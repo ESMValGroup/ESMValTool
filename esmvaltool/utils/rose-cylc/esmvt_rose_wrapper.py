@@ -1,5 +1,5 @@
 r"""
-Install and run u-am444 - the esmvaltool rose-cylc suite.
+Install and run u-bd684 - the esmvaltool rose-cylc suite.
 
 Usage:
 ------
@@ -7,8 +7,8 @@ Usage:
 -r --recipe-file:  [REQUIRED]  single or multiple (space-sep) recipe files;
 -d --main-dir:     [OPTIONAL]  main run dir name (full path);
                                defaults to $HOME/ESMVALTOOL_ROSE;
--s --suite-dir     [OPTIONAL]  u-am444 dir full path; can be set by user;
-                               defaults to $HOME/u-am444;
+-s --suite-dir     [OPTIONAL]  u-bd684 dir full path; can be set by user;
+                               defaults to $HOME/u-bd684;
 -n --no-submit     [OPTIONAL]  if specified, will not submit suite to cylc;
 -l --log-level:    [OPTIONAL]  log level, default=info
 
@@ -18,12 +18,12 @@ python esmvt_rose_wrapper.py -c /home/users/valeriu/input/config-user.yml \
                              -r /home/users/valeriu/recipes/recipe1.yml \
                                 /home/users/valeriu/recipes/recipe2.yml \
                              -d /home/users/valeriu/esmvat_WRAPPER \
-                             -s /home/users/valeriu/u-am444/ \
+                             -s /home/users/valeriu/u-bd684/ \
                              -n
 
 Base suite:
 -----------
-The base suite to run esmvaltool via rose-cylc is u-am444; for now (Nov 2018)
+The base suite to run esmvaltool via rose-cylc is u-bd684; for now (Nov 2018)
 the base suite comes with esmvaltool package by default; this suite will be,
 in the near future, included in the Rose repository. The location inside
 esmvaltool is standardized to:
@@ -40,7 +40,7 @@ Environment:
 We will move to a unified and centrally-installed esmvaltool environment;
 until then, the user will have to alter the env_setup script:
 
-u-am444/app/esmvaltool/env_setup
+u-bd684/app/esmvaltool/env_setup
 
 with the correct pointers to esmvaltool installation, if desired;
 NOTE that the defaults are working pointers for an install on CEDA-Jasmin.
@@ -58,7 +58,7 @@ export PATH=/home/users/valeriu/miniconda2/bin:$PATH
 mkdir esmvaltool_rose
 cd esmvaltool_rose
 cp $esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
-[get u-am444 in $HOME, get your recipes and the config]
+[get u-abd684 in $HOME, get your recipes and the config]
 python esmvt_rose_wrapper.py -c config-user.yml \
 -r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
 -d $HOME/esmvaltool_rose
@@ -69,8 +69,8 @@ operations are done remotely on different nodes.
 A practical actual example of running the tool can be found on JASMIN:
 /home/users/valeriu/esmvaltool_rose
 There you will find the run shell: run_example, as well as an example
-how to set the configuration file. A copy of u-am444 is always located
-in /home/users/valeriu/roses/u-am444.
+how to set the configuration file. A copy of u-bd684 is always located
+in /home/users/valeriu/roses/u-bd684.
 
 Contact:
 --------
@@ -129,8 +129,8 @@ def get_args():
     parser.add_argument(
         '-s',
         '--suite-dir',
-        default=os.path.join(os.environ['HOME'], 'u-am444'),
-        help='u-am444 suite directory; default to $HOME/u-am444')
+        default=os.path.join(os.environ['HOME'], 'u-bd684'),
+        help='u-bd684 suite directory; default to $HOME/u-bd684')
     parser.add_argument(
         '-n',
         '--no-submit',
@@ -195,7 +195,7 @@ def _setup_work(rose_config_template, recipe_files,
                                            os.path.basename(recipe))):
             shutil.copy2(recipe, os.path.join(main_dir, 'recipes'))
         recipes_field.append(os.path.basename(recipe).strip('.yml'))
-    rose_suite = os.path.join(main_dir, 'u-am444')
+    rose_suite = os.path.join(main_dir, 'u-bd684')
     if os.path.exists(rose_suite):
         shutil.rmtree(rose_suite)
     shutil.copytree(default_suite, rose_suite)

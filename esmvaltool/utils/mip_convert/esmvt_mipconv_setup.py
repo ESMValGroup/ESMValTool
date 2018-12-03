@@ -40,6 +40,12 @@ A practical example of running the tool can be found on JASMIN:
 There you will find the two component shells: run_conversion
 and run_symlink, as well as an example how to set the configuration file.
 
+The suite used is now on MOSRS (as of 3 December 2018): u-bd681
+You can use the default location on Jasmin:
+DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-bd681"
+alternatively this can be turned off, should you want to check out the suite
+off MOSRS and use it locally.
+
 Contact:
 --------
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
@@ -69,8 +75,11 @@ import yaml  # noqa
 host_name = socket.gethostname().split('.')
 if len(host_name) > 1:
     if host_name[1] == 'ceda':
-        # default location for mip_convert suite on JASMIN
-        DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
+        # default location for mip_convert suite on JASMIN:
+        # previous suite: u-ak283_esmvt; new one u-bd681
+        # DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-ak283_esmvt"
+        DEFAULT_SUITE_LOCATION = "/home/users/valeriu/roses/u-bd681"
+        # note that you can fcm checkout it straight from the MOSRS
 
 # stream mapping; taken from hadsdk.streams
 # these are used to set defaults if not overrides
