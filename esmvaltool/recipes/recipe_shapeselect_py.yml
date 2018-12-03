@@ -18,7 +18,7 @@ diagnostics:
       scripts:
          script1:
            script: shapeselect/diag_shapeselect.py
-           shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
+           shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
            wgtmet: 'mean_inside'
            write_xlsx: true
            write_netcdf: true
