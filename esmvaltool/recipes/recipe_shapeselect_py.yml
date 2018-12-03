@@ -5,21 +5,20 @@ datasets:
  
 
 preprocessors:
-
-   preprocessor_1: {}
+  preprocessor_1: {}
 
 diagnostics:
-   diagnostic1:
-      description: Extracting data for user defined shapefile.
-      variables:
-         pr:
-            preprocessor: preprocessor_1
-            field: T2Ms
-      scripts:
-         script1:
-           script: shapeselect/diag_shapeselect.py
-           shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
-           wgtmet: 'mean_inside'
-           write_xlsx: true
-           write_netcdf: true
-           evalplot: true
+  diagnostic1:
+    description: Extracting data for user defined shapefile.
+    variables:
+      pr:
+        preprocessor: preprocessor_1
+        field: T2Ms
+    scripts:
+      script1:
+        script: shapeselect/diag_shapeselect.py
+        shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
+        wgtmet: 'mean_inside'
+        write_xlsx: true
+        write_netcdf: true
+        evalplot: true
