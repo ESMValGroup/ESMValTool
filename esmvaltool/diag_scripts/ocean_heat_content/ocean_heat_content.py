@@ -87,7 +87,7 @@ class OceanHeatContent(object):
             self.min_color_scale = (
                 depth * OceanHeatContent.WATER_DENSITY *
                 OceanHeatContent.HEAT_CAPACITY * 260.
-                )
+            )
 
         if not self.color_intervals:
             self.color_intervals = 1000
