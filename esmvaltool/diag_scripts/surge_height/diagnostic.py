@@ -27,16 +27,16 @@ def main(cfg):
     for dataset in grouped_input_data:
         logger.info("Processing dataset %s", dataset)
         # read data
-        ua_info = select_metadata(
+        uas_info = select_metadata(
             grouped_input_data[dataset], short_name='ua')[0]
-        ua_file = ua_info['filename']
-        nc_ua = xr.open_dataset(ua_file)
-        ua_data = nc_ua.ua
-        va_info = select_metadata(
+        uas_file = uas_info['filename']
+        nc_ua = xr.open_dataset(uas_file)
+        uas_data = nc_ua.uas
+        vas_info = select_metadata(
             grouped_input_data[dataset], short_name='va')[0]
-        va_file = va_info['filename']
-        nc_va = xr.open_dataset(va_file)
-        va_data = nc_va.va
+        vas_file = vas_info['filename']
+        nc_va = xr.open_dataset(vas_file)
+        vas_data = nc_va.vas
         psl_info = select_metadata(
             grouped_input_data[dataset], short_name='psl')[0]
         psl_file = psl_info['filename']
@@ -44,7 +44,7 @@ def main(cfg):
         psl_data = nc_psl.psl
         # call surge estimator
         logger.info('Calling surge estimator')
-        srg_estim,dates = surge_estimator_main(psl_data, ua_data, va_data, cfg, dataset)
+        srg_estim,dates = surge_estimator_main(psl_data, uas_data, vas_data, cfg, dataset)
 
 
 if __name__ == '__main__':

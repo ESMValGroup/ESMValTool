@@ -1,6 +1,7 @@
 ---
 
 datasets:
+#  - {dataset: ERA-Interim,  project: CMIP5,  mip: 6hrPlev, exp: historical,   start_year: 1979,  end_year: 2000}
   - {dataset: CanESM2,  project: CMIP5,  mip: 6hrPlev, exp: historical,  ensemble: r4i1p1, start_year: 2003,  end_year: 2003}
 
 preprocessors:
@@ -30,6 +31,15 @@ preprocessors:
 #      target_grid: 0.75x0.75
 #      scheme: linear
 
+#  preprocessorERAi:
+#    extract_time:
+#      start_month: 1
+#      start_day:   1
+#      start_year:  1979
+#      end_month:   12
+#      end_day:     31
+#      end_year:    2000
+
 diagnostics:
 
   surge_estimator:
@@ -38,10 +48,10 @@ diagnostics:
       psl:
         preprocessor: preprocessor1
         field: T2D
-      va:
+      va: #should be vas!
         preprocessor: preprocessor2
         field: T3D
-      ua:
+      ua: #should be uas!
         preprocessor: preprocessor2
         field: T3D
     scripts:
@@ -50,10 +60,11 @@ diagnostics:
         coastal_map:       true
         t0:                2003-04-01
         plt_tseries:       false
-        SOIname:           hoekvanh
+        stations:          all
+        plt_stations:      ['hoekvanh']
         colormap:          RdYlBu_r 
         map_projection:    Plate.Carree()
         resolution:        intermediate
-        fout_name:         surge_height_
+        fout_name:         surge_height
         perf_regres:       False
         path2eraint:       /usr/people/ridder/nobackup/ECMWF/ERAintWAQUA/speed/1979-2016/
