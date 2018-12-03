@@ -21,7 +21,8 @@ def test_create_links(tmpdir_factory):
     filepath = os.path.join(testfile.dirname, testfile.basename)
 
     link = create_link(cfg, filepath)
-    assert os.path.islink(link)
+    if not os.path.islink(link):
+            raise AssertionError()
 
 
 #

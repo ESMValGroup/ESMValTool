@@ -61,7 +61,6 @@ def create_link(cfg, inpath):
     cfg: configuration dict
     inpath: path to infile
     """
-
     def _create_link_name(inpath):
         tail = os.path.split(inpath)[1]
         search_result = re.search(r'[0-9]{4}-[0-9]{4}', tail).group(0)
@@ -106,7 +105,6 @@ def setup_namelist(cfg):
 
 def log_functions(func):
     """Decorater to check functions."""
-
     def inner():
         """Inner function."""
         ret = func()
