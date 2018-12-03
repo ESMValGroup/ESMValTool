@@ -1,3 +1,6 @@
+# recipe zmnam.yml
+---
+
 documentation:
   description: |
     Recipe for zonal mean Northern Annular Mode.
@@ -25,9 +28,9 @@ models:
 preprocessors:
   preproc:
     extract_levels: false
-    #regrid:  
-    #    target_grid: 2.5x2.5
-    #    scheme: linear
+    regrid:  
+        target_grid: 2.5x2.5
+        scheme: linear
 
 diagnostics:
   zmnam:
@@ -43,5 +46,6 @@ diagnostics:
 
           ## Information required: 
           ##path_diag_aux: '/work/users/irene/EnsClusTOOL/ESMValTool/esmvaltool/diag_scripts/aux/EnsClus/'
-          path_diag_aux: '/work/users/serva/ESMValTool/esmvaltool/diag_scripts/zmnam/'
+          #path_diag_aux: '/work/users/serva/ESMValTool/esmvaltool/diag_scripts/zmnam/'
+          path_diag_aux: '/home/serva/work/ESMValTool.new.1/esmvaltool/diag_scripts/zmnam/' 
           diag_script_info: True
