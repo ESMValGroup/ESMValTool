@@ -46,11 +46,15 @@ def get_cfg():
     print('settings file: ', settings_file)
     with open(settings_file) as file:
         cfg = yaml.safe_load(file)
-    print('Configuration: ', cfg)
+    #print('Configuration: ', cfg)
     return cfg
 
+print('**********************')
+print('before meain')
+print('**********************')
 
-def main(config):
+#def main(config):
+def main():
     cfg = get_cfg()
     #cfg = config
     """

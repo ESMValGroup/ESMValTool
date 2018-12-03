@@ -1,4 +1,22 @@
----
+documentation:
+  description: |
+    Recipe for zonal mean Northern Annular Mode.
+    The diagnostics compute the index and the spatial 
+    pattern to assess the simulation of the 
+    strat-trop coupling in the boreal hemisphere
+  authors:
+    - fser_fe
+    - hard_jo
+    - arno_en
+    - cagn_ch   
+
+  references:
+    - baldwin09
+
+  projects:
+    - c3s-magic
+
+
 # FIXME datasets, in generl conform with other recipes...
 models:
   - {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
