@@ -117,7 +117,6 @@ def zmnam_calc(indir,outdir,src_props):
         idate += 1
     #
 
-
     pcs_mo = np.zeros((len(date[mid_mon]),len(lev)),dtype='d')
 
     # Perform analysis by level
@@ -137,6 +136,8 @@ def zmnam_calc(indir,outdir,src_props):
 
         # Compute eigenvectors and eigenvalues
         eigenval, eigenvec = np.linalg.eig(cov)
+
+        print(eigenvec)
 
         sum_eigenval = np.sum(eigenval)
 
@@ -167,7 +168,7 @@ def zmnam_calc(indir,outdir,src_props):
         lead_pc_std  = np.std(pc[:,max_eigenval],ddof=1,axis=0)
         lead_pc  = (pc[:,max_eigenval]-lead_pc_mean)/lead_pc_std
         lead_eof = eigenvec[:,max_eigenval]
-
+ 
         max_lat = max(range(len(lat)), key = lambda x: lat[x])
         min_lat = min(range(len(lat)), key = lambda x: lat[x])
 
@@ -288,13 +289,13 @@ def zmnam_calc(indir,outdir,src_props):
     lev_var[:] = lev[:]
     #
     lat_var = file_out.createVariable('lat','d',('lat',))
-    lat_var.setncattr('long_name',lat_nam) #long_name = time_nam
+    #lat_var.setncattr('long_name',lat_nam) #long_name = time_nam
     lat_var.setncattr('units',lat_uni) #units     = time_uni
     lev_var.setncattr('axis',lat_axi) #axis      = time_axi
     lat_var[:] = lat[:]
     #
     lon_var = file_out.createVariable('lon','d',('lon',))
-    lon_var.setncattr('long_name',lon_nam) #long_name = time_nam
+    #lon_var.setncattr('long_name',lon_nam) #long_name = time_nam
     lon_var.setncattr('units',lon_uni) #units     = time_uni
     lon_var.setncattr('axis',lon_axi) #axis      = time_axi
     lon_var[:] = lon[:]

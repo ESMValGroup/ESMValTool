@@ -1,17 +1,14 @@
 # recipe zmnam.yml
 ---
-
 documentation:
   description: |
     Recipe for zonal mean Northern Annular Mode.
     The diagnostics compute the index and the spatial 
     pattern to assess the simulation of the 
     strat-trop coupling in the boreal hemisphere
+
   authors:
-    - fser_fe
     - hard_jo
-    - arno_en
-    - cagn_ch   
 
   references:
     - baldwin09
@@ -19,33 +16,31 @@ documentation:
   projects:
     - c3s-magic
 
-
-# FIXME datasets, in generl conform with other recipes...
-models:
-  - {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
+datasets:
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 2005, end_year: 2008}
     #- {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
 
 preprocessors:
   preproc:
     extract_levels: false
-    #regrid:  
-    #    target_grid: 2.5x2.5
-    #    scheme: linear
+    regrid:  
+      target_grid: 2.5x2.5
+      scheme: linear
 
 diagnostics:
   zmnam:
     description: Zonal mean Northern Annular Mode
     variables: 
-        zg:
-          preprocessor: preproc
-          field: T3D
+      zg:
+        preprocessor: preproc
+        field: T3D
     scripts: 
-        main: 
-          script: zmnam/zmnam.py                              
-          title: "Zonal mean NAM diagnostics"
+      main: 
+        script: zmnam/zmnam.py                              
+        title: "Zonal mean NAM diagnostics"
 
           ## Information required: 
           ##path_diag_aux: '/work/users/irene/EnsClusTOOL/ESMValTool/esmvaltool/diag_scripts/aux/EnsClus/'
           #path_diag_aux: '/work/users/serva/ESMValTool/esmvaltool/diag_scripts/zmnam/'
-          path_diag_aux: '/home/serva/work/ESMValTool.new.1/esmvaltool/diag_scripts/zmnam/' 
-          diag_script_info: True
+        path_diag_aux: '/home/serva/work/ESMValTool.new.1/esmvaltool/diag_scripts/zmnam/' 
+          # diag_script_info: True

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import netCDF4 as nc4
 import sys
 from scipy.stats import linregress
-from mpl_toolkits.basemap import Basemap, addcyclic
+#from mpl_toolkits.basemap import Basemap, addcyclic
 import matplotlib as mpl
 
 #plt.style.use('classic')
@@ -154,15 +154,19 @@ def zmnam_plot(datafolder,figfolder,src_props):
             """
             regr_levs = -1000 + np.arange(201)*10 
 
-            bkg_map = Basemap(projection='npstere', boundinglat=20, lon_0=0, \
-                        lat_0=90, resolution='c',round=True)
+            #bkg_map = Basemap(projection='npstere', boundinglat=20, lon_0=0, \
+            #            lat_0=90, resolution='c',round=True)
                   
   
             # add wrap-around point in longitude.
-            slopew, lonw = addcyclic(slope, lon)
+            #slopew, lonw = addcyclic(slope, lon)
+            slopew = slope
+            lonw = lon        
 
             lons, lats = np.meshgrid(lonw,lat)
-            x,y = bkg_map(lons,lats)
+            #x,y = bkg_map(lons,lats)
+            x = lons
+            y = lats 
 
             bkg_plot = plt.contourf(x,y,slopew,colors=('#cccccc','#ffffff'),levels=[-10000,0,10000],latlon=True)
 
@@ -175,8 +179,8 @@ def zmnam_plot(datafolder,figfolder,src_props):
             mpl.rcParams['contour.negative_linestyle'] = 'dashed'
             
             # coastlines and title
-            bkg_map.drawcoastlines(linewidth=0.5,zorder=10)
-            bkg_map.fillcontinents(color='None',lake_color='None')
+            #bkg_map.drawcoastlines(linewidth=0.5,zorder=10)
+            #bkg_map.fillcontinents(color='None',lake_color='None')
 
             # No border for the map
             plt.axis('off')

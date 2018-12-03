@@ -22,9 +22,10 @@ def zmnam_preproc(ifile,latbound):
     os.system('cdo sellonlatbox,0,360,'+str(latbound[0])+','+\
     str(latbound[1])+' tmp_gh_mo_an.nc tmp_gh_mo_an_hem.nc')
 
+    """   
     # Cleanup unnecessary files. Retain hemispheric only.
     os.system('rm tmp_full_da_nl.nc tmp_gh_da_nl_dm.nc tmp_gh_da_an.nc tmp_gh_da_an_zm.nc')
     os.system('rm tmp_gh_mo.nc tmp_gh_mo_mm.nc tmp_gh_mo_an.nc ')
-
+    """
 
 
