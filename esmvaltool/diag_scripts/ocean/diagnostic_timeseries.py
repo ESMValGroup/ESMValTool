@@ -395,7 +395,6 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',

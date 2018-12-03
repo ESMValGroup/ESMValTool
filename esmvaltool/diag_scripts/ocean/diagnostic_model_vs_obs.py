@@ -126,9 +126,9 @@ def make_model_vs_obs_plots(
 
     Parameters
     ----------
-     cfg: dict
+    cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-     metadata: dict
+    metadata: dict
         the input files dictionairy
     model_filename: str
         the preprocessed model file.
@@ -311,9 +311,9 @@ def make_scatter(
 
     Parameters
     ----------
-     cfg: dict
+    cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-     metadata: dict
+    metadata: dict
         the input files dictionairy
     model_filename: str
         the preprocessed model file.
