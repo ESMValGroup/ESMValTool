@@ -122,10 +122,6 @@ class TrackedFile(object):
         """Filename."""
         return self._filename
 
-    def __hash__(self):
-        """Return the hash value of the object."""
-        return hash(self.filename)
-
     def initialize_provenance(self, activity):
         """Initialize the provenance document."""
         if self.provenance is not None:
