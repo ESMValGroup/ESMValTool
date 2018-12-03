@@ -17,7 +17,7 @@ def test_pep8_conformance():
         'esmvaltool',
         'tests',
     ]
-    exclude_paths = ['esmvaltool/doc', 'esmvaltool/cvdp']
+    exclude_paths = ['esmvaltool/doc', 'esmvaltool/diag_scripts/cvdp/cvdp']
 
     print("PEP8 check of directories: {}\n".format(', '.join(check_paths)))
 
@@ -58,7 +58,7 @@ def test_nclcodestyle():
     ]
 
     exclude_paths = [
-        'esmvaltool/cvdp',
+        'esmvaltool/diag_scripts/cvdp/cvdp',
     ]
 
     print("Formatting check of NCL code in directories: {}\n".format(
@@ -92,19 +92,17 @@ def test_nclcodestyle():
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
-    package_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(__file__))
-    )
+    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
     try:
-        output = subprocess.check_output(
-            ('Rscript', checker, package_root), stderr=subprocess.STDOUT,
-            universal_newlines=True
-        )
+        output = subprocess.check_output(('Rscript', checker, package_root),
+                                         stderr=subprocess.STDOUT,
+                                         universal_newlines=True)
         print(output)
         return
     except subprocess.CalledProcessError as ex:
-        print(textwrap.dedent("""
+        print(
+            textwrap.dedent("""
             Your R code does not follow our formatting standards.
 
             Please fix the following issues:

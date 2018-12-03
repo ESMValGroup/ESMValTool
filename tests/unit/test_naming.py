@@ -57,7 +57,7 @@ class TestNaming(unittest.TestCase):
 
         This will help us to avoid bad merges with stale branches
         """
-        exclude_paths = ['esmvaltool/cvdp']
+        exclude_paths = ['esmvaltool/diag_scripts/cvdp/cvdp']
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             if '.git' in dirpath.split(os.sep):

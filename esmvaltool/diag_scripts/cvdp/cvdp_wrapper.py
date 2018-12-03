@@ -13,7 +13,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def setup_driver(cfg):
     """Write the driver.ncl file of the cvdp package."""
-    cvdp_root = os.path.join(os.path.dirname(__file__), '../../cvdp')
+    cvdp_root = os.path.join(os.path.dirname(__file__), 'cvdp')
     if not os.path.isdir(cvdp_root):
         raise DiagnosticError("CVDP is not available.")
 
