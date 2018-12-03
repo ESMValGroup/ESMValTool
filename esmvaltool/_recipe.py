@@ -436,7 +436,10 @@ def _get_default_settings(variable, config_user, derive=False):
         'metadata': variable,
     }
     if not derive:
-        settings['load_cubes']['constraints'] = variable['standard_name']
+        settings['load_cubes']['constraints'] = \
+            {'standard_name': variable['standard_name'],
+             'long_name': variable['long_name'],
+             'short_name': variable['short_name']}
     # Configure merge
     settings['concatenate'] = {}
 
