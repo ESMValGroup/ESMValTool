@@ -44,7 +44,7 @@ diagnostics:
         field: T2Ms
     scripts:
       main:
-        script: ensclus/main.py
+        script: ensclus/ensclus.py
         title: "Ensemble clustering diagnostic"
 
         ## Information required:

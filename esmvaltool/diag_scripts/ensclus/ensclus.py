@@ -13,9 +13,7 @@
 ;;
 ;;#############################################################################
 """
-
 # Basic Python packages
-#import imp
 
 import yaml
 import sys
@@ -27,8 +25,12 @@ import matplotlib.pyplot as plt
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
+
 import os
 import logging
+from esmvaltool.diag_scripts.shared import (
+    plot, run_diagnostic, save_iris_cube, variables_available,
+    extract_variables)
 
 logger = logging.getLogger(__name__)
 
@@ -95,11 +97,6 @@ def main():
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')
 
-
 if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
-    logging.basicConfig(
-        format="%(asctime)s [%(process)d] %(levelname)-8s "
-               "%(name)s,%(lineno)s\t%(message)s"
-    )
-    main()
+    with run_diagnostic() as config:
+        main(config)
