@@ -28,9 +28,9 @@ models:
 preprocessors:
   preproc:
     extract_levels: false
-    regrid:  
-        target_grid: 2.5x2.5
-        scheme: linear
+    #regrid:  
+    #    target_grid: 2.5x2.5
+    #    scheme: linear
 
 diagnostics:
   zmnam:
