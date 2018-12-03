@@ -64,7 +64,6 @@ def main(cfg):
     out_dir=cfg['work_dir']
     write_plots=cfg['write_plots']
 
-    sys.path.append(cfg['path_diag_aux'])
     # Import full diagnostic routines
     from ens_anom import ens_anom
     from ens_eof_kmeans import ens_eof_kmeans
