@@ -1,5 +1,6 @@
 """Derivation of variable `sispeed`."""
 
+import numpy as np
 from iris import Constraint
 import iris.cube
 from iris.coords import DimCoord
@@ -35,9 +36,15 @@ class DerivedVariable(DerivedVariableBase):
 
         """
         siu = cubes.extract_strict(Constraint(name='sea_ice_x_velocity'))
+        siu.remove_coord('year')
+        siu.remove_coord('day_of_year')
+
         siv = cubes.extract_strict(Constraint(name='sea_ice_y_velocity'))
         siv.remove_coord('latitude')
         siv.remove_coord('longitude')
+        siv.remove_coord('year')
+        siv.remove_coord('day_of_year')
+
         if isinstance(siu.coord('latitude'), DimCoord):
             siv.add_dim_coord(
                 siu.coord('latitude'), siu.coord_dims('latitude')
@@ -52,21 +59,25 @@ class DerivedVariable(DerivedVariableBase):
             siv.add_aux_coord(
                 siu.coord('longitude'), siu.coord_dims('longitude')
             )
+
         speed = iris.cube.CubeList()
-        siu = siu.slices_over('time')
-        for siu_time in siu:
-            siv_time = siv.extract(
-                Constraint(time=siu_time.coord('time').points[0])
-            )
-            speed_time = ((siu_time ** 2 + siu_time ** 2) ** 0.5)
-            speed.append(speed_time)
-            del siu_time
+        for time in siu.coord('time').points:
+            # Casting to float64 to avoid overflow errors
+            siu_slice = siu.extract(Constraint(time=time))
+            siu_slice.data = siu_slice.data.astype(np.float64)
+            siv_slice = siu.extract(Constraint(time=time))
+            siv_slice.data = siv_slice.data.astype(np.float64)
+            speed_slice = (siu_slice ** 2 + siv_slice ** 2) ** 0.5
+            del siu_slice
+            del siv_slice
+            # 64 bit precission no longer needed, cast to 32 to save memory
+            speed_slice.data = speed_slice.data.astype(np.float32)
+            speed.append(speed_slice)
+        del siu
         del siv
 
         speed = speed.merge_cube()
         speed.short_name = 'sispeed'
         speed.standard_name = 'sea_ice_speed'
         speed.long_name = 'Sea-ice speed'
-        speed.convert_units('km day-1')
-
         return speed

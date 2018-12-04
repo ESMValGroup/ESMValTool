@@ -1,8 +1,8 @@
 ---
 
 datasets:
- - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1995}
- - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1999}
+ - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1980}
+ - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 1980}
 #  - {dataset: EC-EARTH,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 preprocessors:
@@ -48,3 +48,23 @@ diagnostics:
         script: seaice_drift/seaice_drift.py
         title: "Python example diagnostic"
         latitude_treshold: 50
+      sea_ice_drift_SCICEX:
+        script: seaice_drift/seaice_drift.py
+        title: "Python example diagnostic"
+        # lon, lat tuples
+        polygon:
+          - [-15., 87.]
+          - [-60., 86.58]
+          - [-130., 80]
+          - [-141., 80]
+          - [-141., 70]
+          - [-155., 72]
+          - [175., 75.5]
+          - [172., 78.5]
+          - [163, 80.5]
+          - [126, 78.5]
+          - [110, 84.33]
+          - [80, 84.42]
+          - [57, 85.17]
+          - [33, 83.8]
+          - [8, 84.08]

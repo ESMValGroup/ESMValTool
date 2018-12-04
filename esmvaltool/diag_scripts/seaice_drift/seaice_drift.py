@@ -13,6 +13,11 @@ import iris
 import iris.cube
 import iris.analysis
 import iris.coords
+from iris.aux_factory import AuxCoordFactory
+import pyproj
+from shapely.geometry import Polygon, Point
+from shapely.ops import transform
+from functools import partial
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -31,7 +36,7 @@ class SeaIceDrift(object):
         self.siconc = {}
         self.sivol = {}
         self.sispeed = {}
-        self.lat_mask = {}
+        self.region_mask = {}
 
         self.slope_drift_siconc = {}
         self.intercept_drift_siconc = {}
@@ -85,6 +90,7 @@ class SeaIceDrift(object):
             )
             alias = self._get_alias(filename, reference_dataset)
             sispeed = self._load_cube(filename, 'sea_ice_speed')
+            sispeed.convert_units('km day-1')
             self.sispeed[alias] = self._compute_mean(
                 sispeed, self._get_mask(sispeed, filename)
             )
@@ -104,13 +110,23 @@ class SeaIceDrift(object):
         )
 
     def _get_mask(self, data,filename):
-        lat_threshold = self.cfg['latitude_treshold']
-        mask = data.coord('latitude').points > lat_threshold
-        mask = mask.astype(np.int8)
+        if 'latitude_treshold' in self.cfg:
+            lat_threshold = self.cfg['latitude_treshold']
+            mask = data.coord('latitude').points > lat_threshold
+            mask = mask.astype(np.int8)
+        else:
+            polygon = self.cfg['polygon']
+            factory = InsidePolygonFactory(
+                polygon,
+                cube.coord('latitude'),
+                cube.coord('longitude'),
+            )
+            data.add_aux_factory(factory)
+            mask = data.coord('inpoly').points
+            mask = mask.astype(np.int8)
         dataset_info = self.datasets.get_dataset_info(filename)
         area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
         return area_cello.data * mask
-
     def _load_cube(self, filepath, standard_name):
         cube = iris.load_cube(filepath, standard_name)
         cube.remove_coord('day_of_month')
@@ -187,50 +203,8 @@ class SeaIceDrift(object):
         domain_mean = domain_mean.merge_cube()
         return domain_mean.aggregated_by('month_number', iris.analysis.MEAN)
 
-# def main():
-#     cfg = get_cfg()
-#     logger.setLevel(cfg['log_level'].upper())
-#
-#     input_files = get_input_files(cfg)
-#
-#     for variable_name, filenames in input_files.items():
-#         logger.info("Processing variable %s", variable_name)
-#         for filename, attributes in filenames.items():
-#             plot_filename = os.path.join(
-#                 cfg['plot_dir'],
-#                 os.path.splitext(os.path.basename(filename))[0] + '.png',
-#             )
-#             cube = iris.load_cube(filename)
-#             cube = cube.collapsed('time', iris.analysis.MEAN)
-#
-#
-# SCICEX = 'scicex'
-# LAT = 'lat'
-# RAW = 'raw'
-#
-# DOMAINS = (SCICEX, LAT)
-#
-#
-#
-# class SeaIceDrift(object):
-#
-#     def compute(self):
-#         self.load_models()
-#         self.load_observations()
-#         self.compute_monthly_mean_over_domain()
-#         self.compute_multi_year_monthly_mean()
-#         self.compute_metrics()
-#         self.results()
-#         self.save()
-#         self.plot_results()
-#
-#
-#     def load_observations(self):
-#         logger.info('Load observations')
-#         self._load_piomas()
-#         self._load_IABP_bouys()
-#         self._load_osisaf_sic()
-#
+
+
 #     def _load_IABP_bouys(self):
 #         logger.info('Sea ice drift (IABP buoys)')
 #         if not self.recalculate and os.path.isfile(self.drift_IABP_file):
@@ -815,7 +789,9 @@ class SeaIceDrift(object):
             ))
 
     def plot_results(self):
-        logger.info('Plot results')
+        if not self.cfg[n.WRITE_PLOTS]:
+            return
+        logger.info('Plotting results')
         for model in self.siconc.keys():
             if model == 'reference':
                 continue
@@ -826,17 +802,14 @@ class SeaIceDrift(object):
         fig, ax = plt.subplots(1, 2, figsize=(18, 6))
         self._plot_drift_siconc(ax[0], dataset)
         self._plot_drift_sivol(ax[1], dataset)
-
-        # Save figure
-        if True:
-            base_path = os.path.join(self.cfg[n.PLOT_DIR], dataset)
-            if not os.path.isdir(base_path):
-                os.makedirs(base_path)
-            fig.savefig(os.path.join(
-                base_path,
-                'Drift-Strength.{0}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-                )
+        base_path = os.path.join(self.cfg[n.PLOT_DIR], dataset)
+        if not os.path.isdir(base_path):
+            os.makedirs(base_path)
+        fig.savefig(os.path.join(
+            base_path,
+            'drift-strength.{0}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
             )
+        )
 
     def _plot_drift_sivol(self, ax, dataset):
 
@@ -856,7 +829,7 @@ class SeaIceDrift(object):
 
         ax.plot([sivol[-1], sivol[0]], [drift[-1], drift[0]], 'r-',
                 linewidth=2)
-        ax.plot(sivol, drift, 'ro-', label='NEMO-LIM3.6', linewidth=2)
+        ax.plot(sivol, drift, 'ro-', label=dataset, linewidth=2)
         ax.plot(sivol, slope_sivol * sivol + intercept_sivol, 'r:',
                 linewidth=2)
 
@@ -879,7 +852,7 @@ class SeaIceDrift(object):
         self._annotate_points(ax, sivol, drift)
         self._annotate_points(ax, sivol_obs, drift_obs)
         ax.grid()
-        ax.set_title('Seasonal cycle 1979-2013 {0}'.format(dataset),
+        ax.set_title('Seasonal cycle {0}'.format(dataset),
                      fontsize=18)
 
     def _plot_drift_siconc(self, ax, dataset):
@@ -917,7 +890,7 @@ class SeaIceDrift(object):
         self._annotate_points(ax, siconc, drift)
         self._annotate_points(ax, siconc_obs, drift_obs)
         ax.grid(linewidth=0.01)
-        ax.set_title('Seasonal cycle 1979-2013 {0}'.format(dataset),
+        ax.set_title('Seasonal cycle {0}'.format(dataset),
                      fontsize=18)
 
     def _annotate_points(self, ax, xvalues, yvalues):
@@ -931,144 +904,89 @@ class SeaIceDrift(object):
         high = max(max(sivol), max(sivol_obs)) + 0.4
         high = 0.5 * math.ceil(2.0 * high)
         return high, low
-#
-#
-# class Model(object):
-#     SICONC = 'siconc'
-#     SIVOL = 'sivol'
-#     DRIFT = 'drift'
-#
-#     def __init__(self, name, path_to_data, mesh_file):
-#         self._slope_drift_sivol = None
-#         self._slope_drift_siconc = None
-#         self.name = name
-#         self.path = path_to_data
-#         self.mesh_file = mesh_file
-#         self._scratch_dir = None
-#         self.start_year = None
-#         self.end_year = None
-#
-#         self._data = {Model.SICONC: {}, Model.SIVOL: {}, Model.DRIFT: {}}
-#
-#         self._slope_drift_sivol = {}
-#         self._slope_drift_siconc = {}
-#         self._intercept_drift_siconc = {}
-#         self._intercept_drift_sivol = {}
-#
-#         self._slope_ratio_drift_sivol = {}
-#         self._slope_ratio_drift_siconc = {}
-#         self._error_drift_sivol = {}
-#         self._error_drift_siconc = {}
-#     @property
-#     def scratch_dir(self):
-#         return self._scratch_dir
-#
-
-#
-#     @property
-#     def scratch_dir(self):
-#         return self._scratch_dir
-#
-#     @scratch_dir.setter
-#     def scratch_dir(self, value):
-#         self._scratch_dir = value
-#         if self._scratch_dir and \
-#             not os.path.isdir(os.path.join(self.scratch_dir, self.name)):
-#             os.mkdir(os.path.join(self.scratch_dir, self.name))
-#
-#     @property
-#     def siconc(self):
-#         return self._data[Model.SICONC]
-#
-#     @property
-#     def sivol(self):
-#         return self._data[Model.SIVOL]
-#
-#     @property
-#     def drift(self):
-#         return self._data[Model.DRIFT]
-#
-#     @property
-#     def slope_drift_siconc(self):
-#         return self._slope_drift_siconc
-#
-#     @property
-#     def slope_drift_sivol(self):
-#         return self._slope_drift_sivol
-#
-#     @property
-#     def intercept_drift_siconc(self):
-#         return self._intercept_drift_siconc
-#
-#     @property
-#     def intercept_drift_sivol(self):
-#         return self._intercept_drift_sivol
-#
-#     @property
-#     def slope_ratio_drift_siconc(self):
-#         return self._slope_ratio_drift_siconc
-#
-#     @property
-#     def slope_ratio_drift_sivol(self):
-#         return self._slope_ratio_drift_sivol
-#
-#     @property
-#     def error_drift_siconc(self):
-#         return self._error_drift_siconc
-#
-#     @property
-#     def error_drift_sivol(self):
-#         return self._error_drift_sivol
-#
-#     @property
-#     def drift_file(self):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'drift_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self))
-#
-#     @property
-#     def siconc_file(self):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'siconc_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self))
-#
-#     @property
-#     def sivol_file(self):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'sivol_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self))
-#
-#
-#     def drift_clim_file(self, domain):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'drift_clim_{1}_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self, domain))
-#
-#     def siconc_clim_file(self, domain):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'siconc_clim_{1}_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self, domain))
-#
-#     def sivol_clim_file(self, domain):
-#         return os.path.join(self.scratch_dir, self.name,
-#                             'sivol_clim_{1}_{0.start_year}-{0.end_year}'
-#                             '.nc'.format(self, domain))
-#
-#
-# if __name__ == '__main__':
-#     nemo = Model('NEMO',
-#                  '/group_workspaces/jasmin2/primavera1/WP2/OCE/'
-#                  'NEMO-LIM3-6/HIST_ORCA1/',
-#                  'ORCA1_mesh_mask.nc')
-#     start_time = datetime.datetime.now()
-#     SeaIceDrift(1979, 2013, (nemo,)).compute()
-#     print ('Ellapsed time: {0}'.format(datetime.datetime.now() - start_time))
 
 
-def main():
-    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
-        SeaIceDrift(config).compute()
+class InsidePolygonFactory(AuxCoordFactory):
+    """Defines a coordinate """
+    def __init__(self, polygon=None, lat=None, lon=None):
+        """
+        Args:
+        * polygon: List
+            List of (lon, lat) tuples defining the polygon
+        * lat: Coord
+            The coordinate providing the latitudes.
+        * lon: Coord
+            The coordinate providing the longitudes.
+        """
+        super(InsidePolygonFactory, self).__init__()
+
+        self._project = partial(
+            pyproj.transform,
+            pyproj.Proj(init='epsg:4326'),
+            pyproj.Proj(
+                '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0'
+                '+lon_0=0.0 +x_0=0.0'
+                ' +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs'
+            )
+        )
+
+        self.polygon = transform(self._project, Polygon(polygon))
+        self.lat = lat
+        self.lon = lon
+
+        self.long_name = 'Inside polygon'
+        self.var_name = 'inpoly'
+        self.units = '1.0'
+
+    @property
+    def dependencies(self):
+        """
+        Returns a dictionary mapping from constructor argument names to
+        the corresponding coordinates.
+        """
+        return {'lat': self.lat, 'lon': self.lon}
+
+    def _derive(self, lat, lon):
+        print(lat)
+        print(lon)
+
+        point = transform(self._project, Point(lat, lon))
+        return self.polygon.contains(point)
+
+    def make_coord(self, coord_dims_func):
+        """
+        Returns a new :class:`iris.coords.AuxCoord` as defined by this
+        factory.
+        Args:
+        * coord_dims_func:
+            A callable which can return the list of dimensions relevant
+            to a given coordinate.
+            See :meth:`iris.cube.Cube.coord_dims()`.
+        """
+        # Which dimensions are relevant?
+        derived_dims = self.derived_dims(coord_dims_func)
+        dependency_dims = self._dependency_dims(coord_dims_func)
+
+        # Build the points array.
+        nd_points_by_key = self._remap(dependency_dims, derived_dims)
+        points = self._derive(nd_points_by_key['lat'],
+                              nd_points_by_key['lon'],)
+
+        bounds = None
+
+        in_polygon = iris.coords.AuxCoord(
+            points,
+            standard_name=self.standard_name,
+            long_name=self.long_name,
+            var_name=self.var_name,
+            units=self.units,
+            bounds=None,
+            attributes=self.attributes,
+            coord_system=self.coord_system
+        )
+        return in_polygon
 
 
 if __name__ == '__main__':
-    main()
+    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
+        SeaIceDrift(config).compute()
