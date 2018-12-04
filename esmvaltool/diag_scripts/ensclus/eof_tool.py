@@ -4,7 +4,6 @@ import pickle
 import datetime
 from eofs.standard import Eof
 import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
 import cartopy.crs as ccrs
 
 from matplotlib.cbook import MatplotlibDeprecationWarning

@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 # from mpl_toolkits.basemap import Basemap
 import math
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 
 
 def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
