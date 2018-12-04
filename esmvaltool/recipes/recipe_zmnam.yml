@@ -22,7 +22,7 @@ datasets:
 
 preprocessors:
   preproc:
-    extract_levels: false
+    extract_levels: false # list of levels in Pa
     regrid:  
       target_grid: 3x3 
       scheme: linear

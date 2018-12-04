@@ -29,7 +29,6 @@ from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
-
 logger = logging.getLogger(__name__)
 
 import warnings
@@ -69,10 +68,13 @@ def main(cfg):
 
     #input_cmor = get_input_cmor_table(cfg)
     #print(input_cmor)
-    #stop 
+    #stop
 
-    plot_dir=cfg['plot_dir']
-    out_dir=cfg['work_dir']
+    plot_dir = cfg['plot_dir']
+    out_dir = cfg['work_dir']
+    bool_plot = cfg['write_plots']
+    print(bool_plot)
+    stop
 
     # Import full diagnostic routines
     sys.path.append(cfg['path_diag_aux'])
@@ -84,14 +86,14 @@ def main(cfg):
     sim_list = []
     ref_list = []
 
+    """
     for key, value in input_files.items():
-        print('*****') 
+        print('*****')
         print(key)
         print('****')
         print(value)
         print('****')
         stop
-
 
     for vals in list(input_files.values()):
         print('**********************')
@@ -99,17 +101,14 @@ def main(cfg):
         print(vals['dataset'])
         print('**********************')
         stop
-
-    """
     {'cmor_table': 'CMIP5', 'dataset': 'MPI-ESM-MR', 'diagnostic': 'zmnam', 'end_year': 2008, 'ensemble': 'r1i1p1', 'exp': 'amip', 'field': 'T3D', 'filename': '/work/users/serva/esmvaltool_output/recipe_zmnam_20181204_172105/preproc/zmnam_preproc_zg/CMIP5_MPI-ESM-MR_day_amip_r1i1p1_T3D_zg_2005-2008.nc', 'frequency': 'day', 'institute': ['MPI-M'], 'long_name': 'Geopotential Height', 'mip': 'day', 'modeling_realm': ['atmos'], 'preprocessor': 'preproc', 'project': 'CMIP5', 'short_name': 'zg', 'standard_name': 'geopotential_height', 'start_year': 2005, 'units': 'm'}
     """
 
-
     filenames_cat = []
-    for filenames in list(input_files.keys()): 
+    for filenames in list(input_files.keys()):
         #logger.info("Processing variable %s", variable_name)
-        #filenames=list(filenames) 
-        #sys.exit() 
+        #filenames=list(filenames)
+        #sys.exit()
         #filenames_cat=[]
         filenames_cat.append(filenames)
         """  
@@ -127,36 +126,36 @@ def main(cfg):
         # List of model simulations
 
         # List of reference datasets (if any)
-       
 
-    #print(filenames_cat)
-    #if 1 == 0:
+        #print(filenames_cat)
+        #if 1 == 0:
 
         for ifile in filenames_cat:
 
             # Get 6 model properties: stream, name, exp, ensemble member, period
-            ifile_props = ifile.rsplit('/',1)[1].rsplit('_',7) 
-            cmor_table = ifile_props[0] # project!!!
+            ifile_props = ifile.rsplit('/', 1)[1].rsplit('_', 7)
+            cmor_table = ifile_props[0]  # project!!!
             dataset = ifile_props[1]
             exp = ifile_props[3]
             ensemble = ifile_props[4]
-            period = ifile_props[7].replace('.nc','')
+            period = ifile_props[7].replace('.nc', '')
             """
             ifile_props = [ifile_props[0],ifile_props[1],\
                           ifile_props[3],ifile_props[4],\
                           ifile_props[7].replace('.nc','')]
-            """ 
-            ifile_props = [cmor_table,dataset,exp,ensemble,period]
+            """
+            ifile_props = [cmor_table, dataset, exp, ensemble, period]
 
-            # Diagnostics calculation. Input parameters for 
+            # Diagnostics calculation. Input parameters for
             # files and plots naming
-            zmnam_preproc(ifile,[20,90]) # area selection should be removed
-            zmnam_calc(out_dir+'/',out_dir+'/',ifile_props) 
-            zmnam_plot(out_dir+'/',plot_dir+'/',ifile_props)   
-            
-            # len(OBS)>0 and len(mod)>0 do the difference, 
+            zmnam_preproc(ifile, [20, 90])  # area selection should be removed
+            zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
+            zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props)
+
+            # len(OBS)>0 and len(mod)>0 do the difference,
             # all-mod (interpolated) minus OBS
             #zmnam_diff()
+
 
 """
 if __name__ == '__main__':
@@ -172,7 +171,6 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
 """
 if __name__ == '__main__':
     iris.FUTURE.netcdf_promote = True
@@ -183,4 +181,3 @@ if __name__ == '__main__':
     main()
 
 """
-
