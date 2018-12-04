@@ -36,12 +36,15 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
+
+# Note: this can be removed
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
     settings_file = sys.argv[1]
     with open(settings_file) as file:
         cfg = yaml.safe_load(file)
     return cfg
+
 
 def get_input_files(cfg, index=0):
     """Get a dictionary with input files from metadata.yml files."""
@@ -51,15 +54,11 @@ def get_input_files(cfg, index=0):
     return metadata
 
 
-
-
-#def main():
 def main(cfg):
 
-    print('**********************')
-    print('before main')
-    print('**********************')
-    
+    #print(cfg.keys())
+    #print (cfg)
+
     #cfg = get_cfg()
 
     logger.setLevel(cfg['log_level'].upper())
@@ -68,21 +67,26 @@ def main(cfg):
     #os.makedirs(cfg['plot_dir'])
     #os.makedirs(cfg['work_dir'])
 
+    #input_cmor = get_input_cmor_table(cfg)
+    #print(input_cmor)
+    #stop 
+
     plot_dir=cfg['plot_dir']
     out_dir=cfg['work_dir']
 
-    sys.path.append(cfg['path_diag_aux'])
     # Import full diagnostic routines
+    sys.path.append(cfg['path_diag_aux'])
     from zmnam_calc import zmnam_calc
     from zmnam_plot import zmnam_plot
     from zmnam_preproc import zmnam_preproc
 
-    #for variable_name, filenames in input_files.items():
-    #for filenames,variable_name in input_files.items():
+    # List of files to be compared as last step
+    sim_list = []
+    ref_list = []
+
     filenames_cat = []
     for filenames in list(input_files.keys()): 
         #logger.info("Processing variable %s", variable_name)
-        print(filenames) #
         #filenames=list(filenames) 
         #sys.exit() 
         #filenames_cat=[]
@@ -99,22 +103,39 @@ def main(cfg):
         """
         os.chdir(out_dir)
 
+        # List of model simulations
+
+        # List of reference datasets (if any)
+       
+
     #print(filenames_cat)
     #if 1 == 0:
 
         for ifile in filenames_cat:
-             
-            # Get model properties (stream, name, exp, ensemble member, period)
+
+            # Get 6 model properties: stream, name, exp, ensemble member, period
             ifile_props = ifile.rsplit('/',1)[1].rsplit('_',7) 
+            cmor_table = ifile_props[0]
+            dataset = ifile_props[1]
+            exp = ifile_props[3]
+            ensemble = ifile_props[4]
+            period = ifile_props[7].replace('.nc','')
+            """
             ifile_props = [ifile_props[0],ifile_props[1],\
                           ifile_props[3],ifile_props[4],\
                           ifile_props[7].replace('.nc','')]
+            """ 
+            ifile_props = [cmor_table,dataset,exp,ensemble,period]
 
             # Diagnostics calculation. Input parameters for 
             # files and plots naming
-            zmnam_preproc(ifile,[20,90])
+            zmnam_preproc(ifile,[20,90]) # area selection should be removed
             zmnam_calc(out_dir+'/',out_dir+'/',ifile_props) 
             zmnam_plot(out_dir+'/',plot_dir+'/',ifile_props)   
+            
+            # len(OBS)>0 and len(mod)>0 do the difference, 
+            # all-mod (interpolated) minus OBS
+            #zmnam_diff()
 
 """
 if __name__ == '__main__':

@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import netCDF4 as nc4
 import sys
 from scipy.stats import linregress
-#from mpl_toolkits.basemap import Basemap, addcyclic
 import matplotlib as mpl
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from cartopy.util import add_cyclic_point
+
 
 #plt.style.use('classic')
 
@@ -13,7 +16,6 @@ def zmnam_plot(datafolder,figfolder,src_props):
     fig_fmt = 'pdf'
 
     print('plot: ',src_props)
-    # TODO use src props for naming plots
 
     figs_path = figfolder
     fig_num = 1
@@ -95,6 +97,8 @@ def zmnam_plot(datafolder,figfolder,src_props):
             # Plot monthly PCs
             plt.figure()
             plt.plot(time_mo,pc_mo[:,i_lev])
+
+            # Make only a few ticks
             plt.xticks(time_mo[0:len(time_mo)+1:60],date_list[0:len(time_mo)+1:60])
             plt.title(str(int(lev[i_lev]/lev_fac))+' hPa  '+\
             src_props[1]+' '+src_props[2])
@@ -159,34 +163,65 @@ def zmnam_plot(datafolder,figfolder,src_props):
             #bkg_map = Basemap(projection='npstere', boundinglat=20, lon_0=0, \
             #            lat_0=90, resolution='c',round=True)
                   
-  
+
+            # create the projections
+            ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
+            geo = ccrs.Geodetic()
+
+            # create the geoaxes for an orthographic projection
+            ax = plt.axes(projection=ortho)
+
+            slopew, lonw = add_cyclic_point(slope, lon)
+
+
             # add wrap-around point in longitude.
             #slopew, lonw = addcyclic(slope, lon)
-            slopew = slope
-            lonw = lon        
+            #slopew = slope
+            #lonw = lon        
 
             lons, lats = np.meshgrid(lonw,lat)
             #x,y = bkg_map(lons,lats)
             x = lons
             y = lats 
 
-            bkg_plot = plt.contourf(x,y,slopew,colors=('#cccccc','#ffffff'),levels=[-10000,0,10000],latlon=True)
+            #bkg_plot = plt.contourf(x,y,slopew,colors=('#cccccc','#ffffff'),\
+            #levels=[-10000,0,10000],latlon=True)
+
+            bkg_plot = plt.contourf(lonw,lat,slopew,colors=('#cccccc','#ffffff'),\
+            levels=[-10000,0,10000],transform=ccrs.PlateCarree())
+
 
             # Switch temporarily to solid negative lines
             mpl.rcParams['contour.negative_linestyle'] = 'solid'
             #regr_map = bkg_map.contour(x,y,slopew,levels=regr_levs,colors='k')#,latlon=True)
-            regr_map = plt.contour(x,y,slopew,levels=regr_levs,colors='k',latlon=True,zorder=10)
+            #regr_map = plt.contour(x,y,slopew,levels=regr_levs,colors='k',latlon=True,zorder=10)
+            regr_map = plt.contour(lonw,lat,slopew,levels=regr_levs,\
+            colors='k',transform=ccrs.PlateCarree(),zorder=5)
             #plt.clabel(regr_map,regr_levs[1::2],fontsize=8,fmt='%1.0f') 
-            plt.clabel(regr_map,fontsize=8,fmt='%1.0f') 
+
+            # Invisible contours, only for labels. 
+            # Workaround for cartopy issue.
+            inv_map = plt.contour(lonw,lat,slopew,levels=regr_levs,\
+            colors='k',transform=ccrs.PlateCarree(),zorder=10)
+
+            #plt.clabel(regr_map,fontsize=8,fmt='%1.0f')#,transform=ccrs.PlateCarree()) 
             mpl.rcParams['contour.negative_linestyle'] = 'dashed'
             
+            for c in inv_map.collections:
+                c.set_visible(False)
+
+            plt.clabel(inv_map,fontsize=8,fmt='%1.0f',zorder=15)
+
             # coastlines and title
             #bkg_map.drawcoastlines(linewidth=0.5,zorder=10)
             #bkg_map.fillcontinents(color='None',lake_color='None')
 
             # No border for the map
-            plt.axis('off')
-            
+            #plt.axis('off')
+            ax.add_feature(cfeature.COASTLINE)
+            ax.set_global()
+
+           
             # Write current level - trouble above 100 Pa ...
             plt.text(0.20, 0.80, str(int(lev[i_lev]/lev_fac))+ ' hPa', \
             fontsize=12, transform=plt.gcf().transFigure)
@@ -197,6 +232,11 @@ def zmnam_plot(datafolder,figfolder,src_props):
             #plt.savefig(figfolder+'test'+str(int(lev[i_lev]/lev_fac))+'.png',format='png')
             plt.savefig(figfolder+'_'.join(src_props)+'_'+\
             str(int(lev[i_lev]/lev_fac))+'hPa_mo_reg.'+fig_fmt,format=fig_fmt)
+        
+
+            # TODO Save regression in netCDF for further postprocessing
+            # with file name etc
+        
         else: continue
 
     return 
