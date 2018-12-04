@@ -26,12 +26,10 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
