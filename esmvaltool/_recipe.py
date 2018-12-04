@@ -261,6 +261,7 @@ def _update_cmor_table(table, mip, short_name):
         raise RecipeError(
             "Unable to load CMOR table '{}' for variable '{}' with mip '{}'"
             .format(table, short_name, mip))
+    return var_info
 
 
 def _add_cmor_info(variable, override=False):
@@ -280,6 +281,10 @@ def _add_cmor_info(variable, override=False):
     ]
     table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
         variable['mip'], variable['short_name'])
+    if table_entry is None:
+        table_entry = _update_cmor_table(table=variable['cmor_table'],
+                                         mip=variable['mip'],
+                                         short_name=variable['short_name'])
 
     for key in cmor_keys:
         if key not in variable or override:
