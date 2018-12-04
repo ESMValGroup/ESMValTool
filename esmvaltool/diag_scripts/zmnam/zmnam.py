@@ -84,6 +84,27 @@ def main(cfg):
     sim_list = []
     ref_list = []
 
+    for key, value in input_files.items():
+        print('*****') 
+        print(key)
+        print('****')
+        print(value)
+        print('****')
+        stop
+
+
+    for vals in list(input_files.values()):
+        print('**********************')
+        print(vals)
+        print(vals['dataset'])
+        print('**********************')
+        stop
+
+    """
+    {'cmor_table': 'CMIP5', 'dataset': 'MPI-ESM-MR', 'diagnostic': 'zmnam', 'end_year': 2008, 'ensemble': 'r1i1p1', 'exp': 'amip', 'field': 'T3D', 'filename': '/work/users/serva/esmvaltool_output/recipe_zmnam_20181204_172105/preproc/zmnam_preproc_zg/CMIP5_MPI-ESM-MR_day_amip_r1i1p1_T3D_zg_2005-2008.nc', 'frequency': 'day', 'institute': ['MPI-M'], 'long_name': 'Geopotential Height', 'mip': 'day', 'modeling_realm': ['atmos'], 'preprocessor': 'preproc', 'project': 'CMIP5', 'short_name': 'zg', 'standard_name': 'geopotential_height', 'start_year': 2005, 'units': 'm'}
+    """
+
+
     filenames_cat = []
     for filenames in list(input_files.keys()): 
         #logger.info("Processing variable %s", variable_name)
@@ -115,7 +136,7 @@ def main(cfg):
 
             # Get 6 model properties: stream, name, exp, ensemble member, period
             ifile_props = ifile.rsplit('/',1)[1].rsplit('_',7) 
-            cmor_table = ifile_props[0]
+            cmor_table = ifile_props[0] # project!!!
             dataset = ifile_props[1]
             exp = ifile_props[3]
             ensemble = ifile_props[4]
