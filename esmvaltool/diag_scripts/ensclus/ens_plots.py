@@ -76,18 +76,18 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
         # print('//////////ENSEMBLE MEMBER {0}'.format(nens))
-        ax=plt.subplot(x, y, nens+1, projection=ccrs.PlateCarree())
+        ax = plt.subplot(x, y, nens+1, projection=ccrs.PlateCarree())
         ax.coastlines("110m")
         # ax.set_extent([-10, 60, -30,90],ccrs.PlateCarree())
 
         # Plot Data
         if field_to_plot == 'anomalies':
             map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
-                                  cmap=plt.cm.RdBu_r,
-                                  transform=proj)
+                                    cmap=plt.cm.RdBu_r,
+                                    transform=proj)
         else:
             map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
-                                  transform=proj)
+                                    transform=proj)
         # print('min={0}'.format(vartoplot[nens].min()))
         # print('max={0}\n'.format(vartoplot[nens].max()))
 
@@ -102,7 +102,7 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     cb = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cb.ax.tick_params(labelsize=18)
 
-    plt.suptitle(exp+' '+kind+' '+varname+' '+tit+' ('+varunits+')', 
+    plt.suptitle(exp+' '+kind+' '+varname+' '+tit+' ('+varunits+')',
                  fontsize=45, fontweight='bold')
 
     plt.subplots_adjust(top=0.85)

@@ -71,7 +71,7 @@ def main(cfg):
     from ens_plots import ens_plots
 
     filenames_cat = []
-    numens=len(input_files.keys())
+    numens = len(input_files.keys())
     for element in input_files.values():
         logger.info("Processing file %s", element['filename'])
         filenames_cat.append(element['filename'])
@@ -98,7 +98,7 @@ def main(cfg):
     # ____________run ens_plots as a module
     if write_plots:
         ens_plots(out_dir, cfg['plot_dir'], name_outputs, cfg['numclus'],
-                  'anomalies') # cfg['file_to_plot']
+                  'anomalies')  # cfg['file_to_plot']
 
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')
