@@ -68,6 +68,7 @@ def zmnam_calc(indir,outdir,src_props):
     zg_da    = np.squeeze(np.array(in_file.variables['zg'][:], dtype='d'))
     #zg_da = np.array(in_file.variables['zg'][:], dtype='d')
     #    zg_da = np.array(in_file.variables['zg'][:])
+    #print(np.shape(zg_da))
     print('closing file')
     #    zg_da = np.squeeze(zg_da)
     in_file.close()
@@ -178,6 +179,9 @@ def zmnam_calc(indir,outdir,src_props):
 
         lead_pc_mo = np.zeros(len(date[mid_mon]),dtype='d')
         time_mo = np.zeros(len(date[mid_mon]),dtype='d')
+ 
+        print(lead_pc)   
+        #stop 
 
         for k_mo in range(len(date[mid_mon])):
             lead_pc_mo[k_mo] = np.mean(lead_pc[sta_mon[k_mo]:end_mon[k_mo]+1])

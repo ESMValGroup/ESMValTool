@@ -24,8 +24,14 @@ preprocessors:
   preproc:
     extract_levels: false
     regrid:  
-      target_grid: 2.5x2.5
+      target_grid: 3x3 
       scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 20.
+      end_latitude: 90.
+
 
 diagnostics:
   zmnam:

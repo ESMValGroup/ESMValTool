@@ -10,6 +10,8 @@ import matplotlib as mpl
 
 def zmnam_plot(datafolder,figfolder,src_props):
 
+    fig_fmt = 'pdf'
+
     print('plot: ',src_props)
     # TODO use src props for naming plots
 
@@ -99,7 +101,7 @@ def zmnam_plot(datafolder,figfolder,src_props):
             plt.xlabel('Time')
             plt.ylabel('Zonal mean NAM')
             plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]/lev_fac))+'hPa_mo_ts.png',format='png')
+            str(int(lev[i_lev]/lev_fac))+'hPa_mo_ts.'+fig_fmt,format=fig_fmt)
 
             plt.figure()
             # PDF of the daily PC
@@ -128,7 +130,7 @@ def zmnam_plot(datafolder,figfolder,src_props):
             plt.ylabel('Normalized probability')  
             plt.tight_layout()
             plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]/lev_fac))+'hPa_da_pdf.png',format='png')
+            str(int(lev[i_lev]/lev_fac))+'hPa_da_pdf.'+fig_fmt,format=fig_fmt)
 
 
 
@@ -194,7 +196,7 @@ def zmnam_plot(datafolder,figfolder,src_props):
             fontsize=12, transform=plt.gcf().transFigure)
             #plt.savefig(figfolder+'test'+str(int(lev[i_lev]/lev_fac))+'.png',format='png')
             plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]/lev_fac))+'hPa_mo_reg.png',format='png')
+            str(int(lev[i_lev]/lev_fac))+'hPa_mo_reg.'+fig_fmt,format=fig_fmt)
         else: continue
 
     return 
