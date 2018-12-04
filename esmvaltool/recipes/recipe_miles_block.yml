@@ -74,7 +74,7 @@ diagnostics:
         reference_dataset: "ERA-Interim"
     scripts:
         miles_block: 
-            script: miles/miles_block.r
+            script: miles/miles_block.R
             seasons: DJF # Select season ('DJF','MAM','JJA','SON')
         
         

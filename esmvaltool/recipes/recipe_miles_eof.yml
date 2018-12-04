@@ -74,7 +74,7 @@ diagnostics:
         reference_dataset: "ERA-Interim"
     scripts:
         miles_eof: 
-            script: miles/miles_eof.r
+            script: miles/miles_eof.R
             seasons: DJF # Select season ('DJF','MAM','JJA','SON','ALL') or your period as e.g. 'Jan_Feb_Mar'
             teles: NAO   # Select EOFs ('NAO','AO','PNA') or specify custom area as "lon1_lon2_lat1_lat2"
         
