@@ -1,6 +1,7 @@
 """Derivation of variable `sispeed`."""
 
 from iris import Constraint
+import iris.cube
 from iris.coords import DimCoord
 
 from ._derived_variable_base import DerivedVariableBase
@@ -51,10 +52,18 @@ class DerivedVariable(DerivedVariableBase):
             siv.add_aux_coord(
                 siu.coord('longitude'), siu.coord_dims('longitude')
             )
-        speed = ((siu ** 2 + siv ** 2) ** 0.5)
-        del siu
+        speed = iris.cube.CubeList()
+        siu = siu.slices_over('time')
+        for siu_time in siu:
+            siv_time = siv.extract(
+                Constraint(time=siu_time.coord('time').points[0])
+            )
+            speed_time = ((siu_time ** 2 + siu_time ** 2) ** 0.5)
+            speed.append(speed_time)
+            del siu_time
         del siv
 
+        speed = speed.merge_cube()
         speed.short_name = 'sispeed'
         speed.standard_name = 'sea_ice_speed'
         speed.long_name = 'Sea-ice speed'
