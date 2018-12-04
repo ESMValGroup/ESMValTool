@@ -44,10 +44,10 @@ diagnostics:
         force_derivation: false
         fx_files: [areacello]
     scripts:
-      sea_ice_drift:
-        script: seaice_drift/seaice_drift.py
-        title: "Python example diagnostic"
-        latitude_treshold: 50
+      # sea_ice_drift:
+      #   script: seaice_drift/seaice_drift.py
+      #   title: "Python example diagnostic"
+      #   latitude_treshold: 50
       sea_ice_drift_SCICEX:
         script: seaice_drift/seaice_drift.py
         title: "Python example diagnostic"
@@ -68,3 +68,5 @@ diagnostics:
           - [57, 85.17]
           - [33, 83.8]
           - [8, 84.08]
+        polygon_name: SCICEX
+

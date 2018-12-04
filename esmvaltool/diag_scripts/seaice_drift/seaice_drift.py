@@ -59,6 +59,7 @@ class SeaIceDrift(object):
             )
             alias = self._get_alias(filename, reference_dataset)
             siconc = self._load_cube(filename, 'sea_ice_area_fraction')
+            siconc.convert_units('1.0')
             siconc_original[alias] = siconc
 
             self.siconc[alias] = self._compute_mean(
@@ -109,7 +110,7 @@ class SeaIceDrift(object):
             'Reference dataset "{}" not found'.format(reference_dataset)
         )
 
-    def _get_mask(self, data,filename):
+    def _get_mask(self, data, filename):
         if 'latitude_treshold' in self.cfg:
             lat_threshold = self.cfg['latitude_treshold']
             mask = data.coord('latitude').points > lat_threshold
@@ -118,15 +119,24 @@ class SeaIceDrift(object):
             polygon = self.cfg['polygon']
             factory = InsidePolygonFactory(
                 polygon,
-                cube.coord('latitude'),
-                cube.coord('longitude'),
+                data.coord('latitude'),
+                data.coord('longitude'),
             )
             data.add_aux_factory(factory)
-            mask = data.coord('inpoly').points
+            mask = data.coord('Inside polygon').points
             mask = mask.astype(np.int8)
+            coord = data.coord('Inside polygon')
+            dim_coords = data.coord_dims(coord)
+            data.remove_aux_factory(factory)
+            data.add_aux_coord(coord, dim_coords)
+            print(data)
+            iris.save(data, "/home/Earth/jvegas/mask.nc")
+            pass
+
         dataset_info = self.datasets.get_dataset_info(filename)
         area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
         return area_cello.data * mask
+
     def _load_cube(self, filepath, standard_name):
         cube = iris.load_cube(filepath, standard_name)
         cube.remove_coord('day_of_month')
@@ -193,13 +203,13 @@ class SeaIceDrift(object):
             end=info[n.END_YEAR],
         )
 
-    def _compute_mean(self, data, mask):
+    def _compute_mean(self, data, weights):
         domain_mean = iris.cube.CubeList()
 
         for map_slice in data.slices_over('time'):
             domain_mean.append(map_slice.collapsed(['latitude', 'longitude'],
                                                    iris.analysis.MEAN,
-                                                   weights=mask))
+                                                   weights=weights))
         domain_mean = domain_mean.merge_cube()
         return domain_mean.aggregated_by('month_number', iris.analysis.MEAN)
 
@@ -710,10 +720,16 @@ class SeaIceDrift(object):
         if model == 'reference':
             return
         logger.info('Dataset {0}'.format(model))
-        logger.info(
-            'Metrics computed over domain north of %s',
-            self.cfg['latitude_treshold']
-        )
+        if 'latitude_treshold' in self.cfg:
+            logger.info(
+                'Metrics computed over domain north of %s',
+                self.cfg['latitude_treshold']
+            )
+        else:
+            logger.info(
+                'Metrics computed inside %s region',
+                self.cfg.get('polygon_name', 'SCICEX')
+            )
         logger.info('Slope ratio Drift-Concentration = {0:.3}'
                     ''.format(self.slope_ratio_drift_siconc[model]))
         logger.info('Mean error Drift-Concentration (%) = {0:.4}'
@@ -886,7 +902,7 @@ class SeaIceDrift(object):
         ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
         ax.tick_params(axis='both', labelsize=14)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
-        ax.axis([0.5, 1, low_drift, high_drift])
+        ax.axis([0., 1, low_drift, high_drift])
         self._annotate_points(ax, siconc, drift)
         self._annotate_points(ax, siconc_obs, drift_obs)
         ax.grid(linewidth=0.01)
@@ -922,21 +938,23 @@ class InsidePolygonFactory(AuxCoordFactory):
 
         self._project = partial(
             pyproj.transform,
-            pyproj.Proj(init='epsg:4326'),
             pyproj.Proj(
                 '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0'
                 '+lon_0=0.0 +x_0=0.0'
                 ' +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs'
-            )
+            ),
+            pyproj.Proj(init='epsg:4326'),
         )
 
         self.polygon = transform(self._project, Polygon(polygon))
         self.lat = lat
         self.lon = lon
 
+        self.standard_name = None
         self.long_name = 'Inside polygon'
         self.var_name = 'inpoly'
         self.units = '1.0'
+        self.attributes = {}
 
     @property
     def dependencies(self):
@@ -947,11 +965,15 @@ class InsidePolygonFactory(AuxCoordFactory):
         return {'lat': self.lat, 'lon': self.lon}
 
     def _derive(self, lat, lon):
-        print(lat)
-        print(lon)
-
-        point = transform(self._project, Point(lat, lon))
-        return self.polygon.contains(point)
+        def in_polygon(lat, lon):
+            if lon > 180:
+                lon -= 360
+            elif lon < -180:
+                lon += 360
+            point = transform(self._project, Point(lat, lon))
+            return 1. if self.polygon.contains(point) else np.nan
+        vectorized = np.vectorize(in_polygon)
+        return vectorized(lat, lon)
 
     def make_coord(self, coord_dims_func):
         """
@@ -986,6 +1008,21 @@ class InsidePolygonFactory(AuxCoordFactory):
         )
         return in_polygon
 
+    def update(self, old_coord, new_coord=None):
+        """
+        Notifies the factory of the removal/replacement of a coordinate
+        which might be a dependency.
+        Args:
+        * old_coord:
+            The coordinate to be removed/replaced.
+        * new_coord:
+            If None, any dependency using old_coord is removed, otherwise
+            any dependency using old_coord is updated to use new_coord.
+        """
+        if self.lat is old_coord:
+            self.lat = new_coord
+        elif self.lon is old_coord:
+            self.lon = new_coord
 
 if __name__ == '__main__':
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
