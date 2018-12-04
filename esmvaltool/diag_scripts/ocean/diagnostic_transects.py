@@ -185,6 +185,34 @@ def make_cube_region_dict(cube):
     return cubes
 
 
+def determine_set_y_logscale(cfg, metadata):
+    """
+    Determine whether to use a log scale y axis.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+
+    Returns
+    ----------
+    bool:
+        Boolean to flag whether to plot as a log scale.
+    """
+
+    set_y_logscale = True
+
+    if 'set_y_logscale' in cfg.keys():
+        set_y_logscale = cfg['set_y_logscale']
+
+    if 'set_y_logscale' in metadata.keys():
+        set_y_logscale = metadata['set_y_logscale']
+
+    return set_y_logscale
+
+
 def make_transects_plots(
         cfg,
         metadata,
@@ -217,10 +245,15 @@ def make_transects_plots(
     cube = make_depth_safe(cube)
     cubes = make_cube_region_dict(cube)
 
+    # Determine y log scale.
+    set_y_logscale = determine_set_y_logscale(cfg, metadata)
+
     for region, cube in cubes.items():
         # Make a dict of cubes for each layer.
         qplt.contourf(cube, 15, linewidth=0, rasterized=True)
-        plt.axes().set_yscale('log')
+
+        if set_y_logscale:
+            plt.axes().set_yscale('log')
 
         if region:
             region_title = region
@@ -316,6 +349,9 @@ def make_transect_contours(
     linewidths = [1 for thres in thresholds]
     linestyles = ['-' for thres in thresholds]
 
+    # Determine y log scale.
+    set_y_logscale = determine_set_y_logscale(cfg, metadata)
+
     cubes = make_cube_region_dict(cube)
     for region, cube in cubes.items():
 
@@ -337,7 +373,9 @@ def make_transect_contours(
                      linewidths=linewidths,
                      linestyles=linestyles,
                      rasterized=True)
-        plt.axes().set_yscale('log')
+
+        if set_y_logscale:
+            plt.axes().set_yscale('log')
 
         add_sea_floor(cube)
 
@@ -416,6 +454,9 @@ def multi_model_contours(
     # Load threshold/thresholds.
     thresholds = diagtools.load_thresholds(cfg, metadatas[filename])
 
+    # Determine y log scale.
+    set_y_logscale = determine_set_y_logscale(cfg, metadatas[filename])
+
     # Make a plot for each layer and each threshold
     for region, threshold in product(regions, thresholds):
         logger.info('plotting threshold: \t%s', threshold)
@@ -453,7 +494,8 @@ def multi_model_contours(
                                       'lw': linewidth,
                                       'label': metadatas[filename]['dataset']}
 
-            plt.axes().set_yscale('log')
+            if set_y_logscale:
+                plt.axes().set_yscale('log')
 
             title = metadatas[filename]['long_name']
             units = str(model_cubes[filename][region].units)

@@ -87,3 +87,4 @@ diagnostics:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_transects.py
         thresholds: [-20, -10., 0., 10., 20.]
+        set_y_logscale: False
