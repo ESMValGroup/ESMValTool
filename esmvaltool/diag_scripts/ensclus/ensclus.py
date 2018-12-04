@@ -5,7 +5,7 @@
 ;; Copernicus C3S 34a lot 2 (MAGIC)
 ;;#############################################################################
 ;; Description
-;;    Cluster analysis tool based on the k-means algorithm 
+;;    Cluster analysis tool based on the k-means algorithm
 ;;    for ensembles of climate model simulations
 ;; Modification history
 ;;    20181002-A_arno_ea: updating to version2_develpment (recipe/dataset)
@@ -13,30 +13,31 @@
 ;;
 ;;#############################################################################
 """
+
 # Basic Python packages
 
 import yaml
 import sys
 import cartopy.crs as ccrs
 import matplotlib as mpl
-mpl.use('Agg')
 import matplotlib.pyplot as plt
-
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
-
 import os
 import logging
-from esmvaltool.diag_scripts.shared import (
-    plot, run_diagnostic, save_iris_cube, variables_available,
-    extract_variables)
+from esmvaltool.diag_scripts.shared import\
+     (plot, run_diagnostic, save_iris_cube, variables_available,
+      extract_variables)
+import warnings
+
+plt.switch_backend('Agg')
 
 logger = logging.getLogger(__name__)
 
-import warnings
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
+
 
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
@@ -58,42 +59,49 @@ def main(cfg):
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
-    os.makedirs(cfg['plot_dir'],exist_ok=True)
-    os.makedirs(cfg['work_dir'],exist_ok=True)
-    
-    out_dir=cfg['work_dir']
-    write_plots=cfg['write_plots']
+    os.makedirs(cfg['plot_dir'], exist_ok=True)
+    os.makedirs(cfg['work_dir'], exist_ok=True)
+
+    out_dir = cfg['work_dir']
+    write_plots = cfg['write_plots']
 
     # Import full diagnostic routines
     from ens_anom import ens_anom
     from ens_eof_kmeans import ens_eof_kmeans
     from ens_plots import ens_plots
 
-    filenames_cat=[]
+    filenames_cat = []
     for element in input_files.values():
         logger.info("Processing file %s", element['filename'])
         filenames_cat.append(element['filename'])
-    name_outputs=element['short_name']+'_'+str(cfg['numens'])+'ens_'+cfg['season']+'_'+cfg['area']+'_'+cfg['kind']
-    variable_name=element['short_name']
+    name_outputs = element['short_name'] + '_' + str(cfg['numens']) + \
+        'ens_' + cfg['season'] + '_' + cfg['area'] + \
+        '_' + cfg['kind']
+    variable_name = element['short_name']
 
-    #____________Building the name of output files
-    print('The name of the output files will be <variable>_{0}.txt'.format(name_outputs))
-   
-    ####################### PRECOMPUTATION #######################
-    #____________run ens_anom as a module
-    ens_anom(filenames_cat,out_dir,name_outputs,variable_name,cfg['numens'],cfg['season'],cfg['area'],cfg['extreme'])
-    
-    ####################### EOF AND K-MEANS ANALYSES #######################
-    #____________run ens_eof_kmeans as a module
-    ens_eof_kmeans(out_dir,name_outputs,cfg['numens'],cfg['numpcs'],cfg['perc'],cfg['numclus'])
-    
-    ####################### PLOT AND SAVE FIGURES ################################
-    #____________run ens_plots as a module
+    # Building the name of output files
+    print('The name of the output files will be <variable>_{0}.txt'
+          .format(name_outputs))
+
+    # ###################### PRECOMPUTATION #######################
+    # ____________run ens_anom as a module
+    ens_anom(filenames_cat, out_dir, name_outputs, variable_name,
+             cfg['numens'], cfg['season'], cfg['area'], cfg['extreme'])
+
+    # ###################### EOF AND K-MEANS ANALYSES #######################
+    # ____________run ens_eof_kmeans as a module
+    ens_eof_kmeans(out_dir, name_outputs, cfg['numens'], cfg['numpcs'],
+                   cfg['perc'], cfg['numclus'])
+
+    # ###################### PLOT AND SAVE FIGURES ##########################
+    # ____________run ens_plots as a module
     if write_plots:
-        ens_plots(out_dir,cfg['plot_dir'],name_outputs,cfg['numclus'],cfg['field_to_plot'])
-    
+        ens_plots(out_dir, cfg['plot_dir'], name_outputs, cfg['numclus'],
+                  cfg['field_to_plot'])
+
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
