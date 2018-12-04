@@ -8,7 +8,6 @@ import cf_units
 from ._derived_variable_base import DerivedVariableBase
 
 
-
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `amoc`."""
 
@@ -24,7 +23,8 @@ class DerivedVariable(DerivedVariableBase):
         """Compute Atlantic meriodinal overturning circulation."""
 
         cube = cubes.extract_strict(
-            Constraint(name='ocean_meridional_overturning_mass_streamfunction'))
+            Constraint(name='ocean_meridional_overturning_mass_'
+                       'streamfunction'))
 
         # 1: find the relevant region
         regions = cube.coord('region')
@@ -41,7 +41,8 @@ class DerivedVariable(DerivedVariableBase):
         rapid_cube = amoc_cube.extract(constraint=rapid_constraint)
 
         # 3: find the maximum in the water column along the time axis.
-        result_cube = rapid_cube.collapsed(['depth', 'region',], iris.analysis.MAX,)
+        result_cube = rapid_cube.collapsed(['depth', 'region'],
+                                           iris.analysis.MAX,)
         print(result_cube)
         print(result_cube.data)
         return result_cube
