@@ -28,7 +28,8 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
 
     print(name_outputs)
     varname = name_outputs.split("_")[0]
-    kind = name_outputs.split("_")[-1]
+    kind = name_outputs.split("_")[-2]
+    exp = name_outputs.split("_")[-1]
 
     # Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
     ifile = os.path.join(dir_OUTPUT, 'ens_anomalies_{0}.nc'
@@ -101,8 +102,8 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     cb = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cb.ax.tick_params(labelsize=18)
 
-    plt.suptitle(kind+' '+varname+' '+tit+' ('+varunits+')', fontsize=45,
-                 fontweight='bold')
+    plt.suptitle(exp+' '+kind+' '+varname+' '+tit+' ('+varunits+')', 
+                 fontsize=45, fontweight='bold')
 
     plt.subplots_adjust(top=0.85)
     top = 0.89     # the top of the subplots of the figure

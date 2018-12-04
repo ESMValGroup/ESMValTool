@@ -219,7 +219,7 @@ def ens_eof_kmeans(dir_OUTPUT, name_outputs, numens, numpcs, perc, numclus):
         statOUTPUT.append(stat)
     statOUTPUT = pd.concat(statOUTPUT, axis=0)
     # ____________Save statistics of cluster analysis
-    namef = os.path.join(dir_OUTPUT, 'statistics_clutering_{0}.txt'
+    namef = os.path.join(dir_OUTPUT, 'statistics_clustering_{0}.txt'
                          .format(name_outputs))
     with open(namef, 'w') as text_file:
         text_file.write(statOUTPUT.__repr__())

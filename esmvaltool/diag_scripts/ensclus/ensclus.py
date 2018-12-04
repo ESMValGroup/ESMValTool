@@ -71,12 +71,13 @@ def main(cfg):
     from ens_plots import ens_plots
 
     filenames_cat = []
+    numens=len(input_files.keys())
     for element in input_files.values():
         logger.info("Processing file %s", element['filename'])
         filenames_cat.append(element['filename'])
-    name_outputs = element['short_name'] + '_' + str(cfg['numens']) + \
+    name_outputs = element['short_name'] + '_' + str(numens) + \
         'ens_' + cfg['season'] + '_' + cfg['area'] + \
-        '_' + cfg['kind']
+        '_' + element['project'] + '_' + element['exp']
     variable_name = element['short_name']
 
     # Building the name of output files
@@ -86,18 +87,18 @@ def main(cfg):
     # ###################### PRECOMPUTATION #######################
     # ____________run ens_anom as a module
     ens_anom(filenames_cat, out_dir, name_outputs, variable_name,
-             cfg['numens'], cfg['season'], cfg['area'], cfg['extreme'])
+             numens, cfg['season'], cfg['area'], cfg['extreme'])
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
     # ____________run ens_eof_kmeans as a module
-    ens_eof_kmeans(out_dir, name_outputs, cfg['numens'], cfg['numpcs'],
+    ens_eof_kmeans(out_dir, name_outputs, numens, cfg['numpcs'],
                    cfg['perc'], cfg['numclus'])
 
     # ###################### PLOT AND SAVE FIGURES ##########################
     # ____________run ens_plots as a module
     if write_plots:
         ens_plots(out_dir, cfg['plot_dir'], name_outputs, cfg['numclus'],
-                  cfg['field_to_plot'])
+                  'anomalies') # cfg['file_to_plot']
 
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')
