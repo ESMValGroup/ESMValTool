@@ -43,6 +43,4 @@ class DerivedVariable(DerivedVariableBase):
         # 3: find the maximum in the water column along the time axis.
         result_cube = rapid_cube.collapsed(['depth', 'region'],
                                            iris.analysis.MAX,)
-        print(result_cube)
-        print(result_cube.data)
         return result_cube

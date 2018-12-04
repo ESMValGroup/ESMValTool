@@ -49,7 +49,6 @@ def titlify(title):
     """
     Check whether a title is too long then add it to current figure.
     """
-    print(len(title), title)
     cutoff = 40
     if len(title) > cutoff:
         # Find good mid point
@@ -61,7 +60,6 @@ def titlify(title):
                 titles[itr] += '\n'
                 length = 0.
         title = ' '.join(titles)
-        print('New Title:', title)
     plt.title(title)
 
 
@@ -273,12 +271,7 @@ def add_sea_floor(cube):
     mask = 1. * land_cube.data.mask
     if mask.shape == ():
         mask = np.zeros_like(land_cube.data)
-    # try:
     land_cube.data = np.ma.masked_where(mask == 0, mask)
-    # except:
-    #         print(land_cube)
-    #         print(land_cube.data.shape, mask.shape, mask)
-    #         assert 0
     land_cube.data.mask = mask
     qplt.contour(land_cube, 2,
                  cmap='Greys_r',
