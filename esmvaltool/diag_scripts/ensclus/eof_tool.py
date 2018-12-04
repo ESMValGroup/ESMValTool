@@ -6,7 +6,6 @@ from eofs.standard import Eof
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 
 from matplotlib.cbook import MatplotlibDeprecationWarning
 import warnings

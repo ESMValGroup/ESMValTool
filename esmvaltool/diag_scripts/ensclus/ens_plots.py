@@ -8,8 +8,10 @@ import sys
 from netCDF4 import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
+# from mpl_toolkits.basemap import Basemap
 import math
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 
 def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
@@ -65,9 +67,8 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     # clevels=np.arange(0,6.2,delta)
 
     colors = ['b', 'g', 'r', 'c', 'm', 'y', 'DarkOrange', 'grey']
-    m = Basemap(projection='cyl', llcrnrlat=min(lat),
-                urcrnrlat=max(lat), llcrnrlon=min(lon), urcrnrlon=max(lon),
-                resolution='c')
+
+    proj = ccrs.PlateCarree()
 
     x = int(np.ceil(np.sqrt(numens*1.6)))
     y = int(np.ceil(numens/x))
@@ -75,19 +76,18 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
         # print('//////////ENSEMBLE MEMBER {0}'.format(nens))
-        ax = plt.subplot(x, y, nens+1)
-
-        m.drawcoastlines()
-        # use meshgrid to create 2D arrays
-        x_i, y_i = np.meshgrid(lon, lat)
-        xi, yi = m(x_i, y_i)
+        ax=plt.subplot(x, y, nens+1, projection=ccrs.PlateCarree())
+        ax.coastlines("110m")
+        # ax.set_extent([-10, 60, -30,90],ccrs.PlateCarree())
 
         # Plot Data
         if field_to_plot == 'anomalies':
-            map_plot = m.contourf(xi, yi, vartoplot[nens], clevels,
-                                  cmap=plt.cm.RdBu_r)
+            map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
+                                  cmap=plt.cm.RdBu_r,
+                                  transform=proj)
         else:
-            map_plot = m.contourf(xi, yi, vartoplot[nens], clevels)
+            map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
+                                  transform=proj)
         # print('min={0}'.format(vartoplot[nens].min()))
         # print('max={0}\n'.format(vartoplot[nens].max()))
 
