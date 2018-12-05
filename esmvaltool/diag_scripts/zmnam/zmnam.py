@@ -55,29 +55,16 @@ def get_input_files(cfg, index=0):
 
 def main(cfg):
 
-    #print(cfg.keys())
-    #print (cfg)
-
-    #cfg = get_cfg()
-
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
-    #os.makedirs(cfg['plot_dir'])
-    #os.makedirs(cfg['work_dir'])
-
-    #input_cmor = get_input_cmor_table(cfg)
-    #print(input_cmor)
-    #stop
 
     plot_dir = cfg['plot_dir']
     out_dir = cfg['work_dir']
-    bool_plot = cfg['write_plots']
-    print(bool_plot)
-    stop
+    write_plots = cfg['write_plots']
 
     # Import full diagnostic routines
-    sys.path.append(cfg['path_diag_aux'])
+    #sys.path.append(cfg['path_diag_aux'])
     from zmnam_calc import zmnam_calc
     from zmnam_plot import zmnam_plot
     from zmnam_preproc import zmnam_preproc
@@ -86,49 +73,47 @@ def main(cfg):
     sim_list = []
     ref_list = []
 
-    """
-    for key, value in input_files.items():
-        print('*****')
-        print(key)
-        print('****')
-        print(value)
-        print('****')
-        stop
+    filenames_cat = []
+    fileprops_cat = []
 
-    for vals in list(input_files.values()):
-        print('**********************')
-        print(vals)
-        print(vals['dataset'])
-        print('**********************')
-        stop
-    {'cmor_table': 'CMIP5', 'dataset': 'MPI-ESM-MR', 'diagnostic': 'zmnam', 'end_year': 2008, 'ensemble': 'r1i1p1', 'exp': 'amip', 'field': 'T3D', 'filename': '/work/users/serva/esmvaltool_output/recipe_zmnam_20181204_172105/preproc/zmnam_preproc_zg/CMIP5_MPI-ESM-MR_day_amip_r1i1p1_T3D_zg_2005-2008.nc', 'frequency': 'day', 'institute': ['MPI-M'], 'long_name': 'Geopotential Height', 'mip': 'day', 'modeling_realm': ['atmos'], 'preprocessor': 'preproc', 'project': 'CMIP5', 'short_name': 'zg', 'standard_name': 'geopotential_height', 'start_year': 2005, 'units': 'm'}
+    # Loop over input cfg
+    for key, value in input_files.items():
+
+        # Collect file names
+        filenames_cat.append(key)
+ 
+        # Collect relevant information for outputs naming
+        fileprops_cat.append([value['project'],
+                             value['dataset'],
+                             value['exp'],
+                             value['ensemble'],
+                             str(value['start_year'])+'-'
+                             +str(value['end_year'])])
+
+    os.chdir(out_dir)
+
+    # Process list of input files
+    for indfile in range(len(filenames_cat)):
+
+        ifile = filenames_cat[indfile]
+        ifile_props = fileprops_cat[indfile]
+
+        # Call diagnostics functions
+        zmnam_preproc(ifile, [20, 90])  # area selection should be removed
+        zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
+        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props)
+
     """
 
     filenames_cat = []
     for filenames in list(input_files.keys()):
-        #logger.info("Processing variable %s", variable_name)
-        #filenames=list(filenames)
-        #sys.exit()
-        #filenames_cat=[]
         filenames_cat.append(filenames)
-        """  
-        print('_____________________________\n{0} INPUT FILES:'.format(len(filenames)))
-        for i in filenames:
-            print(i)
-            filenames_cat.append(i)
-        #filenames_cat.append(filenames)
-        print('_____________________________\n')
 
-        #____________Building the name of output files
-        """
         os.chdir(out_dir)
 
         # List of model simulations
 
         # List of reference datasets (if any)
-
-        #print(filenames_cat)
-        #if 1 == 0:
 
         for ifile in filenames_cat:
 
@@ -139,11 +124,6 @@ def main(cfg):
             exp = ifile_props[3]
             ensemble = ifile_props[4]
             period = ifile_props[7].replace('.nc', '')
-            """
-            ifile_props = [ifile_props[0],ifile_props[1],\
-                          ifile_props[3],ifile_props[4],\
-                          ifile_props[7].replace('.nc','')]
-            """
             ifile_props = [cmor_table, dataset, exp, ensemble, period]
 
             # Diagnostics calculation. Input parameters for
@@ -156,28 +136,9 @@ def main(cfg):
             # all-mod (interpolated) minus OBS
             #zmnam_diff()
 
+    """    
 
-"""
-if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
-    logging.basicConfig(
-        format="%(asctime)s [%(process)d] %(levelname)-8s "
-               "%(name)s,%(lineno)s\t%(message)s"
-    )
-    main()
-
-"""
-# added 20180601h1717
+# Run the diagnostics
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-"""
-if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
-    logging.basicConfig(
-        format="%(asctime)s [%(process)d] %(levelname)-8s "
-               "%(name)s,%(lineno)s\t%(message)s"
-    )
-    main()
-
-"""
