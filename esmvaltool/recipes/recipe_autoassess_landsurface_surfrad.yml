@@ -14,7 +14,7 @@
 # (the original Autoassess diagnostic used time-dependent .pp masks -
 # these can still be implemented if present in autoassess_source)
 #################
-# RECIPE IS FULLY WORKING
+# RECIPE IS FULLY WORKING BUT MASKS NEED TO BE CHECKED !!!
 ###########################################################################################################
 ---
 
@@ -54,7 +54,7 @@ diagnostics:
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
         obs_type: obs4mips
-        fx: sftlf
+        fx: [sftlf]
         start: 1997/12/01
         end: 2002/12/01
 
