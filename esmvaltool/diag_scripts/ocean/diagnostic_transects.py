@@ -84,7 +84,7 @@ def determine_transect_str(cube, region=''):
         return region
 
     options = ['latitude', 'longitude']
-    cube_dims =  [c.standard_name for c in cube.coords()]
+    cube_dims = [c.standard_name for c in cube.coords()]
     for option in options:
         if option not in cube_dims:
             continue
