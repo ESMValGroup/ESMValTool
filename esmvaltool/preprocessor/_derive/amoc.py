@@ -27,20 +27,22 @@ class DerivedVariable(DerivedVariableBase):
                        'streamfunction'))
 
         # 1: find the relevant region
-        regions = cube.coord('region')
         atlantic_region = 'atlantic_arctic_ocean'
         atl_constraint = iris.Constraint(region=atlantic_region)
-        amoc_cube = cube.extract(constraint=atl_constraint)
+        cube = cube.extract(constraint=atl_constraint)
 
-        # 2: Find the latitude closest to 26N
+        # 2: Remove the shallowest 500m to avoid wind driven mixed layer.
+        depth_constraint = iris.Constraint(depth=lambda d: d >= 500.)
+        cube = cube.extract(constraint=depth_constraint)
+
+        # 3: Find the latitude closest to 26N
         rapid_location = 26.5
-        lats = amoc_cube.coord('latitude').points
+        lats = cube.coord('latitude').points
         rapid_index = np.argmin(np.abs(lats - rapid_location))
         rapid_constraint = iris.Constraint(latitude=lats[rapid_index])
+        cube = cube.extract(constraint=rapid_constraint)
 
-        rapid_cube = amoc_cube.extract(constraint=rapid_constraint)
-
-        # 3: find the maximum in the water column along the time axis.
-        result_cube = rapid_cube.collapsed(['depth', 'region'],
-                                           iris.analysis.MAX,)
-        return result_cube
+        # 4: find the maximum in the water column along the time axis.
+        cube = cube.collapsed(['depth', 'region'],
+                              iris.analysis.MAX,)
+        return cube
