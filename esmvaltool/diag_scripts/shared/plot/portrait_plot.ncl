@@ -71,13 +71,13 @@ begin
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname .eq.  defaults)) then
         grade = att2var(data, "var")
-        diag_script = att2var(data, "diag_script")
+        DIAG_SCRIPT = att2var(data, "diag_script")
     else
         grade = varname
     end if
 
     ; Check if a valid wks has been provided, otherwise invoke default
-    wks = get_wks(wks_in, diag_script, grade)
+    wks = get_wks(wks_in, DIAG_SCRIPT, grade)
 
     ; Check source dimensionality
     grade_dim = dimsizes(data)

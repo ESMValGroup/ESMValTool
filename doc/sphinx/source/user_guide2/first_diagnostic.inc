@@ -1,3 +1,7 @@
+********************************************
+How to prepare and run your first diagnostic
+*********************************************
+
 Instructiona for personal diagnostic
 ====================================
 
@@ -5,15 +9,13 @@ Anyone can run a personal diagnostic, no matter where the location of it;
 there is no need to install esmvaltool in developer mode nor is it to
 git push or for that matter, do any git operations; the example recipe
 
-```
-esmvaltool/recipes/recipe_my_personal_diagnostic.yml
-```
+.. code-block:: bash
+    esmvaltool/recipes/recipe_my_personal_diagnostic.yml
 
 shows the use of running a personal diagnostic; the example
 
-```
-esmvaltool/diag_scripts/examples/my_little_diagnostic.py
-```
+.. code-block:: bash
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
 
 and any of its alterations may be used as training wheels for the future ESMValTool
 diagnostic developer. The purpose of this example is to familiarize the user with
@@ -45,11 +47,11 @@ An example of such a recipe is found in `esmvaltool/recipes/recipe_my_personal_d
 For general guidelines with regards to ESMValTool recipes please consult the User Guide;
 the specific parameters needed by a recipe that runs a personal diagnostic are:
 
-```
+.. code-block:: bash
     scripts:
       my_diagnostic:
         script: /path/to/your/my_little_diagnostic.py        
-```
+
 i.e. the full path to the personal diagnostic that the user needs to run.
 
 Example of config dictionary

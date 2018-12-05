@@ -8,13 +8,12 @@ Create normalised assessment criteria plot (NAC plot).
 
 from __future__ import division, print_function
 
-import os
 import csv
 import errno
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # noqa
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Define some colours
 BLACK = '#000000'
