@@ -30,18 +30,20 @@ args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)}
 metadata <- yaml::read_yaml(settings$input_files)
+#varname=metadata$short_name
+print(str(metadata))
+
+# get name of climofile for selected variable and list associated to first climofile
+climofiles <- names(metadata)
+climolist <- get(climofiles[1],metadata)
+
+# get variable name
+varname <- paste0("'",climolist$short_name,"'")
 
 # store needed arguments in lists (outfile is generated based on the input file)
 rainfarm_args=list(slope=slope,nens=nens,nf=nf,weights_climo=weights_climo,varname=varname,
 		                      conserv_glob=conserv_glob,conserv_smooth=conserv_smooth)
 rainfarm_options=list("-s","-e","-n","-w","-v","-g","-c")
-
-# set variable
-var0 <- "pr"
-
-# get name of climofile for selected variable and list associated to first climofile
-climofiles <- names(metadata)
-climolist <- get(climofiles[1],metadata)
 
 diag_base = climolist$diagnostic
 print(paste(diag_base,": starting routine"))
@@ -69,22 +71,11 @@ for (model_idx in c(1:(length(models_name)))) {
   infile <- climofiles[model_idx]
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
-  inregname <- file_path_sans_ext(basename(infile))
-  inregfile <- paste0(regridding_dir,"/",inregname,".nc")
-
-  ## Pre-process file converting it to NetCDF4 format 
-  if(!file.exists(inregfile)) { 
-    cdo_command<-paste("cdo -f nc4 -copy ", infile, inregfile)
-    print(paste0(diag_base,": pre-processing file: ", infile))
-    system(cdo_command)
-    print(paste0(diag_base,": pre-processed file: ", inregfile))
-  } else {
-    print(paste0(diag_base,": data file exists: ", inregfile))  
-  }
+  infilename <- file_path_sans_ext(basename(infile))
 
   ## Call diagnostic
   print(paste0(diag_base,": calling rainfarm"))
-  filename <- paste0(work_dir,"/",inregname,"_downscaled") 
+  filename <- paste0(work_dir,"/",infilename,"_downscaled") 
 
   # reformat arguments from parameter_file
   if (rainfarm_args$conserv_glob == T) {rainfarm_args$conserv_glob <- ""}
@@ -93,10 +84,10 @@ for (model_idx in c(1:(length(models_name)))) {
   # generate weights file if requested
   # (for more information use 'rfweights -h')
   if (rainfarm_args$weights_climo != F) {
-    fileweights <- paste0(work_dir,"/",inregname,"_w.nc")
+    fileweights <- paste0(work_dir,"/",infilename,"_w.nc")
     snf <- ""
     if (rainfarm_args$nf != F) {snf <- paste("-n ",rainfarm_args$nf)}
-    command_w<-paste("rfweights -w ",fileweights,snf," -c ",rainfarm_args$weights_climo,inregfile)  
+    command_w<-paste("rfweights -w ",fileweights,snf," -c ",rainfarm_args$weights_climo,infile)  
     print(paste0(diag_base,": generating weights file"))
     print(command_w)
     system(command_w)
@@ -107,7 +98,7 @@ for (model_idx in c(1:(length(models_name)))) {
   rargs <- paste(rainfarm_options[ret],rainfarm_args[ret],collapse=" ")
   # call rfarm
   # (for more information use 'rfarm -h')
-  command<-paste0("rfarm -o '", filename,"' ",rargs," ",inregfile) 
+  command<-paste0("rfarm -o '", filename,"' ",rargs," ",infile) 
   print(command)
   system(command)
   print(paste0(diag_base,": downscaled data written to ",paste0(filename,"_*.nc")))
