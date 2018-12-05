@@ -104,8 +104,8 @@ class Test(tests.Test):
         region = iris.coords.AuxCoord(
             regions,
             standard_name='region',
-            units='1',
-            )
+            units='1', )
+
         data = np.ones((3, 3))
         region_cube = iris.cube.Cube(data,
                                      dim_coords_and_dims=[(time, 0)],
@@ -123,8 +123,8 @@ class Test(tests.Test):
 
         # test for expected failures:
         with self.assertRaises(ValueError):
-            result3 = extract_named_regions(region_cube, 'reg_A')
-            result4 = extract_named_regions(region_cube, ['region1', 'reg_A'])
+            extract_named_regions(region_cube, 'reg_A')
+            extract_named_regions(region_cube, ['region1', 'reg_A'])
 
 
 if __name__ == '__main__':

@@ -28,14 +28,14 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+from itertools import product
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
-from itertools import product
+import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -70,7 +70,7 @@ def titlify(title):
 
 def determine_transect_str(cube, region=''):
     """
-    Determine the Transect String
+    Determine the Transect String.
 
     Takes a guess at a string to describe the transect.
 
@@ -105,7 +105,7 @@ def determine_transect_str(cube, region=''):
 
 def make_depth_safe(cube):
     """
-    Make the depth coordinate safe
+    Make the depth coordinate safe.
 
     If the depth coordinate has a value of zero or above, we replace the
     zero with the average point of the first depth layer.
@@ -144,7 +144,7 @@ def make_depth_safe(cube):
 
 def make_cube_region_dict(cube):
     """
-    Take a cube and return a dictionairy region: cube
+    Take a cube and return a dictionairy region: cube.
 
     Each item in the dict is a layer with a separate cube for each layer.
     ie: cubes[region] = cube from specific region
@@ -210,7 +210,6 @@ def determine_set_y_logscale(cfg, metadata):
     bool:
         Boolean to flag whether to plot as a log scale.
     """
-
     set_y_logscale = True
 
     if 'set_y_logscale' in cfg.keys():
@@ -280,15 +279,15 @@ def make_transects_plots(
 
         # Determine image filename:
         if multi_model:
-                path = diagtools.folder(
-                    cfg['plot_dir']) + os.path.basename(filename).replace(
-                        '.nc', region+'_transect' + image_extention)
+            path = diagtools.folder(
+                cfg['plot_dir']) + os.path.basename(filename).replace(
+                    '.nc', region + '_transect' + image_extention)
         else:
-                path = diagtools.get_image_path(
-                    cfg,
-                    metadata,
-                    suffix=region+'transect' + image_extention,
-                )
+            path = diagtools.get_image_path(
+                cfg,
+                metadata,
+                suffix=region+'transect' + image_extention,
+            )
 
         # Saving files:
         if cfg['write_plots']:
@@ -342,7 +341,6 @@ def make_transect_contours(
         The preprocessed model file.
 
     """
-
     # Load cube and set up units
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -396,7 +394,7 @@ def make_transect_contours(
 
         # Add title to plot
         title = ' '.join([metadata['dataset'], metadata['long_name'],
-                         determine_transect_str(cube, region)])
+                          determine_transect_str(cube, region)])
         titlify(title)
 
         # Load image format extention
@@ -411,7 +409,7 @@ def make_transect_contours(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix=region+'transect_contour' + image_extention,
+                suffix=region + 'transect_contour' + image_extention,
             )
 
         # Saving files:
@@ -427,8 +425,7 @@ def multi_model_contours(
         metadatas,
 ):
     """
-    Make a multi model comparison plot showing the transect contour plots of
-    several preprocesssed datasets.
+    Make a multi model comparison plot showing several transect contour plots.
 
     This tool loads several cubes from the files, checks that the units are
     sensible BGC units, checks for layers, adjusts the titles accordingly,
@@ -442,11 +439,13 @@ def multi_model_contours(
         The metadatas dictionairy for a specific model.
 
     """
-
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
     regions = {}
+    thresholds = {}
+    set_y_logscale = True
+
     for filename in sorted(metadatas):
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadatas[filename]['short_name'])
@@ -455,16 +454,23 @@ def multi_model_contours(
         model_cubes[filename] = cubes
         for region in model_cubes[filename].keys():
             regions[region] = True
+
+        # Determine y log scale.
+        set_y_logscale = determine_set_y_logscale(cfg, metadatas[filename])
+
+        # Load threshold/thresholds.
+        tmp_thresholds = diagtools.load_thresholds(cfg, metadatas[filename])
+        for threshold in tmp_thresholds:
+            thresholds[threshold] = True
     regions = regions.keys()
+    thresholds = thresholds.keys()
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-    # Load threshold/thresholds.
-    thresholds = diagtools.load_thresholds(cfg, metadatas[filename])
 
-    # Determine y log scale.
-    set_y_logscale = determine_set_y_logscale(cfg, metadatas[filename])
+
+
 
     # Make a plot for each layer and each threshold
     for region, threshold in product(regions, thresholds):

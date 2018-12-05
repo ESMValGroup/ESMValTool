@@ -140,39 +140,39 @@ def area_average(cube, coord1, coord2):
 
 
 def extract_named_regions(cube, regions):
-        """
-        Extract a specific named region.
+    """
+    Extract a specific named region.
 
-        The region coordinate exist in certain CMIP datasets.
-        This preprocessor allows a specific named regions to be extracted.
+    The region coordinate exist in certain CMIP datasets.
+    This preprocessor allows a specific named regions to be extracted.
 
-        Arguments
-        ---------
-        cube: iris.cube.Cube
-           input cube.
+    Arguments
+    ---------
+    cube: iris.cube.Cube
+       input cube.
 
-        regions: str, list
-            A region or list of regions to extract.
+    regions: str, list
+        A region or list of regions to extract.
 
-        Returns
-        -------
-        iris.cube.Cube
-            collapsed cube.
-        """
-        # Make sure regions is a list of strings
-        if isinstance(regions, str):
-            regions = [regions, ]
+    Returns
+    -------
+    iris.cube.Cube
+        collapsed cube.
+    """
+    # Make sure regions is a list of strings
+    if isinstance(regions, str):
+        regions = [regions, ]
 
-        if not isinstance(regions, list):
-            raise ValueError('Regions %s is not a list or a string.', regions)
+    if not isinstance(regions, list):
+        raise ValueError('Regions %s is not a list or a string.', regions)
 
-        cube_regions = cube.coord('region').points
+    cube_regions = cube.coord('region').points
 
-        for reg in regions:
-            if reg in cube_regions:
-                continue
-            raise ValueError('Region %s no in cube regions', reg)
+    for reg in regions:
+       if reg in cube_regions:
+            continue
+        raise ValueError('Region %s no in cube regions', reg)
 
-        constraints = iris.Constraint(region=lambda r: r in regions)
-        cube = cube.extract(constraint=constraints)
-        return cube
+    constraints = iris.Constraint(region=lambda r: r in regions)
+    cube = cube.extract(constraint=constraints)
+    return cube

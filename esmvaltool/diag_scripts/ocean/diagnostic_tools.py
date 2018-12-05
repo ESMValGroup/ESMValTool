@@ -173,7 +173,7 @@ def guess_calendar_datetime(cube):
 
 def load_thresholds(cfg, metadata):
     """
-    Load the thresholds for contour plots from the config files
+    Load the thresholds for contour plots from the config files.
 
     Parameters
     ----------

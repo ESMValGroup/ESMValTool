@@ -3,7 +3,6 @@ import iris
 from iris import Constraint
 
 import numpy as np
-import cf_units
 
 from ._derived_variable_base import DerivedVariableBase
 
@@ -13,15 +12,24 @@ class DerivedVariable(DerivedVariableBase):
 
     # Required variables
     _required_variables = {
-        'vars': [{
-            'short_name': 'msftmyz',
-            'field': 'TO2M'
-         }],
-    }
+        'vars': [{'short_name': 'msftmyz','field': 'TO2M'}],
+        }
 
     def calculate(self, cubes,):
-        """Compute Atlantic meriodinal overturning circulation."""
+        """
+        Compute Atlantic meriodinal overturning circulation.
 
+        Arguments
+        ---------
+        cube: iris.cube.Cube
+           input cube.
+
+        Returns
+        ---------
+        iris.cube.Cube
+              Output AMOC cube.
+        """
+        # 0. Load the msftmyz cube.
         cube = cubes.extract_strict(
             Constraint(name='ocean_meridional_overturning_mass_'
                        'streamfunction'))
