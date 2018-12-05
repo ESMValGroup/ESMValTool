@@ -99,44 +99,10 @@ def main(cfg):
         ifile_props = fileprops_cat[indfile]
 
         # Call diagnostics functions
-        zmnam_preproc(ifile, [20, 90])  # area selection should be removed
+        zmnam_preproc(ifile)
         zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
         zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props)
 
-    """
-
-    filenames_cat = []
-    for filenames in list(input_files.keys()):
-        filenames_cat.append(filenames)
-
-        os.chdir(out_dir)
-
-        # List of model simulations
-
-        # List of reference datasets (if any)
-
-        for ifile in filenames_cat:
-
-            # Get 6 model properties: stream, name, exp, ensemble member, period
-            ifile_props = ifile.rsplit('/', 1)[1].rsplit('_', 7)
-            cmor_table = ifile_props[0]  # project!!!
-            dataset = ifile_props[1]
-            exp = ifile_props[3]
-            ensemble = ifile_props[4]
-            period = ifile_props[7].replace('.nc', '')
-            ifile_props = [cmor_table, dataset, exp, ensemble, period]
-
-            # Diagnostics calculation. Input parameters for
-            # files and plots naming
-            zmnam_preproc(ifile, [20, 90])  # area selection should be removed
-            zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-            zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props)
-
-            # len(OBS)>0 and len(mod)>0 do the difference,
-            # all-mod (interpolated) minus OBS
-            #zmnam_diff()
-
-    """    
 
 # Run the diagnostics
 if __name__ == '__main__':

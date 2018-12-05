@@ -22,7 +22,9 @@ datasets:
 
 preprocessors:
   preproc:
-    extract_levels: false # list of levels in Pa
+    extract_levels:
+      levels: [100000., 50000., 25000., 5000.]
+      scheme: nearest
     regrid:  
       target_grid: 3x3 
       scheme: linear

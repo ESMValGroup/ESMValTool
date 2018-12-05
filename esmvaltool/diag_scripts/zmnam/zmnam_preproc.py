@@ -7,7 +7,7 @@ import os
 # * selection of NH done in preprocessing
 
 
-def zmnam_preproc(ifile, latbound):
+def zmnam_preproc(ifile): #, latbound):
 
     os.system('cdo -delete,month=2,day=29 ' + ifile + ' tmp_full_da_nl.nc')
 
