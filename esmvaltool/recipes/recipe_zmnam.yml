@@ -50,5 +50,5 @@ diagnostics:
           ## Information required: 
           ##path_diag_aux: '/work/users/irene/EnsClusTOOL/ESMValTool/esmvaltool/diag_scripts/aux/EnsClus/'
           #path_diag_aux: '/work/users/serva/ESMValTool/esmvaltool/diag_scripts/zmnam/'
-        path_diag_aux: '/home/serva/work/ESMValTool.new.1/esmvaltool/diag_scripts/zmnam/' 
+          #path_diag_aux: '/home/serva/work/ESMValTool.new.1/esmvaltool/diag_scripts/zmnam/' 
           # diag_script_info: True

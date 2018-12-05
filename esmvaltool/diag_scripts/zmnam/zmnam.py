@@ -1,7 +1,7 @@
 """
 ;;#############################################################################
 ;; Zonal mean Northern Annular Mode Diagnostics
-;; Author: Federico Serva (ISAC-CNR, Italy)
+;; Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 ;; Copernicus C3S 34a lot 2 (MAGIC)
 ;;#############################################################################
 ;; Description
@@ -9,6 +9,7 @@
 ;;    based on EOF/PC analysis of the geopotential height field
 ;;    
 ;; Modification history
+;;    20180512-A_serv_fe: Added output netCDFs, more use of preprocessor
 ;;    20180510-A_serv_fe: Routines written.
 ;;
 ;;#############################################################################
@@ -36,15 +37,6 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
 
-# Note: this can be removed
-def get_cfg():
-    """Read diagnostic script configuration from settings.yml."""
-    settings_file = sys.argv[1]
-    with open(settings_file) as file:
-        cfg = yaml.safe_load(file)
-    return cfg
-
-
 def get_input_files(cfg, index=0):
     """Get a dictionary with input files from metadata.yml files."""
     metadata_file = cfg['input_files'][index]
@@ -62,6 +54,7 @@ def main(cfg):
     plot_dir = cfg['plot_dir']
     out_dir = cfg['work_dir']
     write_plots = cfg['write_plots']
+    fig_fmt = cfg['output_file_type']
 
     # Import full diagnostic routines
     #sys.path.append(cfg['path_diag_aux'])
@@ -101,7 +94,7 @@ def main(cfg):
         # Call diagnostics functions
         zmnam_preproc(ifile)
         zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props)
+        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props,fig_fmt)
 
 
 # Run the diagnostics
