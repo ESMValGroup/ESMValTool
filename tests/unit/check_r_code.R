@@ -5,7 +5,11 @@ check_paths <- list("esmvaltool", "tests")
 
 root_folder <- args[1]
 has_errors <- FALSE
-linters <- with_defaults(line_length_linter(79))
+linters <- with_defaults(
+    line_length_linter(79),
+    commas_linter=NULL,
+    object_usage_linter=NULL
+)
 
 for (path in check_paths){
     check_path <- file.path(root_folder, path)
