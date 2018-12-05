@@ -44,7 +44,7 @@ diagnostics:
         field: T2Ds
     scripts:
       rainfarm:
-        script: rainfarm/rainfarm.r
+        script: rainfarm/rainfarm.R
         # RainFARM options 
         # Note - RainFARM usage:  rfarm [-s SLOPE] [-e NENS] [-n NF] [-r REGION] [-w WEIGHTS]
         #                               [-o OUTFILE] [-v VARNAME] [-g] [-c]
