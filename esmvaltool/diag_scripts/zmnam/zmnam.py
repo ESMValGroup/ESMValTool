@@ -57,7 +57,6 @@ def main(cfg):
     fig_fmt = cfg['output_file_type']
 
     # Import full diagnostic routines
-    #sys.path.append(cfg['path_diag_aux'])
     from zmnam_calc import zmnam_calc
     from zmnam_plot import zmnam_plot
     from zmnam_preproc import zmnam_preproc
@@ -94,7 +93,8 @@ def main(cfg):
         # Call diagnostics functions
         zmnam_preproc(ifile)
         zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props,fig_fmt)
+        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props,
+                   fig_fmt, write_plots)
 
 
 # Run the diagnostics
