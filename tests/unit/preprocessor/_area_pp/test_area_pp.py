@@ -6,11 +6,14 @@ import unittest
 
 import iris
 import numpy as np
+from cf_units import Unit
 
 import tests
 
 from esmvaltool.preprocessor._area_pp import area_slice as extract_region
 from esmvaltool.preprocessor._area_pp import area_average as average_region
+from esmvaltool.preprocessor._area_pp import extract_named_regions
+
 # from esmvaltool.preprocessor._area_pp import area_average_general as avg_gen
 
 
@@ -84,6 +87,44 @@ class Test(tests.Test):
         result = extract_region(self.negative_grid, -0.5, 0.5, -0.5, 0.5)
         expected = np.ones((2, 2))
         self.assertArrayEqual(result.data, expected)
+
+    def test_extract_named_region(self):
+        """Test for extracting a named region."""
+        # tests:
+        # Create a cube with regions
+        times = np.array([15., 45., 75.])
+        bounds = np.array([[0., 30.], [30., 60.], [60., 90.]])
+        time = iris.coords.DimCoord(
+            times,
+            bounds=bounds,
+            standard_name='time',
+            units=Unit('days since 1950-01-01', calendar='gregorian'))
+
+        regions = ['region1', 'region2', 'region3']
+        region = iris.coords.AuxCoord(
+            regions,
+            standard_name='region',
+            units='1',
+            )
+        data = np.ones((3, 3))
+        region_cube = iris.cube.Cube(data,
+                                     dim_coords_and_dims=[(time, 0)],
+                                     aux_coords_and_dims=[(region, 1)])
+
+        # test string region
+        result1 = extract_named_regions(region_cube, 'region1')
+        expected = np.ones((3, ))
+        self.assertArrayEqual(result1.data, expected)
+
+        # test list of regions
+        result2 = extract_named_regions(region_cube, ['region1', 'region2'])
+        expected = np.ones((3, 2))
+        self.assertArrayEqual(result2.data, expected)
+
+        # test for expected failures:
+        with self.assertRaises(ValueError):
+            result3 = extract_named_regions(region_cube, 'reg_A')
+            result4 = extract_named_regions(region_cube, ['region1', 'reg_A'])
 
 
 if __name__ == '__main__':
