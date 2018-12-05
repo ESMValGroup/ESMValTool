@@ -7,11 +7,9 @@
 ;; Description
 ;;    Evaluation of stratosphere-troposphere coupling
 ;;    based on EOF/PC analysis of the geopotential height field
-;;    
 ;; Modification history
 ;;    20180512-A_serv_fe: Added output netCDFs, more use of preprocessor
 ;;    20180510-A_serv_fe: Routines written.
-;;
 ;;#############################################################################
 """
 
@@ -19,7 +17,7 @@ import yaml
 import sys
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-
+import warnings
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
@@ -32,7 +30,6 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(__name__)
 
-import warnings
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
@@ -73,14 +70,13 @@ def main(cfg):
 
         # Collect file names
         filenames_cat.append(key)
- 
+
         # Collect relevant information for outputs naming
-        fileprops_cat.append([value['project'],
-                             value['dataset'],
-                             value['exp'],
-                             value['ensemble'],
-                             str(value['start_year'])+'-'
-                             +str(value['end_year'])])
+        fileprops_cat.append([
+            value['project'], value['dataset'], value['exp'],
+            value['ensemble'],
+            str(value['start_year']) + '-' + str(value['end_year'])
+        ])
 
     os.chdir(out_dir)
 
@@ -93,8 +89,8 @@ def main(cfg):
         # Call diagnostics functions
         zmnam_preproc(ifile)
         zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props,
-                   fig_fmt, write_plots)
+        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props, fig_fmt,
+                   write_plots)
 
 
 # Run the diagnostics

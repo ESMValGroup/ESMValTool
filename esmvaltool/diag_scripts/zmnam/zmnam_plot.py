@@ -8,7 +8,7 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 
 
-def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
+def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
     figs_path = figfolder
     fig_num = 1
@@ -49,19 +49,23 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
     print('mo full dims', dims)
 
     # Double check on lat/lon names, possibly redundant
-    if 'latitude' in dims: latn = 'latitude'
-    if 'lat' in dims: latn = 'lat'
-    if 'longitude' in dims: lonn = 'longitude'
-    if 'lon' in dims: lonn = 'lon'
+    if 'latitude' in dims:
+        latn = 'latitude'
+    if 'lat' in dims:
+        latn = 'lat'
+    if 'longitude' in dims:
+        lonn = 'longitude'
+    if 'lon' in dims:
+        lonn = 'lon'
     lat = np.array(in_file.variables[latn][:])
     lon = np.array(in_file.variables[lonn][:])
 
     zg_mo = np.array(in_file.variables['zg'][:])
 
     # Record attributes for output netCDFs
-    time_nam = in_file.variables['time'].long_name 
-    time_uni = in_file.variables['time'].units 
-    time_cal = in_file.variables['time'].calendar 
+    time_nam = in_file.variables['time'].long_name
+    time_uni = in_file.variables['time'].units
+    time_cal = in_file.variables['time'].calendar
 
     lev_nam = in_file.variables['plev'].long_name
     lev_uni = in_file.variables['plev'].units
@@ -83,9 +87,8 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
         mm = nc4.num2date(time_mo, time_mo_uni, time_mo_cal)[i_date].month
         date_list.append(str(yy) + '-' + str(mm))
 
-
     # Prepare array for outputting regression maps (lev/lat/lon)
-    regr_arr = np.zeros((len(lev),len(lat),len(lon)),dtype='f')
+    regr_arr = np.zeros((len(lev), len(lat), len(lon)), dtype='f')
 
     for i_lev in np.arange(len(lev)):
 
@@ -96,43 +99,47 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
         # Make only a few ticks
         plt.xticks(time_mo[0:len(time_mo) + 1:60],
                    date_list[0:len(time_mo) + 1:60])
-        plt.title(str(int(lev[i_lev]))+' Pa  '+\
-        src_props[1]+' '+src_props[2])
+        plt.title(str(int(lev[i_lev])) + ' Pa  ' +
+                  src_props[1] + ' ' + src_props[2])
         plt.xlabel('Time')
         plt.ylabel('Zonal mean NAM')
 
         if write_plots:
-            plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]))+'Pa_mo_ts.'+fig_fmt,format=fig_fmt)
+            plt.savefig(figfolder + '_'.join(src_props) + '_' +
+                        str(int(lev[i_lev])) + 'Pa_mo_ts.' +
+                        fig_fmt, format=fig_fmt)
 
         plt.figure()
-        
+
         # PDF of the daily PC
         plt.figure()
         min_var = -5
         max_var = 5
         n_bars = 50
 
-        n, bins, patches = plt.hist(pc_da[:,i_lev], n_bars, density=True, \
-        range=(min_var,max_var), facecolor='b', alpha=0.75)
+        n, bins, patches = plt.hist(pc_da[:, i_lev], n_bars, density=True,
+                                    range=(min_var, max_var), facecolor='b',
+                                    alpha=0.75)
 
         # Reference normal Gaussian
         mu = 0.
         sigma = 1.
-        plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * \
-                 np.exp( - (bins - mu)**2 / (2 * sigma**2) ),\
-                 linewidth=2, color='k',linestyle='--')
+        plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) *
+                 np.exp(- (bins - mu)**2 / (2 * sigma**2)),
+                 linewidth=2, color='k', linestyle='--')
 
         plt.xlim(min_var, max_var)
-        plt.title('Daily PDF ' + str(int(lev[i_lev]))+\
-        ' Pa  '+src_props[1]+' '+src_props[2])
+        plt.title('Daily PDF ' + str(int(lev[i_lev])) +
+                  ' Pa  ' + src_props[1] + ' '+src_props[2])
         plt.xlabel('Zonal mean NAM')
         plt.ylabel('Normalized probability')
         plt.tight_layout()
 
-        if write_plots: 
-            plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]))+'Pa_da_pdf.'+fig_fmt,format=fig_fmt)
+        if write_plots:
+            plt.savefig(figfolder + '_'.join(src_props) + '_' +
+                        str(int(lev[i_lev])) + 'Pa_da_pdf.' +
+                        fig_fmt, format=fig_fmt)
+
         plt.close('all')
 
         # Regression of 3D zg field onto monthly PC
@@ -143,8 +150,10 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
             for k_lon in np.arange(len(lon)):
 
                 # Following BT09, the maps are Z_m^l*PC_m^l/|PC_m^l|^2
-                slope[j_lat,k_lon] = np.dot(zg_mo[:,i_lev,j_lat,k_lon],pc_mo[:,i_lev])/\
-                np.dot(pc_mo[:,i_lev],pc_mo[:,i_lev])
+                slope[j_lat, k_lon] = np.dot(zg_mo[:, i_lev, j_lat, k_lon],
+                                             (pc_mo[:, i_lev]) /
+                                             np.dot(pc_mo[:, i_lev],
+                                             pc_mo[:, i_lev]))
 
         # Plots of regression maps
         plt.figure()
@@ -164,18 +173,22 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
 
         lons, lats = np.meshgrid(lonw, lat)
 
-        bkg_plot = plt.contourf(lonw,lat,slopew,colors=('#cccccc','#ffffff'),\
-        levels=[-10000,0,10000],transform=ccrs.PlateCarree())
+        bkg_plot = plt.contourf(lonw, lat, slopew,
+                                colors=('#cccccc', '#ffffff'),
+                                levels=[-10000, 0, 10000],
+                                transform=ccrs.PlateCarree())
 
         # Switch temporarily to solid negative lines
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
-        regr_map = plt.contour(lonw,lat,slopew,levels=regr_levs,\
-        colors='k',transform=ccrs.PlateCarree(),zorder=5)
+        regr_map = plt.contour(lonw, lat, slopew, levels=regr_levs,
+                               colors='k', transform=ccrs.PlateCarree(),
+                               zorder=5)
 
         # Invisible contours, only for labels.
         # Workaround for cartopy issue, as of Dec 18
-        inv_map = plt.contour(lonw,lat,slopew,levels=regr_levs,\
-        colors='k',transform=ccrs.PlateCarree(),zorder=10)
+        inv_map = plt.contour(lonw, lat, slopew, levels=regr_levs,
+                              colors='k', transform=ccrs.PlateCarree(),
+                              zorder=10)
 
         mpl.rcParams['contour.negative_linestyle'] = 'dashed'
 
@@ -187,25 +200,26 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
         ax.coastlines()
         ax.set_global()
 
-        plt.text(0.20, 0.80, str(int(lev[i_lev]))+ ' Pa', \
-        fontsize=12, transform=plt.gcf().transFigure)
-        plt.text(0.75, 0.80, src_props[1],\
-        fontsize=12, transform=plt.gcf().transFigure)
-        plt.text(0.75, 0.75, src_props[2],\
-        fontsize=12, transform=plt.gcf().transFigure)
+        plt.text(0.20, 0.80, str(int(lev[i_lev])) + ' Pa',
+                 fontsize=12, transform=plt.gcf().transFigure)
+        plt.text(0.75, 0.80, src_props[1],
+                 fontsize=12, transform=plt.gcf().transFigure)
+        plt.text(0.75, 0.75, src_props[2],
+                 fontsize=12, transform=plt.gcf().transFigure)
 
         if write_plots:
-            plt.savefig(figfolder+'_'.join(src_props)+'_'+\
-            str(int(lev[i_lev]))+'Pa_mo_reg.'+fig_fmt,format=fig_fmt)
+            plt.savefig(figfolder + '_'.join(src_props) + '_' +
+                        str(int(lev[i_lev])) + 'Pa_mo_reg.' + fig_fmt,
+                        format=fig_fmt)
+
         plt.close('all')
 
         # Save regression results in array
-        regr_arr[i_lev,:,:] = slope
+        regr_arr[i_lev, :, :] = slope
 
-
-    # Save 3D regression results in output netCDF    
-    file_out = nc4.Dataset(datafolder+'_'.join(src_props)+'_regr_map.nc', \
-    mode='w',format = 'NETCDF3_CLASSIC')
+    # Save 3D regression results in output netCDF
+    file_out = nc4.Dataset(datafolder + '_'.join(src_props) + '_regr_map.nc',
+                           mode='w', format='NETCDF3_CLASSIC')
 
     file_out.title = 'Zonal mean annular mode (4)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
@@ -221,7 +235,7 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
     time_var.setncattr('long_name', time_nam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
-    time_var[:] = 0 # singleton
+    time_var[:] = 0  # singleton
     #
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
     lev_var.setncattr('long_name', lev_nam)
@@ -240,17 +254,15 @@ def zmnam_plot(datafolder,figfolder,src_props,fig_fmt,write_plots):
     lon_var.setncattr('axis', lon_axi)
     lon_var[:] = lon[:]
     #
-    regr_var = file_out.createVariable('regr', 'f', ('plev', 'lat','lon'))
+    regr_var = file_out.createVariable('regr', 'f', ('plev', 'lat', 'lon'))
     regr_var.setncattr('long_name', 'Zonal mean annular mode regression map')
-    regr_var.setncattr('comment',
-                       'Reference: Baldwin and Thompson '+ 
-                       '(2009), doi:10.1002/qj.479')
-    regr_var[:] = regr_arr[:, :,:]
+    regr_var.setncattr(
+        'comment',
+        'Reference: Baldwin and Thompson ' + '(2009), doi:10.1002/qj.479')
+    regr_var[:] = regr_arr[:, :, :]
     #
     file_out.close()
 
     return
-
-
 
     return
