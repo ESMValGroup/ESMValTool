@@ -1,20 +1,16 @@
+""" Read netCDF file of 3Dfield."""
+
 # Standard packages
-from netCDF4 import Dataset, num2date, date2num, datetime
-import numpy as np
+from netCDF4 import Dataset, num2date, datetime
 import os
+import numpy as np
 
 
 def read3Dncfield(ifile):
-    '''
-    GOAL
-        Read netCDF file of 3Dfield
-    USAGE
-        var, lat, lon, dates = read3Dncfield(filename)
-    '''
-    # --------------------------------------------------------------------
-    # print('__________________________________________________________')
-    # print('Reading the 3D field [time x lat x lon]: \n{0}'.format(ifile))
-    # --------------------------------------------------------------------
+    """ Read netCDF file of 3Dfield.
+
+    USAGE: var, lat, lon, dates = read3Dncfield(filename)
+    """
     fh = Dataset(ifile, mode='r')
     variabs = []
     for variab in fh.variables:
@@ -33,22 +29,18 @@ def read3Dncfield(ifile):
     time_units = fh.variables['time'].units
     var_units = fh.variables[variabs[0]].units
     var = fh.variables[variabs[0]][:, :, :]
-    txt = '{0} dimension [time x lat x lon]: {1}'.format(variabs[0], var.shape)
-    # print(fh.variables)
+    # txt = '{0} dimension [time x lat x lon]: {1}'.format(variabs[0], var.shape)
     dates = num2date(time, time_units)
     fh.close()
 
-    # print('\n'+txt)
     return var, var_units, lat, lon, dates, time_units
 
 
 def save_N_2Dfields(lats, lons, variab, varname, varunits, ofile):
-    '''
-    GOAL
-        Save var in ofile netCDF file
-    USAGE
-        save a number N of 2D fields [latxlon]
-    '''
+    """ Save var in ofile netCDF file.
+
+        Save a number N of 2D fields [latxlon]
+    """
     try:
         os.remove(ofile)  # Remove the outputfile
     except OSError:

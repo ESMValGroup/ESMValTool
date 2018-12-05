@@ -1,23 +1,23 @@
-# *********************************
-#            ens_anom            *
-# *********************************
+""" Computation of ensemble anomalies based on a desired value. """
 
 # Standard packages
-import numpy as np
 import sys
+import numpy as np
 import os
 from scipy import stats
 
 
-def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
+def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
              area, extreme):
-    '''
-    \nGOAL: Computation of the ensemble anomalies based on the desired value
+
+    """ Ensemble anomalies.
+ 
+    Computation of the ensemble anomalies based on the desired value
     from the input variable (it can be the percentile, mean, maximum, standard
     deviation or trend)
     OUTPUT: NetCDF files of ensemble mean of climatology, selected value and
     anomaly maps.
-    '''
+    """
     # User-defined packages
     from read_netcdf import read3Dncfield, save_N_2Dfields
     from sel_season_area import sel_season, sel_area
@@ -36,7 +36,7 @@ def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
 
         # Convertion from kg m-2 s-1 to mm/day
         if varunits == 'kg m-2 s-1':
-            var = var*86400  # there are 86400 seconds in a day
+            var = var * 86400  # there are 86400 seconds in a day
             varunitsnew = 'mm/day'
         else:
             varunitsnew = varunits
@@ -95,9 +95,9 @@ def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
         for i in range(numens):
             for la in range(var_ens[0].shape[1]):
                 for lo in range(var_ens[0].shape[2]):
-                    slope, intercept, r_value, p_value,
-                    std_err = stats.linregress(range(var_ens[0].shape[0]),
-                                               var_ens[i][:, la, lo])
+                    slope, intercept, r_value, p_value, std_err = \
+                        stats.linregress(range(var_ens[0].shape[0]), 
+                                         var_ens[i][:, la, lo])
                     trendmap[la, lo] = slope
             trendmap_ens.append(trendmap)
         varextreme_ens = trendmap_ens
@@ -110,9 +110,9 @@ def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
     print('------------------------------------------------------------\n')
 
     # Compute and save the anomalies with respect to the ensemble
-    ens_anomalies = varextreme_ens_np-np.mean(varextreme_ens_np, axis=0)
+    ens_anomalies = varextreme_ens_np - np.mean(varextreme_ens_np, axis=0)
     varsave = 'ens_anomalies'
-    ofile = os.path.join(dir_OUTPUT, 'ens_anomalies_{0}.nc'
+    ofile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
                          .format(name_outputs))
     # print(ofile)
     print('Save the anomalies with respect to the ensemble:')
@@ -125,7 +125,7 @@ def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
     vartimemean_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
     ens_climatologies = np.array(vartimemean_ens)
     varsave = 'ens_climatologies'
-    ofile = os.path.join(dir_OUTPUT, 'ens_climatologies_{0}.nc'
+    ofile = os.path.join(dir_output, 'ens_climatologies_{0}.nc'
                          .format(name_outputs))
     # print(ofile)
     print('Save the climatology:')
@@ -135,7 +135,7 @@ def ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens, season,
     # Save the extreme
     ens_extreme = varextreme_ens_np
     varsave = 'ens_extreme'
-    ofile = os.path.join(dir_OUTPUT, 'ens_extreme_{0}.nc'.format(name_outputs))
+    ofile = os.path.join(dir_output, 'ens_extreme_{0}.nc'.format(name_outputs))
     # print(ofile)
     print('Save the extreme:')
     save_N_2Dfields(lat_area, lon_area, ens_extreme, varsave,
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     print('Running {0}'.format(sys.argv[0]))
     print('**************************************************************')
     filenames = sys.argv[1].split()  # input file names
-    dir_OUTPUT = sys.argv[2]         # OUTPUT DIRECTORY
+    dir_output = sys.argv[2]         # OUTPUT DIRECTORY
     name_outputs = sys.argv[3]       # name of the outputs
     varname = sys.argv[4]            # variable name
     numens = int(sys.argv[5])        # number of ensemble members
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     area = sys.argv[7]               # regional average
     extreme = sys.argv[8]            # chosen extreme to investigate
 
-    ens_anom(filenames, dir_OUTPUT, name_outputs, varname, numens,
+    ens_anom(filenames, dir_output, name_outputs, varname, numens,
              season, area, extreme)
 
 else:

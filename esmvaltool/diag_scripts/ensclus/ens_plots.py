@@ -1,25 +1,18 @@
-# *********************************
-#           ens_plots            *
-# *********************************
+""" Plot the chosen field for each ensemble."""
 
 # Standard packages
 import os
 import sys
-from netCDF4 import Dataset
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 # from mpl_toolkits.basemap import Basemap
-import math
 import cartopy.crs as ccrs
 
 
-def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
-    '''
-    \nGOAL:
-    Plot the chosen field for each ensemble
-    NOTE:
-    '''
+def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
 
+    """ Plot the chosen field for each ensemble."""
     # User-defined libraries
     from read_netcdf import read_N_2Dfields
 
@@ -32,14 +25,14 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     exp = name_outputs.split("_")[-1]
 
     # Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
-    ifile = os.path.join(dir_OUTPUT, 'ens_anomalies_{0}.nc'
+    ifile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
                                      .format(name_outputs))
     vartoplot, varunits, lat, lon = read_N_2Dfields(ifile)
     print('vartoplot dim: (numens x lat x lon)={0}'.format(vartoplot.shape))
     numens = vartoplot.shape[0]
 
     # ____________Load labels
-    namef = os.path.join(dir_OUTPUT, 'labels_{0}.txt'.format(name_outputs))
+    namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
     labels = np.loadtxt(namef, dtype=int)
     print(labels)
 
@@ -49,17 +42,17 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     if field_to_plot == 'anomalies':
         # compute range colorbar for anomalies
         delta = 0.05
-        if abs(math.floor(mi*100)/100) < math.ceil(ma*100)/100:
-            rangecbarmin = -math.ceil(ma*100)/100
-            rangecbarmax = math.ceil(ma*100)/100+delta
+        if abs(math.floor(mi*100)/100) < math.ceil(ma*100) / 100:
+            rangecbarmin = -math.ceil(ma*100) / 100
+            rangecbarmax = math.ceil(ma*100) / 100 + delta
         else:
-            rangecbarmin = math.floor(mi*100)/100
-            rangecbarmax = abs(math.floor(mi*100)/100)+delta
+            rangecbarmin = math.floor(mi*100) / 100
+            rangecbarmax = abs(math.floor(mi*100) / 100) + delta
     else:
         # compute range colorbar for climatologies
         delta = 0.2
         rangecbarmin = math.floor(mi)
-        rangecbarmax = math.ceil(ma)+delta
+        rangecbarmax = math.ceil(ma) + delta
 
     clevels = np.arange(rangecbarmin, rangecbarmax, delta)
     # clevels=np.arange(2,44,delta)
@@ -70,8 +63,8 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
 
     proj = ccrs.PlateCarree()
 
-    x = int(np.ceil(np.sqrt(numens*1.6)))
-    y = int(np.ceil(numens/x))
+    x = int(np.ceil(np.sqrt(numens * 1.6)))
+    y = int(np.ceil(numens / x))
     print(x, y)
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
@@ -102,8 +95,8 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
     cb = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cb.ax.tick_params(labelsize=18)
 
-    plt.suptitle(exp+' '+kind+' '+varname+' '+tit+' ('+varunits+')',
-                 fontsize=45, fontweight='bold')
+    plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + tit + ' (' + 
+                 varunits + ')', fontsize=45, fontweight='bold')
 
     plt.subplots_adjust(top=0.85)
     top = 0.89     # the top of the subplots of the figure
@@ -116,11 +109,11 @@ def ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot):
                         wspace=wspace, hspace=hspace)
 
     # plot the selected fields
-    namef = os.path.join(dir_PLOT, '{0}_{1}.eps'
+    namef = os.path.join(dir_plot, '{0}_{1}.eps'
                          .format(field_to_plot, name_outputs))
     fig.savefig(namef)  # bbox_inches='tight')
     print('An eps figure for the selected fields is saved in {0}'
-          .format(dir_PLOT))
+          .format(dir_plot))
     print('___________________________________________________\
            _________________________________________________________________')
 
@@ -132,15 +125,15 @@ if __name__ == '__main__':
     print('**************************************************************')
     print('Running {0}'.format(sys.argv[0]))
     print('**************************************************************')
-    dir_OUTPUT = sys.argv[1]     # OUTPUT DIRECTORY
-    dir_PLOT = sys.argv[2]       # OUTPUT PLOT DIRECTORY
+    dir_output = sys.argv[1]     # OUTPUT DIRECTORY
+    dir_plot = sys.argv[2]       # OUTPUT PLOT DIRECTORY
     name_outputs = sys.argv[3]   # name of the outputs
     numclus = int(sys.argv[4])   # number of clusters
     field_to_plot = sys.argv[5]
     # field to plot ('climatologies', 'anomalies', '75th_percentile', 'mean',
     # 'maximum', 'std', 'trend')
 
-    ens_plots(dir_OUTPUT, dir_PLOT, name_outputs, numclus, field_to_plot)
+    ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot)
 
 else:
     print('ens_plots is being imported from another module')
