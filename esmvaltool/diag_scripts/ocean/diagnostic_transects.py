@@ -48,6 +48,11 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def titlify(title):
     """
     Check whether a title is too long then add it to current figure.
+
+    Parameters
+    ----------
+    title: str
+        The title for the figure.
     """
     cutoff = 40
     if len(title) > cutoff:
@@ -79,8 +84,12 @@ def determine_transect_str(cube, region=''):
         return region
 
     options = ['latitude', 'longitude']
+    cube_dims =  [c.standard_name for c in cube.coords()]
     for option in options:
+        if option not in cube_dims:
+            continue
         coord = cube.coord(option)
+
         if len(coord.points) > 1:
             continue
         value = coord.points.mean()
