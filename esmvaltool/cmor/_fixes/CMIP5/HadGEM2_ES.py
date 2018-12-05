@@ -8,26 +8,26 @@ from ..fix import Fix
 class allvars(Fix):
     """Fixes common to all vars"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fixes latitude
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        lats = cube.coords('latitude')
+        lats = cubes.coords('latitude')
         if lats:
-            lat = cube.coord('latitude')
+            lat = cubes.coord('latitude')
             lat.points = np.clip(lat.points, -90., 90.)
             lat.bounds = np.clip(lat.bounds, -90., 90.)
 
-        return cube
+        return cubes
 
 
 class o2(Fix):

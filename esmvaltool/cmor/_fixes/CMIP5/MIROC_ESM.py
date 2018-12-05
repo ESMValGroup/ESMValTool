@@ -33,7 +33,7 @@ class tro3(Fix):
 class co2(Fix):
     """Fixes for co2"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -41,15 +41,15 @@ class co2(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        cube.units = cf_units.Unit('1.0e-6')
-        return cube
+        cubes[0].units = cf_units.Unit('1.0e-6')
+        return cubes
 
 
 class gpp(Fix):

@@ -7,7 +7,7 @@ from ..fix import Fix
 class xco2Stderr(Fix):
     """Fixes for xco2Stderr"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -15,7 +15,7 @@ class xco2Stderr(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
             Cube to fix
 
         Returns
@@ -23,7 +23,7 @@ class xco2Stderr(Fix):
         iris.cube.Cube
 
         """
-        cube.units = cf_units.Unit('1.0e-6')
+        cubes[0].units = cf_units.Unit('1.0e-6')
         return cube
 
     def fix_data(self, cube):
@@ -57,7 +57,7 @@ class xco2Stddev(xco2Stderr):
 class xch4Stderr(Fix):
     """Fixes for xch4Stderr"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -65,7 +65,7 @@ class xch4Stderr(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
             Cube to fix
 
         Returns
@@ -73,8 +73,8 @@ class xch4Stderr(Fix):
         iris.cube.Cube
 
         """
-        cube.units = cf_units.Unit('1.0e-9')
-        return cube
+        cubes[0].units = cf_units.Unit('1.0e-9')
+        return cubes
 
     def fix_data(self, cube):
         """

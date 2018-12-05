@@ -29,7 +29,7 @@ class sftof(Fix):
 class snw(Fix):
     """Fixes for snw"""
 
-    def fix_metadata(self, cube):
+    def fix_data(self, cube):
         """
         Fix data
 

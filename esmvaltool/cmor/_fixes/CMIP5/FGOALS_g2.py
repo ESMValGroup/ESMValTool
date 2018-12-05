@@ -7,7 +7,7 @@ from ..fix import Fix
 class allvars(Fix):
     """Fixes common to all vars"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -15,13 +15,13 @@ class allvars(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        time = cube.coord('time')
+        time = cubes[0].coord('time')
         time.units = Unit(time.units.name, time.units.calendar)
-        return cube
+        return cubes

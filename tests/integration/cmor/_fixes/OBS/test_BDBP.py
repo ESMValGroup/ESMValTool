@@ -14,7 +14,7 @@ class TestTro3prof(unittest.TestCase):
         self.fix = tro3prof()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.coord('air_pressure').units.origin, 'Pa')
         self.assertEqual(cube.coord('air_pressure').points[0], 100)
         self.assertEqual(cube.coord('air_pressure').points[1], 200)

@@ -8,7 +8,7 @@ from ..fix import Fix
 class rlut(Fix):
     """Fixes for rlut"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix data
 
@@ -16,13 +16,14 @@ class rlut(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
+        cube = cubes[0]
         lat = cube.coord('latitude')
         lat.points = np.round(lat.points, 3)
         lat.bounds = np.round(lat.bounds, 3)
@@ -58,13 +59,13 @@ class so(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        cube.units = '1e3'
+        cubes.units = '1e3'
 
-        return cube
+        return cubes

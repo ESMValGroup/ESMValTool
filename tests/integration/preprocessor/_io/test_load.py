@@ -36,16 +36,15 @@ class TestLoad(unittest.TestCase):
         descriptor, temp_file = tempfile.mkstemp('.nc')
         os.close(descriptor)
         iris.save(cube, temp_file)
-        self.temp_files.append(temp_file)
+        self.temp_file = temp_file
         return temp_file
 
-    def test_load_multiple(self):
+    def test_load(self):
         """Test loading multiple files."""
-        for _ in range(2):
-            cube = _create_sample_cube()
-            self._save_cube(cube)
+        cube = _create_sample_cube()
+        self._save_cube(cube)
 
-        cubes = _io.load_cubes(self.temp_files, 'filename', None)
+        cubes = _io.load_cubes(self.temp_file, 'filename', None)
         cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
@@ -62,7 +61,7 @@ class TestLoad(unittest.TestCase):
             self._save_cube(cube)
 
         cubes = _io.load_cubes(
-            self.temp_files,
+            self.temp_file,
             'filename',
             None,
             callback=_io.concatenate_callback)
@@ -80,7 +79,7 @@ class TestLoad(unittest.TestCase):
         self._save_cube(cube)
 
         cubes = _io.load_cubes(
-            self.temp_files,
+            self.temp_file,
             'filename',
             None,
             callback=_io.concatenate_callback)

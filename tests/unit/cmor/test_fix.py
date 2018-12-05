@@ -41,14 +41,14 @@ class TestFixMetadata(unittest.TestCase):
         self.cube = mock.Mock()
         self.fixed_cube = mock.Mock()
         self.mock_fix = mock.Mock()
-        self.mock_fix.fix_metadata.return_value = self.fixed_cube
+        self.mock_fix.fix_metadata.return_value = [[self.fixed_cube]]
 
     def test_fix(self):
         """Check that the returned fix is applied"""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[self.mock_fix]):
-            cube_returned = fix_metadata(self.cube, 'short_name', 'project',
-                                         'model')
+            cube_returned = fix_metadata([self.cube], 'short_name', 'project',
+                                         'model')[0]
             self.assertTrue(cube_returned is not self.cube)
             self.assertTrue(cube_returned is self.fixed_cube)
 
@@ -56,8 +56,8 @@ class TestFixMetadata(unittest.TestCase):
         """Check that the same cube is returned if no fix is available"""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[]):
-            cube_returned = fix_metadata(self.cube, 'short_name', 'project',
-                                         'model')
+            cube_returned = fix_metadata([self.cube], 'short_name', 'project',
+                                         'model')[0]
             self.assertTrue(cube_returned is self.cube)
             self.assertTrue(cube_returned is not self.fixed_cube)
 
@@ -69,7 +69,7 @@ class TestFixMetadata(unittest.TestCase):
                         return_value=[]):
             with mock.patch('esmvaltool.cmor.fix._get_cmor_checker',
                             return_value=checker) as get_mock:
-                fix_metadata(self.cube, 'short_name', 'project',
+                fix_metadata([self.cube], 'short_name', 'project',
                              'model', 'cmor_table', 'mip')
                 get_mock.assert_called_once_with(automatic_fixes=True,
                                                  fail_on_error=False,

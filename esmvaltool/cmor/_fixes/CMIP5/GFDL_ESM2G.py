@@ -4,7 +4,6 @@ from iris.coords import AuxCoord
 from ..fix import Fix
 
 
-
 class allvars(Fix):
     """Common fixes"""
 
@@ -43,7 +42,6 @@ class allvars(Fix):
         except iris.exceptions.ConstraintMismatchError:
             return None
 
-
     def _add_aux_coord(self, target, cube):
         if cube is None:
             return
@@ -55,6 +53,7 @@ class allvars(Fix):
             units=cube.units,
         )
         target.add_aux_coord(coordinate, target.coord_dims('time'))
+
 
 class co2(Fix):
     """Fixes for co2"""

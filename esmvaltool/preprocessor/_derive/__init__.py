@@ -105,7 +105,7 @@ def derive(cubes, variable, fx_files=None):
     cube.attributes['_filename'] = variable['filename']
     cube.attributes['metadata'] = yaml.safe_dump(variable)
 
-    return  iris.cube.CubeList((cube,))
+    return iris.cube.CubeList((cube,))
 
 
 def get_all_derived_variables():

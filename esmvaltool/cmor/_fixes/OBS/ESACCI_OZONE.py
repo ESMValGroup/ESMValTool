@@ -7,7 +7,7 @@ from ..fix import Fix
 class tro3prof(Fix):
     """Fixes for tro3prof"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -15,13 +15,14 @@ class tro3prof(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
+        cube = cubes[0]
         old = cube.coord('air_pressure')
         dims = cube.coord_dims(old)
         cube.remove_coord(old)
@@ -36,4 +37,6 @@ class tro3prof(Fix):
         plev.long_name = 'Pressure '
         plev.units = cf_units.Unit('Pa')
         cube.add_dim_coord(plev, dims)
-        return cube
+        cubes = iris.cube.CubeList()
+        cubes.append(cube)
+        return cubes

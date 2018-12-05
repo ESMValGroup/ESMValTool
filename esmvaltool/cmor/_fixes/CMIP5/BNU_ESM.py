@@ -7,7 +7,7 @@ from ..fix import Fix
 class fgco2(Fix):
     """Fixes for fgco2"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -15,15 +15,15 @@ class fgco2(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        cube.units = Unit('kg m-2 s-1')
-        return cube
+        cubes[0].units = Unit('kg m-2 s-1')
+        return cubes
 
     def fix_data(self, cube):
         """

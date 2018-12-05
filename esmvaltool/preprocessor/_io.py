@@ -53,16 +53,6 @@ def load_cubes(datafile, filename, metadata, callback=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", datafile)
     raw_cubes = iris.load_raw(datafile, callback=callback)
-    try:
-        constraint = iris.Constraint(
-            cube_func=lambda cube: cube.var_name == metadata['short_name']
-        )
-        data_cube = raw_cubes.extract_strict(constraint)
-        data_cube.standard_name = metadata['standard_name']
-        data_cube.long_name = metadata['long_name']
-    except iris.exceptions.ConstraintMismatchError:
-        pass
-
     if not raw_cubes:
         raise Exception('Can not load cubes from {0}'.format(datafile))
     iris.util.unify_time_units(raw_cubes)

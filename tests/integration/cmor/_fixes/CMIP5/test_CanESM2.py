@@ -12,6 +12,6 @@ class TestCanESM2Fgco2(unittest.TestCase):
         self.fix = fgco2()
 
     def test_fix_data(self):
-        cube = self.fix.fix_data(self.cube)
+        cube = self.fix.fix_data([self.cube])[0]
         self.assertEqual(cube.data[0], 12.0 / 44.0)
         self.assertEqual(cube.units, Unit('J'))
