@@ -1,6 +1,6 @@
 """
-Diagnostic tools:
------------------
+Diagnostic tools
+================
 
 This module contains several python tools used elsewhere by the ocean
 diagnostics package.
@@ -13,8 +13,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-
+import yaml
 import cftime
+import matplotlib
+matplotlib.use('Agg')  # noqa
+
+import numpy as np
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
