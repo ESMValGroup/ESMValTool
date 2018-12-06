@@ -19,10 +19,10 @@ import logging
 import warnings
 import yaml
 import matplotlib.pyplot as plt
-from esmvaltool.diag_scripts.shared import\
-     (run_diagnostic, save_iris_cube, variables_available, extract_variables)
+from esmvaltool.diag_scripts.shared import run_diagnostic, save_iris_cube,\
+    variables_available, extract_variables
 
-plt.switch_backend('Agg')
+# plt.switch_backend('Agg')
 
 logger = logging.getLogger(__name__)
 
