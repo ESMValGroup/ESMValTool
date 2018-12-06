@@ -176,6 +176,10 @@ begin
   if (isvar("refname")) then
     ; set reference model
     ref_ind = ind(names .eq. refname)
+    if (ismissing(ref_ind)) then
+      log_info("warning: reference dataset (" + refname + ") not found.")
+      ref_ind = -1
+    end if
   end if
 
   climofiles = metadata_att_as_array(info0, "filename")
@@ -359,6 +363,10 @@ begin
       data1@res_cnLevels            = ispan(10, 200, 10) * 0.001
     end if
 
+    if (var0.eq."clwvi") then
+      data1@res_cnLevels            = ispan(10, 300, 10) * 0.001
+    end if
+
     if (var0.eq."swcre") then
       data1@res_cnLevels            = ispan(-100, 0, 10)
     end if
@@ -402,7 +410,7 @@ begin
     end if
 
     if (.not. isatt(data1, "res_cnLevels")) then
-      log_info(DIAG_SCRIPT + " (var: " + variables(0) + "):")
+      log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
       log_info("info: using default contour levels")
       data1@res_cnLevels = fspan(min(data1), max(data1), 20)
     end if
@@ -461,10 +469,10 @@ begin
     corr = corr@_FillValue
     gavg = gavg@_FillValue
 
-    if (.not.all(ismissing(data1)) .and. (ref_ind .ge. 0)) then
+    if (.not.all(ismissing(data1))) then
       if (numseas.gt.1) then
         do is = 0, numseas - 1
-          if (same_grid) then
+          if (same_grid .and. (ref_ind .ge. 0)) then
             corr(is) = calculate_metric(ref_data(is, :, :), data1(is, :, :), \
                                         "correlation")
           end if
@@ -472,7 +480,7 @@ begin
                                      "average", True)
         end do
       else
-        if (same_grid) then
+        if (same_grid .and. (ref_ind .ge. 0)) then
           corr(0) = calculate_metric(ref_data, data1, "correlation")
         end if
         gavg(0) = area_operations(data1, -90., 90., 0., 360., "average", True)
@@ -530,7 +538,11 @@ begin
         else
           data1@res_gsnRightString = ""
         end if
-        data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
+        if (.not.ismissing(gavg(is))) then
+          data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
+        else
+          data1@res_gsnLeftString = ""
+        end if
 
         if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
           data1@res_gsnRightString = ""
@@ -555,7 +567,11 @@ begin
       else
         data1@res_gsnRightString = ""
       end if
-      data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
+      if (.not.ismissing(gavg(0))) then
+        data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
+      else
+        data1@res_gsnLeftString = ""
+      end if
 
       if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
         data1@res_gsnRightString = ""
@@ -686,6 +702,10 @@ begin
         end if
 
         if (var0.eq."clivi") then
+          diff@res_cnLevels           = ispan(-70, 70, 10) * 0.001
+        end if
+
+        if (var0.eq."clwvi") then
           diff@res_cnLevels           = ispan(-50, 50, 10) * 0.001
         end if
 
@@ -724,7 +744,7 @@ begin
         ; ******************************************************
 
         if (.not. isatt(diff, "res_cnLevels")) then
-          log_info(DIAG_SCRIPT + " (var: " + variables(0) + "):")
+          log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
           log_info("info: using default contour levels")
           diff@res_cnLevels = fspan(min(diff), max(diff), 20)
         end if
