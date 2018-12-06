@@ -228,4 +228,4 @@ def run():
             logger.info("If this data is further needed, then")
             logger.info("set remove_preproc_dir to false in config")
             shutil.rmtree(conf["preproc_dir"])
-        logger.info("Run was succesful")
+        logger.info("Run was successful")
