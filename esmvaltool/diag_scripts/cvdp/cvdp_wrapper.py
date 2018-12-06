@@ -67,7 +67,7 @@ def create_link(cfg, inpath):
         return tail.replace(search_result,
                             "{0}01-{1}12".format(*search_result.split('-')))
 
-    if not os.path.isdir(inpath):
+    if not os.path.isfile(inpath):
         raise DiagnosticError("Path {0} does not exist".format(inpath))
 
     lnk_dir = os.path.join(cfg['work_dir'], "links")
