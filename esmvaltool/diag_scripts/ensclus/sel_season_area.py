@@ -6,6 +6,7 @@ import pandas as pd
 
 
 def sel_season(var, dates, season):
+    """Selecting a season (DJF,DJFM,NDJFM,JJA)."""
     # -----------------------------------------------------------------------
     # print('Selecting only {0} data'.format(season))
     dates_pdh = pd.to_datetime(dates)
@@ -51,7 +52,7 @@ def sel_season(var, dates, season):
 
 # ____________Selecting only [latS-latN, lonW-lonE] box region
 def sel_area(lat, lon, var, area):
-    """ Selecting the area of interest.
+    """Selecting the area of interest.
 
     USAGE: var_area, lat_area, lon_area =sel_area(lat,lon,var,area)
     area can be 'EAT', 'PNA', 'NH'
@@ -105,7 +106,7 @@ def sel_area(lat, lon, var, area):
         # If 0<lon<360, convert to -180<lon<180
         if lon.min() >= 0:
             lon_new = lon - 180
-            var_roll = np.roll(var, int(len(lon)/2), axis=2)
+            var_roll = np.roll(var, int(len(lon) / 2), axis=2)
         else:
             var_roll = var
             lon_new = lon

@@ -4,10 +4,10 @@
 import datetime
 import warnings
 import numpy as np
-from eofs.standard import Eof
-import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
+import matplotlib.pyplot as plt
 from matplotlib.cbook import MatplotlibDeprecationWarning
+from eofs.standard import Eof
 warnings.simplefilter('ignore', MatplotlibDeprecationWarning)
 
 

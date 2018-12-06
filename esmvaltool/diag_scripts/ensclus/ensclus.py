@@ -1,15 +1,15 @@
 """Ensemble Clustering Diagnostics.
 
-   Author: Irene Mavilia (ISAC-CNR, Italy)
-   Copernicus C3S 34a lot 2 (MAGIC)
+Author: Irene Mavilia (ISAC-CNR, Italy)
+Copernicus C3S 34a lot 2 (MAGIC)
 
-   Description
-      Cluster analysis tool based on the k-means algorithm
-      for ensembles of climate model simulations
-   Modification history
-      20181202-hard_jo: cleanup, style and finalising
-      20181002-arno_en: updating to version2_develpment (recipe/dataset)
-      20170710-mavi_ir: Routines written.
+Description
+    Cluster analysis tool based on the k-means algorithm
+    for ensembles of climate model simulations
+Modification history
+    20181202-hard_jo: cleanup, style and finalising
+    20181002-arno_en: updating to version2_develpment (recipe/dataset)
+    20170710-mavi_ir: Routines written.
 """
 
 # Basic Python packages
@@ -47,6 +47,7 @@ def get_input_files(cfg, index=0):
 
 
 def main(cfg):
+    """Ensemble Clustering Diagnostics."""
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
