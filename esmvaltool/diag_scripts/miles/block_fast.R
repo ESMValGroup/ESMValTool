@@ -305,7 +305,7 @@ miles_block_fast <- function(dataset, expid, ens, year1, year2, season,
     if (var == "Z500") {
       longvar <- "Geopotential Height"
       unit <- "m"
-      field <- Z500mean
+      field <- z500mean
       full_field <- z500
     }
     if (var == "BI") {

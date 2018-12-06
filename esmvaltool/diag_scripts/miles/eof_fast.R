@@ -82,30 +82,30 @@ miles_eofs_fast <- function(dataset, expid, ens, year1, year2, season,
   etime <- power_date_new(fieldlist$time)
 
   # declare variable
-  Z500 <- fieldlist$field
+  z500 <- fieldlist$field
 
   # monthly averaging
   print("monthly mean...")
 
   # new faster monthly mean function
-  Z500monthly <- monthly_mean(ics, ipsilon, Z500, etime)
+  z500monthly <- monthly_mean(ics, ipsilon, z500, etime)
 
   # climatology
   print("climatological mean...")
-  Z500clim <- apply(Z500monthly, c(1, 2), ave, rep(timeseason, length(years)))
-  Z500clim <- aperm(Z500clim, c(2, 3, 1))
+  z500clim <- apply(z500monthly, c(1, 2), ave, rep(timeseason, length(years)))
+  z500clim <- aperm(z500clim, c(2, 3, 1))
 
   # monthly anomalies
   print("anomalies...")
-  Z500anom <- Z500monthly - Z500clim
+  z500anom <- z500monthly - z500clim
 
   # compute EOFs
   print("EOFs...")
-  EOFS <- eofs(ics, ipsilon, Z500anom,
+  EOFS <- eofs(ics, ipsilon, z500anom,
     neof = neofs, xlim, ylim,
     method = "SVD", do_standardize = T, do_regression = T
   )
-  # COEFF=eofs.coeff(ics,ipsilon,Z500anom,EOFS,
+  # COEFF=eofs.coeff(ics,ipsilon,z500anom,EOFS,
   # do_standardize=T) #do we really need this?
 
   # flip signs of patterns and regressions for NAO and AO
