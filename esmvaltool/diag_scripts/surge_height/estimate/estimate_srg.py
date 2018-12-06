@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
+import os
 
 #from .load import load_betas_intercept as llbi
-from load import load_monmean_srgclim
+from load.load_monmean_srgclim import load_monmean_srgclim
 
 
-def estimate_srg(X, dates, stat, betas, intercept):
+def estimate_srg(X, dates, stat, betas, intercept, data_dir):
     if not type(stat) == list:
         stat = [stat]
     #
@@ -18,7 +19,8 @@ def estimate_srg(X, dates, stat, betas, intercept):
             srg_est[s][t] = sum(X[s][t] * betas[s][:9250]) + float(
                 intercept[s])
         # Add seasonal cycle back to surge
-        monanom_srg = load_monmean_srgclim.load_monmean_srgclim(s)
+        srg_dir = os.path.join(data_dir + '/srgclim/')
+        monanom_srg = load_monmean_srgclim(s, srg_dir)
         srg_est_full[s] = []
         for t in range(len(dates)):
             srg_est_t = srg_est[s][t] + monanom_srg[s][dates[t].month - 1]

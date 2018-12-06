@@ -110,7 +110,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
             stat_tseries = cfg["plt_stations"]
         else:
             #logger.info(
-            print('Station ' + str(cfg["plt_tseries"]) +
+            print('Station ' + str(cfg["plt_station"]) +
                   ' is not available -> timeseries plot cannot be generated.')
             cfg["plt_tseries"] = False
 
@@ -208,7 +208,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # IX. Apply regression model
     # ----------------------------
     #logger.debug("Estimating surge heights")
-    srg_estim = estimate_srg(X, dates, stat, betas, intercept)
+    srg_estim = estimate_srg(X, dates, stat, betas, intercept, data_dir)
 
     # ------------------------
     # X. Save surge to file
