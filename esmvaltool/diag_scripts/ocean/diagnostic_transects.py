@@ -468,10 +468,6 @@ def multi_model_contours(
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-
-
-
-
     # Make a plot for each layer and each threshold
     for region, threshold in product(regions, thresholds):
         logger.info('plotting threshold: \t%s', threshold)

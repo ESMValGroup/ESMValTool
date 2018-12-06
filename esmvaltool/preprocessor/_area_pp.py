@@ -169,7 +169,7 @@ def extract_named_regions(cube, regions):
     cube_regions = cube.coord('region').points
 
     for reg in regions:
-       if reg in cube_regions:
+        if reg in cube_regions:
             continue
         raise ValueError('Region %s no in cube regions', reg)
 
