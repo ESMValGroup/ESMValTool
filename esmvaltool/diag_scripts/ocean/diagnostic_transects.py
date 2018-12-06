@@ -355,12 +355,8 @@ def make_transect_contours(
     linewidths = [1 for thres in thresholds]
     linestyles = ['-' for thres in thresholds]
 
-    # Determine y log scale.
-    set_y_logscale = determine_set_y_logscale(cfg, metadata)
-
     cubes = make_cube_region_dict(cube)
     for region, cube in cubes.items():
-
         for itr, thres in enumerate(thresholds):
             if len(thresholds) > 1:
                 colour = plt.cm.jet(float(itr) / float(len(thresholds) - 1.))
@@ -380,7 +376,8 @@ def make_transect_contours(
                      linestyles=linestyles,
                      rasterized=True)
 
-        if set_y_logscale:
+        # Determine y log scale.
+        if determine_set_y_logscale(cfg, metadata):
             plt.axes().set_yscale('log')
 
         add_sea_floor(cube)
@@ -403,7 +400,7 @@ def make_transect_contours(
         if multi_model:
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(filename)
-            path.replace('.nc', region+'_transect_contour' + image_extention)
+            path.replace('.nc', region + '_transect_contour' + image_extention)
         else:
             path = diagtools.get_image_path(
                 cfg,
