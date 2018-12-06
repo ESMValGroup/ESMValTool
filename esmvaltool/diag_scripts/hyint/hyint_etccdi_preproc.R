@@ -8,7 +8,7 @@
 
 hyint.etccdi.preproc<-function(work_dir,etccdi_dir,etccdi_list_import,cdo_grid,model_idx,season,yrmon="yr") {
 # load settings
-source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.r')
+source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R')
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
 
     year1  <- toString(models_start_year[model_idx])

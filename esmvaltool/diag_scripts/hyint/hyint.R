@@ -1,5 +1,5 @@
 # #############################################################################
-# hyint.r
+# hyint.R
 # Authors:       E. Arnone (ISAC-CNR, Italy)
 #                J. von Hardenberg (ISAC-CNR, Italy) 
 # #############################################################################
@@ -52,9 +52,10 @@
 
 library(tools)
 library(yaml)
-library(climdex.pcic.ncdf)
+# library(climdex.pcic.ncdf)
 
-spath='esmvaltool/diag_scripts/hyint/'
+spath <- "esmvaltool/diag_scripts/hyint/"
+
 source(paste0(spath,'hyint_functions.R'))
 source(paste0(spath,'hyint_metadata.R'))
 source(paste0(spath,'hyint_preproc.R'))
@@ -63,7 +64,7 @@ source(paste0(spath,'hyint_etccdi_preproc.R'))
 source(paste0(spath,'hyint_trends.R'))
 source(paste0(spath,'hyint_plot_maps.R'))
 source(paste0(spath,'hyint_plot_trends.R'))
-source(paste0(spath,'hyint_parameters.r'))
+source(paste0(spath,'hyint_parameters.R'))
 
 ## Do not print warnings
 #options(warn=0)var0 <- names(metadata)[1]
@@ -73,20 +74,25 @@ args <- commandArgs(trailingOnly = TRUE)
 settings_file <- args[1]
 # settings_file="/work/users/arnone/esmvaltool_output/namelist_hyint_egu2018_1_20180322_222547/run/hyint/main/settings.yml"
 # settings_file="/work/users/arnone/esmvaltool_output/namelist_hyint_egu2018_20180416_162130/run/hyint/main/settings.yml"
+settings_file <- "/work/users/arnone/esmvaltool_output/recipe_hyint_20181206_144312/run/hyint/main/settings.yml"
 settings <- yaml::read_yaml(settings_file)
-metadata <- yaml::read_yaml(settings$input_files)
 
 # load data from settings 
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
+for (myname in names(settings)) {
+  temp <- get(myname, settings)
+  assign(myname, temp)
+}
+metadata <- yaml::read_yaml(settings$input_files)
 
-# get first variable and list associated to pr variable
-variables <- names(metadata)
-var0 <- names(metadata)[1]
-list0 <- get(var0,metadata) 
+# get name of climofile for selected variable and list associated to first climofile
+climofiles <- names(metadata)
+climolist <- get(climofiles[1], metadata)
+list0 <- climolist
+climolist0 <- list0
 
-# get name of climofile for first variable and list associated to first climofile
-climofiles <- names(list0)
-climolist0 <- get(climofiles[1],list0)
+# get variable name
+varname <- paste0("'", climolist$short_name, "'")
+var0 <- varname
 
 diag_base = climolist0$diagnostic
 print(paste(diag_base,": starting routine"))
@@ -97,12 +103,23 @@ dir.create(plot_dir, recursive=T,  showWarnings = F)
 dir.create(work_dir, recursive=T, showWarnings = F)
 dir.create(regridding_dir, recursive=T, showWarnings = F)
 
-models_name=unname(sapply(list0, '[[', 'dataset'))
-reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
-models_start_year=unname(sapply(list0, '[[', 'start_year'))
-models_end_year=unname(sapply(list0, '[[', 'end_year'))
-models_experiment=unname(sapply(list0, '[[', 'exp'))
-models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+#models_name=unname(sapply(list0, '[[', 'dataset'))
+#reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
+#models_start_year=unname(sapply(list0, '[[', 'start_year'))
+#models_end_year=unname(sapply(list0, '[[', 'end_year'))
+#models_experiment=unname(sapply(list0, '[[', 'exp'))
+#models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+
+# extract metadata
+models_name <- unname(sapply(metadata, "[[", "dataset"))
+reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
+models_start_year <- unname(sapply(metadata, "[[", "start_year"))
+models_end_year <- unname(sapply(metadata, "[[", "end_year"))
+models_experiment <- unname(sapply(metadata, "[[", "exp"))
+models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
+
+
+
 
 # select reference model
 ref_idx=which(models_name == reference_model) # select reference dataset; if not available, use last of list

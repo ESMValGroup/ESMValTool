@@ -21,7 +21,7 @@ force_diagnostic=F
 etccdi_preproc=F
 run_timeseries=T
 # output_file_type="png"
-diag_script_cfg="./esmvaltool/diag_scripts/aux/hyint/hyint_parameters.r"
+diag_script_cfg="./esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R"
 
 # Define time dimension name
 timedimname="time"

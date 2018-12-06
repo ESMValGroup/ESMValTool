@@ -1,21 +1,4 @@
-###############################################################################
-# namelist_hyint.yml
-#
-# Description
-# Namelist for the HyInt (HY-INT diagnostic by Giorgi et al. 2011) package by E. Arnone and J. von Hardenberg (ISAC-CNR)
-#
-# Authors
-# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
-#
-# Project
-# MAGIC
-#
-# Reference
-# Giorgi, F., E.-S. Im, E. Coppola, N. S. Diffenbaugh, X. J. Gao, L. Mariotti, and Y. Shi (2011), Higher hydroclimatic intensity with global warming, J. Climate, 24, 5309-5324, doi:10.1175/2011JCLI3979.1.
-#
-# This namelist is part of the ESMValTool
-###############################################################################
+# recipe_hyint.yml
 ---
 
 documentation:
@@ -27,17 +10,16 @@ documentation:
     - hard_jo
 
   references:
-    - mehran14jgr
+    - giorgi11jc
+    - giorgi14jgr
 
   projects:
     - c3s-magic
 
-
-
 datasets:
         #- {model: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1976, end_year: 2100}
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1990, end_year: 2010}
-  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1990, end_year: 2010}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
+  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
 
 preprocessors:
   preproc:
@@ -54,7 +36,7 @@ diagnostics:
         field: T2Ds
     scripts:
       main:
-        script: hyint.r
+        script: hyint/hyint.R
         # Define whether model data should be regridded 
         # a) false to keep original resolution
         # b) set desired regridding resolution in cdo format e.g., "r320x160"

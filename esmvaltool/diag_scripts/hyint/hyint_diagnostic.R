@@ -5,7 +5,7 @@
 hyint.diagnostic<-function(work_dir,infile,model_idx,season,rewrite=FALSE) {
 
 # load settings
-source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.r')
+source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R')
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
 
 # setting up path and parameters
