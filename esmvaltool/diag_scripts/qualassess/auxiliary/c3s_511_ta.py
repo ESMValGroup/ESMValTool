@@ -28,11 +28,12 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
         
         super(ta_Diagnostic_SP, self).set_info(**kwargs)
         
+        # add a region to the regions object
         self.__regions__.update({
             'MAR_region': {
                 'latitude': (-60, 50),
                 'longitude': (-60, 0),
-                # 'time': (datetime.datetime(1991, 1, 1),
+                # 'time': (datetime.datetime(2000, 1, 1),
                 #          datetime.datetime(2000, 12, 31)
                 #          )
                 }})
@@ -45,6 +46,7 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
         if cube is None:
             cube = self.sp_data
 
+        # adjustment to ids and filenames
         if level is not None:
             basic_filename = self.__basic_filename__ + "_lev" + str(level)
             dataset_id = [self.__dataset_id__[0], "at", "level", str(
@@ -56,13 +58,17 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
         
         list_of_plots = []
         
-        # interquartiles range over time for the MAR area and for Europe
-        # !!!this is not working, if there are all-Nan areas in the level!!!!
-        cubes = self.__spatiotemp_subsets__(cube)
         
+        cubes = self.__spatiotemp_subsets__(cube) 
+        # if not further defined, self.__regions__ are taken.
+        
+        # go through all regional subsets 
         for c in cubes:
+            
             loc_cube = cubes[c]
         
+            # interquartiles range over time for the MAR area and for Europe
+            # !!!this is not working, if there are all-Nan areas in the level!!!!
             try:
                 cube_iqr = loc_cube.collapsed(
                                     "time",
