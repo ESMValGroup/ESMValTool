@@ -28,12 +28,11 @@
 library(tools)
 library(yaml)
 
-spath <- "./esmvaltool/diag_scripts/miles/"
-
-source(paste0(spath, "basis_functions.R"))
-source(paste0(spath, "block_figures.R"))
-source(paste0(spath, "block_fast.R"))
-source(paste0(spath, "miles_parameters.R"))
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+source(paste0(diag_scripts_dir, "/miles/basis_functions.R"))
+source(paste0(diag_scripts_dir, "/miles/block_figures.R"))
+source(paste0(diag_scripts_dir, "/miles/block_fast.R"))
+source(paste0(diag_scripts_dir, "/miles/miles_parameters.R"))
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
