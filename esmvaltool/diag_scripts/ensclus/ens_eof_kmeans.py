@@ -1,4 +1,4 @@
-""" Find the most representative ensemble member for each cluster."""
+"""Find the most representative ensemble member for each cluster."""
 
 # Standard packages
 import sys
@@ -12,7 +12,7 @@ import pandas as pd
 
 
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
-    """ Find the most representative ensemble member for each cluster.
+    """Find the most representative ensemble member for each cluster.
 
     METHODS:
     - Empirical Orthogonal Function (EOF) analysis of the input file
@@ -75,7 +75,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
               .format(perc, numpcs))
         exctperc = min(enumerate(acc), key=lambda x: x[1] <= perc)[1]
     if numpcs != 'no':
-        exctperc = acc[numpcs-1]
+        exctperc = acc[numpcs - 1]
     print('(the first {0} PCs explain exactly the {1}% of variance)'
           .format(numpcs, "%.2f" % exctperc))
 
@@ -115,7 +115,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     L = []
     for nclus in range(numclus):
         cl = list(np.where(labels == nclus)[0])
-        fr = len(cl)*100 / len(labels)
+        fr = len(cl) * 100 / len(labels)
         L.append([nclus, fr, cl])
     print('Cluster labels:')
     print([L[ncl][0] for ncl in range(numclus)])
@@ -143,7 +143,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     repres = []
     for nclus in range(numclus):
         for ens in range(numens):
-            normens = centroids[nclus, :]-PCs[ens, :]
+            normens = centroids[nclus, :] - PCs[ens, :]
             norm[nclus, ens] = math.sqrt(sum(normens**2))
             # print('The distance between centroid of cluster {0} and
             # member {1} is {2}'.format(nclus,ens,round(norm[nclus,ens],3)))

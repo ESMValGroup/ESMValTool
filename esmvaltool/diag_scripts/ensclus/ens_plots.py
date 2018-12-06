@@ -1,4 +1,4 @@
-""" Plot the chosen field for each ensemble."""
+"""Plot the chosen field for each ensemble."""
 
 # Standard packages
 import os
@@ -11,8 +11,7 @@ import cartopy.crs as ccrs
 
 
 def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
-
-    """ Plot the chosen field for each ensemble."""
+    """Plot the chosen field for each ensemble."""
     # User-defined libraries
     from read_netcdf import read_N_2Dfields
 
@@ -42,12 +41,12 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
     if field_to_plot == 'anomalies':
         # compute range colorbar for anomalies
         delta = 0.05
-        if abs(math.floor(mi*100)/100) < math.ceil(ma*100) / 100:
-            rangecbarmin = -math.ceil(ma*100) / 100
-            rangecbarmax = math.ceil(ma*100) / 100 + delta
+        if abs(math.floor(mi * 100) / 100) < math.ceil(ma * 100) / 100:
+            rangecbarmin = -math.ceil(ma * 100) / 100
+            rangecbarmax = math.ceil(ma * 100) / 100 + delta
         else:
-            rangecbarmin = math.floor(mi*100) / 100
-            rangecbarmax = abs(math.floor(mi*100) / 100) + delta
+            rangecbarmin = math.floor(mi * 100) / 100
+            rangecbarmax = abs(math.floor(mi * 100) / 100) + delta
     else:
         # compute range colorbar for climatologies
         delta = 0.2
@@ -69,7 +68,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
         # print('//////////ENSEMBLE MEMBER {0}'.format(nens))
-        ax = plt.subplot(x, y, nens+1, projection=ccrs.PlateCarree())
+        ax = plt.subplot(x, y, nens + 1, projection=ccrs.PlateCarree())
         ax.coastlines("110m")
         # ax.set_extent([-10, 60, -30,90],ccrs.PlateCarree())
 
@@ -95,7 +94,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
     cb = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cb.ax.tick_params(labelsize=18)
 
-    plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + tit + ' (' + 
+    plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + tit + ' (' +
                  varunits + ')', fontsize=45, fontweight='bold')
 
     plt.subplots_adjust(top=0.85)

@@ -1,4 +1,4 @@
-""" Computing EOFs and PCs."""
+"""Computing EOFs and PCs."""
 
 # Standard packages
 import datetime
@@ -12,13 +12,13 @@ warnings.simplefilter('ignore', MatplotlibDeprecationWarning)
 
 
 def eof_computation(var, varunits, lat, lon):
-    """ Computing the EOFs and PCs.
+    """Computing the EOFs and PCs.
 
-    # EOF analysis of a data array with spatial dimensions that
-    # represent latitude and longitude with weighting. In this example
-    # the data array is dimensioned (ntime, nlat, nlon), and in order
-    # for the latitude weights to be broadcastable to this shape, an
-    # extra length-1 dimension is added to the end
+    EOF analysis of a data array with spatial dimensions that
+    represent latitude and longitude with weighting. In this example
+    the data array is dimensioned (ntime, nlat, nlon), and in order
+    for the latitude weights to be broadcastable to this shape, an
+    extra length-1 dimension is added to the end
     """
     print('_________________________________________________________\
            ___________________________________________________________')
@@ -32,7 +32,7 @@ def eof_computation(var, varunits, lat, lon):
 
     # ALL VARIANCE FRACTIONS
     varfrac = solver.varianceFraction()
-    acc = np.cumsum(varfrac * 100)
+    # acc = np.cumsum(varfrac * 100)
 
     # ---------------------------------------PCs unscaled  (case 0 of scaling)
     pcs_unscal0 = solver.pcs()
@@ -51,8 +51,9 @@ def eof_computation(var, varunits, lat, lon):
 def eof_plots(neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon,
               tit, numens, varfrac):
     """Plot of the nth the EOFs and PCs.
-    # Plot the PC scaled (divided by the square-root of their eigenvalues)
-    # in the selected domain
+
+    Plot the PC scaled (divided by the square-root of their eigenvalues)
+    in the selected domain
     """
     print('___________________________________________________\
            _________________________________________________________________')
@@ -64,7 +65,7 @@ def eof_plots(neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon,
     plt.plot(pcs_scal1[:, neof])
     plt.axhline(y=0, color='k', linestyle='--')
     ttPC = '{0}   PC{1}: explained variance {2}%\n'\
-        .format(tit, neof+1, "%.2f" % (varfrac[neof] * 100))
+        .format(tit, neof + 1, "%.2f" % (varfrac[neof] * 100))
     plt.title(ttPC, fontsize=34, fontweight='bold')
     plt.grid(True)
     for tickx in ax.xaxis.get_major_ticks():

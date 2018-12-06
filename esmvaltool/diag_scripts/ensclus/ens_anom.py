@@ -1,17 +1,16 @@
-""" Computation of ensemble anomalies based on a desired value. """
+"""Computation of ensemble anomalies based on a desired value."""
 
 # Standard packages
 import sys
-import numpy as np
 import os
+import numpy as np
 from scipy import stats
 
 
 def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
              area, extreme):
+    """Ensemble anomalies.
 
-    """ Ensemble anomalies.
- 
     Computation of the ensemble anomalies based on the desired value
     from the input variable (it can be the percentile, mean, maximum, standard
     deviation or trend)
@@ -96,7 +95,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
             for la in range(var_ens[0].shape[1]):
                 for lo in range(var_ens[0].shape[2]):
                     slope, intercept, r_value, p_value, std_err = \
-                        stats.linregress(range(var_ens[0].shape[0]), 
+                        stats.linregress(range(var_ens[0].shape[0]),
                                          var_ens[i][:, la, lo])
                     trendmap[la, lo] = slope
             trendmap_ens.append(trendmap)

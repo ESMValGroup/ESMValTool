@@ -1,4 +1,4 @@
-""" Selecting a season (DJF,DJFM,NDJFM,JJA)."""
+"""Selecting a season (DJF,DJFM,NDJFM,JJA)."""
 # Standard packages
 from netCDF4 import datetime
 import numpy as np
@@ -53,11 +53,11 @@ def sel_season(var, dates, season):
 def sel_area(lat, lon, var, area):
     """ Selecting the area of interest.
 
-        USAGE: var_area, lat_area, lon_area =sel_area(lat,lon,var,area)
-        area can be 'EAT', 'PNA', 'NH'
+    USAGE: var_area, lat_area, lon_area =sel_area(lat,lon,var,area)
+    area can be 'EAT', 'PNA', 'NH'
     """
     if area == 'EAT':
-        printarea = 'Euro-Atlantic'
+        # printarea = 'Euro-Atlantic'
         latN = 87.5
         latS = 30.0
         lonW = -80.0    # 280
@@ -72,7 +72,7 @@ def sel_area(lat, lon, var, area):
             lon_new = lon
 
     elif area == 'PNA':
-        printarea = 'Pacific North American'
+        # printarea = 'Pacific North American'
         latN = 87.5
         latS = 30.0
         lonW = 140.0
@@ -81,13 +81,13 @@ def sel_area(lat, lon, var, area):
         # If -180<lon<180, convert to 0<lon<360
         if lon.min() < 0:
             lon_new = lon + 180
-            var_roll = np.roll(var, int(len(lon)/2), axis=2)
+            var_roll = np.roll(var, int(len(lon) / 2), axis=2)
         else:
             var_roll = var
             lon_new = lon
 
     elif area == 'NH':
-        printarea = 'Northern Hemisphere'
+        # printarea = 'Northern Hemisphere'
         latN = 90.0
         latS = 0.0
         lonW = lon.min()
@@ -96,7 +96,7 @@ def sel_area(lat, lon, var, area):
         lon_new = lon
 
     elif area == 'Eu':
-        printarea = 'Europe'
+        # printarea = 'Europe'
         latN = 72.0
         latS = 27.0
         lonW = -22.0
@@ -104,7 +104,7 @@ def sel_area(lat, lon, var, area):
         # lat and lon are extracted from the netcdf file, assumed to be 1D
         # If 0<lon<360, convert to -180<lon<180
         if lon.min() >= 0:
-            lon_new = lon-180
+            lon_new = lon - 180
             var_roll = np.roll(var, int(len(lon)/2), axis=2)
         else:
             var_roll = var

@@ -1,15 +1,15 @@
-""" Ensemble Clustering Diagnostics.
+"""Ensemble Clustering Diagnostics.
 
-;; Author: Irene Mavilia (ISAC-CNR, Italy)
-;; Copernicus C3S 34a lot 2 (MAGIC)
-;;
-;; Description
-;;    Cluster analysis tool based on the k-means algorithm
-;;    for ensembles of climate model simulations
-;; Modification history
-;;    20181202-hard_jo: cleanup, style and finalising
-;;    20181002-arno_en: updating to version2_develpment (recipe/dataset)
-;;    20170710-mavi_ir: Routines written.
+   Author: Irene Mavilia (ISAC-CNR, Italy)
+   Copernicus C3S 34a lot 2 (MAGIC)
+
+   Description
+      Cluster analysis tool based on the k-means algorithm
+      for ensembles of climate model simulations
+   Modification history
+      20181202-hard_jo: cleanup, style and finalising
+      20181002-arno_en: updating to version2_develpment (recipe/dataset)
+      20170710-mavi_ir: Routines written.
 """
 
 # Basic Python packages
@@ -20,8 +20,7 @@ import warnings
 import yaml
 import matplotlib.pyplot as plt
 from esmvaltool.diag_scripts.shared import\
-     ( run_diagnostic, save_iris_cube, variables_available,
-      extract_variables)
+     (run_diagnostic, save_iris_cube, variables_available, extract_variables)
 
 plt.switch_backend('Agg')
 
