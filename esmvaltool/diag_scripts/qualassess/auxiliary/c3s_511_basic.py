@@ -452,10 +452,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #        if not self.__output_type__ == 'png':
 #            raise ConfigurationError("self.__output_type__", "Only png is currently supported.")
         self.__regions__ = {
-            'Europe_1991-2000': {
+            'Europe_2000': {
                 'latitude': (30, 75),
                 'longitude': (-10, 35),
-                'time': (datetime.datetime(1991, 1, 1),
+                'time': (datetime.datetime(2000, 1, 1),
                          datetime.datetime(2000, 12, 31)
                          )}}  # default region
 #
@@ -578,9 +578,14 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     def __do_overview__(self):
 
         this_function = "overview"
+        
+        list_of_plots = []
 
         if not self.var3D:
-            list_of_plots = self.__overview_procedures_2D__(cube=self.sp_data)
+            lop = self.__overview_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_overview_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -593,6 +598,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                      "cube.")
                 lop = self.__overview_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+                lop = self.__add_overview_procedures_2D__(loc_cube, level=lev)
+                list_of_plots = list_of_plots + lop
+            lop = self.__overview_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_overview_procedures_3D__()
+            list_of_plots = list_of_plots + lop
 
         # dimension information
         lon_range = self.sp_data.coord("longitude").points
@@ -838,13 +849,27 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         del all_data
 
         return list_of_plots
+    
+    def __add_overview_procedures_2D__(self, cube=None, level=None):
+        return []
+    
+    def __overview_procedures_3D__(self, cube=None):
+        return []
+    
+    def __add_overview_procedures_3D__(self, cube=None):
+        return []
 
     def __do_mean_var__(self):
 
         this_function = "mean and variability"
 
+        list_of_plots = []
+
         if not self.var3D:
-            list_of_plots = self.__mean_var_procedures_2D__(cube=self.sp_data)
+            lop = self.__mean_var_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_mean_var_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -852,7 +877,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                         iris.Constraint(coord_values={str(self.level_dim): lambda cell: cell == lev}))
                 lop = self.__mean_var_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+                lop = self.__add_mean_var_procedures_2D__(loc_cube, level=lev)
+                list_of_plots = list_of_plots + lop
             lop = self.__mean_var_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_mean_var_procedures_3D__()
             list_of_plots = list_of_plots + lop
 
         # produce report
@@ -1238,6 +1267,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         return list_of_plots
     
+    def __add_mean_var_procedures_2D__(self, cube=None, level=None):
+        return []
+    
     def __mean_var_procedures_3D__(self, cube=None):
         
         if cube is None:
@@ -1437,13 +1469,21 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          self.authors)
         
         return list_of_plots
+    
+    def __add_mean_var_procedures_3D__(self, cube=None):
+        return []
 
     def __do_trends__(self):
 
         this_function = "trends and stability"
+        
+        list_of_plots = []
 
         if not self.var3D:
-            list_of_plots = self.__trends_procedures_2D__(cube=self.sp_data)
+            lop = self.__trends_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_trend_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -1451,6 +1491,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     coord_values={str(self.level_dim): lambda cell: cell == lev}))
                 lop = self.__trends_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+            lop = self.__trend_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_trend_procedures_3D__()
+            list_of_plots = list_of_plots + lop
 
         # produce report
         expected_input, found = \
@@ -1642,6 +1686,15 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         del S
 
         return list_of_plots
+    
+    def __add_trend_procedures_2D__(self, cube=None, level=None):
+        return []
+    
+    def __trend_procedures_3D__(self, cube=None):
+        return []    
+    
+    def __add_trend_procedures_3D__(self, cube=None):
+        return []
 
     def __do_maturity_matrix__(self):
 
