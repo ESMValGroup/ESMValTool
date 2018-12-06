@@ -56,6 +56,12 @@ library(yaml)
 
 spath <- "esmvaltool/diag_scripts/hyint/"
 
+ # get path to script and source subroutines (if needed)
+
+#diag_scripts_dir <- Sys.getenv("diag_scripts")
+# source paste0(diag_scripts_dir,"/subroutine.r")
+
+
 source(paste0(spath,'hyint_functions.R'))
 source(paste0(spath,'hyint_metadata.R'))
 source(paste0(spath,'hyint_preproc.R'))
@@ -93,6 +99,7 @@ climolist0 <- list0
 # get variable name
 varname <- paste0("'", climolist$short_name, "'")
 var0 <- varname
+var0 <- "pr"
 
 diag_base = climolist0$diagnostic
 print(paste(diag_base,": starting routine"))

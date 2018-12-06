@@ -8,7 +8,7 @@
 hyint.plot.maps<-function(work_dir,plot_dir,ref_dir,ref_idx,season) {
 
 # load settings
-source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R')
+source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
 
 #source('interface_data/r.interface')

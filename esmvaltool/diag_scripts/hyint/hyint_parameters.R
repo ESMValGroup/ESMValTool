@@ -14,12 +14,12 @@
 # Replace here global values from namelist_hyint.xml
 # write_netcdf=T
 # write_plots=T
-run_regridding=T
+run_regridding=F
 force_regridding=F
-run_diagnostic=T
+run_diagnostic=F
 force_diagnostic=F
 etccdi_preproc=F
-run_timeseries=T
+run_timeseries=F
 # output_file_type="png"
 diag_script_cfg="./esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R"
 

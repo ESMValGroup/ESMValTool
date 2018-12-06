@@ -8,7 +8,7 @@
 hyint.trends<-function(work_dir,model_idx,season) {
 
 # load settings
-source('esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R')
+source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
 for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
 
 library("ncdf4")

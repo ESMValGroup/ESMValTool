@@ -30,11 +30,13 @@ hyint.preproc<-function(work_dir,model_idx,ref_idx,climofile,regfile,rgrid) {
   system(cdo_command3)
 
   rm_command<-paste("rm ", paste0(regfile,"regtmp*"))
+  print(rm_command)
   system(rm_command)
 
   # generate grid file
   gridfile<-getfilename.indices(work_dir,diag_base,model_idx,grid=T)
   grid_command<-paste("cdo griddes ",regfile," > ",gridfile)  
+  print(grid_command)
   system(grid_command)
 
   print(paste0(diag_base,": pre-processed file: ", regfile))
