@@ -32,6 +32,6 @@ diagnostics:
         mip: day
         field: T2Ds
     scripts:
-      main:
-        script: quantilebias/main.r
+      quantilebias:
+        script: quantilebias/quantilebias.R
         perc_lev: 75

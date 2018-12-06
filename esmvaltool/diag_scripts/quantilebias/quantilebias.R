@@ -80,8 +80,12 @@ for (model_idx in c(1:(length(models_name)))) {
   perc=perc_lev #"75"
   print(paste0(diag_base,": ",perc," percent quantile"))
 
+  #cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
+   
   cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
    print(cdo_command)
+   system("which cdo")
+   system("echo $LD_LIBRARY_PATH")
    system(cdo_command)
   cdo_command=paste("cdo griddes tmp_model.nc > tmp_grid")
    print(cdo_command)
