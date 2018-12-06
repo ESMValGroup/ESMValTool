@@ -269,9 +269,8 @@ def make_transects_plots(
             region_title = determine_transect_str(cube, region)
 
         # Add title to plot
-        title = ' '.join(
-                [metadata['dataset'], metadata['long_name'],
-                 region_title])
+        title = ' '.join([metadata['dataset'], metadata['long_name'],
+                          region_title])
         titlify(title)
 
         # Load image format extention
@@ -286,7 +285,7 @@ def make_transects_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix=region+'transect' + image_extention,
+                suffix=region + 'transect' + image_extention,
             )
 
         # Saving files:
@@ -462,6 +461,7 @@ def multi_model_contours(
         tmp_thresholds = diagtools.load_thresholds(cfg, metadatas[filename])
         for threshold in tmp_thresholds:
             thresholds[threshold] = True
+
     regions = regions.keys()
     thresholds = thresholds.keys()
 

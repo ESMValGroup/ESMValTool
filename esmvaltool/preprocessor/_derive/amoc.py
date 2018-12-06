@@ -13,7 +13,7 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     _required_variables = {
         'vars': [{'short_name': 'msftmyz', 'field': 'TO2M'}],
-        }
+    }
 
     def calculate(self, cubes,):
         """
