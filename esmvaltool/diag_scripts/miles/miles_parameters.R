@@ -41,12 +41,9 @@ if (map_projection != "no") {
   panels <- rev(panels)
 }
 
-
-# Custom paramteres for plots
-zero <- par(mfrow = panels, cex.main = 2.5, cex.axis = 1.5, cex.lab = 1.5,
+# Custom parameteres for plots
+plotpar=list(mfrow = panels, cex.main = 2.5, cex.axis = 1.5, cex.lab = 1.5,
             mar = c(5, 5, 5, 7), oma = c(1, 1, 3, 2))
-plotpar <- par(no.readonly = T)
-dev.off()
 
 # imagescale3 color bar details
 imgscl_colorbar <- 1.4

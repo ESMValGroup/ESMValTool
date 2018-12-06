@@ -122,7 +122,7 @@ miles_block_figures <- function(dataset, expid, ens, year1, year2,
       next
     }
 
-    # Chose output format for figure - by JvH
+    # Choose output format for figure - by JvH
     open_plot_device(figname, output_file_type)
 
     # plot options
