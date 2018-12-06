@@ -7,14 +7,9 @@
 # MAIN TRENDS FUNCTION
 hyint.trends<-function(work_dir,model_idx,season) {
 
-# load settings
-source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
-
 library("ncdf4")
 
 # setup useful strings
-# diag_base = "HyInt"
 var_type = c("tseries","tseries-sd","trend","trend-stat")
 var_type_long = c("Timeseries","St.dev of timeseries","Trend coeff. for two intervals ","Trend statistics for trend 1 (Estimate, Std. Error, t value, Pr(>|t|))")
 

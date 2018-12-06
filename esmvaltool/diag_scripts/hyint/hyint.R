@@ -57,10 +57,10 @@ library(yaml)
 spath <- "esmvaltool/diag_scripts/hyint/"
 
  # get path to script and source subroutines (if needed)
+spath <- paste0((dirname((unlist(strsplit((commandArgs(trailingOnly = FALSE))[6],"="))[2]))),"/")
 
-#diag_scripts_dir <- Sys.getenv("diag_scripts")
+# diag_scripts_dir <- Sys.getenv("diag_scripts")
 # source paste0(diag_scripts_dir,"/subroutine.r")
-
 
 source(paste0(spath,'hyint_functions.R'))
 source(paste0(spath,'hyint_metadata.R'))
@@ -80,7 +80,7 @@ args <- commandArgs(trailingOnly = TRUE)
 settings_file <- args[1]
 # settings_file="/work/users/arnone/esmvaltool_output/namelist_hyint_egu2018_1_20180322_222547/run/hyint/main/settings.yml"
 # settings_file="/work/users/arnone/esmvaltool_output/namelist_hyint_egu2018_20180416_162130/run/hyint/main/settings.yml"
-settings_file <- "/work/users/arnone/esmvaltool_output/recipe_hyint_20181206_144312/run/hyint/main/settings.yml"
+# settings_file <- "/work/users/arnone/esmvaltool_output/recipe_hyint_20181206_144312/run/hyint/main/settings.yml"
 settings <- yaml::read_yaml(settings_file)
 
 # load data from settings 

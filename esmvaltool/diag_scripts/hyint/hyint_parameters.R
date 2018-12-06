@@ -16,12 +16,12 @@
 # write_plots=T
 run_regridding=F
 force_regridding=F
-run_diagnostic=F
+run_diagnostic=T
 force_diagnostic=F
 etccdi_preproc=F
-run_timeseries=F
+run_timeseries=T
 # output_file_type="png"
-diag_script_cfg="./esmvaltool/diag_scripts/aux/hyint/hyint_parameters.R"
+diag_script_cfg="./esmvaltool/diag_scripts/hyint/hyint_parameters.R"
 
 # Define time dimension name
 timedimname="time"

@@ -18,6 +18,7 @@ documentation:
 
 datasets:
         #- {model: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1976, end_year: 2100}
+ # - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
   - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
   - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
 
@@ -50,7 +51,7 @@ diagnostics:
         # 11) timeseries over required individual region/exp,   12) timeseries over multiple regions/exp
         # 13) timeseries with multiple models, 14) summary trend coefficients multiple regions  
         # 15) summary trend coefficients multiple models 
-        plot_type: 14
+        plot_type: 3
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list

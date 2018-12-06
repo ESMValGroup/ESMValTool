@@ -4,10 +4,6 @@
 ######################################################
 hyint.diagnostic<-function(work_dir,infile,model_idx,season,rewrite=FALSE) {
 
-# load settings
-source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
-
 # setting up path and parameters
 t0<-proc.time()
 exp    <- models_name[model_idx]

@@ -7,9 +7,6 @@
 #        and merging all indices into the HyInt indices file. 
 
 hyint.etccdi.preproc<-function(work_dir,etccdi_dir,etccdi_list_import,cdo_grid,model_idx,season,yrmon="yr") {
-# load settings
-source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
 
     year1  <- toString(models_start_year[model_idx])
     year2  <- toString(models_end_year[model_idx])

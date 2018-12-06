@@ -7,13 +7,6 @@
 
 hyint.plot.maps<-function(work_dir,plot_dir,ref_dir,ref_idx,season) {
 
-# load settings
-source('esmvaltool/diag_scripts/hyint/hyint_parameters.R')
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp) }
-
-#source('interface_data/r.interface')
-# diag_base <- "HyInt"
- 
 # setting up path and parameters
 dataset_ref=models_name[ref_idx]
 model_exp_ref=models_experiment[ref_idx]
