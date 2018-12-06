@@ -47,7 +47,7 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout

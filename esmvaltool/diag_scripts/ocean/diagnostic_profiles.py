@@ -37,7 +37,7 @@ import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
