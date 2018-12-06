@@ -20,7 +20,7 @@ miles_eofs_fast <- function(dataset, expid, ens, year1, year2, season,
   print(dataset)
   print(expid)
   print(ens)
-  savefile1 <- file.builder(
+  savefile1 <- file_builder(
     FILESDIR, paste0("EOFs/", tele), "EOFs", dataset,
     expid, ens, year1, year2, season
   )
