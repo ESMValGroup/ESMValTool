@@ -30,6 +30,11 @@ def get_obs_projects():
 
     Please keep this list up to date, or replace it with something more
     sensible.
+
+    Returns
+    ---------
+    list
+        Returns a list of strings of the various types of observational data.
     """
     obs_projects = ['obs4mips', ]
     return obs_projects
@@ -42,6 +47,16 @@ def folder(name):
     Take a string or a list of strings, convert it to a directory style,
     then make the folder and the string.
     Returns folder string and final character is always os.sep. ('/')
+
+    Arguments
+    ---------
+    name: list or string
+        A list of nested directories, or a path to a directory.
+
+    Returns
+    ---------
+    str
+        Returns a string of a full (potentially new) path of the directory.
     """
     sep = os.sep
     if isinstance(name, list):
@@ -54,14 +69,32 @@ def folder(name):
     return name
 
 
-def get_input_files(cfg, index=0):
+def get_input_files(cfg, index=''):
     """
     Load input configuration file as a Dictionairy.
 
     Get a dictionary with input files from the metadata.yml files.
     This is a wrappper for the _get_input_data_files function from
     diag_scripts.shared._base.
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    index: int
+        the index of the file in the cfg file.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of the input files and their linked details.
     """
+
+    if isinstance(index, int):
+        metadata_file = cfg['input_files'][index]
+        with open(metadata_file) as input_file:
+            metadata = yaml.safe_load(input_file)
+        return metadata
     return _get_input_data_files(cfg)
 
 
@@ -71,9 +104,20 @@ def bgc_units(cube, name):
 
     This is because many CMIP standard units are not the standard units
     used by the BGC community (ie, Celsius is prefered over Kelvin, etc.)
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+    name: str
+        The string describing the data field.
+
+    Returns
+    -------
+    iris.cube.Cube
+        the cube with the new units.
     """
     new_units = ''
-
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
@@ -103,6 +147,22 @@ def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
     This function checks that the control_model, exper_model and
     observational_dataset dictionairies from the recipe are matched with the
     input file dictionairy in the cfg metadata.
+
+    Arguments
+    ---------
+    model_type: str
+        The string model_type to match (only used in debugging).
+    cfg_dict: dict
+        the config dictionairy item for this model type, parsed directly from
+        the diagnostics/ scripts, part of the recipe.
+    input_files_dict: dict
+        The input file dictionairy, loaded directly from the get_input_files()
+         function, in diagnostics_tools.py.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of the input files and their linked details.
     """
     for input_file, intput_dict in input_files_dict.items():
         intersect_keys = intput_dict.keys() & cfg_dict.keys()
@@ -122,6 +182,16 @@ def cube_time_to_float(cube):
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    list
+        List of floats showing the time coordinate in decimal time.
+
     """
     times = cube.coord('time')
     datetime = guess_calendar_datetime(cube)
@@ -151,7 +221,19 @@ def cube_time_to_float(cube):
 
 
 def guess_calendar_datetime(cube):
-    """Guess the cftime.datetime form to create datetimes."""
+    """
+    Guess the cftime.datetime form to create datetimes.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    cftime.datetime
+        A datetime creator function from cftime, based on the cube's calendar.
+    """
     time_coord = cube.coord('time')
 
     if time_coord.units.calendar in ['360_day', ]:
@@ -218,11 +300,28 @@ def add_legend_outside_right(
     plot_details is a 2 level dict,
     where the first level is some key (which is hidden)
     and the 2nd level contains the keys:
-        'c': color
-        'lw': line width (optional)
-        'ls': line style (optional)
-        'label': label for the legend.
+    'c': color
+    'lw': line width
+    'label': label for the legend.
     ax1 is the axis where the plot was drawn.
+
+    Parameters
+    ----------
+    plot_details: dict
+        A dictionary of the plot details (color, linestyle, linewidth, label)
+    ax1: matplotlib.pyplot.axes
+        The pyplot axes to add the
+    column_width: float
+        The width of the legend column. This is used to adjust for longer words
+        in the legends
+    loc: string
+       Location of the legend. Options are "right" and "below".
+
+    Returns
+    -------
+    cftime.datetime
+        A datetime creator function from cftime, based on the cube's calendar.
+
     """
     # ####
     # Create dummy axes:
@@ -246,13 +345,25 @@ def add_legend_outside_right(
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details.keys()):
-        colour = plot_details[index]['c']
+        try:
+            colour = plot_details[index]['c']
+        except AttributeError:
+            colour = plot_details[index]['colour']
 
-        linewidth = plot_details[index].get('lw', 1)
+        try:
+            linewidth = plot_details[index]['lw']
+        except AttributeError:
+            linewidth = 1.
 
-        linestyle = plot_details[index].get('ls', '-')
+        try:
+            linestyle = plot_details[index]['ls']
+        except AttributeError:
+            linestyle = '-'
 
-        label = plot_details[index].get('label', str(index))
+        try:
+            label = plot_details[index]['label']
+        except AttributeError:
+            label = str(index)
 
         plt.plot(
             [], [],
@@ -288,6 +399,16 @@ def get_image_format(cfg, default='png'):
     The default is set in the user config.yml
     Individual diagnostics can set their own format which will
     supercede the main config.yml.
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
+    Returns
+    ---------
+    str
+        The image format extention.
     """
     image_extention = default
 
@@ -320,6 +441,25 @@ def get_image_path(cfg,
 
     The cfg is the opened global config,
     metadata is the metadata dictionairy (for the individual dataset file)
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    prefix: str
+        A string to prepend to the image basename.
+    suffix: str
+        A string to append to the image basename
+    metadata_id_list: list
+        A list of strings to add to the file path. It loads these from the cfg.
+
+    Returns
+    ---------
+    str
+        The ultimate image path
+
     """
     #####
     if metadata_id_list == 'default':
@@ -352,11 +492,20 @@ def make_cube_layer_dict(cube):
     Take a cube and return a dictionairy layer:cube
 
     Each item in the dict is a layer with a separate cube for each layer.
-    ie:
-        cubes[depth] = cube from specific layer
+    ie: cubes[depth] = cube from specific layer
 
-    Cubes with no depth component are returns as:
-        cubes[''] = cube with no depth component.
+    Cubes with no depth component are returned as dict, where the dict key
+    is a blank empty string, and the value is the cube.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    ---------
+    dict
+        A dictionairy of layer name : layer cube.
     """
     #####
     # Check layering:
