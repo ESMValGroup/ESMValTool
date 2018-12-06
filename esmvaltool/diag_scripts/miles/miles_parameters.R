@@ -42,8 +42,8 @@ if (map_projection != "no") {
 }
 
 # Custom parameteres for plots
-plotpar=list(mfrow = panels, cex.main = 2.5, cex.axis = 1.5, cex.lab = 1.5,
-            mar = c(5, 5, 5, 7), oma = c(1, 1, 3, 2))
+plotpar <- list(mfrow = panels, cex.main = 2.5, cex.axis = 1.5, cex.lab = 1.5,
+                mar = c(5, 5, 5, 7), oma = c(1, 1, 3, 2))
 
 # imagescale3 color bar details
 imgscl_colorbar <- 1.4
