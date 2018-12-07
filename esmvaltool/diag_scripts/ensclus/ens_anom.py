@@ -49,15 +49,15 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
         var_ens.append(var_area)
 
     if varunitsnew == 'mm/day':
-        print('\nPrecipitation rate units are converted from kg m-2 s-1 \
-                to mm/day')
+        print('\nPrecipitation rate units are converted from kg m-2 s-1 '
+              'to mm/day')
 
     print('The variable is {0} ({1})'.format(varname, varunitsnew))
     print('Original var shape: (time x lat x lon)={0}'.format(var.shape))
     print('var shape after selecting season {0}: (time x lat x lon)={1}'
           .format(season, var_season.shape))
-    print('var shape after selecting season {0} and area {1}: \
-            (time x lat x lon)={2}'.format(season, area, var_area.shape))
+    print('var shape after selecting season {0} and area {1}: '
+          '(time x lat x lon)={2}'.format(season, area, var_area.shape))
     print('Check the number of ensemble members: {0}'.format(len(var_ens)))
 
     if extreme == 'mean':

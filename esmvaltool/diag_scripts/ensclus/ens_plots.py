@@ -113,8 +113,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
     fig.savefig(namef)  # bbox_inches='tight')
     print('An eps figure for the selected fields is saved in {0}'
           .format(dir_plot))
-    print('___________________________________________________\
-           _________________________________________________________________')
+    print('___________________________________________________'
+          '_________________________________________________________________')
 
     return
 
