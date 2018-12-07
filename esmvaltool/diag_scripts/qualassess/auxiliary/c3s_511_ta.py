@@ -20,8 +20,7 @@ from .plots.basicplot import \
 
 class ta_Diagnostic_SP(Basic_Diagnostic_SP):
     """
-    class to implement basic diagnostics, like e.g. global means,
-    global differences, RMSD etc.
+    class to implement additional diagnostics
     """
     
     def set_info(self, **kwargs):

@@ -47,15 +47,15 @@ def main(cfg):
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from data set %s",
                     attributes['standard_name'], attributes['dataset'])
-        logger.debug("Preparing diagnostic")
+        logger.info("Preparing diagnostic")
         Diag = Basic_Diagnostic_SP()
         Diag.set_info(cfg=cfg)
-        logger.debug("Loading %s", filename)
+        logger.info("Loading %s", filename)
         Diag.read_data()
-        logger.debug("Running computation")
+        logger.info("Running computation")
         Diag.run_diagnostic()
 
-    logger.info('>>>>>>>> ENDED SUCESSFULLY!! <<<<<<<<<<<<')
+    logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
 
 
 if __name__ == '__main__':
