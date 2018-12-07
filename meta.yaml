@@ -61,11 +61,11 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
+    - julia=1.0.2
     - gcc
     - r-base
     - r-rcpp
     - libgfortran-ng
-    # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
