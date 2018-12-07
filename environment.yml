@@ -16,6 +16,7 @@ dependencies:
   - ncurses=6.1=hfc679d8_1
   - r-base
   - r-rcpp
+  - r-lintr
   - libgfortran-ng # needed by r packages
   # TODO: add julia
 
