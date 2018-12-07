@@ -31,5 +31,5 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 | Humidity   | ERA5       | 3   | NUIM          | April 2019  |
 +------------+------------+-----+---------------+-------------+
 | Pressure   | ERA5,      | 3   | NUIM          | April 2018  |
-|            | E-OBS      | 3   |               |             |
+|            | E-OBS      |     |               |             |
 +------------+------------+-----+---------------+-------------+
