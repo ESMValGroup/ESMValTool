@@ -15,7 +15,6 @@ Modification history
 import logging
 import os
 import sys
-import warnings
 
 import matplotlib.pyplot as plt
 import yaml
@@ -29,9 +28,6 @@ from ens_eof_kmeans import ens_eof_kmeans
 from ens_plots import ens_plots
 
 logger = logging.getLogger(__name__)
-
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
 
 
 def get_cfg():

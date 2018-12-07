@@ -1,15 +1,11 @@
 """Computing EOFs and PCs."""
 
 import datetime
-import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.cbook import MatplotlibDeprecationWarning
 import cartopy.crs as ccrs
 from eofs.standard import Eof
-
-warnings.simplefilter('ignore', MatplotlibDeprecationWarning)
 
 
 def eof_computation(var, varunits, lat, lon):
