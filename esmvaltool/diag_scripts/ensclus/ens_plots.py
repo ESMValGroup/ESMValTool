@@ -1,20 +1,19 @@
 """Plot the chosen field for each ensemble."""
 
-# Standard packages
+import math
 import os
 import sys
-import math
-import numpy as np
+
 import matplotlib.pyplot as plt
-# from mpl_toolkits.basemap import Basemap
+import numpy as np
 import cartopy.crs as ccrs
+
+# User-defined libraries
+from read_netcdf import read_N_2Dfields
 
 
 def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
     """Plot the chosen field for each ensemble."""
-    # User-defined libraries
-    from read_netcdf import read_N_2Dfields
-
     tit = field_to_plot
     print('Number of clusters: {0}'.format(numclus))
 

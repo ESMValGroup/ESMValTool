@@ -1,8 +1,8 @@
 """Selecting a season (DJF,DJFM,NDJFM,JJA)."""
-# Standard packages
-from netCDF4 import datetime
+
 import numpy as np
 import pandas as pd
+from netCDF4 import datetime
 
 
 def sel_season(var, dates, season):

@@ -1,14 +1,18 @@
 """Find the most representative ensemble member for each cluster."""
 
-# Standard packages
-import sys
-import os
+import collections
 import datetime
 import math
-import collections
+import os
+import sys
+
 import numpy as np
-from sklearn.cluster import KMeans
 import pandas as pd
+from sklearn.cluster import KMeans
+
+# User-defined libraries
+from eof_tool import eof_computation
+from read_netcdf import read_N_2Dfields
 
 
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
@@ -21,12 +25,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     OUTPUT:
     Frequency
     """
-    # User-defined libraries
-    from read_netcdf import read_N_2Dfields
-    from eof_tool import eof_computation
-
-    print('***********************************OUTPUT************'
-          '***********************')
+    print('**********************OUTPUT*************************')
     print('The name of the output files will be <variable>_{0}.txt'
           .format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))

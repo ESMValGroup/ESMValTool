@@ -2,8 +2,9 @@
 
 # Standard packages
 import os
-from netCDF4 import Dataset, num2date
+
 import numpy as np
+from netCDF4 import Dataset, num2date
 
 
 def read3Dncfield(ifile):

@@ -1,10 +1,13 @@
 """Computation of ensemble anomalies based on a desired value."""
 
-# Standard packages
-import sys
 import os
+import sys
 import numpy as np
 from scipy import stats
+
+# User-defined packages
+from read_netcdf import read3Dncfield, save_N_2Dfields
+from sel_season_area import sel_area, sel_season
 
 
 def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
@@ -17,10 +20,6 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     OUTPUT: NetCDF files of ensemble mean of climatology, selected value and
     anomaly maps.
     """
-    # User-defined packages
-    from read_netcdf import read3Dncfield, save_N_2Dfields
-    from sel_season_area import sel_season, sel_area
-
     print('**************************OUTPUT*******************************')
     print('The name of the output files will be <variable>_{0}.txt'
           .format(name_outputs))

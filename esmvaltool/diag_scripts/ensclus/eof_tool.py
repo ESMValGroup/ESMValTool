@@ -1,13 +1,14 @@
 """Computing EOFs and PCs."""
 
-# Standard packages
 import datetime
 import warnings
-import numpy as np
-import cartopy.crs as ccrs
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.cbook import MatplotlibDeprecationWarning
+import cartopy.crs as ccrs
 from eofs.standard import Eof
+
 warnings.simplefilter('ignore', MatplotlibDeprecationWarning)
 
 

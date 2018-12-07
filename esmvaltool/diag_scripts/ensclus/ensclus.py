@@ -12,17 +12,21 @@ Modification history
     20170710-mavi_ir: Routines written.
 """
 
-# Basic Python packages
+import logging
 import os
 import sys
-import logging
 import warnings
-import yaml
-import matplotlib.pyplot as plt
-from esmvaltool.diag_scripts.shared import run_diagnostic, save_iris_cube,\
-    variables_available, extract_variables
 
-# plt.switch_backend('Agg')
+import matplotlib.pyplot as plt
+import yaml
+
+from esmvaltool.diag_scripts.shared import (extract_variables, run_diagnostic,
+                                            save_iris_cube,
+                                            variables_available)
+# Import user diagnostic routines
+from ens_anom import ens_anom
+from ens_eof_kmeans import ens_eof_kmeans
+from ens_plots import ens_plots
 
 logger = logging.getLogger(__name__)
 
@@ -56,11 +60,6 @@ def main(cfg):
 
     out_dir = cfg['work_dir']
     write_plots = cfg['write_plots']
-
-    # Import full diagnostic routines
-    from ens_anom import ens_anom
-    from ens_eof_kmeans import ens_eof_kmeans
-    from ens_plots import ens_plots
 
     filenames_cat = []
     numens = len(input_files.keys())
