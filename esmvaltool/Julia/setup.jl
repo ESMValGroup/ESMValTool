@@ -15,9 +15,13 @@ open(scriptDir * "/julia_requirements.txt") do f
 
       pkgId=i[1]
       pkgName=i[2]
-      println(pkgId, ": ", pkgName)
-      Pkg.add(pkgName)
 
+      println(pkgId, ": ", pkgName)
+      if occursin("https://", pkgName)
+          Pkg.clone(pkgName)
+      else
+          Pkg.add(pkgName)
+      end
       println("Testing: ", pkgName)
       # load the package this needs to be called at top-level
       Expr(:toplevel, :(module ($pkgName) end))
