@@ -129,9 +129,10 @@ def moving_average(cube, window):
     window_len = int(window[0]) / 2.
     win_units = str(window[1])
 
-    if win_units not in ['days', 'day', 'dy',
-                         'months', 'month', 'mn',
-                         'years', 'yrs', 'year', 'yr']:
+    if win_units not in [
+            'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
+            'year', 'yr'
+    ]:
         raise ValueError("Moving average window units not recognised: " +
                          "{}".format(win_units))
 
@@ -141,9 +142,10 @@ def moving_average(cube, window):
 
     output = []
 
-    times = np.array([datetime(time_itr.year, time_itr.month, time_itr.day,
-                               time_itr.hour, time_itr.minute)
-                      for time_itr in times])
+    times = np.array([
+        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
+                 time_itr.minute) for time_itr in times
+    ])
 
     for time_itr in times:
         if win_units in ['years', 'yrs', 'year', 'yr']:
@@ -210,9 +212,8 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
-        if 'moving_average' in cfg.keys():
-                cube_layer = moving_average(cube_layer,
-                                            cfg['moving_average'])
+        if 'moving_average' in cfg:
+            cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -237,7 +238,8 @@ def make_time_series_plots(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer) + image_extention]),
+                suffix='_'.join(['timeseries',
+                                 str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -366,7 +368,8 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer) + image_extention]),
+                suffix='_'.join(['timeseries',
+                                 str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -395,10 +398,7 @@ def main(cfg):
 
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info(
-            'metadata filename:\t%s',
-            metadata_filename
-        )
+        logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 
@@ -409,7 +409,7 @@ def main(cfg):
             metadatas,
         )
 
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(

@@ -99,11 +99,15 @@ def make_profiles_plots(
 
         color = cmap((time - time_0) / (times_float[-1] - time_0))
 
-        qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'),
-                  c=color)
+        qplt.plot(
+            cube[time_index, :], cube[time_index, :].coord('depth'), c=color)
 
-        plot_details[time_index] = {'c': color, 'ls': '-', 'lw': 1,
-                                    'label': str(int(time))}
+        plot_details[time_index] = {
+            'c': color,
+            'ls': '-',
+            'lw': 1,
+            'label': str(int(time))
+        }
 
     # Add title to plot
     title = ' '.join([
@@ -145,13 +149,10 @@ def main(cfg):
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info(
-            'metadata filename:\t%s',
-            metadata_filename
-        )
+        logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(

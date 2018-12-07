@@ -43,7 +43,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(
+        model_type,
+        cfg_dict,
+        input_files_dict,
+):
     """
     Match up the three models and observations dataset from the configs.
 
@@ -66,7 +70,10 @@ def get_cube_range(cubes):
     for cube in cubes:
         mins.append(cube.data.min())
         maxs.append(cube.data.max())
-    return [np.min(mins), np.max(maxs), ]
+    return [
+        np.min(mins),
+        np.max(maxs),
+    ]
 
 
 def get_cube_range_diff(cubes):
@@ -104,8 +111,7 @@ def multi_model_maps(
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = match_model_to_key(model_type,
-                                                   cfg[model_type],
+        filenames[model_type] = match_model_to_key(model_type, cfg[model_type],
                                                    input_files)
 
     # ####
@@ -121,14 +127,14 @@ def multi_model_maps(
             layers[layer] = True
 
     logger.debug('layers: %s', ', '.join(layers))
-    logger.debug('cubes: %s', ', '.join(cubes.keys()))
+    logger.debug('cubes: %s', ', '.join(cubes))
 
     # ####
     # load names:
     exper = input_files[filenames[exp_key]]['dataset']
     control = input_files[filenames[ctl_key]]['dataset']
     obs = input_files[filenames[obs_key]]['dataset']
-    long_name = cubes[exp_key][list(layers.keys())[0]].long_name
+    long_name = cubes[exp_key][list(layers)[0]].long_name
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -150,14 +156,26 @@ def multi_model_maps(
         linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, n_points=n_points, cmap='viridis',
-                        title=exper)
-        add_map_subplot(222, cube222, n_points=linspace, cmap='bwr',
-                        title=' '.join([exper, 'minus', control]))
-        add_map_subplot(223, cube223, n_points=linspace, cmap='bwr',
-                        title=' '.join([control, 'minus', obs]))
-        add_map_subplot(224, cube224, n_points=linspace, cmap='bwr',
-                        title=' '.join([exper, 'minus', obs]))
+        add_map_subplot(
+            221, cube221, n_points=n_points, cmap='viridis', title=exper)
+        add_map_subplot(
+            222,
+            cube222,
+            n_points=linspace,
+            cmap='bwr',
+            title=' '.join([exper, 'minus', control]))
+        add_map_subplot(
+            223,
+            cube223,
+            n_points=linspace,
+            cmap='bwr',
+            title=' '.join([control, 'minus', obs]))
+        add_map_subplot(
+            224,
+            cube224,
+            n_points=linspace,
+            cmap='bwr',
+            title=' '.join([exper, 'minus', obs]))
 
         # Add overall title
         fig.suptitle(long_name, fontsize=14)

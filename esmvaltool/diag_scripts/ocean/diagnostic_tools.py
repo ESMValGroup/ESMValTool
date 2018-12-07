@@ -13,13 +13,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import yaml
+
 import cftime
 import matplotlib
-matplotlib.use('Agg')  # noqa
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import yaml
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 
@@ -40,7 +39,9 @@ def get_obs_projects():
     list
         Returns a list of strings of the various types of observational data.
     """
-    obs_projects = ['obs4mips', ]
+    obs_projects = [
+        'obs4mips',
+    ]
     return obs_projects
 
 
@@ -144,7 +145,11 @@ def bgc_units(cube, name):
     return cube
 
 
-def match_model_to_key(model_type, cfg_dict, input_files_dict, ):
+def match_model_to_key(
+        model_type,
+        cfg_dict,
+        input_files_dict,
+):
     """
     Match up model or observations dataset dictionairies from config file.
 
@@ -273,31 +278,24 @@ def load_thresholds(cfg, metadata):
     list:
         List of thresholds
     """
-    thresholds = []
+    thresholds = set()
 
-    if 'threshold' in cfg.keys():
-        thresholds.append(float(cfg['threshold']))
+    if 'threshold' in cfg:
+        thresholds.update(float(cfg['threshold']))
 
-    if 'threshold' in metadata.keys():
-        thresholds.append(float(metadata['threshold']))
+    if 'threshold' in metadata:
+        thresholds.update(float(metadata['threshold']))
 
-    if 'thresholds' in cfg.keys():
-        thresholds.extend([float(thres) for thres in cfg['thresholds']])
+    if 'thresholds' in cfg:
+        thresholds.update([float(thres) for thres in cfg['thresholds']])
 
-    if 'thresholds' in metadata.keys():
-        thresholds.extend([float(thres) for thres in metadata['thresholds']])
+    if 'thresholds' in metadata:
+        thresholds.update([float(thres) for thres in metadata['thresholds']])
 
-    thresholds = {threshold: True for threshold in thresholds}
-
-    return sorted(thresholds.keys())
+    return sorted(list(thresholds))
 
 
-def add_legend_outside_right(
-        plot_details,
-        ax1,
-        column_width=0.1,
-        loc='right'
-):
+def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
     """
     Add a legend outside the plot, to the right.
 
@@ -329,26 +327,25 @@ def add_legend_outside_right(
     """
     # ####
     # Create dummy axes:
-    legend_size = len(plot_details.keys()) + 1
+    legend_size = len(plot_details) + 1
     box = ax1.get_position()
     if loc.lower() == 'right':
         nrows = 25
         ncols = int(legend_size / nrows) + 1
-        ax1.set_position([box.x0,
-                          box.y0,
-                          box.width * (1. - column_width * ncols),
-                          box.height])
+        ax1.set_position([
+            box.x0, box.y0, box.width * (1. - column_width * ncols), box.height
+        ])
 
     if loc.lower() == 'below':
         ncols = 4
         nrows = int(legend_size / ncols) + 1
-        ax1.set_position([box.x0,
-                          box.y0 + (nrows * column_width),
-                          box.width,
-                          box.height - (nrows * column_width)])
+        ax1.set_position([
+            box.x0, box.y0 + (nrows * column_width), box.width,
+            box.height - (nrows * column_width)
+        ])
 
     # Add emply plots to dummy axis.
-    for index in sorted(plot_details.keys()):
+    for index in sorted(plot_details):
         try:
             colour = plot_details[index]['c']
         except AttributeError:
@@ -369,12 +366,7 @@ def add_legend_outside_right(
         except AttributeError:
             label = str(index)
 
-        plt.plot(
-            [], [],
-            c=colour,
-            lw=linewidth,
-            ls=linestyle,
-            label=label)
+        plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
 
     if loc.lower() == 'right':
         legd = ax1.legend(
@@ -417,29 +409,32 @@ def get_image_format(cfg, default='png'):
     image_extention = default
 
     # Load format from config.yml and set it as default
-    if 'output_file_type' in cfg.keys():
+    if 'output_file_type' in cfg:
         image_extention = cfg['output_file_type']
 
     # Load format from config.yml and set it as default
-    if 'image_format' in cfg.keys():
+    if 'image_format' in cfg:
         image_extention = cfg['image_format']
 
     matplotlib_image_formats = plt.gcf().canvas.get_supported_filetypes()
     if image_extention not in matplotlib_image_formats:
-        logger.warning(' '.join(['Image format ', image_extention,
-                                 'not in matplot:',
-                                 ', '.join(matplotlib_image_formats)]))
+        logger.warning(' '.join([
+            'Image format ', image_extention, 'not in matplot:',
+            ', '.join(matplotlib_image_formats)
+        ]))
 
     image_extention = '.' + image_extention
     image_extention = image_extention.replace('..', '.')
     return image_extention
 
 
-def get_image_path(cfg,
-                   metadata,
-                   prefix='diag',
-                   suffix='image',
-                   metadata_id_list='default',):
+def get_image_path(
+        cfg,
+        metadata,
+        prefix='diag',
+        suffix='image',
+        metadata_id_list='default',
+):
     """
     Produce a path to the final location of the image.
 
@@ -467,15 +462,25 @@ def get_image_path(cfg,
     """
     #####
     if metadata_id_list == 'default':
-        metadata_id_list = ['project', 'dataset', 'mip', 'exp', 'ensemble',
-                            'field', 'short_name', 'preprocessor',
-                            'diagnostic', 'start_year', 'end_year', ]
+        metadata_id_list = [
+            'project',
+            'dataset',
+            'mip',
+            'exp',
+            'ensemble',
+            'field',
+            'short_name',
+            'preprocessor',
+            'diagnostic',
+            'start_year',
+            'end_year',
+        ]
 
     path = folder(cfg['plot_dir'])
     if prefix:
         path += prefix + '_'
     # Check that the keys are in the dict.
-    intersection = [va for va in metadata_id_list if va in metadata.keys()]
+    intersection = [va for va in metadata_id_list if va in metadata]
     path += '_'.join([str(metadata[b]) for b in intersection])
     if suffix:
         path += '_' + suffix
@@ -533,7 +538,9 @@ def make_cube_layer_dict(cube):
 
     # iris stores coords as a list with one entry:
     layer_dim = layers[0]
-    if len(layer_dim.points) in [1, ]:
+    if len(layer_dim.points) in [
+            1,
+    ]:
         cubes[''] = cube
         return cubes
 

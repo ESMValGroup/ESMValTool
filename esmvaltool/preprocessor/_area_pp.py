@@ -163,15 +163,15 @@ def extract_named_regions(cube, regions):
     if isinstance(regions, str):
         regions = [regions, ]
 
-    if not isinstance(regions, list):
-        raise ValueError('Regions %s is not a list or a string.', regions)
+    if not isinstance(regions, (list, tuple, set)):
+        raise ValueError('Regions "{}" is not an acceptable format.'
+                         ''.format(regions))
 
-    cube_regions = cube.coord('region').points
-
-    for reg in regions:
-        if reg in cube_regions:
-            continue
-        raise ValueError('Region %s no in cube regions', reg)
+    available_regions = set(cube.coord('region').points)
+    invalid_regions = set(regions) - available_regions
+    if invalid_regions:
+        raise ValueError('Region(s) "{}" not in cube region(s): '
+                         '{}'.format(invalid_regions, available_regions))
 
     constraints = iris.Constraint(region=lambda r: r in regions)
     cube = cube.extract(constraint=constraints)
