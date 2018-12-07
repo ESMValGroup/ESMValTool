@@ -28,12 +28,12 @@ def main(cfg):
         logger.info("Processing dataset %s", dataset)
         # read data
         uas_info = select_metadata(
-            grouped_input_data[dataset], short_name='ua')[0]
+            grouped_input_data[dataset], short_name='uas')[0]
         uas_file = uas_info['filename']
         nc_ua = xr.open_dataset(uas_file)
         uas_data = nc_ua.uas
         vas_info = select_metadata(
-            grouped_input_data[dataset], short_name='va')[0]
+            grouped_input_data[dataset], short_name='vas')[0]
         vas_file = vas_info['filename']
         nc_va = xr.open_dataset(vas_file)
         vas_data = nc_va.vas

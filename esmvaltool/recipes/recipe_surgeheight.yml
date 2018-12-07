@@ -1,7 +1,7 @@
 ---
 
 datasets:
-  - {dataset: ERA-Interim,  project: OBS, type: reanaly,  mip: 6hrPlev, version: 1, tier: 3, start_year: 1979,  end_year: 1979}
+  - {dataset: ERA-Interim,  project: OBS, type: reanaly,  mip: cf3hr, version: 1, tier: 3, start_year: 1979,  end_year: 1979}
 #  - {dataset: CanESM2,  project: CMIP5,  mip: 6hrPlev, exp: historical, ensemble: r4i1p1, start_year: 2003,  end_year: 2003}
 
 preprocessors:
@@ -9,37 +9,11 @@ preprocessors:
   preprocessor1:
     extract_time:
       start_month: 1
-      start_day:   1
-      start_year:    1979
+      start_day:   31
+      start_year:  1979
       end_month:   12
       end_day:     31
       end_year:    1979
-#    regrid:
-#      target_grid: 0.75x0.75
-#      scheme: linear
-
-  preprocessor2:
-    extract_time:
-      start_month: 4
-      start_day:   1
-      end_month:   1
-      end_day:     7
-#      end_year:    2003
-    extract_levels:
-      levels: 85000
-      scheme: nearest
-#    regrid:
-#      target_grid: 0.75x0.75
-#      scheme: linear
-
-#  preprocessorERAi:
-#    extract_time:
-#      start_month: 1
-#      start_day:   1
-#      start_year:  1979
-#      end_month:   12
-#      end_day:     31
-#      end_year:    2000
 
 diagnostics:
 
@@ -48,14 +22,14 @@ diagnostics:
     variables:
       psl:
         preprocessor: preprocessor1
-        field: T2D
-        derive: True
+        field: T2Ds
+#        derive: True
       vas: #should be vas!
         preprocessor: preprocessor1
-        field: T2D
+        field: T2Ds
       uas: #should be uas!
         preprocessor: preprocessor1
-        field: T2D
+        field: T2Ds
     scripts:
       surge_height:
         script: surge_height/diagnostic.py
