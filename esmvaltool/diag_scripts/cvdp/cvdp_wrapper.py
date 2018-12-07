@@ -46,7 +46,7 @@ def setup_driver(cfg):
         for line in driver_file:
             content.append(_update_settings(line))
 
-    new_driver = os.path.join(cfg['work_dir'], "driver.ncl")
+    new_driver = os.path.join(cfg['run_dir'], "driver.ncl")
 
     with open(new_driver, 'w') as new_driver_file:
         new_driver_file.write("".join(content))
@@ -70,7 +70,7 @@ def create_link(cfg, inpath):
     if not os.path.isfile(inpath):
         raise DiagnosticError("Path {0} does not exist".format(inpath))
 
-    lnk_dir = os.path.join(cfg['work_dir'], "links")
+    lnk_dir = os.path.join(cfg['run_dir'], "links")
 
     if not os.path.isdir(lnk_dir):
         os.mkdir(lnk_dir)
@@ -97,7 +97,7 @@ def setup_namelist(cfg):
         content.append("{0} | {1} | {2} | {3}\n".format(
             key, ppath, value[0]["start_year"], value[0]["end_year"]))
 
-    namelist = os.path.join(cfg['work_dir'], "namelist")
+    namelist = os.path.join(cfg['run_dir'], "namelist")
 
     with open(namelist, 'w') as namelist_file:
         namelist_file.write("\n".join(content))
@@ -131,7 +131,7 @@ def main(cfg):
     """Set and execute the cvdp package."""
     setup_driver(cfg)
     setup_namelist(cfg)
-    subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['work_dir']))
+    subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['run_dir']))
 
 
 if __name__ == '__main__':
