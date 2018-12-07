@@ -2,14 +2,13 @@
 
 import math
 import os
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 import cartopy.crs as ccrs
 
 # User-defined libraries
-from read_netcdf import read_N_2Dfields
+from read_netcdf import read_n_2d_fields
 
 
 def ens_plots(dir_output, dir_plot, name_outputs, numclus,
@@ -25,8 +24,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
 
     # Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
     ifile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
-                                     .format(name_outputs))
-    vartoplot, varunits, lat, lon = read_N_2Dfields(ifile)
+                         .format(name_outputs))
+    vartoplot, varunits, lat, lon = read_n_2d_fields(ifile)
     print('vartoplot dim: (numens x lat x lon)={0}'.format(vartoplot.shape))
     numens = vartoplot.shape[0]
 
@@ -35,23 +34,23 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     labels = np.loadtxt(namef, dtype=int)
     print(labels)
 
-    mi = vartoplot.min()
-    ma = vartoplot.max()
+    vmi = vartoplot.min()
+    vma = vartoplot.max()
 
     if field_to_plot == 'anomalies':
         # compute range colorbar for anomalies
         delta = 0.05
-        if abs(math.floor(mi * 100) / 100) < math.ceil(ma * 100) / 100:
-            rangecbarmin = -math.ceil(ma * 100) / 100
-            rangecbarmax = math.ceil(ma * 100) / 100 + delta
+        if abs(math.floor(vmi * 100) / 100) < math.ceil(vma * 100) / 100:
+            rangecbarmin = -math.ceil(vma * 100) / 100
+            rangecbarmax = math.ceil(vma * 100) / 100 + delta
         else:
-            rangecbarmin = math.floor(mi * 100) / 100
-            rangecbarmax = abs(math.floor(mi * 100) / 100) + delta
+            rangecbarmin = math.floor(vmi * 100) / 100
+            rangecbarmax = abs(math.floor(vmi * 100) / 100) + delta
     else:
         # compute range colorbar for climatologies
         delta = 0.2
-        rangecbarmin = math.floor(mi)
-        rangecbarmax = math.ceil(ma) + delta
+        rangecbarmin = math.floor(vmi)
+        rangecbarmax = math.ceil(vma) + delta
 
     clevels = np.arange(rangecbarmin, rangecbarmax, delta)
     # clevels=np.arange(2,44,delta)
@@ -68,8 +67,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
         # print('//////////ENSEMBLE MEMBER {0}'.format(nens))
-        ax = plt.subplot(x, y, nens + 1, projection=ccrs.PlateCarree())
-        ax.coastlines("110m")
+        axes = plt.subplot(x, y, nens + 1, projection=ccrs.PlateCarree())
+        axes.coastlines("110m")
         # ax.set_extent([-10, 60, -30,90],ccrs.PlateCarree())
 
         # Plot Data
@@ -91,8 +90,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
                 title_obj.set_backgroundcolor(colors[nclus])
 
     cax = plt.axes([0.1, 0.03, 0.8, 0.03])  # horizontal
-    cb = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
-    cb.ax.tick_params(labelsize=18)
+    cbar = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
+    cbar.ax.tick_params(labelsize=18)
 
     plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + tit + ' (' +
                  varunits + ')', fontsize=45, fontweight='bold')

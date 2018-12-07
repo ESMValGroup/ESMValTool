@@ -7,31 +7,31 @@ import numpy as np
 from netCDF4 import Dataset, num2date
 
 
-def read3Dncfield(ifile):
+def read_3d_ncfield(ifile):
     """Read netCDF file of 3Dfield.
 
-    USAGE: var, lat, lon, dates = read3Dncfield(filename)
+    USAGE: var, lat, lon, dates = read_3d_ncfield(filename)
     """
-    fh = Dataset(ifile, mode='r')
+    fileh = Dataset(ifile, mode='r')
     variabs = []
-    for variab in fh.variables:
+    for variab in fileh.variables:
         variabs.append(variab)
     print('The variables in the nc file are: ', variabs)
 
     if 'lat' in variabs:
-        lat = fh.variables['lat'][:]
+        lat = fileh.variables['lat'][:]
     elif 'latitude' in variabs:
-        lat = fh.variables['latitude'][:]
+        lat = fileh.variables['latitude'][:]
     if 'lon' in variabs:
-        lon = fh.variables['lon'][:]
+        lon = fileh.variables['lon'][:]
     elif 'longitude' in variabs:
-        lon = fh.variables['longitude'][:]
-    time = fh.variables['time'][:]
-    time_units = fh.variables['time'].units
-    var_units = fh.variables[variabs[0]].units
-    var = fh.variables[variabs[0]][:, :, :]
+        lon = fileh.variables['longitude'][:]
+    time = fileh.variables['time'][:]
+    time_units = fileh.variables['time'].units
+    var_units = fileh.variables[variabs[0]].units
+    var = fileh.variables[variabs[0]][:, :, :]
     dates = num2date(time, time_units)
-    fh.close()
+    fileh.close()
 
     return var, var_units, lat, lon, dates, time_units
 
@@ -81,31 +81,30 @@ def save_N_2Dfields(lats, lons, variab, varname, varunits, ofile):
     # -----------------------------------------------------------------------
 
 
-def read_N_2Dfields(ifile):
+def read_n_2d_fields(ifile):
     """Read a number N of 2D fields [latxlon].
 
-    USAGE: var, lat, lon, dates = read_N_2Dfields(filename)
+    USAGE: var, lat, lon, dates = read_n_2d_fields(filename)
     """
-    fh = Dataset(ifile, mode='r')
+    fileh = Dataset(ifile, mode='r')
     variabs = []
-    for variab in fh.variables:
+    for variab in fileh.variables:
         variabs.append(variab)
     # print('The variables in the nc file are: ', variabs)
 
     # num = fh.variables['num'][:]
-    if ('lat' in variabs):
-        lat = fh.variables['lat'][:]
-    elif ('latitude' in variabs):
-        lat = fh.variables['latitude'][:]
-    if ('lon' in variabs):
-        lon = fh.variables['lon'][:]
-    elif ('longitude' in variabs):
-        lon = fh.variables['longitude'][:]
-    var = fh.variables[variabs[3]][:, :, :]
-    var_units = fh.variables[variabs[3]].units
-    # txt = '{0} dim [num x lat x lon]: {1}'.format(variabs[3], var.shape)
+    if 'lat' in variabs:
+        lat = fileh.variables['lat'][:]
+    elif 'latitude' in variabs:
+        lat = fileh.variables['latitude'][:]
+    if 'lon' in variabs:
+        lon = fileh.variables['lon'][:]
+    elif 'longitude' in variabs:
+        lon = fileh.variables['longitude'][:]
+    var = fileh.variables[variabs[3]][:, :, :]
+    var_units = fileh.variables[variabs[3]].units
     # print(fh.variables)
-    fh.close()
+    fileh.close()
 
     # print('\n'+txt)
 

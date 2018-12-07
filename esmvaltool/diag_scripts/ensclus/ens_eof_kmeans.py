@@ -4,7 +4,6 @@ import collections
 import datetime
 import math
 import os
-import sys
 
 import numpy as np
 import pandas as pd
@@ -12,7 +11,7 @@ from sklearn.cluster import KMeans
 
 # User-defined libraries
 from eof_tool import eof_computation
-from read_netcdf import read_N_2Dfields
+from read_netcdf import read_n_2d_fields
 
 
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
@@ -50,8 +49,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
 
     # Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
     ifile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
-                                     .format(name_outputs))
-    var, varunits, lat, lon = read_N_2Dfields(ifile)
+                         .format(name_outputs))
+    var, varunits, lat, lon = read_n_2d_fields(ifile)
     print('var dim: (numens x lat x lon)={0}'.format(var.shape))
 
     # Compute EOFs (Empirical Orthogonal Functions)
@@ -85,12 +84,12 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print('_________________________________________________________'
           '___________________________________________________________')
     # --------------------------------------------------------------------
-    PCs = pcs_unscal0[:, :numpcs]
+    pcs = pcs_unscal0[:, :numpcs]
 
     clus = KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
 
     start = datetime.datetime.now()
-    clus.fit(PCs)
+    clus.fit(pcs)
     end = datetime.datetime.now()
     print('k-means algorithm took me %s seconds' % (end - start))
 
@@ -111,17 +110,17 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     np.savetxt(namef, labels, fmt='%d')
 
     # ____________Compute cluster frequencies
-    L = []
+    clusters = []
     for nclus in range(numclus):
-        cl = list(np.where(labels == nclus)[0])
-        fr = len(cl) * 100 / len(labels)
-        L.append([nclus, fr, cl])
+        clu = list(np.where(labels == nclus)[0])
+        frq = len(clu) * 100 / len(labels)
+        clusters.append([nclus, frq, clu])
     print('Cluster labels:')
-    print([L[ncl][0] for ncl in range(numclus)])
+    print([clusters[ncl][0] for ncl in range(numclus)])
     print('Cluster frequencies (%):')
-    print([round(L[ncl][1], 3) for ncl in range(numclus)])
+    print([round(clusters[ncl][1], 3) for ncl in range(numclus)])
     print('Cluster members:')
-    print([L[ncl][2] for ncl in range(numclus)])
+    print([clusters[ncl][2] for ncl in range(numclus)])
 
     # ____________Find the most representative ensemble member for each cluster
     print('_________________________________________________________'
@@ -135,14 +134,14 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     # 1)
     print('Check: cluster #1 centroid coordinates vector dim {0} should be '
           'the same as the member #1 PC vector dim {1}\n'
-          .format(centroids[1, :].shape, PCs[1, :].shape))
+          .format(centroids[1, :].shape, pcs[1, :].shape))
     # print('\nIn the PC space, the distance between:')
     norm = np.empty([numclus, numens])
     final_output = []
     repres = []
     for nclus in range(numclus):
         for ens in range(numens):
-            normens = centroids[nclus, :] - PCs[ens, :]
+            normens = centroids[nclus, :] - pcs[ens, :]
             norm[nclus, ens] = math.sqrt(sum(normens**2))
             # print('The distance between centroid of cluster {0} and
             # member {1} is {2}'.format(nclus,ens,round(norm[nclus,ens],3)))
@@ -179,13 +178,13 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print('\nIn the PC space:')
     stat_output = []
     for nclus in range(numclus):
-        members = L[nclus][2]
+        members = clusters[nclus][2]
         norm = np.empty([numclus, len(members)])
         for mem in range(len(members)):
             # print('mem=',mem)
             ens = members[mem]
             # print('ens',ens)
-            normens = centroids[nclus, :] - PCs[ens, :]
+            normens = centroids[nclus, :] - pcs[ens, :]
             norm[nclus, mem] = math.sqrt(sum(normens**2))
             # print('norm=',norm[nclus],norm.dtype)
         print('the distances between centroid of cluster {0} and its '
@@ -209,7 +208,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         d_stat['intra-clus_std'] = norm[nclus].std()
         d_stat['d_min'] = round(norm[nclus].min(), 3)
         d_stat['d_max'] = round(norm[nclus].max(), 3)
-        d_stat['freq(%)'] = round(L[nclus][1], 3)
+        d_stat['freq(%)'] = round(clusters[nclus][1], 3)
         stat = pd.DataFrame(d_stat)
         stat_output.append(stat)
     stat_output = pd.concat(stat_output, axis=0)
