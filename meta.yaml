@@ -65,6 +65,9 @@ requirements:
     - r-base
     - r-rcpp
     - libgfortran-ng
+    - sklearn
+    - pandas
+    - eofs
     # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
