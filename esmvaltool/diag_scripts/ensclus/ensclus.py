@@ -85,7 +85,7 @@ def main(cfg):
     # ____________run ens_plots as a module
     if write_plots:
         ens_plots(out_dir, cfg['plot_dir'], name_outputs, cfg['numclus'],
-                  'anomalies')  # cfg['file_to_plot']
+                  'anomalies', cfg['output_file_type'])
 
     print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
     print('')

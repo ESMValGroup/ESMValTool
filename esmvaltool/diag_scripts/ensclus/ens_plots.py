@@ -12,7 +12,8 @@ import cartopy.crs as ccrs
 from read_netcdf import read_N_2Dfields
 
 
-def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
+def ens_plots(dir_output, dir_plot, name_outputs, numclus,
+              field_to_plot, plot_type):
     """Plot the chosen field for each ensemble."""
     tit = field_to_plot
     print('Number of clusters: {0}'.format(numclus))
@@ -107,7 +108,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot):
                         wspace=wspace, hspace=hspace)
 
     # plot the selected fields
-    namef = os.path.join(dir_plot, '{0}_{1}.eps'
+    namef = os.path.join(dir_plot, ('{0}_{1}.' + plot_type)
                          .format(field_to_plot, name_outputs))
     fig.savefig(namef)  # bbox_inches='tight')
     print('An eps figure for the selected fields is saved in {0}'
