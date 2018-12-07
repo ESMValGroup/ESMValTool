@@ -1,5 +1,6 @@
 """
-Diagnostic Maps:
+Maps diagnostics
+================
 
 Diagnostic to produce images of a map with coastlines from a cube.
 These plost show latitude vs longitude and the cube value is used as the colour
@@ -10,13 +11,15 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
+An approproate preprocessor for a 3D+time field would be::
+
+  preprocessors:
+    prep_map:
+      extract_levels:
+        levels:  [100., ]
+         scheme: linear_extrap
+      time_average:
+
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
@@ -47,9 +50,15 @@ def make_map_plots(
     """
     Make a simple map plot for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionairy
+    filename: str
+        the preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -106,9 +115,13 @@ def make_map_plots(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file, and send it to the plot makers.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(

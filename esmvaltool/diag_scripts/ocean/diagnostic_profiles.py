@@ -1,28 +1,44 @@
 """
-Diagnostic:
+Profile diagnostics
+===================
 
-Diagnostic to produce images of the profile over time from a cube.
+Diagnostic to produce figure of the profile over time from a cube.
 These plost show cube value (ie temperature) on the x-axis, and depth/height
-on the y axis. The colour scale is the annual mean of the cube data.
+on the y axis. The colour scale is the time series.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has a time component, and depth component, but no
 latitude or longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_profile:
-    extract_volume:
-      long1: 0.
-      long2:  20.
-      lat1:  -30.
-      lat2:  30.
-      z_min: 0.
-      z_max: 3000.
-    average_region:
-      coord1: longitude
-      coord2: latitude
+An approproate preprocessor for a 3D+time field would be::
+
+  preprocessors:
+    prep_profile:
+      extract_volume:
+        long1: 0.
+        long2:  20.
+        lat1:  -30.
+        lat2:  30.
+        z_min: 0.
+        z_max: 3000.
+      average_region:
+        coord1: longitude
+        coord2: latitude
+
+In order to add an observational dataset to the profile plot, the following
+arguments are needed in the diagnostic script::
+
+  diagnostics:
+    diagnostic_name:
+      variables:
+        ...
+      additional_datasets:
+      - {observational dataset description}
+      scripts:
+        script_name:
+          script: ocean/diagnostic_profiles.py
+          observational_dataset: {observational dataset description}
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
@@ -49,7 +65,15 @@ def determine_profiles_str(cube):
     """
     Determine a string from the cube, to describe the profile.
 
-    Used in image titles, descriptions and filenames.
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    str
+        Returns a string which describes the profile.
     """
     options = ['latitude', 'longitude']
     for option in options:
@@ -72,11 +96,18 @@ def make_profiles_plots(
         filename,
 ):
     """
-    Make a simple profile plot for an individual model.
+    Make a profile plot for an individual model. 
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    The optional observational dataset can also be added.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -88,7 +119,6 @@ def make_profiles_plots(
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
-    #
     times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
@@ -140,9 +170,14 @@ def make_profiles_plots(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file, find an observational dataset filename,
+    pass loaded into the plot making tool.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
