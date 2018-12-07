@@ -77,8 +77,12 @@ Observations and reformat scripts
 
 Default reference data based on GRDC and WFDEI are included in the diagnostic script
 as catchment averages. They can be replaced with any gridded dataset by defining a
-reference_dataset. A default catchment mask is (somehow) delivered together with
-the diagnostic. All other datasets are remapped onto the catchment mask grid as part
+reference_dataset. The necessary catchment mask is available at
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2025776.svg
+   :target: https://doi.org/10.5281/zenodo.2025776
+
+All other datasets are remapped onto the catchment mask grid as part
 of the diagnostics.
 
 

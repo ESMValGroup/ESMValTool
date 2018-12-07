@@ -4,7 +4,8 @@ documentation:
   description:
     Recipe for plotting runoff and ET diagnostics. The diagnostics calculates water
     balance components for different catchments and compares the results against
-    observations
+    observations. Currently, the required catchment mask needs to be downloaded manually
+    at https://doi.org/10.5281/zenodo.2025776
 
   authors:
     - hage_st
