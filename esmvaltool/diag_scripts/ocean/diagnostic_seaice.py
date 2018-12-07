@@ -26,16 +26,14 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import numpy as np
 from itertools import product
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
+import cartopy
 import iris
 import iris.quickplot as qplt
-
-import cartopy
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -78,7 +76,7 @@ def calculate_area_time_series(cube, plot_type, threshold):
             collapsed cube, in units of m^2
     """
     data = []
-    times = diagtools.timecoord_to_float(cube.coord('time'))
+    times = diagtools.cube_time_to_float(cube)
     for time_itr, time in enumerate(times):
         icedata = cube[time_itr].data
 
