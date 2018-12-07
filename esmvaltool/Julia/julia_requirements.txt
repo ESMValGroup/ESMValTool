@@ -1,2 +1,3 @@
-DataFrames
+ArgParse
+Compat
 https://github.com/jhardenberg/RainFARM.jl.git
