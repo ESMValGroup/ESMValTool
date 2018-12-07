@@ -220,22 +220,3 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         text_file.write(stat_output.__repr__())
 
     return
-
-
-if __name__ == '__main__':
-    print('This program is being run by itself')
-
-    print('**************************************************************')
-    print('Running {0}'.format(sys.argv[0]))
-    print('**************************************************************')
-    dir_output = sys.argv[1]    # OUTPUT DIRECTORY
-    name_outputs = sys.argv[2]  # name of the outputs
-    numens = int(sys.argv[3])   # number of ensemble members
-    numpcs = sys.argv[4]        # number of retained PCs
-    perc = sys.argv[5]          # percentage of explained variance by PCs
-    numclus = int(sys.argv[6])  # number of clusters
-
-    ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus)
-
-else:
-    print('ens_eof_kmeans is being imported from another module')

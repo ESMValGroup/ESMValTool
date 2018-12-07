@@ -140,25 +140,3 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
                     varunitsnew, ofile)
 
     return
-
-
-if __name__ == '__main__':
-    print('This program is being run by itself')
-
-    print('**************************************************************')
-    print('Running {0}'.format(sys.argv[0]))
-    print('**************************************************************')
-    filenames = sys.argv[1].split()  # input file names
-    dir_output = sys.argv[2]         # OUTPUT DIRECTORY
-    name_outputs = sys.argv[3]       # name of the outputs
-    varname = sys.argv[4]            # variable name
-    numens = int(sys.argv[5])        # number of ensemble members
-    season = sys.argv[6]             # seasonal average
-    area = sys.argv[7]               # regional average
-    extreme = sys.argv[8]            # chosen extreme to investigate
-
-    ens_anom(filenames, dir_output, name_outputs, varname, numens,
-             season, area, extreme)
-
-else:
-    print('ens_anom is being imported from another module')

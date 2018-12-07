@@ -111,28 +111,9 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     namef = os.path.join(dir_plot, ('{0}_{1}.' + plot_type)
                          .format(field_to_plot, name_outputs))
     fig.savefig(namef)  # bbox_inches='tight')
-    print('An eps figure for the selected fields is saved in {0}'
+    print('A ', plot_type, ' figure for the selected fields is saved in {0}'
           .format(dir_plot))
     print('___________________________________________________'
           '_________________________________________________________________')
 
     return
-
-
-if __name__ == '__main__':
-    print('This program is being run by itself')
-    print('**************************************************************')
-    print('Running {0}'.format(sys.argv[0]))
-    print('**************************************************************')
-    dir_output = sys.argv[1]     # OUTPUT DIRECTORY
-    dir_plot = sys.argv[2]       # OUTPUT PLOT DIRECTORY
-    name_outputs = sys.argv[3]   # name of the outputs
-    numclus = int(sys.argv[4])   # number of clusters
-    field_to_plot = sys.argv[5]
-    # field to plot ('climatologies', 'anomalies', '75th_percentile', 'mean',
-    # 'maximum', 'std', 'trend')
-
-    ens_plots(dir_output, dir_plot, name_outputs, numclus, field_to_plot)
-
-else:
-    print('ens_plots is being imported from another module')
