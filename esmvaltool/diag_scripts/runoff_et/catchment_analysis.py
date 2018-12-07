@@ -494,6 +494,7 @@ def get_sim_data(cfg, datapath, catchment_cube):
 
     Check units, aggregate to long term mean yearly sum and
     regrid to resolution of catchment mask.
+
     Parameters
     ----------
     cfg : dict
