@@ -89,6 +89,10 @@ def get_args():
         '--max-years',
         type=int,
         help='Limit the number of years to MAX_YEARS.')
+    parser.add_argument(
+        '--skip-nonexistent',
+        action='store_true',
+        help="Skip datasets that cannot be found.")
     args = parser.parse_args()
     return args
 
@@ -129,6 +133,7 @@ def main(args):
     logger.info("Using config file %s", config_file)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
+    cfg['skip-nonexistent'] = args.skip_nonexistent
     cfg['synda_download'] = args.synda_download
     for limit in ('max_datasets', 'max_years'):
         value = getattr(args, limit)

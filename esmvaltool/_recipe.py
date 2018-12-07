@@ -418,7 +418,9 @@ def _get_input_files(variable, config_user):
     logger.info("Using input files for variable %s of dataset %s:\n%s",
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
-    check.data_availability(input_files, variable)
+    if (not config_user['skip-nonexistent']
+            or variable['dataset'] == variable.get('reference_dataset')):
+        check.data_availability(input_files, variable)
 
     # Set up provenance tracking
     for i, filename in enumerate(input_files):
@@ -577,6 +579,9 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)
+            if config_user['skip-nonexistent'] and not ancestors:
+                logger.info("Skipping: no data found for %s", variable)
+                continue
         product = PreprocessorFile(
             attributes=variable, settings=settings, ancestors=ancestors)
         products.add(product)
@@ -605,6 +610,10 @@ def _get_single_preprocessor_task(variables,
         order=order,
         ancestor_products=ancestor_products,
         config_user=config_user)
+
+    if not products:
+        raise RecipeError(
+            "Did not find any input data for task {}".format(name))
 
     task = PreprocessingTask(
         products=products,
