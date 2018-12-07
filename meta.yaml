@@ -54,6 +54,7 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
+    - julia=1.0.2
     # TODO: add R, julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
