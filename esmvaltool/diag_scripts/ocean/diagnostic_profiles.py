@@ -96,7 +96,7 @@ def make_profiles_plots(
         filename,
 ):
     """
-    Make a profile plot for an individual model. 
+    Make a profile plot for an individual model.
 
     The optional observational dataset can also be added.
 

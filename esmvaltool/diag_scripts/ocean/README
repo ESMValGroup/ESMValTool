@@ -1,0 +1,11 @@
+
+Documentation for the ocean diagnostic can be
+online in the read the docs page:
+https://esmvaltool.readthedocs.io/en/version2_development/codedoc2/esmvaltool.diag_scripts.html
+
+Documentation for the ocean diagnostics toolkit is available in the
+ocean Sphinx directory:
+   - ESMValTool/doc/sphinx/source/
+
+Or relative to this location:
+../../../doc/sphinx/source/
