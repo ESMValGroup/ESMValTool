@@ -18,7 +18,7 @@ def load_betas_intercept(stat, inpath):
     interc = xr.open_dataarray(fin)
 
     for s in stat:
-        betas[s] = betas_in.sel(station=s).values
-        intercept[s] = interc.sel(station=s).values
+        betas[s] = betas_in.sel(station=np.bytes_(s)).values
+        intercept[s] = interc.sel(station=np.bytes_(s)).values
 
     return betas, intercept
