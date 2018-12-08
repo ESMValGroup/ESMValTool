@@ -54,6 +54,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from eofs.standard import Eof
+from eofs.xarray import Eof as xrEof
 
 #import .dataprep.grad_psl as dpgrd
 #import .estimate.build_predictX as ebX
@@ -63,6 +64,7 @@ from eofs.standard import Eof
 #import .output.plot_tseries as opt
 #import .output.save_netCDF as osn
 from dataprep.calc_monanom import calc_monanom
+from dataprep.calc_eofs import calc_eofs
 from dataprep.cut_NS_xarray import cut_NS
 from dataprep.grad_psl import grad_psl
 from dataprep.Xtrms_xarray import Xtrms
@@ -75,7 +77,6 @@ from load.load_EOFs import load_eofs
 from output.plot_map_cartopy import plot_map_cartopy
 from output.plot_tseries import plot_tseries
 from output.save_netCDF import save_netCDF
-#from regression.perf_regres import perf_regres
 
 
 def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
@@ -179,11 +180,11 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # VI. Project fields onto ERA-Interim EOFs
     # -----------------------------------------
     #logger.debug("Generating PCs")
-    pseudo_pcs_slp = psl_solver.projectField(psl.values)
+    pseudo_pcs_slp = psl_solver.projectField(psl)
     pseudo_pcs_gradlatpsl = gradlat_solver.projectField(gradlatpsl)
     pseudo_pcs_gradlonpsl = gradlon_solver.projectField(gradlonpsl)
-    pseudo_pcs_us = uas_solver.projectField(uas.values)
-    pseudo_pcs_vs = vas_solver.projectField(vas.values)
+    pseudo_pcs_us = uas_solver.projectField(uas)
+    pseudo_pcs_vs = vas_solver.projectField(vas)
 
     # -------------------------------
     # VII. Generate predictor array
@@ -193,11 +194,11 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     for s in stat:
         X[s] = build_predictX(
             dates,
-            pseudo_pcs_slp,
+            pseudo_pcs_slp.values,
             pseudo_pcs_gradlatpsl,  #...
             pseudo_pcs_gradlonpsl,
-            pseudo_pcs_us,
-            pseudo_pcs_vs)
+            pseudo_pcs_us.values,
+            pseudo_pcs_vs.values)
 
     # -----------------------------------------------------------
     # VIII. Load regression coefficients or train model
