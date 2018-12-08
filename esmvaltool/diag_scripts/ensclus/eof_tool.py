@@ -4,11 +4,12 @@ import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 import cartopy.crs as ccrs
 from eofs.standard import Eof
 
 
-def eof_computation(var, varunits, lat, lon):
+def eof_computation(var, lat):
     """Computing the EOFs and PCs.
 
     EOF analysis of a data array with spatial dimensions that
@@ -55,6 +56,8 @@ def eof_plots(neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon,
     print('___________________________________________________'
           '_________________________________________________________________')
     print('Plotting the EOFs and PCs')
+    print('Variable: {1} Units: {2}'.format(var, varunits))
+    print('Ensemble members: {1}'.format(numens))
 
     # ------------------------------------------PCs scaled  (case 1 of scaling)
     figpc_scal1 = plt.figure(figsize=(24, 14))

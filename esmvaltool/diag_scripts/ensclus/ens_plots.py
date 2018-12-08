@@ -61,13 +61,13 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
 
     proj = ccrs.PlateCarree()
 
-    x = int(np.ceil(np.sqrt(numens * 1.6)))
-    y = int(np.ceil(numens / x))
-    print(x, y)
+    xpos = int(np.ceil(np.sqrt(numens * 1.6)))
+    ypos = int(np.ceil(numens / xpos))
+    print(xpos, ypos)
     fig = plt.figure(figsize=(24, 14))
     for nens in range(numens):
         # print('//////////ENSEMBLE MEMBER {0}'.format(nens))
-        axes = plt.subplot(x, y, nens + 1, projection=ccrs.PlateCarree())
+        axes = plt.subplot(xpos, ypos, nens + 1, projection=ccrs.PlateCarree())
         axes.coastlines("110m")
         # ax.set_extent([-10, 60, -30,90],ccrs.PlateCarree())
 

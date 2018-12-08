@@ -60,7 +60,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print('EOF analysis')
     # --------------------------------------------------------------------
     solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac =\
-        eof_computation(var, varunits, lat, lon)
+        eof_computation(var, lat)
 
     acc = np.cumsum(varfrac * 100)
     if perc != 'no':
@@ -156,9 +156,10 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
               .format(nclus, round(norm[nclus].max(), 3),
                       list(np.where(norm[nclus] == norm[nclus].max())[0])))
 
-        txt = ('Closest ensemble member/members to centroid of cluster {0} '
-               'is/are {1}\n').format(nclus, list(np.where(norm[nclus] ==
-                                                  norm[nclus].min())[0]))
+        txt = ('Closest ensemble member/members '
+               'to centroid of cluster {0} is/are {1}\n'
+               .format(nclus, list(np.where(norm[nclus] ==
+                                            norm[nclus].min())[0])))
         final_output.append(txt)
     with open(os.path.join(dir_output, 'RepresentativeEnsembleMembers_{0}.txt'
                            .format(name_outputs)), "w") as text_file:
@@ -180,24 +181,20 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     for nclus in range(numclus):
         members = clusters[nclus][2]
         norm = np.empty([numclus, len(members)])
-        for mem in range(len(members)):
-            # print('mem=',mem)
-            ens = members[mem]
-            # print('ens',ens)
+        for mem, ens in enumerate(members):
             normens = centroids[nclus, :] - pcs[ens, :]
             norm[nclus, mem] = math.sqrt(sum(normens**2))
-            # print('norm=',norm[nclus],norm.dtype)
         print('the distances between centroid of cluster {0} and its '
               'belonging members {1} are:\n{2}'
               .format(nclus, members, np.round(norm[nclus], 3)))
         print('MINIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'
               .format(nclus, round(norm[nclus].min(), 3),
                       members[np.where(norm[nclus] ==
-                              norm[nclus].min())[0][0]]))
+                                       norm[nclus].min())[0][0]]))
         print('MAXIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'
               .format(nclus, round(norm[nclus].max(), 3),
                       members[np.where(norm[nclus] ==
-                              norm[nclus].max())[0][0]]))
+                                       norm[nclus].max())[0][0]]))
         print('INTRA-CLUSTER STANDARD DEVIATION FOR CLUSTER {0} IS {1}\n'
               .format(nclus, norm[nclus].std()))
 

@@ -35,14 +35,17 @@ def sel_season(var, dates, season):
     if (12 in mon) or (1 in mon):
         # REMOVING THE FIRST MONTHS (for the first year)
         # because there is no previuos december
-        start = int(np.where(dates_season == datetime(dates_pdh.year[0],
-                    mon[0], dates_pdh.day[0], dates_pdh.hour[0],
-                    dates_pdh.minute[0]))[0])
+        start = int(np.where(dates_season ==
+                             datetime(dates_pdh.year[0], mon[0],
+                                      dates_pdh.day[0], dates_pdh.hour[0],
+                                      dates_pdh.minute[0]))[0])
         # REMOVING THE LAST MONTHS (for the last year)
         # because there is no following january
-        end = int(np.where(dates_season == datetime(dates_pdh.year[-1],
-                  mon[0], dates_pdh.day[0], dates_pdh.hour[0],
-                  dates_pdh.minute[0]))[0])
+        end = int(np.where(dates_season ==
+                           datetime(dates_pdh.year[-1],
+                                    mon[0], dates_pdh.day[0],
+                                    dates_pdh.hour[0],
+                                    dates_pdh.minute[0]))[0])
 
         var_season = var_season[start:end, :, :]
         dates_season = dates_season[start:end]

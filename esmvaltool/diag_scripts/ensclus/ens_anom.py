@@ -1,12 +1,11 @@
 """Computation of ensemble anomalies based on a desired value."""
 
 import os
-import sys
 import numpy as np
 from scipy import stats
 
 # User-defined packages
-from read_netcdf import read_3d_ncfield, save_N_2Dfields
+from read_netcdf import read_3d_ncfield, save_n_2d_fields
 from sel_season_area import sel_area, sel_season
 
 
@@ -67,8 +66,8 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     elif len(extreme.split("_")) == 2:
         # Compute the chosen percentile over the period, for each ens member
         # PERCENTILE
-        q = int(extreme.partition("th")[0])
-        varextreme_ens = [np.percentile(var_ens[i], q, axis=0)
+        quant = int(extreme.partition("th")[0])
+        varextreme_ens = [np.percentile(var_ens[i], quant, axis=0)
                           for i in range(numens)]
 
     elif extreme == 'maximum':
@@ -91,12 +90,12 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
         trendmap = np.empty((var_ens[0].shape[1], var_ens[0].shape[2]))
         trendmap_ens = []
         for i in range(numens):
-            for la in range(var_ens[0].shape[1]):
-                for lo in range(var_ens[0].shape[2]):
+            for jla in range(var_ens[0].shape[1]):
+                for jlo in range(var_ens[0].shape[2]):
                     slope, intercept, r_value, p_value, std_err = \
                         stats.linregress(range(var_ens[0].shape[0]),
-                                         var_ens[i][:, la, lo])
-                    trendmap[la, lo] = slope
+                                         var_ens[i][:, jla, jlo])
+                    trendmap[jla, jlo] = slope
             trendmap_ens.append(trendmap)
         varextreme_ens = trendmap_ens
 
@@ -116,8 +115,8 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     print('Save the anomalies with respect to the ensemble:')
     print('ens_anomalies shape: (numens x lat x lon)={0}'
           .format(ens_anomalies.shape))
-    save_N_2Dfields(lat_area, lon_area, ens_anomalies, varsave,
-                    varunitsnew, ofile)
+    save_n_2d_fields(lat_area, lon_area, ens_anomalies, varsave,
+                     varunitsnew, ofile)
 
     # Compute and save the climatology
     vartimemean_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
@@ -127,8 +126,8 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
                          .format(name_outputs))
     # print(ofile)
     print('Save the climatology:')
-    save_N_2Dfields(lat_area, lon_area, ens_climatologies, varsave,
-                    varunitsnew, ofile)
+    save_n_2d_fields(lat_area, lon_area, ens_climatologies, varsave,
+                     varunitsnew, ofile)
 
     # Save the extreme
     ens_extreme = varextreme_ens_np
@@ -136,7 +135,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     ofile = os.path.join(dir_output, 'ens_extreme_{0}.nc'.format(name_outputs))
     # print(ofile)
     print('Save the extreme:')
-    save_N_2Dfields(lat_area, lon_area, ens_extreme, varsave,
-                    varunitsnew, ofile)
+    save_n_2d_fields(lat_area, lon_area, ens_extreme, varsave,
+                     varunitsnew, ofile)
 
     return

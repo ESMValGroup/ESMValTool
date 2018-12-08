@@ -36,7 +36,7 @@ def read_3d_ncfield(ifile):
     return var, var_units, lat, lon, dates, time_units
 
 
-def save_N_2Dfields(lats, lons, variab, varname, varunits, ofile):
+def save_n_2d_fields(lats, lons, variab, varname, varunits, ofile):
     """Save var in ofile netCDF file.
 
     Save a number N of 2D fields [lat x lon]
