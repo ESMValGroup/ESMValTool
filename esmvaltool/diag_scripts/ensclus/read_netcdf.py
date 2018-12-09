@@ -3,9 +3,11 @@
 # Standard packages
 import os
 
-import iris
 import numpy as np
 from netCDF4 import Dataset, num2date
+
+import iris
+
 
 def read_iris(ifile):
     """Read netCDF file of 3D field using iris.

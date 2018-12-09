@@ -5,7 +5,8 @@ import numpy as np
 
 def sel_season(var, dates, season):
     """Selecting a season (DJF,DJFM,NDJFM,JJA).
-       var_season, dates_season = sel_season(var, dates, season)
+
+    USAGE: var_season, dates_season = sel_season(var, dates, season)
     """
     # -----------------------------------------------------------------------
     # print('Selecting only {0} data'.format(season))

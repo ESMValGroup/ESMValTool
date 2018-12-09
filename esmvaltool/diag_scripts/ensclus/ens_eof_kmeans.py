@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 
 # User-defined libraries
 from eof_tool import eof_computation
-from read_netcdf import read_iris, read_n_2d_fields
+from read_netcdf import read_n_2d_fields
 
 
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
