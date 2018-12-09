@@ -5,8 +5,9 @@ scriptDir=@__DIR__
 #println("file: ", scriptFile)
 #println("directory: ", scriptDir)
 
-
-using Pkg
+if VERSION >= v"0.7.0-DEV.2005"
+    using Pkg
+end
 
 println("Installing the packages.")
 pkgName=in
@@ -17,11 +18,19 @@ open(scriptDir * "/julia_requirements.txt") do f
       pkgName=i[2]
 
       println(pkgId, ": ", pkgName)
+if VERSION >= v"0.7.0-DEV.2005"
       if occursin("https://", pkgName)
           Pkg.clone(pkgName)
       else
           Pkg.add(pkgName)
       end
+else
+      if contains(pkgName, "https://")
+          Pkg.clone(pkgName)
+      else
+          Pkg.add(pkgName)
+      end
+end
       println("Testing: ", pkgName)
       # load the package this needs to be called at top-level
       Expr(:toplevel, :(module ($pkgName) end))
