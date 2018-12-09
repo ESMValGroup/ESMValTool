@@ -11,7 +11,7 @@ def load_monmean_srgclim(stat,data_dir):
 
     monmean_srgclim = {}
     for s in stat:
-        monmean_srgclim[str(ifname)] = srg_anom.sel(stations=np.bytes_(s.ljust(8)))
+        monmean_srgclim[s] = srg_anom.sel(stations=np.bytes_(s.ljust(8)))
 
         #ncpath = os.path.join(data_dir, filename + str(ifname) + '.nc')
         #nc = Dataset(ncpath, 'r')
