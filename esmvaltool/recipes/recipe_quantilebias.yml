@@ -16,7 +16,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
+  - {dataset: EC-EARTH,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   preproc:
@@ -28,10 +28,15 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        reference_dataset: "EC-Earth"
+        reference_dataset: "EC-EARTH"
         mip: day
         field: T2Ds
     scripts:
-      quantilebias:
+      main:
         script: quantilebias/quantilebias.R
         perc_lev: 75
+        # reference global precipitation monthly climatology data:
+        # suggested dataset from the GPCP project at https://precip.gsfc.nasa.gov/
+        # already converted dataset can be downloaded at http://wilma.to.isac.cnr.it/arnone/data/gpcp_22.nc 
+        ref_data_file: "/work/datasets/obs/unsorted/GPCP/pr/data/mon/gpcp_22.nc"
+

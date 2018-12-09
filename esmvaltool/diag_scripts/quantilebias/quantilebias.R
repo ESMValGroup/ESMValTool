@@ -1,149 +1,145 @@
 # #############################################################################
 # quantilebias.r
 # Authors:       E. Arnone (ISAC-CNR, Italy)
-#	         S. Terzago (ISAC-CNR, Italy) 
-#	         J. von Hardenberg (ISAC-CNR, Italy) 
+# 	         S. Terzago (ISAC-CNR, Italy)
+# 	         J. von Hardenberg (ISAC-CNR, Italy)
 # #############################################################################
 # Description
 # ESMValTool diagnostic for calculation of the precipitation quantile bias
 # following Mehran et al. (2014)
-#  
-# Required
-# CDO
 #
-# Optional 
+# Required
+# - #CDO
+# - observational monthly mean global precipitation climatology
+# - (e.g. from the GPCP project: http://gpcp.umd.edu)
+#
+# Optional
 #
 # Caveats
 #
 # Modification history
-#    20180926-A_arno_en: Refined for usage as recipe   
-#    20180518-A_arno_en: Written for v2.0  
+#    20180926-A_arno_en: Refined for usage as recipe
+#    20180518-A_arno_en: Written for v2.0
 #
-# ############################################################################
+# #############################################################################
 
 library(tools)
 library(yaml)
-
-ref="/work/datasets/obs/unsorted/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
-orog_tmp="/work/datasets/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"  # modify with observed data
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
 metadata <- yaml::read_yaml(settings$input_files)
-for (myname in names(settings)) { temp=get(myname,settings); assign(myname,temp)}
+for (myname in names(settings)) {
+  temp <- get(myname, settings)
+  assign(myname, temp)
+}
 
-# set pr variable and get metadata list associated to it
-var0 <- "pr"
-list0 <- metadata
+# get name of climofile and list associated to first climofile
+climofiles <- names(metadata)
+climolist <- get(climofiles[1], metadata)
 
-# get name of climofile for first variable and list associated to first climofile
-climofiles <- names(list0)
-climolist0 <- get(climofiles[1],list0)
+# get variable name
+var0 <- climolist$short_name
 
-diag_base = climolist0$diagnostic
-print(paste0(diag_base,": starting routine"))
+# say hi
+diag_base <- climolist$diagnostic
+print(paste0(diag_base, ": starting routine"))
 
 # create working dirs if they do not exist
-work_dir=settings$work_dir
-regridding_dir=settings$run_dir
+work_dir <- settings$work_dir
+regridding_dir <- settings$run_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
 
 # extract metadata
-models_name=unname(sapply(list0, '[[', 'dataset'))
-reference_model=unname(sapply(list0, '[[', 'reference_dataset'))[1]
-models_start_year=unname(sapply(list0, '[[', 'start_year'))
-models_end_year=unname(sapply(list0, '[[', 'end_year'))
-models_experiment=unname(sapply(list0, '[[', 'exp'))
-models_ensemble=unname(sapply(list0, '[[', 'ensemble'))
+models_name <- unname(sapply(metadata, "[[", "dataset"))
+reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
+models_start_year <- unname(sapply(metadata, "[[", "start_year"))
+models_end_year <- unname(sapply(metadata, "[[", "end_year"))
+models_experiment <- unname(sapply(metadata, "[[", "exp"))
+models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 
-## Loop through input models, apply pre-processing and call RainFARM
+## Loop through input models
 for (model_idx in c(1:(length(models_name)))) {
-  # Setup parameters and path 
-  exp    <- models_name[model_idx]
-  year1  <- models_start_year[model_idx]
-  year2  <- models_end_year[model_idx]
+  # Setup parameters and path
+  exp <- models_name[model_idx]
+  year1 <- models_start_year[model_idx]
+  year2 <- models_end_year[model_idx]
   infile <- climofiles[model_idx]
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
-  print("======================")
-  print(exp)
-  print(model_exp)
-  print(model_ens)
 
-  inregname <- paste0(exp,"_",model_exp,"_",model_ens,"_",toString(year1),"-",toString(year2),"_",var0)
-  outfile <- paste0(work_dir,"/",inregname,"_",perc_lev,"qb.nc")
-  print(paste0(diag_base,": pre-processing file: ", infile))
-  model=infile
+  inregname <- paste0(exp, "_", model_exp, "_", model_ens, "_",
+                      toString(year1), "-", toString(year2), "_", var0)
+  outfile <- paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
+  outfile_landonly <- paste0(work_dir, "/", inregname, "_",
+                             perc_lev, "qb_landonly.nc")
+  print(paste0(diag_base, ": pre-processing file: ", infile))
+  model <- infile
 
-  perc=perc_lev #"75"
-  print(paste0(diag_base,": ",perc," percent quantile"))
+  print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
+  cdo_command <- paste("cdo -mulc,86400", model, "tmp_model.nc")
+  system(cdo_command)
+  cdo_command <- paste("cdo griddes tmp_model.nc > tmp_grid")
+  system(cdo_command)
+  cdo_command <- paste("cdo remapcon,tmp_grid ", paste0("-selyear,",
+                       year1, "/", year2), ref_data_file, "tmp_ref.nc")
+  system(cdo_command)
 
-  #cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
-   
-  cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
-   print(cdo_command)
-   system("which cdo")
-   system("echo $LD_LIBRARY_PATH")
-   system(cdo_command)
-  cdo_command=paste("cdo griddes tmp_model.nc > tmp_grid")
-   print(cdo_command)
-   system(cdo_command)
-  cdo_command=paste("cdo remapcon,tmp_grid ",paste0("-selyear,",year1,"/",year2),ref,"tmp_ref.nc")
-   print(cdo_command)
-   system(cdo_command)
+  # Get (75)th percentile of reference dataaset
+  cdo_command <- paste(paste0("cdo timpctl,", perc_lev),
+    " tmp_ref.nc  -timmin tmp_ref.nc  -timmax tmp_ref.nc  tmp_ref_perc_p.nc")
+  system(cdo_command)
 
-  # Get (75)th percentile of reference dataaset 
-  cdo_command=paste(paste0("cdo timpctl,",perc)," tmp_ref.nc  -timmin tmp_ref.nc  -timmax tmp_ref.nc  tmp_ref_perc_p.nc")
-   print(cdo_command)
-   system(cdo_command)
-
-  # Select points with monthly precipitation greater than 75th perc
-  cdo_command=paste("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
-   print(cdo_command)
-   system(cdo_command)
-  cdo_command=paste("cdo ge tmp_model.nc   tmp_ref_perc_p.nc tmp_mask_model.nc")
-   print(cdo_command)
-   system(cdo_command)
+  # Select points with monthly precipitation greater than (75) perc
+  cdo_command <- paste("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
+  system(cdo_command)
+  cdo_command <- paste("cdo ge tmp_model.nc
+    tmp_ref_perc_p.nc tmp_mask_model.nc")
+  system(cdo_command)
 
   # Precipitation sums
-  cdo_command=paste("cdo timsum -mul tmp_mask_ref.nc tmp_ref.nc tmp_ref_sum.nc")
-   print(cdo_command)
-   system(cdo_command)
-  cdo_command=paste("cdo timsum -mul tmp_mask_model.nc  tmp_model.nc tmp_model_sum.nc")
-   print(cdo_command)
-   system(cdo_command)
+  cdo_command <- paste("cdo timsum -mul tmp_mask_ref.nc
+    tmp_ref.nc tmp_ref_sum.nc")
+  system(cdo_command)
+  cdo_command <- paste("cdo timsum -mul tmp_mask_model.nc
+    tmp_model.nc tmp_model_sum.nc")
+  system(cdo_command)
 
-  # Quantile bias
-  cdo_command=paste("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb.nc")
-   print(cdo_command)
-   system(cdo_command)
+  # Calculate quantile bias, set name and attributes
+  cdo_command <- paste("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb1.nc")
+  system(cdo_command)
+  cdo_command <- paste(
+    "cdo ",
+    " -setattribute,qb@standard_name='precipitation_quantile_bias'",
+    " -setattribute,qb@long_name='Precipitation quantile bias'",
+    " -setattribute,qb@units=' '",
+    paste0(" -chname,", var0, ",qb"),
+    " tmp_qb1.nc tmp_qb.nc"
+  )
+  print(cdo_command)
+  system(cdo_command)
 
-  # Check with Mehran et al. 2014 
-  cdo_command=paste("cdo remapnn,tmp_grid -gtc,5 ",orog_tmp, "tmp_mask_orog.nc")   # modify DEM with observation  &  5m threshold
-   print(cdo_command)
-   system(cdo_command)
-  cdo_command=paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
-   print(cdo_command)
-   system(cdo_command)
+  # Select land only using > 5 meter (Mehran et al. 2014)
+  cdo_command <- paste("cdo -f nc topo tmp_orog.nc")
+  system(cdo_command)
+  cdo_command <- paste("cdo remapnn,tmp_grid
+    -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
+  system(cdo_command)
+  cdo_command <- paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
+  system(cdo_command)
 
   # Copy file to output destination and remove temporary files
-  mv_command=paste("mv tmp_qb.nc ",outfile)
-   print(mv_command)
-   system(mv_command)
-  rm_command=paste("rm tmp_*")
-   print(mv_command)
-   system(mv_command)
+  mv_command <- paste("mv tmp_qb.nc ", outfile)
+  print(mv_command)
+  system(mv_command)
+  mv_command <- paste("mv tmp_qb_landonly.nc ", outfile_landonly)
+  print(mv_command)
+  system(mv_command)
+  rm_command <- paste("rm tmp_*")
+  print(rm_command)
+  system(rm_command)
 }
 
-
-
-
-
-
-
-
-
-
-
+print(paste0(diag_base, ": done."))
