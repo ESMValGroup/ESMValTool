@@ -1,54 +1,45 @@
 """Selecting a season (DJF,DJFM,NDJFM,JJA)."""
 
 import numpy as np
-import pandas as pd
-from netCDF4 import datetime
 
 
 def sel_season(var, dates, season):
-    """Selecting a season (DJF,DJFM,NDJFM,JJA)."""
+    """Selecting a season (DJF,DJFM,NDJFM,JJA).
+       var_season, dates_season = sel_season(var, dates, season)
+    """
     # -----------------------------------------------------------------------
     # print('Selecting only {0} data'.format(season))
-    dates_pdh = pd.to_datetime(dates)
+    dmonth = np.array([date.month for date in dates])
     if season == 'DJF':       # ONLY DEC-JAN-FEB
-        mon = [12, 1, 2]
-        mask = (dates_pdh.month == 12) | (dates_pdh.month == 1) |\
-               (dates_pdh.month == 2)
+        imon = [1, 2]
+        emon = [12]
+        mask = (dmonth == 12) | (dmonth == 1) | (dmonth == 2)
     elif season == 'DJFM':    # ONLY DEC-JAN-FEB-MAR
-        mon = [12, 1, 2, 3]
-        mask = (dates_pdh.month == 12) | (dates_pdh.month == 1) |\
-               (dates_pdh.month == 2) | (dates_pdh.month == 3)
+        imon = [1, 2, 3]
+        emon = [12]
+        mask = (dmonth == 12) | (dmonth == 1) | (dmonth == 2) | (dmonth == 3)
     elif season == 'NDJFM':   # ONLY NOV-DEC-JAN-FEB-MAR
-        mon = [11, 12, 1, 2, 3]
-        mask = (dates_pdh.month == 11) | (dates_pdh.month == 12) |\
-               (dates_pdh.month == 1) | (dates_pdh.month == 2) |\
-               (dates_pdh.month == 3)
+        imon = [1, 2, 3]
+        emon = [11, 12]
+        mask = (dmonth == 11) | (dmonth == 12) | (dmonth == 1) |\
+               (dmonth == 2) | (dmonth == 3)
     elif season == 'JJA':   # ONLY JUN-JUL-AUG
-        mon = [6, 7, 8]
-        mask = (dates_pdh.month == 6) | (dates_pdh.month == 7) |\
-               (dates_pdh.month == 8)
+        imon = []
+        emon = []
+        mask = (dmonth == 6) | (dmonth == 7) | (dmonth == 8)
     else:
         print('season is not one of the following: DJF, DJFM, NDJFM, JJA')
     var_season = var[mask, :, :]
     dates_season = dates[mask]
 
-    if (12 in mon) or (1 in mon):
-        # REMOVING THE FIRST MONTHS (for the first year)
-        # because there is no previuos december
-        start = int(np.where(dates_season ==
-                             datetime(dates_pdh.year[0], mon[0],
-                                      dates_pdh.day[0], dates_pdh.hour[0],
-                                      dates_pdh.minute[0]))[0])
-        # REMOVING THE LAST MONTHS (for the last year)
-        # because there is no following january
-        end = int(np.where(dates_season ==
-                           datetime(dates_pdh.year[-1],
-                                    mon[0], dates_pdh.day[0],
-                                    dates_pdh.hour[0],
-                                    dates_pdh.minute[0]))[0])
+    dmonth = np.array([date.month for date in dates_season])
+    dyear = np.array([date.year for date in dates_season])
 
-        var_season = var_season[start:end, :, :]
-        dates_season = dates_season[start:end]
+    imask = list(mon not in imon for mon in dmonth) | (dyear != dyear[0])
+    emask = list(mon not in emon for mon in dmonth) | (dyear != dyear[-1])
+
+    var_season = var_season[imask & emask, :, :]
+    dates_season = dates_season[imask & emask]
 
     return var_season, dates_season
 

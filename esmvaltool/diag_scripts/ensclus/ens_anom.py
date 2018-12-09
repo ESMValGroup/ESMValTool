@@ -5,7 +5,7 @@ import numpy as np
 from scipy import stats
 
 # User-defined packages
-from read_netcdf import read_3d_ncfield, save_n_2d_fields
+from read_netcdf import read_iris, save_n_2d_fields
 from sel_season_area import sel_area, sel_season
 
 
@@ -29,7 +29,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     for ens in range(numens):
         ifile = filenames[ens]
         # print('ENSEMBLE MEMBER %s' %ens)
-        var, varunits, lat, lon, dates, time_units = read_3d_ncfield(ifile)
+        var, varunits, lat, lon, dates, time_units = read_iris(ifile)
 
         # Convertion from kg m-2 s-1 to mm/day
         if varunits == 'kg m-2 s-1':

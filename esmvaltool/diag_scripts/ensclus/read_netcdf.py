@@ -3,8 +3,33 @@
 # Standard packages
 import os
 
+import iris
 import numpy as np
 from netCDF4 import Dataset, num2date
+
+def read_iris(ifile):
+    """Read netCDF file of 3D field using iris.
+
+    USAGE: var, lat, lon, dates = read_3d_ncfield_iris(filename)
+    """
+    cube = iris.load_cube(ifile)
+    variabs = [coord.name() for coord in cube.coords()]
+
+    if 'lat' in variabs:
+        lat = cube.coord('lat').points
+    elif 'latitude' in variabs:
+        lat = cube.coord('latitude').points
+    if 'lon' in variabs:
+        lon = cube.coord('lon').points
+    elif 'longitude' in variabs:
+        lon = cube.coord('longitude').points
+    time = cube.coord('time')
+    time_units = str(cube.coord('time').units)
+    dates = time.units.num2date(time.points)
+    var_units = str(cube.units)
+    var = cube.data
+
+    return var, var_units, lat, lon, dates, time_units
 
 
 def read_3d_ncfield(ifile):
