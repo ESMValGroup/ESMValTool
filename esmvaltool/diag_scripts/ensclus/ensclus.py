@@ -14,6 +14,7 @@ Modification history
 
 import os
 import logging
+import numpy as np
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
 # Import user diagnostic routines
@@ -28,17 +29,13 @@ def main(cfg):
     """Ensemble Clustering Diagnostics."""
     out_dir = cfg['work_dir']
     write_plots = cfg['write_plots']
+    files_dict = group_metadata(cfg['input_data'].values(), 'filename',
+                                sort=False)
+    numens = len(files_dict)
+    logger.info('numens=%d', numens)
 
-#    input_files = get_input_files(cfg)
-#    os.makedirs(cfg['plot_dir'], exist_ok=True)
-#    os.makedirs(cfg['work_dir'], exist_ok=True)
-
-    my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    numens = len(my_files_dict)
-    print("numens ", numens)
     # Building the name of output files
-    element = list(my_files_dict.values())[0][0]
-    print(element)
+    element = list(files_dict.values())[0][0]
     name_outputs = (element['short_name'] + '_' + str(numens) +
                     'ens_' + cfg['season'] + '_' + cfg['area'] +
                     '_' + element['project'] + '_' + element['exp'])
@@ -47,9 +44,22 @@ def main(cfg):
     variable_name = element['short_name']
 
     filenames_cat = []
-    for key, value in my_files_dict.items():
+    legend_cat = []
+    for key, value in files_dict.items():
         logger.info("Processing file %s", value[0]['filename'])
         filenames_cat.append(value[0]['filename'])
+        leg = (value[0]['project'] + " " +
+               value[0]['dataset'] + " " +
+               value[0]['exp'] + " " +
+               value[0]['mip'] + " " +
+               value[0]['short_name'] + " " +
+               value[0]['ensemble'] + " " +
+               str(value[0]['start_year']) + "-" +
+               str(value[0]['end_year']))
+        legend_cat.append(leg)
+        logger.info('Processing: %s', leg)
+    namef = os.path.join(out_dir, 'legend_{0}.txt'.format(name_outputs))
+    np.savetxt(namef, legend_cat, fmt='%s')
 
     # ###################### PRECOMPUTATION #######################
     # ____________run ens_anom as a module
