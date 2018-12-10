@@ -32,7 +32,6 @@ from itertools import product
 
 import iris
 import iris.quickplot as qplt
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -342,9 +341,6 @@ def make_transect_contours(
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = make_depth_safe(cube)
 
-    # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
-
     # Load threshold/thresholds.
     plot_details = {}
     colours = []
@@ -355,10 +351,7 @@ def make_transect_contours(
     cubes = make_cube_region_dict(cube)
     for region, cube in cubes.items():
         for itr, thres in enumerate(thresholds):
-            if len(thresholds) > 1:
-                colour = plt.cm.jet(float(itr) / float(len(thresholds) - 1.))
-            else:
-                colour = plt.cm.jet(0)
+            colour = diagtools.get_colour_from_cmap(itr, len(thresholds))
             label = str(thres) + ' ' + str(cube.units)
             colours.append(colour)
             plot_details[thres] = {
@@ -397,7 +390,7 @@ def make_transect_contours(
         image_extention = diagtools.get_image_format(cfg)
 
         # Determine image filename:
-        if multi_model:
+        if metadata['dataset'].find('MultiModel') > -1:
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(filename)
             path.replace('.nc', region + '_transect_contour' + image_extention)
@@ -470,14 +463,10 @@ def multi_model_contours(
         logger.info('plotting threshold: \t%s', threshold)
         title = ''
         plot_details = {}
-        cmap = plt.cm.get_cmap('jet')
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadatas)):
-            if len(metadatas) > 1:
-                color = cmap(index / (len(metadatas) - 1.))
-            else:
-                color = 'blue'
+            color = diagtools.get_colour_from_cmap(index, len(thresholds))
             linewidth = 1.
             linestyle = '-'
             # Determine line style for MultiModel statistics:
