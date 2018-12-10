@@ -18,41 +18,53 @@ The reports will be produced with the following procedure:
 
 1. Which ECVs will be evaluated, when and by who?
 --------------------------------------------------
-Below is a table of prioritized variables as reminder. Green: some datasets are available on CDS. Yellow: no datasets available in CDS, please check regularly (latest 15/10/2018 for red marked cells). Red ECVs prioritized for October 2018.
+Below is a table of prioritized variables as reminder. *: some datasets are available on CDS. **: no datasets available in CDS, please check regularly (latest 15/10/2018 for bold marked deadlines). Bold marked ECVs prioritized for October 2018.
 
-+------------+----------------------+-----+---------------+-------------+
-| ECV        | Products             | WP  | Who evaluates | Release     |
-+============+======================+=====+===============+=============+
-| Surface    | ERA5,                | 3   | NUIM/CNR      | October 2018|
-| Temperature| E-OBS                |     |               |             |
-+------------+----------------------+-----+---------------+-------------+
-| Wind       | ERA5                 | 3   | NUIM          | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
-| Humidity   | ERA5                 | 3   | NUIM          | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
-| Pressure   | ERA5,                | 3   | NUIM          | April 2019  |
-|            | E-OBS                |     |               |             |
-+------------+----------------------+-----+---------------+-------------+
-| Air        | ERA5                 | 4   | CNR           | October 2018|
-| Temperature|                      |     |               |             |
-+------------+----------------------+-----+---------------+-------------+
-| Ozone      | ESA-CCI Total column,| 4   | ENEA          | April 2019  |
-|            | ESA-CCI Tropospheric,|     |               |             |
-|            | ESA-CCI Profiles,    |     |               |             |
-|            | ERA5                 |     |               |             |
-+------------+----------------------+-----+---------------+-------------+
-| CO2        | ESA-CCI              | 4   | DLR           | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
-| Winds      | ERA5                 | 4   | CNR           | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
-| SST        | ESA-CCI OSTIA, (ERA5)| 5   | CNR           | October 2018|
-+------------+----------------------+-----+---------------+-------------+
-| Sea Ice    | ESA-CCI OSTIA, (ERA5)| 5   | ULB           | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
-| Sea Level, |                      | 5   | ULB           | April 2019  |
-| Surface    |                      | 5   | ULB           | April 2019  |
-| Properties |                      | 5   | ULB           | April 2019  |
-+------------+----------------------+-----+---------------+-------------+
++------------+-----------------------+-----+---------------+-----------------+
+| ECV        | Products              | WP  | Who evaluates | Release         |
++============+=======================+=====+===============+=================+
+| Surface    | ERA5*,                | 3   | NUIM/CNR      | **October**     |
+| Temperature| E-OBS*                |     |               | **2018**        |
++------------+-----------------------+-----+---------------+-----------------+
+| Wind       | ERA5*                 | 3   | NUIM          | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| Humidity   | ERA5*                 | 3   | NUIM          | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| Pressure   | ERA5*,                | 3   | NUIM          | April 2019      |
+|            | E-OBS*                |     |               |                 |
++------------+-----------------------+-----+---------------+-----------------+
+| Air        | ERA5*                 | 4   | CNR           | **October**     |
+| Temperature|                       |     |               | **2018**        |
++------------+-----------------------+-----+---------------+-----------------+
+| Ozone      | ESA-CCI Total column*,| 4   | ENEA          | April 2019      |
+|            | ESA-CCI Tropospheric*,|     |               |                 |
+|            | ESA-CCI Profiles*,    |     |               |                 |
+|            | ERA5*                 |     |               |                 |
++------------+-----------------------+-----+---------------+-----------------+
+| CO2        | ESA-CCI*              | 4   | DLR           | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| Winds      | ERA5*                 | 4   | CNR           | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| SST        | ESA-CCI OSTIA*,       | 5   | CNR           | **October 2018**|
+|            | (ERA5)*               | 5   | CNR           | **October 2018**|
++------------+-----------------------+-----+---------------+-----------------+
+| Sea Ice    | ESA-CCI OSTIA*,       | 5   | ULB           | April 2019      |
+|            | (ERA5)*               | 5   | ULB           | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| Sea Level, | **                    | 5   | CNR, ENEA,    | April 2019      |
+| Surface    |                       |     | CSIC          |                 |
+| Properties |                       |     |               |                 |
++------------+-----------------------+-----+---------------+-----------------+
+| Soil       | ERA5**,               | 6   | ETHz          | **October 2018**|
+| Moisture   | (no ESA-CCI)**        |     |               |                 |
++------------+-----------------------+-----+---------------+-----------------+
+| Albedo     | SPOT-VGT*             | 6   | LMU           | April 2019      |
++------------+-----------------------+-----+---------------+-----------------+
+| Snow       | **                    | 6   |               | April 2019      |
++------------+------------------- ---+-----+---------------+-----------------+
+| Glaciers   | Randolph*,            | 6   | VUB           | April 2019      |
+|            | Elevation and mass*   |     |               |                 |
++------------+-----------------------+-----+---------------+-----------------+
 
 
 2. How to access the datasets and make them compatible to ESMValTool
