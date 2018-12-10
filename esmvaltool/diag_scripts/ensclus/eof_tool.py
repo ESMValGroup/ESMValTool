@@ -18,8 +18,7 @@ def eof_computation(var, lat):
     for the latitude weights to be broadcastable to this shape, an
     extra length-1 dimension is added to the end
     """
-    print('_________________________________________________________'
-          '___________________________________________________________')
+    print('_________________________________________________________')
     print('Computing the EOFs and PCs')
     weights_array = np.sqrt(np.cos(np.deg2rad(lat)))[:, np.newaxis]
 
@@ -53,8 +52,7 @@ def eof_plots(neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon,
     Plot the PC scaled (divided by the square-root of their eigenvalues)
     in the selected domain
     """
-    print('___________________________________________________'
-          '_________________________________________________________________')
+    print('_________________________________________________________')
     print('Plotting the EOFs and PCs')
     print('Variable: {1} Units: {2}'.format(var, varunits))
     print('Ensemble members: {1}'.format(numens))

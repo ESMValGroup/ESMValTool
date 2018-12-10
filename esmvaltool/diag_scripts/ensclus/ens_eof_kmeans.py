@@ -24,7 +24,6 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     OUTPUT:
     Frequency
     """
-    print('**********************OUTPUT*************************')
     print('The name of the output files will be <variable>_{0}.txt'
           .format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))
@@ -55,9 +54,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
 
     # Compute EOFs (Empirical Orthogonal Functions)
     # and PCs (Principal Components) with respect to ensemble memeber
-    print('_________________________________________________________'
-          '___________________________________________________________')
-    print('EOF analysis')
+    print('_________________________________________________________')
+    print('EOF analysis:')
     # --------------------------------------------------------------------
     _, _, _, pcs_unscal0, eofs_unscal0, varfrac = eof_computation(var, lat)
 
@@ -77,12 +75,9 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
           .format(numpcs, "%.2f" % exctperc))
 
     # ____________Compute k-means analysis using a subset of PCs
-    print('_________________________________________________________'
-          '___________________________________________________________')
+    print('_________________________________________________________')
     print('k-means analysis using a subset of PCs')
-    print('_________________________________________________________'
-          '___________________________________________________________')
-    # --------------------------------------------------------------------
+
     pcs = pcs_unscal0[:, :numpcs]
 
     clus = KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
@@ -122,19 +117,16 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print([clusters[ncl][2] for ncl in range(numclus)])
 
     # ____________Find the most representative ensemble member for each cluster
-    print('_________________________________________________________'
-          '___________________________________________________________')
+    print('_________________________________________________________')
     print('In order to find the most representative ensemble member for each '
           'cluster\n(which is the closest member to the cluster centroid)')
     print('the Euclidean distance between cluster centroids and each ensemble '
           'member is computed in the PC space')
-    print('_________________________________________________________'
-          '___________________________________________________________')
-    # 1)
+    print('_________________________________________________________')
     print('Check: cluster #1 centroid coordinates vector dim {0} should be '
           'the same as the member #1 PC vector dim {1}\n'
           .format(centroids[1, :].shape, pcs[1, :].shape))
-    # print('\nIn the PC space, the distance between:')
+
     norm = np.empty([numclus, numens])
     final_output = []
     repres = []
@@ -142,8 +134,6 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         for ens in range(numens):
             normens = centroids[nclus, :] - pcs[ens, :]
             norm[nclus, ens] = math.sqrt(sum(normens**2))
-            # print('The distance between centroid of cluster {0} and
-            # member {1} is {2}'.format(nclus,ens,round(norm[nclus,ens],3)))
         print('The distances between centroid of cluster {0} and '
               'member #0 to #{1} are:\n{2}'
               .format(nclus, numens - 1, np.round(norm[nclus], 3)))
@@ -168,14 +158,10 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
     np.savetxt(namef, repres, fmt='%i')
 
-    print('_________________________________________________________'
-          '___________________________________________________________')
+    print('_________________________________________________________')
     print('In order to study the spread of each cluster,')
     print('the standard deviation of the distances between each member '
           'in a cluster and the cluster centroid is computed in the PC space')
-    print('_________________________________________________________'
-          '___________________________________________________________')
-    print('\nIn the PC space:')
     stat_output = []
     for nclus in range(numclus):
         members = clusters[nclus][2]
