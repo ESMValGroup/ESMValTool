@@ -46,10 +46,10 @@ Below is a table of prioritized variables as reminder. *: some datasets are avai
 | Winds      | ERA5*                 | 4   | CNR           | April 2019      |
 +------------+-----------------------+-----+---------------+-----------------+
 | SST        | ESA-CCI OSTIA*,       | 5   | CNR           | **October 2018**|
-|            | (ERA5)*               | 5   | CNR           | **October 2018**|
+|            | (ERA5)*               |     |               |                 |
 +------------+-----------------------+-----+---------------+-----------------+
 | Sea Ice    | ESA-CCI OSTIA*,       | 5   | ULB           | April 2019      |
-|            | (ERA5)*               | 5   | ULB           | April 2019      |
+|            | (ERA5)*               |     |               |                 |
 +------------+-----------------------+-----+---------------+-----------------+
 | Sea Level, | ^                     | 5   | CNR, ENEA,    | April 2019      |
 | Surface    |                       |     | CSIC          |                 |
