@@ -218,8 +218,7 @@ A useful online tool for reStructuredText can be found here: `<http://rst.ninjs.
 
 After you have added your customized text, you have to run the SPQB namelist a second time to get the text added to the report(s). If you do not edit the text file for a report, no individual text will be added to that final report (which means that the contents of the text file produced with the first run of the ESMValTool is not displayed if it was not altered!). If you do add individual text, it will appear in the final report after the Table of Contents, any lists and before the figures to follow a paper draft design. **Please note:** for each report you will have to add the customary text individually!
 
-3.6 What to provide for the System Maturity Matrix (SMM) and how
-----------------------------------------------------------------
+**3.6 What to provide for the System Maturity Matrix (SMM) and how**
 
 The C3S_511 SMM is derived from the Core Climax and adapted to the specific service needs. In order to produce a SMM in the report it is necessary to fill the “SMM_CORE_CLIMAX_c3s_Adapted_v5.0.xlsx” xlsx-file provided with the code of the SPQB namelist. This file contains the different specifications for each SMM category and subcategory. Additional help can be found in “SMM_Guide_for_USERS_C3S_511_v1.pdf” and the “CORE_CLIMAX_MANUAL.pdf”.
 
@@ -270,5 +269,67 @@ The section is currently left blank on purpose.
 **Usage:** The section is currently left blank on purpose.
 
 In addition to these guidelines, Core Climax heritage material is available through `<https://drive.google.com/open?id=1hm5IHx-Nxl3ouVjwGwwuPT2tVmsKeL1g>`_.
+
+
+**3.7 What to provide for GCOS requirement and how [optional]**
+
+The GCOS requirements are in principle checked automatically based on the internal table, reporting these and the scan of the data performed by the ESMValTool. Nevertheless, several datasets are larger than the recommended size (see Section 2.3) and it might be necessary to reduce their size via resolution degradation. In this case it is necessary to adjust the real dataset resolution/temporal coverage in a correctional step. The calculated values can be found in the file “[ECV name]_gcos_values_editable.csv” and can be edited therein. 
+Please note: only change values if really necessary.
+
+**3.8 What to provide for the ESM evaluation and how**
+
+The ESM evaluation report consists of two parts. The first part is a graphical/tabular display about the suitability of the temporal and spatial resolution of the ECV for ESM evaluation (based on the assessment of the expert users), the second part is a list of references where the respective ECV, in the product or a similar product, has been used previously for ESM evaluation.
+
+For the first part, the expert user will have to provide an estimate about the necessary length of an ECV to be useful for the following applications related to ESM evaluation: mean/climatology, trends, and variability. The estimates have to be added to the csv-file “[ECV name]_esmeval_expert.csv”, that will be created when you run the ESMValTool the first time. The file is located in the folder “work/c3s_511/esmeval_input/”. The information given in this csv-file is then compared to the respective ECV’s temporal and spatial resolution, which will ultimately result in colored table cells for this first part of the ESM evaluation.
+
+For the second part, the expert user will have to provide information about references of the recent literature about the usage of the respective ECV in ESM evaluation studies. The information should be added to the file “esmeval_expert.csv” in the directory “diag_scripts/aux/C3S_511/lib/predef/”. The following pieces of information about the references are needed:
+
+* ECV
+*	Product
+*	Dataset(s): name of the dataset(s) that are used within the reference for ESM evaluation
+*	Title of reference
+*	Author(s) of reference: only provide the first authors last name, initial of the first name, and then add ‘et al.’ (e.g. Lauer, A., et al.)
+*	Year of publication
+*	DOI (reference): doi of the reference
+*	Keywords: only provide key words here that describe for what purpose the ECV has been used in the respective ESM evaluation (e.g. climatology, trends, etc.). Please do not provide the keywords of the study here!
+
+There are already plenty of examples in the file. Please follow their example, and add more references if necessary. The information from this csv-file will then be added to the report as bullet point list. If you update this file, please make sure that the content is made available to all the ESMValTool users, either by adding them to the branch and informing WP2 to check it, or sending the library file to WP2. 
+
+**3.9 What to provide for the Sectoral Information System section and how**
+
+Sectoral will come in the form of GCOS-like requirements based on the (SIS) User’s feedback. For the beta version they are not implemented. Demonstration will be provided on demand as “place holder” in the reports following the example in the template.
+
+**3.10 What to provide for the Application Performance Matrix (APM) and how**
+
+APM is not implemented fully in the beta version. Demonstration will be provided on demand as “place holder” in the reports following the example in the template.
+
+
+4. Deliverable template
+-----------------------
+
+The template for the requested reports can be found in the file C3S_D511_template_SPQB_12102018.docx. This template requires the following specific actions:
+
+*	Adjusting any ECV/dataset/producer information on the cover page and the file name.
+*	Adding additional information on a possible preprocessing of the data (spatial/temporal aggregation, CMORization).
+*	Adding the executive summary of the report with selected figures, text and references.
+*	Produce the full reports and add them to the word template
+
+Now, you are potentially done, and if satisfied can upload it to the shared repository for internal evaluation.
+
+**Please note:** all SPQB report specific texts can be added with the procedure described in section 3.5.
+
+
+5. How to report any problems with the SPQB
+-------------------------------------------
+
+The C3S_511 service is implementing a quality assurance system that requires to track the development and the problems of the service components. 
+
+a) It is then needed to fill a report feedback form to report any problem/difficulty/missing functionality or information parts encountered found during the reporting activity. These are collected in a specific file Report_Feedback_ECV_Products.doc where ECV products may be specified to each report.
+
+b) In addition, specific issues concerning the ESMValTool and eventual developments are tracked on GitHub in the following way:
+
+The ESMValTool code is hosted on GitHub (`<www.github.com>`_). In the private branch of the ESMValTool (which you should have all access to; if not, please refer to the Workshop Agenda for the Workshop in May 2018; there is a detailed description on how to be added to the hub!), there is a project ‘C3S_511’ (`<https://github.com/ESMValGroup/ESMValTool-private/projects/1>`_, only accessible if you are logged in and part of the hub). The project page contains four different cards which are called ‘To Do’, ‘In Progress’, ‘Done’ and ‘Questions’. 
+If something is developed for a specific ECV that might be of interest for other ECVs as well, it is recommended to add a note to the column ‘In Progress’ to let other service members know what is developed and how. This might prevent duplication of code development and produce synergies.
+If there are any questions or comments about the most recent release of the SPQB namelist, it is recommended to add these as a note or an issue to the card ‘Questions’. In doing so, the questions and comments are available for all service members to see, it is possible to trace back who had posted the question/comment, and it can be made sure that all comments/questions are answered and dealt with. Please do not send any questions/comments directly to DLR or LMU, but post them on GitHub to ensure that all comments and questions can be dealt with, and that we can trace our efforts/work!
 
 
