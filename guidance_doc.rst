@@ -98,4 +98,62 @@ Below are two examples of the resulting script for 1D and 3D data.
 
 In order to have data compliant with the CDM of the Toolbox, an operation on the data needs to be performed. The simple retrieval does not require the data are CDM compliant. Whatever is the initial format of the data (grib, netcdf, zip...) the operation assures the retrieved dataset is netcdf and CDM compliant, e.g. ct.climate.daily_mean.
 
+**2.1 Extract 1D from ERA-5**
+*import cdstoolbox as ct*
+
+*@ct.application(title='Retrieve Data')*
+*@ct.output.dataarray()*
+*def retrieve_sample_data():*
+    *"""*
+    *Retrieve a variable from sample dataset.*
+    *"""*
+
+    *data = ct.catalogue.retrieve(*
+    *'reanalysis-era5-single-levels',*
+    *{*
+        *'variable':'sea_surface_temperature',*
+        *'product_type':'reanalysis',*
+        *'year':'2017',*
+        *'month':'04',*
+        *'day':'10',*
+        *'time':'08:00'*
+    *}*
+*)*
+    *datas=ct.climate.daily_mean(data)*
+    *return datas*
+
+
+**2.2 Extract 1-month daily 3D temperature from ERA-5**
+
+*@ct.application(title='Retrieve Data')*
+*@ct.output.dataarray()*
+*def retrieve_sample_data():*
+    *"""*
+    *Application main steps*
+    *- retrieve a variable from CDS Catalogue*
+    *- produce a link to download it in original data format (usually 'grib' if not otherwise specified).*
+    *"""*
+
+    *data = ct.catalogue.retrieve(*
+        *'reanalysis-era5-pressure-levels',*
+        *{*
+            *'variable': 'temperature',*
+            *'product_type': 'reanalysis',*
+            *'pressure_level':['50','100','500','1000'],*
+            *'year': '2010',*
+            *'month': '08',*
+            *'day': ['01', '02', '03', '04', '05', '06',*
+                *'07', '08', '09', '10', '11', '12',*
+                *'13', '14', '15', '16', '17', '18',*
+                *'19', '20', '21', '22', '23', '24',*
+                *'25', '26', '27', '28', '29', '30',*
+                *'31'],*
+            *'time': ['00:00','12:00']*
+       	        *}*
+    *)*
+
+    *datas=ct.climate.daily_mean(data)*
+    *return datas*
+
+
 
