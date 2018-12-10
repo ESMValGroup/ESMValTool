@@ -79,12 +79,14 @@ def _assemble_datasets(raw_obs, obs_list):
     return datasets
 
 
-def _write_ncl_settings(project_info, dataset, run_dir, reformat_script):
+def _write_ncl_settings(project_info, dataset, run_dir,
+                        reformat_script, log_level):
     """Write the information needed by the ncl reformat script."""
     settings = {
         'cmorization_script': reformat_script,
         'input_dir_path': project_info[dataset]['indir'],
         'output_dir_path': project_info[dataset]['outdir'],
+        'config_user_info': {'log_level': log_level},
     }
     settings_filename = os.path.join(run_dir, dataset, 'settings.ncl')
     if not os.path.isdir(os.path.join(run_dir, dataset)):
@@ -98,14 +100,15 @@ def _run_ncl_script(in_dir,
                     out_dir,
                     run_dir,
                     dataset,
-                    reformat_script):
+                    reformat_script,
+                    log_level):
     """Run the NCL cmorization mechanism."""
     project = {}
     project[dataset] = {}
     project[dataset]['indir'] = in_dir
     project[dataset]['outdir'] = out_dir
     settings_file = _write_ncl_settings(project, dataset, run_dir,
-                                        reformat_script)
+                                        reformat_script, log_level)
     esmvaltool_root = os.path.dirname(
         os.path.dirname(os.path.dirname(reformat_script))
     )
@@ -203,7 +206,9 @@ def execute_cmorize():
         obs_list = args.obs_list_cmorize
     else:
         obs_list = []
-    _cmor_reformat(config_user, obs_list)
+    if not args.log_level:
+        args.log_level = 'info'
+    _cmor_reformat(config_user, obs_list, args.log_level)
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
@@ -215,7 +220,7 @@ def execute_cmorize():
         timestamp2 - timestamp1)
 
 
-def _cmor_reformat(config, obs_list):
+def _cmor_reformat(config, obs_list, log_level):
     """Run the cmorization routine."""
     logger.info("Running the CMORization scripts.")
 
@@ -256,7 +261,8 @@ def _cmor_reformat(config, obs_list):
                                 out_data_dir,
                                 run_dir,
                                 dataset,
-                                reformat_script)
+                                reformat_script,
+                                log_level)
             elif os.path.isfile(reformat_script_root + '.py'):
                 py_reformat_script = reformat_script_root + '.py'
                 logger.info("CMORizing dataset %s using Python script %s",
