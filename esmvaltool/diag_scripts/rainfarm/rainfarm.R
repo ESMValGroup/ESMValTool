@@ -30,6 +30,8 @@ library(JuliaCall)  #nolint
 julia_setup()
 julia_library("RainFARM")
 
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
@@ -53,6 +55,9 @@ work_dir <- settings$work_dir
 regridding_dir <- settings$run_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
+
+# switch to working directory
+setwd(work_dir)
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
@@ -95,8 +100,21 @@ for (model_idx in c(1:(length(models_name)))) {
       print(paste0("Fixed spatial spectral slope: ", sx))
   }
   if (weights_climo != F) {
-    print(paste0("Using weights file ", weights_climo))
-    ans <- julia_call("read_netcdf2d", weights_climo, varname,
+    print(paste0("Using external climatology for weights: ", weights_climo))
+    fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
+    if ( conserv_smooth ) {
+      snw <- " -c "
+    } else {
+      snw <- " "
+    }
+    command_w <- paste0("julia ", diag_scripts_dir, "/rainfarm/",#nolint
+                        "rfweights.jl -w ", fileweights, " -n ",
+                        nf, snw, " -v ", varname, " ",
+                        weights_climo, " ", infile)
+    print(paste0(diag_base, ": generating weights file"))
+    print(command_w)
+    system(command_w)
+    ans <- julia_call("read_netcdf2d", fileweights, varname,
                        need_return = "R" )
     ww <- ans[[1]]
   } else {

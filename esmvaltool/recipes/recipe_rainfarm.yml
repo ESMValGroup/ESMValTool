@@ -48,8 +48,6 @@ diagnostics:
         slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
         nens: 2                # number of ensemble members to be calculated
         nf: 8                  # subdivisions for downscaling
-        varname: false         # input variable name - this is assigned by ESMValTool pre-processing 
-        conserv_glob: false     # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+        conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
         conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
-        # orographic weights: set to false or climatology file to be used (generated with the rfweights tool) 
-        weights_climo: false
+        weights_climo: false   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
