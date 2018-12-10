@@ -144,12 +144,14 @@ Either, you perform any adjustments with the widely known tools (e.g. `cdo, nco 
 For the installation of the necessary python modules and ncl to be able to run the ESMValTool, please follow the steps outlined below:
 
 1. GitHub:
+
 *	Open a GitHub account (`<http://www.github.com>`_).
 *	Send your GitHub user name to "Axel.Lauer@dlr.de" to request access to the private branch of the ESMValTool with the note that you work for the C3S_511 service. 
 *	After Axel adds you to the ESMVal group on GitHub, you should have access to `<https://github.com/ESMValGroup/ESMValTool-private/tree/development>`_
 *	Familiarize yourself with GitHub and the ESMValTool workflow. An introduction can be found here: `<http://esmvaltool.readthedocs.io/en/latest/annex_b.html>`_
 
-2. Read the installation instructions that are given in the ESMValTool manual. 
+2. Read the installation instructions that are given in the ESMValTool manual.
+
 *	You should start with installing the ESMValTool on your (Linux) computer or your institute’s computing facilities (e.g. a cluster). A step-by-step installation guide is given in the User Manual: `<http://esmvaltool.readthedocs.io/en/latest/install.html>`_
 *	Additionally, please install sphinx (‘conda install sphinx’), and make sure that you have Latex installed on your machine.	
 *	If further support is needed for the installation or the recommended test, please contact your IT people.
@@ -171,5 +173,34 @@ Before you run the SPQB namelist, you should check and update the following file
 2.	In the diagnostics part of the namelist (this starts with the keyword <DIAGNOSTICS>), adjust all necessary parts (e.g. diagnostic specific cfg-file, <variable ref_model="??">, <field_type>, <model> …), so that your specific ECV can be read and processed.
 
 After you have adjusted these files, you can run the SPQB namelist as described in the ESMValTool manual. Please be aware that you will have to run the namelist twice to produce the final reports with all additional input! Between the first and the second run you will have to finalize some files (these will be described in the sections below), so that this information can be added to the report during the second run of the namelist.
+
+
+**3.3 C3S_511 SPQB Configuration (cfg) file options**
+
+*Definition of levels for 3D variables*
+
+If you have to provide reports for a 3D variable with the SPQB namelist, you have the option to specify the levels in a list you want to provide figures for in the reports in a configuration file (cfg-file, specified in the namelist). Your selection should be based on your expert opinion on which levels need to be shown to characterize the specific ECV. Please keep in mind that the number of figures shown in the reports for a 2D variable is multiplied by the number of levels you specify in the cfg-file (e.g. 3 levels selected -> 3 x number of trend plots for a 2D variable), so please select your levels carefully to avoid too many figures in the reports!
+
+The levels that you specify have to be given in the respective unit, and they have to be available in the dataset that you assess. There is no level interpolation available (since this would provide information in the QB that is not available in the dataset)! If the level you specify is not available in the dataset, the ESMValTool will crash while running the SPQB namelist. If you are unsure, which levels are available, you can run the tool once before and you will get information from the first run.
+
+*Definition of data color map*
+
+Please specify a custom color map in the cfg file. This color map will then be used in the graphs for the mean and variability. Possible color maps are available here: `<https://matplotlib.org/examples/color/colormaps_reference.html>`_ 
+
+*Definition of latex output*
+
+*	For debugging purpose, you can put the latex option to True (“show_latex=True”). If you have installed ‘sphinx’ and ‘latex’ correctly, you should get the output from producing the pdf-files of the different reports. 
+*	Recommended setting: the option False (“show_latex=False”). This allows you to avoid the production of the pdf-files every time you run the SPQB namelist, as the output is lengthy. 
+*	If you have problems with producing latex output (latex is not running smoothly on your machine where you run the ESMValTool) you can only produce the figures and the latex file in sphinx compatible format (“show_latex=None”), and port these files to another latex compatible machine to compile them separately to a pdf file outside of your ESMValTool environment. With this option, the SPQB namelist automatically copies the latex script for the creation of the reports to reporting directories. Their structure is self-explaining.
+
+*3.4 Input/Output structure for the SPQB*
+
+When you set up your general ESMValTool configuration (in your ESMValTool-private directory), you defined your work directory. Within this directory, you will have two relevant and SPQB related subdirectories, one called “c3s_511” and one called “reporting”. The reporting directory contains your pdf output, or, if the latex-option was set to “None”, the respective built and source directories. This is the output you need for the reports. The directory c3s_511 contains all editable files. The first run produces all files according to your data set name in the namelist. Therefore, if you run the ESMValTool with the same namelist a second time, it will read in these files and check if information was added or, with some specific files, corrected. The ESMValTool also reports the set up files in the terminal output. Please check these files for:
+
+*	Adding additional text to the reports.
+*	Filling out information needed for SMM, APM, etc.
+*	Adjusting information like the original resolution for the gcos requirements checks.
+
+The following subsections explain the needs for the single reports in more detail.
 
 
