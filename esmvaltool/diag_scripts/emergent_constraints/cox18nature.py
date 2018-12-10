@@ -106,15 +106,14 @@ def _save_fig(cfg, filename, legend=None):
 
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
-    psi_filepath = get_ancestor_file(cfg, 'psi.nc')
-    ecs_filepath = get_ancestor_file(cfg, 'ecs.nc')
-    lambda_filepath = get_ancestor_file(cfg, 'lambda.nc')
-    psi_cube_all = iris.load_cube(psi_filepath)
-    psi_cube = psi_cube_all.extract(ec.iris_constraint_no_obs(cfg))
-    ecs_cube = iris.load_cube(ecs_filepath)
-    lambda_cube = iris.load_cube(lambda_filepath)
-    ec.check_dataset_dimensions(psi_cube, ecs_cube, lambda_cube)
-    return (psi_cube, ecs_cube, lambda_cube)
+    cubes = []
+    for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
+        filepath = get_ancestor_file(cfg, filename)
+        cube = iris.load_cube(filepath)
+        cube = cube.extract(ec.iris_constraint_no_obs(cfg))
+        cubes.append(cube)
+    cubes = ec.match_dataset_coordinates(cubes)
+    return (cubes[0], cubes[1], cubes[2])
 
 
 def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
@@ -189,7 +188,7 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
 
     # Calculate regression line
     lines = ec.regression_line(psi_cube.data, ecs_cube.data)
-    logger.info("Found emergent relationship with slop %.2f (r = %.2f)",
+    logger.info("Found emergent relationship with slope %.2f (r = %.2f)",
                 lines['slope'], lines['rvalue'])
 
     # Plot points

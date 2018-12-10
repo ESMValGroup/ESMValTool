@@ -46,11 +46,12 @@ diagnostics:
         start_year: 1880
         end_year: 2015
     additional_datasets:
-      - {dataset: HadCRUT, project: OBS, type: ground, version: 3v, tier: 2}
+      - {dataset: HadCRUT, project: OBS, type: ground, version: 3v, tier: 2, end_year: 2013}
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,  tier: 2}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0}
-      - {dataset: bcc-csm1-1}
+      # Historical data end year is 2012, not 2005 (overlaps with RCP8.5)
+      # - {dataset: bcc-csm1-1}
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CCSM4}

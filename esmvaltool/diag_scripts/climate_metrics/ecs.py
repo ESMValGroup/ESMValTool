@@ -28,6 +28,7 @@ import logging
 import os
 from pprint import pformat
 
+import cf_units
 import iris
 import numpy as np
 import yaml
@@ -55,11 +56,11 @@ def read_external_file(cfg):
         logger.error("Desired external file %s does not exist", filepath)
         return (ecs, clim_sens)
     ecs = external_data.get('ecs', {})
-    clim_sens = external_data('climate_sensitivity', {})
+    clim_sens = external_data.get('climate_sensitivity', {})
     logger.info("External file %s", filepath)
-    logger.info("Found ECS:")
+    logger.info("Found ECS (K):")
     logger.info("%s", pformat(ecs))
-    logger.info("Found climate sensitivities:")
+    logger.info("Found climate sensitivities (W m-2 K-1):")
     logger.info("%s", pformat(clim_sens))
     return (ecs, clim_sens)
 
@@ -201,7 +202,7 @@ def main(cfg):
         'short_name': 'ecs',
         'standard_name': 'equilibrium_climate_sensitivity',
         'long_name': 'Equilibrium Climate Sensitivity (ECS)',
-        'units': cubes['tas_4x'].units,
+        'units': cf_units.Unit('K'),
     }
     save_scalar_data(ecs, path, cfg, var_attrs)
     path = os.path.join(cfg['work_dir'], 'lambda.nc')
@@ -209,7 +210,7 @@ def main(cfg):
         'short_name': 'lambda',
         'standard_name': 'climate_sensitivity',
         'long_name': 'Climate Sensitivity',
-        'units': cubes['rtmt_4x'].units / cubes['tas_4x'].units,
+        'units': cf_units.Unit('W m-2 K-1'),
     }
     save_scalar_data(clim_sens, path, cfg, var_attrs)
 

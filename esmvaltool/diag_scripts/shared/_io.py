@@ -148,7 +148,8 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
     for path in all_files:
         cube = iris.load_cube(path)
         _add_standard_name_to_iris(
-            cube.attributes.pop('invalid_standard_name'), cube.units, cube)
+            cube.attributes.pop('invalid_standard_name', None), cube.units,
+            cube)
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
@@ -237,7 +238,7 @@ def save_scalar_data(data, path, cfg, var_attrs):
     cfg : dict
         Diagnostic script configuration.
     var_attrs : dict
-        Attributes for the variable (`var_name`, `standard_name`, `long_name`
+        Attributes for the variable (`short_name`, `standard_name`, `long_name`
         or `units`).
 
     """
@@ -246,8 +247,7 @@ def save_scalar_data(data, path, cfg, var_attrs):
         return
     dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
     _add_standard_name_to_iris(var_attrs['standard_name'], var_attrs['units'])
-    if 'short_name' in var_attrs:
-        var_attrs['var_name'] = var_attrs.pop('short_name')
+    var_attrs['var_name'] = var_attrs.pop('short_name')
     cube = iris.cube.Cube(
         list(data.values()),
         aux_coords_and_dims=[(dataset_coord, 0)],
