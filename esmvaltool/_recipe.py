@@ -308,7 +308,12 @@ def _get_default_settings(variable, config_user, derive=False):
     }
 
     if derive:
-        settings['derive'] = {'variable': variable}
+        settings['derive'] = {
+            'short_name': variable['short_name'],
+            'standard_name': variable['standard_name'],
+            'long_name': variable['long_name'],
+            'units': variable['units'],
+        }
 
     # Configure CMOR metadata check
     if variable.get('cmor_table'):

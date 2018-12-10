@@ -5,7 +5,6 @@ import logging
 import os
 
 import iris
-import yaml
 
 from ._derived_variable_base import DerivedVariableBase
 
@@ -40,18 +39,23 @@ def get_required(short_name, field=None):
     return derived_var.get_required(frequency)
 
 
-def derive(cubes, variable, fx_files=None):
+def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
     """Derive variable.
 
     Parameters
     ----------
-    cubes : iris.cube.CubeList
+    cubes: iris.cube.CubeList
         Includes all the needed variables for derivation defined in
         :func:`get_required`.
-    variable : dict
-        All information of the derived variable. Required keys are
-        `short_name`, `standard_name`, `long_name`, and `units`.
-    fx_files : dict, optional
+    short_name: str
+        short_name
+    standard_name: str
+        standard_name
+    long_name: str
+        long_name
+    units: str
+        units
+    fx_files: dict, optional
         If required, dictionary containing fx files  with `short_name`
         (keys) and path (values) of the fx variable.
 
@@ -61,8 +65,6 @@ def derive(cubes, variable, fx_files=None):
         The new derived variable.
 
     """
-    short_name = variable['short_name']
-
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
         return cubes[0]
@@ -84,12 +86,11 @@ def derive(cubes, variable, fx_files=None):
 
     # Set standard attributes
     cube.var_name = short_name
-    if variable['standard_name'] not in iris.std_names.STD_NAMES:
-        iris.std_names.STD_NAMES[variable['standard_name']] = {
-            'canonical_units': variable['units']
-        }
-    for attribute in ('standard_name', 'long_name', 'units'):
-        setattr(cube, attribute, variable[attribute])
+    if standard_name not in iris.std_names.STD_NAMES:
+        iris.std_names.STD_NAMES[standard_name] = {'canonical_units': units}
+    cube.standard_name = standard_name
+    cube.long_name = long_name
+    cube.units = units
 
     return cube
 
