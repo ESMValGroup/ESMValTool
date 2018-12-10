@@ -143,18 +143,18 @@ Either, you perform any adjustments with the widely known tools (e.g. `cdo, nco 
 
 For the installation of the necessary python modules and ncl to be able to run the ESMValTool, please follow the steps outlined below:
 
-*	GitHub:
-o	Open a GitHub account (`<http://www.github.com>`_).
-o	Send your GitHub user name to ‘Axel.Lauer@dlr.de’ to request access to the private branch of the ESMValTool with the note that you work for the C3S_511 service. 
-o	After Axel adds you to the ESMVal group on GitHub, you should have access to `<https://github.com/ESMValGroup/ESMValTool-private/tree/development>`_
-o	Familiarize yourself with GitHub and the ESMValTool workflow. An introduction can be found here: `<http://esmvaltool.readthedocs.io/en/latest/annex_b.html>`_
+1. GitHub:
+*	Open a GitHub account (`<http://www.github.com>`_).
+*	Send your GitHub user name to "Axel.Lauer@dlr.de" to request access to the private branch of the ESMValTool with the note that you work for the C3S_511 service. 
+*	After Axel adds you to the ESMVal group on GitHub, you should have access to `<https://github.com/ESMValGroup/ESMValTool-private/tree/development>`_
+*	Familiarize yourself with GitHub and the ESMValTool workflow. An introduction can be found here: `<http://esmvaltool.readthedocs.io/en/latest/annex_b.html>`_
 
-*	Read the installation instructions that are given in the ESMValTool manual. 
-o		You should start with installing the ESMValTool on your (Linux) computer or your institute’s computing facilities (e.g. a cluster). A step-by-step installation guide is given in the User Manual: `<http://esmvaltool.readthedocs.io/en/latest/install.html>`_
-o	Additionally, please install sphinx (‘conda install sphinx’), and make sure that you have Latex installed on your machine.	
-o	If further support is needed for the installation or the recommended test, please contact your IT people.
+2. Read the installation instructions that are given in the ESMValTool manual. 
+*	You should start with installing the ESMValTool on your (Linux) computer or your institute’s computing facilities (e.g. a cluster). A step-by-step installation guide is given in the User Manual: `<http://esmvaltool.readthedocs.io/en/latest/install.html>`_
+*	Additionally, please install sphinx (‘conda install sphinx’), and make sure that you have Latex installed on your machine.	
+*	If further support is needed for the installation or the recommended test, please contact your IT people.
 
-If there are still technical issues after you followed the outlined steps, please contact the C3S_511 service support (C3S_511_Support@dlr.de) with a proper problem description including configuration details.
+If there are still technical issues after you followed the outlined steps, please contact the C3S_511 service support ("C3S_511_Support@dlr.de") with a proper problem description including configuration details.
 
 
 **3.2 Running the namelist for the SPQB**
