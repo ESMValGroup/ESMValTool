@@ -15,9 +15,7 @@ import os
 import sys
 
 import cftime
-import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
 import yaml
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
@@ -94,7 +92,6 @@ def get_input_files(cfg, index=''):
     dict
         A dictionairy of the input files and their linked details.
     """
-
     if isinstance(index, int):
         metadata_file = cfg['input_files'][index]
         with open(metadata_file) as input_file:
@@ -293,6 +290,32 @@ def load_thresholds(cfg, metadata):
         thresholds.update([float(thres) for thres in metadata['thresholds']])
 
     return sorted(list(thresholds))
+
+
+def get_colour_from_cmap(number, total, cmap='jet'):
+    """
+    Get a colour `number` of `total` from a cmap.
+
+    This function is used when several lines are created evenly along a
+    colour map.
+
+    Parameters
+    ----------
+    number: int, float
+        The
+    total: int
+
+    cmap: string,  plt.cm
+        A colour map, either by name (string) or from matplotlib
+    """
+    if isinstance(cmap, str):
+        cmap = plt.get_cmap(cmap)
+
+    if total > 1:
+        colour = cmap(float(number) / float(total - 1.))
+    else:
+        colour = cmap(0.)
+    return colour
 
 
 def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
