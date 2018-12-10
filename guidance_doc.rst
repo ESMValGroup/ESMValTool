@@ -16,31 +16,31 @@ The reports will be produced with the following procedure:
 **Please**, if already not done, start your work with the ESMValTool and refer to the general template to prepare a first version of your report. Final templates with proper deliverable numbers are sent to ECV responsible to finalize the report.
 
 
-1. Which ECVs shall be evaluated, when and by who?
+1. Which ECVs will be evaluated, when and by who?
 --------------------------------------------------
 Below is a table of prioritized variables as reminder. Green: some datasets are available on CDS. Yellow: no datasets available in CDS, please check regularly (latest 15/10/2018 for red marked cells). Red ECVs prioritized for October 2018.
 
-+------------+---------------------+-----+---------------+-------------+
-| ECV        | Products            | WP  | Who evaluates | Release     |
-+============+=====================+=====+===============+=============+
-| Surface    | ERA5,               | 3   | NUIM/CNR      | October 2018|
-| Temperature| E-OBS               |     |               |             |
-+------------+---------------------+-----+---------------+-------------+
-| Wind       | ERA5                | 3   | NUIM          | April 2019  |
-+------------+---------------------+-----+---------------+-------------+
-| Humidity   | ERA5                | 3   | NUIM          | April 2019  |
-+------------+---------------------+-----+---------------+-------------+
-| Pressure   | ERA5,               | 3   | NUIM          | April 2019  |
-|            | E-OBS               |     |               |             |
-+------------+---------------------+-----+---------------+-------------+
-| Air        | ERA5                | 4   | CNR           | October 2018|
-| Temperature|                     |     |               |             |
-+------------+---------------------+-----+---------------+-------------+
-| Ozone      | ESA-CCI Total column| 4   | ENEA          | April 2019  |
-|            | ESA-CCI Tropospheric|     |               |             |
-|            | ESA-CCI Profiles    |     |               |             |
-|            | ERA5                |     |               |             |
-+------------+---------------------+-----+---------------+-------------+
++------------+----------------------+-----+---------------+-------------+
+| ECV        | Products             | WP  | Who evaluates | Release     |
++============+======================+=====+===============+=============+
+| Surface    | ERA5,                | 3   | NUIM/CNR      | October 2018|
+| Temperature| E-OBS                |     |               |             |
++------------+----------------------+-----+---------------+-------------+
+| Wind       | ERA5                 | 3   | NUIM          | April 2019  |
++------------+----------------------+-----+---------------+-------------+
+| Humidity   | ERA5                 | 3   | NUIM          | April 2019  |
++------------+----------------------+-----+---------------+-------------+
+| Pressure   | ERA5,                | 3   | NUIM          | April 2019  |
+|            | E-OBS                |     |               |             |
++------------+----------------------+-----+---------------+-------------+
+| Air        | ERA5                 | 4   | CNR           | October 2018|
+| Temperature|                      |     |               |             |
++------------+----------------------+-----+---------------+-------------+
+| Ozone      | ESA-CCI Total column,| 4   | ENEA          | April 2019  |
+|            | ESA-CCI Tropospheric,|     |               |             |
+|            | ESA-CCI Profiles,    |     |               |             |
+|            | ERA5                 |     |               |             |
++------------+----------------------+-----+---------------+-------------+
 
 
 
