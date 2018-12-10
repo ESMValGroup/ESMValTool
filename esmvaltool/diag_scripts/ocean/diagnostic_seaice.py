@@ -218,7 +218,7 @@ def make_polar_map(
         plt.gca().coastlines()
     except AttributeError:
         logger.warning('make_polar_map: Not able to add coastlines')
-    return fig, ax1
+    return fig
 
 
 def get_pole(cube):
@@ -297,7 +297,7 @@ def make_map_plots(
             time_str = get_time_string(cube)
 
             # Make the polar map.
-            fig, ax1 = make_polar_map(cube, pole=pole, cmap=cmap)
+            fig = make_polar_map(cube, pole=pole, cmap=cmap)
 
             # Add title to plot
             title = ' '.join([metadata['dataset'], plot_type, time_str])
