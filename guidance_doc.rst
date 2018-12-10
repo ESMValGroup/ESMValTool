@@ -193,7 +193,7 @@ Please specify a custom color map in the cfg file. This color map will then be u
 *	Recommended setting: the option False (“show_latex=False”). This allows you to avoid the production of the pdf-files every time you run the SPQB namelist, as the output is lengthy. 
 *	If you have problems with producing latex output (latex is not running smoothly on your machine where you run the ESMValTool) you can only produce the figures and the latex file in sphinx compatible format (“show_latex=None”), and port these files to another latex compatible machine to compile them separately to a pdf file outside of your ESMValTool environment. With this option, the SPQB namelist automatically copies the latex script for the creation of the reports to reporting directories. Their structure is self-explaining.
 
-*3.4 Input/Output structure for the SPQB*
+**3.4 Input/Output structure for the SPQB**
 
 When you set up your general ESMValTool configuration (in your ESMValTool-private directory), you defined your work directory. Within this directory, you will have two relevant and SPQB related subdirectories, one called “c3s_511” and one called “reporting”. The reporting directory contains your pdf output, or, if the latex-option was set to “None”, the respective built and source directories. This is the output you need for the reports. The directory c3s_511 contains all editable files. The first run produces all files according to your data set name in the namelist. Therefore, if you run the ESMValTool with the same namelist a second time, it will read in these files and check if information was added or, with some specific files, corrected. The ESMValTool also reports the set up files in the terminal output. Please check these files for:
 
@@ -202,5 +202,18 @@ When you set up your general ESMValTool configuration (in your ESMValTool-privat
 *	Adjusting information like the original resolution for the gcos requirements checks.
 
 The following subsections explain the needs for the single reports in more detail.
+
+**3.5 How to add customary text for the individual reports**
+
+You will have to run the SPQB namelist for each ECV twice to be able to display customary text.
+The first time you run the SPQB namelist, you produce the figures for each report with their respective figure numbers and figure captions. During that first run, an empty text file for each report that you want to produce is created. These will be located in individual report directories (e.g. a directory named ‘overview_input’). You can then add your text with the figure interpretation and comments in the text file that is available in each of these directories. Please note: There is no txt-file in the folder ‘smm_input’ but a csv-file instead! You can add the custom text there.(This is differing to the other text files to future upward compatibility.)
+
+If you want to add a specific format to your customized text (more than having it appear as plain text), you will have to add the text in the 'reStructuredText'-format (see `<http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_ for a brief documentation about the rst-format). The following webpages show examples on how to add references and footnotes to an rst-style file:
+
+*	`<http://docutils.sourceforge.net/docs/user/rst/quickref.html#hyperlink-targets>`_
+*	`<http://docutils.sourceforge.net/docs/user/rst/quickref.html#footnotes>`_
+
+A useful online tool for reStructuredText can be found here: `<http://rst.ninjs.org/#>`_. It allows you to format your text without having to run the ESMValTool over and over.
+After you have added your customized text, you have to run the SPQB namelist a second time to get the text added to the report(s). If you do not edit the text file for a report, no individual text will be added to that final report (which means that the contents of the text file produced with the first run of the ESMValTool is not displayed if it was not altered!). If you do add individual text, it will appear in the final report after the Table of Contents, any lists and before the figures to follow a paper draft design. Please note: for each report you will have to add the customary text individually!
 
 
