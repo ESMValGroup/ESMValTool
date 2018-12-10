@@ -1,7 +1,3 @@
-.. raw:: html
-  <style> .red {color:red} </style>
-.. role:: red
-
 Guidance document to prepare the Single Product Quality Brief (SPQB) in ESMValTool v2
 =====================================================================================
 
@@ -30,7 +26,7 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 | Surface    | ERA5,                | 3   | NUIM/CNR      | October 2018|
 | Temperature| E-OBS                |     |               |             |
 +------------+----------------------+-----+---------------+-------------+
-| Wind       | ERA5                 | 3   | :red:'NUIM'   | April 2019  |
+| Wind       | ERA5                 | 3   | NUIM          | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
 | Humidity   | ERA5                 | 3   | NUIM          | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
@@ -45,6 +41,11 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 |            | ESA-CCI Profiles,    |     |               |             |
 |            | ERA5                 |     |               |             |
 +------------+----------------------+-----+---------------+-------------+
-
-
-
+| CO2        | ESA-CCI              | 4   | DLR           | April 2019  |
++------------+----------------------+-----+---------------+-------------+
+| Winds      | ERA5                 | 4   | CNR           | April 2019  |
++------------+----------------------+-----+---------------+-------------+
+| SST        | ESA-CCI OSTIA, (ERA5)| 5   | CNR           | October 2018|
++------------+----------------------+-----+---------------+-------------+
+| Sea Ice    | ESA-CCI OSTIA, (ERA5)| 5   | ULB           | April 2019  |
++------------+----------------------+-----+---------------+-------------+
