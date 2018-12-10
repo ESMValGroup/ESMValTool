@@ -32,7 +32,7 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 from esmvaltool.diag_scripts.shared import (
-    get_file_from_ancestors, group_metadata, netcdf_to_metadata, plot,
+    get_ancestor_file, group_metadata, netcdf_to_metadata, plot,
     run_diagnostic, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -106,9 +106,9 @@ def _save_fig(cfg, filename, legend=None):
 
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
-    psi_filepath = get_file_from_ancestors(cfg, 'psi.nc')
-    ecs_filepath = get_file_from_ancestors(cfg, 'ecs.nc')
-    lambda_filepath = get_file_from_ancestors(cfg, 'lambda.nc')
+    psi_filepath = get_ancestor_file(cfg, 'psi.nc')
+    ecs_filepath = get_ancestor_file(cfg, 'ecs.nc')
+    lambda_filepath = get_ancestor_file(cfg, 'lambda.nc')
     psi_cube_all = iris.load_cube(psi_filepath)
     psi_cube = psi_cube_all.extract(ec.iris_constraint_no_obs(cfg))
     ecs_cube = iris.load_cube(ecs_filepath)

@@ -45,13 +45,13 @@ def _has_necessary_attributes(metadata, log_level='debug'):
     return True
 
 
-def _has_necessary_var_attributes(attributes, log_level='debug'):
-    """Check if metadata has necessary variable attributes."""
+def _has_necessary_var_attributes(metadata, log_level='debug'):
+    """Check if dataset metadata has necessary variable attributes."""
     for var_key in VAR_KEYS + ['short_name']:
-        if var_key not in attributes:
-            getattr(logger, log_level)("Attributes '%s' do not have "
+        if var_key not in metadata:
+            getattr(logger, log_level)("Metadata '%s' do not have "
                                        "necessary variable attribute '%s'",
-                                       attributes, var_key)
+                                       metadata, var_key)
             return False
     return True
 
@@ -85,15 +85,15 @@ def get_all_ancestor_files(cfg, pattern=None):
     return ancestor_files
 
 
-def get_file_from_ancestors(cfg, filename):
-    """Search a file in the ancestor directories.
+def get_ancestor_file(cfg, pattern):
+    """Return a desired file in the ancestor directories.
 
     Parameters
     ----------
     cfg : dict
         Diagnostic script configuration.
-    filename : str
-        Name of the file.
+    pattern : str
+        Pattern which specifies the name of the file.
 
     Returns
     -------
@@ -101,15 +101,16 @@ def get_file_from_ancestors(cfg, filename):
         Full path to the file or `None` if file not found.
 
     """
-    files = get_all_ancestor_files(cfg, pattern=filename)
+    files = get_all_ancestor_files(cfg, pattern=pattern)
     if not files:
-        logger.warning("Requested file %s not found in ancestor directories",
-                       filename)
+        logger.warning(
+            "No file with requested name %s found in ancestor "
+            "directories", pattern)
         return None
     if len(files) != 1:
         logger.warning(
-            "Requested file %s was found multiple times (%s), "
-            "returning first appearance", filename, files)
+            "Multiple files with requested pattern %s found (%s), returning "
+            "first appearance", pattern, files)
     return files[0]
 
 
@@ -147,7 +148,7 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
     for path in all_files:
         cube = iris.load_cube(path)
         _add_standard_name_to_iris(
-            cube.attributes.get('invalid_standard_name'), cube.units, cube)
+            cube.attributes.pop('invalid_standard_name'), cube.units, cube)
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
@@ -155,10 +156,10 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         dataset_info['filename'] = path
 
         # Check if necessary keys are available
-        if _has_necessary_attributes([dataset_info]):
+        if _has_necessary_attributes([dataset_info], log_level='warning'):
             metadata.append(dataset_info)
         else:
-            logger.debug("Skipping '%s'", path)
+            logger.warning("Skipping '%s'", path)
 
     return metadata
 
@@ -221,7 +222,7 @@ def save_iris_cube(cube, path, cfg):
     logger.info("Wrote %s", path)
 
 
-def save_scalar_data(data, path, cfg, **var_attrs):
+def save_scalar_data(data, path, cfg, var_attrs):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -235,7 +236,7 @@ def save_scalar_data(data, path, cfg, **var_attrs):
         Desired path.
     cfg : dict
         Diagnostic script configuration.
-    var_attrs : optional keyword arguments
+    var_attrs : dict
         Attributes for the variable (`var_name`, `standard_name`, `long_name`
         or `units`).
 

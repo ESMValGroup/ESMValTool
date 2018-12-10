@@ -19,14 +19,18 @@ Configuration options in recips
 -------------------------------
 plot_ecs_regression : bool, optional (default: False)
     Plot the linear regression graph.
+read_external_file : str, optional
+    Read ECS from external file.
 
 """
 
 import logging
 import os
+from pprint import pformat
 
 import iris
 import numpy as np
+import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
@@ -34,6 +38,30 @@ from esmvaltool.diag_scripts.shared import (
     save_scalar_data, select_metadata, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def read_external_file(cfg):
+    """Read external file to get ECS."""
+    ecs = {}
+    clim_sens = {}
+    if not cfg.get('read_external_file'):
+        return (ecs, clim_sens)
+    base_dir = os.path.dirname(__file__)
+    filepath = os.path.join(base_dir, cfg['read_external_file'])
+    if os.path.isfile(filepath):
+        with open(filepath, 'r') as infile:
+            external_data = yaml.safe_load(infile)
+    else:
+        logger.error("Desired external file %s does not exist", filepath)
+        return (ecs, clim_sens)
+    ecs = external_data.get('ecs', {})
+    clim_sens = external_data('climate_sensitivity', {})
+    logger.info("External file %s", filepath)
+    logger.info("Found ECS:")
+    logger.info("%s", pformat(ecs))
+    logger.info("Found climate sensitivities:")
+    logger.info("%s", pformat(clim_sens))
+    return (ecs, clim_sens)
 
 
 def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
@@ -115,17 +143,21 @@ def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
 
-    # Check if tas and rtmt are available
-    if not variables_available(cfg, ['tas', 'rtmt']):
-        raise ValueError("This diagnostic needs 'tas' and 'rtmt' variables")
+    # Read external file if desired
+    if cfg.get('read_external_file'):
+        (ecs, clim_sens) = read_external_file(cfg)
+    else:
+        if not variables_available(cfg, ['tas', 'rtmt']):
+            raise ValueError("This diagnostic needs 'tas' and 'rtmt' "
+                             "variables if 'read_external_file' is not given")
+        ecs = {}
+        clim_sens = {}
 
     # Read data
     tas_data = select_metadata(input_data, short_name='tas')
     rtmt_data = select_metadata(input_data, short_name='rtmt')
 
     # Iterate over all datasets and save ECS
-    ecs = {}
-    clim_sens = {}
     for (dataset, data) in group_metadata(tas_data, 'dataset').items():
         logger.info("Processing %s", dataset)
         paths = {
@@ -156,6 +188,10 @@ def main(cfg):
                             reg)
 
         # Save data
+        if cfg.get('read_external_file') and dataset in ecs:
+            logger.info(
+                "Overwriting external given ECS and climate "
+                "sensitivity for %s", dataset)
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
         clim_sens[dataset] = -reg.slope
 
@@ -167,7 +203,7 @@ def main(cfg):
         'long_name': 'Equilibrium Climate Sensitivity (ECS)',
         'units': cubes['tas_4x'].units,
     }
-    save_scalar_data(ecs, path, cfg, **var_attrs)
+    save_scalar_data(ecs, path, cfg, var_attrs)
     path = os.path.join(cfg['work_dir'], 'lambda.nc')
     var_attrs = {
         'short_name': 'lambda',
@@ -175,7 +211,7 @@ def main(cfg):
         'long_name': 'Climate Sensitivity',
         'units': cubes['rtmt_4x'].units / cubes['tas_4x'].units,
     }
-    save_scalar_data(clim_sens, path, cfg, **var_attrs)
+    save_scalar_data(clim_sens, path, cfg, var_attrs)
 
 
 if __name__ == '__main__':

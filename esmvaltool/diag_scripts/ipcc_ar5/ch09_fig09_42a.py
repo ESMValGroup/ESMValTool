@@ -31,10 +31,9 @@ import os
 import iris
 from iris import Constraint
 
-from esmvaltool.diag_scripts.shared import (extract_variables,
-                                            get_file_from_ancestors, plot,
-                                            run_diagnostic, save_iris_cube,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    extract_variables, get_ancestor_file, plot, run_diagnostic, save_iris_cube,
+    variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -130,7 +129,7 @@ def main(cfg):
         raise ValueError("This diagnostic needs 'tas' variable")
 
     # Get ECS data
-    ecs_filepath = get_file_from_ancestors(cfg, 'ecs.nc')
+    ecs_filepath = get_ancestor_file(cfg, 'ecs.nc')
     ecs_cube = iris.load_cube(ecs_filepath)
 
     # Create iris cubes for each dataset

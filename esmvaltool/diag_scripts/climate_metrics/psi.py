@@ -19,7 +19,7 @@ Configuration options in recips
 -------------------------------
 window_length : int, optional (default: 55)
     Number of years used for the moving window average.
-lag : int, optional(default: 1)
+lag : int, optional (default: 1)
     Lag (in years) for the autocorrelation function.
 
 """
@@ -113,7 +113,7 @@ def main(cfg):
 
     # Save averaged psis for every dataset in one file
     path = os.path.join(cfg['work_dir'], 'psi.nc')
-    save_scalar_data(psis, path, cfg, **psi_attrs)
+    save_scalar_data(psis, path, cfg, psi_attrs)
 
 
 if __name__ == '__main__':
