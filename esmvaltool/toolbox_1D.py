@@ -18,5 +18,5 @@ def retrieve_sample_data():
         'time':'08:00'
     }
 )
-    datas=ct.climate.daily_mean(data)
+    datas = ct.climate.daily_mean(data)
     return datas
