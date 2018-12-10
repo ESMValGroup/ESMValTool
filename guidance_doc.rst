@@ -13,7 +13,7 @@ The reports will be produced with the following procedure:
 
 **Please note**: The content of the deliverable is specific to each ECV and Evaluators can make their choices in terms of plots / content of their summary, keeping in mind that reports should be readable and contain synthetic information following the basic content described in the C3S_D511_template_SPQB_12102018 template.
 
-**Please**, if already not done, start your work with the ESMValTool and refer to the general template to prepare first version of your report. Final templates with proper deliverable numbers are sent to ECV responsible to finalize the report.
+**Please**, if already not done, start your work with the ESMValTool and refer to the general template to prepare a first version of your report. Final templates with proper deliverable numbers are sent to ECV responsible to finalize the report.
 
 
 1. Which ECVs shall be evaluated, when and by who?
