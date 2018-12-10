@@ -73,9 +73,9 @@ Below is a table of prioritized variables as reminder. *: some datasets are avai
 For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting off-line and download the datasets on a local machine or cluster where ESMValTool is run. 
 
 The extraction of the datasets is done:
-  1. Through the CDS itself 
-  2. Using the CDS-Toolbox
-  3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script `here <https://github.com/bascrezee/c3s_tools/blob/master/retrieve_era5.py>`_)
+ 1. Through the CDS itself 
+ 2. Using the CDS-Toolbox
+ 3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script `here <https://github.com/bascrezee/c3s_tools/blob/master/retrieve_era5.py>`_)
 
 We advise to make use of the second option since the toolbox treats the variables following the CMOR tables and allows the necessary sub-setting and resolution degradation. 
 
