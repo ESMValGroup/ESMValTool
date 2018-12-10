@@ -184,7 +184,7 @@ long_name:        ocean passage
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
-out_name:         line
+out_name:         passage
 type:             character
 requested:        barents_opening bering_strait canadian_archipelago denmark_strait drake_passage english_channel pacific_equatorial_undercurrent faroe_scotland_channel florida_bahamas_strait fram_strait iceland_faroe_channel indonesian_throughflow mozambique_channel taiwan_luzon_straits windward_passage        ! space-separated list of requested coordinates 
 must_have_bounds: no
@@ -3795,7 +3795,7 @@ long_name:         Sea Water Transport
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        oline time
+dimensions:        time oline
 out_name:          mfo
 type:              real
 !----------------------------------
