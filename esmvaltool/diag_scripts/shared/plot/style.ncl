@@ -39,7 +39,7 @@ function project_style(items: list,
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of items list, with the stlye
+;    An array of the same size of items list, with the style
 ;    information for the given flag. The type depends on the flag.
 ;
 ; Description

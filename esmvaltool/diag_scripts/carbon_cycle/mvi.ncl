@@ -50,25 +50,27 @@ load "./diag_scripts/shared/plot/style.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
-
-  ; Check field type
-  plot_fields = (/"T2Ms"/)
-  ind_f = any(field_type0 .eq. plot_fields)
-  if (all(ismissing(ind_f))) then
-    error_msg("f", diag_script, "", "cannot use field " + field_type0)
+  VAR0 = variable_info[0]
+  DIM_VAR = ListCount(variable_info)
+  if (DIM_VAR .gt. 1) then
+    error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
+              "variable, processing " + VAR0@short_name)
   end if
-  delete([/plot_fields, ind_f/])
+
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  DATASETS = metadata_att_as_array(INFO0, "dataset")
+  DIM_DAT = dimsizes(DATASETS)
+  DIM_DAT_ORIG = DIM_DAT
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + VAR0@short_name + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Write references (TODO)
-  ; write_references(diag_script, \
+  ; write_references(DIAG_SCRIPT, \
   ;                  (/"A-anav_al"/), \
   ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
   ;                  (/"D_anav13jclim"/), \
@@ -102,9 +104,18 @@ begin
   region = select_region(diag_script_info@region)
 
   ; Set time range
-  start_year = min(stringtoint(input_file_info@start_year))
-  end_year = max(stringtoint(input_file_info@end_year))
+  start_year = 9999
+  end_year = -9999
+  do idat = 0, DIM_DAT - 1
+    if (INFO0[idat]@start_year .lt. start_year) then
+      start_year = INFO0[idat]@start_year
+    end if
+    if (INFO0[idat]@end_year .gt. end_year) then
+      end_year = INFO0[idat]@end_year
+    end if
+  end do
   all_years = ispan(start_year, end_year, 1)
+  DIM_TIME = dimsizes(all_years)
 
   ; Specific time range for mean
   if (isatt(diag_script_info, "mean_time_range")) then
@@ -142,22 +153,18 @@ begin
     custom_mvi_time_range = False
   end if
 
-  ; Array sizes
-  DIM_VAR = dimsizes(variables)
-  DIM_DAT = dimsizes(input_file_info@dataset)
-  DIM_TIME = dimsizes(all_years)
-
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
   ; ---------------------------------------------------------------------------
 
   ; Calculate yearly average
   do idat = 0, DIM_DAT - 1
-    dataset_name = input_file_info@dataset(idat)
+    data = INFO0[idat]
+    dataset_name = DATASETS(idat)
     log_debug("Processing " + dataset_name)
 
     ; Read data
-    data_var = read_data(idat, var0, field_type0)
+    data_var = read_data(data)
     if (typeof(data_var) .eq. "double") then
       data_var := dble2flt(data_var)
     end if
@@ -173,13 +180,13 @@ begin
       DIM_LON = dimsizes(data_var&lon)
     else
       ; TODO
-      error_msg("f", diag_script, "", "Irregular grids are currently not " + \
+      error_msg("f", DIAG_SCRIPT, "", "Irregular grids are currently not " + \
                 "supported")
     end if
 
     ; Cut off Antarctica if necessary (for land-based observations)
-    if ((isatt(variable_info, "reference_dataset") .and. \
-         variable_info@reference_dataset .eq. "CRU")) then
+    if ((isatt(VAR0, "reference_dataset") .and. \
+         VAR0@reference_dataset .eq. "CRU")) then
       if (dimsizes(data_var&lat) .gt. 1) then
         log_info("Masking Antarctica")
         data_var(:, {:-60}, :) = data_var@_FillValue
@@ -187,9 +194,7 @@ begin
     end if
 
     ; Computing annual mean
-    data_annual = time_operations(data_var, \
-                                  toint(input_file_info@start_year(idat)), \
-                                  toint(input_file_info@end_year(idat)), \
+    data_annual = time_operations(data_var, data@start_year, data@end_year, \
                                   "average", "yearly", True)
 
     ; Collect data in global array
@@ -200,7 +205,7 @@ begin
       all_data_yearly!1 = "year"
       all_data_yearly!2 = "lat"
       all_data_yearly!3 = "lon"
-      all_data_yearly&dataset = input_file_info@dataset
+      all_data_yearly&dataset = DATASETS
       all_data_yearly&year = all_years
       all_data_yearly&lat = data_var&lat
       all_data_yearly&lon = data_var&lon
@@ -209,15 +214,14 @@ begin
     ; Check lat and lon dimensions
     if (DIM_LAT .ne. dimsizes(all_data_yearly&lat) .or. \
         DIM_LON .ne. dimsizes(all_data_yearly&lon)) then
-      error_msg("f", diag_script, "", "Not all datasets are on the same " + \
+      error_msg("f", DIAG_SCRIPT, "", "Not all datasets are on the same " + \
                 "grid (" + dataset_name + "), select 'regrid' in " + \
                 "preprocessor options")
     end if
 
     ; Save data at correct place
-    idx_1 = toint(input_file_info@start_year(idat)) - start_year
-    idx_2 = dimsizes(all_years) - \
-      (end_year - toint(input_file_info@end_year(idat))) - 1
+    idx_1 = data@start_year - start_year
+    idx_2 = dimsizes(all_years) - (end_year - data@end_year) - 1
     all_data_yearly(idat, idx_1:idx_2, :, :) = data_annual
     copy_VarAtts(data_annual, all_data_yearly)
     copy_VarCoords(data_annual, all_data_yearly(idat, :, :, :))
@@ -233,7 +237,7 @@ begin
   all_data_mvi!0 = "dataset"
   all_data_mvi!1 = "lat"
   all_data_mvi!2 = "lon"
-  all_data_mvi&dataset = input_file_info@dataset
+  all_data_mvi&dataset = DATASETS
   all_data_mvi&lat = all_data_yearly&lat
   all_data_mvi&lon = all_data_yearly&lon
   all_data_mvi@_FillValue = 1.0e20
@@ -243,18 +247,18 @@ begin
   all_data_trend!0 = "dataset"
   all_data_trend!1 = "lat"
   all_data_trend!2 = "lon"
-  all_data_trend&dataset = input_file_info@dataset
+  all_data_trend&dataset = DATASETS
   all_data_trend&lat = all_data_yearly&lat
   all_data_trend&lon = all_data_yearly&lon
   all_data_trend@_FillValue = 1.0e20
 
   ; Determine reference dataset
-  ref_idx = get_ref_dataset_idx(input_file_info, \
-                                variable_info@reference_dataset)
+  ref_idx = ind(DATASETS .eq. VAR0@reference_dataset)
+  ref_idx := ref_idx(0)
   if (ismissing(ref_idx)) then
-      error_msg("f", diag_script, "", "no adequate reference dataset provided")
+      error_msg("f", DIAG_SCRIPT, "", "no adequate reference dataset provided")
   end if
-  log_info("Reference dataset: " + input_file_info@dataset(ref_idx))
+  log_info("Reference dataset: " + DATASETS(ref_idx))
 
   ; Restrict time range of reference dataset if desired
   if (custom_mvi_time_range) then
@@ -311,7 +315,7 @@ begin
   ; Special case for lai:
   ; Since datasets have different land covers, all sparse vegetated points must
   ; be masked
-  if (isStrSubset(var0, "lai")) then
+  if (isStrSubset(VAR0@short_name, "lai")) then
     all_data_yearly = where(all_data_yearly .ge. 0.025, \
                             all_data_yearly, all_data_yearly@_FillValue)
   end if
@@ -326,7 +330,7 @@ begin
   all_data_mean!0 = "dataset"
   all_data_mean!1 = "lat"
   all_data_mean!2 = "lon"
-  all_data_mean&dataset = input_file_info@dataset
+  all_data_mean&dataset = DATASETS
   all_data_mean&lat = all_data_yearly&lat
   all_data_mean&lon = all_data_yearly&lon
   all_data_mean@units = all_data_yearly@units
@@ -339,18 +343,18 @@ begin
   ; Setup arrays
   regional_mean = new((/DIM_DAT/), typeof(all_data_mean))
   regional_mean!0 = "dataset"
-  regional_mean&dataset = input_file_info@dataset
+  regional_mean&dataset = DATASETS
   regional_trend = new((/DIM_DAT/), typeof(all_data_trend))
   regional_trend!0 = "dataset"
-  regional_trend&dataset = input_file_info@dataset
+  regional_trend&dataset = DATASETS
   regional_mvi = new((/DIM_DAT/), typeof(all_data_mvi))
   regional_mvi!0 = "dataset"
-  regional_mvi&dataset = input_file_info@dataset
+  regional_mvi&dataset = DATASETS
 
   ; Set type of area operation (flux vs. non-flux variables)
   ; Flux variables need to be integrated and area weighted ("sum"), non-flux
   ; variables need to be averaged, area weighted and normalized ("average")
-  if (all_data_mean@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
+  if (all_data_mean@units .eq. "kg m-2 s-1" .and. VAR0@short_name .ne. "pr") then
     sp_opt = "sum"
   else
     sp_opt = "average"
@@ -372,8 +376,8 @@ begin
   ; Diagnostic- and variable-specific units conversions
   regional_mvi@units = "1"
   trend_tmp = regional_trend
-  if (isatt(variable_info, "plot_units")) then
-    new_units = variable_info@plot_units
+  if (isatt(VAR0, "plot_units")) then
+    new_units = VAR0@plot_units
     regional_mean = convert_units(regional_mean, new_units)
     if (new_units .eq. "degC") then
       trend_tmp@units = "degC"
@@ -383,7 +387,7 @@ begin
   end if
 
   ; Units conversion for trend
-  if (input_file_info@mip(0) .eq. "Lmon") then
+  if (INFO0[0]@mip .eq. "Lmon") then
     regional_trend = trend_tmp
     temp_unit = "yr-1"
   else
@@ -406,23 +410,23 @@ begin
     system("mkdir -p " + work_dir)
 
     ; Mean
-    new_path = work_dir + "mean_" + var0 + ".nc"
-    regional_mean@var = var0
-    regional_mean@diag_script = diag_script
+    new_path = work_dir + "mean_" + VAR0@short_name + ".nc"
+    regional_mean@var = VAR0@short_name
+    regional_mean@diag_script = DIAG_SCRIPT
     regional_mean@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_mean, new_path)
 
     ; Trend
-    new_path = work_dir + "trend_" + var0 + ".nc"
-    regional_trend@var = var0
-    regional_trend@diag_script = diag_script
+    new_path = work_dir + "trend_" + VAR0@short_name + ".nc"
+    regional_trend@var = VAR0@short_name
+    regional_trend@diag_script = DIAG_SCRIPT
     regional_trend@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_trend, new_path)
 
     ; MVI
-    new_path = work_dir + "MVI_" + var0 + ".nc"
-    regional_mvi@var = var0
-    regional_mvi@diag_script = diag_script
+    new_path = work_dir + "MVI_" + VAR0@short_name + ".nc"
+    regional_mvi@var = VAR0@short_name
+    regional_mvi@diag_script = DIAG_SCRIPT
     regional_mvi@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_mvi, new_path)
   end if
@@ -433,7 +437,7 @@ begin
 
   if (config_user_info@write_plots) then
     ; Set plot output file
-    outfile = plot_dir + var0 + "_" + region@name
+    outfile = plot_dir + VAR0@short_name + "_" + region@name
     wks = gsn_open_wks(file_type, outfile)
     gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
     gsn_reverse_colormap(wks)
@@ -464,7 +468,7 @@ begin
     data_arr!0 = "statistic"
     data_arr!1 = "datasets"
     data_arr&statistic = (/mean_label, trend_label, mvi_label/)
-    data_arr&datasets = input_file_info@dataset
+    data_arr&datasets = DATASETS
     data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
 
     ; Set levels for the color coding
@@ -476,26 +480,26 @@ begin
     delete(tmp)
 
     ; Draw a 3D scatterplot
-    data_arr@res_tiMainString = var0 + " - " + diag_script_info@region
-    plot = scatterplot3D(wks, data_arr, var0, levs)
+    data_arr@res_tiMainString = VAR0@short_name + " - " + diag_script_info@region
+    plot = scatterplot3D(wks, data_arr, VAR0@short_name, levs)
     log_info("Wrote " + outfile + "." + file_type)
     draw(plot)
     frame(wks)
 
     ; ; Add meta data (TODO)
-    ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
+    ; climofiles = new(dimsizes(DATASETS) * DIM_VAR, \
     ;                  string)
     ; alltags = array_append_record(tags, region@DM_tag, 0)
     ; alltags := array_append_record(alltags, \
     ;                                (/"PT_scatter", "PT_zonal", "ST_mean", \
     ;                                 "ST_trend", "ST_clim", "ST_var"/), 0)
-    ; caption =  "Scatterplot for multiyear average " + var0 + \
+    ; caption =  "Scatterplot for multiyear average " + VAR0@short_name + \
     ;            " in x axis, its linear trend in y axis, and MVI." + \
     ;            " Like Anav et al. Fig 1 bottom"
-    ; id = diag_script
+    ; id = DIAG_SCRIPT
     ; do n_var = 0, DIM_VAR - 1
-    ;    do idat = 0, dimsizes(input_file_info@dataset) - 1
-    ;     climofiles(n_var * dimsizes(input_file_info@dataset) + idat) = \
+    ;    do idat = 0, dimsizes(DATASETS) - 1
+    ;     climofiles(n_var * dimsizes(DATASETS) + idat) = \
     ;       interface_get_inpaths(idat) + "/" + \
     ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
     ;   end do
@@ -503,13 +507,13 @@ begin
     ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
 
     ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
-    ;          input_file_info@dataset, climofiles, diag_script, \
+    ;          DATASETS, climofiles, DIAG_SCRIPT, \
     ;          contrib_authors)
 
     ; delete([/alltags, caption, id, climofiles/])
     delete(data_arr)
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

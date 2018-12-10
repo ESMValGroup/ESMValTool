@@ -2158,6 +2158,7 @@ begin
     diag_script = att2var(data, "diag_script")
   else
     var = varname
+    diag_script = DIAG_SCRIPT
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
@@ -2277,6 +2278,7 @@ begin
     diag_script = att2var(data, "diag_script")
   else
     var = varname
+    diag_script = DIAG_SCRIPT
   end if
   if (.not.isatt(diag_script_info, "styleset")) then
     diag_script_info@styleset = "DEFAULT"
