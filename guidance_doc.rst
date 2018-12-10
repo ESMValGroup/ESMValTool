@@ -99,28 +99,28 @@ Below are two examples of the resulting script for 1D and 3D data.
 In order to have data compliant with the CDM of the Toolbox, an operation on the data needs to be performed. The simple retrieval does not require the data are CDM compliant. Whatever is the initial format of the data (grib, netcdf, zip...) the operation assures the retrieved dataset is netcdf and CDM compliant, e.g. ct.climate.daily_mean.
 
 **2.1 Extract 1D from ERA-5**
+
 *import cdstoolbox as ct*
 
 *@ct.application(title='Retrieve Data')*
 *@ct.output.dataarray()*
 *def retrieve_sample_data():*
-    *"""*
-    *Retrieve a variable from sample dataset.*
-    *"""*
-
-    *data = ct.catalogue.retrieve(*
-    *'reanalysis-era5-single-levels',*
-    *{*
-        *'variable':'sea_surface_temperature',*
-        *'product_type':'reanalysis',*
-        *'year':'2017',*
-        *'month':'04',*
-        *'day':'10',*
-        *'time':'08:00'*
-    *}*
+*"""*
+*Retrieve a variable from sample dataset.*
+*"""*
+*data = ct.catalogue.retrieve(*
+*'reanalysis-era5-single-levels',*
+*{*
+*'variable':'sea_surface_temperature',*
+*'product_type':'reanalysis',*
+*'year':'2017',*
+*'month':'04',*
+*'day':'10',*
+*'time':'08:00'*
+*}*
 *)*
-    *datas=ct.climate.daily_mean(data)*
-    *return datas*
+*datas=ct.climate.daily_mean(data)*
+*return datas*
 
 
 **2.2 Extract 1-month daily 3D temperature from ERA-5**
