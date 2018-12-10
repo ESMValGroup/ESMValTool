@@ -111,6 +111,7 @@ See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `he
 
 
 **2.3 Data Limitations**
+
 Several datasets may need to be reduced in size due to limitations of memory space for operations of ESMValTool. The maximum size of the dataset is determined by the machine which is used to run the ESMValTool. Rough guidelines for planning the dataset size would be:
 
 *	Machine storage available: ~dataset size x 3
@@ -129,8 +130,46 @@ We suggest the following 3 subsets as an approach for reporting 4D variables, if
 
 
 **2.4 If your dataset is not CMORized…**
+
 Data is required to be adherent to CMOR tables to be treated by the ESMValTool. The tool will crash if this is not the case. 
 Reference to CMOR can be found in (`<https://cmor.llnl.gov/>`_). Please note: we are not using the CMOR program (CMOR = Climate Model Output Rewriter) itself, only the definitions provided and described by it!
 CMOR tables reporting the definitions are available at: `<https://github.com/PCMDI/cmip5-cmor-tables>`_
 Either, you perform any adjustments with the widely known tools (e.g. `cdo, nco <https://www.unidata.ucar.edu/software/netcdf/software.html>`_) or you make use of the CDS toolbox procedures (**recommended**) as described in Section 2.
+
+3. Preparation of the SPQB reports with the ESMValTool
+------------------------------------------------------
+
+**3.1 Installation of the ESMValTool on the local servers**
+
+For the installation of the necessary python modules and ncl to be able to run the ESMValTool, please follow the steps outlined below:
+
+*	GitHub:
+o	Open a GitHub account (`<http://www.github.com>`_).
+o	Send your GitHub user name to ‘Axel.Lauer@dlr.de’ to request access to the private branch of the ESMValTool with the note that you work for the C3S_511 service. 
+o	After Axel adds you to the ESMVal group on GitHub, you should have access to `<https://github.com/ESMValGroup/ESMValTool-private/tree/development>`_
+o	Familiarize yourself with GitHub and the ESMValTool workflow. An introduction can be found here: `<http://esmvaltool.readthedocs.io/en/latest/annex_b.html>`_
+
+*	Read the installation instructions that are given in the ESMValTool manual. 
+o		You should start with installing the ESMValTool on your (Linux) computer or your institute’s computing facilities (e.g. a cluster). A step-by-step installation guide is given in the User Manual: `<http://esmvaltool.readthedocs.io/en/latest/install.html>`_
+o	Additionally, please install sphinx (‘conda install sphinx’), and make sure that you have Latex installed on your machine.	
+o	If further support is needed for the installation or the recommended test, please contact your IT people.
+
+If there are still technical issues after you followed the outlined steps, please contact the C3S_511 service support (C3S_511_Support@dlr.de) with a proper problem description including configuration details.
+
+
+**3.2 Running the namelist for the SPQB**
+
+When you are familiar with the ESMValTool after following Section 3.1, git checkout the branch C3S_511_beta. Follow the description below in addition to the general guidance from the ESMValTool.
+
+Before you run the SPQB namelist, you should check and update the following files:
+
+*	Diagnostic specific cfg-file: This file is called “cfg_C3S_511.py” and is located in the directory “ESMValTool-private/nml/cfg_C3S_511/”. Here you can specify your preferences about 3D variable levels, your ECV specific color scheme, and your preferred output. More detailed instructions on how to do this are given below.
+
+*	namelist: You will have to adjust the namelist to specify the data set that you want to produce the SPQB for. The namelist is called “namelist_C3S_511_SPQB_beta_wpp.xml”, and it is located in the directory “ESMValTool-private/nml/”. There are three parts in the namelist that need adjustments:
+
+1.	Adjust the file path/name to your specific environment cfg-file (line 2 of the namelist) that includes the file paths for your specific working environment. The file is a xml-file, and is probably called something like “config_private.xml”
+2.	In the diagnostics part of the namelist (this starts with the keyword <DIAGNOSTICS>), adjust all necessary parts (e.g. diagnostic specific cfg-file, <variable ref_model="??">, <field_type>, <model> …), so that your specific ECV can be read and processed.
+
+After you have adjusted these files, you can run the SPQB namelist as described in the ESMValTool manual. Please be aware that you will have to run the namelist twice to produce the final reports with all additional input! Between the first and the second run you will have to finalize some files (these will be described in the sections below), so that this information can be added to the report during the second run of the namelist.
+
 
