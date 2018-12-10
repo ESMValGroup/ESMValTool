@@ -231,27 +231,38 @@ After filling, export the respective sheet then to the file that is requested by
 
 Guidance on the different categories of the SMM to be integrated with the xlsx-file:
 
-**Software readiness:** The section is left blank on purpose. 
+**Software readiness:** The section is left blank on purpose.
+
 **Metadata:** Metadata information has to be tested from the datafile itself. Access to the metadata may be done for instance using basic instructions (e.g. *ncdump –h [filename]*). Please note: this has to be applied to the original data (subset).
 
 * Standard: *Is there any standard used?* 
 Check the used metadata convention (original file) and whether the convention is CF_Convention or if there is any tool to translate the used standard to the CF_Convention. (ESMValTool does not run without this Convention.)
+
 * Collection Level: *Is there the possibility to read in metadata?*
 Sufficient for use – basic geolocation and sensor/platform identification
 Enhanced detailed metadata (see as example the necessary fields in `<https://data.noaa.gov/datasetsearch/>`_)
+
 * File level
 The section is currently left blank on purpose. 
 
 **Documentation:** All information on documentation are currently gathered from the documentation available on the CDS itself and / or from the EQCO framework.
+
 *Formal description of scientific methodology: which level of description? -> see PRODUCT GENERATION: DOCUMENTATION & REFERENCES*
+
 *Formal Product User Guide: is it available and updated? -> see QUALITY INDICATORS: DOCUMENTATION & REFERENCES*
+
 *Formal Validation report: is it available and updated and reports uncertainties? -> see PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+
 *Formal Description of operations concepts* -> The section is currently left blank on purpose.
 
 **Uncertainty:** All information on uncertainty are currently gathered from the documentation available on the CDS itself and / or from the EQCO framework.
+
 *Standard: level of standard used for uncertainty* ->	see *UNCERTAINTY CHARACTERISATION*: Metrologically Assessed
+
 *Uncertainty Validation* -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+
 *Uncertainty Quantification -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+
 *Quality Monitoring* ->	see *QUALITY INDICATORS: QUALITY CONTROL*
 
 **Public access, feedback, update:** The section is currently left blank on purpose.
