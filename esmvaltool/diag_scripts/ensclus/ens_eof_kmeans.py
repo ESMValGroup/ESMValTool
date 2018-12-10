@@ -50,7 +50,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     # Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
     ifile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
                          .format(name_outputs))
-    var, varunits, lat, lon = read_n_2d_fields(ifile)
+    var, _, lat, _ = read_n_2d_fields(ifile)
     print('var dim: (numens x lat x lon)={0}'.format(var.shape))
 
     # Compute EOFs (Empirical Orthogonal Functions)
@@ -59,8 +59,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
           '___________________________________________________________')
     print('EOF analysis')
     # --------------------------------------------------------------------
-    solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac =\
-        eof_computation(var, lat)
+    _, _, _, pcs_unscal0, eofs_unscal0, varfrac = eof_computation(var, lat)
 
     acc = np.cumsum(varfrac * 100)
     if perc != 'no':

@@ -29,7 +29,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     for ens in range(numens):
         ifile = filenames[ens]
         # print('ENSEMBLE MEMBER %s' %ens)
-        var, varunits, lat, lon, dates, time_units = read_iris(ifile)
+        var, varunits, lat, lon, dates, _ = read_iris(ifile)
 
         # Convertion from kg m-2 s-1 to mm/day
         if varunits == 'kg m-2 s-1':
@@ -39,7 +39,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
             varunitsnew = varunits
 
         # Selecting a season (DJF,DJFM,NDJFM,JJA)
-        var_season, dates_season = sel_season(var, dates, season)
+        var_season, _ = sel_season(var, dates, season)
 
         # Selecting only [latS-latN, lonW-lonE] box region
         var_area, lat_area, lon_area = sel_area(lat, lon, var_season, area)
@@ -92,7 +92,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
         for i in range(numens):
             for jla in range(var_ens[0].shape[1]):
                 for jlo in range(var_ens[0].shape[2]):
-                    slope, intercept, r_value, p_value, std_err = \
+                    slope, _, _, _, _ = \
                         stats.linregress(range(var_ens[0].shape[0]),
                                          var_ens[i][:, jla, jlo])
                     trendmap[jla, jlo] = slope

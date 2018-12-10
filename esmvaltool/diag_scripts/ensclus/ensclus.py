@@ -45,7 +45,7 @@ def main(cfg):
 
     filenames_cat = []
     legend_cat = []
-    for key, value in files_dict.items():
+    for value in files_dict.values():
         logger.info("Processing file %s", value[0]['filename'])
         filenames_cat.append(value[0]['filename'])
         leg = (value[0]['project'] + " " +
