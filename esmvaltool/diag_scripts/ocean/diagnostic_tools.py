@@ -311,6 +311,10 @@ def get_colour_from_cmap(number, total, cmap='jet'):
     if isinstance(cmap, str):
         cmap = plt.get_cmap(cmap)
 
+    if number > total:
+        raise ValueError('The cannot be larger than the total length '
+                         'of the list ie: {} > {}'.format(number, total))
+
     if total > 1:
         colour = cmap(float(number) / float(total - 1.))
     else:
