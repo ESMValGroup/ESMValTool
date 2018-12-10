@@ -1,7 +1,7 @@
 ---
 
 datasets:
-  - {dataset: ERA-Interim,  project: OBS, type: reanaly,  mip: cf3hr, version: 1, tier: 3, start_year: 1979,  end_year: 1979}
+  - {dataset: ERA-Interim,  project: OBS, type: reanaly,  mip: cf3hr, version: 1, tier: 3, start_year: 1980,  end_year: 1989}
 #  - {dataset: CanESM2,  project: CMIP5,  mip: 6hrPlev, exp: historical, ensemble: r4i1p1, start_year: 2003,  end_year: 2003}
 
 preprocessors:
@@ -9,11 +9,11 @@ preprocessors:
   preprocessor1:
     extract_time:
       start_month: 1
-      start_day:   31
-      start_year:  1979
+      start_day:   1
+      start_year:  1980
       end_month:   12
       end_day:     31
-      end_year:    1979
+      end_year:    1980
 
 diagnostics:
 
@@ -34,7 +34,7 @@ diagnostics:
       surge_height:
         script: surge_height/diagnostic.py
         coastal_map:       true
-        t0:                2003-04-01
+        t0:                1980-12-01
         plt_tseries:       false
         stations:          all
         plt_stations:      ['hoekvanh']
@@ -42,5 +42,5 @@ diagnostics:
         map_projection:    Plate.Carree()
         resolution:        intermediate
         fout_name:         surge_height
-        perf_regres:       False
+        perf_regres:       True
         path2eraint:       /usr/people/ridder/nobackup/ECMWF/ERAintWAQUA/speed/1979-2016/

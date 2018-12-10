@@ -44,7 +44,7 @@ def main(cfg):
         psl_data = nc_psl.psl
         # call surge estimator
         logger.info('Calling surge estimator')
-        srg_estim,dates = surge_estimator_main(psl_data, uas_data, vas_data, cfg, dataset)
+        surge_estimator_main(psl_data, uas_data, vas_data, cfg, dataset)
 
 
 if __name__ == '__main__':

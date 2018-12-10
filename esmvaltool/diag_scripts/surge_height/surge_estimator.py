@@ -48,7 +48,7 @@ import os
 import pickle
 import sys
 from datetime import datetime
-
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -78,6 +78,8 @@ from output.plot_map_cartopy import plot_map_cartopy
 from output.plot_tseries import plot_tseries
 from output.save_netCDF import save_netCDF
 
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ---------------
@@ -136,18 +138,13 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ----------------------------------------------------
     # III. Cut NS box & calculate daily maxes & anomalies
     # ----------------------------------------------------
-    #logger.debug
-    print("Preprocessing input data")
+    logger.info("Preparing input data")
 
     pslNS, uaNS, vaNS = cut_NS(psl_in, uas_in, vas_in)
 
     xpslNS, xuaNS, xvaNS = Xtrms(pslNS, uaNS, vaNS)
-    #print('after xtrms')
-    #print(np.isnan(xpslNS.values.flatten()).any())
 
     psl, uas, vas = calc_monanom(xpslNS, xuaNS, xvaNS)
-    #print('after preprocessing')
-    #print(np.isnan(psl.values.flatten()).any())
 
     # -----------------------------
     # IV. Calculate SLP gradients
@@ -159,7 +156,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -----------------------------------------------------------
     # V. Load or determine EOF solvers & load regression coefficients
     # -----------------------------------------------------------
-    #logger.debug("Loading EOFs and regression coefficients")
+    logger.info("Starting EOF analysis")
     dirname = os.path.dirname(__file__)
     data_dir = os.path.join(dirname, 'data')
 
@@ -179,7 +176,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -----------------------------------------
     # VI. Project fields onto ERA-Interim EOFs
     # -----------------------------------------
-    #logger.debug("Generating PCs")
+    logger.debug("Generating PCs")
     pseudo_pcs_slp = psl_solver.projectField(psl)
     pseudo_pcs_gradlatpsl = gradlat_solver.projectField(gradlatpsl)
     pseudo_pcs_gradlonpsl = gradlon_solver.projectField(gradlonpsl)
@@ -189,7 +186,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -------------------------------
     # VII. Generate predictor array
     # -------------------------------
-    #logger.debug("Generating predictor array")
+    logger.debug("Generating predictor array")
     X = {}
     for s in stat:
         X[s] = build_predictX(
@@ -208,7 +205,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ----------------------------
     # IX. Apply regression model
     # ----------------------------
-    #logger.debug("Estimating surge heights")
+    logger.info("Estimating surge heights")
     srg_estim = estimate_srg(X, dates, stat, betas, intercept, data_dir)
 
     # ------------------------
@@ -218,7 +215,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
         cfg["fout_name"] = 'surge'
 
     if cfg["write_netcdf"]:
-        #logger.debug('saving data to netCDF file ')
+        logger.debug('saving data to netCDF file ')
         save_netCDF(dates, stat, srg_estim, cfg, dataset)
 
     # -----------
@@ -226,12 +223,12 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -----------
     # if write_plots:
     if cfg["coastal_map"]:  # generate geographical map with surge levels on day specified in config file
-        #logger.info("Plotting and saving geographical map with surge heights")
+        logger.info("Plotting and saving geographical map with surge heights")
         plot_map_cartopy(dates_map[0], srg_estim,
                          dates.index(dates_map[0]), cfg, dataset)
     #
     if cfg["plt_tseries"]:  # generate timeseries plot
-        #logger.info("Plotting and saving surge timeseries")
+        logger.info("Plotting and saving surge timeseries")
         for s in stat_tseries:
             plot_tseries(dates, srg_estim[s], s, cfg, dataset)
 

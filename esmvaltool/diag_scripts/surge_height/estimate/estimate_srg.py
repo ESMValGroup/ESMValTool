@@ -13,6 +13,7 @@ def estimate_srg(X, dates, stat, betas, intercept, data_dir):
     #global srg_est_full, srg_est
     srg_est = {}
     srg_est_full = {}
+    monanom_srg = {}
     for s in stat:
         srg_est[s] = np.zeros(len(dates)).tolist()
         for t in range(len(dates)):
@@ -20,7 +21,7 @@ def estimate_srg(X, dates, stat, betas, intercept, data_dir):
                 intercept[s])
         # Add seasonal cycle back to surge
         srg_dir = os.path.join(data_dir + '/srgclim/')
-        monanom_srg = load_monmean_srgclim(s, srg_dir)
+        monanom_srg[s] = load_monmean_srgclim(s, srg_dir)
         srg_est_full[s] = []
         for t in range(len(dates)):
             srg_est_t = srg_est[s][t] + monanom_srg[s][dates[t].month - 1]
