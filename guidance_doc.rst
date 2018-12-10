@@ -98,7 +98,8 @@ Below are two examples of the resulting script for 1D and 3D data.
 
 In order to have data compliant with the CDM of the Toolbox, an operation on the data needs to be performed. The simple retrieval does not require the data are CDM compliant. Whatever is the initial format of the data (grib, netcdf, zip...) the operation assures the retrieved dataset is netcdf and CDM compliant, e.g. ct.climate.daily_mean.
 
-**2.1 Extract 1D from ERA-5**
+2.1 Extract 1D from ERA-5
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_1D_ERA5.py>`_
 
