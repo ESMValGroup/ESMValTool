@@ -354,7 +354,8 @@ begin
   ; Set type of area operation (flux vs. non-flux variables)
   ; Flux variables need to be integrated and area weighted ("sum"), non-flux
   ; variables need to be averaged, area weighted and normalized ("average")
-  if (all_data_mean@units .eq. "kg m-2 s-1" .and. VAR0@short_name .ne. "pr") then
+  if (all_data_mean@units .eq. "kg m-2 s-1" .and. \
+      VAR0@short_name .ne. "pr") then
     sp_opt = "sum"
   else
     sp_opt = "average"
@@ -480,7 +481,8 @@ begin
     delete(tmp)
 
     ; Draw a 3D scatterplot
-    data_arr@res_tiMainString = VAR0@short_name + " - " + diag_script_info@region
+    data_arr@res_tiMainString = VAR0@short_name + " - " + \
+      diag_script_info@region
     plot = scatterplot3D(wks, data_arr, VAR0@short_name, levs)
     log_info("Wrote " + outfile + "." + file_type)
     draw(plot)

@@ -55,7 +55,7 @@ preprocessors:
 
 diagnostics:
 
-  diag_mvi_tas: &diag_mvi
+  diag_mvi_tas:
     description: MVI scatter plot for tas (Figure 1).
     themes:
       - phys
@@ -113,7 +113,7 @@ diagnostics:
         <<: *mvi_global
         region: Tropics
 
-  diag_main_tas: &diag_main
+  diag_main_tas:
     description: Error bar, sasonal cycle and evolution plots for tas (Figure 1).
     themes:
       - phys
@@ -150,8 +150,11 @@ diagnostics:
         region: Tropics
 
   diag_mvi_pr:
-    <<: *diag_mvi
     description: MVI scatter plot for pr (Figure 2).
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       pr:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
@@ -168,8 +171,11 @@ diagnostics:
         <<: *mvi_trop
 
   diag_main_pr:
-    <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for pr (Figure 2).
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       pr:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
@@ -188,8 +194,9 @@ diagnostics:
 
   # FIXME: irregular regridding not supported yet (#550)
   # diag_mvi_tos:
-  #   <<: *diag_mvi
   #   description: MVI scatter plot for tos (Figure 3).
+  #   themes:
+  #     - phys
   #   realms:
   #     - ocean
   #   variables:
@@ -215,8 +222,9 @@ diagnostics:
   #       <<: *mvi_trop
 
   # diag_main_tos:
-  #   <<: *diag_main
   #   description: Error bar, sasonal cycle and evolution plots for pr (Figure 3).
+  #   themes:
+  #     - phys
   #   realms:
   #     - ocean
   #   variables:
@@ -241,8 +249,9 @@ diagnostics:
   #       evolution_plot_ref_dataset: HadISST
 
   diag_main_nbp:
-    <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
+    themes:
+      - phys
     realms:
       - land
     variables:
@@ -254,27 +263,34 @@ diagnostics:
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
         derive: True
+        additional_datasets: &nbp_datasets
+          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: HadGEM2-CC}
+          - {dataset: HadGEM2-ES}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5A-LR}
+          - {dataset: IPSL-CM5A-MR}
+          # Overlapping files for several variables at mistral
+          # - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC-ESM}
+          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MPI-ESM-MR}
+          - {dataset: NorESM1-ME}
+      nbp_global:
+        <<: *landmaskregrid_Amon_1901_2005_refCRU
+        preprocessor: noop
+        mip: Lmon
+        field: T0M
+        plot_units: PgC y-1
+        derive: True
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
-    additional_datasets: &nbp_datasets
-      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
     scripts:
       main_global:
         <<: *main_global
@@ -298,8 +314,9 @@ diagnostics:
         anav_month: True
 
   diag_mvi_lai:
-    <<: *diag_mvi
     description: MVI scatter plot for lai (Figure 10).
+    themes:
+      - phys
     realms:
       - land
     variables:
@@ -346,8 +363,9 @@ diagnostics:
         <<: *mvi_trop
 
   diag_main_lai:
-    <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for lai (Figure 11).
+    themes:
+      - phys
     realms:
       - land
     variables:
@@ -374,8 +392,9 @@ diagnostics:
         evolution_plot_anomaly: False
 
   diag_mvi_gpp:
-    <<: *diag_mvi
     description: MVI scatter plot for gpp (Figure 8).
+    themes:
+      - phys
     realms:
       - land
     variables:
@@ -415,8 +434,9 @@ diagnostics:
         <<: *mvi_trop
 
   diag_main_gpp:
-    <<: *diag_main
     description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
+    themes:
+      - phys
     realms:
       - land
     variables:

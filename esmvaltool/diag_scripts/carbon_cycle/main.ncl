@@ -344,7 +344,8 @@ begin
   ;   delete([/data_dum, data_dum2, min_obs_year, max_obs_year, obs_time, \
   ;           all_data_yearly_add, obs_years, obs_ind/])
   ;   input_file_info@dataset_new = \
-  ;     array_append_record(input_file_info@dataset, diag_script_info@obsname, 0)
+  ;     array_append_record(input_file_info@dataset, \
+  ;                         diag_script_info@obsname, 0)
   ;   input_file_info@project_new = \
   ;     array_append_record(input_file_info@project, "OBS", 0)
   ;   input_file_info@project := input_file_info@project_new
@@ -380,14 +381,16 @@ begin
     system("mkdir -p " + work_dir)
 
     ; Yearly data
-    new_path = work_dir + "_yearly_" + VAR0@short_name + "_" + region@name + ".nc"
+    new_path = work_dir + "_yearly_" + VAR0@short_name + "_" + region@name + \
+      ".nc"
     all_data_yearly@var = VAR0@short_name
     all_data_yearly@diag_script = DIAG_SCRIPT
     all_data_yearly@ncdf = new_path
     ncdf_outfile = ncdf_write(all_data_yearly, new_path)
 
     ; Monthly data
-    new_path = work_dir + "_monthly_" + VAR0@short_name + "_" + region@name + ".nc"
+    new_path = work_dir + "_monthly_" + VAR0@short_name + "_" + region@name + \
+      ".nc"
     all_data_monthly@var = VAR0@short_name
     all_data_monthly@diag_script = DIAG_SCRIPT
     all_data_monthly@ncdf = new_path
@@ -430,7 +433,8 @@ begin
       ; ; Add meta data (TODO)
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_seas", "ST_mean"/), 0)
-      ; caption = "Seasonal Cycle plot for " + VAR0@short_name + " over the period " + \
+      ; caption = "Seasonal Cycle plot for " + VAR0@short_name + \
+      ;   " over the period " + \
       ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
       ;   "Fig. 9."
       ; id = DIAG_SCRIPT
@@ -509,7 +513,8 @@ begin
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_errorbar", "ST_stddev", \
       ;                                          "ST_mean"/),  0)
-      ; caption = "Errorbar plot for " + VAR0@short_name + " over the period " + \
+      ; caption = "Errorbar plot for " + VAR0@short_name + \
+      ;   " over the period " + \
       ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
       ;   "Fig. 6."
       ; id = DIAG_SCRIPT
@@ -583,7 +588,8 @@ begin
       ; ; Add meta data (TODO)
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_scatter", "ST_mean"/), 0)
-      ; caption = "Scatterplot for " + VAR0@short_name + " over the period " + \
+      ; caption = "Scatterplot for " + VAR0@short_name + \
+      ;   " over the period " + \
       ;   start_year + "-" + end_year + \
       ;   ", similar to Anav et al., 2013, Fig. 17."
       ; id = DIAG_SCRIPT
