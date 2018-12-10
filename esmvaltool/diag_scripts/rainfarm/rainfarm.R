@@ -100,23 +100,11 @@ for (model_idx in c(1:(length(models_name)))) {
       print(paste0("Fixed spatial spectral slope: ", sx))
   }
   if (weights_climo != F) {
-    print(paste0("Using external climatology for weights: ", weights_climo))
-    fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
-    if ( conserv_smooth ) {
-      snw <- " -c "
-    } else {
-      snw <- " "
-    }
-    command_w <- paste0("julia ", diag_scripts_dir, "/rainfarm/",#nolint
-                        "rfweights.jl -w ", fileweights, " -n ",
-                        nf, snw, " -v ", varname, " ",
-                        weights_climo, " ", infile)
-    print(paste0(diag_base, ": generating weights file"))
-    print(command_w)
-    system(command_w)
-    ans <- julia_call("read_netcdf2d", fileweights, varname,
-                       need_return = "R" )
-    ww <- ans[[1]]
+      print(paste0("Using external climatology for weights: ", weights_climo))
+      fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
+      ww <- julia_call("rfweights", weights_climo, infile, nf,
+                      weightsfn = fileweights, varname = varname,
+                      fsmooth = conserv_smooth, need_return = "R");
   } else {
     print("Not using weights")
     ww <- 1.
