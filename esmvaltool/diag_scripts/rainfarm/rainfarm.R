@@ -25,7 +25,7 @@
 
 library(tools)
 library(yaml)
-library(JuliaCall)
+library(JuliaCall)  #nolint
 
 julia_setup()
 julia_library("RainFARM")
