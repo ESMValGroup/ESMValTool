@@ -418,7 +418,7 @@ def _get_input_files(variable, config_user):
     logger.info("Using input files for variable %s of dataset %s:\n%s",
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
-    if (not config_user['skip-nonexistent']
+    if (not config_user.get('skip-nonexistent')
             or variable['dataset'] == variable.get('reference_dataset')):
         check.data_availability(input_files, variable)
 
@@ -579,7 +579,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)
-            if config_user['skip-nonexistent'] and not ancestors:
+            if config_user.get('skip-nonexistent') and not ancestors:
                 logger.info("Skipping: no data found for %s", variable)
                 continue
         product = PreprocessorFile(
