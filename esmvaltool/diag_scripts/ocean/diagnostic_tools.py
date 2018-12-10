@@ -369,25 +369,13 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details):
-        try:
-            colour = plot_details[index]['c']
-        except AttributeError:
-            colour = plot_details[index]['colour']
+        colour = plot_details[index]['c']
 
-        try:
-            linewidth = plot_details[index]['lw']
-        except AttributeError:
-            linewidth = 1.
+        linewidth = plot_details[index].get('lw', 1)
 
-        try:
-            linestyle = plot_details[index]['ls']
-        except AttributeError:
-            linestyle = '-'
+        linestyle = plot_details[index].get('ls', '-')
 
-        try:
-            label = plot_details[index]['label']
-        except AttributeError:
-            label = str(index)
+        label = plot_details[index].get('label', str(index))
 
         plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
 
