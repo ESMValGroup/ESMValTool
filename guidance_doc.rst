@@ -261,7 +261,7 @@ The section is currently left blank on purpose.
 
 *Uncertainty Validation* -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
 
-*Uncertainty Quantification -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+*Uncertainty Quantification* -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
 
 *Quality Monitoring* ->	see *QUALITY INDICATORS: QUALITY CONTROL*
 
