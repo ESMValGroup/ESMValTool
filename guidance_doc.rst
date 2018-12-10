@@ -49,7 +49,10 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 +------------+----------------------+-----+---------------+-------------+
 | Sea Ice    | ESA-CCI OSTIA, (ERA5)| 5   | ULB           | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
-
+| Sea Level, |                      | 5   | ULB           | April 2019  |
+| Surface    |                      | 5   | ULB           | April 2019  |
+| Properties |                      | 5   | ULB           | April 2019  |
++------------+----------------------+-----+---------------+-------------+
 
 
 2. How to access the datasets and make them compatible to ESMValTool
