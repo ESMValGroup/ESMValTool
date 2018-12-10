@@ -329,7 +329,9 @@ a) It is then needed to fill a report feedback form to report any problem/diffic
 b) In addition, specific issues concerning the ESMValTool and eventual developments are tracked on GitHub in the following way:
 
 The ESMValTool code is hosted on GitHub (`<www.github.com>`_). In the private branch of the ESMValTool (which you should have all access to; if not, please refer to the Workshop Agenda for the Workshop in May 2018; there is a detailed description on how to be added to the hub!), there is a project ‘C3S_511’ (`<https://github.com/ESMValGroup/ESMValTool-private/projects/1>`_, only accessible if you are logged in and part of the hub). The project page contains four different cards which are called ‘To Do’, ‘In Progress’, ‘Done’ and ‘Questions’. 
+
 If something is developed for a specific ECV that might be of interest for other ECVs as well, it is recommended to add a note to the column ‘In Progress’ to let other service members know what is developed and how. This might prevent duplication of code development and produce synergies.
+
 If there are any questions or comments about the most recent release of the SPQB namelist, it is recommended to add these as a note or an issue to the card ‘Questions’. In doing so, the questions and comments are available for all service members to see, it is possible to trace back who had posted the question/comment, and it can be made sure that all comments/questions are answered and dealt with. Please do not send any questions/comments directly to DLR or LMU, but post them on GitHub to ensure that all comments and questions can be dealt with, and that we can trace our efforts/work!
 
 
