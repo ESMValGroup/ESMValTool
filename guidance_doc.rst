@@ -23,10 +23,10 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 +------------+----------------------+-----+---------------+-------------+
 | ECV        | Products             | WP  | Who evaluates | Release     |
 +============+======================+=====+===============+=============+
-| Surface    | ERA5,                | 3   | NUIM/CNR      | :red:'October':red:'2018'|
+| Surface    | ERA5,                | 3   | NUIM/CNR      | October 2018|
 | Temperature| E-OBS                |     |               |             |
 +------------+----------------------+-----+---------------+-------------+
-| Wind       | ERA5                 | 3   | NUIM          | April 2019  |
+| Wind       | ERA5                 | 3   | :red:'NUIM'   | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
 | Humidity   | ERA5                 | 3   | NUIM          | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
