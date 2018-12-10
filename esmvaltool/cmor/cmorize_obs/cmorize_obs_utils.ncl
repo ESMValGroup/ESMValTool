@@ -306,7 +306,8 @@ end
 
 ; #############################################################################
 undef("var_attrib")
-function var_attrib(var:numeric, name:string)
+function var_attrib(var:numeric,
+                    name:string)
 ;
 ; Arguments
 ;    var: the variable's field.
@@ -418,8 +419,8 @@ end
 
 ; #############################################################################
 undef("yyyyfrac_to_ut")
-function yyyyfrac_to_ut(frac: numeric,
-                        option: integer,
+function yyyyfrac_to_ut(frac:numeric,
+                        option:integer,
                         flag)
 ;
 ; Arguments
@@ -625,10 +626,10 @@ end
 
 ; #############################################################################
 undef("write_nc_profile")
-procedure write_nc_profile(outfile: string,
-                           name: string,
-                           var: numeric,
-                           gAtt: logical)
+procedure write_nc_profile(outfile:string,
+                           name:string,
+                           var:numeric,
+                           gAtt:logical)
 ;
 ; Arguments
 ;    outfile: the name of the file to be written, including its path.
@@ -710,11 +711,11 @@ end
 
 ; #############################################################################
 undef("process_EBAS_data")
-function process_EBAS_data(in_vars[*]: string,
-                           in_units[*]:  string,
-                           in_matrix[*]: string,
-                           in_compon[*]: string,
-                           in_column[*]: string,
+function process_EBAS_data(in_vars[*]:string,
+                           in_units[*]: string,
+                           in_matrix[*]:string,
+                           in_compon[*]:string,
+                           in_column[*]:string,
                            indir[1]:string,
                            st_code:string,
                            y1:integer,
