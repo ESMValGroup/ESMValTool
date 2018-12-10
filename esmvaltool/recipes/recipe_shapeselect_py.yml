@@ -1,0 +1,24 @@
+---
+
+datasets:
+  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1998,  end_year: 1999}
+ 
+
+preprocessors:
+  preprocessor_1: {}
+
+diagnostics:
+  diagnostic1:
+    description: Extracting data for user defined shapefile.
+    variables:
+      pr:
+        preprocessor: preprocessor_1
+        field: T2Ms
+    scripts:
+      script1:
+        script: shapeselect/diag_shapeselect.py
+        shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
+        wgtmet: 'mean_inside'
+        write_xlsx: true
+        write_netcdf: true
+        evalplot: true

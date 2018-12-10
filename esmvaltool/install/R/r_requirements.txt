@@ -1,2 +1,5 @@
-yaml
 lintr
+ncdf4
+RColorBrewer
+SPEI
+yaml

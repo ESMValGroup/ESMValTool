@@ -58,6 +58,8 @@ requirements:
     - six
     - vmprof
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
@@ -69,6 +71,7 @@ requirements:
     - pandas
     - eofs
     # TODO: add julia
+
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
