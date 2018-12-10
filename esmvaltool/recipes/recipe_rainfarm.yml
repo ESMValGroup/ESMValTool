@@ -45,16 +45,11 @@ diagnostics:
     scripts:
       rainfarm:
         script: rainfarm/rainfarm.R
-        # RainFARM options 
-        # Note - RainFARM usage:  rfarm [-s SLOPE] [-e NENS] [-n NF] [-r REGION] [-w WEIGHTS]
-        #                               [-o OUTFILE] [-v VARNAME] [-g] [-c]
-        # NOTE: for more information type 'rfarm -h' from terminal
-        slope: 1.7             # spatial spectral slope       
+        slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
         nens: 2                # number of ensemble members to be calculated
         nf: 8                  # subdivisions for downscaling
         varname: false         # input variable name - this is assigned by ESMValTool pre-processing 
-        conserv_glob: true     # conserve precipitation over full domain
-        conserv_smooth: true   # conserve precipitation using convolution
-        # orographic weights: set false or climatology file to be used (calling rfweights) 
+        conserv_glob: false     # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+        conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
+        # orographic weights: set to false or climatology file to be used (generated with the rfweights tool) 
         weights_climo: false
-

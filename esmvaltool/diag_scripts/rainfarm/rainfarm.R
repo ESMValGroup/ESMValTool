@@ -1,5 +1,5 @@
 # #############################################################################
-# rainfarm.r
+# rainfarm.R
 # Authors:       E. Arnone (ISAC-CNR, Italy)
 # 	         J. von Hardenberg (ISAC-CNR, Italy)
 # #############################################################################
@@ -17,6 +17,7 @@
 # Caveats
 #
 # Modification history
+#    20181210 hard_jo: cleanup and using juliacall
 #    20180508-A_arnone_e: Conversion to v2.0
 #    20170908-A_arnone_e: 1st github version
 #
@@ -24,6 +25,10 @@
 
 library(tools)
 library(yaml)
+library(JuliaCall)
+
+julia_setup()
+julia_library("RainFARM")
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -38,16 +43,7 @@ metadata <- yaml::read_yaml(settings$input_files)
 climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
 
-# get variable name
-varname <- paste0("'", climolist$short_name, "'")
-
-# store needed arguments in lists (outfile is generated based on the input file)
-rainfarm_args <- list(
-  slope = slope, nens = nens, nf = nf,
-  weights_climo = weights_climo, varname = varname,
-  conserv_glob = conserv_glob, conserv_smooth = conserv_smooth
-)
-rainfarm_options <- list("-s", "-e", "-n", "-w", "-v", "-g", "-c")
+varname <- climolist$short_name
 
 diag_base <- climolist$diagnostic
 print(paste(diag_base, ": starting routine"))
@@ -68,7 +64,7 @@ models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 
 # Loop through input models, apply pre-processing and call RainFARM
 for (model_idx in c(1:(length(models_name)))) {
-  # Setup parameters and path
+
   exp <- models_name[model_idx]
   year1 <- models_start_year[model_idx]
   year2 <- models_end_year[model_idx]
@@ -77,42 +73,49 @@ for (model_idx in c(1:(length(models_name)))) {
   model_ens <- models_ensemble[model_idx]
   infilename <- file_path_sans_ext(basename(infile))
 
-  ## Call diagnostic
   print(paste0(diag_base, ": calling rainfarm"))
-  filename <- paste0(work_dir, "/", infilename, "_downscaled")
+  outfilename <- paste0(work_dir, "/", infilename, "_downscaled")
 
-  # reformat arguments from parameter_file
-  if (rainfarm_args$conserv_glob == T) {
-    rainfarm_args$conserv_glob <- ""
-  }
-  if (rainfarm_args$conserv_smooth == T) {
-    rainfarm_args$conserv_smooth <- ""
-  }
-
-  # generate weights file if requested
-  #  (for more information use 'rfweights -h')
-  if (rainfarm_args$weights_climo != F) {
-    fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
-    snf <- ""
-    if (rainfarm_args$nf != F) {
-      snf <- paste("-n ", rainfarm_args$nf)
-    }
-    command_w <- paste("rfweights -w ", fileweights, snf, " -c ",
-                       rainfarm_args$weights_climo, infile)
-    print(paste0(diag_base, ": generating weights file"))
-    print(command_w)
-    system(command_w)
-    rainfarm_args$weights_climo <- fileweights
-  }
-  # assign user defined options
-  ret <- which(as.logical(rainfarm_args) != F |
-               is.na(as.logical(rainfarm_args)))
-  rargs <- paste(rainfarm_options[ret], rainfarm_args[ret], collapse = " ")
   # call rfarm
-  #  (for more information use 'rfarm -h')
-  command <- paste0("rfarm -o '", filename, "' ", rargs, " ", infile)
-  print(command)
-  system(command)
-  print(paste0(diag_base, ": downscaled data written to ",
-               paste0(filename, "_*.nc")))
+  ans <- julia_call("read_netcdf2d", infile, varname, need_return = "R" )
+  pr <- ans[[1]]
+  lon_mat <- ans[[2]]
+  lat_mat <- ans[[3]]
+  ans <- julia_call("lon_lat_fine", lon_mat, lat_mat, nf, need_return = "R" )
+  lon_f <- ans[[1]]
+  lat_f <- ans[[2]]
+  if (slope == 0){
+      ans <- julia_call("fft3d", pr, need_return = "R"  )
+      fxp <- ans[[1]]
+      ftp <- ans[[2]]
+      sx <- julia_call("fitslopex", fxp, kmin = 1, need_return = "R" )
+      print(paste0("Computed spatial spectral slope: ",sx))
+  } else {
+      sx <- slope
+      print(paste0("Fixed spatial spectral slope: ", sx))
+  }
+  if (weights_climo != F) {
+    print(paste0("Using weights file ", weights_climo))
+    ans <- julia_call("read_netcdf2d", weights_climo, varname, need_return = "R" )
+    ww <- ans[[1]]
+  } else {
+    print("Not using weights")
+    ww <- 1.
+  }
+  if (conserv_glob) {
+     print("Conserving global field")
+  } else if (conserv_smooth) {
+     print("Smooth conservation")
+  } else {
+     print("Box conservation")
+  }
+  for (iens in 1:nens) {
+      print(paste0("Realization ",iens))
+      rd <- julia_call("rainfarm", pr, sx, nf, ww,
+                              fglob = conserv_glob,
+                              fsmooth = conserv_smooth,
+                              verbose = T, need_return = "R")
+      fname <- sprintf("%s_%04d.nc",outfilename,iens);
+      julia_call("write_netcdf2d", fname, rd, lon_f, lat_f, varname, infile )
+  }
 }
