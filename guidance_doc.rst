@@ -206,7 +206,8 @@ The following subsections explain the needs for the single reports in more detai
 **3.5 How to add customary text for the individual reports**
 
 You will have to run the SPQB namelist for each ECV twice to be able to display customary text.
-The first time you run the SPQB namelist, you produce the figures for each report with their respective figure numbers and figure captions. During that first run, an empty text file for each report that you want to produce is created. These will be located in individual report directories (e.g. a directory named ‘overview_input’). You can then add your text with the figure interpretation and comments in the text file that is available in each of these directories. Please note: There is no txt-file in the folder ‘smm_input’ but a csv-file instead! You can add the custom text there.(This is differing to the other text files to future upward compatibility.)
+
+The first time you run the SPQB namelist, you produce the figures for each report with their respective figure numbers and figure captions. During that first run, an empty text file for each report that you want to produce is created. These will be located in individual report directories (e.g. a directory named ‘overview_input’). You can then add your text with the figure interpretation and comments in the text file that is available in each of these directories. **Please note:** There is no txt-file in the folder ‘smm_input’ but a csv-file instead! You can add the custom text there. (This is differing to the other text files to future upward compatibility.)
 
 If you want to add a specific format to your customized text (more than having it appear as plain text), you will have to add the text in the 'reStructuredText'-format (see `<http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_ for a brief documentation about the rst-format). The following webpages show examples on how to add references and footnotes to an rst-style file:
 
@@ -214,6 +215,49 @@ If you want to add a specific format to your customized text (more than having i
 *	`<http://docutils.sourceforge.net/docs/user/rst/quickref.html#footnotes>`_
 
 A useful online tool for reStructuredText can be found here: `<http://rst.ninjs.org/#>`_. It allows you to format your text without having to run the ESMValTool over and over.
-After you have added your customized text, you have to run the SPQB namelist a second time to get the text added to the report(s). If you do not edit the text file for a report, no individual text will be added to that final report (which means that the contents of the text file produced with the first run of the ESMValTool is not displayed if it was not altered!). If you do add individual text, it will appear in the final report after the Table of Contents, any lists and before the figures to follow a paper draft design. Please note: for each report you will have to add the customary text individually!
+
+After you have added your customized text, you have to run the SPQB namelist a second time to get the text added to the report(s). If you do not edit the text file for a report, no individual text will be added to that final report (which means that the contents of the text file produced with the first run of the ESMValTool is not displayed if it was not altered!). If you do add individual text, it will appear in the final report after the Table of Contents, any lists and before the figures to follow a paper draft design. **Please note:** for each report you will have to add the customary text individually!
+
+3.6 What to provide for the System Maturity Matrix (SMM) and how
+----------------------------------------------------------------
+
+The C3S_511 SMM is derived from the Core Climax and adapted to the specific service needs. In order to produce a SMM in the report it is necessary to fill the “SMM_CORE_CLIMAX_c3s_Adapted_v5.0.xlsx” xlsx-file provided with the code of the SPQB namelist. This file contains the different specifications for each SMM category and subcategory. Additional help can be found in “SMM_Guide_for_USERS_C3S_511_v1.pdf” and the “CORE_CLIMAX_MANUAL.pdf”.
+
+Guidelines and help for understanding the different categories and subcategories, as well as an export option for the required csv-file (asked for by the ESMValTool in your c3s_511 directory) are provided in the above mentioned xlsx-file, as well as in the rest of this section where the SMM fields are mapped to the fields expected from the EQCO (Evaluation and Quality Control for Observations) Service of the CDS reported in *CAPITAL ITALIC*. **Please note:** Some categories are left blank on purpose as they are currently not relevant for C3S_511 purposes but left in for completeness of the approach or for eventually later automatic filling when coupled to the QATs.
+
+After filling, export the respective sheet then to the file that is requested by the first run of the ESMValTool (c3s_511 directory). Run the ESMValTool a second time for your chosen ECV. Afterwards, the SMM table cells should be colored. The colors represent the different subcategories and are based on the numbers that you have added to the csv-file.
+
+**Please note:** if the SMM csv-file, which is requested by the ESMValTool after the first run, is empty; if not changed, the table cells will not contain colors after the second time you run the ESMValTool!
+
+Guidance on the different categories of the SMM to be integrated with the xlsx-file:
+
+**Software readiness:** The section is left blank on purpose. 
+**Metadata:** Metadata information has to be tested from the datafile itself. Access to the metadata may be done for instance using basic instructions (e.g. *ncdump –h [filename]*). Please note: this has to be applied to the original data (subset).
+
+* Standard: *Is there any standard used?* 
+Check the used metadata convention (original file) and whether the convention is CF_Convention or if there is any tool to translate the used standard to the CF_Convention. (ESMValTool does not run without this Convention.)
+* Collection Level: *Is there the possibility to read in metadata?*
+Sufficient for use – basic geolocation and sensor/platform identification
+Enhanced detailed metadata (see as example the necessary fields in `<https://data.noaa.gov/datasetsearch/>`_)
+* File level
+The section is currently left blank on purpose. 
+
+**Documentation:** All information on documentation are currently gathered from the documentation available on the CDS itself and / or from the EQCO framework.
+*Formal description of scientific methodology: which level of description? -> see PRODUCT GENERATION: DOCUMENTATION & REFERENCES*
+*Formal Product User Guide: is it available and updated? -> see QUALITY INDICATORS: DOCUMENTATION & REFERENCES*
+*Formal Validation report: is it available and updated and reports uncertainties? -> see PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+*Formal Description of operations concepts* -> The section is currently left blank on purpose.
+
+**Uncertainty:** All information on uncertainty are currently gathered from the documentation available on the CDS itself and / or from the EQCO framework.
+*Standard: level of standard used for uncertainty* ->	see *UNCERTAINTY CHARACTERISATION*: Metrologically Assessed
+*Uncertainty Validation* -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+*Uncertainty Quantification -> see *PRODUCT VALIDATION: DOCUMENTATION & REFERENCES*
+*Quality Monitoring* ->	see *QUALITY INDICATORS: QUALITY CONTROL*
+
+**Public access, feedback, update:** The section is currently left blank on purpose.
+
+**Usage:** The section is currently left blank on purpose.
+
+In addition to these guidelines, Core Climax heritage material is available through `<https://drive.google.com/open?id=1hm5IHx-Nxl3ouVjwGwwuPT2tVmsKeL1g>`_.
 
 
