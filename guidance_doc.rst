@@ -77,4 +77,23 @@ The extraction of the datasets is done:
 2. Using the CDS-Toolbox
 3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script `here <https://github.com/bascrezee/c3s_tools/blob/master/retrieve_era5.py>`_)
 
+We advise to make use of the second option since the toolbox treats the variables following the CMOR tables and allows the necessary sub-setting and resolution degradation. 
+
+The procedure is as follows:
+* Go to the CDS and choose the dataset you want: https://climate.copernicus.eu/climate-data-store
+*	Select a small subset example
+*	Perform a download after accepting the agreement
+*	On the bottom of the page tick: Show Toolbox Request
+*	Open the toolbox from the options at the top of the page
+*	In the toolbox window open the sample code 01 retrieve data 
+*	Load it
+*	Make a copy of it
+*	Replace the command after *"data=“* with the Toolbox request script
+*	Run it
+*	Download the data from the right column of the screen
+
+Below are two examples of the resulting script for 1D and 3D data.
+
+In order to have data compliant with the CDM of the Toolbox, an operation on the data needs to be performed. The simple retrieval does not require the data are CDM compliant. Whatever is the initial format of the data (grib, netcdf, zip...) the operation assures the retrieved dataset is netcdf and CDM compliant, e.g. ct.climate.daily_mean.
+
 
