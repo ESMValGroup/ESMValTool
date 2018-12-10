@@ -89,14 +89,15 @@ for (model_idx in c(1:(length(models_name)))) {
       fxp <- ans[[1]]
       ftp <- ans[[2]]
       sx <- julia_call("fitslopex", fxp, kmin = 1, need_return = "R" )
-      print(paste0("Computed spatial spectral slope: ",sx))
+      print(paste0("Computed spatial spectral slope: ", sx))
   } else {
       sx <- slope
       print(paste0("Fixed spatial spectral slope: ", sx))
   }
   if (weights_climo != F) {
     print(paste0("Using weights file ", weights_climo))
-    ans <- julia_call("read_netcdf2d", weights_climo, varname, need_return = "R" )
+    ans <- julia_call("read_netcdf2d", weights_climo, varname,
+                       need_return = "R" )
     ww <- ans[[1]]
   } else {
     print("Not using weights")
@@ -110,12 +111,12 @@ for (model_idx in c(1:(length(models_name)))) {
      print("Box conservation")
   }
   for (iens in 1:nens) {
-      print(paste0("Realization ",iens))
+      print(paste0("Realization ", iens))
       rd <- julia_call("rainfarm", pr, sx, nf, ww,
                               fglob = conserv_glob,
                               fsmooth = conserv_smooth,
                               verbose = T, need_return = "R")
-      fname <- sprintf("%s_%04d.nc",outfilename,iens);
+      fname <- sprintf("%s_%04d.nc", outfilename, iens)
       julia_call("write_netcdf2d", fname, rd, lon_f, lat_f, varname, infile )
   }
 }
