@@ -100,9 +100,9 @@ In order to have data compliant with the CDM of the Toolbox, an operation on the
 
 **2.1 Extract 1D from ERA-5**
 
-See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here < >`_
+See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_1D_ERA5.py>`_
 
 **2.2 Extract 1-month daily 3D temperature from ERA-5**
 
-See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here < >`_
+See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_3D_ERA5.py>`_
 
