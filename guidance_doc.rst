@@ -1,4 +1,5 @@
 .. raw:: html
+  <style> .red {color:red} </style>
 .. role:: red
 
 Guidance document to prepare the Single Product Quality Brief (SPQB) in ESMValTool v2
