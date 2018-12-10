@@ -102,7 +102,35 @@ In order to have data compliant with the CDM of the Toolbox, an operation on the
 
 See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_1D_ERA5.py>`_
 
+
 **2.2 Extract 1-month daily 3D temperature from ERA-5**
 
 See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_3D_ERA5.py>`_
+
+**Please note:** The last two lines perform a daily mean and produce a netcdf output file.
+
+
+**2.3 Data Limitations**
+Several datasets may need to be reduced in size due to limitations of memory space for operations of ESMValTool. The maximum size of the dataset is determined by the machine which is used to run the ESMValTool. Rough guidelines for planning the dataset size would be:
+
+*	Machine storage available: ~dataset size x 3
+*	Machine memory available: ~dataset size x 3
+*	Machine minimum CPU requirements: single core
+
+We strongly suggest not exceeding these limits.
+This might require downscaling the datasets in temporal or spatial resolution for the reports. We advise to download parts of the required dataset from CDS to estimate the full size your data (e.g. size(one month) x 12 x number of years = full size). Then estimate which spatial aggregation (0.25x0.25 => 0.5x0.5 makes 2x2=4 times less space in memory or storage) or temporal aggregation (from daily to monthly data this makes ~30 times less space) is needed to a) make it possible for you to produce the reports and b) have a minimum of alteration (e.g. if spatial aggregation is done with averaging or nearest neighbor depends on your dataset, or if you have not enough space by a factor of 5, monthly means are not necessary). The exact extend of the downscaling (which coordinates are downscaled) is ECV dependent, and therefore has to be decided by the ECV expert user.
+We suggest the following 3 subsets as an approach for reporting 4D variables, if processing time is available:
+
+*	Full time resolution on one chosen level and reduced spatial resolution
+*	Full vertical resolution and reduced spatial and temporal resolution
+*	Full spatial resolution and reduced vertical and temporal resolution
+
+**Please note:** There is an ongoing discussion for homogenization of this approach for ERA5 data.
+
+
+**2.4 If your dataset is not CMORized…**
+Data is required to be adherent to CMOR tables to be treated by the ESMValTool. The tool will crash if this is not the case. 
+Reference to CMOR can be found in (`<https://cmor.llnl.gov/>`_). Please note: we are not using the CMOR program (CMOR = Climate Model Output Rewriter) itself, only the definitions provided and described by it!
+CMOR tables reporting the definitions are available at: `<https://github.com/PCMDI/cmip5-cmor-tables>`_
+Either, you perform any adjustments with the widely known tools (e.g. `cdo, nco <https://www.unidata.ucar.edu/software/netcdf/software.html>`_) or you make use of the CDS toolbox procedures (**recommended**) as described in Section 2.
 
