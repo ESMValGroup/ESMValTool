@@ -6,23 +6,18 @@
 ;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;    http://reverb.echo.nasa.gov/reverb/
+;    https://search.earthdata.nasa.gov/search?q=TL3O3M
 ;
 ; Last access
-;    20140107
+;    20181208
 ;
 ; Download and processing instructions
-;    Select the following search options:
-;        Platforms & Instruments: AURA / TES / FTS
-;        Processing levels: 3
-;    Select the following datasets:
-;        TES/Aura L3 O3 Monthly Gridded V001
-;        TES/Aura L3 O3 Monthly Gridded V002
-;        TES/Aura L3 O3 Monthly Gridded V003
-;    Add all the files to the cart and download the script as a text file.
-;    To download the data use: wget -i <textfile>.
+;    Select the V004 and V005 projects.
+;    Download the script file for both projects.
+;    To download the data use: wget -i <scriptfile>.
 ;    From the downloaded data, pick only the *.he5 files and save them in the
 ;    path specified below as INDIR.
+;    Data is freely available, but a registration is required.
 ;
 ; Modification history
 ;    20180628-A_righ_ma: adapted for v2.
@@ -68,20 +63,18 @@ end
 
 begin
 
-  print(input_dir_path)
+  ; Create output dir
+  if (.not.isfilepresent(OUTDIR)) then
+    system("mkdir -p " + OUTDIR)
+  end if
 
-  exit
-;;   diag_script = "reformat_obs_AURA-TES.ncl"
-;;   enter_msg(diag_script, "", 1)
+  ; Creat time coordinate
+  timec = create_timec(YEAR1, YEAR2)
+  datec = ut_calendar(timec, 0)
 
-;;   ; Create output dir
-;;   if (.not.isfilepresent(OUTDIR)) then
-;;     system("mkdir -p " + OUTDIR)
-;;   end if
+  print(datec)
 
-;;   ; Creat time coordinate
-;;   timec = create_timec(YEAR1, YEAR2)
-;;   datec = ut_calendar(timec, 0)
+
 
 ;;   ; Loop over variables
 ;;   do vID = 0, dimsizes(VARS) - 1
