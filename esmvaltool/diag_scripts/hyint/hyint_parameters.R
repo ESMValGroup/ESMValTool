@@ -11,17 +11,12 @@
 #
 #####################################################################
 
-# Replace here global values from namelist_hyint.xml
 run_regridding <- T
 force_regridding <- F
 run_diagnostic <- T
 force_diagnostic <- F
 etccdi_preproc <- F
 run_timeseries <- T
-# output_file_type="png"
-diag_script_cfg <- "./esmvaltool/diag_scripts/hyint/hyint_parameters.R"
-
-
 
 # define fields for timeseries calculation and plotting
 hyint_list <- c(
@@ -59,8 +54,8 @@ region_codes <- c(
 
 regions <- matrix(nrow = length(region_names), ncol = 4)
 # c(lon1,lon2,lat1,lat2) NOTE: lon(-180/180)
-regions[1, ] <- c(-180, 180, -90, 90) # First row = global
-regions[2, ] <- c(-180, 180, -60, 60) # GL |lat|<60
+regions[1, ] <- c(-180, 180, -90, 90)
+regions[2, ] <- c(-180, 180, -60, 60)
 regions[3, ] <- c(-180, 180, -30, 30)
 regions[4, ] <- c(-90, -30, -60, 10)
 regions[5, ] <- c(-20, 60, -40, 35)
@@ -160,21 +155,21 @@ levels_m[40, ] <- c(-20, 320, -2, 2)
 ntlev <- 24
 tlevels_m <- matrix(nrow = length(field_names), ncol = 2)
 tlevels_m[1, ] <- c(-0.05, 0.2) * 0.01
-tlevels_m[2, ] <- c(-0.1, 0.4) * 0.01 # c(-0.1,0.3)*0.01
+tlevels_m[2, ] <- c(-0.1, 0.4) * 0.01
 tlevels_m[3, ] <- c(-0.1, 0.1) * 0.01
-tlevels_m[4, ] <- c(0, 0.4) * 0.01 # c(0,0.5)*0.01
+tlevels_m[4, ] <- c(0, 0.4) * 0.01
 tlevels_m[5, ] <- c(0, 1.5) * 0.01
 tlevels_m[6, ] <- c(-1, 6) * 0.01
 tlevels_m[7, ] <- c(-0.8, 0.8) * 0.01
 tlevels_m[8, ] <- c(-0.3, 0.5) * 0.01
-tlevels_m[9, ] <- c(0, 0.6) * 0.01 # c(-0.2,0.6)*0.01
+tlevels_m[9, ] <- c(0, 0.6) * 0.01
 tlevels_m[10, ] <- c(0, 200) * 0.01
 tlevels_m[11, ] <- c(0, 12) * 0.01
 tlevels_m[12, ] <- c(0, 20) * 0.01
 tlevels_m[13, ] <- c(0, 20) * 0.01
-tlevels_m[14, ] <- c(0, 15) * 0.01 # c(0,30)*0.01
+tlevels_m[14, ] <- c(0, 15) * 0.01
 tlevels_m[15, ] <- c(-70, 0) * 0.01
-tlevels_m[16, ] <- c(-4, 4) * 0.01 # c(-5,5)*0.01
+tlevels_m[16, ] <- c(-4, 4) * 0.01
 tlevels_m[17, ] <- c(-1, 0) * 0.01
 tlevels_m[18, ] <- c(-70, 10) * 0.01
 tlevels_m[19, ] <- c(-10, 90) * 0.01
@@ -185,7 +180,7 @@ tlevels_m[23, ] <- c(-15, 5) * 0.01
 tlevels_m[24, ] <- c(0, 6) * 0.01
 tlevels_m[25, ] <- c(0, 100) * 0.01
 tlevels_m[26, ] <- c(0, 60) * 0.01
-tlevels_m[27, ] <- c(0, 15) * 0.01 # c(0,30)*0.01
+tlevels_m[27, ] <- c(0, 15) * 0.01
 tlevels_m[28, ] <- c(0, 50) * 0.01
 tlevels_m[29, ] <- c(0, 15) * 0.01
 tlevels_m[30, ] <- c(0, 140) * 0.01
@@ -203,7 +198,7 @@ tlevels_m[40, ] <- c(-100, 300) * 0.01
 # color palette to be used
 palette1 <- colorRampPalette(c("white", "orange", "darkred"))
 palette2 <- colorRampPalette(c("blue", "white", "red"))
-palette3 <- colorRampPalette(c("darkblue", "blue", "dodgerblue", 
+palette3 <- colorRampPalette(c("darkblue", "blue", "dodgerblue",
                                "white", "orange", "red", "darkred"))
 palette_giorgi2011 <- colorRampPalette(c(
   "white", "khaki1", "darkseagreen2", "mediumseagreen", "lightskyblue1",

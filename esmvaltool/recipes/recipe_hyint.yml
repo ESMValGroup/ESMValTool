@@ -68,14 +68,14 @@ diagnostics:
 
        
         timedimname: "time"  # Define time dimension name
-        rotLongitude: "full" # a) "full" to convert input arrays from 0/360 to -180/180 longitude grid
+        rotlongitude: "full" # a) "full" to convert input arrays from 0/360 to -180/180 longitude grid
                              # b) "no" to leave input data on its original grid
         grid_file: "grid_file"  # suffix for grid file
         
         topography_file: "topo" # suffix for topography file (needed for filtering ocean/land or land elevation)
                                    # generated with cdo
-        topography_highres: "/home/arnone/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
-        etccdi_dir: "/work/users/arnone/data/ETCCDI/historical+rcp85/"
+        topography_highres: "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
+        etccdi_dir: "~/work/data/ETCCDI/historical+rcp85/"
 
 
         # Diagnostic options
@@ -95,10 +95,10 @@ diagnostics:
                               # c) c(year1,year2,year3,year4) to apply trend to two separate 
                               #    time intervals (year1<=years<=year2) and (year3<=years<=year4)
         removedesert: false # T to remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (desertic areas, Giorgi et al. 2014)
-        maskSeaLand: false  # T to mask depending on seaLandElevation threshold
-        seaLandElevation: 0 # a) 0 land; b) positive value: land above given elevation;
+        masksealand: false  # T to mask depending on seaLandElevation threshold
+        sealandelevation: 0 # a) 0 land; b) positive value: land above given elevation;
                             # c) negative value: ocean below given depth. The topography/bathymetry file is generated with cdo from ETOPO data. 
-        reverse_maskSeaLand: false # T to reject what selected, F to keep what selected
+        reverse_masksealand: false # T to reject what selected, F to keep what selected
         highreselevation: false #  a) F: neglect; b) value: threshold of minimum elevation to be overplotted with contour lines of elevation
         highreselevation_only: false  # T to plot only high resolution elevation contours
         oplot_grid: false      # T to plot grid points over maps

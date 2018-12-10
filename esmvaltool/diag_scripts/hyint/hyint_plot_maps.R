@@ -5,22 +5,13 @@
 
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
-hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
+hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
   # setting up path and parameters
   dataset_ref <- models_name[ref_idx]
-  model_exp_ref <- models_experiment[ref_idx]
-  model_ens_ref <- models_ensemble[ref_idx]
   year1_ref <- models_start_year[ref_idx]
   year2_ref <- models_end_year[ref_idx]
   years_ref <- year1_ref:year2_ref
-
-  # check path to reference dataset
-  # if (ref_dir!=work_dir) {
-  #  ref_dir=file.path(ref_dir,diag_base,paste0(year1_ref,"_",year2_ref),season)
-  # } else {
-  #  ref_dir=file.path(work_dir,dataset_ref,paste0(year1_ref,"_",year2_ref),season)
-  # }
 
   # Define fields to be used
   if (selfields[1] != F) {
@@ -32,7 +23,8 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   nfields <- length(field_names)
 
   # Define quantity (exp, ref, exp-ref) to be plotted depending on plot_type
-  nquantity <- c(1, 3, 3, 1) # 1=exp_only, 3=exp/ref/exp-ref
+  # 1=exp_only, 3=exp/ref/exp-ref
+  nquantity <- c(1, 3, 3, 1)
 
   # Define regions to be used
   nregions <- length(selregions)
@@ -47,43 +39,43 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
   # ------- loading reference data ----------
   # load topography if needed
-  if (maskSeaLand) {
+  if (masksealand) {
     topo_file_idx <- paste0(topography_file, ref_idx, ".nc")
-    gridfile <- getfilename.indices(work_dir, diag_base, ref_idx, grid = T)
+    gridfile <- getfilename_indices(work_dir, diag_base, ref_idx, grid = T)
     if (!file.exists(topo_file_idx)) {
-      createLandSeaMask(regrid = gridfile, regridded_topo = topo_file_idx, 
+      create_landseamask(regrid = gridfile, regridded_topo = topo_file_idx,
                         topo_only = T)
     }
-    relevation <- ncdf.opener(topo_file_idx, "topo", "lon", "lat", 
+    relevation <- ncdf.opener(topo_file_idx, "topo", "lon", "lat",
                               rotate = "no")
   }
   if (highreselevation) {
-    highresel <- get.elevation(elev_range = c(highreselevation, 9000))
+    highresel <- get_elevation(elev_range = c(highreselevation, 9000))
   }
 
-  # produce desert areas map if required from reference file 
+  # produce desert areas map if required from reference file
   # (mean annual precipitation <0.5 mm, Giorgi et al. 2014)
   if (removedesert) {
-    ref_filename <- getfilename.indices(ref_dir, diag_base, ref_idx, season)
-    pry <- ncdf.opener(ref_filename, "pry", "lon", "lat", rotate = "no")
+    ref_filename <- getfilename_indices(ref_dir, diag_base, ref_idx, season)
+    pry <- ncdf_opener(ref_filename, "pry", "lon", "lat", rotate = "no")
     retdes <- which(pry < 0.5)
     pry[retdes] <- NA
-    # create mask with NAs for deserts and 1's for not-desert
+    # create mask with NAs for deserts and 1's for non-desert
     retdes2D <- apply(pry * 0, c(1, 2), sum) + 1
     retdes3D <- replicate(dim(pry)[length(dim(pry))], retdes2D)
   }
 
   # open reference field
-  ref_filename <- getfilename.indices(ref_dir, diag_base, ref_idx, season)
+  ref_filename <- getfilename_indices(ref_dir, diag_base, ref_idx, season)
   print(paste("Reading reference ", ref_filename))
   for (field in field_names) {
-    field_ref <- ncdf.opener(ref_filename, field, "lon", "lat", rotate = "no")
+    field_ref <- ncdf_opener(ref_filename, field, "lon", "lat", rotate = "no")
     if (removedesert) {
       field_ref <- field_ref * retdes3D
     }
-    if (maskSeaLand) {
-      field_ref <- apply.elevation.mask(field_ref, relevation, 
-                                        seaLandElevation)
+    if (masksealand) {
+      field_ref <- apply_elevation_mask(field_ref, relevation,
+                                        sealandelevation)
     }
     # if requested calculate multiyear average and store at time=1
     if (rmultiyear_mean) {
@@ -97,14 +89,12 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
     # setting up path and parameters
     exp <- models_name[model_idx]
-    model_exp <- models_experiment[model_idx]
-    model_ens <- models_ensemble[model_idx]
     year1 <- models_start_year[model_idx]
     year2 <- models_end_year[model_idx]
 
     # set main paths
     work_dir_exp <- work_dir
-    plot_dir_exp <- plot_dir 
+    plot_dir_exp <- plot_dir
     dir.create(plot_dir_exp, recursive = T)
 
     # Years to be considered based on namelist and cfg_file
@@ -123,16 +113,16 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
     # open experiment field
     for (field in field_names) {
-      filename <- getfilename.indices(work_dir_exp, diag_base, model_idx, 
+      filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                       season)
       print(paste("Reading experiment ", filename))
-      field_exp <- ncdf.opener(filename, field, "lon", "lat", rotate = "no")
+      field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
       if (removedesert) {
         field_exp <- field_exp * retdes3D
       }
-      if (maskSeaLand) {
-        field_exp <- apply.elevation.mask(field_exp, relevation, 
-                                          seaLandElevation)
+      if (masksealand) {
+        field_exp <- apply_elevation_mask(field_exp, relevation,
+                                          sealandelevation)
       }
       # if requested calculate multiyear average and store it at time=1
       if (rmultiyear_mean) {
@@ -155,8 +145,9 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     print(paste0(diag_base, ": starting figures"))
 
     if (boxregion != 0) {
+      # boxregion will plot region boxes over a global map of selected field
       nregions <- 1
-    } # boxregion will plot region boxes over a global map of selected field
+    }
 
     # LOOP over selected regions
     for (iselregion in 1:nregions) {
@@ -166,12 +157,12 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       # Startup graphics for multiple years in one figure
       if (plot_type == 4) {
         field_label <- paste(field_names, collapse = "-")
-        figname <- getfilename.figure(
+        figname <- getfilename_figure(
           plot_dir_exp, field_label, year1, year2, model_idx, season,
           "multiyear", region_codes[iregion], label, "map", output_file_type
         )
-        graphics.startup(figname, output_file_type, diag_script_cfg)
-        par(mfrow = c(nyears, nfields), cex.main = 1.3, cex.axis = 1.2, 
+        graphics_startup(figname, output_file_type, diag_script_cfg)
+        par(mfrow = c(nyears, nfields), cex.main = 1.3, cex.axis = 1.2,
             cex.lab = 1.2, mar = c(2, 2, 2, 2), oma = c(1, 1, 1, 1))
       }
       # LOOP over years defined in namelist and cfg_file
@@ -189,7 +180,7 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           time_label_ref <- paste(year1_ref, year2_ref, sep = "-")
           time_label_fig <- "myearmean"
         }
-        print(paste0(diag_base, ": plotting data for  ", region_names[iregion], 
+        print(paste0(diag_base, ": plotting data for  ", region_names[iregion],
                      " ", time_label))
 
         # standard properties
@@ -199,18 +190,17 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         #  Startup graphics for multiple fields/quantities in one figure
         if (plot_type == 3) {
           field_label <- paste(field_names, collapse = "-")
-          figname <- getfilename.figure(
+          figname <- getfilename_figure(
             plot_dir_exp, field_label, year1, year2, model_idx,
-            season, time_label_fig, region_codes[iregion], label, "map", 
+            season, time_label_fig, region_codes[iregion], label, "map",
             output_file_type
           )
-          graphics.startup(figname, output_file_type, diag_script_cfg)
-          par(mfrow = c(nfields, 3), cex.main = 1.3, cex.axis = 1.2, 
+          graphics_startup(figname, output_file_type, diag_script_cfg)
+          par(mfrow = c(nfields, 3), cex.main = 1.3, cex.axis = 1.2,
               cex.lab = 1.2, mar = c(2, 2, 2, 2), oma = c(1, 1, 1, 1))
         }
         # LOOP over fields
         for (field in field_names) {
-          # print(paste0("working on ",field))
           ifield <- which(field == field_names)
           if (anyNA(title_unit_m[ifield, 1:3])) {
             title_unit_m[ifield, 1:3] <- field
@@ -221,7 +211,7 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           field_ref <- get(paste(field, "_ref", sep = ""))
           field_exp <- get(paste(field, "_exp", sep = ""))
 
-          # MAPS: select required year (if requested, multiyear average 
+          # MAPS: select required year (if requested, multiyear average
           #       is stored at iyear=1)
           field_ref <- field_ref[, , iyear]
           field_exp <- field_exp[, , iyear_ref]
@@ -235,32 +225,32 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           tmp.palette <- palette_giorgi2011
           if (is.na(levels_m[ifield, 1]) | is.na(levels_m[ifield, 2])) {
             print("No value for range: assigning min and max")
-            tmp.levels <- seq(min(field_ref, na.rm = T), 
+            tmp.levels <- seq(min(field_ref, na.rm = T),
                               max(field_ref, na.rm = T), len = nlev)
           } else {
-            tmp.levels <- seq(levels_m[ifield, 1], levels_m[ifield, 2], 
+            tmp.levels <- seq(levels_m[ifield, 1], levels_m[ifield, 2],
                               len = nlev)
           }
           if (highreselevation_only) {
             title_unit_m[ifield, 1] <- "Elevation"
           }
-          tmp.titles <- paste0(title_unit_m[ifield, 1], ": ", 
+          tmp.titles <- paste0(title_unit_m[ifield, 1], ": ",
                         region_names[iregion], " ", 
                         c(info_exp, info_ref, "Difference"))
           if (plot_type == 4) {
             tmp.titles <- paste(title_unit_m[ifield, 1], time_label)
           }
 
-          # Startup graphics for individual fields and multi 
+          # Startup graphics for individual fields and multi
           # quantities in each figure
           if (plot_type == 2) {
-            figname <- getfilename.figure(
+            figname <- getfilename_figure(
               plot_dir_exp, field, year1, year2, model_idx,
-              season, time_label_fig, region_codes[iregion], 
+              season, time_label_fig, region_codes[iregion],
               label, "comp_map", output_file_type
             )
-            graphics.startup(figname, output_file_type, diag_script_cfg)
-            par(mfrow = c(3, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5, 
+            graphics_startup(figname, output_file_type, diag_script_cfg)
+            par(mfrow = c(3, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                 mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
           }
 
@@ -274,22 +264,23 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               tmp.palette <- palette2
               tmp.field <- field_exp - field_ref
               if (is.na(levels_m[ifield, 3]) | is.na(levels_m[ifield, 4])) {
-                tmp.levels <- seq(min(field_ref, na.rm = T), 
-                                  max(field_ref, na.rm = T), len = nlev)
+                tmp.levels <- seq(min(field_ref, na.rm = T),
+                                  max(field_ref, na.rm = T),
+                                  len = nlev)
               } else {
-                tmp.levels <- seq(levels_m[ifield, 3], levels_m[ifield, 4], 
+                tmp.levels <- seq(levels_m[ifield, 3], levels_m[ifield, 4],
                                   len = nlev)
               }
             }
             # Startup graphics for individual field in each figure
             if (plot_type == 1) {
-              figname <- getfilename.figure(
+              figname <- getfilename_figure(
                 plot_dir_exp, field, year1, year2, model_idx,
-                season, time_label_fig, region_codes[iregion], label, 
+                season, time_label_fig, region_codes[iregion], label,
                 "map", output_file_type
               )
-              graphics.startup(figname, output_file_type, diag_script_cfg)
-              par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5, 
+              graphics_startup(figname, output_file_type, diag_script_cfg)
+              par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                   mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
             }
 
@@ -301,11 +292,11 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               par(mfg = c(iyear, ifield, nyears, nfields))
             }
             # contours
-            filled.contour3(ics, ipsilon, tmp.field,
+            filled_contour3(ics, ipsilon, tmp.field,
               xlab = "Longitude", ylab = "Latitude",
-              main = tmp.titles[iquantity], levels = tmp.levels, 
+              main = tmp.titles[iquantity], levels = tmp.levels,
                      color.palette = tmp.palette,
-              xlim = c(regions[iregion, 1], regions[iregion, 2]), 
+              xlim = c(regions[iregion, 1], regions[iregion, 2]),
               ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F
             )
             # continents
@@ -313,21 +304,16 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             if (map_continents <= 0) {
               continents_col <- "gray30"
             }
-            map("world", regions = ".", interior = map_continents_regions, 
-                exact = F, boundary = T, add = T, col = continents_col, 
+            map("world", regions = ".", interior = map_continents_regions,
+                exact = F, boundary = T, add = T, col = continents_col,
                 lwd = abs(map_continents))
             # grid points
-
             if (oplot_grid) {
               # build up grid if needed
               ics2 <- replicate(length(ipsilon), ics)
               ipsilon2 <- t(replicate(length(ics), ipsilon))
-              print(str(ics2))
-              print(str(ipsilon2))
-              print(str(tmp.field))
               points(ics2, ipsilon2, pch = 1, col = "grey40", cex = oplot_grid)
             }
-
             # add highres elevation contours
             if (highreselevation) {
               palette(terrain.colors(10))
@@ -344,11 +330,11 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               }
               for (ireg in 2:length(selregions)) {
                 iselreg <- selregions[ireg]
-                rect(regions[iselreg, 1], regions[iselreg, 3], 
+                rect(regions[iselreg, 1], regions[iselreg, 3],
                      regions[iselreg, 2], regions[iselreg, 4],
                   border = box_col, lwd = abs(boxregion)
                 )
-                text(regions[iselreg, 1], regions[iselreg, 3], 
+                text(regions[iselreg, 1], regions[iselreg, 3],
                      paste0("         ", region_codes[iselreg]
                 ), col = box_col, pos = 3, offset = 0.5)
               }
@@ -373,26 +359,26 @@ hyint.plot.maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               }
             }
             # colorbar
-            if ((tmp.colorbar[iquantity]) & add_colorbar) {
-              image.scale3(volcano, levels = tmp.levels, 
-                           color.palette = tmp.palette, colorbar.label = 
-                           paste(title_unit_m[ifield, 1], 
+            if ( (tmp.colorbar[iquantity]) & add_colorbar) {
+              image.scale3(volcano, levels = tmp.levels,
+                           color.palette = tmp.palette, colorbar.label =
+                           paste(title_unit_m[ifield, 1],
                            title_unit_m[ifield, 4]),
-                cex.colorbar = 1.0, cex.label = 1.0, colorbar.width = 1, 
+                cex.colorbar = 1.0, cex.label = 1.0, colorbar.width = 1,
                 line.label = legend_distance, line.colorbar = 1.0
               )
             }
           } # close loop over quantity
           if (plot_type <= 2) {
-            graphics.close(figname)
+            graphics_close(figname)
           }
         } # close loop over field
         if (plot_type == 3) {
-          graphics.close(figname)
+          graphics_close(figname)
         }
       } # close loop over years
       if (plot_type == 4) {
-        graphics.close(figname)
+        graphics_close(figname)
       }
     } # close loop over regions
   } # close loop over models

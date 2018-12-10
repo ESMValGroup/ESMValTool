@@ -39,7 +39,7 @@ if (exists(".lm.fit")) {
 #----------------Naming functions------------------------#
 ##########################################################
 
-getfilename.regridded <- function(spath, rgrid, var0, model_idx) {
+getfilename_regridded <- function(spath, rgrid, var0, model_idx) {
   exp <- models_name[model_idx]
   year1 <- models_start_year[model_idx]
   year2 <- models_end_year[model_idx]
@@ -51,7 +51,7 @@ getfilename.regridded <- function(spath, rgrid, var0, model_idx) {
   return(filename)
 }
 
-getfilename.indices <- function(spath, label, model_idx, season, hist = F, 
+getfilename_indices <- function(spath, label, model_idx, season, hist = F, 
                                 hist_years = hist_years, grid = F) {
   exp <- models_name[model_idx]
   model_exp <- models_experiment[model_idx]
@@ -74,7 +74,7 @@ getfilename.indices <- function(spath, label, model_idx, season, hist = F,
   return(filename)
 }
 
-getfilename.etccdi <- function(spath, var, model_idx, yrmon = "yr") {
+getfilename_etccdi <- function(spath, var, model_idx, yrmon = "yr") {
   # Function to get names of files of ETCCDI indices
   # If input 'var' is an array of names, 'filename' an array will be as well
 
@@ -97,7 +97,7 @@ getfilename.etccdi <- function(spath, var, model_idx, yrmon = "yr") {
   return(filename)
 }
 
-getfilename.trends <- function(spath, label, model_idx, season) {
+getfilename_trends <- function(spath, label, model_idx, season) {
   exp <- models_name[model_idx]
   year1 <- models_start_year[model_idx]
   year2 <- models_end_year[model_idx]
@@ -109,7 +109,7 @@ getfilename.trends <- function(spath, label, model_idx, season) {
   return(filename)
 }
 
-getfilename.figure <- function(spath, var, year1, year2, model_idx, season, 
+getfilename_figure <- function(spath, var, year1, year2, model_idx, season, 
                                syears, sregion, label, map, output_file_type,
                                multimodel = F) {
   if (nchar(var) > 10) {
@@ -141,7 +141,7 @@ getfilename.figure <- function(spath, var, year1, year2, model_idx, season,
 ##########################################################
 
 # read cdo_resolution from cdo_griddes file
-get.cdo.res <- function(grid_file) {
+get_cdo_res <- function(grid_file) {
   temp_grid <- read.table(grid_file, nrows = 13, sep = "=")
 
   print("----------============_------------")
@@ -171,15 +171,15 @@ whicher <- function(axis, number) {
 
 
 # area of longitude/latitude rectangle
-area.lonlat <- function(lon1, lon2, lat1, lat2) {
+area_lonlat <- function(lon1, lon2, lat1, lat2) {
   R <- 6378
-  return(2 * pi * R^2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi)) 
+  return(2 * pi * R^2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
          * abs(lon1 - lon2) / 360)
 }
 
 
 # produce a 2d matrix of area size for given longitude/latitude grid points
-area.size <- function(ics, ipsilon, resolution = NA, norm = F) {
+area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
   if (is.na(resolution) & (length(ics) == 1) & (length(ipsilon) == 1)) {
     stop("Provide either resolution or two adjacent elements")
   }
@@ -188,7 +188,7 @@ area.size <- function(ics, ipsilon, resolution = NA, norm = F) {
   }
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   for (j in 1:length(ipsilon)) {
-    field[, j] <- area.lonlat(0, resolution, ipsilon[j] - 0.5 * resolution, 
+    field[, j] <- area_lonlat(0, resolution, ipsilon[j] - 0.5 * resolution,
                               ipsilon[j] + 0.5 * resolution)
   }
   if (norm) {
@@ -201,18 +201,16 @@ area.size <- function(ics, ipsilon, resolution = NA, norm = F) {
 
 
 # produce a 2d matrix of area weight
-area.weight <- function(ics, ipsilon, root = T, norm = F) {
+area_weight <- function(ics, ipsilon, root = T, norm = F) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
-    for (j in 1:length(ipsilon))
-    {
+    for (j in 1:length(ipsilon)) {
       field[, j] <- sqrt(cos(pi / 180 * ipsilon[j]))
     }
   }
 
   if (root == F) {
-    for (j in 1:length(ipsilon))
-    {
+    for (j in 1:length(ipsilon)) {
       field[, j] <- cos(pi / 180 * ipsilon[j])
     }
   }
@@ -223,9 +221,9 @@ area.weight <- function(ics, ipsilon, root = T, norm = F) {
 }
 
 # normalize a 2D or 3D field by a 2d matrix of area weight
-area.weight.norm <- function(ics, ipsilon, field, root = T, norm = F) {
+area_weight_norm <- function(ics, ipsilon, field, root = T, norm = F) {
   timedim <- dim(field)[length(dim(field))]
-  weights <- replicate(timedim, area.weight(ics, ipsilon, root = root, 
+  weights <- replicate(timedim, area_weight(ics, ipsilon, root = root, 
                        norm = norm))
   field <- field * weights
   return(field)
@@ -237,7 +235,7 @@ area.weight.norm <- function(ics, ipsilon, field, root = T, norm = F) {
 
 # check number of days for each month
 
-number.days.month <- function(datas) {
+number_days_month <- function(datas) {
 
   # evaluate the number of days in a defined month of a year
   datas <- as.Date(datas)
@@ -273,11 +271,11 @@ season2timeseason <- function(season) {
 }
 
 # leap year treu/false function
-is.leapyear <- function(year) {
+is_leapyear <- function(year) {
   return(((year %% 4 == 0) & (year %% 100 != 0)) | (year %% 400 == 0))
 }
 
-power.date.new <- function(datas) {
+power_date_new <- function(datas) {
   whichdays <- as.numeric(format(datas, "%m"))
   # create a "season" for continuous time
   seas <- whichdays * 1
@@ -296,7 +294,7 @@ power.date.new <- function(datas) {
   return(etime)
 }
 
-power.date <- function(season, ANNO1, ANNO2) {
+power_date <- function(season, ANNO1, ANNO2) {
   # evalute the number of days that will analyze in order
   # to create arrays of the needed dimensions
 
@@ -333,7 +331,7 @@ power.date <- function(season, ANNO1, ANNO2) {
   return(dataline)
 }
 
-power.date.no.leap <- function(season, ANNO1, ANNO2) {
+power_date_no_leap <- function(season, ANNO1, ANNO2) {
   # apply to power.date object to clean out elements for leap years
   e <- power.date(season, ANNO1, ANNO2)
   leap.days <- which(e$month == 2 & e$day == 29)
@@ -349,7 +347,7 @@ power.date.no.leap <- function(season, ANNO1, ANNO2) {
   return(dataline.leap)
 }
 
-power.date.30day <- function(season, ANNO1, ANNO2) {
+power_date_30day <- function(season, ANNO1, ANNO2) {
   # apply to power.date object to clean out elements for leap years
   nmonths <- length(season2timeseason(season))
   nyears <- as.numeric(ANNO2) - as.numeric(ANNO1) + 1
@@ -365,14 +363,14 @@ power.date.30day <- function(season, ANNO1, ANNO2) {
     }
     seas[i + 1] <- ss
   }
-  dataline.30day <- list(day = dd, month = mm, season = seas)
+  dataline_30day <- list(day = dd, month = mm, season = seas)
   print("SIMPLIFIED CALENDAR FOR 30-day CALENDAR: Time Array Built")
   print(paste("Length:", length(dataline.30day$season), "days for", 
               season, "season"))
-  return(dataline.30day)
+  return(dataline_30day)
 }
 
-calc.region.timeseries <- function(x, y, indata, region, calc_sd = F, 
+calc_region_timeseries <- function(x, y, indata, region, calc_sd = F, 
                           weighted_mean = T, root = F, norm = T, ..) {
   # This function subsets a lon/lat/time array based on an input 
   # region(lon1,loni2,lat1,lat2) and returns its timeseries. 
@@ -393,7 +391,7 @@ calc.region.timeseries <- function(x, y, indata, region, calc_sd = F,
   } else {
     retdata <- indata[retx, rety, , drop = F]
     if (weighted_mean & !calc_sd) {
-      retdata <- area.weight.norm(x[retx], y[rety], retdata, 
+      retdata <- area_weight_norm(x[retx], y[rety], retdata, 
                                   root = root, norm = norm)
     }
     outdata <- apply(retdata, idimtimedata, mean, na.rm = T)
@@ -415,7 +413,7 @@ calc.region.timeseries <- function(x, y, indata, region, calc_sd = F,
 ## files from which to create the grid
 ## Adapted from 20170920-A_maritsandstad
 ##
-createGrid <- function(ref_file = "./reffile", path = idx_dir, 
+create_grid <- function(ref_file = "./reffile", path = idx_dir, 
                        loc = "./gridDef") {
 
   ## Picking the grid found in reference file to regrid over
@@ -434,7 +432,7 @@ createGrid <- function(ref_file = "./reffile", path = idx_dir,
 ## to put the landdseamask on
 ## Adapted from 20170920-A_maritsandstad
 ##
-createLandSeaMask <- function(regrid = "./gridDef", ref_file = ref_file, 
+create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file, 
                      loc = "./", regridded_topo = "/regridded_topo.nc", 
                      landmask = "./landSeaMask.nc", topo_only = F) {
 
@@ -442,7 +440,7 @@ createLandSeaMask <- function(regrid = "./gridDef", ref_file = ref_file,
   # otherwise call function to generate one
   if (!file.exists(regrid)) {
     # createGrid(path = loc, loc = regrid)
-    createGrid(ref_file = ref_file, loc = regrid)
+    create_grid(ref_file = ref_file, loc = regrid)
   }
 
   ## Making topographic map
@@ -481,7 +479,7 @@ createLandSeaMask <- function(regrid = "./gridDef", ref_file = ref_file,
 ##
 ## Read seaLandElevationMask and mask data
 ##
-apply.elevation.mask <- function(rfield, relevation, el_threshold, 
+apply_elevation_mask <- function(rfield, relevation, el_threshold, 
                                  reverse = F) {
   if (!reverse) {
     if (el_threshold >= 0) { # mountains
@@ -530,7 +528,7 @@ dimension of field: remove old topography files if needed")
 # Author: E. Arnone ( ISAC-CNR, Torino)
 # Last update: 14 June 2017
 
-mean.spell.length <- function(m) {
+mean_spell_length <- function(m) {
   # Setup useful arrays and parameters
   nlon <- dim(m)[1]
   nlat <- dim(m)[2]
@@ -567,7 +565,7 @@ mean.spell.length <- function(m) {
   return(mean_spell_length_year)
 }
 
-get.elevation <- function(filename = NULL, elev_range = c(-1000, 10000), 
+get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000), 
                           mask = F, elev_plot = F) {
   # get elevation data from a high resolution topography file.
   # In the example the GMTED2010 elevation data regridded at 0.125 degree 
@@ -579,17 +577,17 @@ get.elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
   if (is.null(filename)) {
     filename <- "/home/arnone/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
   }
-  elevation <- ncdf.opener(filename, namevar = "elevation", 
+  elevation <- ncdf_opener(filename, namevar = "elevation", 
                namelon = "longitude", namelat = "latitude", rotate = "no")
-  lon_el <- ncdf.opener(filename, namevar = "longitude", rotate = "no")
-  lat_el <- ncdf.opener(filename, namevar = "latitude", rotate = "no")
+  lon_el <- ncdf_opener(filename, namevar = "longitude", rotate = "no")
+  lat_el <- ncdf_opener(filename, namevar = "latitude", rotate = "no")
   elevation[which(elevation < elev_range[1] | elevation > elev_range[2])] <- NA
   if (mask) {
     elevation[which(elevation >= elev_range[1] & 
                     elevation <= elev_range[2])] <- 1
   }
   if (elev_plot) {
-    filled.contour3(lon_el, lat_el, elevation, color.palette = rainbow)
+    filled_contour3(lon_el, lat_el, elevation, color.palette = rainbow)
     map("world", regions = ".", interior = F, exact = F, boundary = T, add = T, 
         col = "gray", lwd = 1.5)
   }
@@ -602,7 +600,7 @@ get.elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
 #--------------NetCDF loading function-------------------#
 ##########################################################
 
-# universal function to open a single var 3D (x,y,time) ncdf files: it includes 
+# universal function to open a single var 3D (x,y,time) ncdf files: it includes
 # rotation, y-axis filpping, time selection and CDO-based interpolation
 # to replace both ncdf.opener.time and ncdf.opener (deprecated and removed)
 # automatically rotate matrix to place greenwich at the center (flag "rotate") 
@@ -611,7 +609,7 @@ get.elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
 # "grid" can be used to specify the target grid name 
 # time selection based on package PCICt must be specifed with both "tmonths"
 #  and "tyears" flags. It returns a list including its own dimensions
-ncdf.opener.universal <- function(namefile, namevar = NULL, namelon = NULL, 
+ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
                             namelat = NULL, tmonths = NULL, tyears = NULL,
                             rotate = "full", interp2grid = F, grid = "r144x73",
                             remap_method = "remapcon2",
@@ -738,9 +736,9 @@ with namevar=yourvar")
 
     # break if the data requested is not there
     lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28") 
-    # uses number.days.month, which loops to get the month change
+    # uses number_days_month, which loops to get the month change
     lastday <- as.PCICt(paste0(max(tyears), "-", max(tmonths), "-", 
-               number.days.month(lastday_base)), cal = caldata, 
+               number_days_month(lastday_base)), cal = caldata, 
                format = "%Y-%m-%d")
     firstday <- as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"), 
                 cal = caldata, format = "%Y-%m-%d")
@@ -847,11 +845,11 @@ with namevar=yourvar")
 
 # ncdf.opener is a simplified wrapper for ncdf.opener.universal which returns 
 # only the field, ignoring the list
-ncdf.opener <- function(namefile, namevar = NULL, namelon = NULL, 
+ncdf_opener <- function(namefile, namevar = NULL, namelon = NULL, 
                namelat = NULL, tmonths = NULL, tyears = NULL, rotate = "full", 
                interp2grid = F, grid = "r144x73", remap_method = "remapcon2", 
                exportlonlat = T) {
-  field <- ncdf.opener.universal(namefile, namevar, namelon, namelat, tmonths, 
+  field <- ncdf_opener_universal(namefile, namevar, namelon, namelat, tmonths, 
                                tyears, rotate, interp2grid, grid, remap_method, 
                                exportlonlat = exportlonlat)
   return(field$field)
@@ -859,7 +857,7 @@ ncdf.opener <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # function to open ncdf files (much more refined, with CDO-based interpolation)
-ncdf.opener.time <- function(namefile, namevar = NULL, namelon = NULL, 
+ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL, 
                     namelat = NULL, tmonths = NULL, tyears = NULL, ics = ics, 
                     ipsilon = ipsilon, rotate = "full", interp2grid = F, 
                     grid = "r144x73", remap_method = "remapcon2") {
@@ -1096,7 +1094,7 @@ ncdf.opener.time <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # Figure functions
-graphics.startup <- function(figname, output_file_type, diag_script_cfg) {
+graphics_startup <- function(figname, output_file_type, diag_script_cfg) {
   source(diag_script_cfg)
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
@@ -1113,14 +1111,14 @@ graphics.startup <- function(figname, output_file_type, diag_script_cfg) {
   return()
 }
 
-graphics.close <- function(figname) {
+graphics_close <- function(figname) {
   print(figname)
   dev.off()
   return()
 }
 
 # extensive filled.contour function
-filled.contour3 <-
+filled_contour3 <-
   function(x = seq(0, 1, length.out = nrow(z)),
            y = seq(0, 1, length.out = ncol(z)), z, 
            xlim = range(x, finite = TRUE),
@@ -1201,7 +1199,7 @@ filled.contour3 <-
     invisible()
   }
 
-image.scale3 <- function(z, levels, color.palette = heat.colors, 
+image_scale3 <- function(z, levels, color.palette = heat.colors, 
                          colorbar.label = "image.scale", extend = T,
                          line.label = 2, line.colorbar = 0, cex.label = 1, 
                          cex.colorbar = 1, colorbar.width = 1, ...) {

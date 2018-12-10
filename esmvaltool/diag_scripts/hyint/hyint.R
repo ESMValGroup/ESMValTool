@@ -52,16 +52,12 @@
 
 library(tools)
 library(yaml)
-# library(climdex.pcic.ncdf)
-
-spath <- "esmvaltool/diag_scripts/hyint/"
+library(ncdf4)
 
 # get path to script and source subroutines (if needed)
 args <- commandArgs(trailingOnly = FALSE)
-spath <- paste0(dirname(unlist(strsplit(grep("--file", args, value = TRUE), "="))[2]), "/")
-
-# diag_scripts_dir <- Sys.getenv("diag_scripts")
-# source paste0(diag_scripts_dir,"/subroutine.r")
+spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
+                                             value = TRUE), "="))[2]), "/")
 
 source(paste0(spath, "hyint_functions.R"))
 source(paste0(spath, "hyint_metadata.R"))
@@ -73,10 +69,11 @@ source(paste0(spath, "hyint_plot_maps.R"))
 source(paste0(spath, "hyint_plot_trends.R"))
 source(paste0(spath, "hyint_parameters.R"))
 
+diag_script_cfg <- paste0(spath, "hyint_parameters.R")
+
 # Read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings_file <- args[1]
-# settings_file <- "/work/users/arnone/esmvaltool_output/recipe_hyint_20181206_144312/run/hyint/main/settings.yml"
 settings <- yaml::read_yaml(settings_file)
 
 # load data from settings
@@ -87,7 +84,8 @@ for (myname in names(settings)) {
 
 metadata <- yaml::read_yaml(settings$input_files)
 
-# get name of climofile for selected variable and list associated to first climofile
+# get name of climofile for selected variable and 
+# list associated to first climofile
 climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
 list0 <- climolist
@@ -118,7 +116,7 @@ models_experiment <- unname(sapply(metadata, "[[", "exp"))
 models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 
 # select reference dataset; if not available, use last of list
-ref_idx <- which(models_name == reference_model) 
+ref_idx <- which(models_name == reference_model)
 if (length(ref_idx) == 0) {
   ref_idx <- length(models_name)
 }
@@ -135,14 +133,15 @@ if (write_netcdf) {
     if (rgrid != F) {
       sgrid <- rgrid
     }
-    regfile <- getfilename.regridded(regridding_dir, sgrid, var0, model_idx)
+    regfile <- getfilename_regridded(regridding_dir, sgrid, var0, model_idx)
 
-    # If needed, pre-process file regridding, selecting lon/lat region of interest and adding absolute time axis
+    # If needed, pre-process file and adding absolute time axis
     if (run_regridding) {
       if (!file.exists(regfile) | force_regridding) {
-        dummy <- hyint.preproc(work_dir, model_idx, climofile, regfile)
+        dummy <- hyint_preproc(work_dir, model_idx, climofile, regfile)
       } else {
-        gridfile <- getfilename.indices(work_dir, diag_base, model_idx, grid = T)
+        gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
+                                        grid = T)
         grid_command <- paste("cdo griddes ", regfile, " > ", gridfile)
         system(grid_command)
         print(paste0(diag_base, ": data file exists: ", regfile))
@@ -153,7 +152,8 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        hyint.diagnostic(work_dir, regfile, model_idx, seas, rewrite = force_diagnostic)
+        hyint_diagnostic(work_dir, regfile, model_idx, seas,
+                         rewrite = force_diagnostic)
       }
     }
   }
@@ -162,9 +162,9 @@ if (write_netcdf) {
 ## Preprocess ETCCDI input files and merge them with HyInt indices
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
-    gridfile <- getfilename.indices(work_dir, diag_base, model_idx, grid = T)
-    # grid_file_idx=paste0(grid_file,model_idx)
-    dummy <- hyint.etccdi.preproc(work_dir, etccdi_dir, etccdi_list_import, gridfile, model_idx, "ALL", yrmon = "yr")
+    gridfile <- getfilename_indices(work_dir, diag_base, model_idx, grid = T)
+    dummy <- hyint_etccdi_preproc(work_dir, etccdi_dir, etccdi_list_import,
+                                  gridfile, model_idx, "ALL", yrmon = "yr")
   }
 }
 
@@ -172,23 +172,25 @@ if (write_netcdf & etccdi_preproc) {
 if (write_netcdf & run_timeseries) {
   for (model_idx in c(1:(length(models_name)))) {
     for (seas in seasons) {
-      hyint.trends(work_dir, model_idx, seas)
+      hyint_trends(work_dir, model_idx, seas)
     }
   }
 }
 
 ## Create figures
 if (write_plots) {
-  ref_idx <- which(models_name == reference_model) # select reference dataset; if not available, use last of list
+   # select reference dataset; if not available, use last of list
+  ref_idx <- which(models_name == reference_model)
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_name)
   }
   for (seas in seasons) {
-    if (plot_type <= 10) { # Plot maps
-      hyint.plot.maps(work_dir, plot_dir, work_dir, ref_idx, seas)
-    } else { # Plot timeseries and trends
-      print("HyInt: calling plot.trend")
-      hyint.plot.trends(work_dir, plot_dir, work_dir, ref_idx, seas)
+    if (plot_type <= 10) {
+      # Plot maps
+      hyint_plot_maps(work_dir, plot_dir, work_dir, ref_idx, seas)
+    } else {
+      # Plot timeseries and trends
+      hyint_plot_trends(work_dir, plot_dir, work_dir, ref_idx, seas)
     }
   }
 }

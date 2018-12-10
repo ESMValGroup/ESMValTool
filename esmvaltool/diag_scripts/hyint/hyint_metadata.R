@@ -4,7 +4,7 @@
 #----------------Metadata functions------------------------#
 ##########################################################
 
-getmetadata.indices <- function(var, sfile) {
+getmetadata_indices <- function(var, sfile) {
   ncfile <- nc_open(sfile)
   long_name <- (ncatt_get(ncfile, var, "long_name"))$value
   units <- (ncatt_get(ncfile, var, "units"))$value
@@ -18,7 +18,7 @@ getmetadata.indices <- function(var, sfile) {
   return(metadata)
 }
 
-setmetadata.indices <- function(var) {
+setmetadata_indices <- function(var) {
   longvar <- ""
   unit <- ""
 
