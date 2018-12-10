@@ -104,14 +104,16 @@ In order to have data compliant with the CDM of the Toolbox, an operation on the
 See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_1D_ERA5.py>`_
 
 
-**2.2 Extract 1-month daily 3D temperature from ERA-5**
+2.2 Extract 1-month daily 3D temperature from ERA-5
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_3D_ERA5.py>`_
 
 **Please note:** The last two lines perform a daily mean and produce a netcdf output file.
 
 
-**2.3 Data Limitations**
+2.3 Data Limitations
+^^^^^^^^^^^^^^^^^^^^^^
 
 Several datasets may need to be reduced in size due to limitations of memory space for operations of ESMValTool. The maximum size of the dataset is determined by the machine which is used to run the ESMValTool. Rough guidelines for planning the dataset size would be:
 
@@ -130,17 +132,20 @@ We suggest the following 3 subsets as an approach for reporting 4D variables, if
 **Please note:** There is an ongoing discussion for homogenization of this approach for ERA5 data.
 
 
-**2.4 If your dataset is not CMORized…**
+2.4 If your dataset is not CMORized...
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Data is required to be adherent to CMOR tables to be treated by the ESMValTool. The tool will crash if this is not the case. 
 Reference to CMOR can be found in (`<https://cmor.llnl.gov/>`_). Please note: we are not using the CMOR program (CMOR = Climate Model Output Rewriter) itself, only the definitions provided and described by it!
 CMOR tables reporting the definitions are available at: `<https://github.com/PCMDI/cmip5-cmor-tables>`_
 Either, you perform any adjustments with the widely known tools (e.g. `cdo, nco <https://www.unidata.ucar.edu/software/netcdf/software.html>`_) or you make use of the CDS toolbox procedures (**recommended**) as described in Section 2.
 
+
 3. Preparation of the SPQB reports with the ESMValTool
 ------------------------------------------------------
 
-**3.1 Installation of the ESMValTool on the local servers**
+3.1 Installation of the ESMValTool on the local servers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For the installation of the necessary python modules and ncl to be able to run the ESMValTool, please follow the steps outlined below:
 
@@ -159,8 +164,8 @@ For the installation of the necessary python modules and ncl to be able to run t
 
 If there are still technical issues after you followed the outlined steps, please contact the C3S_511 service support ("C3S_511_Support@dlr.de") with a proper problem description including configuration details.
 
-
-**3.2 Running the namelist for the SPQB**
+3.2 Running the namelist for the SPQB
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When you are familiar with the ESMValTool after following Section 3.1, git checkout the branch C3S_511_beta. Follow the description below in addition to the general guidance from the ESMValTool.
 
@@ -175,8 +180,8 @@ Before you run the SPQB namelist, you should check and update the following file
 
 After you have adjusted these files, you can run the SPQB namelist as described in the ESMValTool manual. Please be aware that you will have to run the namelist twice to produce the final reports with all additional input! Between the first and the second run you will have to finalize some files (these will be described in the sections below), so that this information can be added to the report during the second run of the namelist.
 
-
-**3.3 C3S_511 SPQB Configuration (cfg) file options**
+3.3 C3S_511 SPQB Configuration (cfg) file options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 *Definition of levels for 3D variables*
 
@@ -194,7 +199,8 @@ Please specify a custom color map in the cfg file. This color map will then be u
 *	Recommended setting: the option False (“show_latex=False”). This allows you to avoid the production of the pdf-files every time you run the SPQB namelist, as the output is lengthy. 
 *	If you have problems with producing latex output (latex is not running smoothly on your machine where you run the ESMValTool) you can only produce the figures and the latex file in sphinx compatible format (“show_latex=None”), and port these files to another latex compatible machine to compile them separately to a pdf file outside of your ESMValTool environment. With this option, the SPQB namelist automatically copies the latex script for the creation of the reports to reporting directories. Their structure is self-explaining.
 
-**3.4 Input/Output structure for the SPQB**
+3.4 Input/Output structure for the SPQB
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When you set up your general ESMValTool configuration (in your ESMValTool-private directory), you defined your work directory. Within this directory, you will have two relevant and SPQB related subdirectories, one called “c3s_511” and one called “reporting”. The reporting directory contains your pdf output, or, if the latex-option was set to “None”, the respective built and source directories. This is the output you need for the reports. The directory c3s_511 contains all editable files. The first run produces all files according to your data set name in the namelist. Therefore, if you run the ESMValTool with the same namelist a second time, it will read in these files and check if information was added or, with some specific files, corrected. The ESMValTool also reports the set up files in the terminal output. Please check these files for:
 
@@ -204,7 +210,8 @@ When you set up your general ESMValTool configuration (in your ESMValTool-privat
 
 The following subsections explain the needs for the single reports in more detail.
 
-**3.5 How to add customary text for the individual reports**
+3.5 How to add customary text for the individual reports
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You will have to run the SPQB namelist for each ECV twice to be able to display customary text.
 
@@ -219,7 +226,8 @@ A useful online tool for reStructuredText can be found here: `<http://rst.ninjs.
 
 After you have added your customized text, you have to run the SPQB namelist a second time to get the text added to the report(s). If you do not edit the text file for a report, no individual text will be added to that final report (which means that the contents of the text file produced with the first run of the ESMValTool is not displayed if it was not altered!). If you do add individual text, it will appear in the final report after the Table of Contents, any lists and before the figures to follow a paper draft design. **Please note:** for each report you will have to add the customary text individually!
 
-**3.6 What to provide for the System Maturity Matrix (SMM) and how**
+3.6 What to provide for the System Maturity Matrix (SMM) and how
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The C3S_511 SMM is derived from the Core Climax and adapted to the specific service needs. In order to produce a SMM in the report it is necessary to fill the “SMM_CORE_CLIMAX_c3s_Adapted_v5.0.xlsx” xlsx-file provided with the code of the SPQB namelist. This file contains the different specifications for each SMM category and subcategory. Additional help can be found in “SMM_Guide_for_USERS_C3S_511_v1.pdf” and the “CORE_CLIMAX_MANUAL.pdf”.
 
@@ -271,13 +279,14 @@ The section is currently left blank on purpose.
 
 In addition to these guidelines, Core Climax heritage material is available through `<https://drive.google.com/open?id=1hm5IHx-Nxl3ouVjwGwwuPT2tVmsKeL1g>`_.
 
-
-**3.7 What to provide for GCOS requirement and how [optional]**
+3.7 What to provide for GCOS requirement and how [optional]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The GCOS requirements are in principle checked automatically based on the internal table, reporting these and the scan of the data performed by the ESMValTool. Nevertheless, several datasets are larger than the recommended size (see Section 2.3) and it might be necessary to reduce their size via resolution degradation. In this case it is necessary to adjust the real dataset resolution/temporal coverage in a correctional step. The calculated values can be found in the file “[ECV name]_gcos_values_editable.csv” and can be edited therein. 
 Please note: only change values if really necessary.
 
-**3.8 What to provide for the ESM evaluation and how**
+3.8 What to provide for the ESM evaluation and how
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ESM evaluation report consists of two parts. The first part is a graphical/tabular display about the suitability of the temporal and spatial resolution of the ECV for ESM evaluation (based on the assessment of the expert users), the second part is a list of references where the respective ECV, in the product or a similar product, has been used previously for ESM evaluation.
 
@@ -296,11 +305,13 @@ For the second part, the expert user will have to provide information about refe
 
 There are already plenty of examples in the file. Please follow their example, and add more references if necessary. The information from this csv-file will then be added to the report as bullet point list. If you update this file, please make sure that the content is made available to all the ESMValTool users, either by adding them to the branch and informing WP2 to check it, or sending the library file to WP2. 
 
-**3.9 What to provide for the Sectoral Information System section and how**
+3.9 What to provide for the Sectoral Information System section and how
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sectoral will come in the form of GCOS-like requirements based on the (SIS) User’s feedback. For the beta version they are not implemented. Demonstration will be provided on demand as “place holder” in the reports following the example in the template.
 
-**3.10 What to provide for the Application Performance Matrix (APM) and how**
+3.10 What to provide for the Application Performance Matrix (APM) and how
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 APM is not implemented fully in the beta version. Demonstration will be provided on demand as “place holder” in the reports following the example in the template.
 
