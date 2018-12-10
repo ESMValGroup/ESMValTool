@@ -61,7 +61,6 @@ Below is a table of prioritized variables as reminder. *: some datasets are avai
 | Albedo     | SPOT-VGT*             | 6   | LMU           | April 2019      |
 +------------+-----------------------+-----+---------------+-----------------+
 | Snow       | ^                     | 6   |               | April 2019      |
-|            |                       |     |               |                 |
 +------------+-----------------------+-----+---------------+-----------------+
 | Glaciers   | Randolph*,            | 6   | VUB           | April 2019      |
 |            | Elevation and mass*   |     |               |                 |
