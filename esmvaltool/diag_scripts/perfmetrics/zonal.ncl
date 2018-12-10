@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
+load "$diag_scripts/shared/plot/zonalmean_profile.ncl"
 
 procedure perfmetrics_ptype_script()
 begin

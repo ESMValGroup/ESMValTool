@@ -46,12 +46,12 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"  ; load metadata
+load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 
-load "./diag_scripts/shared/statistics.ncl"  ; load statistics functions
+load "$diag_scripts/shared/statistics.ncl"  ; load statistics functions
 
-load "./diag_scripts/shared/plot/style.ncl"  ; load plot style functions
-load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
+load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
 
 begin
@@ -99,7 +99,7 @@ begin
   ; where also auxiliary coordinates are stored (if available).
   ; If no fx-variable is found a missing value is returned
   fx_var = read_fx_data(info[1], "sftlf")
-  printVarSummary(fx_var[0])
+  printVarSummary(fx_var)
 
   ; Retrieve metadata item for the reference dataset
   atts = True

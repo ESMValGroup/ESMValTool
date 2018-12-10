@@ -227,8 +227,9 @@ class AbstractTask(object):
 
         txt = 'settings:\n{}\nancestors:\n{}'.format(
             pprint.pformat(self.settings, indent=2),
-            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None',
+            '\n\n'.join(
+                _indent(str(task))
+                for task in self.ancestors) if self.ancestors else 'None',
         )
         return txt
 
@@ -274,8 +275,10 @@ class DiagnosticTask(AbstractTask):
                 profile_file = os.path.join(self.settings['run_dir'],
                                             'profile.bin')
                 executables = {
-                    'py': [which('python'), '-m', 'vmprof', '--lines',
-                           '-o', profile_file],
+                    'py': [
+                        which('python'), '-m', 'vmprof', '--lines', '-o',
+                        profile_file
+                    ],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
                 }
@@ -378,16 +381,17 @@ class DiagnosticTask(AbstractTask):
                 "There were warnings during the execution of NCL script %s, "
                 "for details, see the log %s", self.script, self.log)
 
-    def _start_diagnostic_script(self, cmd, env, cwd):
+    def _start_diagnostic_script(self, cmd, env):
         """Start the diagnostic script."""
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
+        cwd = self.settings['run_dir']
         logger.debug("in current working directory: %s", cwd)
         logger.info("Writing output to %s", self.output_dir)
         logger.info("Writing plots to %s", self.settings['plot_dir'])
         logger.info("Writing log to %s", self.log)
 
-        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        rerun_msg = 'cd {}; '.format(cwd)
         if env:
             rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
                                   if k not in os.environ)
@@ -420,24 +424,17 @@ class DiagnosticTask(AbstractTask):
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
-            input_files = [
+            self.settings['input_files'] = [
                 f for f in input_files
                 if f.endswith('.ncl') or os.path.isdir(f)
             ]
         else:
-            input_files = [
+            self.settings['input_files'] = [
                 f for f in input_files
                 if f.endswith('.yml') or os.path.isdir(f)
             ]
 
-        self.settings['input_files'] = input_files
-
-        cmd = list(self.cmd)
-        cwd = None
         env = dict(os.environ)
-
-        settings_file = self.write_settings()
-
         if self.script.lower().endswith('.py'):
             # Set non-interactive matplotlib backend
             env['MPLBACKEND'] = 'Agg'
@@ -446,13 +443,14 @@ class DiagnosticTask(AbstractTask):
             env['diag_scripts'] = os.path.join(
                 os.path.dirname(__file__), 'diag_scripts')
 
+        cmd = list(self.cmd)
+        settings_file = self.write_settings()
         if is_ncl_script:
-            cwd = os.path.dirname(__file__)
             env['settings'] = settings_file
         else:
             cmd.append(settings_file)
 
-        process = self._start_diagnostic_script(cmd, env, cwd)
+        process = self._start_diagnostic_script(cmd, env)
 
         returncode = None
         last_line = ['']
@@ -571,9 +569,10 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
         if len(scheduled) != n_scheduled or len(running) != n_running:
             n_scheduled, n_running = len(scheduled), len(running)
             n_done = n_tasks - n_scheduled - n_running
-            logger.info("Progress: %s tasks running or queued, %s tasks "
-                        "waiting for ancestors, %s/%s done", n_running,
-                        n_scheduled, n_done, n_tasks)
+            logger.info(
+                "Progress: %s tasks running or queued, %s tasks "
+                "waiting for ancestors, %s/%s done", n_running, n_scheduled,
+                n_done, n_tasks)
 
     pool.close()
     pool.join()

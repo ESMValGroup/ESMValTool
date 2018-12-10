@@ -54,9 +54,9 @@ end
 
 ; #############################################################################
 ; Load standard interface scripts
-load "./interface_scripts/logging.ncl"
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
 
 ; #############################################################################
 ; Convenience functions for selecting input_file_info and related attributes
