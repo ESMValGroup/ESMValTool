@@ -3,13 +3,9 @@
 import cf_units
 import iris
 from iris import Constraint
+import numpy as np
 
 from ._derived_variable_base import DerivedVariableBase
-
-# Constants
-WATER_DENSITY = 998.2
-WATER_DENSITY_UNIT = cf_units.Unit('kg m^-3')
-
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `sm`."""
@@ -38,7 +34,8 @@ class DerivedVariable(DerivedVariableBase):
         depth = mrsos_cube.coord('depth').bounds
         height = depth[..., 1] - depth[..., 0]
 
-        sm_cube = mrsos_cube / height / WATER_DENSITY
-        sm_cube.convert_units(WATER_DENSITY_UNITS)
+        sm_cube = mrsos_cube / height / 998.2
+        sm_cube.units = cf_units.Unit('m3 m^-3')
+        sm_cube.data = np.ma.array(sm_cube.data, dtype=np.dtype('float32'))
 
         return sm_cube
