@@ -63,7 +63,7 @@ requirements:
     - ncurses=6.1=hfc679d8_1
     - gcc
     - r-base
-    - r-rcpp    
+    - r-rcpp 
     - libgfortran-ng
     - cdo
     # TODO: add julia

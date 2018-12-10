@@ -18,16 +18,11 @@ documentation:
 datasets:
   - {dataset: EC-EARTH,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
 
-preprocessors:
-  preproc:
-    extract_levels: false
-
 diagnostics:
   quantilebias:
     description: tool for calculation of precipitation quantile bias 
     variables:
       pr:
-        preprocessor: preproc
         reference_dataset: "EC-EARTH"
         mip: day
         field: T2Ds
