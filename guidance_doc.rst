@@ -60,6 +60,6 @@ For the first phase (until the ESMValTool is available through the CDS) it is ne
 The extraction of the datasets is done:
 1. Through the CDS itself 
 2. Using the CDS-Toolbox
-3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script here)
+3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script `here <https://github.com/bascrezee/c3s_tools/blob/master/retrieve_era5.py>`_)
 
 
