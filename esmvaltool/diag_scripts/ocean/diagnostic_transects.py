@@ -466,7 +466,7 @@ def multi_model_contours(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadatas)):
-            color = diagtools.get_colour_from_cmap(index, len(thresholds))
+            color = diagtools.get_colour_from_cmap(index, len(metadatas))
             linewidth = 1.
             linestyle = '-'
             # Determine line style for MultiModel statistics:
