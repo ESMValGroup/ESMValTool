@@ -18,7 +18,7 @@ The reports will be produced with the following procedure:
 
 1. Which ECVs will be evaluated, when and by who?
 --------------------------------------------------
-Below is a table of prioritized variables as reminder. *: some datasets are available on CDS. ^: no datasets available in CDS, please check regularly (latest 15/10/2018 for bold marked deadlines). Bold marked ECVs prioritized for October 2018.
+Below is a table of prioritized variables as reminder. \*: some datasets are available on CDS. ^: no datasets available in CDS, please check regularly (latest 15/10/2018 for bold marked deadlines). Bold marked ECVs prioritized for October 2018.
 
 +------------+-----------------------+-----+---------------+-----------------+
 | ECV        | Products              | WP  | Who evaluates | Release         |
