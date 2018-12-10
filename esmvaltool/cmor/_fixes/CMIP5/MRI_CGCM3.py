@@ -22,7 +22,7 @@ class msftmyz(Fix):
 
         """
         cube.data = np.ma.array(cube.data)
-        cube.data = np.ma.masked_where(cube.data.mask + (cube.data==0.),
+        cube.data = np.ma.masked_where(cube.data.mask + (cube.data == 0.),
                                        cube.data)
 
         return cube
