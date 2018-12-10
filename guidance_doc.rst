@@ -49,3 +49,17 @@ Below is a table of prioritized variables as reminder. Green: some datasets are 
 +------------+----------------------+-----+---------------+-------------+
 | Sea Ice    | ESA-CCI OSTIA, (ERA5)| 5   | ULB           | April 2019  |
 +------------+----------------------+-----+---------------+-------------+
+
+
+
+2. How to access the datasets and make them compatible to ESMValTool
+--------------------------------------------------------------------
+
+For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting off-line and download the datasets on a local machine or cluster where ESMValTool is run. 
+
+The extraction of the datasets is done:
+1. Through the CDS itself 
+2. Using the CDS-Toolbox
+3. Using the CDS API (`<https://pypi.org/project/cdsapi/>`_ with an example script here)
+
+
