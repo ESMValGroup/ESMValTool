@@ -33,12 +33,9 @@ import os
 from itertools import cycle
 
 import iris
-import matplotlib
 import numpy as np
 
 import esmvaltool.diag_scripts.shared as diag
-
-matplotlib.use('Agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
