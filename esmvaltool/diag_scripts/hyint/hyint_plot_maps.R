@@ -86,6 +86,10 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
   # Loop over models
   for (model_idx in c(1:(length(models_name)))) {
+    # Do not compare reference with itself
+    if ((model_idx == ref_idx) && ((plot_type == 2) || (plot_type == 3))) {
+      next
+    }
 
     # setting up path and parameters
     exp <- models_name[model_idx]

@@ -186,7 +186,7 @@ if (write_plots) {
     ref_idx <- length(models_name)
   }
   for (plot_type in plot_type_list) {
-    print(paste0("***** PLOT TYPE: ", plot_type, " *********"))
+    print(paste0("******** PLOT TYPE: ", plot_type, " *********"))
     for (seas in seasons) {
       if (plot_type <= 10) {
         # Plot maps
