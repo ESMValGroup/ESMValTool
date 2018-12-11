@@ -8,6 +8,7 @@ Copernicus C3S 34a lot 2 (MAGIC)
 
 import os
 
+
 def zmnam_preproc(ifile):
 
     os.system('cdo -delete,month=2,day=29 ' + ifile + ' tmp_full_da_nl.nc')
