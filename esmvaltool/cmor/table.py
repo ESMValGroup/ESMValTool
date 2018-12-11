@@ -40,9 +40,13 @@ def read_cmor_tables(cfg_developer):
         else:
             default = custom
         if cmor_type == 'CMIP5':
-            CMOR_TABLES[table] = CMIP5Info(table_path, default=default)
+            CMOR_TABLES[table] = CMIP5Info(
+                table_path, default=default,
+            )
         elif cmor_type == 'CMIP6':
-            CMOR_TABLES[table] = CMIP6Info(table_path, default=default)
+            CMOR_TABLES[table] = CMIP6Info(
+                table_path, default=default,
+            )
 
 
 class CMIP6Info(object):
@@ -80,9 +84,12 @@ class CMIP6Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
         if not cmor_tables_path:
-            cwd = os.path.dirname(os.path.realpath(__file__))
-            cmor_tables_path = os.path.join(cwd, 'tables', 'cmip6')
+            cmor_tables_path = 'cmip6'
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
 
     def _load_table(self, json_file):
@@ -92,7 +99,7 @@ class CMIP6Info(object):
                 return
             table = TableInfo()
             header = raw_data['Header']
-            table.name = header['table_id'][6:]
+            table.name = header['table_id'][6:].split('_')[-1]
             self.tables[table.name] = table
 
             generic_levels = header['generic_levels'].split()
@@ -420,9 +427,12 @@ class CMIP5Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
         if not cmor_tables_path:
-            cwd = os.path.dirname(os.path.realpath(__file__))
-            cmor_tables_path = os.path.join(cwd, 'tables', 'cmip5')
+            cmor_tables_path = 'cmip5'
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
 
     def _load_table(self, table_file, table_name=''):
@@ -581,7 +591,6 @@ class CustomInfo(CMIP5Info):
         )
         self.coords = {}
         self._read_table_file(self._coordinates_file, self.tables['custom'])
-        print(self.tables)
         for dat_file in glob.glob(os.path.join(self._cmor_folder, '*.dat')):
             if dat_file == self._coordinates_file:
                 continue
@@ -623,7 +632,6 @@ class CustomInfo(CMIP5Info):
             found, returns None if not
 
         """
-        print(self.tables)
         return self.tables['custom'].get(short_name, None)
 
     def _read_table_file(self, table_file, table=None):
@@ -631,7 +639,6 @@ class CustomInfo(CMIP5Info):
             self._read_line()
             while True:
                 key, value = self._last_line_read
-                print((key, value))
                 if key == 'generic_levels':
                     for dim in value.split(' '):
                         coord = CoordinateInfo(dim)

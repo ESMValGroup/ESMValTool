@@ -129,6 +129,7 @@ class RunTests(CustomCommand):
         args = [
             'tests',
             'esmvaltool',  # for doctests
+            '--ignore=esmvaltool/cmor/tables/',
             '--doctest-modules',
             '--cov=esmvaltool',
             '--cov-report=term',

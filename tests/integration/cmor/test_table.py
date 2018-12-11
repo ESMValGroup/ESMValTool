@@ -41,6 +41,39 @@ class TestCMIP6Info(unittest.TestCase):
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
 
 
+class Testobs4mipsInfo(unittest.TestCase):
+    """Test for the obs$mips info class"""
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Set up tests
+
+        We read CMIP6Info once to keep tests times manageable
+        """
+        cls.variables_info = CMIP6Info(
+            cmor_tables_path='obs4mips',
+            default=CustomInfo()
+        )
+
+    def test_custom_tables_location(self):
+        """Test constructor with custom tables location"""
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+                                        'cmor', 'tables', 'cmip6')
+        cmor_tables_path = os.path.abspath(cmor_tables_path)
+        CMIP6Info(cmor_tables_path)
+
+    def test_get_variable_tas(self):
+        """Get tas variable"""
+        var = self.variables_info.get_variable('monStderr', 'ndviStderr')
+        self.assertEqual(var.short_name, 'tas')
+
+    def test_get_bad_variable(self):
+        """Get none if a variable is not in the given table"""
+        self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
+
+
 class TestCMIP5Info(unittest.TestCase):
     """Test for the CMIP5 info class"""
 

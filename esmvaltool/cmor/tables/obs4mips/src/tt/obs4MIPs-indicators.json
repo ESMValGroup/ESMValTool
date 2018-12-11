@@ -1,0 +1,20 @@
+{
+        "id:obs4MIPs.NASA-JPL.AIRS.ta.mon.v1|esgf-dev.jpl.nasa.gov": {
+                "quality_control_flags": ["obs4mips_indicators:1:red",
+                                         "obs4mips_indicators:2:orange",
+                                         "obs4mips_indicators:3:yellow",
+                                         "obs4mips_indicators:4:green",
+                                         "obs4mips_indicators:5:gray",
+                                         "obs4mips_indicators:6:dark_gray"
+                                         ]
+        },
+        "id:obs4MIPs.NASA-JPL.AIRS.hus.mon.v1|esgf-dev.jpl.nasa.gov": {
+                "quality_control_flags": ["obs4mips_indicators:1:green",
+                                         "obs4mips_indicators:2:green",
+                                         "obs4mips_indicators:3:green",
+                                         "obs4mips_indicators:4:green",
+                                         "obs4mips_indicators:5:yellow",
+                                         "obs4mips_indicators:6:light_gray"
+                                         ]
+        }
+}
