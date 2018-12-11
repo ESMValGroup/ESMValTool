@@ -28,4 +28,4 @@ def retrieve_sample_data():
     )
 
     datas = ct.climate.daily_mean(data)
-    return datas
+return datas

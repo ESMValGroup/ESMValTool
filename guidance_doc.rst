@@ -70,7 +70,7 @@ Below is a table of prioritized variables as reminder. \*: some datasets are ava
 2. How to access the datasets and make them compatible to ESMValTool
 --------------------------------------------------------------------
 
-For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting off-line and download the datasets on a local machine or cluster where ESMValTool is run. 
+For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting offline and download the datasets on a local machine or cluster where ESMValTool is run. 
 
 The extraction of the datasets is done:
 
@@ -101,13 +101,13 @@ In order to have data compliant with the CDM of the Toolbox, an operation on the
 2.1 Extract 1D from ERA-5
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_1D_ERA5.py>`_
+See example code on how to extract 1D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_1D_ERA5.py>`_
 
 
 2.2 Extract 1-month daily 3D temperature from ERA-5
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/toolbox_3D_ERA5.py>`_
+See example code on how to extract 3D ERA5 data from the CDS via the Toolbox `here <https://github.com/ESMValGroup/ESMValTool-private/blob/C3S_511_v2/esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_3D_ERA5.py>`_
 
 **Please note:** The last two lines perform a daily mean and produce a netcdf output file.
 
