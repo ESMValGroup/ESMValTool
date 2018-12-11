@@ -1,38 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import netCDF4 as nc4
-import sys
-from scipy.stats import linregress
 import matplotlib as mpl
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
-
-    figs_path = figfolder
-    fig_num = 1
-
-    in_folder = datafolder
+    """
+    Plotting of timeseries and maps
+    for the zonal-mean NAM diagnostics
+    """
 
     # Open daily and monthly PCs
     file_name = '_'.join(src_props) + '_pc_da.nc'
-    print(in_folder + file_name)
-    in_file = nc4.Dataset(in_folder + file_name, "r")
+    # print(datafolder + file_name)
+    in_file = nc4.Dataset(datafolder + file_name, "r")
     #
-    time_da = in_file.variables['time'][:]
-    time_da_uni = in_file.variables['time'].units
-    time_da_cal = in_file.variables['time'].calendar
+    # time_da = in_file.variables['time'][:]
+    # time_da_uni = in_file.variables['time'].units
+    # time_da_cal = in_file.variables['time'].calendar
     #
     lev = np.array(in_file.variables['plev'][:], dtype='d')
-    lev_units = in_file.variables['plev'].units
+    # lev_units = in_file.variables['plev'].units
     #
     pc_da = np.array(in_file.variables['PC_da'][:], dtype='d')
     in_file.close()
 
     file_name = '_'.join(src_props) + '_pc_mo.nc'
-    print(in_folder + file_name)
-    in_file = nc4.Dataset(in_folder + file_name, "r")
+    # print(datafolder + file_name)
+    in_file = nc4.Dataset(datafolder + file_name, "r")
     #
     time_mo = np.array(in_file.variables['time'][:], dtype='d')
     time_mo_uni = in_file.variables['time'].units
@@ -43,8 +40,8 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
     # Open monthly gh field
     file_name = 'tmp_gh_mo_an_hem.nc'
-    print(in_folder + file_name)
-    in_file = nc4.Dataset(in_folder + file_name, "r")
+    # print(datafolder + file_name)
+    in_file = nc4.Dataset(datafolder + file_name, "r")
     dims = list(in_file.dimensions.keys())[::-1]  # py3
     print('mo full dims', dims)
 
@@ -124,13 +121,13 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         # Reference normal Gaussian
         mu = 0.
         sigma = 1.
-        plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) *
+        plt.plot(bins, 1. / (sigma * np.sqrt(2 * np.pi)) *
                  np.exp(- (bins - mu)**2 / (2 * sigma**2)),
                  linewidth=2, color='k', linestyle='--')
 
         plt.xlim(min_var, max_var)
         plt.title('Daily PDF ' + str(int(lev[i_lev])) +
-                  ' Pa  ' + src_props[1] + ' '+src_props[2])
+                  ' Pa  ' + src_props[1] + ' ' + src_props[2])
         plt.xlabel('Zonal mean NAM')
         plt.ylabel('Normalized probability')
         plt.tight_layout()
@@ -173,16 +170,16 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
         lons, lats = np.meshgrid(lonw, lat)
 
-        bkg_plot = plt.contourf(lonw, lat, slopew,
-                                colors=('#cccccc', '#ffffff'),
-                                levels=[-10000, 0, 10000],
-                                transform=ccrs.PlateCarree())
+        plt.contourf(lonw, lat, slopew,
+                     colors=('#cccccc', '#ffffff'),
+                     levels=[-10000, 0, 10000],
+                     transform=ccrs.PlateCarree())
 
         # Switch temporarily to solid negative lines
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
-        regr_map = plt.contour(lonw, lat, slopew, levels=regr_levs,
-                               colors='k', transform=ccrs.PlateCarree(),
-                               zorder=5)
+        plt.contour(lonw, lat, slopew, levels=regr_levs,
+                    colors='k', transform=ccrs.PlateCarree(),
+                    zorder=5)
 
         # Invisible contours, only for labels.
         # Workaround for cartopy issue, as of Dec 18

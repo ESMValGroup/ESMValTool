@@ -1,11 +1,12 @@
 import numpy as np
 import netCDF4 as nc4
-import sys
 from scipy import signal
 
 
 def butter_filter(data, fs, lowcut=None, order=2):
-
+    """
+    Function to perform time filtering
+    """
     if lowcut is not None:
         filttype = 'lowpass'
 
@@ -24,7 +25,10 @@ def butter_filter(data, fs, lowcut=None, order=2):
 
 
 def zmnam_calc(indir, outdir, src_props):
-
+    """
+    Function to do EOF/PC decomposition 
+    of input fields
+    """
     deg_to_r = np.pi / 180.
     lat_weighting = True
 
@@ -40,7 +44,7 @@ def zmnam_calc(indir, outdir, src_props):
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
     time = np.array(time_dim[:], dtype='d')
-    startdate = nc4.num2date(time[0], time_uni, time_cal)
+    # startdate = nc4.num2date(time[0], time_uni, time_cal)
     date = nc4.num2date(time, in_file.variables['time'].units,
                         in_file.variables['time'].calendar)
 
@@ -51,12 +55,12 @@ def zmnam_calc(indir, outdir, src_props):
     lev_axi = in_file.variables['plev'].axis
 
     lat = np.array(in_file.variables['lat'][:], dtype='d')
-    lat_nam = in_file.variables['lat'].long_name
+    # lat_nam = in_file.variables['lat'].long_name
     lat_uni = in_file.variables['lat'].units
     lat_axi = in_file.variables['lat'].axis
 
     lon = np.array(in_file.variables['lon'][:], dtype='d')
-    lon_nam = in_file.variables['lon'].long_name
+    # lon_nam = in_file.variables['lon'].long_name
     lon_uni = in_file.variables['lon'].units
     lon_axi = in_file.variables['lon'].axis
 
@@ -98,9 +102,9 @@ def zmnam_calc(indir, outdir, src_props):
             mid_mon.append(idate)
 
         # Save last day of the month
-        if ((idate == len(date)-1) or
+        if ((idate == len(date) - 1) or
             (date[idate].month == mo and
-             date[idate+1].month != mo)):
+             date[idate + 1].month != mo)):
             end_mon.append(idate)
 
         idate += 1
@@ -118,10 +122,6 @@ def zmnam_calc(indir, outdir, src_props):
         zg_da_lp_an = zg_da_lp[:, i_lev, :] - np.mean(
             zg_da_lp[:, i_lev, :], axis=0)
         cov = np.dot(zg_da_lp_an.T, zg_da_lp_an) / (n_tim - 1)
-
-        # Print covariance matrix shape and check symmetry
-        # print(np.shape(cov))
-        # print("Symmetric?", (cov.transpose() == cov).all())
 
         # Compute eigenvectors and eigenvalues
         eigenval, eigenvec = np.linalg.eig(cov)
@@ -224,8 +224,9 @@ def zmnam_calc(indir, outdir, src_props):
     file_out.close()
 
     # (2) monthly PCs
-    file_out = nc4.Dataset(outdir+'_'.join(src_props)+'_pc_mo.nc',
-                           mode='w', format='NETCDF3_CLASSIC')
+    file_out = nc4.Dataset(outdir + '_'.join(src_props) + '_pc_mo.nc',
+                           mode='w', 
+                           format='NETCDF3_CLASSIC')
     file_out.title = 'Zonal mean annular mode (2)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
     C. Cagnazzo (c.cagnazzo@isac.cnr.it)'
