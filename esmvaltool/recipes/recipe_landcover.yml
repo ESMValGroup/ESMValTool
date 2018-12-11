@@ -19,8 +19,7 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM-LR,       project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
-  - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
-  - {dataset: HadGEM2-ES,       project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
+  - {dataset: inmcm4,           project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
   - {dataset: ESACCI-LANDCOVER, project: OBS,   type: sat,   version: 1, tier: 1, start_year: 2008,  end_year: 2012}
 
 preprocessors:
@@ -45,6 +44,16 @@ diagnostics:
         mip: Lmon
         field: T2Ms
       treeFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: Lmon
+        field: T2Ms
+      shrubFrac:
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: Lmon
+        field: T2Ms
+      cropFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon

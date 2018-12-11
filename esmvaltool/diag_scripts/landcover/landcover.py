@@ -78,7 +78,8 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     outtype = cfg.get('output_file_type', 'png')
     logger.info('Generating plots for filetype: ' + outtype)
 
-    nicename = {'baresoilFrac': 'bare soil covered', 'treeFrac': 'tree covered', 'grassFrac': 'grass covered'}
+    nicename = {'baresoilFrac': 'bare soil covered', 'treeFrac': 'tree covered', 'grassFrac': 'grass covered',
+                'cropFrac': 'crop covered', 'shrubFrac': 'shrub covered'}
     plottitle = {'area': ' '.join(['Accumulated',nicename.get(var,var),'area']),
                  'frac': ' '.join(['Average',nicename.get(var,var),'fraction']),
                  'bias': ' '.join(['Average',nicename.get(var,var),'fraction bias'])}
