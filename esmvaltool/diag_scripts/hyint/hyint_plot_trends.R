@@ -74,7 +74,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   # Loop over models
   for (model_idx in 1:nmodels) {
     # setting up path and parameters
-    exp <- models_name[model_idx]
     year1 <- models_start_year[model_idx]
     year2 <- models_end_year[model_idx]
 
@@ -102,7 +101,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       years <- years[match(ryearplot, years)]
       years <- years[!is.na(years)]
     }
-    nyears <- length(years)
     if (plot_type >= 14) {
       add_trend <- F
     } # do not plot trend line for plot 14 or 15
@@ -110,7 +108,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     # Startup graphics for multi-region timeseries
     if (plot_type == 12) {
       field_label <- paste(field_names, collapse = "-")
-      figname <- getfilename.figure(
+      figname <- getfilename_figure(
         plot_dir_exp, field_label, year1, year2,
         model_idx, season, "", "regions", label_figname, "timeseries",
         output_file_type
@@ -124,12 +122,12 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     #  Startup graphics for bar plot of trend coefficients
     if (plot_type == 14) {
       field_label <- paste(field_names, collapse = "-")
-      figname <- getfilename.figure(
+      figname <- getfilename_figure(
         plot_dir_exp, field_label, year1, year2,
         model_idx, season, "", "regions", label_figname,
         "trend_summary", output_file_type
       )
-      graphics.startup(figname, output_file_type, diag_script_cfg)
+      graphics_startup(figname, output_file_type, diag_script_cfg)
       par(
         mfrow = c(npanrow, npancol), cex.main = 1.3, cex.axis = 1.2,
         cex.lab = 1.2, mar = c(8, 8, 2, 2), oma = c(1, 1, 1, 1)
@@ -154,7 +152,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         ivar <- which(field_names == var)
         for (stype in var_type[1:2]) {
           svar <- paste0(var, "_", stype)
-          rfield <- ncdf.opener(infile, svar, "region", timedimname,
+          rfield <- ncdf_opener(infile, svar, "region", timedimname,
             rotate = "no"
           )
           assign(svar, rfield) # assign field data to field name
@@ -167,7 +165,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         }
         for (stype in var_type[3:4]) {
           svar <- paste0(var, "_", stype)
-          rfield <- ncdf.opener(infile, svar, "region", "coefficients",
+          rfield <- ncdf_opener(infile, svar, "region", "coefficients",
             rotate = "no"
           )
           assign(svar, rfield) # assign field data to field name
@@ -175,9 +173,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       }
 
       # store size of time and region arrays
-      time <- ncdf.opener(infile, timedimname, timedimname, rotate = "no")
+      time <- ncdf_opener(infile, timedimname, timedimname, rotate = "no")
       +1950
-      regions <- ncdf.opener(infile, "regions", "region", "boundaries",
+      regions <- ncdf_opener(infile, "regions", "region", "boundaries",
         rotate = "no"
       )
 
@@ -221,10 +219,10 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         rettimes <- which(!is.na(time))
         if (trend_years[1] != F) {
           # apply trend to limited time interval if required
-          rettimes <- which( (time >= trend_years[1]) & time <= trend_years[2])
+          rettimes <- which((time >= trend_years[1]) & time <= trend_years[2])
           if (length(trend_years) == 4) {
             # apply trend also to second time interval if required
-            rettimes2 <- which( (time >= trend_years[3]) &
+            rettimes2 <- which((time >= trend_years[3]) &
               time <= trend_years[4])
           }
         }
@@ -335,7 +333,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             )
             ncol <- 1
             #    text((xlim[1]+(xlim[2]-xlim[1])*ireg/nregions),
-            #         tmp.levels[1],region_codes[iselreg],col=col_ts,offset=0.5)
+            #        tmp.levels[1],region_codes[iselreg],col=col_ts,offset=0.5)
             if (add_legend < 0) {
               ncol <- nregions
             }
@@ -387,7 +385,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             xlab <- "" # "Models"
             xlabels <- models_name
           }
-          # hereafter xregions is the x which also holds models for plot_type 15
+          # hereafter xregions is the x which also holds models for plottype 15
           xregions <- 1:nx
 
           # Actual plotting

@@ -257,7 +257,7 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
 
   # Calculate mean and mean_sd for hyint
   if (external_norm[1] == F) {
-    # calculate or load hyint_mean from file to be consistent with other indices
+    # calculate or load hyint_mean from file for consistency with other indice
     ret_years <- which(years >= norm_years[1] & years <= norm_years[2])
     hyint_mean <- apply(hyint[, , ret_years], c(1, 2), mean, na.rm = T)
     hyint_mean_sd <- apply(hyint[, , ret_years], c(1, 2), sd, na.rm = T)
