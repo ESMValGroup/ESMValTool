@@ -1,4 +1,35 @@
-"""Python example diagnostic."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Landcover analysis plots.
+
+###############################################################
+landcover/landcover.py
+Authors ESMValToolV1 Version
+    Stefan Hagemann (stefan.hagemann@hzg.de)
+    Alexander Loew
+    Benjamin Mueller (b.mueller@iggf.geo.uni-muenchen.de)
+Port to ESMValTool Version 2
+    Tobias Stacke (tobias.stacke@mpimet.mpg.de)
+###############################################################
+
+Description
+-----------
+    Computes accumulated and fractional extent for major land
+    cover types (bare soil, crops, grasses, shrubs and trees)
+    for the whole globe as well as separated into regions
+    (tropics, northern extratropics and southern extratropics).
+    The fractions are compared to ESA-CCI land cover data.
+
+    ESA-CCI land cover data needs to be downloaded separately
+    by the user. The data and a downloader are available at
+    https://maps.elie.ucl.ac.be/CCI/viewer/ upon registration.
+    Note, that all experiments will be regridded onto the
+    grid of the ESA-CCI data, thus it is recommended to
+    download the coarses resolution which is sufficient for
+    the planned study. For testing, ESA-CCI data on 0.5 degree
+    resolution was used.
+"""
+
 import logging
 import os
 import numpy as np
