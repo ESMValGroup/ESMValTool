@@ -22,3 +22,6 @@ dependencies:
       # TODO: include dummydata in esmvaltool repository and move to setup.py
       # dummydata fetched from github as a zip file, contains latest version
       - https://github.com/ESMValGroup/dummydata/archive/dev.zip
+      - sklearn
+      - pandas
+      - eofs
