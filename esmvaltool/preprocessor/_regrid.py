@@ -195,6 +195,17 @@ def regrid(src_cube, target_grid, scheme):
                 [coord] = coords
                 src_cube.remove_coord(coord)
 
+    # Guess bounds for area weighted regridding if necessary
+    if scheme.lower() == 'area_weighted':
+        if not src_cube.coord('latitude').has_bounds():
+            src_cube.coord('latitude').guess_bounds()
+        if not src_cube.coord('longitude').has_bounds():
+            src_cube.coord('longitude').guess_bounds()
+        if not target_grid.coord('latitude').has_bounds():
+            target_grid.coord('latitude').guess_bounds()
+        if not target_grid.coord('longitude').has_bounds():
+            target_grid.coord('longitude').guess_bounds()
+
     # Perform the horizontal regridding.
     attempt_irregular_regridding = False
     try:
