@@ -1,7 +1,12 @@
+"""
+
+Zonal-mean annular mode preproc routine
+Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
+Copernicus C3S 34a lot 2 (MAGIC)
+
+"""
+
 import os
-
-# Note: requires system install of cdo
-
 
 def zmnam_preproc(ifile):
 

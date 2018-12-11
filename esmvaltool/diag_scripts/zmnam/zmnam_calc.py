@@ -1,3 +1,11 @@
+"""
+
+Zonal-mean annular mode calculation routine
+Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
+Copernicus C3S 34a lot 2 (MAGIC)
+
+"""
+
 import numpy as np
 import netCDF4 as nc4
 from scipy import signal
@@ -5,7 +13,9 @@ from scipy import signal
 
 def butter_filter(data, fs, lowcut=None, order=2):
     """
-    Function to perform time filtering
+
+    Function to perform time filtering.
+
     """
     if lowcut is not None:
         filttype = 'lowpass'
@@ -26,8 +36,9 @@ def butter_filter(data, fs, lowcut=None, order=2):
 
 def zmnam_calc(indir, outdir, src_props):
     """
-    Function to do EOF/PC decomposition
-    of input fields
+
+    Function to do EOF/PC decomposition of input fields
+
     """
     deg_to_r = np.pi / 180.
     lat_weighting = True

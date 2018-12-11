@@ -1,3 +1,11 @@
+"""
+
+Zonal-mean annular mode plot routine
+Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
+Copernicus C3S 34a lot 2 (MAGIC)
+
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import netCDF4 as nc4
@@ -11,7 +19,6 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     Plotting of timeseries and maps
     for the zonal-mean NAM diagnostics
     """
-
     # Open daily and monthly PCs
     file_name = '_'.join(src_props) + '_pc_da.nc'
     # print(datafolder + file_name)
