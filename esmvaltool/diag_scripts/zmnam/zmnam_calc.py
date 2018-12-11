@@ -26,7 +26,7 @@ def butter_filter(data, fs, lowcut=None, order=2):
 
 def zmnam_calc(indir, outdir, src_props):
     """
-    Function to do EOF/PC decomposition 
+    Function to do EOF/PC decomposition
     of input fields
     """
     deg_to_r = np.pi / 180.
@@ -225,7 +225,7 @@ def zmnam_calc(indir, outdir, src_props):
 
     # (2) monthly PCs
     file_out = nc4.Dataset(outdir + '_'.join(src_props) + '_pc_mo.nc',
-                           mode='w', 
+                           mode='w',
                            format='NETCDF3_CLASSIC')
     file_out.title = 'Zonal mean annular mode (2)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \

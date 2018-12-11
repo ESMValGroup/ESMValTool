@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def main(cfg):
     """
-    Run the zonal-mean NAM diagnostic, 
+    Run the zonal-mean NAM diagnostic,
     calling in order:
     - preprocessing
     - index calculation
