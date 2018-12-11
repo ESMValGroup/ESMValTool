@@ -179,18 +179,22 @@ if (write_netcdf & run_timeseries) {
 
 ## Create figures
 if (write_plots) {
+  plot_type_list <- plot_type
    # select reference dataset; if not available, use last of list
   ref_idx <- which(models_name == reference_model)
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_name)
   }
-  for (seas in seasons) {
-    if (plot_type <= 10) {
-      # Plot maps
-      hyint_plot_maps(work_dir, plot_dir, work_dir, ref_idx, seas)
-    } else {
-      # Plot timeseries and trends
-      hyint_plot_trends(work_dir, plot_dir, work_dir, ref_idx, seas)
+  for (plot_type in plot_type_list) {
+    print(paste0("***** PLOT TYPE: ", plot_type, " *********"))
+    for (seas in seasons) {
+      if (plot_type <= 10) {
+        # Plot maps
+        hyint_plot_maps(work_dir, plot_dir, work_dir, ref_idx, seas)
+      } else {
+        # Plot timeseries and trends
+        hyint_plot_trends(work_dir, plot_dir, work_dir, ref_idx, seas)
+      }
     }
   }
 }
