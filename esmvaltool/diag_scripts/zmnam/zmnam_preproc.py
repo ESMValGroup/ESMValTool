@@ -1,6 +1,7 @@
 """
 
-Zonal-mean annular mode preproc routine
+Zonal-mean annular mode preproc routine.
+
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
 
@@ -10,6 +11,11 @@ import os
 
 
 def zmnam_preproc(ifile):
+    """
+
+    cdo preprocessing of the input dataset files
+
+    """
 
     os.system('cdo -delete,month=2,day=29 ' + ifile + ' tmp_full_da_nl.nc')
 

@@ -1,6 +1,7 @@
 """
 
-Zonal-mean annular mode plot routine
+Zonal-mean annular mode plot routine.
+
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
 

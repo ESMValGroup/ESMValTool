@@ -17,6 +17,7 @@ dependencies:
   - r-base
   - r-rcpp
   - libgfortran-ng # needed by r packages
+  - hdf5
   - cdo  
   # TODO: add julia
 

@@ -65,6 +65,7 @@ requirements:
     - r-base
     - r-rcpp
     - libgfortran-ng
+    - hdf5  
     - cdo  
     # TODO: add julia
 test:

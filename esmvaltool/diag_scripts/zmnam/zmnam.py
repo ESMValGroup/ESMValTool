@@ -1,6 +1,7 @@
 """
 
-Zonal mean Northern Annular Mode main routine.
+Zonal-mean Northern Annular Mode main routine.
+
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
 
@@ -28,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 def main(cfg):
-
     """
 
     Run the zonal-mean NAM diagnostic,
