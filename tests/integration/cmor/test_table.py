@@ -67,7 +67,7 @@ class Testobs4mipsInfo(unittest.TestCase):
     def test_get_variable_tas(self):
         """Get tas variable"""
         var = self.variables_info.get_variable('monStderr', 'ndviStderr')
-        self.assertEqual(var.short_name, 'tas')
+        self.assertEqual(var.short_name, 'ndviStderr')
 
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table"""
