@@ -6,8 +6,6 @@ import pdb
 
 import iris
 import esmvaltool.diag_scripts.shared as diag
-import matplotlib
-matplotlib.use('Agg')
 
 
 logger = logging.getLogger(os.path.basename(__file__))
