@@ -31,14 +31,13 @@ logger = logging.getLogger(__name__)
 def main(cfg):
     """
 
-    Run the zonal-mean NAM diagnostic,
-    calling in order:
+    Run the zonal-mean NAM diagnostic, calling in order:
+
     - preprocessing
     - index calculation
     - regression and plot
 
     """
-
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = cfg['input_data']

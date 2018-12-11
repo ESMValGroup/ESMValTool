@@ -16,10 +16,7 @@ from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
-    """
-    Plotting of timeseries and maps
-    for the zonal-mean NAM diagnostics
-    """
+    """Plotting of timeseries and maps for zmnam diagnostics."""
     # Open daily and monthly PCs
     file_name = '_'.join(src_props) + '_pc_da.nc'
     # print(datafolder + file_name)
@@ -176,7 +173,7 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         # Add wrap-around point in longitude.
         slopew, lonw = add_cyclic_point(slope, lon)
 
-        lons, lats = np.meshgrid(lonw, lat)
+        # lons, lats = np.meshgrid(lonw, lat)
 
         plt.contourf(lonw, lat, slopew,
                      colors=('#cccccc', '#ffffff'),

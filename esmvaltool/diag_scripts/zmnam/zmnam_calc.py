@@ -13,11 +13,7 @@ from scipy import signal
 
 
 def butter_filter(data, fs, lowcut=None, order=2):
-    """
-
-    Function to perform time filtering.
-
-    """
+    """Function to perform time filtering."""
     if lowcut is not None:
         filttype = 'lowpass'
 
@@ -36,11 +32,7 @@ def butter_filter(data, fs, lowcut=None, order=2):
 
 
 def zmnam_calc(indir, outdir, src_props):
-    """
-
-    Function to do EOF/PC decomposition of input fields
-
-    """
+    """Function to do EOF/PC decomposition of zg field."""
     deg_to_r = np.pi / 180.
     lat_weighting = True
 

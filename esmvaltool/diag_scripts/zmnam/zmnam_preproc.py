@@ -11,12 +11,8 @@ import os
 
 
 def zmnam_preproc(ifile):
-    """
-
-    cdo preprocessing of the input dataset files
-
-    """
-
+    """Preprocessing of the input dataset files."""
+    # Delete leap day, if any.
     os.system('cdo -delete,month=2,day=29 ' + ifile + ' tmp_full_da_nl.nc')
 
     # Compute anomalies from the daily/monthly means. Regrid.
