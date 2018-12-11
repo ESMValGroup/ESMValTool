@@ -17,7 +17,7 @@ dependencies:
   - r-base
   - r-rcpp
   - libgfortran-ng # needed by r packages
-  - cdo  
+  - cdo=1.9.3
   # TODO: add julia
 
   - pip:

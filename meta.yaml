@@ -65,7 +65,7 @@ requirements:
     - r-base
     - r-rcpp
     - libgfortran-ng
-    - cdo  
+    - cdo=1.9.3
     # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
