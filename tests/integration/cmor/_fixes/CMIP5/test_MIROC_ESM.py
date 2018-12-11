@@ -14,7 +14,7 @@ class TestCo2(unittest.TestCase):
         self.fix = co2()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('1e-6'))
 
