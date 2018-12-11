@@ -18,7 +18,7 @@ print("PDF production started.")
 
 for source in source_list:
 
-    print "processing " + source
+    print("processing " + source)
 
     build = source.replace("source", "build")
 
