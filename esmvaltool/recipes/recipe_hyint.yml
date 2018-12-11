@@ -18,8 +18,8 @@ documentation:
 
 datasets:
   - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
+  - {dataset: ACCESS1-3,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
 #  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
-#  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
 
 preprocessors:
   preproc:
@@ -54,22 +54,20 @@ diagnostics:
         # 13) timeseries with multiple models
         # 14) summary trend coefficients multiple regions
         # 15) summary trend coefficients multiple models
-        plot_type: [1,2,3,4,10,11,12,13,14,15]
+        plot_type: [1,2,3,4,12,13,14,15]
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
-        # World,World60 (60S/60N),"Tropics (30S/30N), South America, Africa , North America, India, Europe, East-Asia, Australia
+        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 5=Africa,
+        # 6=Northi,7=America,8=India,9=Europe,10=East-Asia,11=Australia
         selregions: [1,2,3,4,5,6,7,8,9,10]
         # Select one or more fields for timeseries and maps from the following list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        selfields: [8,4,9,1,2,3]
-
-
-        ## ------- Advanced settings ----------
+        selfields: [1, 4, 8]
 
         seasons: "ALL"   # seasons to be analysed: "ALL", "DJF", ...
-
        
+        ## ------- Advanced settings ----------
         timedimname: "time"  # Define time dimension name
         rotlongitude: "full" # a) "full" to convert input arrays from 0/360 to -180/180 longitude grid
                              # b) "no" to leave input data on its original grid
