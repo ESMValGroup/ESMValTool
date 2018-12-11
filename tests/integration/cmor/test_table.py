@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from esmvaltool.cmor.table import CMIP5Info, CMIP6Info
+from esmvaltool.cmor.table import CMIP5Info, CMIP6Info, CustomInfo
 
 
 class TestCMIP6Info(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestCMIP6Info(unittest.TestCase):
 
         We read CMIP6Info once to keep tests times manageable
         """
-        cls.variables_info = CMIP6Info()
+        cls.variables_info = CMIP6Info(default=CustomInfo())
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location"""
@@ -51,7 +51,7 @@ class TestCMIP5Info(unittest.TestCase):
 
         We read CMIP5Info once to keep testing times manageable
         """
-        cls.variables_info = CMIP5Info()
+        cls.variables_info = CMIP5Info(default=CustomInfo())
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location"""
@@ -69,3 +69,34 @@ class TestCMIP5Info(unittest.TestCase):
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table"""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
+
+
+class TestCustomInfo(unittest.TestCase):
+    """Test for the custom info class"""
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Set up tests
+
+        We read CMIP5Info once to keep testing times manageable
+        """
+        cls.variables_info = CustomInfo()
+
+    def test_custom_tables_location(self):
+        """Test constructor with custom tables location"""
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+                                        'cmor', 'tables', 'cmip5')
+        cmor_tables_path = os.path.abspath(cmor_tables_path)
+        CustomInfo(cmor_tables_path)
+
+    def test_get_variable_tas(self):
+        """Get tas variable"""
+        CustomInfo()
+        var = self.variables_info.get_variable('Amon', 'netcre')
+        self.assertEqual(var.short_name, 'netcre')
+
+    def test_get_bad_variable(self):
+        """Get none if a variable is not in the given table"""
+        self.assertIsNone(self.variables_info.get_variable('Omon', 'badvar'))
