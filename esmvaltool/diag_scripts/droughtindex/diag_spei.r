@@ -40,7 +40,7 @@ getnc <- function(yml, m, lat = FALSE) {
          month <- as.numeric(substr(date, 6, 7))
          mdays <- monarr[month]
          pdays <- mdays
-	 if (month == 2 & lpyear == TRUE){
+         if (month == 2 & lpyear == TRUE){
            pdays <- 29
            if (tcal$value != "365_day"){
              mdays <- 29
@@ -50,7 +50,7 @@ getnc <- function(yml, m, lat = FALSE) {
          }
          v[,,cnt] <- v[,,cnt] * mdays * 24 * 3600.
          date <- date + pdays
-	 cnt = cnt + 1
+         cnt <- cnt + 1
        }
      }
    }
@@ -165,7 +165,7 @@ for (mod in 1:nmods){
       tmp <- pme_spei[,,t]
       tmp[is.na(refmsk)] <- NA
       pme_spei[,,t] <- tmp
-   }#t
+   }
    pme_spei[is.infinite(pme_spei)] <- NA
    pme_spei[pme_spei > 10000] <- NA
    # Weight against latitude
@@ -173,9 +173,9 @@ for (mod in 1:nmods){
    for (j in 1:d[2]){
      h <- h + hist(pme_spei[j,,], breaks = histbrks,
                    plot = FALSE)$counts * cos(lat[j] * pi / 180.)
-   }#j
-   histarr[mod,] <- h / sum(h, na.rm=TRUE)
-}#mod
+   }
+   histarr[mod,] <- h / sum(h, na.rm = TRUE)
+}
 save(histarr, file = paste0(params$work_dir,
                             "/", "histarr.rsav"))
 

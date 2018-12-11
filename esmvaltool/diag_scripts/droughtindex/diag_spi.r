@@ -90,16 +90,14 @@ for (mod in 1:nmods){
                               ihigh = histbrks[nnh + 1])
    }
    ncwritenew(var1_input, mod, hist_spi, wdir, histbrks)
-   #v1_spi[is.infinite(v1_spi)] <- NA
-   #v1_spi[v1_spi > 10000] <- NA
    # Weight against latitude
    h <- c(1:length(histnams)) * 0
    for (j in 1:d[2]){
      h <- h + hist(v1_spi[j,,], breaks = histbrks,
                    plot = FALSE)$counts * cos(lat[j] * pi / 180.)
-   }#j
+   }
    histarr[mod, ] <- h / sum(h, na.rm = TRUE)
-}#mod
+}
 save(histarr, file = paste0(params$work_dir,
                             "/", "histarr.rsav"))
 
