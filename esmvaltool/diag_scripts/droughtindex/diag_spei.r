@@ -40,14 +40,17 @@ getnc <- function(yml, m, lat = FALSE) {
          month <- as.numeric(substr(date, 6, 7))
          mdays <- monarr[month]
          pdays <- mdays
-         if (tcal$value != "365_day" & month == 2 & lpyear == TRUE){
-           mdays <- 29
+	 if (month == 2 & lpyear == TRUE){
            pdays <- 29
-         }else{
-           pdays <- 29
+           if (tcal$value != "365_day"){
+             mdays <- 29
+           }else{
+             mdays <- 28
+           }
          }
          v[,,cnt] <- v[,,cnt] * mdays * 24 * 3600.
          date <- date + pdays
+	 cnt = cnt + 1
        }
      }
    }
@@ -55,18 +58,31 @@ getnc <- function(yml, m, lat = FALSE) {
   nc_close(id)
   return(v)
 }
-ncwrite <- function(yml, m, data, wdir){
+
+ncwritenew <- function(yml, m, hist, wdir, bins){
   fnam <- strsplit(yml[m][[1]]$filename, "/")[[1]]
   pcs <- strsplit(fnam[length(fnam)], "_")[[1]]
   pcs[which(pcs == yml[m][[1]]$short_name)] <- "spei"
-  onam <- paste0(wdir, "/", paste(pcs, collapse = "_"))
-  system(paste0("cp ", yml[m][[1]]$filename, " ", onam))
-  idw <- nc_open(onam, write = TRUE)
-    ncvar_put(idw, yml[m][[1]]$short_name,  data)
+  onam <- paste(pcs, collapse = "_")
+  onam <- paste0(wdir, "/", strsplit(onam, ".nc"), "_hist.nc")
+  ncid_in <- nc_open(yml[m][[1]]$filename)
+  var <- ncid_in$var[[yml[m][[1]]$short_name]]
+  xdim <- ncid_in$dim[["lon"]]
+  ydim <- ncid_in$dim[["lat"]]
+  hdim <- ncdim_def("bins", "level", bins[1:(length(bins) - 1)])
+  hdim2 <- ncdim_def("binsup", "level", bins[2:length(bins)])
+  var_hist <- ncvar_def("hist", "counts", list(xdim, ydim, hdim), NA)
+  idw <- nc_create(onam, var_hist)
+  ncvar_put(idw, "hist", hist)
   nc_close(idw)
 }
+
+whfcn <- function(x, ilow, ihigh){
+  return(length(which(x >= ilow & x < ihigh)))
+}
+
 dothornthwaite <- function(v, lat){
- print("Estimating PET wit Thorntwaite method.")
+ print("Estimating PET with Thornthwaite method.")
  dpet <- v * NA
  d <- dim(dpet)
  for (i in 1:d[2]){
@@ -95,16 +111,23 @@ histnams <- c("Extremely dry", "Moderately dry", "Dry",
               "Neutral",
               "Wet", "Moderately wet", "Extremely wet")
 
-print(names(var1_input))
-for (n in 1:nmods){
-   if (var1_input[n][[1]]$cmor_table == "OBS"){
-      ref <- getnc(var1_input, n)
-      refmsk <- apply(ref, c(1, 2), FUN = mean)
-      refmsk[refmsk > 10000] <- NA
-      refmsk[!is.na(refmsk)] <- 1
-      nref <- n
-   }
+refnam <- var1_input[1][[1]]$reference_dataset
+n <- 1
+while (n <= nmods){
+  if (var1_input[n][[1]]$dataset == refnam) break
+  n <- n + 1
 }
+nref <- n
+lat <- getnc(var1_input, nref, lat = TRUE)
+if (max(lat) > 90){
+  print(paste0("Latitude must be [-90,90]: min=",
+  min(lat), " max=", max(lat)))
+  stop("Aborting!")
+}
+ref <- getnc(var1_input, nref, lat = FALSE)
+refmsk <- apply(ref, c(1, 2), FUN = mean, na.rm = TRUE)
+refmsk[refmsk > 10000] <- NA
+refmsk[!is.na(refmsk)] <- 1
 
 histarr <- array(NA, c(nmods, length(histnams)))
 for (mod in 1:nmods){
@@ -123,17 +146,21 @@ for (mod in 1:nmods){
    d <- dim(pme)
    pme_spei <- pme * NA
    for (i in 1:d[1]){
-    tmp <- v1[i,,]
-    pme_spei[i,,] <- t(spei(t(tmp), 1, na.rm = TRUE)$fitted)
+     wh <- which(!is.na(refmsk[i,]))
+     if (length(wh) > 0){
+       tmp <- pme[i,wh,]
+       pme_spei[i,wh,] <- t(spei(t(tmp), 1, na.rm = TRUE)$fitted)
+     }
    }
-   print(summary(as.numeric(pme_spei)))
-   pme_spei[is.infinite(pme_spei)] <- NA
-   print(summary(as.numeric(pme_spei)))
-   pme_spei[pme_spei > 10000] <- NA
-   print(summary(as.numeric(pme_spei)))
    pme_spei[is.infinite(pme_spei)] <- NA
    pme_spei[pme_spei > 10000] <- NA
-   ncwrite(var1_input, mod, pme_spei, wdir)
+   hist_spei <- array(NA, c(d[1], d[2], length(histbrks) - 1))
+   for (nnh in 1:(length(histbrks) - 1)){
+     hist_spei[,,nnh] <- apply(pme_spei, c(1, 2), FUN = whfcn,
+                              ilow = histbrks[nnh],
+                              ihigh = histbrks[nnh + 1])
+   }
+   ncwritenew(var1_input, mod, hist_spei, wdir, histbrks)
    for (t in 1:d[3]){
       tmp <- pme_spei[,,t]
       tmp[is.na(refmsk)] <- NA
@@ -147,10 +174,10 @@ for (mod in 1:nmods){
      h <- h + hist(pme_spei[j,,], breaks = histbrks,
                    plot = FALSE)$counts * cos(lat[j] * pi / 180.)
    }#j
-   histarr[mod,] <- h / sum(h)
+   histarr[mod,] <- h / sum(h, na.rm=TRUE)
 }#mod
 save(histarr, file = paste0(params$work_dir,
-                          "/", "histarr.rsav"))
+                            "/", "histarr.rsav"))
 
 bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]

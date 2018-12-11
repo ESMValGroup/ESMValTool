@@ -13,15 +13,27 @@ getnc <- function(yml, m, lat = FALSE) {
   nc_close(id)
   return(v)
 }
-ncwrite <- function(yml, m, data, wdir){
+
+ncwritenew <- function(yml, m, hist, wdir, bins){
   fnam <- strsplit(yml[m][[1]]$filename, "/")[[1]]
   pcs <- strsplit(fnam[length(fnam)], "_")[[1]]
   pcs[which(pcs == yml[m][[1]]$short_name)] <- "spi"
-  onam <- paste0(wdir, "/", paste(pcs, collapse = "_"))
-  system(paste0("cp ", yml[m][[1]]$filename, " ", onam))
-  idw <- nc_open(onam, write = TRUE)
-    ncvar_put(idw, yml[m][[1]]$short_name, data)
+  onam <- paste(pcs, collapse = "_")
+  onam <- paste0(wdir, "/", strsplit(onam, ".nc"), "_hist.nc")
+  ncid_in <- nc_open(yml[m][[1]]$filename)
+  var <- ncid_in$var[[yml[m][[1]]$short_name]]
+  xdim <- ncid_in$dim[["lon"]]
+  ydim <- ncid_in$dim[["lat"]]
+  hdim <- ncdim_def("bins", "level", bins[1:(length(bins) - 1)])
+  hdim2 <- ncdim_def("binsup", "level", bins[2:length(bins)])
+  var_hist <- ncvar_def("hist", "counts", list(xdim, ydim, hdim), NA)
+  idw <- nc_create(onam, var_hist)
+  ncvar_put(idw, "hist", hist)
   nc_close(idw)
+}
+
+whfcn <- function(x, ilow, ihigh){
+  return(length(which(x >= ilow & x < ihigh)))
 }
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -37,23 +49,23 @@ histbrks <- c(-99999, -2, -1.5, -1, 1, 1.5, 2, 99999)
 histnams <- c("Extremely dry", "Moderately dry", "Dry",
               "Neutral",
               "Wet", "Moderately wet", "Extremely wet")
-
-print(names(var1_input))
-for (n in 1:nmods){
-   if (var1_input[n][[1]]$cmor_table == "OBS"){
-      lat <- getnc(var1_input, n, lat = TRUE)
-      if (max(lat) > 90){
-        print(paste0("Latitude must be [-90,90]: min=",
-              min(lat), " max=", max(lat)))
-        stop("Aborting!")
-      }
-      ref <- getnc(var1_input, n, lat = FALSE)
-      refmsk <- apply(ref, c(1, 2), FUN = mean)
-      refmsk[refmsk > 10000] <- NA
-      refmsk[!is.na(refmsk)] <- 1
-      nref <- n
-   }
+refnam <- var1_input[1][[1]]$reference_dataset
+n <- 1
+while (n <= nmods){
+  if (var1_input[n][[1]]$dataset == refnam) break
+  n <- n + 1
 }
+nref <- n
+lat <- getnc(var1_input, nref, lat = TRUE)
+if (max(lat) > 90){
+  print(paste0("Latitude must be [-90,90]: min=",
+  min(lat), " max=", max(lat)))
+  stop("Aborting!")
+}
+ref <- getnc(var1_input, nref, lat = FALSE)
+refmsk <- apply(ref, c(1, 2), FUN = mean, na.rm = TRUE)
+refmsk[refmsk > 10000] <- NA
+refmsk[!is.na(refmsk)] <- 1
 
 histarr <- array(NA, c(nmods, length(histnams)))
 for (mod in 1:nmods){
@@ -62,30 +74,34 @@ for (mod in 1:nmods){
    d <- dim(v1)
    v1_spi <- v1 * NA
    for (i in 1:d[1]){
-    tmp <- v1[i,,]
-    v1_spi[i,,] <- t(spi(t(tmp), 1, na.rm = TRUE,
-                     distribution = "PearsonIII")$fitted)
+     wh <- which(!is.na(refmsk[i,]))
+     if (length(wh) > 0){
+       tmp <- v1[i,wh,]
+       v1_spi[i,wh,] <- t(spi(t(tmp), 1, na.rm = TRUE,
+                        distribution = "PearsonIII")$fitted)
+     }
    }
    v1_spi[is.infinite(v1_spi)] <- NA
    v1_spi[v1_spi > 10000] <- NA
-   ncwrite(var1_input, mod, v1_spi, wdir)
-   for (t in 1:d[3]){
-      tmp <- v1_spi[,,t]
-      tmp[is.na(refmsk)] <- NA
-      v1_spi[,, t] <- tmp
-   }#t
-   v1_spi[is.infinite(v1_spi)] <- NA
-   v1_spi[v1_spi > 10000] <- NA
+   hist_spi <- array(NA, c(d[1], d[2], length(histbrks) - 1))
+   for (nnh in 1:(length(histbrks) - 1)){
+     hist_spi[,,nnh] <- apply(v1_spi, c(1, 2), FUN = whfcn,
+                              ilow = histbrks[nnh],
+                              ihigh = histbrks[nnh + 1])
+   }
+   ncwritenew(var1_input, mod, hist_spi, wdir, histbrks)
+   #v1_spi[is.infinite(v1_spi)] <- NA
+   #v1_spi[v1_spi > 10000] <- NA
    # Weight against latitude
    h <- c(1:length(histnams)) * 0
    for (j in 1:d[2]){
      h <- h + hist(v1_spi[j,,], breaks = histbrks,
                    plot = FALSE)$counts * cos(lat[j] * pi / 180.)
    }#j
-   histarr[mod, ] <- h / sum(h)
+   histarr[mod, ] <- h / sum(h, na.rm = TRUE)
 }#mod
 save(histarr, file = paste0(params$work_dir,
-                          "/", "histarr.rsav"))
+                            "/", "histarr.rsav"))
 
 bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]

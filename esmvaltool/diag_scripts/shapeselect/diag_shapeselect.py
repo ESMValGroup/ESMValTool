@@ -58,7 +58,7 @@ def write_keyvalue_toxlsx(worksheet, row, key, value):
     return row
 
 
-def writexls(cfg, filename, ncts, nclon, nclat):
+def writexls(cfg, filename, ncts, nclon1, nclat1):
     """Write the content of a netcdffile as .xlsx."""
     name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
     ncfile = Dataset(filename, 'r')
@@ -78,8 +78,8 @@ def writexls(cfg, filename, ncts, nclon, nclat):
     for row in range(ncts.shape[1]):
         worksheet.write(
             1, row + 1,
-            str("%#.3f" % round(float(nclon[row]), 3)) + '_' + str(
-                "%#.3f" % round(float(nclat[row]), 3)))
+            str("%#.3f" % round(float(nclon1[row]), 3)) + '_' + str(
+                "%#.3f" % round(float(nclat1[row]), 3)))
         worksheet.write_column(2, row + 1,
                                np.around(np.squeeze(ncts[:, row]), decimals=8))
         worksheet.set_column(0, row + 1, 20)
@@ -252,8 +252,8 @@ def write_netcdf(path, var, plon, plat, cube, cfg):
     polys.setncattr_string('standard_name', 'polygon')
     polys.setncattr_string('long_name', 'polygon')
     polys.setncattr_string('shapefile', shppath)
-    lon = ncout.createVariable(
-        cube.coord('longitude').var_name, 'f8', 'polygon', zlib=True)
+    lon = ncout.createVariable(cube.coord('longitude').var_name,
+                               'f8', 'polygon', zlib=True)
     lon.setncattr_string('standard_name',
                          cube.coord('longitude').standard_name)
     lon.setncattr_string('long_name', cube.coord('longitude').long_name)
