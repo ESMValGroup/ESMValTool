@@ -421,39 +421,39 @@ begin
 
   log_info(" wrote " + outfile + "." + file_type)
 
-  ; add meta data to plot (for reporting)
-
-  climofiles = new(dim_MOD, string)
-  climofiles = input_file_info@filename
-
-  domain = "DM_global"
-
-  if (anom .eq. "anom") then
-    stat = "ST_anomaly"
-    captionadd = "anomalies"
-  else
-    stat = "ST_mean"
-    captionadd = "means"
-  end if
-
-  alltags = array_append_record(tags, (/"PT_time", stat, domain/), 0)
-
-  if (diag_script_info@multi_model_mean.eq."y") then
-    allmodelnames = array_append_record(dataset_info@dataset, \
-                                        (/"multi-model-mean"/), 0)
-  else
-    allmodelnames = dataset_info@dataset
-  end if
-
-  caption = "Time series of the " + captionadd + " for variable " \
-    + variables(0) + ", similar to IPCC AR5, fig. 9.8."
-
-  id = diag_script + "_" + variables(0)
-
-  contrib_authors = (/"A_cion_ir", "A_righ_ma", "A_wenz_sa", "A_bock_ls"/)
-
-  ; ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-  ;          allmodelnames, climofiles, diag_script, contrib_authors)
+;  ; add meta data to plot (for reporting)
+;
+;  climofiles = new(dim_MOD, string)
+;  climofiles = input_file_info@filename
+;
+;  domain = "DM_global"
+;
+;  if (anom .eq. "anom") then
+;    stat = "ST_anomaly"
+;    captionadd = "anomalies"
+;  else
+;    stat = "ST_mean"
+;    captionadd = "means"
+;  end if
+;
+;  alltags = array_append_record(tags, (/"PT_time", stat, domain/), 0)
+;
+;  if (diag_script_info@multi_model_mean.eq."y") then
+;    allmodelnames = array_append_record(dataset_info@dataset, \
+;                                        (/"multi-model-mean"/), 0)
+;  else
+;    allmodelnames = dataset_info@dataset
+;  end if
+;
+;  caption = "Time series of the " + captionadd + " for variable " \
+;    + variables(0) + ", similar to IPCC AR5, fig. 9.8."
+;
+;  id = diag_script + "_" + variables(0)
+;
+;  contrib_authors = (/"A_cion_ir", "A_righ_ma", "A_wenz_sa", "A_bock_ls"/)
+;
+;  ; ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
+;  ;          allmodelnames, climofiles, diag_script, contrib_authors)
 
   leave_msg(diag_script, "")
 
