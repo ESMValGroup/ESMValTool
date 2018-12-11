@@ -77,7 +77,7 @@ from load.load_EOFs import load_eofs
 from output.plot_map_cartopy import plot_map_cartopy
 from output.plot_tseries import plot_tseries
 from output.save_netCDF import save_netCDF
-
+#from regression.train_model import train_model
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -140,9 +140,9 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ----------------------------------------------------
     logger.info("Preparing input data")
 
-    pslNS, uaNS, vaNS = cut_NS(psl_in, uas_in, vas_in)
+    psl, uas, vas = cut_NS(psl_in, uas_in, vas_in)
 
-    xpslNS, xuaNS, xvaNS = Xtrms(pslNS, uaNS, vaNS)
+    xpslNS, xuaNS, xvaNS = Xtrms(psl_in, uas_in, vas_in)
 
     psl, uas, vas = calc_monanom(xpslNS, xuaNS, xvaNS)
 
@@ -165,10 +165,10 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     if dataset == 'ERA-Interim' and not solvers_exist:
         [psl_solver, gradlon_solver, gradlat_solver, 
           uas_solver, vas_solver] = calc_eofs(psl, uas, vas, gradlatpsl, gradlonpsl, data_dir)
-        print('EOF solvers generated and saved to ' + data_dir)
+        logger.info('EOF solvers generated and saved to ' + data_dir)
         exit()
     elif not dataset == 'ERA-Interim' and not solvers_exist:
-        print('No EOF solvers found. Please rerun the script with ERA-Interim to produce them.')
+        logger.info('No EOF solvers found. Please rerun the script with ERA-Interim to produce them.')
         exit('ERROR - no EOF solvers found')
     else:
         psl_solver, gradlon_solver, gradlat_solver, uas_solver, vas_solver = load_eofs(data_dir)
@@ -200,6 +200,14 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -----------------------------------------------------------
     # VIII. Load regression coefficients or train model
     # -----------------------------------------------------------
+    #if cfg['train_model']:
+    #    logger.info("Training the model")
+    #    data_in = cfg['path2traindata']
+    #    strt_date = dates[0] 
+    #    end_date = dates[-1] 
+    #    betas, intercept = train_model(X, stats, data_in, data_dir, strt_date, end_date)
+    #else:
+    #    betas, intercept = load_betas_intercept(stat, data_dir)
     betas, intercept = load_betas_intercept(stat, data_dir)
 
     # ----------------------------
