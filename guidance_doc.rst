@@ -70,7 +70,7 @@ Below is a table of prioritized variables as reminder. \*: some datasets are ava
 2. How to access the datasets and make them compatible to ESMValTool
 --------------------------------------------------------------------
 
-For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting off-line and download the datasets on a local machine or cluster where ESMValTool is run. 
+For the first phase (until the ESMValTool is available through the CDS) it is necessary to perform the reporting offline and download the datasets on a local machine or cluster where ESMValTool is run. 
 
 The extraction of the datasets is done:
 
