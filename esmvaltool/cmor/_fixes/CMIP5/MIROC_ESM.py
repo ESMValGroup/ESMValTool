@@ -48,14 +48,16 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        cubes[0].units = cf_units.Unit('1.0e-6')
+        print(cubes[0].units)
+        cubes[0].units = '1.0e-6'
+        print(cubes[0].units)
         return cubes
 
 
 class gpp(Fix):
     """Fixes for gpp"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -63,22 +65,22 @@ class gpp(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
         # Fixing the metadata, automatic unit conversion should do the trick
-        cube.units = cf_units.Unit('g m-2 day-1')
-        return cube
+        cubes[0].units = cf_units.Unit('g m-2 day-1')
+        return cubes
 
 
 class allvars(Fix):
     """Common fixes to all vars"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -86,14 +88,15 @@ class allvars(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
         try:
+            cube = cubes[0]
             old = cube.coord('AR5PL35')
             dims = cube.coord_dims(old)
             cube.remove_coord(old)
@@ -106,4 +109,4 @@ class allvars(Fix):
         except CoordinateNotFoundError:
             pass
 
-        return cube
+        return cubes

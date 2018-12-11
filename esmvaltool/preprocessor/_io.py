@@ -5,6 +5,7 @@ import os
 import shutil
 from itertools import groupby
 
+import numpy as np
 import iris
 import iris.exceptions
 import yaml

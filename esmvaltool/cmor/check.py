@@ -551,6 +551,8 @@ def _get_cmor_checker(table,
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
+    if var_info is None:
+        var_info = CMOR_TABLES['default'].get_variable(mip, short_name)
 
     def _checker(cube):
         return CMORCheck(

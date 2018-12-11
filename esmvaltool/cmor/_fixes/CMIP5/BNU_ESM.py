@@ -49,7 +49,7 @@ class fgco2(Fix):
 class ch4(Fix):
     """Fixes for ch4"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -57,15 +57,15 @@ class ch4(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = Unit('1e-9')
-        return cube
+        cubes[0].units = Unit('1e-9')
+        return cubes
 
     def fix_data(self, cube):
         """
@@ -91,7 +91,7 @@ class ch4(Fix):
 class co2(Fix):
     """Fixes for co2"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -99,15 +99,15 @@ class co2(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = Unit('1e-6')
-        return cube
+        cubes[0].units = Unit('1e-6')
+        return cubes
 
     def fix_data(self, cube):
         """

@@ -478,7 +478,7 @@ def get_reference_levels(filename, project, dataset, short_name, fix_dir,
     """
     try:
         filename = fix_file(filename, short_name, project, dataset, fix_dir)
-        cubes = iris.load_cube(filename)
+        cubes = iris.load_raw(filename)
         cube = fix_metadata(cubes, short_name, project, dataset)[0]
         coord = cube.coord(coordinate)
 

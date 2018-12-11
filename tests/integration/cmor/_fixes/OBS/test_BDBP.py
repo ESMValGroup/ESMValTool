@@ -28,7 +28,7 @@ class TestTro3prof(unittest.TestCase):
                 standard_name='air_pressure',
                 units='hPa',
                 bounds=[[0.5, 1.5], [1.5, 2.5]]), 0)
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
 
         plev = cube.coord('air_pressure')
         self.assertEqual(plev.units.origin, 'Pa')

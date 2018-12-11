@@ -27,7 +27,7 @@ class rlut(Fix):
         lat = cube.coord('latitude')
         lat.points = np.round(lat.points, 3)
         lat.bounds = np.round(lat.bounds, 3)
-        return cube
+        return cubes
 
 
 class rlutcs(rlut):
@@ -51,7 +51,7 @@ class rsutcs(rlut):
 class so(Fix):
     """Fixes for so"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix data
 
@@ -66,6 +66,5 @@ class so(Fix):
         iris.cube.Cube
 
         """
-        cubes.units = '1e3'
-
+        cubes[0].units = '1e3'
         return cubes

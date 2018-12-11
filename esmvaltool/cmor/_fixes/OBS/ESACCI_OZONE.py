@@ -1,5 +1,6 @@
 """Fixes for ESA CCI ozone"""
 import cf_units
+import iris.cube
 
 from ..fix import Fix
 
