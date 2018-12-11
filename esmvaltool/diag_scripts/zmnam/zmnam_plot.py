@@ -269,5 +269,3 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     file_out.close()
 
     return
-
-    return
