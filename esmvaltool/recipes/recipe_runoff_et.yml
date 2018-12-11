@@ -41,5 +41,5 @@ diagnostics:
     scripts:
       catchment_analysis:
         script: runoff_et/catchment_analysis.py
-        catchmentmask: /home/mpim/m214103/Remote/Mistral_Work/Misc_Data/runoff_et/catchmentmask_v01.nc
+        catchmentmask: ~/catchmentmask_v1.nc
 
