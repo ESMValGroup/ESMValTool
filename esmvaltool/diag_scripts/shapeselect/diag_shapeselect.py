@@ -62,8 +62,6 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     """Write the content of a netcdffile as .xlsx."""
     name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
     ncfile = Dataset(filename, 'r')
-    nclon = ncfile.variables['lon']
-    nclat = ncfile.variables['lat']
     otime = ncfile.variables['time']
     dtime = num2date(otime[:], otime.units, otime.calendar)
     wtime = []
