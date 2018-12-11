@@ -35,7 +35,7 @@ class co2(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes error in cube units
 
@@ -59,7 +59,7 @@ class gpp(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes error in cube units
 
@@ -82,7 +82,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes error in air_pressure coordinate, sometimes called AR5PL35
 

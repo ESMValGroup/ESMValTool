@@ -10,7 +10,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fixes latitude
+        Fixes latitude.
 
         Parameters
         ----------

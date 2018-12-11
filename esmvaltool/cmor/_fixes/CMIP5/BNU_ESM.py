@@ -1,15 +1,15 @@
-"""Fixes for BNU ESM model"""
+"""Fixes for BNU ESM model."""
 from cf_units import Unit
 
 from ..fix import Fix
 
 
 class fgco2(Fix):
-    """Fixes for fgco2"""
+    """Fixes for fgco2."""
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
@@ -27,7 +27,7 @@ class fgco2(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 
@@ -51,7 +51,7 @@ class ch4(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
@@ -69,7 +69,7 @@ class ch4(Fix):
 
     def fix_data(self, cube):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
@@ -93,7 +93,7 @@ class co2(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
@@ -111,7 +111,7 @@ class co2(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 
@@ -135,7 +135,7 @@ class spco2(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 

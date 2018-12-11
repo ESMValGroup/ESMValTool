@@ -9,7 +9,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes bad standard names
 

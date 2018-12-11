@@ -28,7 +28,7 @@ class xco2Stderr(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fix cube units
 
@@ -78,7 +78,7 @@ class xch4Stderr(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fix cube units
 
