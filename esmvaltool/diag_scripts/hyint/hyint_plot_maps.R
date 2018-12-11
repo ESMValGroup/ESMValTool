@@ -181,7 +181,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           time_label_fig <- "myearmean"
         }
         print(paste0(diag_base, ": plotting data for  ", region_names[iregion],
-                     " ", time_label))
+                     "-", time_label))
 
         # standard properties
         info_exp <- paste(exp, time_label) # ,season)
@@ -235,7 +235,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             title_unit_m[ifield, 1] <- "Elevation"
           }
           tmp.titles <- paste0(title_unit_m[ifield, 1], ": ",
-                        region_names[iregion], " ", 
+                        region_names[iregion], "-",
                         c(info_exp, info_ref, "Difference"))
           if (plot_type == 4) {
             tmp.titles <- paste(title_unit_m[ifield, 1], time_label)

@@ -53,7 +53,8 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   }
 
   # Startup graphics for multi-model timeseries
-  if ( (plot_type == 13) | (plot_type == 15)) {
+  plot_type_now <- (plot_type == 13) | (plot_type == 15)
+  if (plot_type_now == T) {
     field_label <- paste(field_names, collapse = "-")
     tseries_trend_tag <- "timeseries"
     if (plot_type == 15) {
@@ -219,11 +220,12 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         rettimes <- which(!is.na(time))
         if (trend_years[1] != F) {
           # apply trend to limited time interval if required
-          rettimes <- which((time >= trend_years[1]) & time <= trend_years[2])
+          rettimes_tmp <- (time >= trend_years[1]) & time <= trend_years[2]
+          rettimes <- which(rettimes_tmp)
           if (length(trend_years) == 4) {
             # apply trend also to second time interval if required
-            rettimes2 <- which((time >= trend_years[3]) &
-              time <= trend_years[4])
+            rettime2_tmp <- (time >= trend_years[3]) & time <= trend_years[4]
+            rettimes2 <- which(rettime2_tmp)
           }
         }
         xlim <- c(min(time), max(time))

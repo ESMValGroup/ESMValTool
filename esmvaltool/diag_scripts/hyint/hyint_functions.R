@@ -467,8 +467,8 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
 # Adapted from 20170920-A_maritsandstad
 #
 create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
-                          loc = "./", regridded_topo = "/regridded_topo.nc",
-                          landmask = "./landSeaMask.nc", topo_only = F) {
+                loc = "./", regridded_topo = paste0("/", "regridded_topo.nc"),
+                landmask = "./landSeaMask.nc", topo_only = F) {
 
   # Test if gridfile exists
   # otherwise call function to generate one
@@ -482,9 +482,8 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   system(cmd)
 
   ## Regridding the topographic map to chosen grid
-  cmd <- paste("cdo remapcon2,", regrid, " ", loc, "/topo.nc ", loc,
-    regridded_topo,
-    sep = ""
+  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/","topo.nc"),
+    loc, regridded_topo, sep = ""
   )
   print(cmd)
   system(cmd)
@@ -493,24 +492,23 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
 
     # Set above sea-level gridpoints to missing
     cmd <- paste("cdo setrtomiss,0,9000 ", loc, regridded_topo, loc,
-      "/regridded_topo_miss1.nc",
-      sep = ""
+      paste0("/", "regridded_topo_miss1.nc"), sep = ""
     )
     print(cmd)
     system(cmd)
 
     # Set above sea-level gridpoints to 1
-    cmd <- paste("cdo setmisstoc,1 ", loc, "/regridded_topo_miss1.nc ",
-      loc, "/regridded_topo_1pos.nc",
-      sep = ""
+    cmd <- paste("cdo setmisstoc,1 ", loc,
+      paste0("/","regridded_topo_miss1.nc"),
+      loc, paste0("/", "regridded_topo_1pos.nc"), sep = ""
     )
     print(cmd)
     system(cmd)
 
     # Set below sea-level gridpoints to missing
-    cmd <- paste("cdo setrtomiss,-9000,0 ", loc, "/regridded_topo_1pos.nc ",
-      landmask,
-      sep = ""
+    cmd <- paste("cdo setrtomiss,-9000,0 ", loc,
+      paste0("/", "regridded_topo_1pos.nc"),
+      landmask, sep = ""
     )
     print(cmd)
     system(cmd)
@@ -612,14 +610,10 @@ mean_spell_length <- function(m) {
 get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
                           mask = F, elev_plot = F) {
   # get elevation data from a high resolution topography file.
-  # In the example the GMTED2010 elevation data regridded at 0.125 degree
-  # resolution is adopted. Elevation file: GMTED2010_15n030_0125deg.nc - KNMI
-  # gmted2010_citation = "Danielson, J.J., and Gesch, D.B., 2011, Global
-  # multi-resolution terrain elevation data 2010 (GMTED2010): U.S. Geological
-  # Survey Open-File Report 2011-1073, 26 p."
 
   if (is.null(filename)) {
-    filename <- "/home/arnone/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
+    cdo_command <- paste0("cdo -f nc topo tmp_topography.nc")
+    filename <- "tmp_topography.nc"
   }
   elevation <- ncdf_opener(filename,
     namevar = "elevation",
@@ -1155,14 +1149,14 @@ graphics_close <- function(figname) {
 # extensive filled.contour function
 filled_contour3 <-
   function(x = seq(0, 1, length.out = nrow(z)),
-             y = seq(0, 1, length.out = ncol(z)), z,
-             xlim = range(x, finite = TRUE),
-             ylim = range(y, finite = TRUE), zlim = range(z, finite = TRUE),
-             levels = pretty(zlim, nlevels), nlevels = 20,
-             color.palette = cm.colors, col = color.palette(length(levels) - 1),
-             extend = TRUE, plot.title, plot.axes,
-             key.title, key.axes, asp = NA, xaxs = "i", yaxs = "i", las = 1,
-             axes = TRUE, frame.plot = axes, mar, ...) {
+           y = seq(0, 1, length.out = ncol(z)), z,
+           xlim = range(x, finite = TRUE),
+           ylim = range(y, finite = TRUE), zlim = range(z, finite = TRUE),
+           levels = pretty(zlim, nlevels), nlevels = 20,
+           color.palette = cm.colors, col = color.palette(length(levels) - 1),
+           extend = TRUE, plot.title, plot.axes,
+           key.title, key.axes, asp = NA, xaxs = "i", yaxs = "i", las = 1,
+           axes = TRUE, frame.plot = axes, mar, ...) {
     # modification by Ian Taylor of the filled.contour function
     # to remove the key and facilitate overplotting with contour()
     # further modified by Carey McGilliard and Bridget Ferris
