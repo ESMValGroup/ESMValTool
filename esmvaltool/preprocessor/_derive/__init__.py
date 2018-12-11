@@ -64,6 +64,14 @@ def derive(cubes, variable, fx_files=None):
 
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
+
+        # FIXME (not necessary after reformat OBS PR)
+        if variable['standard_name'] not in iris.std_names.STD_NAMES:
+            iris.std_names.STD_NAMES[variable['standard_name']] = {
+                'canonical_units': variable['units']
+            }
+        cubes[0].standard_name = variable['standard_name']
+
         return cubes[0]
 
     # Preprare input cubes and add fx files if necessary

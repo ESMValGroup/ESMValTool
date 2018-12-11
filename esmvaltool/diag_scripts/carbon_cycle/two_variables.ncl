@@ -40,30 +40,27 @@ load "./diag_scripts/shared/plot/style.ncl"
 
 begin
 
-  if (dimsizes(variables) .ne. 2) then
-    error_msg("f", diag_script, "", "script needs exactly two variables")
+  enter_msg(DIAG_SCRIPT, "")
+
+  ; Variable
+  DIM_VAR = ListCount(variable_info)
+  if (DIM_VAR .ne. 2) then
+    error_msg("f", DIAG_SCRIPT, "", "this diagnostic expects exactly two " + \
+              "variables")
   end if
+  VAR0 = variable_info[0]
+  VAR1 = variable_info[1]
 
-  enter_msg(diag_script, "")
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  INFO1 = select_metadata_by_name(input_file_info, VAR1@short_name)
+  DATASETS = metadata_att_as_array(INFO0, "dataset")
+  DIM_DAT = dimsizes(DATASETS)
+  DIM_DAT_ORIG = DIM_DAT
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (variables: " + variables(0) + ", " + \
-           variables(1) + ")")
+  log_info(DIAG_SCRIPT + " (vars: " + VAR0@short_name + ", " + \
+           VAR1@short_name + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; Variables
-  var0 = variables(0)
-  var1 = variables(1)
-  DIM_VAR = dimsizes(variables)
-
-  ; Check field types
-  plot_fields = (/"T2Ms"/)
-  do ivar = 0, DIM_VAR - 1
-    ind_f := any(field_types(ivar) .eq. plot_fields)
-    if (all(ismissing(ind_f))) then
-      error_msg("f", diag_script, "", "cannot use field " + field_types(ivar))
-    end if
-  end do
-  delete([/plot_fields, ind_f/])
 
   ; Write references (TODO)
   ; write_references(diag_script, \
