@@ -416,7 +416,6 @@ class CMORCheck(object):
         tol = 0.001
         intervals = {
             'dec': (3600, 3660),
-            'yr': (360, 366),
             'day': (1, 1)
         }
         if self.frequency == 'mon':
@@ -428,9 +427,19 @@ class CMORCheck(object):
                     second_year = first.year
                     if second_month == 13:
                         second_month = 1
-                        second_year +=1
+                        second_year += 1
                     if second_month != second.month or \
                        second_year != second.year:
+                        msg = '{}: Frequency {} does not match input data'
+                        self.report_error(msg, var_name, self.frequency)
+                        break
+        elif self.frequency == 'yr':
+            with iris.FUTURE.context(cell_datetime_objects=True):
+                for i in range(len(coord.points) - 1):
+                    first = coord.cell(i).point
+                    second = coord.cell(i + 1).point
+                    second_month = first.month + 1
+                    if first.year + 1 != second.year:
                         msg = '{}: Frequency {} does not match input data'
                         self.report_error(msg, var_name, self.frequency)
                         break
