@@ -590,9 +590,6 @@ class CustomInfo(CMIP5Info):
     """
 
     def __init__(self, cmor_tables_path=None):
-        """
-
-        """
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'tables', 'custom')
         self.tables = {}
