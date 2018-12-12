@@ -1,5 +1,5 @@
 """
-CMOR information reader for ESMValTool
+CMOR information reader for ESMValTool.
 
 Read variable information from CMOR 2 and CMOR 3 tables and make it easily
 available for the other components of ESMValTool
@@ -13,18 +13,19 @@ import os
 logger = logging.getLogger(__name__)
 
 CMOR_TABLES = {}
-"""dict of str, obj: CMOR info objects"""
+"""dict of str, obj: CMOR info objects."""
 
 
 def read_cmor_tables(cfg_developer):
-    """Read cmor tables required in the configuration
+    """Read cmor tables required in the configuration.
 
     Parameters
     ----------
     cfg_developer : dict of str
         Parsed config-developer file
+
     """
-    for table in cfg_developer.keys():
+    for table in cfg_developer:
         project = cfg_developer[table]
 
         table_path = project.get('cmor_tables', '')
@@ -40,7 +41,7 @@ def read_cmor_tables(cfg_developer):
 
 class CMIP6Info(object):
     """
-    Class to read CMIP6-like data request
+    Class to read CMIP6-like data request.
 
     This uses CMOR 3 json format
 
@@ -82,25 +83,24 @@ class CMIP6Info(object):
             raw_data = json.loads(inf.read())
             if not self._is_table(raw_data):
                 return
+            table = TableInfo()
             header = raw_data['Header']
-            name = header['table_id'][6:]
-            self.tables[name] = {}
+            table.name = header['table_id'][6:]
+            self.tables[table.name] = table
 
             generic_levels = header['generic_levels'].split()
-            if 'frequency' in header:
-                frequency = header['frequency']
-            else:
-                frequency = None
+            table.frequency = header.get('frequency', '')
+            table.realm = header.get('realm', '')
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo('CMIP6', var_name)
                 if 'frequency' in var_data:
                     var.frequency = var_data['frequency']
                 else:
-                    var.frequency = frequency
+                    var.frequency = table.frequency
                 var.read_json(var_data)
                 self._assign_dimensions(var, generic_levels)
-                self.tables[name][var_name] = var
+                table[var_name] = var
 
     def _assign_dimensions(self, var, generic_levels):
         for dimension in var.dimensions:
@@ -128,9 +128,27 @@ class CMIP6Info(object):
                     coord.read_json(table_data['axis_entry'][coord_name])
                     self.coords[coord_name] = coord
 
+    def get_table(self, table):
+        """
+        Search and return the table info.
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+
+        Returns
+        -------
+        TableInfo
+            Return the TableInfo object for the requested table if
+            found, returns None if not
+
+        """
+        return self.tables.get(table)
+
     def get_variable(self, table, short_name):
         """
-        Search and return the variable info
+        Search and return the variable info.
 
         Parameters
         ----------
@@ -163,6 +181,17 @@ class CMIP6Info(object):
         return True
 
 
+class TableInfo(dict):
+    """Container class for storing a CMOR table."""
+
+    def __init__(self, *args, **kwargs):
+        """Create a new TableInfo object for storing VariableInfo objects."""
+        super(TableInfo, self).__init__(*args, **kwargs)
+        self.name = ''
+        self.frequency = ''
+        self.realm = ''
+
+
 class JsonInfo(object):
     """
     Base class for the info classes.
@@ -171,11 +200,11 @@ class JsonInfo(object):
     """
 
     def __init__(self):
-        self._json_data = None
+        self._json_data = {}
 
     def _read_json_variable(self, parameter):
         """
-        Read a json parameter in json_data
+        Read a json parameter in json_data.
 
         Parameters
         ----------
@@ -194,7 +223,7 @@ class JsonInfo(object):
 
     def _read_json_list_variable(self, parameter):
         """
-        Read a json list parameter in json_data
+        Read a json list parameter in json_data.
 
         Parameters
         ----------
@@ -213,9 +242,11 @@ class JsonInfo(object):
 
 
 class VariableInfo(JsonInfo):
+    """Class to read and store variable information."""
+
     def __init__(self, table_type, short_name):
         """
-        Class to read and store variable information
+        Class to read and store variable information.
 
         Parameters
         ----------
@@ -225,6 +256,8 @@ class VariableInfo(JsonInfo):
         """
         super(VariableInfo, self).__init__()
         self.table_type = table_type
+        self.modeling_realm = []
+        """Modeling realm"""
         self.short_name = short_name
         """Short name"""
         self.standard_name = ''
@@ -275,9 +308,11 @@ class VariableInfo(JsonInfo):
 
 
 class CoordinateInfo(JsonInfo):
+    """Class to read and store coordinate information."""
+
     def __init__(self, name):
         """
-        Class to read and store coordinate information
+        Class to read and store coordinate information.
 
         Parameters
         ----------
@@ -346,7 +381,7 @@ class CoordinateInfo(JsonInfo):
 
 class CMIP5Info(object):
     """
-    Class to read CMIP5-like data request
+    Class to read CMIP5-like data request.
 
     Parameters
     ----------
@@ -365,6 +400,7 @@ class CMIP5Info(object):
 
         self.tables = {}
         self.coords = {}
+        self._current_table = None
         self._last_line_read = None
 
         for table_file in glob.glob(os.path.join(self._cmor_folder, '*')):
@@ -379,16 +415,29 @@ class CMIP5Info(object):
             cmor_tables_path = os.path.join(cwd, 'tables', 'cmip5')
         return cmor_tables_path
 
-    def _load_table(self, table_file, table_name='', frequency=''):
+    def _load_table(self, table_file, table_name=''):
+        if table_name and table_name in self.tables:
+            # special case used for updating a table with custom variable file
+            table = self.tables[table_name]
+        else:
+            # default case: table name is first line of table file
+            table = None
+
+        self._read_table_file(table_file, table)
+
+    def _read_table_file(self, table_file, table=None):
         with open(table_file) as self._current_table:
             self._read_line()
             while True:
                 key, value = self._last_line_read
                 if key == 'table_id':
-                    table_name = value[len('Table '):]
-                    self.tables[table_name] = {}
+                    table = TableInfo()
+                    table.name = value[len('Table '):]
+                    self.tables[table.name] = table
                 elif key == 'frequency':
-                    frequency = value
+                    table.frequency = value
+                elif key == 'modeling_realm':
+                    table.realm = value
                 elif key == 'generic_levels':
                     for dim in value.split(' '):
                         coord = CoordinateInfo(dim)
@@ -399,11 +448,7 @@ class CMIP5Info(object):
                     self.coords[value] = self._read_coordinate(value)
                     continue
                 elif key == 'variable_entry':
-                    variable = self._read_variable(value)
-                    variable.frequency = frequency
-                    for dim in variable.dimensions:
-                        variable.coordinates[dim] = self.coords[dim]
-                    self.tables[table_name][value] = variable
+                    table[value] = self._read_variable(value, table.frequency)
                     continue
                 if not self._read_line():
                     return
@@ -413,17 +458,14 @@ class CMIP5Info(object):
         Add a file with custom definitions to table.
 
         Parameters
-         ----------
+        ----------
         table_file: basestring
             Path to the file containing the custom table
         table_name: basestring
             Name of the the custom table to add
 
         """
-        random_variable_key = next(iter(self.tables[table_name]))
-        random_variable = self.tables[table_name][random_variable_key]
-        frequency = random_variable.frequency
-        self._load_table(table_file, table_name, frequency)
+        self._load_table(table_file, table_name)
 
     def _read_line(self):
         line = self._current_table.readline()
@@ -455,22 +497,42 @@ class CMIP5Info(object):
             if hasattr(coord, key):
                 setattr(coord, key, value)
 
-    def _read_variable(self, value):
-        var = VariableInfo('CMIP5', value)
+    def _read_variable(self, short_name, frequency):
+        var = VariableInfo('CMIP5', short_name)
+        var.frequency = frequency
         while self._read_line():
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
-                return var
-            if key == 'dimensions':
-                var.dimensions = value.split(' ')
-                continue
-            if hasattr(var, key):
+                break
+            if key in ('dimensions', 'modeling_realm'):
+                setattr(var, key, value.split(' '))
+            elif hasattr(var, key):
                 setattr(var, key, value)
+        for dim in var.dimensions:
+            var.coordinates[dim] = self.coords[dim]
         return var
+
+    def get_table(self, table):
+        """
+        Search and return the table info.
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+
+        Returns
+        -------
+        TableInfo
+            Return the TableInfo object for the requested table if
+            found, returns None if not
+
+        """
+        return self.tables.get(table)
 
     def get_variable(self, table, short_name):
         """
-        Search and return the variable info
+        Search and return the variable info.
 
         Parameters
         ----------
@@ -486,7 +548,4 @@ class CMIP5Info(object):
             found, returns None if not
 
         """
-        try:
-            return self.tables[table][short_name]
-        except KeyError:
-            return None
+        return self.tables.get(table, {}).get(short_name)

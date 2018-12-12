@@ -6,6 +6,7 @@ import unittest
 
 import iris
 import numpy as np
+from cf_units import Unit
 
 import tests
 from esmvaltool.preprocessor._volume_pp import volume_slice
@@ -21,8 +22,29 @@ class Test(tests.Test):
     def setUp(self):
         """Prepare tests"""
         coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-        data2 = np.ones((3, 2, 2))
+        data1 = np.ones((3, 2, 2))
+        data2 = np.ma.ones((2, 3, 2, 2))
+        data3 = np.ma.ones((4, 3, 2, 2))
+        mask3 = np.full((4, 3, 2, 2), False)
+        mask3[0, 0, 0, 0] = True
+        data3 = np.ma.array(data3, mask=mask3)
 
+        time = iris.coords.DimCoord(
+            [15, 45],
+            standard_name='time',
+            bounds=[[1., 30.], [30., 60.]],
+            units=Unit('days since 1950-01-01', calendar='gregorian'))
+        time2 = iris.coords.DimCoord(
+            [1., 2., 3., 4.],
+            standard_name='time',
+            bounds=[[0.5, 1.5], [1.5, 2.5], [2.5, 3.5], [3.5, 4.5], ],
+            units=Unit('days since 1950-01-01', calendar='gregorian'))
+
+        depth = iris.coords.DimCoord(
+            [0.5, 5., 50.],
+            standard_name='depth',
+            bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
+            units='m')
         lons2 = iris.coords.DimCoord(
             [1.5, 2.5],
             standard_name='longitude',
@@ -35,13 +57,16 @@ class Test(tests.Test):
             bounds=[[1., 2.], [2., 3.]],
             units='degrees_north',
             coord_system=coord_sys)
-        depth = iris.coords.DimCoord(
-            [0.5, 5., 50.],
-            standard_name='depth',
-            bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
-            units='m')
+
         coords_spec3 = [(depth, 0), (lats2, 1), (lons2, 2)]
-        self.grid_3d = iris.cube.Cube(data2, dim_coords_and_dims=coords_spec3)
+        self.grid_3d = iris.cube.Cube(data1, dim_coords_and_dims=coords_spec3)
+
+        coords_spec4 = [(time, 0), (depth, 1), (lats2, 2), (lons2, 3)]
+        self.grid_4d = iris.cube.Cube(data2, dim_coords_and_dims=coords_spec4)
+
+        coords_spec5 = [(time2, 0), (depth, 1), (lats2, 2), (lons2, 3)]
+        self.grid_4d_2 = iris.cube.Cube(data3,
+                                        dim_coords_and_dims=coords_spec5)
 
     def test_volume_slice(self):
         """Test to extract the top two layers of a 3 layer depth column."""
@@ -51,9 +76,23 @@ class Test(tests.Test):
         self.assertArrayEqual(result.data, expected)
 
     def test_volume_average(self):
-        """Test to take the volume weighted average of a (3,2,2) cube."""
-        result = volume_average(self.grid_3d, 'depth', 'latitude', 'longitude')
-        expected = np.array([1.])
+        """Test to take the volume weighted average of a (2,3,2,2) cube."""
+        result = volume_average(self.grid_4d, 'depth', 'latitude', 'longitude')
+        expected = np.array([1., 1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_volume_average_long(self):
+        """
+        Test to take the volume weighted average of a (4,3,2,2) cube.
+
+        This extra time is needed, as the volume average calculation uses
+        different methods for small and large cubes.
+        """
+        result = volume_average(self.grid_4d_2,
+                                'depth',
+                                'latitude',
+                                'longitude')
+        expected = np.array([1., 1., 1., 1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_depth_integration_1d(self):

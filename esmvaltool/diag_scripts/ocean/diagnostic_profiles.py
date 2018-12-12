@@ -1,7 +1,7 @@
 """
 Diagnostic:
 
-Diagnostic to produce png images of the profile over time from a cube.
+Diagnostic to produce images of the profile over time from a cube.
 These plost show cube value (ie temperature) on the x-axis, and depth/height
 on the y axis. The colour scale is the annual mean of the cube data.
 
@@ -89,8 +89,7 @@ def make_profiles_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
-    times = cube.coord('time')
-    times_float = diagtools.timecoord_to_float(times)
+    times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
     cmap = plt.cm.get_cmap('jet')
@@ -116,16 +115,19 @@ def make_profiles_plots(
     # Add Legend outside right.
     diagtools.add_legend_outside_right(plot_details, plt.gca())
 
-    # Determine png filename:
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
     if multi_model:
         path = diagtools.folder(
             cfg['plot_dir']) + os.path.basename(filename).replace(
-                '.nc', '_profile.png')
+                '.nc', '_profile' + image_extention)
     else:
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='profile.png',
+            suffix='profile' + image_extention,
         )
 
     # Saving files:

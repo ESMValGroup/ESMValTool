@@ -1,7 +1,7 @@
 """
 Diagnostic profile:
 
-Diagnostic to produce png images of the time development of a metric from
+Diagnostic to produce images of the time development of a metric from
 cubes. These plost show time on the x-axis and cube value (ie temperature) on
 the y-axis.
 
@@ -44,8 +44,8 @@ import logging
 import os
 
 import iris
-import iris.quickplot as qplt
 import matplotlib.pyplot as plt
+import numpy as np
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -60,11 +60,80 @@ def timeplot(cube, **kwargs):
 
     Needed because iris version 1.13 fails due to the time axis.
     """
-    if iris.__version__ > '2.0':
-        qplt.plot(cube, kwargs)
-    else:
-        times = diagtools.timecoord_to_float(cube.coord('time'))
-        plt.plot(times, cube.data, **kwargs)
+    cubedata = np.ma.array(cube.data)
+    if len(cubedata.compressed()) == 1:
+        plt.axhline(cubedata.compressed(), **kwargs)
+        return
+
+    times = diagtools.cube_time_to_float(cube)
+    plt.plot(times, cubedata, **kwargs)
+
+
+def moving_average(cube, window):
+    """
+    Calculate a moving average.
+
+    The window is a string which is a number and a measuremet of time.
+    For instance, the following are acceptable windows:
+        '5 days'
+        '12 years'
+        '1 month'
+        '5 yr'
+
+    Also note the the value used is the total width of the window.
+    For instance, if the window provided was '10 years', the the moving
+    average returned would be the average of all values within 5 years
+    of the central value.
+    In the case of edge conditions, at the start an end of the data, they
+    only include the average of the data available. Ie the first value
+    in the moving average of a '10 year' window will only include the average
+    of the five subsequent years.
+    """
+    window = window.split()
+    window_len = int(window[0]) / 2.
+    win_units = str(window[1])
+
+    if win_units not in ['days', 'day', 'dy',
+                         'months', 'month', 'mn',
+                         'years', 'yrs', 'year', 'yr']:
+        raise ValueError("Moving average window units not recognised: " +
+                         "{}".format(win_units))
+
+    times = cube.coord('time').units.num2date(cube.coord('time').points)
+
+    datetime = diagtools.guess_calendar_datetime(cube)
+
+    output = []
+
+    times = np.array([datetime(time_itr.year, time_itr.month, time_itr.day,
+                               time_itr.hour, time_itr.minute)
+                      for time_itr in times])
+
+    for time_itr in times:
+        if win_units in ['years', 'yrs', 'year', 'yr']:
+            tmin = datetime(time_itr.year - window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year + window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+
+        if win_units in ['months', 'month', 'mn']:
+            tmin = datetime(time_itr.year, time_itr.month - window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month + window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+
+        if win_units in ['days', 'day', 'dy']:
+            tmin = datetime(time_itr.year, time_itr.month,
+                            time_itr.day - window_len, time_itr.hour,
+                            time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month,
+                            time_itr.day + window_len, time_itr.hour,
+                            time_itr.minute)
+
+        arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
+        output.append(arr.mean())
+    cube.data = np.array(output)
+    return cube
 
 
 def make_time_series_plots(
@@ -89,6 +158,9 @@ def make_time_series_plots(
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
 
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
@@ -100,23 +172,23 @@ def make_time_series_plots(
 
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
+        if layer != '':
+            if cube_layer.coords('depth'):
+                z_units = cube_layer.coord('depth').units
+            else:
+                z_units = ''
+            title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(cube_layer.units))
 
-        # Determine png filename:
+        # Determine image filename:
         if multi_model:
-            # path = diagtools.folder(
-            #     cfg['plot_dir']) + os.path.basename(filename).replace(
-            #         '.nc', '_timeseries_' + str(l) + '.png')
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -127,7 +199,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index) + '.png',
+                suffix='timeseries_' + str(layer_index) + image_extention,
             )
 
         # Saving files:
@@ -163,6 +235,9 @@ def multi_model_time_series(
         for layer in cubes:
             layers[layer] = True
 
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
     # Make a plot for each layer
     for layer in layers:
 
@@ -173,11 +248,21 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
-            color = cmap(index / (len(metadata) - 1.))
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
+            else:
+                color = 'blue'
+
+            # Take a moving average, if needed.
+            if 'moving_average' in cfg:
+                cube = moving_average(model_cubes[filename][layer],
+                                      cfg['moving_average'])
+            else:
+                cube = model_cubes[filename][layer]
 
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
                     ls=':',
@@ -191,7 +276,7 @@ def multi_model_time_series(
                 }
             else:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'])
                     ls='-',
@@ -206,13 +291,16 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                z_units = model_cubes[filename][layer].coords('depth')[0].units
-
+                if model_cubes[filename][layer].coords('depth'):
+                    z_units = model_cubes[filename][layer].coord('depth').units
+                else:
+                    z_units = ''
         # Add title, legend to plots
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
         if cfg['write_plots']:
@@ -220,7 +308,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer) + '.png']),
+                suffix='_'.join(['timeseries', str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'

@@ -16,13 +16,7 @@ pep8:
     full: true
 
 pep257:
-    # see http://pep257.readthedocs.io/en/latest/error_codes.html
-    disable: [
-        # For short descriptions it makes sense not to end with a period:
-        D400,  # First line should end with a period
-        # Disable because not part of PEP257 official convention:
-        D203,  # 1 blank line required before class docstring
-        D212,  # Multi-line docstring summary should start at the first line
-        D213,  # Multi-line docstring summary should start at the second line
-        D404,  # First word of the docstring should not be This
-    ]
+    # disable rules that are allowed by the numpy convention
+    # see https://github.com/PyCQA/pydocstyle/blob/master/src/pydocstyle/violations.py
+    # and http://pydocstyle.readthedocs.io/en/latest/error_codes.html
+    disable: ['D107', 'D203', 'D212', 'D213', 'D402', 'D413']

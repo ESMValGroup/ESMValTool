@@ -56,10 +56,18 @@ authors:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
     email: oliverdandrews 'at' googlemail.com
+  arno_en:
+    name: Arnone, Enrico
+    institute: ISAC-CNR, Torino, Italy
+    email: e.arnone 'at' isac.cnr.it 
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
     email: lisa.bock 'at' dlr.de
+  cagn_ch:
+    name: Cagnazzo, Chiara
+    institute: CNR, Italy
+    email: c.cagnazzo 'at' isac.cnr.it    
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -72,6 +80,10 @@ authors:
     name: Davin, Edouard Leopold
     institute: ETH, CH
     email: edouard.davin 'at' env.ethz.ch
+  davi_pa:
+    name: Davini, Paolo
+    institute: CNR-ISAC, Italy
+    email: p.davini 'at' isac.cnr.it
   ehbr_ca:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
@@ -102,6 +114,10 @@ authors:
   hann_ul:
     name: Hansson, Ulf
     institute: SMHI, Sweden
+  hard_jo:
+    name: von Hardenberg, Jost
+    institute: ISAC-CNR, Torino, Italy
+    email: j.vonhardenberg 'at' isac.cnr.it    
   hemp_ni:
     name: Hempelmann, Nils
     institute: IPSL, France
@@ -130,6 +146,10 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
+  lee_dm:
+    name: de Mora, Lee
+    institute: PML, UK
+    email: ledm 'at' pml.ac.uK
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -204,6 +224,10 @@ authors:
     name: Senftleben, Daniel
     institute: DLR, Germany
     email: daniel.senftleben 'at' dlr.de
+  serv_fe:
+    name: Serva, Federico
+    institute: CNR, Italy
+    email: federico.serva 'at' artov.isac.cnr.it    
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -256,6 +280,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     email: a.j.charlton-perez 'at' reading.ac.uk
+  cort_su:
+    name: Corti, Susanna
+    institute: ISAC-CNR, Torino, Italy
+    email: s.corti 'at' isac.cnr.it
   denn_jo:
     name: Dennis, John
     institute: NCAR, USA
@@ -402,10 +430,13 @@ references:
   antonov10usgov: "Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp., 2010."
   aquila11gmd: "Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011."
   bakker14essd: "Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014."
+  baldwin09qjrms: "Baldwin, D. P. et al., Q. J. R. Meteorol. Soc., 135, 1661-1672, doi:10.1002/qj.479, 2009"
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030, doi:10.1175/2008JCLI2731.1, 2009."
+  demora2018: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, https://doi.org/10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
+  donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
   duemenil00mpimr: "Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
   emmons00jgr: "Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000."
   eyring06jgr: "Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006."
@@ -430,11 +461,13 @@ references:
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."
+  rebora06jhm: "Rebora et. al., JHM 7, 724, 2006."
   righi13acp: "Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013."
   righi15gmd: "Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
+  straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251–2272, doi:10.1175/JCLI4070.1, 2007 " 
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
@@ -501,6 +534,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
+  ukesm: UKESM, UK Earth System Model project (NERC)
 
 realms:
   aerosol: aerosol

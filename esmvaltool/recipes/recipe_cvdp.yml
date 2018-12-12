@@ -1,0 +1,34 @@
+---
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+#preprocessors:
+#
+#  pp_regrid:
+#    extract_levels:
+#      false
+#    regrid:
+#      target_grid: reference_dataset
+#      scheme: linear
+#    multi_model_statistics:
+#      false
+
+diagnostics:
+
+  diagnostic1:
+    description: Run the NCAR CVDPackage.
+    variables:
+      tas:
+        field: T2Ms
+        #reference_dataset: bcc-csm1-1
+      pr:
+        field: T2Ms
+        #reference_dataset: MPI-ESM-LR
+      psl:
+        field: T2Ms
+    scripts:
+      cvdp:
+        script: cvdp/cvdp_wrapper.py
+        quickplot:
+          plot_type: pcolormesh
