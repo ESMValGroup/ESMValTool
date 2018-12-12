@@ -73,6 +73,7 @@ class TestFixMetadata(unittest.TestCase):
                              'model', 'cmor_table', 'mip')
                 get_mock.assert_called_once_with(automatic_fixes=True,
                                                  fail_on_error=False,
+                                                 frequency='frequency',
                                                  mip='mip',
                                                  short_name='short_name',
                                                  table='cmor_table')
@@ -117,9 +118,10 @@ class TestFixData(unittest.TestCase):
             with mock.patch('esmvaltool.cmor.fix._get_cmor_checker',
                             return_value=checker) as get_mock:
                 fix_data(self.cube, 'short_name', 'project',
-                         'model', 'cmor_table', 'mip')
+                         'model', 'cmor_table', 'mip', 'frequency')
                 get_mock.assert_called_once_with(automatic_fixes=True,
                                                  fail_on_error=False,
+                                                 frequency='frequency',
                                                  mip='mip',
                                                  short_name='short_name',
                                                  table='cmor_table')

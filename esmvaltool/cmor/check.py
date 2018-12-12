@@ -541,6 +541,7 @@ class CMORCheck(object):
 def _get_cmor_checker(table,
                       mip,
                       short_name,
+                      frequency,
                       fail_on_error=True,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
@@ -556,13 +557,14 @@ def _get_cmor_checker(table,
         return CMORCheck(
             cube,
             var_info,
+            frequency=frequency,
             fail_on_error=fail_on_error,
             automatic_fixes=automatic_fixes)
 
     return _checker
 
 
-def cmor_check_metadata(cube, cmor_table, mip, short_name):
+def cmor_check_metadata(cube, cmor_table, mip, short_name, frequency):
     """
     Check if metadata conforms to variable's CMOR definiton.
 
@@ -578,14 +580,16 @@ def cmor_check_metadata(cube, cmor_table, mip, short_name):
         Variable's mip
     short_name: basestring
         Variable's short name
+    frequency: basestring
+        Data frequency
 
     """
-    checker = _get_cmor_checker(cmor_table, mip, short_name)
+    checker = _get_cmor_checker(cmor_table, mip, short_name, frequency)
     checker(cube).check_metadata()
     return cube
 
 
-def cmor_check_data(cube, cmor_table, mip, short_name):
+def cmor_check_data(cube, cmor_table, mip, short_name, frequency):
     """
     Check if data conforms to variable's CMOR definiton.
 
@@ -601,14 +605,16 @@ def cmor_check_data(cube, cmor_table, mip, short_name):
         Variable's mip
     short_name: basestring
         Variable's short name
+    frequency: basestring
+        Data frequency
 
     """
-    checker = _get_cmor_checker(cmor_table, mip, short_name)
+    checker = _get_cmor_checker(cmor_table, mip, short_name, frequency)
     checker(cube).check_data()
     return cube
 
 
-def cmor_check(cube, cmor_table, mip, short_name):
+def cmor_check(cube, cmor_table, mip, short_name, frequency):
     """
     Check if cube conforms to variable's CMOR definiton.
 
@@ -624,8 +630,10 @@ def cmor_check(cube, cmor_table, mip, short_name):
         Variable's mip
     short_name: basestring
         Variable's short name
+    frequency: basestring
+        Data frequency
 
     """
-    cmor_check_metadata(cube, cmor_table, mip, short_name)
-    cmor_check_data(cube, cmor_table, mip, short_name)
+    cmor_check_metadata(cube, cmor_table, mip, short_name, frequency)
+    cmor_check_data(cube, cmor_table, mip, short_name, frequency)
     return cube

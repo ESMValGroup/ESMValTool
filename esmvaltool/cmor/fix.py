@@ -44,7 +44,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 
 
 def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
-                 mip=None):
+                 mip=None, frequency=None):
     """
     Fix cube metadata if fixes are required and check it anyway
 
@@ -69,6 +69,9 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
     mip: str, optional
         Variable's MIP, if available
 
+    frequency: str, optional
+        Variable's data frequency, if available
+
     Returns
     -------
     iris.cube.Cube:
@@ -85,6 +88,7 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
         cube = fix.fix_metadata(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
+            frequency=frequency,
             table=cmor_table,
             mip=mip,
             short_name=short_name,
@@ -94,7 +98,8 @@ def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
     return cube
 
 
-def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
+def fix_data(cube, short_name, project, dataset, cmor_table=None,
+             mip=None, frequency=None):
     """
     Fix cube data if fixes add present and check it anyway.
 
@@ -121,6 +126,9 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
     mip: str, optional
         Variable's MIP, if available
 
+    frequency: str, optional
+        Variable's data frequency, if available
+
     Returns
     -------
     iris.cube.Cube:
@@ -137,6 +145,7 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
         cube = fix.fix_data(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
+            frequency=frequency,
             table=cmor_table,
             mip=mip,
             short_name=short_name,

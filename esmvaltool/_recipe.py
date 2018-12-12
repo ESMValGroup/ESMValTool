@@ -456,6 +456,7 @@ def _get_default_settings(variable, config_user, derive=False):
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
+        fix['frequency'] = variable['frequency']
     settings['fix_data'] = dict(fix)
     settings['fix_metadata'] = dict(fix)
 
@@ -478,6 +479,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+            'frequency': variable['frequency'],
         }
     # Configure final CMOR data check
     if variable.get('cmor_table'):
@@ -485,6 +487,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+            'frequency': variable['frequency'],
         }
 
     # Clean up fixed files

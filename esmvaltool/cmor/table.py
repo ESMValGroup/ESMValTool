@@ -518,6 +518,7 @@ class CMIP5Info(object):
                 continue
             if hasattr(coord, key):
                 setattr(coord, key, value)
+        return coord
 
     def _read_variable(self, short_name, frequency):
         var = VariableInfo('CMIP5', short_name)
