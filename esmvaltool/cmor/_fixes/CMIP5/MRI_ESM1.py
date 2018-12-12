@@ -1,6 +1,5 @@
 """Fixes for MRI-ESM1 model"""
 import numpy as np
-
 from ..fix import Fix
 
 

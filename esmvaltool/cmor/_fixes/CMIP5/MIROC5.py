@@ -1,6 +1,6 @@
-"""Fixes for MIROC5 model"""
-from ..fix import Fix
+"""Fixes for MIROC5 model."""
 import numpy as np
+from ..fix import Fix
 
 
 class sftof(Fix):
@@ -8,7 +8,7 @@ class sftof(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -28,7 +28,7 @@ class sftof(Fix):
 
 
 class snw(Fix):
-    """Fixes for snw"""
+    """Fixes for snw."""
 
     def fix_metadata(self, cube):
         """
@@ -52,7 +52,7 @@ class snw(Fix):
 
 
 class snc(snw):
-    """Fixes for snc"""
+    """Fixes for snc."""
 
     pass
 

@@ -1,6 +1,5 @@
-"""Fixes for MRI-CGCM3 model"""
+"""Fixes for MRI-CGCM3 model."""
 import numpy as np
-
 from ..fix import Fix
 
 
