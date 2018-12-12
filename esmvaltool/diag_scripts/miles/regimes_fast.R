@@ -157,7 +157,8 @@ miles_regimes_fast <- function(dataset, expid, ens, year1, year2, season,
                                 compression = 1)
 
   # testnames
-  dimnchar <- ncdim_def("nchar", "", 1:max(nchar(names)), create_dimvar = FALSE)
+  dimnchar <- ncdim_def("nchar", "", 1:max(nchar(names)),
+                        create_dimvar = FALSE)
   names_ncdf <- ncvar_def("Names", "", list(dimnchar, cl), prec = "char")
 
   # saving file
