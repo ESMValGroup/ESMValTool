@@ -2,7 +2,9 @@
 from . import names, plot
 from ._base import (get_cfg, group_metadata, run_diagnostic, select_metadata,
                     sorted_group_metadata, sorted_metadata, extract_variables,
-                    variables_available, iris_project_constraint)
+                    variables_available)
+from ._iris_helpers import (check_dataset_coordinates, iris_project_constraint,
+                            match_dataset_coordinates)
 from ._io import (save_iris_cube, save_scalar_data, metadata_to_netcdf,
                   netcdf_to_metadata, get_all_ancestor_files,
                   get_ancestor_file)
@@ -20,10 +22,12 @@ __all__ = [
     'select_metadata',
     'sorted_metadata',
     'group_metadata',
-    'iris_project_constraint',
     'sorted_group_metadata',
     'extract_variables',
     'variables_available',
+    'check_dataset_coordinates',
+    'iris_project_constraint',
+    'match_dataset_coordinates',
     'get_all_ancestor_files',
     'get_ancestor_file',
     'metadata_to_netcdf',

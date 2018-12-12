@@ -9,7 +9,6 @@ import sys
 import time
 from collections import OrderedDict
 
-import iris
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -204,35 +203,6 @@ def variables_available(cfg, short_names):
         if var not in available_short_names:
             return False
     return True
-
-
-def iris_project_constraint(projects, cfg):
-    """Create `iris.Constraint` to select specific projects from data.
-
-    Parameters
-    ----------
-    projects : list of str
-        Projects to be selected.
-    cfg : dict
-        Diagnostic script configuration.
-
-    Returns
-    -------
-    iris.Constraint
-        constraint for coordinate `dataset`.
-
-    """
-    datasets = []
-    grouped_data = group_metadata(cfg['input_data'].values(), 'project')
-    for project in projects:
-        for data in grouped_data[project]:
-            datasets.append(data['dataset'])
-
-    # Constraint function
-    def project_constraint(cell):
-        return cell in datasets
-
-    return iris.Constraint(dataset=project_constraint)
 
 
 def get_cfg(filename=None):
