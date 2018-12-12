@@ -670,19 +670,20 @@ class Plot2D(object):
                         'linewidths': 2,
                     }
                     if 'time' not in self.plot_type:
-                        iplt.contour(cube,
-                                     contour_levels,
-                                     **options)
+                        cs = iplt.contour(cube,
+                                          contour_levels,
+                                          **options)
                     else:
                         if self.data_transposed:
                             data = cube.data.transpose()
                         else:
                             data = cube.data
-                        plt.contour(cube.coord(self.x_axis).points,
-                                    cube.coord(self.y_axis).points,
-                                    data,
-                                    contour_levels,
-                                    **options)
+                        cs = plt.contour(cube.coord(self.x_axis).points,
+                                         cube.coord(self.y_axis).points,
+                                         data,
+                                         contour_levels,
+                                         **options)
+                    plt.clabel(cs, cs.levels)
                 iplt.pcolormesh(cube,
                                 cmap=brewer_cmap,
                                 vmin=vmin,
