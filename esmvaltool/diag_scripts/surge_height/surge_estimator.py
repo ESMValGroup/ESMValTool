@@ -109,13 +109,14 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
         stat = [x for x in cfg['stations'] if x in allstats]
     #
     if cfg["plt_tseries"]:
-        if cfg["plt_stations"] in allstats:
-            stat_tseries = cfg["plt_stations"]
-        else:
-            #logger.info(
-            print('Station ' + str(cfg["plt_station"]) +
-                  ' is not available -> timeseries plot cannot be generated.')
-            cfg["plt_tseries"] = False
+        stat_tseries = []
+        for plt_stat in cfg["plt_stations"]:
+            if plt_stat in allstats:
+                stat_tseries.append(plt_stat)
+            else:
+                logger.info('Station ' + str(cfg["plt_station"]) +
+                      ' is not available -> timeseries plot cannot be generated.')
+                cfg["plt_tseries"] = False
 
     # 2. Date for map plot
     if cfg["coastal_map"]:
@@ -140,18 +141,22 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ----------------------------------------------------
     logger.info("Preparing input data")
 
-    psl, uas, vas = cut_NS(psl_in, uas_in, vas_in)
+    pslNS, uasNS, vasNS = cut_NS(psl_in, uas_in, vas_in)
+    del psl_in, uas_in, vas_in
 
-    xpslNS, xuaNS, xvaNS = Xtrms(psl_in, uas_in, vas_in)
+    xpslNS, xuasNS, xvasNS = Xtrms(pslNS, uasNS, vasNS)
+    del pslNS, uasNS, vasNS
 
-    psl, uas, vas = calc_monanom(xpslNS, xuaNS, xvaNS)
+    psl, uas, vas = calc_monanom(xpslNS, xuasNS, xvasNS)
+    del pslNS, xuasNS, xvasNS
 
     # -----------------------------
     # IV. Calculate SLP gradients
     # -----------------------------
     #logger.debug("Calculating gradient of psl")
     gradlatpsl = np.gradient(psl, axis=1)
-    gradlonpsl = np.gradient(psl, axis=2)
+    gradpsl = np.gradient(gradlatpsl, axis=1)
+    del gradlatpsl
 
     # -----------------------------------------------------------
     # V. Load or determine EOF solvers & load regression coefficients
@@ -163,23 +168,22 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     solvers_exist = check_solver(data_dir)
 
     if dataset == 'ERA-Interim' and not solvers_exist:
-        [psl_solver, gradlon_solver, gradlat_solver, 
-          uas_solver, vas_solver] = calc_eofs(psl, uas, vas, gradlatpsl, gradlonpsl, data_dir)
+        [psl_solver, gradpsl_solver, 
+          uas_solver, vas_solver] = calc_eofs(psl, uas, vas, gradpsl, data_dir)
         logger.info('EOF solvers generated and saved to ' + data_dir)
         exit()
     elif not dataset == 'ERA-Interim' and not solvers_exist:
         logger.info('No EOF solvers found. Please rerun the script with ERA-Interim to produce them.')
         exit('ERROR - no EOF solvers found')
     else:
-        psl_solver, gradlon_solver, gradlat_solver, uas_solver, vas_solver = load_eofs(data_dir)
+        psl_solver, gradpsl_solver, uas_solver, vas_solver = load_eofs(data_dir)
 
     # -----------------------------------------
     # VI. Project fields onto ERA-Interim EOFs
     # -----------------------------------------
     logger.debug("Generating PCs")
     pseudo_pcs_slp = psl_solver.projectField(psl)
-    pseudo_pcs_gradlatpsl = gradlat_solver.projectField(gradlatpsl)
-    pseudo_pcs_gradlonpsl = gradlon_solver.projectField(gradlonpsl)
+    pseudo_pcs_gradpsl = gradpsl_solver.projectField(gradpsl)
     pseudo_pcs_us = uas_solver.projectField(uas)
     pseudo_pcs_vs = vas_solver.projectField(vas)
 
@@ -192,8 +196,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
         X[s] = build_predictX(
             dates,
             pseudo_pcs_slp.values,
-            pseudo_pcs_gradlatpsl,  #...
-            pseudo_pcs_gradlonpsl,
+            pseudo_pcs_gradpsl,
             pseudo_pcs_us.values,
             pseudo_pcs_vs.values)
 

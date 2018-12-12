@@ -10,14 +10,9 @@ def load_eofs(eof_inpath):
         SLPsolver = pickle.load(input)
     #
     with open(os.path.join(eof_inpath,
-            'eof_gradlat_solver_075x075_19790101-20151231.pkl'),
+            'eof_gradslp_solver_075x075_19790101-20151231.pkl'),
             'rb') as input:
-        gradlatsolver = pickle.load(input)
-    #
-    with open(os.path.join(eof_inpath,
-            'eof_gradlon_solver_075x075_19790101-20151231.pkl'),
-            'rb') as input:
-        gradlonsolver = pickle.load(input)
+        gradslpsolver = pickle.load(input)
     #
     with open(os.path.join(eof_inpath,
             'eof_uas_solver_075x075_19790101-20151231.pkl'),
@@ -29,4 +24,4 @@ def load_eofs(eof_inpath):
             'rb') as input:
         vsolver = pickle.load(input)
 
-    return  SLPsolver, gradlonsolver, gradlatsolver, usolver, vsolver
+    return  SLPsolver, gradslpsolver, usolver, vsolver
