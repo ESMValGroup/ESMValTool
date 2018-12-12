@@ -1514,25 +1514,27 @@ begin
       else if (isdim(obs, "plev").and.isdim(obs, "lat")) then
         areas = map_area(obs&lat, (/1.0, 2.0/))
         nlev = dimsizes(obs&plev)
-        ptop = obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
+        ptop = obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) \
+                                           - obs&plev(nlev - 1))
         delta_p = dpres_plevel(obs&plev, 101325., ptop, 0)
         weights = new((/dimsizes(obs&plev), dimsizes(obs&lat)/), float)
         wdims = dimsizes(weights)
-        weights = conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
+        weights = (conform_dims(wdims, delta_p, 0) * \
+                   conform_dims(wdims, areas(:, 0), 1))
       else
-        error_msg("f", diag_script, "", "Ups. This should not happen. Unknown dimensions in variable obs.")
+        error_msg("f", diag_script, "", "Ups. This should not happen." + \
+                  " Unknown dimensions in variable obs.")
       end if
       end if
 
       wgt1d = ndtooned(weights)
-      out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D)^2 \
-                                            / sig1D^2, wgt1d, 1)
-      
+      out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D) ^ 2 \
+                                         / sig1D ^ 2, wgt1d, 1)
+
     end do
     leave_msg(scriptname, funcname)
     return(out)
   end if
-
 
   error_msg("f", scriptname, funcname, "metric " + metric + " not available")
 

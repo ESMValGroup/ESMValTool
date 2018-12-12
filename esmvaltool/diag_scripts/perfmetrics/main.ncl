@@ -327,9 +327,9 @@ begin
       if (diag_script_info@metric(met).eq."SMPI") then
         ens_idx = new(dimsizes(smpi&models), integer)
         do ii = 0, dimsizes(ens_idx) - 1
-          loc_idx = ind(dataset_info@dataset.eq.smpi&models(ii))
+          loc_idx = ind(input_file_info@dataset.eq.smpi&models(ii))
           ; Select only the datasets of the specified project
-          if (dataset_info@project(loc_idx).ne. \
+          if (input_file_info@project(loc_idx).ne. \
               diag_script_info@normalization(met)) then
             ens_idx(ii) = ens_idx@_FillValue
           else
@@ -365,8 +365,8 @@ begin
         smpi@invar = var0
         smpi@region = location
         smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
-        do imod = 0, dimsizes(dataset_info@dataset) - 1
+        smpi@num_climofiles = dimsizes(input_file_info@dataset)  ; FIX-ME ?
+        do imod = 0, dimsizes(input_file_info@dataset) - 1
           num_climo = "climofile_" + imod
           smpi@$num_climo$ = input_file_info@filename(imod)
         end do
