@@ -8,3 +8,4 @@ Recipes
    recipe_crem
    recipe_perfmetrics
    recipe_runoff_et
+   recipe_landcover
