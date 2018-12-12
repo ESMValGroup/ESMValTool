@@ -40,7 +40,7 @@ climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
 
 # get variable name
-var0 <- climolist$short_name
+varname <- climolist$short_name
 
 # say hi
 diag_base <- climolist$diagnostic
@@ -51,6 +51,7 @@ work_dir <- settings$work_dir
 regridding_dir <- settings$run_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
+setwd(work_dir)
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
@@ -60,8 +61,14 @@ models_end_year <- unname(sapply(metadata, "[[", "end_year"))
 models_experiment <- unname(sapply(metadata, "[[", "exp"))
 models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 
+ref_idx <- which(models_name == reference_model)
+ref_data_file <- climofiles[ref_idx]
+
 ## Loop through input models
 for (model_idx in c(1:(length(models_name)))) {
+  if (model_idx == ref_idx) {
+     next
+  }
   # Setup parameters and path
   exp <- models_name[model_idx]
   year1 <- models_start_year[model_idx]
@@ -71,24 +78,24 @@ for (model_idx in c(1:(length(models_name)))) {
   model_ens <- models_ensemble[model_idx]
 
   inregname <- paste0(exp, "_", model_exp, "_", model_ens, "_",
-                      toString(year1), "-", toString(year2), "_", var0)
+                      toString(year1), "-", toString(year2), "_", varname)
   outfile <- paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
   outfile_landonly <- paste0(work_dir, "/", inregname, "_",
                              perc_lev, "qb_landonly.nc")
   print(paste0(diag_base, ": pre-processing file: ", infile))
-  model <- infile
 
   print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
-  system(paste("cdo -mulc,86400", model, "tmp_model.nc"))
-  system("cdo griddes tmp_model.nc > tmp_grid")
-  system(paste0("cdo remapcon,tmp_grid -selyear,", year1, "/", year2, " ",
+  system(paste0("cdo selvar,", varname, " ", infile, " tmp_model.nc"))
+
+  # Remap reference onto model grid
+  system(paste0("cdo remapcon,tmp_model.nc -selvar,", varname, " ",
                 ref_data_file, " tmp_ref.nc"))
 
-  # Get (75)th percentile of reference dataaset
+  # Get (75)th percentile of reference dataset
   system(paste0("cdo timpctl,", perc_lev, " tmp_ref.nc  -timmin ",
                 "tmp_ref.nc -timmax tmp_ref.nc tmp_ref_perc_p.nc"))
 
-  # Select points with monthly precipitation greater than (75) perc
+  # Select points with monthly precipitation greater than (75)th perc
   system("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
   system("cdo ge tmp_model.nc tmp_ref_perc_p.nc tmp_mask_model.nc")
 
@@ -103,7 +110,7 @@ for (model_idx in c(1:(length(models_name)))) {
     " -setattribute,qb@standard_name='precipitation_quantile_bias'",
     " -setattribute,qb@long_name='Precipitation quantile bias'",
     " -setattribute,qb@units=' '",
-    paste0(" -chname,", var0, ",qb"),
+    paste0(" -chname,", varname, ",qb"),
     " tmp_qb1.nc tmp_qb.nc"
   )
   print(cdo_command)
@@ -111,7 +118,7 @@ for (model_idx in c(1:(length(models_name)))) {
 
   # Select land only using > 5 meter (Mehran et al. 2014)
   system("cdo -f nc topo tmp_orog.nc")
-  system("cdo remapnn,tmp_grid -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
+  system("cdo remapnn,tmp_model.nc -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
   system("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
 
   # Copy file to output destination and remove temporary files
