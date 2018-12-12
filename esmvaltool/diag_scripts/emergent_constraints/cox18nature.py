@@ -32,8 +32,8 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 from esmvaltool.diag_scripts.shared import (
-    get_ancestor_file, group_metadata, netcdf_to_metadata, plot,
-    run_diagnostic, variables_available)
+    get_ancestor_file, group_metadata, iris_project_constraint,
+    netcdf_to_metadata, plot, run_diagnostic, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -110,7 +110,7 @@ def get_external_cubes(cfg):
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
-        cube = cube.extract(ec.iris_constraint_no_obs(cfg))
+        cube = cube.extract(iris_project_constraint(['OBS'], cfg))
         cubes.append(cube)
     cubes = ec.match_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])

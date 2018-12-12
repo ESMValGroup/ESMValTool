@@ -121,7 +121,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
     tas_coord = iris.coords.AuxCoord(
         tas_cube.data,
         **extract_variables(cfg, as_iris=True)['tas'])
-    attr = {
+    attrs = {
         'model': dataset_name,
         'regression_r_value': regression_stats.rvalue,
         'regression_slope': regression_stats.slope,
@@ -131,7 +131,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
     }
     cube = iris.cube.Cube(
         rtmt_cube.data,
-        attributes=attr,
+        attributes=attrs,
         aux_coords_and_dims=[(tas_coord, 0)],
         **extract_variables(cfg, as_iris=True)['rtmt'])
     filepath = os.path.join(cfg['work_dir'],

@@ -5,8 +5,6 @@ import iris
 import numpy as np
 from scipy import integrate, stats
 
-from esmvaltool.diag_scripts.shared import group_metadata
-
 logger = logging.getLogger(__name__)
 
 
@@ -83,58 +81,6 @@ def match_dataset_coordinates(cubes):
                  sorted(common_elements))
     check_dataset_coordinates(new_cubes)
     return new_cubes
-
-
-def iris_constraint_no_obs(cfg):
-    """Create `iris.Constraint` to remove OBS data from cubes.
-
-    Parameters
-    ----------
-    cfg : dict
-        Diagnostic script configuration.
-
-    Returns
-    -------
-    iris.Constraint
-        constraint for coordinate `dataset`.
-
-    """
-    datasets = []
-    grouped_data = group_metadata(cfg['input_data'].values(), 'project')
-    for data in grouped_data.get('OBS', []):
-        datasets.append(data['dataset'])
-
-    # Constraint function
-    def no_obs(cell):
-        return cell not in datasets
-
-    return iris.Constraint(dataset=no_obs)
-
-
-def iris_constraint_only_obs(cfg):
-    """Create `iris.Constraint` to extract OBS data from cubes.
-
-    Parameters
-    ----------
-    cfg : dict
-        Diagnostic script configuration.
-
-    Returns
-    -------
-    iris.Constraint
-        constraint for coordinate `dataset`.
-
-    """
-    datasets = []
-    grouped_data = group_metadata(cfg['input_data'].values(), 'project')
-    for data in grouped_data.get('OBS', []):
-        datasets.append(data['dataset'])
-
-    # Constraint function
-    def obs(cell):
-        return cell in datasets
-
-    return iris.Constraint(dataset=obs)
 
 
 def standard_prediction_error(x_data, y_data):

@@ -113,7 +113,8 @@ def main(cfg):
 
     # Save averaged psis for every dataset in one file
     path = os.path.join(cfg['work_dir'], 'psi.nc')
-    save_scalar_data(psis, path, cfg, psi_attrs)
+    save_scalar_data(
+        psis, path, cfg, psi_attrs, attributes=psi_cube.attributes)
 
 
 if __name__ == '__main__':

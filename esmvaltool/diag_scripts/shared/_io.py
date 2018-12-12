@@ -33,26 +33,18 @@ def _add_standard_name_to_iris(standard_name, units, cube=None):
         cube.standard_name = standard_name
 
 
-def _has_necessary_attributes(metadata, log_level='debug'):
+def _has_necessary_attributes(metadata,
+                              only_var_attrs=False,
+                              log_level='debug'):
     """Check if dataset metadata has necessary attributes."""
+    keys_to_check = VAR_KEYS if only_var_attrs else NECESSARY_KEYS
     for dataset in metadata:
-        for key in NECESSARY_KEYS:
+        for key in keys_to_check:
             if key not in dataset:
                 getattr(logger, log_level)("Dataset '%s' does not have "
                                            "necessary attribute '%s'", dataset,
                                            key)
                 return False
-    return True
-
-
-def _has_necessary_var_attributes(metadata, log_level='debug'):
-    """Check if dataset metadata has necessary variable attributes."""
-    for var_key in VAR_KEYS + ['short_name']:
-        if var_key not in metadata:
-            getattr(logger, log_level)("Metadata '%s' do not have "
-                                       "necessary variable attribute '%s'",
-                                       metadata, var_key)
-            return False
     return True
 
 
@@ -139,9 +131,9 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         for (base, _, files) in os.walk(root):
             if pattern is not None:
                 files = fnmatch.filter(files, pattern)
-            files = fnmatch.filter(files, '*.nc')
             files = [os.path.join(base, f) for f in files]
             all_files.extend(files)
+    all_files = fnmatch.filter(all_files, '*.nc')
 
     # Iterate over netcdf files
     metadata = []
@@ -153,7 +145,7 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
-        dataset_info['short_name'] = getattr(cube, 'var_name')
+        dataset_info['short_name'] = cube.var_name
         dataset_info['filename'] = path
 
         # Check if necessary keys are available
@@ -185,7 +177,7 @@ def metadata_to_netcdf(cube, metadata, cfg):
                                cube)
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
-    setattr(cube, 'var_name', metadata.pop('short_name'))
+    cube.var_name = metadata.pop('short_name')
     for (attr, val) in metadata.items():
         if isinstance(val, bool):
             metadata[attr] = str(val)
@@ -223,7 +215,7 @@ def save_iris_cube(cube, path, cfg):
     logger.info("Wrote %s", path)
 
 
-def save_scalar_data(data, path, cfg, var_attrs):
+def save_scalar_data(data, path, cfg, var_attrs, attributes=None):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -240,17 +232,23 @@ def save_scalar_data(data, path, cfg, var_attrs):
     var_attrs : dict
         Attributes for the variable (`short_name`, `standard_name`, `long_name`
         or `units`).
+    attributes : dict, optional
+        Additional attributes for the cube.
 
     """
-    if not _has_necessary_var_attributes(var_attrs, 'error'):
+    if not _has_necessary_attributes(
+            [var_attrs], only_var_attrs=True, log_level='error'):
         logger.error("Cannot write file '%s'", path)
         return
     dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
     _add_standard_name_to_iris(var_attrs['standard_name'], var_attrs['units'])
+    if attributes is None:
+        attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')
     cube = iris.cube.Cube(
         list(data.values()),
         aux_coords_and_dims=[(dataset_coord, 0)],
+        attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path
     save_iris_cube(cube, path, cfg)
