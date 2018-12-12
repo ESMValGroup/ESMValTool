@@ -21,8 +21,13 @@ Description
     The fractions are compared to ESA-CCI land cover data.
 
     ESA-CCI land cover data needs to be downloaded separately
-    by the user. The data and a downloader are available at
+    by the user and converted to netCDF files containing the
+    grid cell fractions for the respective cover type.
+    The data and a conversion tool are available at
     https://maps.elie.ucl.ac.be/CCI/viewer/ upon registration.
+    Detailed instructions for the installation and use of the
+    CCI-LC user tools is available on the same page.
+
     Note, that all experiments will be regridded onto the
     grid of the ESA-CCI data, thus it is recommended to
     download the coarses resolution which is sufficient for
