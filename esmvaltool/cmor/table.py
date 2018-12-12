@@ -84,9 +84,10 @@ class CMIP6Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if os.path.isdir(cmor_tables_path):
-            return cmor_tables_path
-        if not cmor_tables_path:
+        if cmor_tables_path:
+            if os.path.isdir(cmor_tables_path):
+                return cmor_tables_path
+        else:
             cmor_tables_path = 'cmip6'
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
@@ -427,9 +428,10 @@ class CMIP5Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if os.path.isdir(cmor_tables_path):
-            return cmor_tables_path
-        if not cmor_tables_path:
+        if cmor_tables_path:
+            if os.path.isdir(cmor_tables_path):
+                return cmor_tables_path
+        else:
             cmor_tables_path = 'cmip5'
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
