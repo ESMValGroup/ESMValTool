@@ -38,7 +38,6 @@ Description
 import logging
 import os
 import numpy as np
-import pdb
 
 import iris
 import esmvaltool.diag_scripts.shared as diag
@@ -47,7 +46,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def write_plotdata(cfg, regnam, modnam, values, var):
-    """ Output region sums for all datasets of one variable.
+    """Write region values for all datasets of one variable.
+
     Parameters
     ----------
     cfg : dict
@@ -63,7 +63,6 @@ def write_plotdata(cfg, regnam, modnam, values, var):
     var : str
         variable short name
     """
-
     # Header information for different metrics
     filehead = {
         'area':
@@ -80,22 +79,22 @@ def write_plotdata(cfg, regnam, modnam, values, var):
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join([metric, var]) + '.txt')
         ncol = len(regnam)
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w') as fout:
             header = '{:35} ' + ncol * ' {:>12}' + '\n'
             body = '{:35} ' + ncol * ' {:12.4f}' + '\n'
             line = [
                 ' ',
             ] + regnam
-            f.write(filehead[metric] + '\n\n')
-            f.write(header.format(*line))
-            for ir, row in enumerate(values[metric]):
-                line = [modnam[metric][ir]] + row
-                f.write(body.format(*line))
+            fout.write(filehead[metric] + '\n\n')
+            fout.write(header.format(*line))
+            for irow, row in enumerate(values[metric]):
+                line = [modnam[metric][irow]] + row
+                fout.write(body.format(*line))
 
 
 def make_landcover_bars(cfg, regnam, modnam, values, var):
-    """ makes bar plots for the accumulated land cover area
-        for the different regions and datasets
+    """Make bar plots for regional values.
+
     Parameters
     ----------
     cfg : dict
@@ -152,21 +151,21 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     for metric in values.keys():
         filepath = os.path.join(cfg[diag.names.PLOT_DIR],
                                 '_'.join([metric, var]) + '.' + outtype)
-        fig, ax = plt.subplots(nrows=1, ncols=1, sharex=False)
-        ax.set_title(plottitle[metric])
-        ax.set_ylabel(ylabel[metric])
+        fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
+        axs.set_title(plottitle[metric])
+        axs.set_ylabel(ylabel[metric])
         nbar, ncat = np.array(values[metric]).shape
         index = np.arange(0, (nbar + 1) * ncat, nbar + 1)
         xticks = np.linspace((nbar + 1) / 2.0,
                              (nbar + 1) * ncat - (nbar + 1) / 2.0, ncat) - 1.0
-        ax.set_xticklabels(regnam)
-        ax.set_xticks(xticks)
-        for ir, row in enumerate(values[metric]):
-            ax.bar(index + ir, row)
+        axs.set_xticklabels(regnam)
+        axs.set_xticks(xticks)
+        for irow, row in enumerate(values[metric]):
+            axs.bar(index + irow, row)
 
         fig.subplots_adjust(bottom=0.20)
         caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-        for i, label in enumerate(modnam[metric]):
+        for label in modnam[metric]:
             caxe.plot([], [], lw=4, label=label)
         caxe.legend(ncol=2, loc="lower center", fontsize='small')
         caxe.set_axis_off()
@@ -187,9 +186,8 @@ def main(cfg):
     Parameters
     ----------
     cfg : dict
-    Configuration dictionary of the recipe.
+        Configuration dictionary of the recipe.
     """
-
     # Get dataset and variable information
     datasets = diag.Datasets(cfg)
     logging.debug("Found datasets in recipe:\n%s", datasets)
@@ -209,7 +207,7 @@ def main(cfg):
     for dataset_path in sorted(datasets):
         # Get dataset information
         datainfo = datasets.get_dataset_info(path=dataset_path)
-        ds = datainfo['dataset']
+        dset = datainfo['dataset']
         var = datainfo['short_name']
         # Store name of reference data for given variable
         if var not in refset.keys():
@@ -229,11 +227,11 @@ def main(cfg):
             datainfo.get('exp', ''),
             datainfo.get('ensemble', '')
         ]).replace('__', '_').strip("_")
-        mean_cube.long_name = " ".join([var, 'for dataset', ds])
+        mean_cube.long_name = " ".join([var, 'for dataset', dset])
         # Update data for dataset
         datasets.set_data(mean_cube.data, dataset_path)
         # Append to cubelist for temporary output
-        if ds == refset[var]:
+        if dset == refset[var]:
             refcubes[var].append(mean_cube)
         else:
             expcubes[var].append(mean_cube)
@@ -250,7 +248,8 @@ def main(cfg):
             iris.save(allcubes[var], filepath)
             logger.info("Writing %s", filepath)
 
-    # Compute aggregated area and average fractional coverage for different regions
+    # Compute aggregated area and average fractional coverage for
+    # different regions
     regdef = {
         'Global': None,
         'Tropics': [-30, 30],
@@ -306,19 +305,19 @@ def main(cfg):
             values['frac'].append(row['frac'])
         # Compute relative bias in average fractions compared to reference
         reffrac = np.array(values['frac'][-1])
-        for im, modfrac in enumerate(values['frac'][:-1]):
+        for imod, modfrac in enumerate(values['frac'][:-1]):
             row = ((np.array(modfrac) - reffrac) / reffrac * 100.0).tolist()
             values['bias'].append(row)
-            modnam['bias'].append(modnam['frac'][im])
+            modnam['bias'].append(modnam['frac'][imod])
         mydata[var] = {'values': values, 'groups': modnam}
 
     # Reshuffle data if models are the comparison target
     if comparison == 'model':
         shuffle = {key: {} for key in mydata[var]['groups']['area']}
-        for ds in shuffle.keys():
-            ids = mydata[var]['groups']['area'].index(ds)
-            if refset[var] in ds:
-                shuffle[ds] = {
+        for dset in shuffle.keys():
+            ids = mydata[var]['groups']['area'].index(dset)
+            if refset[var] in dset:
+                shuffle[dset] = {
                     'groups': {
                         'area': [],
                         'frac': []
@@ -329,7 +328,7 @@ def main(cfg):
                     }
                 }
             else:
-                shuffle[ds] = {
+                shuffle[dset] = {
                     'groups': {
                         'area': [],
                         'frac': [],
@@ -342,9 +341,9 @@ def main(cfg):
                     }
                 }
             for var in sorted(allcubes.keys()):
-                for metric in shuffle[ds]['groups'].keys():
-                    shuffle[ds]['groups'][metric].append(var)
-                    shuffle[ds]['values'][metric].append(
+                for metric in shuffle[dset]['groups'].keys():
+                    shuffle[dset]['groups'][metric].append(var)
+                    shuffle[dset]['values'][metric].append(
                         mydata[var]['values'][metric][ids])
         mydata = shuffle
 
