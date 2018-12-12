@@ -1,7 +1,9 @@
+import os
+from datetime import datetime
+
 import matplotlib.pyplot as plt
 import numpy as np
-from datetime import datetime
-import os
+
 
 def plot_tseries(dates, srg, stat, cfg, dataset):
     #

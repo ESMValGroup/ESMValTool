@@ -1,5 +1,6 @@
-import pickle
 import os
+import pickle
+
 
 def load_eofs(eof_inpath):
     #global SLPsolver, gradlonsolver, gradlatsolver, usolver, vsolver

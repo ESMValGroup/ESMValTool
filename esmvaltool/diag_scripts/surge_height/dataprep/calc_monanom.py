@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 
+
 def calc_monanom(psl, uas, vas):
     # ------------------------------
     # Calculate monthly climatology

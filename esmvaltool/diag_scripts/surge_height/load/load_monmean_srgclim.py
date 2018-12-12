@@ -1,6 +1,8 @@
-import xarray as xr
 import os
+
 import numpy as np
+import xarray as xr
+
 
 def load_monmean_srgclim(stat,data_dir):
     filename = 'monmean_ERAintWAQUA_surge_1979-2016_speed.nc'

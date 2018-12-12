@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 
+
 def Xtrms(psl, ua, va):
 
     dmin_psl = psl.resample(time='D').min('time')

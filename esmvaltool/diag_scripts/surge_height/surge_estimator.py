@@ -44,11 +44,12 @@
 
 #begin
 
+import logging
 import os
 import pickle
 import sys
 from datetime import datetime
-import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -56,6 +57,7 @@ import xarray as xr
 from eofs.standard import Eof
 from eofs.xarray import Eof as xrEof
 
+from dataprep.calc_eofs import calc_eofs
 #import .dataprep.grad_psl as dpgrd
 #import .estimate.build_predictX as ebX
 #import .estimate.estimate_srg as ees
@@ -64,7 +66,6 @@ from eofs.xarray import Eof as xrEof
 #import .output.plot_tseries as opt
 #import .output.save_netCDF as osn
 from dataprep.calc_monanom import calc_monanom
-from dataprep.calc_eofs import calc_eofs
 from dataprep.cut_NS_xarray import cut_NS
 from dataprep.grad_psl import grad_psl
 from dataprep.Xtrms_xarray import Xtrms
@@ -77,6 +78,7 @@ from load.load_EOFs import load_eofs
 from output.plot_map_cartopy import plot_map_cartopy
 from output.plot_tseries import plot_tseries
 from output.save_netCDF import save_netCDF
+
 #from regression.train_model import train_model
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -153,7 +155,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # -----------------------------
     # IV. Calculate SLP gradients
     # -----------------------------
-    #logger.debug("Calculating gradient of psl")
+    logger.debug("Calculating gradient of psl")
     gradlatpsl = np.gradient(psl, axis=1)
     gradpsl = np.gradient(gradlatpsl, axis=1)
     del gradlatpsl

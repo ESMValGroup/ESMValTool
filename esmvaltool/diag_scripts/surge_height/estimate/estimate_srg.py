@@ -1,6 +1,7 @@
+import os
+
 import numpy as np
 import pandas as pd
-import os
 
 #from .load import load_betas_intercept as llbi
 from load.load_monmean_srgclim import load_monmean_srgclim

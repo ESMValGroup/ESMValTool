@@ -1,16 +1,12 @@
 """Python example diagnostic."""
 import logging
 import os
-from pprint import pformat
 
-import iris
-import numpy as np
 import xarray as xr
 
-import surge_estimator
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
-from esmvaltool.diag_scripts.shared.plot import quickplot
+                                            select_metadata)
+
 from surge_estimator import surge_estimator_main
 
 logger = logging.getLogger(os.path.basename(__file__))
