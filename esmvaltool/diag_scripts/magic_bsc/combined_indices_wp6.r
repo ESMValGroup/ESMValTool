@@ -13,12 +13,12 @@ library(ggplot2)
 library(yaml)
 library(ncdf4)
 library(ClimProjDiags) #nolint
-
+library(abind)
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
-
+print(params)
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
@@ -26,17 +26,17 @@ work_dir <- params$work_dir
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
-
-input_files_per_var <- yaml::read_yaml(params$input_files)
+input_files_per_var <- yaml::read_yaml(params$input_files[1])
+var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
-model_names <- unname(model_names)
+model_names <- unique(unlist(unname(model_names)))
 
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
-experiment <- lapply(input_files_per_var, function(x) x$exp)
-experiment <- unlist(unname(experiment))
-rcp_scenario <- experiment
+
+var0 <- unlist(var0)
+
 
 start_year <- lapply(input_files_per_var, function(x) x$start_year)
 start_year <- c(unlist(unname(start_year)))[1]
@@ -59,23 +59,40 @@ weights <- params$weights
 print(running_mean)
 print(multi_year_average)
 print(weights)
+data_nc <- nc_open(fullpath_filenames)
+lat <- ncvar_get(data_nc, "lat")
+lon <- ncvar_get(data_nc, "lon")
+units <- ncatt_get(data_nc, var0, "units")$value
+calendar <- ncatt_get(data_nc, "time", "calendar")$value
+long_names <-  ncatt_get(data_nc, var0, "long_name")$value
+time <-  ncvar_get(data_nc, "time")
+data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
+start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
+                                          "units")$value, 11, 29))
+time <- as.Date(time, origin = start_date, calendar = calendar)
+projection <- "NULL"
+nc_close(data_nc)
 
-data <- Start(
-  model = fullpath_filenames,
-  var = var0,
-  var_var = "var_names",
-  time = "all",
-  lat = "all",
-  lon = "all",
-  lon_var = "lon",
-  return_vars = list(time = "model", lon = "model", lat = "model"),
-  retrieve = TRUE
-)
-units <- (attr(data, "Variables")$common)[[2]]$units
-lat <- attr(data, "Variables")$dat1$lat
-lon <- attr(data, "Variables")$dat1$lon
-long_names <- attr(data, "Variables")$common$tas$long_name
-projection <- attr(data, "Variables")$common$tas$coordinates
+if (length(params$input_files) >= 2) {
+  for (i in 2 : length(params$input_files)) {
+    input_files_per_var <- yaml::read_yaml(params$input_files[i])
+    var_names <- names(input_files_per_var)
+    model_names <- lapply(input_files_per_var, function(x) x$dataset)
+    model_names <- unique(unlist(unname(model_names)))
+    
+    var0 <- lapply(input_files_per_var, function(x) x$short_name)
+    fullpath_filenames <- names(var0)
+    var0 <- unname(var0)[1]
+    var0 <- unlist(var0)
+    data_nc <- nc_open(fullpath_filenames)
+    data <- abind(data,
+                            InsertDim(ncvar_get(data_nc, var0), 1, 1), along = 1) # nolint
+    nc_close(data_nc)
+  }
+} 
+
+names(dim(data)) <- c("model", "lon", "lat", "time")
+
 region <- c(min(lon), max(lon), min(lat), max(lat))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
@@ -92,7 +109,6 @@ timestamp <- ""
 # ------------------------------
 # nolint end
 # Provisional solution to error in dimension order:
-time <- attr(data, "Variables")$dat1$time
 
 # nolint start
 #  if ((end_projection-start_projection + 1) * 12 == length(time)) {
@@ -110,16 +126,16 @@ time <- attr(data, "Variables")$dat1$time
 #  }
 # nolint end
 
-data <- as.vector(data)
-dim(data) <- c(
-  model = 1,
-  var = 1,
-  lon = length(lon),
-  lat = length(lat),
-  time = length(time)
-)
-data <- aperm(data, c(1, 2, 5, 3, 4))
-attr(data, "Variables")$dat1$time <- time
+#data <- as.vector(data)
+#dim(data) <- c(
+#  model = 1,
+#  var = 1,
+#  lon = length(lon),
+#  lat = length(lat),
+#  time = length(time)
+#)
+#data <- aperm(data, c(1, 2, 5, 3, 4))
+#attr(data, "Variables")$dat1$time <- time
 
 # nolint start
 # ------------------------------
@@ -128,19 +144,19 @@ attr(data, "Variables")$dat1$time <- time
 #dev.off()
 # nolint end
 
-if (is.null(moninf)) {
-  time <- attributes(data)$Variables$dat1$time
-} else {
-  day <- "01"
-  month <- moninf
-  if (length(moninf) == 1) {
-    month <- paste0(0, month)
-  }
-  month <- paste0("-", month, "-")
-  time <- start_year : end_year
-  time <- as.POSIXct(paste0(time, month, day), tz = "CET")
-  time <- julian(time, origin = as.POSIXct("1970-01-01"))
-}
+#if (is.null(moninf)) {
+#  time <- attributes(data)$Variables$dat1$time
+#} else {
+#  day <- "01"
+#  month <- moninf
+#  if (length(moninf) == 1) {
+#    month <- paste0(0, month)
+#  }
+#  month <- paste0("-", month, "-")
+#  time <- start_year : end_year
+#  time <- as.POSIXct(paste0(time, month, day), tz = "CET")
+#  time <- julian(time, origin = as.POSIXct("1970-01-01"))
+#}
 
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
@@ -216,7 +232,7 @@ if (!is.null(weights)) {
     data <- CombineIndices(indices, weights = NULL) # nolint
     print(dim(data))
   } else {
-    data <- CombineIndices(indices, weights = NULL) # nolint
+    data <- CombineIndices(indices, weights = weights) # nolint
   }
 }
 print(region)
@@ -243,6 +259,8 @@ if (!is.null(region)) {
   #   )
   # )
   # nolint end
+ model_names_filename <- paste(model_names, collapse = "_")
+
   print(
     paste(
       "Attribute projection from climatological data is saved and,",
@@ -278,7 +296,7 @@ if (!is.null(region)) {
   file <- nc_create(
     paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
-      "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
+      "_", timestamp, "_", model_names_filename, "_", start_year, "_", end_year,
       "_", ".nc"),
     list(defdata)
   )
@@ -295,7 +313,6 @@ if (!is.null(region)) {
   attr(data, "variables") <- metadata
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
-
 
   print(paste(
     "Attribute projection from climatological data is saved and,",
@@ -330,7 +347,7 @@ if (!is.null(region)) {
   file <- nc_create(
     paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
-      "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
+      "_", timestamp, "_", model_names_filename, "_", start_year, "_", end_year,
       "_", ".nc"),
     list(defdata)
   )
