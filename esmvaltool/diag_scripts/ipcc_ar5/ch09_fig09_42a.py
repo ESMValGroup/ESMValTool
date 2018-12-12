@@ -16,7 +16,7 @@ Project
 -------
 CRESCENDO
 
-Configuration options in recips
+Configuration options in recipe
 -------------------------------
 save : dict, optional
     Keyword arguments for the `fig.saveplot()` function.

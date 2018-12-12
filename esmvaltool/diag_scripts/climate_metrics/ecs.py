@@ -15,7 +15,7 @@ Project
 -------
 CRESCENDO
 
-Configuration options in recips
+Configuration options in recipe
 -------------------------------
 plot_ecs_regression : bool, optional (default: False)
     Plot the linear regression graph.

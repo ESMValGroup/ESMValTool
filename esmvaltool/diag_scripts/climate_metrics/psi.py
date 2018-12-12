@@ -15,7 +15,7 @@ Project
 -------
 CRESCENDO
 
-Configuration options in recips
+Configuration options in recipe
 -------------------------------
 window_length : int, optional (default: 55)
     Number of years used for the moving window average.

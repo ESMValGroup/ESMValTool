@@ -15,7 +15,7 @@ Project
 -------
 CRESCENDO
 
-Configuration options in recips
+Configuration options in recipe
 -------------------------------
 confidence_level : float, optional (default: 0.66)
     Confidence level for ECS error estimation.
