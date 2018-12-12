@@ -1,12 +1,9 @@
 """Python example diagnostic."""
 import logging
 import os
-
 import xarray as xr
-
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
-
 from surge_estimator import surge_estimator_main
 
 logger = logging.getLogger(os.path.basename(__file__))
