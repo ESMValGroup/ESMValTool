@@ -324,7 +324,6 @@ The template for the requested reports can be found in the file C3S_D511_templat
 *	Adjusting any ECV/dataset/producer information on the cover page and the file name.
 *	Adding additional information on a possible preprocessing of the data (spatial/temporal aggregation, CMORization).
 *	Adding the executive summary of the report with selected figures, text and references.
-*	Produce the full reports and add them to the word template
 
 Now, you are potentially done, and if satisfied can upload it to the shared repository for internal evaluation.
 
