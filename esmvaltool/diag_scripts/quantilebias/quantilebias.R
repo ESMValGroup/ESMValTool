@@ -79,37 +79,25 @@ for (model_idx in c(1:(length(models_name)))) {
   model <- infile
 
   print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
-  cdo_command <- paste("cdo -mulc,86400", model, "tmp_model.nc")
-  system(cdo_command)
-  cdo_command <- paste("cdo griddes tmp_model.nc > tmp_grid")
-  system(cdo_command)
-  cdo_command <- paste("cdo remapcon,tmp_grid ", paste0("-selyear,",
-                       year1, "/", year2), ref_data_file, "tmp_ref.nc")
-  system(cdo_command)
+  system(paste("cdo -mulc,86400", model, "tmp_model.nc"))
+  system("cdo griddes tmp_model.nc > tmp_grid")
+  system(paste0("cdo remapcon,tmp_grid -selyear,", year1, "/", year2, " ",
+                ref_data_file, " tmp_ref.nc"))
 
   # Get (75)th percentile of reference dataaset
-  cdo_command <- paste(paste0("cdo timpctl,", perc_lev),
-    " tmp_ref.nc  -timmin tmp_ref.nc  -timmax tmp_ref.nc  tmp_ref_perc_p.nc")
-  system(cdo_command)
+  system(paste0("cdo timpctl,", perc_lev, " tmp_ref.nc  -timmin ",
+                "tmp_ref.nc -timmax tmp_ref.nc tmp_ref_perc_p.nc"))
 
   # Select points with monthly precipitation greater than (75) perc
-  cdo_command <- paste("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
-  system(cdo_command)
-  cdo_command <- paste("cdo ge tmp_model.nc
-    tmp_ref_perc_p.nc tmp_mask_model.nc")
-  system(cdo_command)
+  system("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
+  system("cdo ge tmp_model.nc tmp_ref_perc_p.nc tmp_mask_model.nc")
 
   # Precipitation sums
-  cdo_command <- paste("cdo timsum -mul tmp_mask_ref.nc
-    tmp_ref.nc tmp_ref_sum.nc")
-  system(cdo_command)
-  cdo_command <- paste("cdo timsum -mul tmp_mask_model.nc
-    tmp_model.nc tmp_model_sum.nc")
-  system(cdo_command)
+  system("cdo timsum -mul tmp_mask_ref.nc tmp_ref.nc tmp_ref_sum.nc")
+  system("cdo timsum -mul tmp_mask_model.nc tmp_model.nc tmp_model_sum.nc")
 
   # Calculate quantile bias, set name and attributes
-  cdo_command <- paste("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb1.nc")
-  system(cdo_command)
+  system("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb1.nc")
   cdo_command <- paste(
     "cdo ",
     " -setattribute,qb@standard_name='precipitation_quantile_bias'",
@@ -122,19 +110,15 @@ for (model_idx in c(1:(length(models_name)))) {
   system(cdo_command)
 
   # Select land only using > 5 meter (Mehran et al. 2014)
-  cdo_command <- paste("cdo -f nc topo tmp_orog.nc")
-  system(cdo_command)
-  cdo_command <- paste("cdo remapnn,tmp_grid
-    -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
-  system(cdo_command)
-  cdo_command <- paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
-  system(cdo_command)
+  system("cdo -f nc topo tmp_orog.nc")
+  system("cdo remapnn,tmp_grid -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
+  system("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
 
   # Copy file to output destination and remove temporary files
-  mv_command <- paste("mv tmp_qb.nc ", outfile)
+  mv_command <- paste("mv tmp_qb.nc", outfile)
   print(mv_command)
   system(mv_command)
-  mv_command <- paste("mv tmp_qb_landonly.nc ", outfile_landonly)
+  mv_command <- paste("mv tmp_qb_landonly.nc", outfile_landonly)
   print(mv_command)
   system(mv_command)
   rm_command <- paste("rm tmp_*")
