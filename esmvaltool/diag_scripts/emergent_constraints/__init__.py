@@ -45,8 +45,8 @@ def standard_prediction_error(x_data, y_data):
     x_mean = np.mean(x_data)
     ssx = np.sum(np.square(x_data - x_mean))
 
-    # Standard prediction error
     def spe(x_new):
+        """Return standard prediction error."""
         return see * np.sqrt(1.0 + 1.0 / n_data + (x_new - x_mean)**2 / ssx)
 
     return np.vectorize(spe)
@@ -113,19 +113,19 @@ def gaussian_pdf(x_data, y_data, obs_mean, obs_std, n_points=100):
     spe = standard_prediction_error(x_data, y_data)
     reg = stats.linregress(x_data, y_data)
 
-    # PDF of observations P(x)
     def obs_pdf(x_new):
+        """Return PDF of observations P(x)."""
         norm = np.sqrt(2.0 * np.pi * obs_std**2)
         return np.exp(-(x_new - obs_mean)**2 / 2.0 / obs_std**2) / norm
 
-    # Conditional PDF P(y|x)
     def cond_pdf(x_new, y_new):
+        """Return conditional PDF P(y|x)."""
         y_estim = reg.slope * x_new + reg.intercept
         norm = np.sqrt(2.0 * np.pi * spe(x_new)**2)
         return np.exp(-(y_new - y_estim)**2 / 2.0 / spe(x_new)**2) / norm
 
-    # Combined PDF P(y,x)
     def comb_pdf(x_new, y_new):
+        """Return combined PDF P(y,x)."""
         return obs_pdf(x_new) * cond_pdf(x_new, y_new)
 
     # PDF of target variable P(y)

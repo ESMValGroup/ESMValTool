@@ -40,7 +40,7 @@ def check_dataset_coordinates(cubes):
     return coord.points
 
 
-def iris_project_constraint(projects, cfg):
+def iris_project_constraint(projects, cfg, negate=False):
     """Create `iris.Constraint` to select specific projects from data.
 
     Parameters
@@ -49,6 +49,9 @@ def iris_project_constraint(projects, cfg):
         Projects to be selected.
     cfg : dict
         Diagnostic script configuration.
+    negate : bool, optional (default: False)
+        Negate constraint (`True`: select all elements that fit `projects`,
+        `False`: select all elements that do not fit `projects`).
 
     Returns
     -------
@@ -62,8 +65,10 @@ def iris_project_constraint(projects, cfg):
         for data in grouped_data[project]:
             datasets.append(data['dataset'])
 
-    # Constraint function
     def project_constraint(cell):
+        """Constraint function."""
+        if negate:
+            return cell not in datasets
         return cell in datasets
 
     return iris.Constraint(dataset=project_constraint)

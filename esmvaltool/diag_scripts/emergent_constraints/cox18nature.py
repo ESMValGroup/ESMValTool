@@ -111,7 +111,7 @@ def get_external_cubes(cfg):
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
-        cube = cube.extract(iris_project_constraint(['CMIP5'], cfg))
+        cube = cube.extract(iris_project_constraint(['OBS'], cfg, negate=True))
         cubes.append(cube)
     cubes = match_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])
