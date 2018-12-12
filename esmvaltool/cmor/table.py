@@ -578,9 +578,20 @@ class CMIP5Info(object):
 
 class CustomInfo(CMIP5Info):
     """
-    Class to read custom var info for ESMVal
+    Class to read custom var info for ESMVal.
+
+    Parameters
+    ----------
+    cmor_tables_path: basestring or None
+        Full path to the table or name for the table if it is present in
+        ESMValTool repository
+
     """
+
     def __init__(self, cmor_tables_path=None):
+        """
+
+        """
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'tables', 'custom')
         self.tables = {}
