@@ -64,7 +64,7 @@ begin
   INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DIM_DAT = dimsizes(DATASETS)
-  DIM_DAT_ORIG = DIM_DAT
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + VAR0@short_name + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")

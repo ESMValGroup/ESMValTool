@@ -48,22 +48,35 @@ begin
     error_msg("f", DIAG_SCRIPT, "", "this diagnostic expects exactly two " + \
               "variables")
   end if
-  VAR0 = variable_info[0]
-  VAR1 = variable_info[1]
+  var = new(DIM_VAR, string)
+  var(0) = variable_info[0]@short_name
+  var(1) = variable_info[1]@short_name
 
   ; Input data
-  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
-  INFO1 = select_metadata_by_name(input_file_info, VAR1@short_name)
-  DATASETS = metadata_att_as_array(INFO0, "dataset")
-  DIM_DAT = dimsizes(DATASETS)
-  DIM_DAT_ORIG = DIM_DAT
+  info0 = select_metadata_by_name(input_file_info, var(0))
+  info1 = select_metadata_by_name(input_file_info, var(1))
+  projects0 = metadata_att_as_array(info0, "project")
+  projects1 = metadata_att_as_array(info1, "project")
+  DATASETS = NewList("lifo")
+  ListAppend(DATASETS, metadata_att_as_array(info0, "dataset"))
+  ListAppend(DATASETS, metadata_att_as_array(info1, "dataset"))
+  if any(DATASETS[0](ind(projects0 .ne. "OBS")) .ne. \
+         DATASETS[1](ind(projects1 .ne. "OBS"))) then
+    error_msg("f", DIAG_SCRIPT, "", "the two variables do not cover the " + \
+              "same datasets, this is not supported yet")
+  end if
+  if any(projects0 .ne. projects1) then
+    error_msg("f", DIAG_SCRIPT, "", "the two variables do not include the " + \
+              "same number of observations")
+  end if
+  DIM_DAT = dimsizes(DATASETS[0])
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (vars: " + VAR0@short_name + ", " + \
-           VAR1@short_name + ")")
+  log_info(DIAG_SCRIPT + " (vars: " + var(0) + ", " + var(1) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Write references (TODO)
-  ; write_references(diag_script, \
+  ; write_references(DIAG_SCRIPT, \
   ;                  (/"A-anav_al"/), \
   ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
   ;                  (/"D_anav13jclim"/), \
@@ -88,54 +101,49 @@ begin
   req_atts = (/"region"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   delete(req_atts)
+  if (.not. isatt(diag_script_info, "legend_outside")) then
+    diag_script_info@legend_outside = False
+  end if
 
   ; Set region
   region = select_region(diag_script_info@region)
-
-  ; Set time range, array sizes and new arrays
-  all_years = NewList("lifo")
-  all_data = NewList("lifo")
-  start_year = new(DIM_VAR, integer)
-  end_year = new(DIM_VAR, integer)
-  DIM_DAT = new(DIM_VAR, integer)
-  DIM_TIME = new(DIM_VAR, integer)
-  do ivar = 0, DIM_VAR - 1
-    ; Time
-    start_year(ivar) = min(stringtoint(input_file_info[ivar]@start_year))
-    end_year(ivar) = min(stringtoint(input_file_info[ivar]@end_year))
-    ListAppend(all_years, ispan(start_year(ivar), end_year(ivar), 1))
-
-    ; Array sizes
-    DIM_DAT(ivar) = dimsizes(input_file_info[ivar]@dataset)
-    DIM_TIME(ivar) = dimsizes(all_years[ivar])
-
-    ; New arrays
-    ListAppend(all_data, new((/DIM_DAT(ivar)/), float))
-    all_data[ivar]!0 = "dataset"
-    all_data[ivar]&dataset = input_file_info[ivar]@dataset
-  end do
-  if (DIM_DAT(0) .ne. DIM_DAT(1)) then
-    error_msg("f", diag_script, "", "the two variables do not cover the " + \
-              "same number of datasets, this is not supported yet")
-  end if
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
   ; ---------------------------------------------------------------------------
 
   ; Loop over all variables and datasets
+  all_data = NewList("lifo")
   do ivar = 0, DIM_VAR - 1
-    do idat = 0, DIM_DAT(ivar) - 1
-      dataset_name = input_file_info[ivar]@dataset(idat)
-      log_debug("Processing " + variables(ivar) + " of " + dataset_name)
+    INFO = select_metadata_by_name(input_file_info, var(ivar))
+
+    ; Array
+    ListAppend(all_data, new((/DIM_DAT/), float))
+    all_data[ivar]!0 = "dataset"
+    all_data[ivar]&dataset = DATASETS[ivar]
+
+    ; Time range
+    start_year = 9999
+    end_year = -9999
+    do idat = 0, DIM_DAT - 1
+      if (INFO[idat]@start_year .lt. start_year) then
+        start_year = INFO[idat]@start_year
+      end if
+      if (INFO[idat]@end_year .gt. end_year) then
+        end_year = INFO[idat]@end_year
+      end if
+    end do
+
+    ; Read data
+    do idat = 0, DIM_DAT - 1
+      data = INFO[idat]
+      log_debug("Processing " + var(ivar) + " of " + DATASETS[ivar](idat))
 
       ; Read variable
-      var = read_data(idat, variables(ivar), field_types(ivar))
+      var_data = read_data(data)
 
       ; Compute annual mean
-      tmp = time_operations(var, \
-                            toint(input_file_info[ivar]@start_year(idat)), \
-                            toint(input_file_info[ivar]@end_year(idat)), \
+      tmp = time_operations(var_data, data@start_year, data@end_year, \
                             "average", "annualclim", True)
 
       ; Compute area-weighted sum
@@ -144,12 +152,10 @@ begin
 
       ; Assign to global array
       all_data[ivar](idat) = area_op
-      delete([/var, tmp, area_op/])
+      delete([/var_data, tmp, area_op/])
     end do
-  end do
 
-  ; Convert units if appropriate
-  do ivar = 0, DIM_VAR - 1
+    ; Convert units if appropriate
     if (isatt(variable_info[ivar], "plot_units")) then
       all_data[ivar] = convert_units(all_data[ivar], \
                                      variable_info[ivar]@plot_units)
@@ -164,11 +170,11 @@ begin
     work_dir = config_user_info@work_dir
     system("mkdir -p " + work_dir)
 
-    ; Loop over variables
+    ; Set attributes and save
     do ivar = 0, DIM_VAR - 1
-      new_path = work_dir + variables(ivar) + ".nc"
-      all_data[ivar]@var = variables(ivar)
-      all_data[ivar]@diag_script = diag_script
+      new_path = work_dir + var(ivar) + ".nc"
+      all_data[ivar]@var = var(ivar)
+      all_data[ivar]@diag_script = DIAG_SCRIPT
       all_data[ivar]@ncdf = new_path
       ncdf_outfile = ncdf_write(all_data[ivar], new_path)
     end do
@@ -179,37 +185,42 @@ begin
   ; ---------------------------------------------------------------------------
 
   if (config_user_info@write_plots) then
-    ; Output array
     data_arr = new((/DIM_VAR, DIM_DAT(0)/), float)
+
+    ; Initialize output array
     data_arr!0 = "statistic"
     data_arr!1 = "dataset"
-    data_arr&statistic = (/var0, var1/)
-    data_arr&dataset = input_file_info[0]@dataset
+    data_arr&statistic = (/var(0), var(1)/)
+    data_arr&dataset = DATASETS[0]
     data_arr@units = (/all_data[0]@units, all_data[1]@units/)
     data_arr@legend_outside = diag_script_info@legend_outside
 
     ; Collect data
     do ivar = 0, DIM_VAR - 1
-      idx_ref = get_ref_dataset_idx(input_file_info[ivar], \
-                                    variable_info[ivar]@reference_dataset)
+      ref_idx = ind(DATASETS[ivar] .eq. variable_info[ivar]@reference_dataset)
+      ref_idx := ref_idx(0)
+      if (ismissing(ref_idx)) then
+          error_msg("f", DIAG_SCRIPT, "", "no adequate reference dataset " + \
+                    "for " + var(ivar) + " provided")
+      end if
+      log_info("Reference dataset for " + var(ivar) + ": " + \
+               DATASETS[ivar](ref_idx))
 
       ; Replace FillValue in the dataset array with the value of the reference
-      ; dataset. Since it is not possible to reduce the size of
-      ; input_file_info[ivar]@dataset, the reference dataset is simply
-      ; duplicated.
       all_data[ivar] = \
-        where(ismissing(all_data[ivar]), all_data[ivar](idx_ref), \
+        where(ismissing(all_data[ivar]), all_data[ivar](ref_idx), \
               all_data[ivar])
       data_arr(ivar, :) = (/all_data[ivar]/)
     end do
 
     ; Draw plot
-    outfile = plot_dir + "_" + var0 + "-" + var1 + "_scatter_" + region@name
+    outfile = plot_dir + "_" + var(0) + "-" + var(1) + "_scatter_" + \
+      region@name
     wks = gsn_open_wks(file_type, outfile)
     wks@legendfile = outfile + "_legend"
-    data_arr@res_tiMainString = var0 + "-" + var1 + " - " + \
+    data_arr@res_tiMainString = var(0) + "-" + var(1) + " - " + \
       diag_script_info@region
-    plot = scatterplot_markers(wks, data_arr, var0)
+    plot = scatterplot_markers(wks, data_arr, var(0), info0)
     plot@outfile = outfile + "." + file_type
     draw(plot)
     frame(wks)
@@ -220,7 +231,7 @@ begin
     ; caption = "Scatterplot for " + var0 + " and " + var1 + \
     ;   " over the period " + start_year + "-" + end_year + \
     ;   ", similar to Anav et al., 2013, Fig. 12."
-    ; id = diag_script
+    ; id = DIAG_SCRIPT
     ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
     ;                  string)
     ; do ivar = 0, DIM_VAR - 1
@@ -232,12 +243,12 @@ begin
     ; end do
     ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
     ; ESMValMD(plot@outfile, alltags, caption, id, variables, \
-    ;          input_file_info@dataset, climofiles, diag_script,
+    ;          input_file_info@dataset, climofiles, DIAG_SCRIPT,
     ;          contrib_authors)
     ; delete([/alltags, caption, id, climofiles/])
     delete(data_arr)
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end
