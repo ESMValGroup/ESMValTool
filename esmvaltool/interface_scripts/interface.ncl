@@ -187,12 +187,15 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  out = new(ListCount(inlist), string)
   do ii = 0, ListCount(inlist) - 1
     if (isatt(inlist[ii], att)) then
-      if (typeof(inlist[ii]@$att$).ne."string") then
-        error_msg("f", scriptname, funcname, "non-string attributes not " + \
-                  "supported")
+      if (.not.isdefined("out")) then
+        set_type = typeof(inlist[ii]@$att$)
+        out = new(ListCount(inlist), set_type)
+      end if
+      if (typeof(inlist[ii]@$att$).ne.set_type) then
+        error_msg("f", scriptname, funcname, "attributes must be of the " + \
+                  "same type")
       end if
       out(ii) = inlist[ii]@$att$
     end if
