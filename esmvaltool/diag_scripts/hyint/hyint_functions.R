@@ -1121,21 +1121,37 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # Figure functions
-graphics_startup <- function(figname, output_file_type, diag_script_cfg) {
+scale_figure <- function(plot_type, diag_script_cfg, plot_size) {
   source(diag_script_cfg)
+  plot_size <- c(png_width, png_height)
+  if (tolower(output_file_type) == "pdf") {
+    plot_size[1] <- pdf_width
+    plot_size[2] <- pdf_height
+  } else if (tolower(output_file_type) == "eps") {
+    plot_size[1] <- pdf_width
+    plot_size[2] <- pdf_height
+  } else if (tolower(output_file_type) == "x11") {
+    plot_size[1] <- x11_width
+    plot_size[2] <- x11_height
+  }
+  return()
+}
+
+graphics_startup <- function(figname, output_file_type, plot_size) {
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
-    png(filename = figname, width = png_width, height = png_height)
+    png(filename = figname, width = plot_size[1], height = plot_size[2])
   } else if (tolower(output_file_type) == "pdf") {
-    pdf(file = figname, width = pdf_width, height = pdf_height, onefile = T)
+    pdf(file = figname, width = plot_size[1], 
+               height = plot_size[2], onefile = T)
   } else if (tolower(output_file_type) == "eps") {
     setEPS(
-      width = pdf_width, height = pdf_height,
+      width = plot_size[1], height = plot_size[2],
       onefile = T, paper = "special"
     )
     postscript(figname)
   } else if (tolower(output_file_type) == "x11") {
-    x11(width = x11_width, height = x11_height)
+    x11(width = plot_size[1], height = plot_size[2])
   }
   return()
 }

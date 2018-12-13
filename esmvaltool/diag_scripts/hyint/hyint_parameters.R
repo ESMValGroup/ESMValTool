@@ -204,7 +204,7 @@ title_unit_m[9, ] <- c(
 
 # define levels for contour/yrange for abs. values: 
 # (minlev,maxlev,minlev_diff,maxlev_diff) and nlev
-autolevels <- F
+autolevels <- F # T to override fixed range set below
 nlev <- 24
 levels_m <- matrix(nrow = length(field_names), ncol = 4)
 
