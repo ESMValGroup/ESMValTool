@@ -1,0 +1,52 @@
+recipe_consecdrydays.yml:
+  frlim:  # days?
+    - 2.5
+    - 5
+    - 10
+  plim:  # mm
+    - 0.5
+    - 1
+    - 2
+
+recipe_ensclus.yml:
+  season:
+#    - DJF  # broken
+#    - DJFM  # broken
+#    - NDJFM  # broken
+    - JJA
+  area:
+    - EAT  # Euro-Atlantic
+    - PNA  # Pacific North American
+#    - NH   # Northern Hemisphere  # broken
+    - Eu   # Europe
+  extreme:
+    - 60th_percentile
+    - 75th_percentile
+    - 90th_percentile
+    - mean
+    - maximum
+    - std
+#    - trend  # broken
+  numclus:  # number of clusters
+    - 2
+    - 3
+    - 4
+  # Cluster analysis is applied on a number of PCs such as they explain
+  # Either set perc or numpcs:
+  perc:  #'perc' of total variance
+    - 70
+    - 80
+    - 90
+  numpcs:  # number of PCs
+    - 'no'
+
+recipe_shapeselect_py.yml:
+  shppath:
+    - /group_workspaces/jasmin2/cp4cds1/magic-test/esmvaltool/esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp
+    - /group_workspaces/jasmin2/cp4cds1/magic-test/esmvaltool/esmvaltool/diag_scripts/shapeselect/testdata/Elbe.shp
+    - /group_workspaces/jasmin2/cp4cds1/magic-test/esmvaltool/esmvaltool/diag_scripts/shapeselect/testdata/multicatchment.shp
+    - /group_workspaces/jasmin2/cp4cds1/magic-test/esmvaltool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp
+    - /group_workspaces/jasmin2/cp4cds1/magic-test/esmvaltool/esmvaltool/diag_scripts/shapeselect/testdata/Thames.shp
+  wgtmet:
+    - mean_inside
+    - representative  # only works with evalplot: false
