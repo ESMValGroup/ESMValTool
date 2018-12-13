@@ -29,13 +29,11 @@ import logging
 import os
 import sys
 from itertools import product
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -212,10 +210,10 @@ def determine_set_y_logscale(cfg, metadata):
     """
     set_y_logscale = True
 
-    if 'set_y_logscale' in cfg.keys():
+    if 'set_y_logscale' in cfg:
         set_y_logscale = cfg['set_y_logscale']
 
-    if 'set_y_logscale' in metadata.keys():
+    if 'set_y_logscale' in metadata:
         set_y_logscale = metadata['set_y_logscale']
 
     return set_y_logscale
@@ -269,8 +267,8 @@ def make_transects_plots(
             region_title = determine_transect_str(cube, region)
 
         # Add title to plot
-        title = ' '.join([metadata['dataset'], metadata['long_name'],
-                          region_title])
+        title = ' '.join(
+            [metadata['dataset'], metadata['long_name'], region_title])
         titlify(title)
 
         # Load image format extention
@@ -313,9 +311,7 @@ def add_sea_floor(cube):
         mask = np.zeros_like(land_cube.data)
     land_cube.data = np.ma.masked_where(mask == 0, mask)
     land_cube.data.mask = mask
-    qplt.contour(land_cube, 2,
-                 cmap='Greys_r',
-                 rasterized=True)
+    qplt.contour(land_cube, 2, cmap='Greys_r', rasterized=True)
 
 
 def make_transect_contours(
@@ -345,9 +341,6 @@ def make_transect_contours(
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = make_depth_safe(cube)
 
-    # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
-
     # Load threshold/thresholds.
     plot_details = {}
     colours = []
@@ -358,23 +351,23 @@ def make_transect_contours(
     cubes = make_cube_region_dict(cube)
     for region, cube in cubes.items():
         for itr, thres in enumerate(thresholds):
-            if len(thresholds) > 1:
-                colour = plt.cm.jet(float(itr) / float(len(thresholds) - 1.))
-            else:
-                colour = plt.cm.jet(0)
+            colour = diagtools.get_colour_from_cmap(itr, len(thresholds))
             label = str(thres) + ' ' + str(cube.units)
             colours.append(colour)
-            plot_details[thres] = {'c': colour,
-                                   'lw': 1,
-                                   'ls': '-',
-                                   'label': label}
+            plot_details[thres] = {
+                'c': colour,
+                'lw': 1,
+                'ls': '-',
+                'label': label
+            }
 
-        qplt.contour(cube,
-                     thresholds,
-                     colors=colours,
-                     linewidths=linewidths,
-                     linestyles=linestyles,
-                     rasterized=True)
+        qplt.contour(
+            cube,
+            thresholds,
+            colors=colours,
+            linewidths=linewidths,
+            linestyles=linestyles,
+            rasterized=True)
 
         # Determine y log scale.
         if determine_set_y_logscale(cfg, metadata):
@@ -383,21 +376,21 @@ def make_transect_contours(
         add_sea_floor(cube)
 
         # Add legend
-        diagtools.add_legend_outside_right(plot_details,
-                                           plt.gca(),
-                                           column_width=0.08,
-                                           loc='below')
+        diagtools.add_legend_outside_right(
+            plot_details, plt.gca(), column_width=0.08, loc='below')
 
         # Add title to plot
-        title = ' '.join([metadata['dataset'], metadata['long_name'],
-                          determine_transect_str(cube, region)])
+        title = ' '.join([
+            metadata['dataset'], metadata['long_name'],
+            determine_transect_str(cube, region)
+        ])
         titlify(title)
 
         # Load image format extention
         image_extention = diagtools.get_image_format(cfg)
 
         # Determine image filename:
-        if multi_model:
+        if metadata['dataset'].find('MultiModel') > -1:
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(filename)
             path.replace('.nc', region + '_transect_contour' + image_extention)
@@ -448,7 +441,7 @@ def multi_model_contours(
         cube = make_depth_safe(cube)
         cubes = make_cube_region_dict(cube)
         model_cubes[filename] = cubes
-        for region in model_cubes[filename].keys():
+        for region in model_cubes[filename]:
             regions[region] = True
 
         # Determine y log scale.
@@ -459,8 +452,8 @@ def multi_model_contours(
         for threshold in tmp_thresholds:
             thresholds[threshold] = True
 
-    regions = regions.keys()
-    thresholds = thresholds.keys()
+    regions = regions
+    thresholds = thresholds
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -470,14 +463,10 @@ def multi_model_contours(
         logger.info('plotting threshold: \t%s', threshold)
         title = ''
         plot_details = {}
-        cmap = plt.cm.get_cmap('jet')
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadatas)):
-            if len(metadatas) > 1:
-                color = cmap(index / (len(metadatas) - 1.))
-            else:
-                color = 'blue'
+            color = diagtools.get_colour_from_cmap(index, len(metadatas))
             linewidth = 1.
             linestyle = '-'
             # Determine line style for MultiModel statistics:
@@ -490,17 +479,23 @@ def multi_model_contours(
                 linewidth = 1.7
                 linestyle = '-'
 
-            qplt.contour(model_cubes[filename][region],
-                         [threshold, ],
-                         colors=[color, ],
-                         linewidths=linewidth,
-                         linestyles=linestyle,
-                         rasterized=True)
+            qplt.contour(
+                model_cubes[filename][region], [
+                    threshold,
+                ],
+                colors=[
+                    color,
+                ],
+                linewidths=linewidth,
+                linestyles=linestyle,
+                rasterized=True)
 
-            plot_details[filename] = {'c': color,
-                                      'ls': linestyle,
-                                      'lw': linewidth,
-                                      'label': metadatas[filename]['dataset']}
+            plot_details[filename] = {
+                'c': color,
+                'ls': linestyle,
+                'lw': linewidth,
+                'label': metadatas[filename]['dataset']
+            }
 
             if set_y_logscale:
                 plt.axes().set_yscale('log')
@@ -511,11 +506,11 @@ def multi_model_contours(
             add_sea_floor(model_cubes[filename][region])
 
         # Add title, threshold, legend to plots
-        title = ' '.join([title,
-                          str(threshold),
-                          units,
-                          determine_transect_str(model_cubes[filename][region],
-                                                 region)])
+        title = ' '.join([
+            title,
+            str(threshold), units,
+            determine_transect_str(model_cubes[filename][region], region)
+        ])
         titlify(title)
         plt.legend(loc='best')
 
@@ -525,8 +520,10 @@ def multi_model_contours(
                 cfg,
                 metadatas[filename],
                 prefix='MultipleModels',
-                suffix='_'.join(['contour_tramsect', region,
-                                 str(threshold) + image_extention]),
+                suffix='_'.join([
+                    'contour_tramsect', region,
+                    str(threshold) + image_extention
+                ]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -574,7 +571,7 @@ def main(cfg):
                 metadatas,
             )
 
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(
