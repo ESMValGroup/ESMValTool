@@ -14,10 +14,12 @@ dependencies:
   - gcc
   - ncl
   - ncurses=6.1=hfc679d8_1
-  - julia
   - r-base
   - r-rcpp
   - libgfortran-ng # needed by r packages
+  - julia=0.6.1
+  - hdf5
+  - cdo=1.9.3
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py
