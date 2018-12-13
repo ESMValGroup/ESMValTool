@@ -12,4 +12,3 @@ User's guide
 .. include:: preprocessor.inc
 .. include:: dirstruct.inc
 .. include:: running.inc
-.. include:: ocean_diags.inc
