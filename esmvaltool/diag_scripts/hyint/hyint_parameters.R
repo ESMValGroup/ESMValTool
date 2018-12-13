@@ -24,7 +24,7 @@ seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
 
 timedimname <- "time"
 
-rotLongitude <- "full" # a) "full" to convert input arrays from 0/360 to
+rottongitude <- "full" # a) "full" to convert input arrays from 0/360 to
                        # -180/180 longitude grid
                        # b) "no" to leave input data on its original grid
 
@@ -85,12 +85,12 @@ trend_years <- F # a) F=all;
                  #   time intervals (year1<=y's<=year2) and (year3<=y's<=year4)
 removedesert <- F # T to remove (flag as NA) grid points with mean annual
                   # pr < 0.5 mm/day (desertic areas, Giorgi et al. 2014)
-maskSeaLand <- F # T to mask depending on seaLandElevation threshold
-seaLandElevation <- 0 # a) 0 land; b) positive value: land above given
+masksealand <- F # T to mask depending on seaLandElevation threshold
+sealandelevation <- 0 # a) 0 land; b) positive value: land above given
                       # elevation; c) negative value: sea below given depth.
                       # The topography/bathymetry file is generated with cdo 
                       # from ETOPO data. 
-reverse_maskSeaLand <- F # T to reject what selected, F to keep what selected
+reverse_masksealand <- F # T to reject what selected, F to keep what selected
 highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation
                       #  to be overplotted with contour lines of elevation
 highreselevation_only <- F # T to plot only high resolution elevation contours
@@ -103,7 +103,7 @@ add_trend_sd <- F     # T to add stdev range to timeseries
 add_trend_sd_shade <- F   # T to add shade of stdev range to timeseries
 add_tseries_lines <- F    # T to plot lines of timeseries over points
 add_zeroline <- T         # T to plot a dashed line at y=0
-trend_years_only <- F # T to limit timeseries plotting to trend_years[1:2] 
+trend_years_only <- F # T to limit timeseries plotting to trend_years[1:2]
                       # time interval
 scale100years <- T    # T to plot trends as 1/100 years
 scalepercent <- F     # T to plot trends as percent change 
