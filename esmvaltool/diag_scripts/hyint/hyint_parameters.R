@@ -204,7 +204,7 @@ title_unit_m[9, ] <- c(
 
 # define levels for contour/yrange for abs. values: 
 # (minlev,maxlev,minlev_diff,maxlev_diff) and nlev
-# autolevels set in recipe will override these
+autolevels <- F
 nlev <- 24
 levels_m <- matrix(nrow = length(field_names), ncol = 4)
 

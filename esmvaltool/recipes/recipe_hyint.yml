@@ -58,10 +58,12 @@ diagnostics:
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
-        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 5=Africa,
-        # 6=Northi,7=America,8=India,9=Europe,10=East-Asia,11=Australia
+        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
+        # 5=Africa,6=Northi,7=America,8=India,9=Europe,10=East-Asia,
+        # 11=Australia
         selregions: [1,2,3,4,5,6,7,8,9,10]
-        # Select one or more fields for timeseries and maps from the following list (order-sensitive): 
+        # Select one or more fields for timeseries and maps from the following 
+        # list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
         selfields: [8, 4, 1, 9, 3, 2]
 
