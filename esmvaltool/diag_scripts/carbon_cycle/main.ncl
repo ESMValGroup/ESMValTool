@@ -89,7 +89,16 @@ begin
   ; Variable
   VAR0 = variable_info[0]
   DIM_VAR = ListCount(variable_info)
-  if (DIM_VAR .gt. 1) then
+  err = False
+  if (DIM_VAR .eq. 2) then
+    if (variable_info[1]@short_name .ne. VAR0@short_name) then
+      err = True
+    end if
+  else if (DIM_VAR .gt. 2) then
+    err = True
+  end if
+  end if
+  if (err) then
     error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
               "variable, processing " + VAR0@short_name)
   end if
