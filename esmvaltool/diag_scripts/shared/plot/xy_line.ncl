@@ -1473,17 +1473,16 @@ procedure xy_line(wks[1],
                   source,
                   source_x,
                   source_stddev,
-                  res_in : logical,
-                  debuginfo[1] : logical)
+                  res_in:logical,
+                  items:list)
 ;
 ; Arguments:
 ;    wks: workstation, must be passed - no default used yet!
 ;    source: data to be plotted (no netCDF input possible yet)
 ;    source_x: x-axis of array to be plotted (e.g. source&time, ... )
-;    source_stddev: standard deviation of input, needed if
-;                   diag_script_info@multi_model_mean is set to "y"
+;    source_stddev: standard deviation of input, needed for multi_model_mean
 ;    res_in: diag_script-specific resources passed from diag_script
-;    debuginfo: description about diagnostic rendered onto plot
+;    items: list of input_file_info metadata
 ;
 ; Source prototype
 ;
@@ -1512,42 +1511,42 @@ begin
 
   ; Select colors and other plotting attributes
   ; (see ./diag_scripts/shared/plot/style.ncl)
-  ; FIX-ME: project_style function has changed
-  ; colors = project_style(diag_script_info, "colors")
-  ; dashes = project_style(diag_script_info, "dashes")
-  ; thicks = project_style(diag_script_info, "thicks")
-  ; annots = project_style(diag_script_info, "annots")
-  ; avgstd = project_style(diag_script_info, "avgstd")
+  colors = project_style(items, diag_script_info, "colors")
+  dashes = project_style(items, diag_script_info, "dashes")
+  thicks = project_style(items, diag_script_info, "thicks")
+  annots = project_style(items, diag_script_info, "annots")
+  avgstd = project_style(items, diag_script_info, "avgstd")
 
-  ; Select colors and other plotting attributes for multi-model mean
-  if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Project_style evaluates metadata of variable "input_file_info"
-    temp = input_file_info
+  ;; FIX-ME: no longer needed, as multi-model is now a dataset (?)
+  ;; Select colors and other plotting attributes for multi-model mean
+  ;; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;;   ; Project_style evaluates metadata of variable "input_file_info"
+  ;;   temp = input_file_info
 
-    ; -> keep original "input_file_info" in "temp" and restore later
-    copy_VarMeta(input_file_info, temp)
-    delete(input_file_info)
+  ;;   ; -> keep original "input_file_info" in "temp" and restore later
+  ;;   copy_VarMeta(input_file_info, temp)
+  ;;   delete(input_file_info)
 
-    ; Use "input_file_info" to pass on attribute names
-    input_file_info = getvaratts(temp)
-    do i = 0, dimsizes(input_file_info) - 1
-      ; Define all original attributes again, but empty
-      input_file_info@$input_file_info(i)$ = ""
-    end do
-    input_file_info@dataset = "model_mean"
+  ;;   ; Use "input_file_info" to pass on attribute names
+  ;;   input_file_info = getvaratts(temp)
+  ;;   do i = 0, dimsizes(input_file_info) - 1
+  ;;     ; Define all original attributes again, but empty
+  ;;     input_file_info@$input_file_info(i)$ = ""
+  ;;   end do
+  ;;   input_file_info@dataset = "model_mean"
 
-    ; See ./diag_scripts/shared/plot/style.ncl
-    ; FIX-ME: project_style function has changed
-    ; colors_mmm = project_style(diag_script_info, "colors")
-    ; dashes_mmm = project_style(diag_script_info, "dashes")
-    ; thicks_mmm = project_style(diag_script_info, "thicks")
-    ; annots_mmm = project_style(diag_script_info, "annots")
-    ; avgstd_mmm = project_style(diag_script_info, "avgstd")
-    delete(input_file_info)
-    input_file_info = temp  ; restore original "input_file_info"
-    copy_VarMeta(temp, input_file_info)
-    delete(temp)
-  end if
+  ;;   ; See ./diag_scripts/shared/plot/style.ncl
+  ;;   ; FIX-ME: project_style function has changed
+  ;;   ; colors_mmm = project_style(diag_script_info, "colors")
+  ;;   ; dashes_mmm = project_style(diag_script_info, "dashes")
+  ;;   ; thicks_mmm = project_style(diag_script_info, "thicks")
+  ;;   ; annots_mmm = project_style(diag_script_info, "annots")
+  ;;   ; avgstd_mmm = project_style(diag_script_info, "avgstd")
+  ;;   delete(input_file_info)
+  ;;   input_file_info = temp  ; restore original "input_file_info"
+  ;;   copy_VarMeta(temp, input_file_info)
+  ;;   delete(temp)
+  ;; end if
 
   ; Set/copy resources
   res                   = True
@@ -1568,27 +1567,27 @@ begin
   ; Plot
   plot = gsn_csm_xy(wks, source_x, source, res)
 
-  ; Add multi model mean and stddev
-  if (diag_script_info@multi_model_mean .eq. "y") then
-    ; Stddev
-    res_stddev = True
-    copy_VarMeta(res, res_stddev)
-    res_stddev@gsnXYFillColors = "LightGrey"
-    delete(res_stddev@xyLineColors)
+  ;; ; Add multi model mean and stddev
+  ;; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;;   ; Stddev
+  ;;   res_stddev = True
+  ;;   copy_VarMeta(res, res_stddev)
+  ;;   res_stddev@gsnXYFillColors = "LightGrey"
+  ;;   delete(res_stddev@xyLineColors)
 
-    ; We don't want the line, so make it transparent.
-    res_stddev@xyLineColor = -1
-    shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
-                              res_stddev)
-    overlay(plot, shading_plot)
-    ; MMM
-    delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
-    res@xyLineThicknesses = thicks_mmm
-    res@xyLineColors = colors_mmm
-    res@xyDashPatterns = dashes_mmm
-    mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
-    overlay(plot, mmm)
-  end if
+  ;;   ; We don't want the line, so make it transparent.
+  ;;   res_stddev@xyLineColor = -1
+  ;;   shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
+  ;;                             res_stddev)
+  ;;   overlay(plot, shading_plot)
+  ;;   ; MMM
+  ;;   delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
+  ;;   res@xyLineThicknesses = thicks_mmm
+  ;;   res@xyLineColors = colors_mmm
+  ;;   res@xyDashPatterns = dashes_mmm
+  ;;   mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
+  ;;   overlay(plot, mmm)
+  ;; end if
 
   ; Resources for a customized legend.
   lgres                     = True
@@ -1606,23 +1605,22 @@ begin
     diag_script_info@EMs_in_lg = True  ; Set default
   end if
   if (.not.diag_script_info@EMs_in_lg) then
-    idcs_modelnames = UNIQ(input_file_info@dataset)
+    idcs_modelnames = annots
     colors := colors(idcs_modelnames)
     dashes := dashes(idcs_modelnames)
     thicks := thicks(idcs_modelnames)
     annots := input_file_info@dataset(idcs_modelnames)
   end if
-  if (diag_script_info@multi_model_mean .eq. "y") then
-    lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
-    lgres@lgDashIndexes     = array_append_record(dashes, dashes_mmm, 0)
-    lgres@lgLineThicknesses = array_append_record(thicks, thicks_mmm, 0) + 0.5
-    labels = array_append_record(annots, annots_mmm, 0)
-  else
-    lgres@lgLineColors      = colors
-    lgres@lgDashIndexes     = dashes
-    lgres@lgLineThicknesses = thicks + 0.5
-    labels = annots
-  end if
+  ;; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;;   lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
+  ;;   lgres@lgDashIndexes     = array_append_record(dashes, dashes_mmm, 0)
+  ;;   lgres@lgLineThicknesses = array_append_record(thicks, thicks_mmm, 0) + 0.5
+  ;;   labels = array_append_record(annots, annots_mmm, 0)
+  ;; else
+  lgres@lgLineColors      = colors
+  lgres@lgDashIndexes     = dashes
+  lgres@lgLineThicknesses = thicks + 0.5
+  labels = annots
   nitems = dimsizes(labels)
   lgres@lgItemOrder = ispan(nitems - 1, 0, 1)
 
@@ -1710,14 +1708,6 @@ begin
   ; Redraw plot borders since the legend may (partially) cover some
   ; of the borders drawn in the first 'plot'
   draw(blank_plot2)
-  if (debuginfo) then
-    txres = True
-    txres@txFuncCode = "~"
-    debugbox = write_info(debuginfo)
-    am_infobox_id = place_debuginfo(wks, debugbox, txres, blank_plot2)
-    drawNDCGrid(wks)
-    place_description(wks, debuginfo@description, debuginfo@description_ycoord)
-  end if
 
   frame(wks)
 
@@ -1741,22 +1731,21 @@ procedure xy_line_anom(wks[1],
                        source_stddev,
                        ref_start,
                        ref_end,
-                       res_in : logical,
-                       res0_in : logical,
-                       debuginfo[1] : logical)
-
+                       res_in: logical,
+                       res0_in: logical,
+                       items: list)
+;
 ; Arguments:
-;    * wks:  workstation, must be passed - no default used yet!
-;    * source_mean:   source_mean
-;    * source:        data to be plotted (no netCDF input possible yet)
-;    * source_x:      x-axis of array to be plotted (e.g. source&time, ... )
-;    * source_stddev: standard deviation of input, needed if
-;                     diag_script_info@multi_model_mean is set to "y"
-;    * ref_start:     ref_start
-;    * ref_end:       ref_end
-;    * res_in:        diag_script-specific resources passed from diag_script
-;    * res0_in:       res0_in
-;    * debuginfo:     description about diagnostic rendered onto plot
+;    wks:  workstation, must be passed - no default used yet!
+;    source_mean:   source_mean
+;    source:        data to be plotted (no netCDF input possible yet)
+;    source_x:      x-axis of array to be plotted (e.g. source&time, ... )
+;    source_stddev: standard deviation of input, needed multi_model_mean
+;    ref_start:     start year of the reference dataset
+;    ref_end:       end year of the reference dataset
+;    res_in:        diag_script-specific resources passed from diag_script
+;    res0_in:       res0_in
+;    items: list of input_file_info metadata
 ;
 ; Source prototype
 ;
@@ -1786,16 +1775,17 @@ begin
 
   ; Select colors and other plotting attributes
   ; (see ./diag_scripts/lib/ncl/style.ncl)
-  colors = project_style(diag_script_info, "colors")
-  dashes = project_style(diag_script_info, "dashes")
-  thicks = project_style(diag_script_info, "thicks")
-  annots = project_style(diag_script_info, "annots")
-  avgstd = project_style(diag_script_info, "avgstd")
+  colors = project_style(items, diag_script_info, "colors")
+  dashes = project_style(items, diag_script_info, "dashes")
+  thicks = project_style(items, diag_script_info, "thicks")
+  annots = project_style(items, diag_script_info, "annots")
+  avgstd = project_style(items, diag_script_info, "avgstd")
 
   ; individual case for HadCRUT4 observations
   ; mean value comes from climatology file (absolute.nc)
-  if (any(input_file_info@dataset.eq."HadCRUT4-clim")) then
-    ind_wo_clim = ind(input_file_info@dataset .ne. "HadCRUT4-clim")
+  datasetnames = metadata_att_as_array(items, "dataset")
+  if (any(datasetnames.eq."HadCRUT4-clim")) then
+    ind_wo_clim = ind(datasetnames .ne. "HadCRUT4-clim")
     tmp1 = colors(ind_wo_clim)
     delete(colors)
     colors = tmp1
@@ -1822,19 +1812,19 @@ begin
 
   res0 = True
   res0@gsnDraw   = False
-  res0@gsnFrame  = False   ; don't advance frame yet
-  res0@vpHeightF = 0.5     ; change aspect ratio of plot
+  res0@gsnFrame  = False
+  res0@vpHeightF = 0.5
   res0@vpWidthF  = 0.05
-  res0@trYMinF   =  min(source_mean) - 0.05 * (max(source_mean) - \
-                                               min(source_mean))
-  res0@trYMaxF   =  max(source_mean) + 0.05 * (max(source_mean) - \
-                                               min(source_mean))
-  res0@trXMinF   =  0.     ; min value on y-axis
-  res0@trXMaxF   =  2.     ; max value on y-axis
-  res0@tmXTOn    = False
-  res0@tmXBOn    = False
-  res0@tmYLLabelsOn  = False
-  res0@tmYRLabelsOn  = True
+  res0@trYMinF = \
+    min(source_mean) - 0.05 * (max(source_mean) - min(source_mean))
+  res0@trYMaxF = \
+    max(source_mean) + 0.05 * (max(source_mean) - min(source_mean))
+  res0@trXMinF = 0.
+  res0@trXMaxF = 2.
+  res0@tmXTOn = False
+  res0@tmXBOn = False
+  res0@tmYLLabelsOn = False
+  res0@tmYRLabelsOn = True
   res0@tmYRLabelFontHeightF = 0.016
   res0@tmYLLabelFontHeightF = 0.016
   res0@tiXAxisFontHeightF = 0.016
@@ -1853,18 +1843,18 @@ begin
   res0@tmYLMinorLengthF = 0.003
 
   res0@xyDashPatterns    = dashes
-  res0@xyLineThicknesses = thicks  ; make 2nd lines thicker
-  res0@xyLineColors      = colors  ; change line color
+  res0@xyLineThicknesses = thicks
+  res0@xyLineColors      = colors
 
   copy_VarMeta(res0_in, res0)  ; copy passed resources
 
-  res           = True                      ; plot mods desired
-  res@gsnDraw   = False                  ; don't advance draw yet
-  res@gsnFrame  = False                  ; don't advance frame yet
+  res           = True
+  res@gsnDraw   = False
+  res@gsnFrame  = False
 
-  res@vpXF      = 0.05                   ; start plot at x ndc coord
-  res@vpYF      = 0.7                   ; start plot at x ndc coord
-  res@vpHeightF = 0.4                    ; change aspect ratio of plot
+  res@vpXF      = 0.05
+  res@vpYF      = 0.7
+  res@vpHeightF = 0.4
   res@vpWidthF  = 0.7
   res@pmLegendDisplayMode = "Never"
   res@tmYRLabelFontHeightF = 0.016
@@ -1947,7 +1937,7 @@ begin
     diag_script_info@EMs_in_lg = True  ; Set default
   end if
   if (.not.diag_script_info@EMs_in_lg) then
-    idcs_modelnames = UNIQ(models@name)
+    idcs_modelnames = annots
     colors := colors(idcs_modelnames)
     dashes := dashes(idcs_modelnames)
     thicks := thicks(idcs_modelnames)
@@ -1964,15 +1954,13 @@ begin
   lbid = gsn_create_legend(wks, nitems, labels, lgres)
 
   amres = True
-  amres@amParallelPosF   = 0.81             ; move legend to the right
-  amres@amOrthogonalPosF = 0.0             ; move the legend down
-  annoid1 = gsn_add_annotation(plot(0), lbid, amres)   ; add legend to plot
+  amres@amParallelPosF   = 0.81
+  amres@amOrthogonalPosF = 0.0
+  annoid1 = gsn_add_annotation(plot(0), lbid, amres)
 
   resP = True
   resP@gsnMaximize = True
   resP@gsnPaperOrientation = "portrait"
-  ; resP@gsnPanelDebug     = True     ; To get information from panel
-  ; resP@gsnPanelYF = (/.9, .51/)      ; Adjust bottommost plots.
   resP@gsnPaperMargin =  0.8
 
   gsn_panel(wks, plot, (/1, 1/), resP)

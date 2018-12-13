@@ -52,15 +52,14 @@ load "./diag_scripts/shared/plot/xy_line.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  datasetnames = metadata_att_as_array(info_items, "dataset")
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
@@ -70,7 +69,7 @@ begin
   plot_fields = (/"T2Ms"/)
   ind_f = any(field_type0 .eq. plot_fields)
   if (all(ismissing(ind_f))) then
-      error_msg("f", diag_script, "", "can't use field " + field_type0)
+      error_msg("f", DIAG_SCRIPT, "", "can't use field " + field_type0)
   end if
   delete(plot_fields)
   delete(ind_f)
@@ -85,7 +84,7 @@ begin
   if (isatt(diag_script_info, "time_avg")) then
     time_avg = diag_script_info@time_avg
     if (all(time_avg.ne.(/"yearly", "monthly"/))) then
-        error_msg("f", diag_script, "", \
+        error_msg("f", DIAG_SCRIPT, "", \
                   "time averaging option " + time_avg + " not yet " + \
                   "implemented")
     end if
@@ -99,11 +98,10 @@ begin
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "time_avg", "monthly")
   set_default_att(diag_script_info, "ts_anomaly", "noanom")
-  set_default_att(diag_script_info, "range_option", 0)
 
   ; Determine time range
-  start_year = min(stringtoint(dataset_info@start_year))
-  end_year = max(stringtoint(dataset_info@end_year))
+  start_year = min(metadata_att_as_array(info_items, "start_year"))
+  end_year = max(metadata_att_as_array(info_items, "end_year"))
   all_years = ispan(start_year, end_year, 1)
 
   ; Create time coordinate
@@ -123,43 +121,41 @@ begin
   end if
 
   ; Set index of the reference (and alternative) dataset
-  if (isatt(variable_info, "reference_dataset")) then
-    ref_ind = \
-      get_ref_dataset_idx(input_file_info, variable_info@reference_dataset)
-    A_ref = read_data(ref_ind, var0, field_type0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    ref_ind = ind(datasetnames.eq.variable_info[0]@reference_dataset)
+    A_ref = read_data(info_items[ref_ind])
   end if
 
   ; individual case for HadCRUT4 observations
   ; mean value comes from climatology file (absolute.nc)
   clim_ind = -1
-  if (any(input_file_info@dataset.eq."HadCRUT4-clim")) then
-    clim_ind = ind(input_file_info@dataset .eq. "HadCRUT4-clim")
-    ind_wo_clim = ind(input_file_info@dataset .ne. "HadCRUT4-clim")
+  if (any(datasetnames.eq."HadCRUT4-clim")) then
+    clim_ind = ind(datasetnames.eq."HadCRUT4-clim")
+    ind_wo_clim = ind(datasetnames.ne."HadCRUT4-clim")
   end if
 
   ; Anomaly
   if (isatt(diag_script_info, "ts_anomaly")) then
     anom = diag_script_info@ts_anomaly
-    if(anom .eq. "anom") then
-      if(isatt(diag_script_info, "ref_start") .and. \
-         isatt(diag_script_info, "ref_end")) then
+    if (anom .eq. "anom") then
+      if (isatt(diag_script_info, "ref_start") .and. \
+          isatt(diag_script_info, "ref_end")) then
         ref_start = diag_script_info@ref_start
         ref_end   = diag_script_info@ref_end
-        if((ref_start.lt.start_year) .or. (ref_end.gt.end_year) .or. \
-           (ref_end.lt.ref_start)) then
-            error_msg("f", diag_script, "", \
-                      "period for reference years is not properly " + \
-                      "defined")
+        if ((ref_start.lt.start_year) .or. (ref_end.gt.end_year) .or. \
+            (ref_end.lt.ref_start)) then
+          error_msg("f", DIAG_SCRIPT, "", \
+                    "period for reference years is not properly defined")
         end if
       else
-        error_msg("f", diag_script, "", \
+        error_msg("f", DIAG_SCRIPT, "", \
                   "period for reference years is not defined " + \
                   "(needed for anomaly)")
       end if
 
       anom_ref = new((/dim_MOD/), double)
       anom_ref!0 = "model"
-      anom_ref&model = project_style(diag_script_info, "annots")
+      anom_ref&model = datasetnames
     end if
   else
     anom = "noanom"
@@ -172,7 +168,7 @@ begin
   model_arr = new((/dim_MOD, ntime/), double)
   model_arr!0 = "model"
   model_arr!1 = "time"
-  model_arr&model = project_style(diag_script_info, "annots")
+  model_arr&model = datasetnames
   model_arr&time = time
   delete(time)
   delete(ntime)
@@ -183,7 +179,7 @@ begin
     if(imod.ne.clim_ind) then
 
       ; Read data
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       dnames = getVarDimNames(A0)
 
       ; Convert units for plotting (if required)
@@ -194,13 +190,13 @@ begin
       ; time, lat, lon
       if (field_type0.eq."T2Ms") then
 
-        if (isatt(variable_info, "reference_dataset")) then
+        if (isatt(variable_info[0], "reference_dataset")) then
 
           if(imod .ne. ref_ind) then
 
             ; Determine start/end year
-            start_year = get_start_year(imod)
-            end_year = get_end_year(imod)
+            start_year = info_items[imod]@start_year
+            end_year = info_items[imod]@end_year
             A_ref_mask = time_operations(A_ref, start_year, \
                                          end_year, "extract", "", 0)
 
@@ -216,12 +212,10 @@ begin
         ; Anomaly
         if(anom .eq. "anom") then
           A0_timavg_ref = time_operations(A0, ref_start, ref_end, \
-                                          "average", "annualclim", \
-                                          True)
+                                          "average", "annualclim", True)
           if(imod .ne. ref_ind) then
             do i = 0, dimsizes(A0&time) - 1
-              A0_mask(i, :, :) = A0_mask(i, :, :) \
-                                          - A0_timavg_ref(:, :)
+              A0_mask(i, :, :) = A0_mask(i, :, :) - A0_timavg_ref(:, :)
             end do
           else
             do i = 0, dimsizes(A0&time) - 1
@@ -279,7 +273,7 @@ begin
         detr = "nodetr"
       end if
 
-      ; Calcualte time average
+      ; Calculate time average
       if (time_avg.ne."monthly") then
         A0_timavg = time_operations(procmod, -1, -1, "average", \
                                     time_avg, True)
@@ -312,9 +306,9 @@ begin
 
   ; individual case for HadCRUT4 observations
   ; mean value comes from climatology file (absolute.nc)
-  if (any(input_file_info@dataset.eq."HadCRUT4-clim")) then
+  if (any(datasetnames.eq."HadCRUT4-clim")) then
     ; Read data
-    A0 = read_data(clim_ind, var0, field_type0)
+    A0 = read_data(info_items[clim_ind])
     dnames = getVarDimNames(A0)
 
     ; Convert units for plotting (if required)
@@ -367,7 +361,7 @@ begin
     out_path = out_path + "tsline_" + var0 + "_" + anom + "_" + detr + "_" \
       + start_year + "-" + end_year + ".nc"
     model_arr@ncdf = out_path
-    model_arr@diag_script = diag_script
+    model_arr@diag_script = DIAG_SCRIPT
     model_arr@var = var0
     ncdf_outfile = ncdf_write(model_arr, out_path)
   end if
@@ -413,10 +407,9 @@ begin
 
   if(anom .eq. "anom") then
     xy_line_anom(wks, anom_ref, model_arr, model_arr&time, \
-                 model_arr_stddev, ref_start, ref_end, res, res0, False)
+                 model_arr_stddev, ref_start, ref_end, res, res0, info_items)
   else
-    xy_line(wks, model_arr, model_arr&time, model_arr_stddev, \
-            res, False)
+    xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, info_items)
   end if
 
   log_info(" wrote " + outfile + "." + file_type)
@@ -448,13 +441,13 @@ begin
 ;  caption = "Time series of the " + captionadd + " for variable " \
 ;    + variables(0) + ", similar to IPCC AR5, fig. 9.8."
 ;
-;  id = diag_script + "_" + variables(0)
+;  id = DIAG_SCRIPT + "_" + variables(0)
 ;
 ;  contrib_authors = (/"A_cion_ir", "A_righ_ma", "A_wenz_sa", "A_bock_ls"/)
 ;
 ;  ; ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;  ;          allmodelnames, climofiles, diag_script, contrib_authors)
+;  ;          allmodelnames, climofiles, DIAG_SCRIPT, contrib_authors)
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end
