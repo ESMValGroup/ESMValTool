@@ -698,7 +698,14 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
     filedir <- dirname(normalizePath(namefile))
     cdo <- Sys.which("cdo")
     tempfile <- paste0(file.path(filedir, paste0("tempfile_", filename)))
-    system2(cdo, args = c(paste0(remap_method, ",", grid), namefile, tempfile))
+    if (is.null(namevar)) {
+      cdo_args <- c(paste0(remap_method, ",", grid), namefile, tempfile)
+    } else {
+      cdo_args <- c(paste0(remap_method, ",", grid),
+                  paste0("-selvar,", namevar),
+                  namefile, tempfile)
+    }
+    system2(cdo, args = cdo_args)
     namefile <- tempfile
   }
 
@@ -1121,9 +1128,15 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # Figure functions
-scale_figure <- function(plot_type, diag_script_cfg, plot_size) {
+scale_figure <- function(plot_type, diag_script_cfg, nfields) {
   source(diag_script_cfg)
-  plot_size <- c(png_width, png_height)
+  if (plot_type == 3) {
+    figure_aspect_ratio[3] <- figure_aspect_ratio[3] / nfields
+  }
+  png_width <- png_width * figure_rel_width[plot_type]
+  pdf_width <- pdf_width * figure_rel_width[plot_type]
+  x11_width <- x11_width * figure_rel_width[plot_type]
+  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_height
@@ -1134,10 +1147,11 @@ scale_figure <- function(plot_type, diag_script_cfg, plot_size) {
     plot_size[1] <- x11_width
     plot_size[2] <- x11_height
   }
-  return()
+  return(plot_size)
 }
 
 graphics_startup <- function(figname, output_file_type, plot_size) {
+  source(diag_script_cfg)
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
     png(filename = figname, width = plot_size[1], height = plot_size[2])

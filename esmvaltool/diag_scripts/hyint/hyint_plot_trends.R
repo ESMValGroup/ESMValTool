@@ -52,6 +52,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     label_figname <- paste0(label[1], "-plus")
   }
 
+  # Set figure dimensions
+  plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields))
+
   # Startup graphics for multi-model timeseries
   plot_type_now <- (plot_type == 13) | (plot_type == 15)
   if (plot_type_now == T) {
@@ -65,7 +68,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       label_figname, tseries_trend_tag, output_file_type,
       multimodel = T
     )
-    graphics_startup(figname, output_file_type, diag_script_cfg)
+    graphics_startup(figname, output_file_type, plot_size)
     par(
       mfrow = c(npanrow, npancol), cex.main = 1.3, cex.axis = 1.2,
       cex.lab = 1.2, mar = c(5, 5, 5, 5), oma = c(1, 1, 1, 1)
@@ -114,7 +117,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         model_idx, season, "", "regions", label_figname, "timeseries",
         output_file_type
       )
-      graphics_startup(figname, output_file_type, diag_script_cfg)
+      graphics_startup(figname, output_file_type, plot_size)
       par(
         mfrow = c(npanrow, npancol), cex.main = 1.3, cex.axis = 1.2,
         cex.lab = 1.2, mar = c(5, 5, 5, 5), oma = c(1, 1, 1, 1)
@@ -128,7 +131,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         model_idx, season, "", "regions", label_figname,
         "trend_summary", output_file_type
       )
-      graphics_startup(figname, output_file_type, diag_script_cfg)
+      graphics_startup(figname, output_file_type, plot_size)
       par(
         mfrow = c(npanrow, npancol), cex.main = 1.3, cex.axis = 1.2,
         cex.lab = 1.2, mar = c(8, 8, 2, 2), oma = c(1, 1, 1, 1)
@@ -240,21 +243,20 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             "", region_codes[selregions[1]], label_figname, "timeseries_single",
             output_file_type
           )
-          graphics_startup(figname, output_file_type, diag_script_cfg)
-          par(
-            cex.main = 1.3, cex.axis = 1.2, cex.lab = 1.2,
+          graphics_startup(figname, output_file_type, plot_size)
+          par(cex.main = 1.3, cex.axis = 1.2, cex.lab = 1.2,
             mar = c(4, 4, 2, 2), oma = c(1, 1, 1, 1)
           )
         }
 
         # Actual plotting
         if ( (plot_type == 11) | (plot_type == 12) | (plot_type == 13)) {
-
-          # set active panel
-          par_row <- (ifield - 1) %/% npancol + 1
-          par_col <- (ifield - 1) %% npancol + 1
-          par(mfg = c(par_row, par_col, npanrow, npancol))
-
+          if (plot_type != 11) {
+            # set active panel
+            par_row <- (ifield - 1) %/% npancol + 1
+            par_col <- (ifield - 1) %% npancol + 1
+            par(mfg = c(par_row, par_col, npanrow, npancol))
+          }
           # Base plot
           if (!(plot_type == 13 & model_idx > 1) & ilabel == 1) {
             ylab <- paste0(title_unit_m[ifield, 1])
@@ -493,7 +495,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             )
             axis(2)
           }
-        }
+        }  # close if on plot_type 14 and 15
       } # close loop over field
     } # close loop over label
     if ( (plot_type == 12) | (plot_type == 14)) {
@@ -515,9 +517,8 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     # set active panel
     par_row <- (ifield - 1) %/% npancol + 1
     par_col <- (ifield - 1) %% npancol + 1
-    par(
-      mfg = c(par_row, par_col, npanrow, npancol),
-      usr = plot_limits[, ifield]
+    par(mfg = c(par_row, par_col, npanrow, npancol),
+        usr = plot_limits[, ifield]
     )
     pos_legend <- c(
       plot_limits[1, ifield] + (plot_limits[2, ifield] -

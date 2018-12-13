@@ -23,7 +23,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   nfields <- length(field_names)
 
   # Define quantity (exp, ref, exp-ref) to be plotted depending on plot_type
-  # 1=exp_only, 3=exp/ref/exp-ref
+  # 1=exp_only, 2=ref_only, 3=exp/ref/exp-ref
   nquantity <- c(1, 3, 3, 1)
 
   # Define regions to be used
@@ -78,7 +78,12 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                                         sealandelevation)
     }
     # if requested calculate multiyear average and store at time=1
+    # in this case skip multi-year plot_type 4
     if (rmultiyear_mean) {
+      if (plot_type == 4) {
+        print("skipping multi-year plot_type 4 with multiyear mean")
+        return(0)
+      }
       field_ref[, , 1] <- apply(field_ref, c(1, 2), mean, na.rm = T)
     }
     assign(paste(field, "_ref", sep = ""), field_ref)
@@ -88,6 +93,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   for (model_idx in c(1:(length(models_name)))) {
     # Do not compare reference with itself
     if ((model_idx == ref_idx) && ((plot_type == 2) || (plot_type == 3))) {
+      if (length(models_name) == 1) {
+        print("skipping comparison plots because only one dataset was requested")
+      }
       next
     }
 
@@ -120,7 +128,13 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                       season)
       print(paste("Reading experiment ", filename))
-      field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
+      if ( (plot_type == 2) | (plot_type == 3)) {
+        # regrid when comparing
+        field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no",
+                                 interp2grid = T, grid = ref_filename)
+      } else {
+        field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
+      }
       if (removedesert) {
         field_exp <- field_exp * retdes3D
       }
@@ -148,6 +162,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
     print(paste0(diag_base, ": starting figures"))
 
+    # Set figure dimensions
+    plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields))
+
     if (boxregion != 0) {
       # boxregion will plot region boxes over a global map of selected field
       nregions <- 1
@@ -165,11 +182,11 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           plot_dir_exp, field_label, year1, year2, model_idx, season,
           "multiyear", region_codes[iregion], label, "map", output_file_type
         )
-        graphics_startup(figname, output_file_type, diag_script_cfg)
+        graphics_startup(figname, output_file_type, plot_size)
         par(mfrow = c(nyears, nfields), cex.main = 1.3, cex.axis = 1.2,
             cex.lab = 1.2, mar = c(2, 2, 2, 2), oma = c(1, 1, 1, 1))
       }
-      # LOOP over years defined in namelist and cfg_file
+      # LOOP over years defined in parameter file
       for (iyear in c(1:nyears)) {
         if (ryearplot_ref[1] == "EXP") {
           iyear_ref <- iyear
@@ -199,7 +216,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             season, time_label_fig, region_codes[iregion], label, "map",
             output_file_type
           )
-          graphics_startup(figname, output_file_type, diag_script_cfg)
+          graphics_startup(figname, output_file_type, plot_size)
           par(mfrow = c(nfields, 3), cex.main = 1.3, cex.axis = 1.2,
               cex.lab = 1.2, mar = c(2, 2, 2, 2), oma = c(1, 1, 1, 1))
         }
@@ -253,7 +270,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               season, time_label_fig, region_codes[iregion],
               label, "comp_map", output_file_type
             )
-            graphics_startup(figname, output_file_type, diag_script_cfg)
+            graphics_startup(figname, output_file_type, plot_size)
             par(mfrow = c(3, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                 mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
           }
@@ -283,7 +300,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 season, time_label_fig, region_codes[iregion], label,
                 "map", output_file_type
               )
-              graphics_startup(figname, output_file_type, diag_script_cfg)
+              graphics_startup(figname, output_file_type, plot_size)
               par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                   mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
             }

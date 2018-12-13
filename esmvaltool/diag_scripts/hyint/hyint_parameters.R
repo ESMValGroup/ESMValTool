@@ -54,7 +54,7 @@ external_r95=external_norm # a) F=use internal data to evaluate r95 threshold
 # Plot_type set in namelist
 npancol <- 2 # number of columns for trend/tseries multi-panel figures
 npanrow <- 3 # number of rows for trend/tseries multi-panel figures
-ryearplot <- 2006 # c(1997,2002,2003) # years to be plotted for experiments 
+ryearplot <- 2006 # years to be plotted for experiments 
                   # (maps over individual years): 
                   # a) actual years, b) "FIRST" = first year in dataset or 
                   # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
@@ -101,7 +101,7 @@ lm_trend <- T         # T to calculate linear trend
 add_trend <- T        # T to add linear trend to plot
 add_trend_sd <- F     # T to add stdev range to timeseries
 add_trend_sd_shade <- F   # T to add shade of stdev range to timeseries
-add_tseries_lines <- F    # T to plot lines of timeseries over points
+add_tseries_lines <- T    # T to plot lines of timeseries over points
 add_zeroline <- T         # T to plot a dashed line at y=0
 trend_years_only <- F # T to limit timeseries plotting to trend_years[1:2]
                       # time interval
@@ -296,20 +296,22 @@ tlevels_m[38, ] <- c(2, 8) * 0.01
 tlevels_m[39, ] <- c(0, 8) * 0.01
 tlevels_m[40, ] <- c(-100, 300) * 0.01
 
-# Specific settings for PNG output
-png_height <- 720
+# Figure aspect ratio (width:height) 
+# (depending on plot_type)
+figure_aspect_ratio <- c(1.6, 0.6, 3, 1.3, 1, 1, 1, 1, 1, 1,
+                         1.6, 1.1, 1.1, 1.1, 1.3, 1, 1, 1, 1, 1)
+
+figure_rel_width <- c(0.7, 0.7, 0.8, 1, 1, 1, 1, 1, 1, 1,
+                      0.7, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+# Figure size
 png_width <- 960
 png_units <- "px"
 png_pointsize <- 12
 png_bg <- "white"
 
-# Specific settings for PDF and EPS output (in inches)
 pdf_width <- 24
-pdf_height <- 12
-
-# Specific settings for x11 output (in inches)
 x11_width <- 7
-x11_height <- 8
 
 # color palette to be used
 palette1 <- colorRampPalette(c("white", "orange", "darkred"))
