@@ -32,7 +32,7 @@ grid_file <- "grid_file"  # suffix for grid file
 topography_file <- "topo" # suffix for topography file (needed for filtering
                           # ocean/land or land elevation)
 
-etccdi_dir <- "~/work/data/ETCCDI/historical+rcp85/"
+etccdi_dir <- ""
 
 # Diagnostic options
 # norm_years set in recipe
@@ -204,7 +204,7 @@ title_unit_m[9, ] <- c(
 
 # define levels for contour/yrange for abs. values: 
 # (minlev,maxlev,minlev_diff,maxlev_diff) and nlev
-autolevels <- F # T to override fixed range set below
+autolevels <- T # T to override fixed range set below
 nlev <- 24
 levels_m <- matrix(nrow = length(field_names), ncol = 4)
 

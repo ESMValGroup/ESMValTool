@@ -20,6 +20,7 @@ datasets:
 #  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
 # - {dataset: ACCESS1-3,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
   - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
   - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 
 preprocessors:
@@ -55,14 +56,14 @@ diagnostics:
         # 13) timeseries with multiple models
         # 14) summary trend coefficients multiple regions
         # 15) summary trend coefficients multiple models
-        plot_type: [14]
+        plot_type: [2, 3, 12, 13, 14, 15]
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
         # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
         # 5=Africa,6=Northi,7=America,8=India,9=Europe,10=East-Asia,
         # 11=Australia
-        selregions: [1,2,3,4,5,6,7,8,9,10]
+        selregions: [2,4,5,6,7]
         # Select one or more fields for timeseries and maps from the following 
         # list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 

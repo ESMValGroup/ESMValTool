@@ -301,6 +301,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 "map", output_file_type
               )
               graphics_startup(figname, output_file_type, plot_size)
+              oma_now <- c(1, 1, 1, 1)
+              lonlat_aratio <- (max(ics)-min(ics)) /
+                               (max(ipsilon) - min(ipsilon)) 
               par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                   mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
             }
@@ -318,7 +321,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               main = tmp.titles[iquantity], levels = tmp.levels,
                      color.palette = tmp.palette,
               xlim = c(regions[iregion, 1], regions[iregion, 2]),
-              ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F
+              ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F,
+              asp = 1
             )
             # continents
             continents_col <- "white"
@@ -328,6 +332,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             map("world", regions = ".", interior = map_continents_regions,
                 exact = F, boundary = T, add = T, col = continents_col,
                 lwd = abs(map_continents))
+            rect(regions[iregion, 1], regions[iregion, 3],
+                 regions[iregion, 2], regions[iregion, 4],
+                 border = "white", lwd = 2)
             # grid points
             if (oplot_grid) {
               # build up grid if needed

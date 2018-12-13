@@ -177,8 +177,8 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       }
 
       # store size of time and region arrays
-      time <- ncdf_opener(infile, timedimname, timedimname, rotate = "no")
-      +1950
+      time <- ncdf_opener(infile, timedimname,
+              timedimname, rotate = "no") + 1950
       regions <- ncdf_opener(infile, "regions", "region", "boundaries",
         rotate = "no"
       )
