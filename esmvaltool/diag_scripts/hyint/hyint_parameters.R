@@ -24,7 +24,7 @@ seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
 
 timedimname <- "time"
 
-rottongitude <- "full" # a) "full" to convert input arrays from 0/360 to
+rotongitude <- "full" # a) "full" to convert input arrays from 0/360 to
                        # -180/180 longitude grid
                        # b) "no" to leave input data on its original grid
 
