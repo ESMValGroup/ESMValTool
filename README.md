@@ -29,10 +29,6 @@ To install in development mode, follow these instructions.
 - Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
 - Available recipes are located in the directory `esmvaltool/recipes`.
 
-### Julia support
-To install the Julia dependencies you need to run: `./esmvaltool/Julia/setup.jl`.
-The dependencies for Julia diagnostics should be added to `esmvaltool/Julia/julia_requirements.txt` file.
-
 ### Anaconda Package
 The Anaconda packages can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
 If you already installed Anaconda, you can install ESMValTool by running:
@@ -49,6 +45,11 @@ Rscript esmvaltool/install/R/setup.R
 
 The dependencies of R diagostics should be added to `esmvaltool/install/R/r_requirements.txt` file.
 
+
+### Julia support
+If you haven't installed ESMValTool via Anaconda, you will also need to run the following to
+the Julia dependencies: `./esmvaltool/install/Julia/setup.jl`.
+The dependencies for Julia diagnostics should be added to `esmvaltool/install/Julia/julia_requirements.txt` file.
 
 
 ### Docker
