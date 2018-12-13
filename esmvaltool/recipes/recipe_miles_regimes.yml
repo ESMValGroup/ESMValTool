@@ -72,7 +72,7 @@ diagnostics:
         field: T2Ds
         reference_dataset: "ERA-Interim"
     scripts:
-        miles_eof: 
+        miles_regimes: 
             script: miles/miles_regimes.R
             seasons: DJF # Select season (beta: 'DJF' only possible option for now)
             nclusters: 4 # beta: only 4 possible for now
