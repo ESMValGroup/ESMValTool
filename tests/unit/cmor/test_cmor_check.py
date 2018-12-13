@@ -379,10 +379,10 @@ class TestCMORCheck(unittest.TestCase):
         self.cube = self.get_cube(self.var_info, frequency='mon')
         time = self.cube.coord('time')
         points = numpy.array(time.points)
-        print(points)
         points[1] = points[1] + 12
+        dims = self.cube.coord_dims(time)
         self.cube.remove_coord(time)
-        self.cube.add_dim_coord(time.copy(points), 0)
+        self.cube.add_dim_coord(time.copy(points), dims)
         self._check_cube(frequency='mon')
 
     def test_bad_frequency_day(self):
