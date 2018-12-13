@@ -17,11 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-#  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
-# - {dataset: ACCESS1-3,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
-  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
-  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
 
 preprocessors:
   preproc:
