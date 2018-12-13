@@ -118,7 +118,6 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     plt.style.use(colorscheme)
 
     outtype = cfg.get('output_file_type', 'png')
-    logger.info('Generating plots for filetype: ' + outtype)
 
     nicename = {
         'baresoilFrac': 'bare soil covered',
@@ -180,6 +179,215 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         pdf.close()
 
 
+def sel_lats(latlist, bounds):
+    """Return subset of latitudes within bounds.
+
+    Parameters
+    ----------
+    latlist : numpy array
+        contains all latitudes for the cube
+    bounds : list
+        bounds for latitude selection
+    """
+    subset = []
+    for lat in latlist.tolist():
+        if min(bounds) < lat < max(bounds):
+            subset.append(lat)
+
+    return subset
+
+
+def get_timmeans(cfg, datapath, cubes, refset):
+    """Return time averaged data cubes.
+
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe.
+    datapath : str
+        Path and filename of netCDF data file.
+    cubes : dict
+        collection of iris data cubes.
+    refset : dict
+        reference dataset names for all variables.
+    """
+    # Get dataset information
+    datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
+    dset = datainfo['dataset']
+    var = datainfo['short_name']
+    # Store name of reference data for given variable
+    if var not in refset.keys():
+        refset[var] = datainfo.get('reference_dataset', None)
+    # Load data into iris cube
+    new_cube = iris.load(datapath, diag.Variables(cfg).standard_names())[0]
+    # Check for expected unit
+    if new_cube.units != '%':
+        raise ValueError('Unit % is expected for ' +
+                         new_cube.long_name.lower() + ' area fraction')
+    # Compute long term mean
+    mean_cube = new_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
+    # Rename variable in cube
+    mean_cube.var_name = "_".join([
+        datainfo.get('cmor_table', ''),
+        datainfo.get('dataset', ''),
+        datainfo.get('exp', ''),
+        datainfo.get('ensemble', '')
+    ]).replace('__', '_').strip("_")
+    mean_cube.long_name = " ".join([var, 'for dataset', dset])
+    # Update data for dataset
+    diag.Datasets(cfg).set_data(mean_cube.data, datapath)
+    # Append to cubelist for temporary output
+    if dset == refset[var]:
+        cubes['ref'][var].append(mean_cube)
+    else:
+        cubes['exp'][var].append(mean_cube)
+
+
+def write_data(cfg, cubes, var):
+    """Write intermediate datafield for one variable.
+
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe.
+    cubes : dict
+        collection of iris data cubes.
+    var : str
+        variable short name
+    """
+    # Compile output path
+    filepath = os.path.join(cfg[diag.names.WORK_DIR],
+                            '_'.join(['postproc', var]) + '.nc')
+
+    # Join cubes in one list with ref being the last entry
+    outcubes = cubes['exp'][var] + cubes['ref'][var]
+    if cfg[diag.names.WRITE_NETCDF]:
+        iris.save(outcubes, filepath)
+        logger.info("Writing %s", filepath)
+
+
+def compute_landcover(var, lcdata, cubes):
+    """Return aggregated and averaged land cover values.
+
+    Parameters
+    ----------
+    var : str
+        variable short name
+    lcdata : dict
+        collection of land cover values per region
+    cubes : dict
+        collection of time averaged iris data cubes.
+    """
+    # Define regions
+    regdef = {
+        'Global': None,
+        'Tropics': [-30, 30],
+        'North. Hem.': [30, 90],
+        'South. Hem.': [-90, -30]
+    }
+
+    values = {'area': [], 'frac': [], 'bias': []}
+    modnam = {'area': [], 'frac': [], 'bias': []}
+    # Compute metrices for all datasets of a given variable
+    for sub_cube in cubes:
+        modnam['area'].append(sub_cube.var_name)
+        modnam['frac'].append(sub_cube.var_name)
+        cellarea = sub_cube.copy()
+        cellarea.name = 'cellarea'
+        cellarea.data = iris.analysis.cartography.area_weights(cubes[0])
+        row = {'area': [], 'frac': []}
+        # Compute land cover area in million km2:
+        # area = Percentage * 0.01 * area [m2]
+        #      / 1.0e+6 [km2]
+        #      / 1.0e+6 [1.0e+6 km2]
+        coverarea = sub_cube.copy()
+        coverarea.data *= (0.01 * cellarea.data / 1.0E+6 / 1.0e+6)
+        # Sum over area for different regions
+        for reg in regdef:
+            if regdef[reg] is not None:
+                zone = iris.Constraint(
+                    latitude=sel_lats(
+                        sub_cube.coord('latitude').points, regdef[reg]))
+                row['area'].append(
+                    coverarea.extract(zone).collapsed(
+                        ['longitude', 'latitude'],
+                        iris.analysis.SUM).data.tolist())
+                row['frac'].append(
+                    sub_cube.extract(zone).collapsed(
+                        ['longitude', 'latitude'],
+                        iris.analysis.MEAN,
+                        weights=cellarea.extract(zone).data).data.tolist())
+
+            else:
+                row['area'].append(
+                    coverarea.collapsed(['longitude', 'latitude'],
+                                        iris.analysis.SUM).data.tolist())
+                row['frac'].append(
+                    sub_cube.collapsed(['longitude', 'latitude'],
+                                       iris.analysis.MEAN,
+                                       weights=cellarea.data).data.tolist())
+        values['area'].append(row['area'])
+        values['frac'].append(row['frac'])
+    # Compute relative bias in average fractions compared to reference
+    reffrac = np.array(values['frac'][-1])
+    for imod, modfrac in enumerate(values['frac'][:-1]):
+        values['bias'].append(
+            ((np.array(modfrac) - reffrac) / reffrac * 100.0).tolist())
+        modnam['bias'].append(modnam['frac'][imod])
+
+    lcdata[var] = {'values': values, 'groups': modnam}
+
+    return list(regdef.keys())
+
+
+def focus2model(cfg, lcdata, refset):
+    """Resort lcdata for model focus.
+
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe.
+    lcdata : dict
+        collection of land cover values per region
+    refset : dict
+        reference dataset names for all variables.
+    """
+    var = diag.Variables(cfg).short_names()[0]
+    shuffle = {key: {} for key in lcdata[var]['groups']['area']}
+    for dset in shuffle.keys():
+        ids = lcdata[var]['groups']['area'].index(dset)
+        if refset[var] in dset:
+            shuffle[dset] = {
+                'groups': {
+                    'area': [],
+                    'frac': []
+                },
+                'values': {
+                    'area': [],
+                    'frac': []
+                }
+            }
+        else:
+            shuffle[dset] = {
+                'groups': {
+                    'area': [],
+                    'frac': [],
+                    'bias': []
+                },
+                'values': {
+                    'area': [],
+                    'frac': [],
+                    'bias': []
+                }
+            }
+        for var in sorted(diag.Variables(cfg).short_names()):
+            for metric in shuffle[dset]['groups'].keys():
+                shuffle[dset]['groups'][metric].append(var)
+                shuffle[dset]['values'][metric].append(
+                    lcdata[var]['values'][metric][ids])
+    lcdata = shuffle
+
+
 def main(cfg):
     """Run the diagnostic.
 
@@ -188,174 +396,49 @@ def main(cfg):
     cfg : dict
         Configuration dictionary of the recipe.
     """
-    # Get dataset and variable information
-    datasets = diag.Datasets(cfg)
-    logging.debug("Found datasets in recipe:\n%s", datasets)
-    varlist = diag.Variables(cfg)
-    logging.debug("Found variables in recipe:\n%s", varlist)
+    # Print dataset and variable information
+    logging.debug("Found datasets in recipe:\n%s", diag.Datasets(cfg))
+    logging.debug("Found variables in recipe:\n%s", diag.Variables(cfg))
 
-    # Get target for comparison [variable, model]
-    comparison = cfg.get('comparison', 'variable')
-    if comparison not in ['variable', 'model']:
-        raise ValueError('Only variable or model are valid comparison targets')
+    # Prepare dictionaries
+    timcubes = {
+        'exp': {key: []
+                for key in diag.Variables(cfg).short_names()},
+        'ref': {key: []
+                for key in diag.Variables(cfg).short_names()}
+    }
+    lcdata = {key: {} for key in diag.Variables(cfg).short_names()}
+    refset = {}
 
     # Read data and compute long term means
-    # to check: Shouldn't this be part of preprocessing?
-    expcubes = {key: [] for key in varlist.short_names()}
-    refcubes = {key: [] for key in varlist.short_names()}
-    refset = {}
-    for dataset_path in sorted(datasets):
-        # Get dataset information
-        datainfo = datasets.get_dataset_info(path=dataset_path)
-        dset = datainfo['dataset']
-        var = datainfo['short_name']
-        # Store name of reference data for given variable
-        if var not in refset.keys():
-            refset[var] = datainfo.get('reference_dataset', None)
-        # Load data into iris cube
-        new_cube = iris.load(dataset_path, varlist.standard_names())[0]
-        # Check for expected unit
-        if new_cube.units != '%':
-            raise ValueError('Unit % is expected for ',
-                             new_cube.long_name.lower(), ' area fraction')
-        # Compute long term mean
-        mean_cube = new_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
-        # Rename variable in cube
-        mean_cube._var_name = "_".join([
-            datainfo.get('cmor_table', ''),
-            datainfo.get('dataset', ''),
-            datainfo.get('exp', ''),
-            datainfo.get('ensemble', '')
-        ]).replace('__', '_').strip("_")
-        mean_cube.long_name = " ".join([var, 'for dataset', dset])
-        # Update data for dataset
-        datasets.set_data(mean_cube.data, dataset_path)
-        # Append to cubelist for temporary output
-        if dset == refset[var]:
-            refcubes[var].append(mean_cube)
-        else:
-            expcubes[var].append(mean_cube)
+    for dataset_path in sorted(diag.Datasets(cfg)):
+        get_timmeans(cfg, dataset_path, timcubes, refset)
 
-    # Write regridded and temporal aggregated netCDF data files (one per model)
-    # to do: update attributes
-    allcubes = {key: [] for key in varlist.short_names()}
-    for var in expcubes.keys():
-        filepath = os.path.join(cfg[diag.names.WORK_DIR],
-                                '_'.join(['postproc', var]) + '.nc')
-        # Join cubes in one list with ref being the last entry
-        allcubes[var] = expcubes[var] + refcubes[var]
-        if cfg[diag.names.WRITE_NETCDF]:
-            iris.save(allcubes[var], filepath)
-            logger.info("Writing %s", filepath)
+    for var in diag.Variables(cfg).short_names():
+        # Write regridded and temporal aggregated netCDF data files
+        write_data(cfg, timcubes, var)
+        # Compute aggregated and fraction average land cover
+        regnam = compute_landcover(var, lcdata,
+                                   timcubes['exp'][var] + timcubes['ref'][var])
 
     # Compute aggregated area and average fractional coverage for
     # different regions
-    regdef = {
-        'Global': None,
-        'Tropics': [-30, 30],
-        'North. Hem.': [30, 90],
-        'South. Hem.': [-90, -30]
-    }
-    regnam = list(regdef.keys())
-    mydata = {key: {} for key in varlist.short_names()}
-    for var in allcubes.keys():
-        values = {'area': [], 'frac': [], 'bias': []}
-        modnam = {'area': [], 'frac': [], 'bias': []}
-        # Compute metrices for all datasets of a given variable
-        for sub_cube in allcubes[var]:
-            dataset_name = sub_cube._var_name
-            modnam['area'].append(dataset_name)
-            modnam['frac'].append(dataset_name)
-            cellarea = sub_cube.copy()
-            cellarea.name = 'cellarea'
-            cellarea.data = iris.analysis.cartography.area_weights(
-                allcubes[var][0], normalize=False)
-            row = {'area': [], 'frac': []}
-            # Compute land cover area in million km2:
-            # area = Percentage * 0.01 * area [m2]
-            #      / 1.0e+6 [km2]
-            #      / 1.0e+6 [1.0e+6 km2]
-            coverarea = sub_cube.copy()
-            coverarea.data *= (0.01 * cellarea.data / 1.0E+6 / 1.0e+6)
-            # Sum over area for different regions
-            for reg in regnam:
-                if regdef[reg] is not None:
-                    zone = iris.Constraint(
-                        latitude=lambda v: regdef[reg][0] < v < regdef[reg][1])
-                    row['area'].append(
-                        coverarea.extract(zone).collapsed(
-                            ['longitude', 'latitude'],
-                            iris.analysis.SUM).data.tolist())
-                    row['frac'].append(
-                        sub_cube.extract(zone).collapsed(
-                            ['longitude', 'latitude'],
-                            iris.analysis.MEAN,
-                            weights=cellarea.extract(zone).data).data.tolist())
-
-                else:
-                    row['area'].append(
-                        coverarea.collapsed(['longitude', 'latitude'],
-                                            iris.analysis.SUM).data.tolist())
-                    row['frac'].append(
-                        sub_cube.collapsed(
-                            ['longitude', 'latitude'],
-                            iris.analysis.MEAN,
-                            weights=cellarea.data).data.tolist())
-            values['area'].append(row['area'])
-            values['frac'].append(row['frac'])
-        # Compute relative bias in average fractions compared to reference
-        reffrac = np.array(values['frac'][-1])
-        for imod, modfrac in enumerate(values['frac'][:-1]):
-            row = ((np.array(modfrac) - reffrac) / reffrac * 100.0).tolist()
-            values['bias'].append(row)
-            modnam['bias'].append(modnam['frac'][imod])
-        mydata[var] = {'values': values, 'groups': modnam}
 
     # Reshuffle data if models are the comparison target
-    if comparison == 'model':
-        shuffle = {key: {} for key in mydata[var]['groups']['area']}
-        for dset in shuffle.keys():
-            ids = mydata[var]['groups']['area'].index(dset)
-            if refset[var] in dset:
-                shuffle[dset] = {
-                    'groups': {
-                        'area': [],
-                        'frac': []
-                    },
-                    'values': {
-                        'area': [],
-                        'frac': []
-                    }
-                }
-            else:
-                shuffle[dset] = {
-                    'groups': {
-                        'area': [],
-                        'frac': [],
-                        'bias': []
-                    },
-                    'values': {
-                        'area': [],
-                        'frac': [],
-                        'bias': []
-                    }
-                }
-            for var in sorted(allcubes.keys()):
-                for metric in shuffle[dset]['groups'].keys():
-                    shuffle[dset]['groups'][metric].append(var)
-                    shuffle[dset]['values'][metric].append(
-                        mydata[var]['values'][metric][ids])
-        mydata = shuffle
+    if cfg.get('comparison', 'variable') == 'model':
+        focus2model(cfg, lcdata, refset)
+    elif cfg.get('comparison', 'variable') != 'variable':
+        raise ValueError('Only variable or model are valid comparison targets')
 
     # Output ascii files and plots
-    for target in mydata.keys():
+    for target in lcdata.keys():
         # Write plotdata as ascii files for user information
-        write_plotdata(cfg, regnam, mydata[target]['groups'],
-                       mydata[target]['values'], target)
+        write_plotdata(cfg, regnam, lcdata[target]['groups'],
+                       lcdata[target]['values'], target)
 
         # Plot area values
-        make_landcover_bars(cfg, regnam, mydata[target]['groups'],
-                            mydata[target]['values'], target)
+        make_landcover_bars(cfg, regnam, lcdata[target]['groups'],
+                            lcdata[target]['values'], target)
 
 
 if __name__ == '__main__':
