@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
-  - {dataset: ACCESS1-3,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
-#  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2010}
+#  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
+# - {dataset: ACCESS1-3,      project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2010}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 
 preprocessors:
   preproc:
@@ -54,7 +54,7 @@ diagnostics:
         # 13) timeseries with multiple models
         # 14) summary trend coefficients multiple regions
         # 15) summary trend coefficients multiple models
-        plot_type: [1,2,3,4,12,13,14,15]
+        plot_type: [14]
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
@@ -63,101 +63,12 @@ diagnostics:
         selregions: [1,2,3,4,5,6,7,8,9,10]
         # Select one or more fields for timeseries and maps from the following list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        selfields: [1, 4, 8]
+        selfields: [8, 4, 1, 9, 3, 2]
 
-        seasons: "ALL"   # seasons to be analysed: "ALL", "DJF", ...
        
         ## ------- Advanced settings ----------
-        timedimname: "time"  # Define time dimension name
-        rotlongitude: "full" # a) "full" to convert input arrays from 0/360 to -180/180 longitude grid
-                             # b) "no" to leave input data on its original grid
-        grid_file: "grid_file"  # suffix for grid file
         
-        topography_file: "topo" # suffix for topography file (needed for filtering ocean/land or land elevation)
-                                   # generated with cdo
         topography_highres: "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
-        etccdi_dir: "~/work/data/ETCCDI/historical+rcp85/"
-
-
-        # Diagnostic options
-        external_norm: false # a) F=use internal data to normalize over the norm_years period
-                             # b) list of names of normalization files (one per input data file or one for all)
-                             # c) "HIST" to automatically generate the name of the historical experiment associated with the model name 
-
-        external_r95: false   # a) F=use internal data to evaluate r95 threshold over the norm_years period  
-                              # b) list of names of files (one per input data file or one for all) 
-                              # c) "HIST" to automatically generate the name of the historical experiment associated with the model name
-
-
-        # Timeseries options
-        weight_tseries: true  # T to calculate area weighted time averages
-        trend_years: false    # a) F=all; 
-                              # b) c(year1,year2) to apply trend calculation and plotting only to a limited time interval (year1<=years<=year2) 
-                              # c) c(year1,year2,year3,year4) to apply trend to two separate 
-                              #    time intervals (year1<=years<=year2) and (year3<=years<=year4)
-        removedesert: false # T to remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (desertic areas, Giorgi et al. 2014)
-        masksealand: false  # T to mask depending on seaLandElevation threshold
-        sealandelevation: 0 # a) 0 land; b) positive value: land above given elevation;
-                            # c) negative value: ocean below given depth. The topography/bathymetry file is generated with cdo from ETOPO data. 
-        reverse_masksealand: false # T to reject what selected, F to keep what selected
-        highreselevation: false #  a) F: neglect; b) value: threshold of minimum elevation to be overplotted with contour lines of elevation
-        highreselevation_only: false  # T to plot only high resolution elevation contours
-        oplot_grid: false      # T to plot grid points over maps
-
-
-
-        # Plotting options 
-        autolevels: false # true if you wish to plot actual range of target values
-                          # false to get predefined ranges of target values
-
-        npancol: 2 # number of columns for trend/tseries multi-panel figures
-        npanrow: 3 # number of rows for trend/tseries multi-panel figures
-   
-        ryearplot: [2006, 2007] # years to be plotted for experiments (maps over individual years): 
-                                # a) actual years, b) "FIRST" = first year in dataset or 
-                                # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
-        rmultiyear_mean: true # T to plot multiyear mean (this override ryearplot)
-        ryearplot_ref: "EXP" # year to be plotted for reference dataset: 
-                             # a) "EXP" == same as experiments, b) one year only, e.g. 1998    
-        force_ref: false # set TRUE to force plotting of reference dataset as any other experiment
-
-        map_continents: -2 # thickness of continents: positive values in white, negative values in gray
-        map_continents_regions: false # T to plot also regional boundaries
-
-        # colorbar
-        add_colorbar: false # T to add colorbar
-        legend_distance: 3  # positioning of legend
-
-        # timeseries and trend plotting options
-        lm_trend: true         # T to calculate linear trend
-        add_trend: true        # T to add linear trend to plot
-        add_trend_sd: false     # T to add stdev range to timeseries
-        add_trend_sd_shade: false   # T to add shade of stdev range to timeseries 
-        add_tseries_lines: false    # T to plot lines of timeseries over points
-        add_zeroline: true         # T to plot a dashed line at y=0 
-        trend_years_only: false # T to limit timeseries plotting to trend_years[1:2] time interval
-        scale100years: true    # T to plot trends as 1/100 years
-        scalepercent: false     # T to plot trends as percent change (this is not applied to HY-INT)
-        add_legend: 5       # a) F=no legend; b) n>0 list disposed in n column; c) <0 horizontal legend 
-        xy_legend: [0.03,0.4] # position of legend in fraction of plotting panel 
-        tag_legend: ["T","F","F"] # 1=model name, 2=model experiment, 3=model ensemble (select one or more)
-
-
         boxregion: false  #-2 # !=0 plot region boxes over maps with thickness = abs(boxregion) and 
                          # white (>0) or grey (<0).  This automatically works on global maps only.
-
-        # Specific settings for PNG output
-        png_height: 720
-        png_width: 1440 #960
-        png_units: "px"
-        png_pointsize: 12
-        png_bg: "white"
-
-        # Specific settings for PDF and EPS output (in inches)
-        pdf_width: 24
-        pdf_height: 12
-
-        # Specific settings for x11 output (in inches)
-        x11_width: 7
-        x11_height: 8
 
