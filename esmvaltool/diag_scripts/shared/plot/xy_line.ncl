@@ -1517,36 +1517,36 @@ begin
   annots = project_style(items, diag_script_info, "annots")
   avgstd = project_style(items, diag_script_info, "avgstd")
 
-  ;; FIX-ME: no longer needed, as multi-model is now a dataset (?)
-  ;; Select colors and other plotting attributes for multi-model mean
-  ;; if (diag_script_info@multi_model_mean .eq. "y") then
-  ;;   ; Project_style evaluates metadata of variable "input_file_info"
-  ;;   temp = input_file_info
+  ; FIX-ME: no longer needed, as multi-model is now a dataset (?)
+  ; Select colors and other plotting attributes for multi-model mean
+  ; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;   ; Project_style evaluates metadata of variable "input_file_info"
+  ;   temp = input_file_info
 
-  ;;   ; -> keep original "input_file_info" in "temp" and restore later
-  ;;   copy_VarMeta(input_file_info, temp)
-  ;;   delete(input_file_info)
+  ;   ; -> keep original "input_file_info" in "temp" and restore later
+  ;   copy_VarMeta(input_file_info, temp)
+  ;   delete(input_file_info)
 
-  ;;   ; Use "input_file_info" to pass on attribute names
-  ;;   input_file_info = getvaratts(temp)
-  ;;   do i = 0, dimsizes(input_file_info) - 1
-  ;;     ; Define all original attributes again, but empty
-  ;;     input_file_info@$input_file_info(i)$ = ""
-  ;;   end do
-  ;;   input_file_info@dataset = "model_mean"
+  ;   ; Use "input_file_info" to pass on attribute names
+  ;   input_file_info = getvaratts(temp)
+  ;   do i = 0, dimsizes(input_file_info) - 1
+  ;     ; Define all original attributes again, but empty
+  ;     input_file_info@$input_file_info(i)$ = ""
+  ;   end do
+  ;   input_file_info@dataset = "model_mean"
 
-  ;;   ; See ./diag_scripts/shared/plot/style.ncl
-  ;;   ; FIX-ME: project_style function has changed
-  ;;   ; colors_mmm = project_style(diag_script_info, "colors")
-  ;;   ; dashes_mmm = project_style(diag_script_info, "dashes")
-  ;;   ; thicks_mmm = project_style(diag_script_info, "thicks")
-  ;;   ; annots_mmm = project_style(diag_script_info, "annots")
-  ;;   ; avgstd_mmm = project_style(diag_script_info, "avgstd")
-  ;;   delete(input_file_info)
-  ;;   input_file_info = temp  ; restore original "input_file_info"
-  ;;   copy_VarMeta(temp, input_file_info)
-  ;;   delete(temp)
-  ;; end if
+  ;   ; See ./diag_scripts/shared/plot/style.ncl
+  ;   ; FIX-ME: project_style function has changed
+  ;   ; colors_mmm = project_style(diag_script_info, "colors")
+  ;   ; dashes_mmm = project_style(diag_script_info, "dashes")
+  ;   ; thicks_mmm = project_style(diag_script_info, "thicks")
+  ;   ; annots_mmm = project_style(diag_script_info, "annots")
+  ;   ; avgstd_mmm = project_style(diag_script_info, "avgstd")
+  ;   delete(input_file_info)
+  ;   input_file_info = temp  ; restore original "input_file_info"
+  ;   copy_VarMeta(temp, input_file_info)
+  ;   delete(temp)
+  ; end if
 
   ; Set/copy resources
   res                   = True
@@ -1567,27 +1567,27 @@ begin
   ; Plot
   plot = gsn_csm_xy(wks, source_x, source, res)
 
-  ;; ; Add multi model mean and stddev
-  ;; if (diag_script_info@multi_model_mean .eq. "y") then
-  ;;   ; Stddev
-  ;;   res_stddev = True
-  ;;   copy_VarMeta(res, res_stddev)
-  ;;   res_stddev@gsnXYFillColors = "LightGrey"
-  ;;   delete(res_stddev@xyLineColors)
+  ; ; Add multi model mean and stddev
+  ; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;   ; Stddev
+  ;   res_stddev = True
+  ;   copy_VarMeta(res, res_stddev)
+  ;   res_stddev@gsnXYFillColors = "LightGrey"
+  ;   delete(res_stddev@xyLineColors)
 
-  ;;   ; We don't want the line, so make it transparent.
-  ;;   res_stddev@xyLineColor = -1
-  ;;   shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
-  ;;                             res_stddev)
-  ;;   overlay(plot, shading_plot)
-  ;;   ; MMM
-  ;;   delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
-  ;;   res@xyLineThicknesses = thicks_mmm
-  ;;   res@xyLineColors = colors_mmm
-  ;;   res@xyDashPatterns = dashes_mmm
-  ;;   mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
-  ;;   overlay(plot, mmm)
-  ;; end if
+  ;   ; We don't want the line, so make it transparent.
+  ;   res_stddev@xyLineColor = -1
+  ;   shading_plot = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
+  ;                             res_stddev)
+  ;   overlay(plot, shading_plot)
+  ;   ; MMM
+  ;   delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
+  ;   res@xyLineThicknesses = thicks_mmm
+  ;   res@xyLineColors = colors_mmm
+  ;   res@xyDashPatterns = dashes_mmm
+  ;   mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res)
+  ;   overlay(plot, mmm)
+  ; end if
 
   ; Resources for a customized legend.
   lgres                     = True
@@ -1611,12 +1611,13 @@ begin
     thicks := thicks(idcs_modelnames)
     annots := input_file_info@dataset(idcs_modelnames)
   end if
-  ;; if (diag_script_info@multi_model_mean .eq. "y") then
-  ;;   lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
-  ;;   lgres@lgDashIndexes     = array_append_record(dashes, dashes_mmm, 0)
-  ;;   lgres@lgLineThicknesses = array_append_record(thicks, thicks_mmm, 0) + 0.5
-  ;;   labels = array_append_record(annots, annots_mmm, 0)
-  ;; else
+  ; if (diag_script_info@multi_model_mean .eq. "y") then
+  ;   lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
+  ;   lgres@lgDashIndexes     = array_append_record(dashes, dashes_mmm, 0)
+  ;   lgres@lgLineThicknesses = \
+  ;     array_append_record(thicks, thicks_mmm, 0) + 0.5
+  ;   labels = array_append_record(annots, annots_mmm, 0)
+  ; else
   lgres@lgLineColors      = colors
   lgres@lgDashIndexes     = dashes
   lgres@lgLineThicknesses = thicks + 0.5
