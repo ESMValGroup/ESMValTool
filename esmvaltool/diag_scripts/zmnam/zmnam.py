@@ -24,6 +24,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 from zmnam_calc import zmnam_calc
 from zmnam_plot import zmnam_plot
 from zmnam_preproc import zmnam_preproc
+from zmnam_clean import zmnam_clean
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,7 @@ def main(cfg):
         zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
         zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props, fig_fmt,
                    write_plots)
+        zmnam_clean()
 
 
 # Run the diagnostics

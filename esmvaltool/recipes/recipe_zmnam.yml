@@ -20,7 +20,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 2005, end_year: 2008}
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
     #- {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
 
 preprocessors:
