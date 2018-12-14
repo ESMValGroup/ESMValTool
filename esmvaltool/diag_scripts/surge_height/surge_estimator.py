@@ -150,7 +150,7 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     del pslNS, uasNS, vasNS
 
     psl, uas, vas = calc_monanom(xpslNS, xuasNS, xvasNS)
-    del pslNS, xuasNS, xvasNS
+    del xpslNS, xuasNS, xvasNS
 
     # -----------------------------
     # IV. Calculate SLP gradients
@@ -202,6 +202,8 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
             pseudo_pcs_us.values,
             pseudo_pcs_vs.values)
 
+    np.save('/usr/people/ridder/Documents/0_models/scripts/python/0_MAGIC/predictor_array_X.npy',X)
+    exit()
     # -----------------------------------------------------------
     # VIII. Load regression coefficients or train model
     # -----------------------------------------------------------

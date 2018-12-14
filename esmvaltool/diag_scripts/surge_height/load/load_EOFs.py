@@ -11,7 +11,7 @@ def load_eofs(eof_inpath):
         SLPsolver = pickle.load(input)
     #
     with open(os.path.join(eof_inpath,
-            'eof_gradslp_solver_075x075_19790101-20151231.pkl'),
+            'eof_gradpsl_solver_075x075_19790101-20151231.pkl'),
             'rb') as input:
         gradslpsolver = pickle.load(input)
     #

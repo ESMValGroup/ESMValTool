@@ -10,7 +10,7 @@ def save_object(filename, obj):
 		pickle.dump(obj,output,pickle.HIGHEST_PROTOCOL)
 
 
-def calc_eofs(psl, uas, vas, gradslp, eof_savepath):
+def calc_eofs(psl, uas, vas, gradpsl, eof_savepath):
     # determine eofs
     psl_solver = xrEof(psl)
     fout_psl = os.path.join(eof_savepath,
@@ -19,11 +19,11 @@ def calc_eofs(psl, uas, vas, gradslp, eof_savepath):
     save_object(fout_psl, psl_solver)
 
 
-    gradslp_solver = Eof(gradslp)
+    gradpsl_solver = Eof(gradpsl)
     fout_lon = os.path.join(eof_savepath,
-       'eof_gradslp_solver_075x075_19790101-20151231.pkl'
+       'eof_gradpsl_solver_075x075_19790101-20151231.pkl'
     )
-    save_object(fout_lon, gradlat_solver)
+    save_object(fout_lon, gradpsl_solver)
 
 
     uas_solver = xrEof(uas)
@@ -39,4 +39,4 @@ def calc_eofs(psl, uas, vas, gradslp, eof_savepath):
     )
     save_object(fout_vas, vas_solver) 
 
-    return psl_solver, gradlon_solver, gradlat_solver, uas_solver, vas_solver
+    return psl_solver, gradpsl_solver, uas_solver, vas_solver
