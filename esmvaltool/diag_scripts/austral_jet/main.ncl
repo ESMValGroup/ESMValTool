@@ -59,14 +59,22 @@ load "./diag_scripts/shared/mder.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-
   ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  VAR0 = variable_info[0]
+  DIM_VAR = ListCount(variable_info)
+  else if (DIM_VAR .gt. 2) then
+    error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports at most two " + \
+              "variables, got " +  DIM_VAR)
+  end if
+
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  DATASETS = metadata_att_as_array(INFO0, "dataset")
+  DIM_DAT = dimsizes(DATASETS)
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + VAR0@short_name + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Write references (TODO)
   ; write_references(diag_script, \
@@ -94,10 +102,8 @@ begin
   if(isatt(diag_script_info, "e13fig10_season")) then
     season = diag_script_info@e13fig10_season
   else
-    if (isStrSubset(field_type0, "z") .eq. False) then
-      error_msg("f", diag_script, "", "plot requires attribute " + \
-                "'e13fig10_season' in recipe")
-    end if
+    error_msg("f", diag_script, "", "plot requires attribute " + \
+              "'e13fig10_season' in recipe")
   end if
 
   ; Additional observations
@@ -130,9 +136,9 @@ begin
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(input_file_info@dataset)
+    idx_datasets = UNIQ(DATASETS)
   else
-    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
+    idx_datasets = ispan(0, dimsizes(DATASETS) - 1, 1)
   end if
 
   ; Array sizes
