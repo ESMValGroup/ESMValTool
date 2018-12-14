@@ -40,6 +40,7 @@ import os
 import numpy as np
 
 import iris
+import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared as diag
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -92,6 +93,117 @@ def write_plotdata(cfg, regnam, modnam, values, var):
                 fout.write(body.format(*line))
 
 
+def init_plot(cfg, var):
+    """Prepare plot and set defaults.
+
+    Parameters
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe
+    var : str
+        variable short name
+    """
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    if cfg.get('output_file_type', 'png') == 'pdf':
+        filepath = os.path.join(cfg[diag.names.PLOT_DIR],
+                                '_'.join(['metrics', var]) + ".pdf")
+        pdf = PdfPages(filepath)
+    else:
+        pdf = None
+
+    nicename = {
+        'baresoilFrac': 'bare soil covered',
+        'treeFrac': 'tree covered',
+        'grassFrac': 'grass covered',
+        'cropFrac': 'crop covered',
+        'shrubFrac': 'shrub covered'
+    }
+
+    info = {
+        # Plot titles
+        'pt': {
+            'area': ' '.join(['Accumulated',
+                              nicename.get(var, var), 'area']),
+            'frac': ' '.join(['Average',
+                              nicename.get(var, var), 'fraction']),
+            'bias':
+            ' '.join(['Average',
+                      nicename.get(var, var), 'fraction bias'])
+        },
+        # Labels for y axis
+        'yl': {
+            'area': r'Area [$10^6$ km$^2$]',
+            'frac': r'Fraction [%]',
+            'bias': r'Bias [%]'
+        },
+        # Plot directory
+        'pd': cfg[diag.names.PLOT_DIR]
+    }
+
+    return pdf, info
+
+
+def plot_bars(info, metric, data, regnam):
+    """Add legend and save plot to either png or pdf.
+
+    Parameters
+    ----------
+    info : dict
+        compilation of plot properties
+    metric : str
+        plot type [area, fraction or bias]
+    data : list
+        list of floats for plotting
+    regnam : list
+        list containing the region names
+    """
+    fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
+    axs.set_title(info['pt'][metric])
+    axs.set_ylabel(info['yl'][metric])
+    nbar, ncat = np.array(data).shape
+    index = np.arange(0, (nbar + 1) * ncat, nbar + 1)
+    xticks = np.linspace((nbar + 1) / 2.0,
+                         (nbar + 1) * ncat - (nbar + 1) / 2.0, ncat) - 1.0
+    axs.set_xticklabels(regnam)
+    axs.set_xticks(xticks)
+    for irow, row in enumerate(data):
+        axs.bar(index + irow, row)
+
+    return fig
+
+
+def finish_plot(fig, labels, pltdir, name, pdf):
+    """Add legend and save plot to either png or pdf.
+
+    Parameters
+    ----------
+    fig : obj
+        actual figure
+    labels : list
+        list of plot labels
+    pltdir : str
+        target directory to store plots
+    name : str
+        filename for png output without extension
+    pdf : obj
+        pdf object collection all pages in case of pdf output
+    """
+    fig.subplots_adjust(bottom=0.20)
+    caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
+    for lbl in labels:
+        caxe.plot([], [], lw=4, label=lbl)
+    caxe.legend(ncol=2, loc="lower center", fontsize='small')
+    caxe.set_axis_off()
+
+    if pdf is None:
+        filepath = os.path.join(pltdir, name + ".png")
+        fig.savefig(filepath)
+    else:
+        fig.savefig(pdf, dpi=80, format='pdf')
+        plt.close()
+
+
 def make_landcover_bars(cfg, regnam, modnam, values, var):
     """Make bar plots for regional values.
 
@@ -99,7 +211,7 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     ----------
     cfg : dict
         Configuration dictionary of the recipe
-    regname : list
+    regnam : list
         list containing the region names
     modnam : dict
         containing list of dataset names for specific metrics
@@ -110,72 +222,20 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     var : str
         variable short name
     """
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_pdf import PdfPages
-
     # Get colorscheme from recipe
-    colorscheme = cfg.get('colorscheme', 'seaborn')
-    plt.style.use(colorscheme)
+    plt.style.use(cfg.get('colorscheme', 'seaborn'))
 
-    outtype = cfg.get('output_file_type', 'png')
-
-    nicename = {
-        'baresoilFrac': 'bare soil covered',
-        'treeFrac': 'tree covered',
-        'grassFrac': 'grass covered',
-        'cropFrac': 'crop covered',
-        'shrubFrac': 'shrub covered'
-    }
-    plottitle = {
-        'area': ' '.join(['Accumulated',
-                          nicename.get(var, var), 'area']),
-        'frac': ' '.join(['Average',
-                          nicename.get(var, var), 'fraction']),
-        'bias': ' '.join(['Average',
-                          nicename.get(var, var), 'fraction bias'])
-    }
-    ylabel = {
-        'area': r'Area [$10^6$ km$^2$]',
-        'frac': r'Fraction [%]',
-        'bias': r'Bias [%]'
-    }
-
-    # Create pdf in case of pdf output
-    if outtype == 'pdf':
-        filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                                '_'.join(['metrics', var]) + '.' + outtype)
-        pdf = PdfPages(filepath)
+    # Set up plot
+    pdf, info = init_plot(cfg, var)
 
     # Loop over metrices
-    for metric in values.keys():
-        filepath = os.path.join(cfg[diag.names.PLOT_DIR],
-                                '_'.join([metric, var]) + '.' + outtype)
-        fig, axs = plt.subplots(nrows=1, ncols=1, sharex=False)
-        axs.set_title(plottitle[metric])
-        axs.set_ylabel(ylabel[metric])
-        nbar, ncat = np.array(values[metric]).shape
-        index = np.arange(0, (nbar + 1) * ncat, nbar + 1)
-        xticks = np.linspace((nbar + 1) / 2.0,
-                             (nbar + 1) * ncat - (nbar + 1) / 2.0, ncat) - 1.0
-        axs.set_xticklabels(regnam)
-        axs.set_xticks(xticks)
-        for irow, row in enumerate(values[metric]):
-            axs.bar(index + irow, row)
+    for metr in values.keys():
+        # Plot plot with bars
+        fig = plot_bars(info, metr, values[metr], regnam)
+        # Add legend and finish plot
+        finish_plot(fig, modnam[metr], info['pd'], '_'.join([metr, var]), pdf)
 
-        fig.subplots_adjust(bottom=0.20)
-        caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
-        for label in modnam[metric]:
-            caxe.plot([], [], lw=4, label=label)
-        caxe.legend(ncol=2, loc="lower center", fontsize='small')
-        caxe.set_axis_off()
-
-        if outtype == "pdf":
-            fig.savefig(pdf, dpi=80, format='pdf')
-            plt.close()
-        else:
-            fig.savefig(filepath)
-
-    if outtype == "pdf":
+    if pdf is not None:
         pdf.close()
 
 
