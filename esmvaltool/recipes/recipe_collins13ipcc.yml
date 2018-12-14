@@ -16,17 +16,10 @@ documentation:
     - crescendo
 
 preprocessors:
-  preprocessor_1:
-    regrid: false
-    mask_landsea: false
-    multi_model_statistics: false
-
   preproc_map:
     regrid:
       target_grid: 1x1
       scheme: linear
-    mask_landsea: false
-    multi_model_statistics: false
 
   preproc_map_land:
     mask_landsea:
@@ -36,7 +29,6 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics: false
 
   preproc_zonal_atm:
     regrid:
@@ -48,8 +40,6 @@ preprocessors:
     zonal_means:
       coordinate: longitude
       mean_type: mean
-    mask_landsea: false
-    multi_model_statistics: false
 
   preproc_zonal_ocean:
     regrid:
@@ -61,8 +51,6 @@ preprocessors:
     zonal_means:
       coordinate: longitude
       mean_type: mean
-    mask_landsea: false
-    multi_model_statistics: false
 
 diagnostics:
 
@@ -76,7 +64,6 @@ diagnostics:
       - atmos
     variables:
       tas:
-        preprocessor: preprocessor_1
         mip: Amon
         field: T2Ms
         project: CMIP5
@@ -122,7 +109,6 @@ diagnostics:
       - atmos
     variables:
       tas:
-        preprocessor: preprocessor_1
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
@@ -324,7 +310,7 @@ diagnostics:
       ch12_plot_ts_line_mean_spread_tas:
         <<: *ts_settings
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
-        ancestors: ['tas', 'ts_line_tas/ch12_ts_line_mean_spread_tas']
+        ancestors: ['tas', 'ch12_ts_line_mean_spread_tas']
 
   ts_line_rsut:
     description: Timeseries of relative change in TOA short wave radiation, multiple scenarios incl. spread
@@ -334,7 +320,6 @@ diagnostics:
       - atmos
     variables:
       rsut:
-        preprocessor: preprocessor_1
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
@@ -412,7 +397,7 @@ diagnostics:
       ch12_plot_ts_line_mean_spread_rsut:
         <<: *ts_settings_rsut
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
-        ancestors: ['rsut', 'ts_line_rsut/ch12_ts_line_mean_spread_rsut']
+        ancestors: ['rsut', 'ch12_ts_line_mean_spread_rsut']
 
   ts_line_rlut:
     description: Timeseries of relative change in TOA long wave radiation, multiple scenarios incl. spread
@@ -422,7 +407,6 @@ diagnostics:
       - atmos
     variables:
       rlut:
-        preprocessor: preprocessor_1
         mip: Amon
         field: T2Ms
         project: CMIP5
@@ -500,7 +484,7 @@ diagnostics:
       ch12_plot_ts_line_mean_spread_rlut:
         <<: *ts_settings_rlut
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
-        ancestors: ['rlut', 'ts_line_rlut/ch12_ts_line_mean_spread_rlut']
+        ancestors: ['rlut', 'ch12_ts_line_mean_spread_rlut']
 
   ts_line_rtmt:
     description: Timeseries of relative change in TOA net radiation, multiple scenarios incl. spread
@@ -510,7 +494,6 @@ diagnostics:
       - atmos
     variables:
       rtmt:
-        preprocessor: preprocessor_1
         mip: Amon
         field: T2Ms
         project: CMIP5
@@ -589,7 +572,7 @@ diagnostics:
       ch12_plot_ts_line_mean_spread_rtmt:
         <<: *ts_settings_rtmt
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
-        ancestors: ['rtmt', 'ts_line_rtmt/ch12_ts_line_mean_spread_rtmt']
+        ancestors: ['rtmt', 'ch12_ts_line_mean_spread_rtmt']
 
 ###  Mean temperature change in RCPs for multi model mean ###
   IAV_calc_tas:
@@ -675,7 +658,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_tas:
         <<: *tas_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['tas', 'tas_change_mmm/ch12_calc_map_diff_mmm_tas']
+        ancestors: ['tas', 'ch12_calc_map_diff_mmm_tas']
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -779,7 +762,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_pr:
         <<: *pr_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['pr', 'pr_change_mmm/ch12_calc_map_diff_mmm_pr']
+        ancestors: ['pr', 'ch12_calc_map_diff_mmm_pr']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -894,7 +877,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_rtmt:
         <<: *rtmt_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['rtmt', 'rtmt_change_mmm/ch12_calc_map_diff_mmm_rtmt']
+        ancestors: ['rtmt', 'ch12_calc_map_diff_mmm_rtmt']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -1009,7 +992,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_rlut:
         <<: *rlut_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['rlut', 'rlut_change_mmm/ch12_calc_map_diff_mmm_rlut']
+        ancestors: ['rlut', 'ch12_calc_map_diff_mmm_rlut']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -1124,7 +1107,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_rsut:
         <<: *rsut_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['rsut', 'rsut_change_mmm/ch12_calc_map_diff_mmm_rsut']
+        ancestors: ['rsut', 'ch12_calc_map_diff_mmm_rsut']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -1233,7 +1216,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_clt:
         <<: *clt_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['clt', 'clt_change_mmm/ch12_calc_map_diff_mmm_clt']
+        ancestors: ['clt', 'ch12_calc_map_diff_mmm_clt']
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson  
         #projection: Robinson
@@ -1342,7 +1325,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_psl:
         <<: *psl_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['psl', 'psl_change_mmm/ch12_calc_map_diff_mmm_psl']
+        ancestors: ['psl', 'ch12_calc_map_diff_mmm_psl']
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson  
         #projection: Robinson
@@ -1453,7 +1436,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_hurs:
         <<: *hurs_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['hurs', 'hurs_change_mmm/ch12_calc_map_diff_mmm_hurs']
+        ancestors: ['hurs', 'ch12_calc_map_diff_mmm_hurs']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -1577,7 +1560,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_sos:
         <<: *sos_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['sos', 'sos_change_mmm/ch12_calc_map_diff_mmm_sos']
+        ancestors: ['sos', 'ch12_calc_map_diff_mmm_sos']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -1687,7 +1670,7 @@ diagnostics:
       ch12_plot_zonal_diff_mmm_ta:
         <<: *ta_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
-        ancestors: ['ta', 'ta_change_mmm/ch12_calc_zonal_diff_mmm_ta']
+        ancestors: ['ta', 'ch12_calc_zonal_diff_mmm_ta']
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
         sig: True
@@ -1787,7 +1770,7 @@ diagnostics:
       ch12_plot_zonal_diff_mmm_ua:
         <<: *ua_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
-        ancestors: ['ua', 'ua_change_mmm/ch12_calc_zonal_diff_mmm_ua']
+        ancestors: ['ua', 'ch12_calc_zonal_diff_mmm_ua']
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
         sig: True
@@ -1878,7 +1861,7 @@ diagnostics:
       ch12_plot_zonal_diff_mmm_thetao:
         <<: *thetao_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
-        ancestors: ['thetao', 'thetao_change_mmm/ch12_calc_zonal_diff_mmm_thetao']
+        ancestors: ['thetao', 'ch12_calc_zonal_diff_mmm_thetao']
         title: "Annual mean ocean temperature change (2081-2100)"
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         diff_levs: [-0.5, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
@@ -1986,7 +1969,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_mrsos:
         <<: *mrsos_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['mrsos', 'mrsos_change_mmm/ch12_calc_map_diff_mmm_mrsos']
+        ancestors: ['mrsos', 'ch12_calc_map_diff_mmm_mrsos']
         # Optional attributes:
         # map projection, any valid ncl projection, default Robinson  
         projection: Robinson
@@ -2120,7 +2103,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_mrro:
         <<: *mrro_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['mrro', 'mrro_change_mmm/ch12_calc_map_diff_mmm_mrro']
+        ancestors: ['mrro', 'ch12_calc_map_diff_mmm_mrro']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -2254,7 +2237,7 @@ diagnostics:
       ch12_plot_map_diff_mmm_stipp_evspsbl:
         <<: *evspsbl_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['evspsbl', 'evspsbl_change_mmm/ch12_calc_map_diff_mmm_evspsbl']
+        ancestors: ['evspsbl', 'ch12_calc_map_diff_mmm_evspsbl']
         ## Optional attributes:
         # Map projection, any valid ncl projection, default Robinson
         #projection: Robinson
@@ -2353,7 +2336,7 @@ diagnostics:
       ch12_plot_map_diff_scaleT_tas:
         <<: *tas_scale_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['tas', 'tas_change_scaleT/ch12_calc_map_diff_scaleT_tas']
+        ancestors: ['tas', 'ch12_calc_map_diff_scaleT_tas']
         # Optional attributes:
         # map projection, any valid ncl projection  
         projection: Robinson
@@ -2431,7 +2414,7 @@ diagnostics:
 #       ch12_plot_map_diff_scaleT_pr:
 #         <<: *pr_scale_settings
 #         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-#         ancestors: ['pr', 'pr_change_scaleT/ch12_calc_map_diff_scaleT_pr']
+#         ancestors: ['pr', 'ch12_calc_map_diff_scaleT_pr']
 #         # Optional attributes:
 #         projection: Robinson   # map projection, any valid ncl projection
 #         sig: True # plot significance as stippling?
@@ -2450,7 +2433,6 @@ diagnostics:
       - land
     variables:
       snw:
-        preprocessor: preprocessor_1
         project: CMIP5
         mip: LImon
         field: T2Ms
@@ -2536,4 +2518,4 @@ diagnostics:
       ch12_plot_ts_line_snw_area_change:
         <<: *ts_snw_settings
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
-        ancestors: ['snw', 'snw_line/ch12_calc_ts_snw_area_change']
+        ancestors: ['snw', 'ch12_calc_ts_snw_area_change']

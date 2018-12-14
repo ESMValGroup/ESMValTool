@@ -42,7 +42,7 @@ begin
     var_avg = time_operations(var_zon, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
     var_std = interannual_variability(var_zon, start_year, end_year, \
-                                      diag_script_info@time_avg)
+                                      diag_script_info@time_avg, "None")
     delete(var_zon)
 
     ; Write output
