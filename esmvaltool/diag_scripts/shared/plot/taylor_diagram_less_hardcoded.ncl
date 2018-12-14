@@ -167,7 +167,8 @@ begin
       dist = rr + 1.0
       ; uncertainty circle has to be cropped
       ; need to find intersection between uncertainty circule and outer arc
-      if (dist .gt. max(rxy@tmXBValues)) then
+;      if (dist .gt. max(rxy@tmXBValues)) then
+      if (dist .gt. xyMax) then
         xtmp = (xyMax ^ 2 - rr ^ 2 + 1.0) / 2.0
         ytmp = sqrt(xyMax ^ 2 - xtmp ^ 2)
         xtmp = xtmp - 1.0
