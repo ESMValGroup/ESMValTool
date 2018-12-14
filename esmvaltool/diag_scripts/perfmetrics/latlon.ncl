@@ -4,11 +4,13 @@
 ; ESMVal project
 ; #############################################################################
 
+load "./diag_scripts/shared/plot/contour_maps.ncl"
+
 procedure perfmetrics_ptype_script()
 begin
 
   ; Set dataset indexes, with reference dataset first
-  modidx = ispan(0, dim_MOD - 1, 1)
+  modidx = ispan(0, nDatasets - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
   ; Loop over datasets
@@ -21,17 +23,17 @@ begin
     ; Set path for saving processed data
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + input_file_info@filename(imod)))
-    fname = fname + "_" + basename(diag_script) + "_latlon"
+    fname = basename(systemfunc("basename " + info_items[imod]@filename))
+    fname = fname + "_" + basename(DIAG_SCRIPT) + "_latlon"
     fname = fname + "_" + diag_script_info@time_avg
     procpath = fullpath + fname + "_Global.nc"
 
     ; Determine start/end year
-    start_year = get_start_year(imod)
-    end_year = get_end_year(imod)
+    start_year = info_items[imod]@start_year
+    end_year = info_items[imod]@end_year
 
     ; Read data
-    var = read_data(imod, var0, field_type0)
+    var = read_data(info_items[imod])
     dnames = getVarDimNames(var)
 
     ; Calculate time average and standard dev. w.r.t. interannual variablity
@@ -48,9 +50,9 @@ begin
     var_all(:, :, 0) = var_avg
     var_all(:, :, 1) = var_std
     var_all@var = var0
-    var_all@diag_script = (/diag_script/)
+    var_all@diag_script = (/DIAG_SCRIPT/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info@reference_dataset
+    var_all@ref_model = variable_info[0]@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -134,8 +136,8 @@ begin
     x2 = var_ref(:, :, 0)
     s1 = var_all(:, :, 1) ^ 2
     s2 = var_ref(:, :, 1) ^ 2
-    n1 = get_end_year(imod) - get_start_year(imod) + 1
-    n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
+    n1 = info_items[imod]@end_year - info_items[imod]@start_year + 1
+    n2 = info_items[ref_ind]@end_year - info_items[ref_ind]@start_year + 1
     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
     mask_var = 1. - prob
     copy_VarCoords(plot_var, mask_var)
