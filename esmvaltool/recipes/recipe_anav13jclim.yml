@@ -30,13 +30,6 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
 
-  oceanmask_and_regrid:
-    mask_landsea:
-      mask_out: land
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-
   regridding:
     regrid:
       target_grid: 2x2
@@ -208,7 +201,7 @@ diagnostics:
     variables:
       tos:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: oceanmask_and_regrid
+        preprocessor: regridding
         mip: Omon
         reference_dataset: HadISST
     additional_datasets: &tos_datasets
@@ -252,7 +245,7 @@ diagnostics:
     variables:
       tos:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: oceanmask_and_regrid
+        preprocessor: regridding
         mip: Omon
         reference_dataset: HadISST
     additional_datasets: *tos_datasets
@@ -540,7 +533,7 @@ diagnostics:
     variables:
       fgco2_grid:
         <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: oceanmask_and_regrid
+        preprocessor: regridding
         mip: Omon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
