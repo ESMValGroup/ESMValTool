@@ -213,15 +213,14 @@ diagnostics:
         reference_dataset: HadISST
     additional_datasets: &tos_datasets
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
-      # No lat/lon bounds
-      # - {dataset: bcc-csm1-1}
-      # - {dataset: bcc-csm1-1-m}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
       # No data
       # - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2G}
-      # Empty output file
+      # Empty output file (only missing values)
       # - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
