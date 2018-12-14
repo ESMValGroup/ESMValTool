@@ -120,8 +120,8 @@ def check_diagnostics(diagnostics):
     """Check diagnostics in recipe."""
     for name, diagnostic in diagnostics.items():
         if 'scripts' not in diagnostic:
-            raise RecipeError("Missing scripts section in diagnostic {}"
-                              .format(name))
+            raise RecipeError(
+                "Missing scripts section in diagnostic {}".format(name))
         variable_names = tuple(diagnostic.get('variables', {}))
         scripts = diagnostic.get('scripts')
         if scripts is None:
@@ -202,8 +202,8 @@ def check_variable(variable, required_keys):
 def check_data_availability(input_files, variable):
     """Check if the required input data is available."""
     if not input_files:
-        raise RecipeError("No input files found for variable {}"
-                          .format(variable))
+        raise RecipeError(
+            "No input files found for variable {}".format(variable))
 
     required_years = set(
         range(variable['start_year'], variable['end_year'] + 1))
@@ -259,8 +259,8 @@ def _update_cmor_table(table, mip, short_name):
 
     if var_info is None:
         raise RecipeError(
-            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'"
-            .format(table, short_name, mip))
+            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
+            format(table, short_name, mip))
 
 
 def _add_cmor_info(variable, override=False):
@@ -995,8 +995,8 @@ class Recipe(object):
                         ancestor_ids = fnmatch.filter(tasks, id_glob)
                         if not ancestor_ids:
                             raise RecipeError(
-                                "Could not find any ancestors matching {}"
-                                .format(id_glob))
+                                "Could not find any ancestors matching {}".
+                                format(id_glob))
                         logger.debug("Pattern %s matches %s", id_glob,
                                      ancestor_ids)
                         ancestors.extend(tasks[a] for a in ancestor_ids)
