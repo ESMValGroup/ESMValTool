@@ -129,9 +129,8 @@ class SeaIceDrift(object):
             dim_coords = data.coord_dims(coord)
             data.remove_aux_factory(factory)
             data.add_aux_coord(coord, dim_coords)
-            print(data)
             iris.save(data, "/home/Earth/jvegas/mask.nc")
-            pass
+            data.remove_coord('Inside polygon')
 
         dataset_info = self.datasets.get_dataset_info(filename)
         area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
@@ -970,7 +969,7 @@ class InsidePolygonFactory(AuxCoordFactory):
                 lon -= 360
             elif lon < -180:
                 lon += 360
-            point = transform(self._project, Point(lat, lon))
+            point = transform(self._project, Point(lon, lat))
             return 1. if self.polygon.contains(point) else np.nan
         vectorized = np.vectorize(in_polygon)
         return vectorized(lat, lon)
