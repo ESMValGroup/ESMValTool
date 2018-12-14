@@ -88,6 +88,7 @@ class snc(snw):
 
 class msftmyz(Fix):
     """Fixes for msftmyz."""
+
     def fix_data(self, cube):
         """
         Fix data
