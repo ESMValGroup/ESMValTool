@@ -117,7 +117,10 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
                        title=" ".join([self.__dataset_id__[indx] for
                                        indx in [0, 2, 1, 3]]) + \
                         " (" + self.__time_period__ + ")",
-                       ext_cmap="both")
+                       ext_cmap="both",
+                       y_log=True,
+                       contour_levels=[0,1,2],
+                       )
                 fig.savefig(filename)
                 plt.close(fig.number)
     

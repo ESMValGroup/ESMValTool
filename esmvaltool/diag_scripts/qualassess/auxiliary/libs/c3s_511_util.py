@@ -50,7 +50,7 @@ def __minmeanmax__(array):
     """
     calculate minimum, maximum and average of array
     """
-    return (np.min(array), np.mean(array), np.max(array))
+    return (np.nanmin(array), np.nanmean(array), np.nanmax(array))
 
 
 def __temporal_trend__(cube, pthres=1.01):

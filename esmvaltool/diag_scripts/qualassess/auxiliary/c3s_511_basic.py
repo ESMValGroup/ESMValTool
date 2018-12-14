@@ -18,7 +18,7 @@ import string
 import collections
 import csv
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 #from scipy import stats
@@ -63,7 +63,6 @@ class __Diagnostic_skeleton__(object):
         self.__cfg__ = None
         self.__logger__ = logging.getLogger(os.path.basename(__file__))
 
-        self.__project_info__ = None  # empty project info
         self.__plot_dir__ = '.' + os.sep  # default plot directory
         self.__work_dir__ = '.' + os.sep  # default work dir
 
@@ -71,13 +70,8 @@ class __Diagnostic_skeleton__(object):
         self.__output_type__ = 'png'  # default ouput file type
         self.__regions__ = {}  # default regions
 
-        self.__verbosity_level__ = 0  # default information during runtime
-        self.__debug_info__ = "No debug info"  # default debug information
-        self.__config__ = dict()  # default configuration input
-
         self.__basetags__ = []
         self.__infile__ = None
-        self.__inpath__ = None
 
         self.__time_period__ = None
         self.__dataset_id__ = None
@@ -571,7 +565,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 # self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1]
 # + ['li1']]))
         self.__logger__.info({y: self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
-        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3]))
+        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3])) 
+        self.__logger__.info("attributes")
+        self.__logger__.info(li2)
+        for l in li2:
+            self.__logger__.info(self.__dict__[l])
+            self.__logger__.info(type(self.__dict__[l]))
+            self.__logger__.info("-----------------------------------------------------------")
         #######################################################################
         pass
 

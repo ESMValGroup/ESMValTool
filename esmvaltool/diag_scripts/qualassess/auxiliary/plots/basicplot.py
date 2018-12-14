@@ -443,12 +443,8 @@ class Plot2D(object):
     def plot(
         self,
         summary_plot=False,
-        colorbar_ticks=None,
-        x_label=None,
-        y_label=None,
         title=None,
         ax=None,
-        fig=None,
         vminmax=None,
         color=None,
         color_type=None,
@@ -910,15 +906,11 @@ class Plot1D(object):
 
 ###############################################################################
 
-    def plot(self, summary_plot=False, colorbar_ticks=None, x_label=None,
-             y_label=None, title=None, ax=None, fig=None, vminmax=None):
+    def plot(self, title=None, ax=None):
         """
         Arguments
-            summary_plot   : Add summary line plot
-            colorbar_ticks : Ticks of the colorbar
-            x_label        : label of x-axis
-            y_label        : label of y-axis
             title          : title of the plot
+            ax             : ax to put the plot in
 
         Returns
             Matplotlib figure instance
