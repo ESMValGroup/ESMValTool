@@ -539,7 +539,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         return
 
     def run_diagnostic(self):
-#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_1991-2000']
+#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_2000']
         self.__do_overview__()
         self.__do_mean_var__()
         self.__do_trends__()
@@ -860,7 +860,49 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         return []
 
     def __do_mean_var__(self):
-
+        
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+        
+        map_area = iris.analysis.cartography.area_weights(next(self.sp_data.slices(["latitude","longitude"])))
+        map_area = map_area / np.mean(map_area)
+        self.__logger__.warning(map_area)
+        
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+                
+        latlon_list = []
+        
+        for latlon in self.sp_data.slices(["latitude","longitude"]):
+            latlon = latlon * map_area
+            latlon.remove_coord("month_number")
+            latlon.remove_coord("year")
+            latlon.remove_coord("day_of_month")
+            latlon.remove_coord("day_of_year")
+            latlon_list.append(latlon)
+            
+        cube_list = iris.cube.CubeList(latlon_list)
+        
+        old_data=self.sp_data.copy()
+        
+        self.sp_data = cube_list.merge_cube()
+        
+        self.__logger__.warning(old_data.__dict__.keys())
+        self.__logger__.warning(old_data.__dict__["_standard_name"])
+        self.__logger__.warning(old_data.__dict__["long_name"])
+        self.__logger__.warning(old_data.__dict__["_var_name"])
+        self.__logger__.warning(self.sp_data.__dict__.keys())
+        self.__logger__.warning(self.sp_data.__dict__["_standard_name"])
+        self.__logger__.warning(self.sp_data.__dict__["long_name"])
+        self.__logger__.warning(self.sp_data.__dict__["_var_name"])
+        
+        self.sp_data.standard_name = old_data.standard_name
+        self.sp_data.long_name = old_data.long_name
+        self.sp_data.var_name = old_data.var_name
+            
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+        
         this_function = "mean and variability"
 
         list_of_plots = []
@@ -948,7 +990,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 temp_series_1d = cube.collapsed(
                     long_left_over,
                     iris.analysis.MEAN,
-                    weights=iris.analysis.cartography.area_weights(cube))
+#                    weights=iris.analysis.cartography.area_weights(cube)
+                    )
 
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_" + "temp_series_1d" + "." + self.__output_type__
@@ -997,8 +1040,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                             d,
                             iris.analysis.__dict__["W" + m],
                             percent=percentiles,
-                            weights=iris.analysis.cartography.area_weights(
-                                    cube))
+#                            weights=iris.analysis.cartography.area_weights(
+#                                    cube)
+                            )
 
                         precentile_list = list()
 
@@ -1115,7 +1159,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     loc_data = cube.collapsed(
                         d,
                         iris.analysis.__dict__[m],
-                        weights=iris.analysis.cartography.area_weights(cube))
+#                        weights=iris.analysis.cartography.area_weights(cube)
+                        )
 
                     mean_std_cov.update({m: loc_data})
 
@@ -1127,7 +1172,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     mean_std_cov.update({m: utils.weighted_STD_DEV(
                         cube,
                         d,
-                        weights=iris.analysis.cartography.area_weights(cube))})
+#                        weights=iris.analysis.cartography.area_weights(cube)
+                        )})
 
                 elif m == "LOG_COV":
 
@@ -1294,11 +1340,17 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             short_left_over = np.array([sl[0:3] for sl in long_left_over])
             
             stat_dict[d].update({"slo":short_left_over,"llo":long_left_over})
-            weights=iris.analysis.cartography.area_weights(cube)
+#            weights=iris.analysis.cartography.area_weights(cube)
             
-            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg, iris.analysis.MEAN, weights=weights)})
+            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg,
+                     iris.analysis.MEAN,
+#                     weights=weights
+                     )})
             vminmaxmean=np.nanpercentile(np.concatenate([vminmaxmean,np.nanpercentile(stat_dict[d]["level_dim_mean"].data,[5,95])]),[0,100])
-            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube, long_agg, weights=weights)})
+            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube,
+                     long_agg,
+#                     weights=weights
+                     )})
             vminmaxstd=np.nanpercentile(np.concatenate([vminmaxstd,np.nanpercentile(stat_dict[d]["level_dim_std"].data,[5,95])]),[0,100])
             
         for d in reg_dimensions:
