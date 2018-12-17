@@ -1,13 +1,14 @@
-"""Fixes for MRI-ESM1 model"""
+"""Fixes for MRI-ESM1 model."""
 import numpy as np
 from ..fix import Fix
 
 
 class msftmyz(Fix):
     """Fixes for msftmyz."""
+
     def fix_data(self, cube):
         """
-        Fix data
+        Fix msftmyz data.
 
         Fixes mask
 
