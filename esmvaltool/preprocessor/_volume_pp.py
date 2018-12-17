@@ -6,8 +6,12 @@ selecting depth or height regions; constructing volumetric averages;
 """
 from copy import deepcopy
 
+import logging
+
 import iris
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def volume_slice(cube, z_min, z_max):
