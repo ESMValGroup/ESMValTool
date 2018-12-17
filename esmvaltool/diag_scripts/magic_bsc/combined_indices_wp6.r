@@ -87,10 +87,8 @@ if (length(params$input_files) >= 2) {
                             InsertDim(ncvar_get(data_nc, var0), 1, 1), along = 1) # nolint
     nc_close(data_nc)
   }
-} 
-
+}
 names(dim(data)) <- c("model", "lon", "lat", "time")
-
 region <- c(min(lon), max(lon), min(lat), max(lat))
 attributes(lon) <- NULL
 attributes(lat) <- NULL
