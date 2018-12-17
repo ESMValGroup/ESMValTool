@@ -93,7 +93,7 @@ preprocessors:
 
 diagnostics:
 
-  ta_sp100:
+  diag_ta_sp100:
     description: Calculate temperature trends and climatological means of ta.
     variables:
       ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
@@ -166,9 +166,9 @@ diagnostics:
         script: austral_jet/main.ncl
         average_ens: True
         styleset: CMIP5
+        season: ['ONDJ']
         e13fig10_yr_min: 1979
         e13fig10_yr_max: 2005
-        e13fig10_season: ['ONDJ']
         wdiag: ['T-SP_t', 'T-SP_c']
         wdiag_title: ['T-SP_t', 'T-SP_c']
         ref_dataset: ['ERA-Interim']
@@ -177,7 +177,7 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'ta_sp100']
 
-  ta_ng100:
+  diag_ta_ng100:
     description: Calculate temperature trends and climatological means of ta.
     variables:
       ta:
@@ -187,7 +187,7 @@ diagnostics:
     scripts:
       ta_ng100: &ta_ng100
         <<: *ta_sp100
-        e13fig10_season: ['yearly']
+        season: ['yearly']
         wdiag: ['T-NGlob_t', 'T-NGlob_c']
         wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
       select_for_mder:
@@ -195,7 +195,7 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'ta_ng100']
 
-  ta_trop250:
+  diag_ta_trop250:
     description: Calculate temperature trends and climatological means of ta.
     variables:
       ta:
@@ -205,7 +205,7 @@ diagnostics:
     scripts:
       ta_trop250: &ta_trop250
         <<: *ta_sp100
-        e13fig10_season: ['DJF']
+        season: ['DJF']
         wdiag: ['T-Trop_t', 'T-Trop_c']
         wdiag_title: ['T-Trop_t', 'T-Trop_c']
       select_for_mder:
@@ -214,7 +214,7 @@ diagnostics:
         ancestors: ['ta', 'ta_trop250']
 
   # FIXME: Models missing due to wrong time format
-  # tro3_sp50:
+  # diag_tro3_sp50:
   #   description: Calculate temperature trends and climatological means of tro3.
   #   variables:
   #     tro3:
@@ -271,7 +271,7 @@ diagnostics:
   #   scripts:
   #     tro3_sp50: &tro3_sp50
   #       <<: *ta_sp100
-  #       e13fig10_season: ['SOND']
+  #       season: ['SOND']
   #       wdiag: ['O3-SP_t', 'O3-SP_c']
   #       wdiag_title: ['O3-SP_t', 'O3-SP_c']
   #       ref_dataset: ['BDBP']
@@ -280,7 +280,7 @@ diagnostics:
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['tro3', 'tro3_sp50']
 
-  # tro3_ng50:
+  # diag_tro3_ng50:
   #   description: Calculate temperature trends and climatological means of tro3.
   #   variables:
   #     tro3:
@@ -290,7 +290,7 @@ diagnostics:
   #   scripts:
   #     tro3_ng50: &tro3_ng50
   #       <<: *tro3_sp50
-  #       e13fig10_season: ['yearly']
+  #       season: ['yearly']
   #       wdiag: ['O3-NGlob_t', 'O3-NGlob_c']
   #       wdiag_title: ['O3-NGlob_t', 'O3-NGlob_c']
   #     select_for_mder:
@@ -298,7 +298,7 @@ diagnostics:
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['tro3', 'tro3_ng50']
 
-  uajet_sh850:
+  diag_uajet_sh850:
     description: Calculate temperature trends and climatological means of uajet.
     variables:
       uajet: &cmip5_amon_t0m_historical_1979_2005
@@ -313,7 +313,7 @@ diagnostics:
     scripts:
       uajet_sh850: &uajet_sh850
         <<: *ta_sp100
-        e13fig10_season: ['DJF']
+        season: ['DJF']
         wdiag: ['U-Jet_t', 'U-Jet_c']
         wdiag_title: ['U-Jet_t', 'U-Jet_c']
       select_for_mder:
@@ -321,7 +321,7 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['uajet', 'uajet_sh850']
 
-  tpp_sh50:
+  diag_tpp_sh50:
     description: Calculate temperature trends and climatological means of tpp.
     variables:
       ta: &cmip5_amon_t3m_historical_1979_2005
@@ -335,7 +335,7 @@ diagnostics:
     scripts:
       tpp_sh50: &tpp_sh50
         <<: *ta_sp100
-        e13fig10_season: ['DJF']
+        season: ['DJF']
         wdiag: ['P-SH_t', 'P-SH_c']
         wdiag_title: ['P-SH_t', 'P-SH_c']
         derive_var: tpp
@@ -346,31 +346,30 @@ diagnostics:
         script: mder/select_for_mder.ncl
         ancestors: ['ta', 'tpp_sh50']
 
-  # FIXME: NCL scripts cannot process multiple varible at the moment (#531)
-  # mmstf_sh500:
-  #   description: Calculate temperature trends and climatological means of mmstf.
-  #   variables:
-  #     va:
-  #       <<: *cmip5_amon_t3m_historical_1979_2005
-  #     ps:
-  #       <<: *cmip5_amon_t3m_historical_1979_2005
-  #       field: T2Ms
-  #   additional_datasets: *ta_datasets
-  #   scripts:
-  #     mmstf_sh500: &mmstf_sh500
-  #       <<: *ta_sp100
-  #       e13fig10_season: ['DJF']
-  #       wdiag: ['H-SH_t', 'H-SH_c']
-  #       wdiag_title: ['H-SH_t', 'H-SH_c']
-  #       derive_var: mmstf
-  #       derive_lev: 50000
-  #       derive_latrange: [-80, -20]
-  #     select_for_mder:
-  #       <<: *mmstf_sh500
-  #       script: mder/select_for_mder.ncl
-  #       ancestors: ['va', 'ps', 'mmstf_sh500']
+  diag_mmstf_sh500:
+    description: Calculate temperature trends and climatological means of southern hemisphere Hadley cell boundary.
+    variables:
+      va:
+        <<: *cmip5_amon_t3m_historical_1979_2005
+      ps:
+        <<: *cmip5_amon_t3m_historical_1979_2005
+        field: T2Ms
+    additional_datasets: *ta_datasets
+    scripts:
+      mmstf_sh500: &mmstf_sh500
+        <<: *ta_sp100
+        season: ['DJF']
+        wdiag: ['H-SH_t', 'H-SH_c']
+        wdiag_title: ['H-SH_t', 'H-SH_c']
+        derive_var: mmstf
+        derive_lev: 50000
+        derive_latrange: [-80, -20]
+      select_for_mder:
+        <<: *mmstf_sh500
+        script: mder/select_for_mder.ncl
+        ancestors: ['va', 'ps', 'mmstf_sh500']
 
-  asr_sh:
+  diag_asr_sh:
     description: Calculate temperature trends and climatological means of asr.
     variables:
       asr:
@@ -454,7 +453,7 @@ diagnostics:
 
   # FIXME: OBS data missing (ESMValTool does not support irregular grids at the
   # moment)
-  # sic_sp:
+  # diag_sic_sp:
   #   description: Calculate temperature trends and climatological means of sic.
   #   variables:
   #     sic:
@@ -543,7 +542,7 @@ diagnostics:
   #       script: mder/select_for_mder.ncl
   #       ancestors: ['sic', 'sic_sp']
 
-  mder:
+  diag_mder:
     description: Performs Multiple Diagnostic Ensemble Regression (MDER).
     variables:
       uajet:

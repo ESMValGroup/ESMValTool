@@ -16,16 +16,14 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"
-
 
 ; #############################################################################
 undef("diag_file_name")
-function diag_file_name(dataset_idx[1]: integer, \
+function diag_file_name(filename[1]: string, \
                         opt[1]: logical)
 ;
 ; Arguments:
-;     dataset_idx: index of the current model.
+;     filename: Name of the current file.
 ;     opt: options with the optional attributes
 ;          opt@wdiag (diagnostic name).
 ;          opt@period_avg (year-, month- or season name).
@@ -51,8 +49,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ; File name
-  outname = basename(systemfunc("basename " + \
-                                input_file_info@filename(dataset_idx)))
+  outname = basename(systemfunc("basename " + filename))
 
   ; Add extra info to the file
   if (isatt(opt, "wdiag")) then

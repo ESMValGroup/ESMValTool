@@ -28,6 +28,7 @@
 ;    function filter_attrs
 ;    procedure write_ignore_warnings
 ;    function get_ref_dataset_idx
+;    function get_average
 ;
 ; #############################################################################
 
@@ -492,7 +493,7 @@ function ncdf_write(data,
 ; Modification history
 ;    20131107-A_gott_kl: written.
 ;
-local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
+local funcname, scriptname, data, outfile, outfile_in, ncdf, varname, i
 begin
 
   funcname = "ncdf_write"
@@ -1458,5 +1459,78 @@ begin
 
   leave_msg(scriptname, funcname)
   return(idx_ref)
+
+end
+
+; #############################################################################
+undef("get_average")
+function get_average(items: list)
+
+;
+; Arguments
+;    items: list of input_file_info metadata
+;
+; Description
+;    Calculates average of all datasets given by items.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181217-A-schl_ma: written
+;
+local funcname, scriptname, dim_dat, dim_array, rank, data_array, data
+begin
+
+  funcname = "get_average"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Check input list
+  dim_dat = ListCount(items)
+  if (dim_dat .lt. 1) then
+    error_msg("f", scriptname, funcname, "expected at least one dataset, " + \
+              "got empty list")
+  end if
+
+  ; Collect data
+  do idat = 0, dim_dat - 1
+    data = read_data(items[idat])
+
+    ; Create array at first iteration
+    if (.not. isvar("data_array")) then
+      dim_array = dimsizes(data)
+      rank = dimsizes(dim_array)
+      data_array = new(array_append_record(dim_dat, dim_array, 0), \
+                       typeof(data))
+    end if
+    if (rank .eq. 4) then
+      copy_VarCoords(data, data_array(0, :, :, :, :))
+      data_array(idat, :, :, :, :) = (/data/)
+    else if (rank .eq. 3) then
+      copy_VarCoords(data, data_array(0, :, :, :))
+      data_array(idat, :, :, :) = (/data/)
+    else if (rank .eq. 2) then
+      copy_VarCoords(data, data_array(0, :, :))
+      data_array(idat, :, :) = (/data/)
+    else if (rank .eq. 1) then
+      copy_VarCoords(data, data_array(0, :))
+      data_array(idat, :) = (/data/)
+    else
+      error_msg("f", scriptname, funcname, "unsupported rank " + rank)
+    end if
+    end if
+    end if
+    end if
+  end do
+
+  ; Average
+  data_array!0 = "dataset"
+  data_array := dim_avg_n_Wrap(data_array, 0)
+  log_info("Averaged over " + dim_dat + " dataset(s)")
+
+  leave_msg(scriptname, funcname)
+  return(data_array)
 
 end

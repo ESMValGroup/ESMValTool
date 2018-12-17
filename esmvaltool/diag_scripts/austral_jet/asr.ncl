@@ -40,125 +40,100 @@ load "./diag_scripts/shared/mder.ncl"
 
 begin
 
-  ; ---------------------------------------------------------------------------
-  ; Read recipe and config data
-  ; ---------------------------------------------------------------------------
-
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  VAR0 = variable_info[0]
+  var0 = VAR0@short_name
+  DIM_VAR = ListCount(variable_info)
+  if (DIM_VAR .gt. 1) then
+    error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
+              "variable, processing " + VAR0@short_name)
+  end if
+
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, var0)
+  DATASETS = metadata_att_as_array(INFO0, "dataset")
+
+  ; Ensemble averaging (if desired)
+  avgens = False
+  if (isatt(diag_script_info, "average_ens")) then
+    avgens = diag_script_info@average_ens
+  end if
+  if (avgens) then
+    DATASETS := get_unique_values(DATASETS)
+  else
+    DATASETS := unique_labels_min(INFO0, (/"dataset", "ensemble"/))
+  end if
+  DIM_DAT = dimsizes(DATASETS)
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
 end
 
 begin
 
   ; Plot file type
-  plot_dir = config_user_info@plot_dir
   file_type = config_user_info@output_file_type
   if (ismissing(file_type)) then
     file_type = "ps"
   end if
 
-  ; Season
-  if (isatt(diag_script_info, "season")) then
-    season = diag_script_info@season
-  else
-    if (isStrSubset(field_type0, "z") .eq. False) then
-      error_msg("f", diag_script, "", "plot requires attribute " + \
-                "'season' in recipe")
-    end if
-  end if
+  ; Required attributes
+  req_atts = (/"season"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+  season = diag_script_info@season
 
   ; Get datasets (consider ensemble averaging if desired)
-  avgens = False
-  if (isatt(diag_script_info, "average_ens")) then
-    avgens = diag_script_info@average_ens
-  end if
-  if (avgens) then
-    idx_datasets = UNIQ(input_file_info@dataset)
-  else
-    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
-  end if
-
-  ; Array sizes
-  DIM_DAT = dimsizes(idx_datasets)
 
   ; Output arrays
   val_grad = new((/2, DIM_DAT/), "float")
   val_grad!0 = "case"
   val_grad&case = (/"val", "stddev"/)
   val_grad!1 = "dataset"
-  val_grad&dataset = input_file_info@dataset(idx_datasets)
+  val_grad&dataset = DATASETS
 
   ; Get lat range from preprocessed data
-  lat = read_data(0, "lat", field_type0)
+  f = addfile(INFO0[0]@filename, "r")
+  lat = f->lat
   if (dimsizes(lat) .gt. 1) then
     lat_range = (/min(lat), max(lat)/)
   else
-    lat_range = read_data(0, "lat_bnds", field_type0)
+    lat_range = f->lat_bnds
   end if
   log_info("Retrieved latitude range " + lat_range(0) + " to " + \
            lat_range(1) + " from preprocessed data")
+  delete(f)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
   ; ---------------------------------------------------------------------------
 
   ; Iterate over datasets
-  do i = 0, DIM_DAT-1
-    idat = idx_datasets(i)
-    log_info(input_file_info@dataset(idat))
-
-    ; Read data
-    A0 = read_data(idat, var0, field_type0)
+  do idat = 0, DIM_DAT-1
+    log_info(DATASETS(idat))
 
     ; Average over ensemble members if desired
     if (avgens) then
-      ens = ind(input_file_info@dataset(idat) .eq. input_file_info@dataset)
-      rank = dimsizes(dimsizes(A0))
-
-      ; Check if there is more than one ensemble member
-      if (dimsizes(ens) .gt. 1) then
-        dims = getVarDimNames(A0)
-        if (rank .eq. 3) then
-          tmpA0 = new((/dimsizes(ens), dimsizes(A0&$dims(0)$), \
-                      dimsizes(A0&$dims(1)$), dimsizes(A0&$dims(2)$)/), \
-                      typeof(A0))
-          copy_VarCoords(A0, tmpA0(0, :, :, :))
-          tmpA0(0, :, :, :) = (/A0/)
-        else
-          error_msg("f", diag_script, "", "unsupported rank (" + rank + \
-                    ") of variable " + var0)
-        end if
-        delete(A0)
-
-        ; Average over ensemble members
-        tmpA0!0 = "ensemble_members"
-        do iens = 1, dimsizes(ens) - 1
-          tmp_data = read_data(idat + iens, var0, field_type0)
-            if (rank .eq. 3) then
-              tmpA0(iens, :, :, :) = (/tmp_data/)
-            end if
-          delete(tmp_data)
-        end do
-        A0 = dim_avg_n_Wrap(tmpA0, 0)
-        delete(tmpA0)
-      end if
-      delete(ens)
+      atts = True
+      atts@dataset = DATASETS(idat)
+      info := select_metadata_by_atts(INFO0, atts)
+    else
+      info = NewList("lifo")
+      ListAppend(info, INFO0[idat])
     end if
+
+    ; Get data
+    A0 = get_average(info)
+    info := info[0]
 
     ; -------------------------------------------------------------------------
     ; Process temporal data
     ; -------------------------------------------------------------------------
 
-    dummy0 = time_operations(A0, \
-                             toint(input_file_info@start_year(idat)), \
-                             toint(input_file_info@end_year(idat)), \
+    dummy0 = time_operations(A0, info@start_year, info@end_year, \
                              "average", season, True)
 
     ; -------------------------------------------------------------------------
@@ -175,12 +150,11 @@ begin
       delete([/dummy2, dummy3/])
     end do
 
-    val_grad(0, i) = tofloat(avg(grad))
-    val_grad(1, i) = tofloat(stddev(grad))
+    val_grad(0, idat) = tofloat(avg(grad))
+    val_grad(1, idat) = tofloat(stddev(grad))
 
     delete([/dummy0, grad, A0/])
   end do
-  dataset_names = input_file_info@dataset(idx_datasets)
 
   ; ---------------------------------------------------------------------------
   ; Plots
@@ -188,10 +162,9 @@ begin
 
   ; Basic plotting settings
   if (config_user_info@write_plots) then
-    input_file_info@dataset := dataset_names   ; Used by unique_labels_min
-    colors = project_style(diag_script_info, "colors")
-    thicks = project_style(diag_script_info, "thicks")
-    lg_labels = unique_labels_min((/"dataset", "ensemble"/))
+    colors = project_style(INFO0, diag_script_info, "colors")
+    thicks = project_style(INFO0, diag_script_info, "thicks")
+    lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
     plot_file = config_user_info@plot_dir + var0 + "_" + season
 
     ; Create directory
@@ -286,7 +259,7 @@ begin
     ; end do
     ; id = diag_script + "_" + var0
     ; contrib_authors = (/"A_zech_sa", "A_schl_ma"/)
-    ; alldatasetnames = dataset_names
+    ; alldatasetnames = DATASETS
     ; alltags = array_append_record(tags,
     ;                               (/"DM_sh", "ST_mean", "ST_clim", \
     ;                               "ST_range", "PT_errorbar", "PT_scatter", \
@@ -309,26 +282,26 @@ begin
     log_info(opt@wdiag)
 
     ; Iterate over all datasets
-    do i = 0, DIM_DAT - 1
-      idat = idx_datasets(i)
-      log_debug("Processing " + dataset_names(i))
-      new_path = work_dir + diag_file_name(idat, opt)
+    do idat = 0, DIM_DAT - 1
+      log_debug("Processing " + DATASETS(idat))
+      info = INFO0[idat]
+      new_path = work_dir + diag_file_name(info@filename, opt)
 
       ; Write files
-      val = val_grad(case|:, dataset|i)
+      val = val_grad(case|:, dataset|idat)
       val@var = var0
       val@units = "(index)"
-      val@diag_script = (/diag_script/)
+      val@diag_script = (/DIAG_SCRIPT/)
       copy_VarAtts(diag_script_info, val)
-      val@dataset = dataset_names(i)
-      val@start_year = input_file_info@start_year(idat)
-      val@end_year = input_file_info@end_year(idat)
+      val@dataset = DATASETS(idat)
+      val@start_year = info@start_year
+      val@end_year = info@end_year
       val@ncdf = new_path
       ncdf_outfile = ncdf_write(val, new_path)
       delete([/val, new_path/])
     end do
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

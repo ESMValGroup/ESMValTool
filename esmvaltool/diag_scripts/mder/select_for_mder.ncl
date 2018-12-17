@@ -35,50 +35,56 @@ load "./diag_scripts/shared/mder.ncl"
 
 begin
 
+  enter_msg(DIAG_SCRIPT, "")
+
   if (.not. isdefined("input_file_info")) then
-    error_msg("f", diag_script, "", "no input_file_info available, " + \
+    error_msg("f", DIAG_SCRIPT, "", "no input_file_info available, " + \
               "variable has to be selected as ancestor in the recipe")
   end if
 
-  ; Get correct variable and field type
+  ; Variable
+  VAR0 = variable_info[0]
+  DIM_VAR = ListCount(variable_info)
+  if (DIM_VAR .gt. 2) then
+    error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports at most two " + \
+              "variables, got " + DIM_VAR)
+  end if
+
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  DATASETS = metadata_att_as_array(INFO0, "dataset")
+
+  ; Get correct variable
   if (isatt(diag_script_info, "derive_var")) then
     var0 = diag_script_info@derive_var
   else
-    var0 = variables(0)
+    var0 = VAR0@short_name
   end if
-  field_type0 = field_types(0)
 
-  enter_msg(diag_script, "")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + var0 + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; Get datasets (consider ensemble averaging if desired)
+  ; Ensemble averaging (if desired)
   avgens = False
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(input_file_info@dataset)
-    dataset_names = input_file_info@dataset(idx_datasets)
+    DATASETS := get_unique_values(DATASETS)
   else
-    idx_datasets = ispan(0, dimsizes(input_file_info@dataset) - 1, 1)
-    dataset_names = unique_labels_min((/"dataset", "ensemble"/))
+    DATASETS := unique_labels_min(INFO0, (/"dataset", "ensemble"/))
   end if
-
-  ; Array sizes
-  DIM_DAT = dimsizes(idx_datasets)
-  DIM_VAR = dimsizes(variables)
-  DIM_DIAG = dimsizes(diag_script_info@wdiag)
+  DIM_DAT = dimsizes(DATASETS)
 
 end
 
 begin
 
-  ; Check field type
-  if (.not. any(field_type0 .eq. (/"T3M", "T2Ms", "T2Mz", "T0D", "T0M"/))) then
-    error_msg("f", diag_script, "", "cannot use field " + field_type0)
-  end if
+  ; Required attributes
+  req_atts = (/"wdiag"/)
+  exit_if_missing_atts(diag_script_info, req_atts)
+  DIM_DIAG = dimsizes(diag_script_info@wdiag)
 
   ; Get reference dataset(s)
   ref_dataset = diag_script_info@ref_dataset
@@ -100,20 +106,26 @@ begin
     ncdf_file = work_dir + var0_new + ".nc"
 
     ; Read data
-    do i = 0, DIM_DAT - 1
-      idat = idx_datasets(i)
+    do idat = 0, DIM_DAT - 1
+      log_info(DATASETS(idat))
+      info = INFO0[idat]
 
       ; Get input directory (using ancestor diagnostic)
-      input_files = diag_script_info@input_files
-      input_dir = input_files(ind(input_files .ne. \
-                                  str_match(input_files, "_info.ncl")))
+      input_files := diag_script_info@input_files
+      var_files = str_match(input_files, "_info.ncl")
+      do ivar = 0, dimsizes(var_files) - 1
+        input_files := input_files(ind(input_files .ne. var_files(ivar)))
+      end do
+      input_dir = input_files
       if (dimsizes(input_dir) .gt. 1) then
-        error_msg("f", diag_script, "", "multiple input directories " + \
+        error_msg("f", DIAG_SCRIPT, "", "multiple input directories " + \
                   "(ancestors in recipe) given, only one supported")
       end if
 
       ; Check if dataset is available
-      new_path = input_dir + "/" + diag_file_name(idat, opt)
+      new_path = input_dir + "/" + diag_file_name(info@filename, opt)
+      print(input_dir)
+      print(info@filename)
       if (fileexists(new_path)) then
         log_info("Reading " + new_path)
         data_temp = ncdf_read(new_path, var0)
@@ -123,21 +135,21 @@ begin
           dim_data = array_append_record((/DIM_DAT/), dimsizes(data_temp), 0)
           data = new(dim_data, float)
           data!0 = "dataset"
-          data&dataset = dataset_names
+          data&dataset = DATASETS
         end if
         rank = dimsizes(dim_data)
 
         ; Add data
         if (rank .eq. 2) then
-          data(i, :) = data_temp
+          data(idat, :) = data_temp
         else if (rank .eq. 3) then
-          data(i, :, :) = data_temp
+          data(idat, :, :) = data_temp
         else if (rank .eq. 4) then
-          data(i, :, :, :) = data_temp
+          data(idat, :, :, :) = data_temp
         else if (rank .eq. 5) then
-          data(i, :, :, :, :) = data_temp
+          data(idat, :, :, :, :) = data_temp
         else
-          error_msg("f", diag_script, "", "rank " + rank + \
+          error_msg("f", DIAG_SCRIPT, "", "rank " + rank + \
                     " data not supported")
         end if
         end if
@@ -147,8 +159,7 @@ begin
 
       ; Skip dataset if no data is available
       else
-        log_info("No data available for dataset: " + \
-                 input_file_info@dataset(idat))
+        log_info("No data available for dataset: " + DATASETS(idat))
         log_info("Skipping")
       end if
     end do
@@ -159,7 +170,7 @@ begin
     val!1 = "datasets"
     val!2 = "stat"
     val&diagnostics = var0_new
-    val&datasets = dataset_names
+    val&datasets = DATASETS
     val&stat = (/"mean", "stddev"/)
     val@ncdf_file = ncdf_file
 
@@ -186,7 +197,7 @@ begin
         var = data(idat, :, :, :, 0)
         var_std = data(idat, :, :, :, 1)
       else
-        error_msg("f", diag_script, "", "rank " + rank + " data not supported")
+        error_msg("f", DIAG_SCRIPT, "", "rank " + rank + " data not supported")
       end if
       end if
       end if
@@ -200,7 +211,7 @@ begin
     ; Attach attributes to the results
     val@title = "selected diagnostic"
     val@long_name = "Diagnostic for Multiple Diagnostic Ensemble Regression"
-    val@diag_script = (/diag_script/)
+    val@diag_script = (/DIAG_SCRIPT/)
     val@var = "diag"
 
     ; Write NetCDF output
@@ -208,6 +219,6 @@ begin
     delete(val)
   end do
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end
