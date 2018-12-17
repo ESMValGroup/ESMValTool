@@ -142,7 +142,7 @@ long_name:        ocean basin
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
-out_name:         region
+out_name:         basin
 type:             character
 requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates
 must_have_bounds: no
