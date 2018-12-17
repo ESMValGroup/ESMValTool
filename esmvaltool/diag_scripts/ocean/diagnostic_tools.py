@@ -14,6 +14,7 @@ import logging
 import os
 import sys
 
+import numpy as np
 import cftime
 import matplotlib.pyplot as plt
 import yaml
@@ -574,3 +575,74 @@ def make_cube_layer_dict(cube):
             layer = layer.replace('_', ' ').title()
             cubes[layer] = cube[tuple(slices)]
     return cubes
+
+
+def get_cube_range(cubes):
+    """
+    Determinue the minimum and maximum values of a list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the overall minumum and maximum values of the
+        list of cubes.
+
+    """
+    mins = []
+    maxs = []
+    for cube in cubes:
+        mins.append(cube.data.min())
+        maxs.append(cube.data.max())
+    return [np.min(mins), np.max(maxs), ]
+
+
+def get_cube_range_diff(cubes):
+    """
+    Determinue the largest deviation from zero in an list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the maximum deviation from zero and its opposite.
+    """
+    ranges = []
+    for cube in cubes:
+        ranges.append(np.abs(cube.data.min()))
+        ranges.append(np.abs(cube.data.max()))
+    return [-1. * np.max(ranges), np.max(ranges)]
+
+
+def get_array_range(arrays):
+    """
+    Determinue the minimum and maximum values of a list of arrays..
+
+    Parameters
+    ----------
+    arrays: list of numpy.array
+        A list of numpy.array.
+
+    Returns
+    ----------
+    list:
+        A list of two values, the overall minumum and maximum values of the
+        list of cubes.
+
+    """
+
+    mins = []
+    maxs = []
+    for arr in arrays:
+        mins.append(arr.min())
+        maxs.append(arr.max())
+    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
+    return [np.min(mins), np.max(maxs), ]
