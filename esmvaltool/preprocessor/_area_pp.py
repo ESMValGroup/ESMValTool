@@ -193,6 +193,7 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
                             weights=grid_areas)
     return result
 
+
 def extract_named_regions(cube, regions):
     """
     Extract a specific named region.

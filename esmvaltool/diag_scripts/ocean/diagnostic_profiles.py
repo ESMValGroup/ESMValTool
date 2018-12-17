@@ -90,9 +90,6 @@ def determine_profiles_str(cube):
             return str(value) + ' E'
     return ''
 
-def get_decade(coord, value):
-    date = coord.units.num2date(value)
-    return date.year - date.year % 10
 
 def make_profiles_plots(
         cfg,
@@ -130,17 +127,13 @@ def make_profiles_plots(
     if np.max(raw_times) - np.min(raw_times) < 20:
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
     else:
-        iris.coord_categorisation.add_categorised_coord(cube, 'decade', 'time',
-                                                        get_decade)
-        cube = cube.aggregated_by('decade', iris.analysis.MEAN)
-        print(cube)
+        cube = diagtools.decadal_average(cube)
 
     times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
     # Is this data is a multi-model dataset?
     multi_model = metadata['dataset'].find('MultiModel') > -1
-
 
     cmap = plt.cm.get_cmap('jet')
 

@@ -260,6 +260,34 @@ def guess_calendar_datetime(cube):
     return datetime
 
 
+def get_decade(coord, value):
+    """
+    Determine the decade.
+
+    Called by iris.coord_categorisation.add_categorised_coord.
+    """
+    date = coord.units.num2date(value)
+    return date.year - date.year % 10
+
+
+def decadal_average(cube):
+    """
+    Calculate the decadal_average.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        The input cube
+
+    Returns
+    -------
+    iris.cube
+    """
+    iris.coord_categorisation.add_categorised_coord(cube, 'decade', 'time',
+                                                    get_decade)
+    return cube.aggregated_by('decade', iris.analysis.MEAN)
+
+
 def load_thresholds(cfg, metadata):
     """
     Load the thresholds for contour plots from the config files.
