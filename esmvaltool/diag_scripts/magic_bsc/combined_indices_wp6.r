@@ -72,14 +72,12 @@ start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
 time <- as.Date(time, origin = start_date, calendar = calendar)
 projection <- "NULL"
 nc_close(data_nc)
-
 if (length(params$input_files) >= 2) {
   for (i in 2 : length(params$input_files)) {
     input_files_per_var <- yaml::read_yaml(params$input_files[i])
     var_names <- names(input_files_per_var)
     model_names <- lapply(input_files_per_var, function(x) x$dataset)
     model_names <- unique(unlist(unname(model_names)))
-    
     var0 <- lapply(input_files_per_var, function(x) x$short_name)
     fullpath_filenames <- names(var0)
     var0 <- unname(var0)[1]
@@ -100,64 +98,6 @@ dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
 time_dim <- which(names(dim(data)) == "time")
 timestamp <- ""
-
-# nolint start
-# ------------------------------
-#jpeg(paste0(plot_dir, "/plot1.jpg"))
-#PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
-#dev.off()
-# ------------------------------
-# nolint end
-# Provisional solution to error in dimension order:
-
-# nolint start
-#  if ((end_projection-start_projection + 1) * 12 == length(time)) {
-#     time <- seq(
-#       as.Date(
-#         paste(start_projection, "01", "01", sep = "-"),
-#         format = "%Y-%m-%d"
-#       ),
-#       as.Date(
-#         paste(end_projection, "12", "01", sep = "-"),
-#         format = "%Y-%m-%d"
-#       ),
-#       "day"
-#     )
-#  }
-# nolint end
-
-#data <- as.vector(data)
-#dim(data) <- c(
-#  model = 1,
-#  var = 1,
-#  lon = length(lon),
-#  lat = length(lat),
-#  time = length(time)
-#)
-#data <- aperm(data, c(1, 2, 5, 3, 4))
-#attr(data, "Variables")$dat1$time <- time
-
-# nolint start
-# ------------------------------
-#jpeg(paste0(plot_dir, "/plot2.jpg"))
-#PlotEquiMap(data[1, 1, 1, , ], lon = lon, lat = lat, filled = FALSE)
-#dev.off()
-# nolint end
-
-#if (is.null(moninf)) {
-#  time <- attributes(data)$Variables$dat1$time
-#} else {
-#  day <- "01"
-#  month <- moninf
-#  if (length(moninf) == 1) {
-#    month <- paste0(0, month)
-#  }
-#  month <- paste0("-", month, "-")
-#  time <- start_year : end_year
-#  time <- as.POSIXct(paste0(time, month, day), tz = "CET")
-#  time <- julian(time, origin = as.POSIXct("1970-01-01"))
-#}
-
 attributes(time) <- NULL
 dim(time) <- c(time = length(time))
 metadata <- list(time = list(
@@ -168,8 +108,6 @@ metadata <- list(time = list(
   dim = list(list(name = "time", unlim = FALSE))
 ))
 attr(time, "variables") <- metadata
-
-
 if (!is.null(region)) {
   dim_names <- names(dim(data))
   londim <- which(names(dim(data)) == "lon")
@@ -296,8 +234,8 @@ if (!is.null(region)) {
   file <- nc_create(
     paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
-      "_", timestamp, "_", model_names_filename, "_", start_year, "_", end_year,
-      "_", ".nc"),
+      "_", timestamp, "_", model_names_filename, "_", start_year,
+      "_", end_year, "_", ".nc"),
     list(defdata)
   )
   ncvar_put(file, defdata, data)
@@ -347,8 +285,8 @@ if (!is.null(region)) {
   file <- nc_create(
     paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
-      "_", timestamp, "_", model_names_filename, "_", start_year, "_", end_year,
-      "_", ".nc"),
+      "_", timestamp, "_", model_names_filename, "_", start_year, "_",
+      end_year, "_", ".nc"),
     list(defdata)
   )
   ncvar_put(file, defdata, data)
