@@ -22,27 +22,26 @@
 load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/latlon.ncl"
+
 load "./diag_scripts/shared/statistics.ncl"
+
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/style.ncl"
+
 begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
-
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", \
@@ -70,11 +69,11 @@ begin
   if(isvar("MyParam")) then
     delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_debug(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
   ; ###########################################
@@ -82,25 +81,26 @@ begin
   ; ###########################################
   ; get data from first dataset for historical period
   imod = 0  ; NCL array indices start from zero
-  log_debug("processing " + dataset_info@dataset(imod) + "_" \
-            + dataset_info@exp(imod) + "_" + dataset_info@ensemble(imod))
+  log_debug("processing " + info_items[imod]@dataset + "_" \
+            + info_items[imod]@exp + "_" \
+            + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(imod, var0, field_type0)
+  A0 = read_data(info_items[imod])
 
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   idx = ind(dims .eq. "lon")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
   end if
 
   ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
@@ -120,8 +120,11 @@ begin
   end if
 
   ; How many historical model runs?
-  ind_hist = ind(dataset_info@exp .eq. "historical")
-  dim_MOD_hist = dimsizes(dataset_info@dataset(ind_hist))
+  attsh = True
+  attsh@exp = "historical"
+  item_hist = select_metadata_by_atts(info_items, attsh)
+  dim_MOD_hist = ListCount(item_hist)
+
   ref_data2 = new((/dim_MOD_hist/), float, data1_glob@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
                   data1_glob@_FillValue)
@@ -134,9 +137,12 @@ begin
   nperiods = dimsizes(syears)
   nyears = toint(eyears(nperiods - 1)) - toint(syears(0)) + 1
   nyearsp1 = toint(eyears(nperiods - 1)) - toint(eyears(0))
+
   ; How many rcp2.6 model runs?
-  ind_26 = ind(dataset_info@exp .eq. diag_script_info@scenarios(0))
-  dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
+  atts1 = True
+  atts1@exp = diag_script_info@scenarios(0)
+  item_rcp26 = select_metadata_by_atts(info_items, atts1)
+  dim_MOD_26 = ListCount(item_rcp26)
   ; indicate array for scenarios
   data26_rel = new((/dim_MOD_26, nyearsp1/), float, \
                    data1_glob@_FillValue)
@@ -144,35 +150,45 @@ begin
 
   if (dim_scen .gt. 1) then
     ; How many rcp4.5 model runs?
-    ind_45 = ind(dataset_info@exp .eq. diag_script_info@scenarios(1))
-    dim_MOD_45 = dimsizes(dataset_info@dataset(ind_45))
+    atts2 = True
+    atts2@exp = diag_script_info@scenarios(1)
+    item_rcp45 = select_metadata_by_atts(info_items, atts2)
+    dim_MOD_45 = ListCount(item_rcp45)
     data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
                      data1_glob@_FillValue)
     i45 = 0
   end if
   if (dim_scen .gt. 2) then
     ; How many rcp6.0 model runs?
-    ind_60 = ind(dataset_info@exp .eq. diag_script_info@scenarios(2))
-    dim_MOD_60 = dimsizes(dataset_info@dataset(ind_60))
+    atts3 = True
+    atts3@exp = diag_script_info@scenarios(2)
+    item_rcp60 = select_metadata_by_atts(info_items, atts3)
+    dim_MOD_60 = ListCount(item_rcp60)
     data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
                      data1_glob@_FillValue)
     i60 = 0
   end if
   if (dim_scen .gt. 3) then
     ; How many rcp8.5 model runs?
-    ind_85 = ind(dataset_info@exp .eq. diag_script_info@scenarios(3))
-    dim_MOD_85 = dimsizes(dataset_info@dataset(ind_85))
+    atts4 = True
+    atts4@exp = diag_script_info@scenarios(3)
+    item_rcp85 = select_metadata_by_atts(info_items, atts4)
+    dim_MOD_85 = ListCount(item_rcp85)
     data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
                      data1_glob@_FillValue)
     i85 = 0
   end if
-  i = 0
+  if (dim_scen .gt. 4) then
+    error_msg("f", DIAG_SCRIPT, "", "Too many different scenarios, " + \
+              "code not set up for more than 3.")
+  end if
+  ;i = 0
   do imod = 0, dim_MOD_hist - 1
     if (imod .eq. 0) then
       data2 = data1
       delete(A0)
     else
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       data2 = time_operations(A0, -1, -1, "average", "yearly", True)
       delete(A0)
     end if
@@ -194,18 +210,20 @@ begin
     delete([/data2, data2_glob/])
 
     ; find all other runs from this model and calculate relative ts
-    imod26 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                 dataset_info@exp .eq. diag_script_info@scenarios(0) .and. \
-                 dataset_info@ensemble .eq. dataset_info@ensemble(imod))
-    if (.not.all(ismissing(imod26))) then
-      A1 = read_data(imod26, var0, field_type0)
+    atts = True
+    atts@dataset = info_items[imod]@dataset
+    atts@exp = diag_script_info@scenarios(0)
+    atts@ensemble = info_items[imod]@ensemble
+    item_26 = select_metadata_by_atts(info_items, atts)
+    if (ListCount(item_26) .ne. 0) then
+      A1 = read_data(item_26[0])
       data3 = time_operations(A1, -1, -1, "average", "yearly", True)
       data3_glob = coswgt_areaave(data3)
       dim_data3g = dimsizes(data3_glob)
       if (dim_data3g .ne. nyearsp1) then
         if (dim_data3g .gt. nyearsp1) then
           error_msg("w", diag_script, "", "Length of dataset " + \
-                    dataset_info@dataset(imod) + " in recipe is " + \
+                    info_items[imod]@dataset + " in recipe is " + \
                     "longer than period given in recipe (" + nyearsp1 + \
                     " years)")
         else
@@ -220,25 +238,25 @@ begin
       delete([/A1, data3, data3_glob/])
     else
       log_info("No corresponding model for historial run " + \
-               dataset_info@dataset(imod) + " found in scenario " + \
+               info_items[imod]@dataset + " found in scenario " + \
                diag_script_info@scenarios(0) + \
                ", cannot calculate relative change.")
     end if
-    delete(imod26)
+    delete(item_26)
 
     if (dim_scen .gt. 1) then
-      imod45 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(1) .and. \
-                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
-      if (.not.all(ismissing(imod45))) then
-        A1 = read_data(imod45, var0, field_type0)
+      atts@exp = diag_script_info@scenarios(1)
+      item_45 = select_metadata_by_atts(info_items, atts)
+
+      if (ListCount(item_45) .ne. 0) then
+        A1 = read_data(item_45[0])
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      dataset_info@dataset(imod) + " in recipe is " + \
+                      info_items[imod]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -253,26 +271,26 @@ begin
         delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 dataset_info@dataset(imod) + " found in scenario " + \
+                 info_items[imod]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(1) + \
                  ", cannot calculate relative change.")
       end if
-      delete(imod45)
+      delete(item_45)
     end if
 
     if (dim_scen .gt. 2) then
-      imod60 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(2) .and. \
-                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
-      if (.not.all(ismissing(imod60))) then
-        A1 = read_data(imod60, var0, field_type0)
+      atts@exp = diag_script_info@scenarios(2)
+      item_60 = select_metadata_by_atts(info_items, atts)
+
+      if (ListCount(item_60) .ne. 0) then
+        A1 = read_data(item_60[0])
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      dataset_info@dataset(imod) + " in recipe is " + \
+                      info_items[imod]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -287,26 +305,26 @@ begin
         delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 dataset_info@dataset(imod) + " found in scenario " + \
+                 info_items[imod]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(2) + \
                  ", cannot calculate relative change.")
       end if
-      delete(imod60)
+      delete(item_60)
     end if
 
     if (dim_scen .gt. 3) then
-      imod85 = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) .and. \
-                   dataset_info@exp .eq. diag_script_info@scenarios(3) .and. \
-                   dataset_info@ensemble .eq. dataset_info@ensemble(imod))
-      if (.not.all(ismissing(imod85))) then
-        A1 = read_data(imod85, var0, field_type0)
+      atts@exp = diag_script_info@scenarios(3)
+      item_85 = select_metadata_by_atts(info_items, atts)
+
+      if (ListCount(item_85) .ne. 0) then
+        A1 = read_data(item_85[0])
         data3 = time_operations(A1, -1, -1, "average", "yearly", True)
         data3_glob = coswgt_areaave(data3)
         dim_data3g = dimsizes(data3_glob)
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      dataset_info@dataset(imod) + " in recipe is " + \
+                      info_items[imod]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -314,6 +332,8 @@ begin
             data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
           end if
         else
+          print(item_rcp85)
+          print(dim_MOD_85)
           data85_rel(i85, :) = data3_glob - ref_data2(imod)
         end if
         i85 = i85 + 1
@@ -323,11 +343,11 @@ begin
         delete(data3_glob)
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 dataset_info@dataset(imod) + " found in scenario " + \
+                 info_items[imod]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(3) + \
                  ", cannot calculate relative change, set to missing.")
       end if
-      delete(imod85)
+      delete(item_85)
     end if
   end do  ; imod
 
@@ -372,24 +392,34 @@ begin
   ; check number of models for timeperiods in scenarios
   ; if there are less than 5 models set to missing
   runs = new((/1 + dim_scen, nperiods/), integer)
-  runs(0, 0) = dimsizes(ind(dataset_info@exp .eq. "historical" .and. \
-                            dataset_info@end_year .eq. \
-                            diag_script_info@eyears(0)))
+  atts_runs = True
+  atts_runs@exp = "historical"
+  item_runs = select_metadata_by_atts(info_items, atts_runs)
+  runs(0, 0) = ListCount(item_runs)
   do scen = 0, dim_scen - 1
     do p = 1, nperiods - 1
-      nrp1 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
-                 .and. toint(dataset_info@end_year) .gt. \
-                 toint(diag_script_info@eyears(p)))
-      tmp = dimsizes(nrp1)
+      atts_runs@exp = diag_script_info@scenarios(scen)
+      item_runs = select_metadata_by_atts(info_items, atts_runs)
+      print(item_runs)
+      nrp1 = NewList("fifo")
+      nrp2 = NewList("fifo")
+      do r = 0, ListCount(item_runs) - 1
+        if (item_runs[r]@end_year .gt. toint(diag_script_info@eyears(p))) then
+          ListAppend(nrp1, item_runs[r])
+        else if \
+          (item_runs[r]@end_year .eq. toint(diag_script_info@eyears(p))) then
+          ListAppend(nrp2, item_runs[r])
+        end if
+        end if
+      end do
+      tmp = ListCount(nrp1)
       ; check if only found missing, in that case set tmp to zero
-      if tmp .eq. 1 .and. ismissing(nrp1) then
+      if tmp .eq. 0 then
         tmp = 0
       end if
-      nrp2 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
-                 .and. dataset_info@end_year .eq. diag_script_info@eyears(p))
-      tmp2 = dimsizes(nrp2)
+      tmp2 = ListCount(nrp2)
       ; check if only found missing, in that case set tmp2 to zero
-      if tmp2 .eq. 1 .and. ismissing(nrp2) then
+      if tmp2 .eq. 0 then
         tmp2 = 0
       end if
       runs(scen + 1, p) = tmp2 + tmp
@@ -469,17 +499,17 @@ begin
   if(isatt(to_plot, "diag_script")) then  ; Add to existing entries
     temp = to_plot@diag_script
     delete(to_plot@diag_script)
-    to_plot@diag_script = array_append_record(temp, (/diag_script/), 0)
+    to_plot@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    to_plot@diag_script = (/diag_script/)
+    to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot@var = var0  ; Overwrite existing entry
-  if(isatt(variable_info, "long_name")) then
-    to_plot@var_long_name = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    to_plot@var_long_name = variable_info[0]@long_name
   end if
-  if(isatt(variable_info, "units")) then
-    to_plot@var_units     = variable_info@units
+  if(isatt(variable_info[0], "units")) then
+    to_plot@var_units     = variable_info[0]@units
   end if
 
   runs!0 = "scenario"
@@ -489,10 +519,10 @@ begin
   if(isatt(runs, "diag_script")) then  ; Add to existing entries
     temp = runs@diag_script
     delete(runs@diag_script)
-    runs@diag_script = array_append_record(temp, (/diag_script/), 0)
+    runs@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    runs@diag_script = (/diag_script/)
+    runs@diag_script = (/DIAG_SCRIPT/)
   end if
   runs@var = "nr"
   runs@var_long_name = "number of model runs per scenario and period"
@@ -500,16 +530,16 @@ begin
   ; ###########################################
   ; # Output to netCDF                        #
   ; ###########################################
-  to_plot@ncdf = variable_info@diagnostic + ".nc"
+  to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+    ncdf_file2 = work_dir + "/nr_runs_" + variable_info[0]@diagnostic + ".nc"
     ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 end

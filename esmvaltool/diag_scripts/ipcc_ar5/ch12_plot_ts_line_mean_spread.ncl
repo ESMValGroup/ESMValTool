@@ -32,20 +32,15 @@ begin
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
-
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Check required diag_script_info attributes
   req_atts = (/"syears", "eyears"/)
@@ -81,22 +76,22 @@ begin
   if(isvar("MyParam")) then
     delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
-    log_debug("MyParam = " + MyParam)
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
+    log_debug(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
   ; ###########################################
   ; # Get data                                #
   ; ###########################################
-  datapath = netcdf_dir + "/" + variable_info@diagnostic + ".nc"
+  datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   to_plot = ncdf_read(datapath, var0)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    datapath2 = netcdf_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+    datapath2 = netcdf_dir + "/nr_runs_" + variable_info[0]@diagnostic + ".nc"
     runs = ncdf_read(datapath2, "nr")
   end if
   ; start and end years of timeperiods
@@ -110,7 +105,7 @@ begin
   ; *********** PLOTTING ************
   ; Create plot variables
   outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
-  wks = get_wks(0, diag_script, outfile)
+  wks = get_wks(0, DIAG_SCRIPT, outfile)
   if(isatt(diag_script_info, "colormap")) then
     colormap = RGBtoCmap(diag_script_info@colormap)
   else
@@ -169,7 +164,7 @@ begin
 
   do j = 1, dims_data
     if(all(ismissing(to_plot(j * 3, :)))) then
-      error_msg("w", diag_script, "", "all missing values for " + \
+      error_msg("w", DIAG_SCRIPT, "", "all missing values for " + \
                 "dimension " + j * 3 + " in to_plot, need at least 5" + \
                 " models, go to next")
       continue
@@ -259,5 +254,5 @@ begin
   frame(wks)
 
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 end
