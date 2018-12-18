@@ -10,8 +10,10 @@ from __future__ import print_function
 import logging
 import os
 
+import cartopy.io.shapereader as shpreader
 import iris
 import numpy as np
+import shapely.vectorized as shp_vect
 from iris.analysis import Aggregator
 from iris.util import rolling_window
 
@@ -203,7 +205,6 @@ def mask_landseaice(cube, fx_files, mask_out):
 
 def _get_geometry_from_shp(shapefilename):
     """Get the mask geometry out from a shapefile"""
-    import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
     # Index 0 grabs the lowest resolution mask (no zoom)
     main_geom = [contour for contour in reader.geometries()][0]
@@ -212,8 +213,6 @@ def _get_geometry_from_shp(shapefilename):
 
 def _mask_with_shp(cube, shapefilename):
     """Apply a Natural Earth land/sea mask"""
-    import shapely.vectorized as shp_vect
-
     # Create the region
     region = _get_geometry_from_shp(shapefilename)
 
