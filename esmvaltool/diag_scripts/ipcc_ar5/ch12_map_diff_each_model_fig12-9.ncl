@@ -159,6 +159,14 @@ begin
     ; Function in ~/interface_scripts/auxiliary.ncl
     ncdf_outfile = ncdf_write(to_plot, to_plot@ncdf)
 
+    if (.not.isatt(diag_script_info, "styleset")) then
+      diag_script_info@styleset = "DEFAULT"
+    end if
+
+    ; Select plotting attributes from the project style files
+    ; See ./diag_scripts/shared/plot/style.ncl
+    annots = project_style(input_file_info, diag_script_info, "annots")
+
     ; ######################################################
     ; # Separate output to a graphics file, Panelling      #
     ; ######################################################
@@ -199,14 +207,10 @@ begin
       end if
       maps = new(nmap, graphic)  ; collect individual maps in a graphic array
     end if
-    to_plot@res_tiMainString = info_items[imod]@dataset
-    to_plot@res_tiMainFontHeightF = 0.035
-
-    if (isStrSubset(info_items[imod]@dataset, "GISS")) then
-      to_plot@res_tiMainString = info_items[imod]@dataset + "-" + \
-        str_upper(str_get_cols(info_items[imod]@ensemble, 4, 5))
-    end if
+    annots_split = str_split(annots(imod), "_") 
+    to_plot@res_tiMainString = annots_split(0) + " " + annots_split(1)
     to_plot@res_gsnRightString = ""
+    to_plot@res_tiMainFontHeightF = 0.035
 
     if(isatt(diag_script_info, "projection")) then
       to_plot@res_mpProjection = diag_script_info@projection
