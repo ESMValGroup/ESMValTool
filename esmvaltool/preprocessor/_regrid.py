@@ -21,6 +21,7 @@ import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
 
+from . import _regrid_esmpy
 from ..cmor.table import CMOR_TABLES
 from ..cmor.fix import fix_file, fix_metadata
 
@@ -197,9 +198,21 @@ def regrid(cube, target_grid, scheme):
                 cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    result = cube.regrid(target_grid, HORIZONTAL_SCHEMES[scheme])
+    attempt_irregular_regridding = False
+    try:
+        lat_dim = cube.coord('latitude').ndim
+        lon_dim = cube.coord('longitude').ndim
+        if (lat_dim == lon_dim == 2
+                and scheme in _regrid_esmpy.ESMF_REGRID_METHODS.keys()):
+            attempt_irregular_regridding = True
+    except iris.exceptions.CoordinateNotFoundError:
+        pass
+    if attempt_irregular_regridding:
+        cube = _regrid_esmpy.regrid(cube, target_grid, scheme)
+    else:
+        cube = cube.regrid(target_grid, HORIZONTAL_SCHEMES[scheme])
 
-    return result
+    return cube
 
 
 def _create_cube(src_cube, data, levels):

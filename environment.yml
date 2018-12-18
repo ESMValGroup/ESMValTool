@@ -10,6 +10,7 @@ dependencies:
   - graphviz
   - matplotlib<3
   - python-stratify
+  - esmpy
   # Multi language support:
   - gcc
   - ncl
