@@ -15,7 +15,8 @@ from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_output_file, get_statistic_output_file)
 from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
-from ._task import DiagnosticTask, get_independent_tasks, run_tasks
+from ._task import (DiagnosticTask, get_flattened_tasks, get_independent_tasks,
+                    run_tasks)
 from .cmor.table import CMOR_TABLES
 from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
                            MULTI_MODEL_FUNCTIONS, PreprocessingTask,
@@ -980,7 +981,6 @@ class Recipe(object):
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)
-                task.initialize_provenance(self.entity)
                 tasks[task_name] = task
 
             if not self._cfg['run_diagnostic']:
@@ -995,11 +995,14 @@ class Recipe(object):
                     output_dir=script_cfg['output_dir'],
                     settings=script_cfg['settings'],
                     name=task_id)
-                task.initialize_provenance(self.entity)
                 tasks[task_id] = task
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)
+
+        # Initialize task provenance
+        for task in get_flattened_tasks(tasks.values()):
+            task.initialize_provenance(self.entity)
 
         # TODO: check that no loops are created (will throw RecursionError)
 
