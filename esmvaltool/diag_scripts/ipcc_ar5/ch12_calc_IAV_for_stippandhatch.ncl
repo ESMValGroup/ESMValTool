@@ -35,8 +35,6 @@
 ;
 ; #############################################################################
 
-; A temporary file written by the invoking Python script
-; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 
@@ -45,20 +43,15 @@ begin
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
-
-  ;  'diag_script' and 'variables' are fetched from the
-  ;  above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ;  'datasets', 'variables' and 'field_types' are fetched from the
-  ;  above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ;  above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Check required diag_script_info attributes
   req_atts = (/"time_avg"/)
@@ -79,11 +72,11 @@ begin
   if (isvar("MyParam")) then
     delete(MyParam)
   end if
-  if (isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if (isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_debug(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 end
@@ -94,36 +87,36 @@ begin
   ; ###########################################
   ; get data from first dataset
   imod = 0  ; NCL array indicies start from zero
-  log_debug("processing " + dataset_info@dataset(imod) + "_"\
-            + dataset_info@exp(imod) + "_" \
-            + dataset_info@ensemble(imod))
+  log_debug("processing " + info_items[imod]@dataset + "_" \
+            + info_items[imod]@exp + "_" \
+            + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(imod, var0, field_type0)
+  A0 = read_data(info_items[imod])
 
   ; Check dimensions
   dims = getvardims(A0)
 
   if (dimsizes(dims) .lt. 3) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 3 or 4")
   end if
   idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   lat_name = dims(idx)
 
   if (field_type0 .eq. "T2Ms") then
     idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lon dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
     end if
     lon_name = dims(idx)
   end if
 
   index = ispan(0, dim_MOD - 1, 1)
-  if diag_script_info@time_avg .eq. "seasonalclim" then
+  if (diag_script_info@time_avg .eq. "seasonalclim") then
     dim_seas = 4
     diag_script_info@seasons = (/0, 1, 2, 3/)
   else
@@ -134,7 +127,7 @@ begin
   if (field_type0 .eq. "T3Ms") then
     idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no level dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no level dimension")
     end if
     lev_name = dims(idx)
   end if
@@ -164,24 +157,24 @@ begin
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
       delete(A0)
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       dims = getvardims(A0)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
       if (ismissing(idx)) then
-        error_msg("f", diag_script, "", "no lat dimension")
+        error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
       end if
       lat_name = dims(idx)
       if (field_type0 .eq. "T2Ms") then
         idx = ind(dims .eq. "lon" .or. dims .eq. "rlon" .or. dims .eq. "i")
         if (ismissing(idx)) then
-          error_msg("f", diag_script, "", "no lon dimension")
+          error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
         end if
         lon_name = dims(idx)
       end if
       if (field_type0 .eq. "T3Ms") then
         idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
         if (ismissing(idx)) then
-          error_msg("f", diag_script, "", "no level dimension")
+          error_msg("f", DIAG_SCRIPT, "", "no level dimension")
         end if
         lev_name = dims(idx)
       end if
@@ -203,7 +196,7 @@ begin
       nr_periods = toint(floor((dimsizes(time) - 12 * 100) / \
                                (length_of_period * 12.)))
       if (nr_periods .lt. 1) then
-        error_msg("w", diag_script, "", "time range too short, " + \
+        error_msg("w", DIAG_SCRIPT, "", "time range too short, " + \
                   "less than 1 period covered, continue with " + \
                   "next model")
         continue
@@ -266,9 +259,9 @@ begin
 
     if ((isatt(diag_script_info, "iavmode")) .and. \
         (diag_script_info@iavmode .eq. "each")) then
-      outfile = "IAV_" + dataset_info@exp(imod) + "_" + \
-        dataset_info@dataset(imod) +\
-        "_" + dataset_info@ensemble(imod) + "_" + field_type0 + "_" + \
+      outfile = "IAV_" + info_items[imod]@exp + "_" + \
+        info_items[imod]@dataset + "_" + info_items[imod]@ensemble + "_" + \
+        field_type0 + "_" + \
         var0 + "_" + diag_script_info@time_avg + ".nc"
       file_exist = isfilepresent(outfile)
       if (file_exist .and. diag_script_info@overwrite .eq. False) then
@@ -295,13 +288,13 @@ begin
           data1&season = (/0/)
         end if
         data1&lat = A0&lat
-        data1@diag_script = (/diag_script/)
+        data1@diag_script = (/DIAG_SCRIPT/)
         data1@var = "iav"
-        if (isatt(variable_info, "long_name")) then
-          data1@var_long_name = "iav of " + variable_info@long_name
+        if (isatt(variable_info[0], "long_name")) then
+          data1@var_long_name = "iav of " + variable_info[0]@long_name
         end if
-        if (isatt(variable_info, "units")) then
-          data1@var_units     = variable_info@units
+        if (isatt(variable_info[0], "units")) then
+          data1@var_units     = variable_info[0]@units
         end if
       end if
       ; ###########################################
@@ -352,15 +345,15 @@ begin
     outfile = "IAV_mmm_piControl_" + field_type0 + "_" \
       + var0 + "_" + diag_script_info@time_avg + ".nc"
 
-    IAV_mmm@diag_script = (/diag_script/)
+    IAV_mmm@diag_script = (/DIAG_SCRIPT/)
     IAV_mmm@var = "iav"
-    if (isatt(variable_info, "long_name")) then
-      IAV_mmm@var_long_name = "iav of " + variable_info@long_name
+    if (isatt(variable_info[0], "long_name")) then
+      IAV_mmm@var_long_name = "iav of " + variable_info[0]@long_name
     end if
-    if (isatt(variable_info, "units")) then
-      IAV_mmm@var_units     = variable_info@units
+    if (isatt(variable_info[0], "units")) then
+      IAV_mmm@var_units     = variable_info[0]@units
     end if
-    IAV_mmm@comment = dataset_info@dataset
+    IAV_mmm@comment = metadata_att_as_array(info_items, "dataset")
     ; Function in ~/interface_scripts/auxiliary.ncl
     ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
   end if
