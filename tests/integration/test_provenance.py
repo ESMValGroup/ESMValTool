@@ -19,6 +19,7 @@ def check_provenance(product):
 
 def check_product_wasderivedfrom(product):
     """Check that product.filename was derived from product._ancestors."""
+    print('checking provenance of file', product.filename)
     prov = product.provenance
 
     def get_identifier(filename):
@@ -38,3 +39,9 @@ def check_product_wasderivedfrom(product):
                 break
         else:
             assert False
+
+    if not product._ancestors:
+        assert 'tracking_id' in product.attributes
+    else:
+        for ancestor in product._ancestors:
+            check_product_wasderivedfrom(ancestor)
