@@ -89,7 +89,6 @@ __all__ = [
 ]
 
 DEFAULT_ORDER = tuple(__all__)
-assert set(DEFAULT_ORDER).issubset(set(globals()))
 
 # The order of intial and final steps cannot be configured
 INITIAL_STEPS = DEFAULT_ORDER[:DEFAULT_ORDER.index('fix_data') + 1]
@@ -99,24 +98,13 @@ MULTI_MODEL_FUNCTIONS = {
     'multi_model_statistics',
     'mask_fillvalues',
 }
-assert MULTI_MODEL_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
 
 def _get_itype(step):
     """Get the input type of a preprocessor function."""
     function = globals()[step]
     itype = inspect.getargspec(function).args[0]
-    valid_itypes = ('file', 'files', 'cube', 'cubes', 'product', 'products')
-    assert itype in valid_itypes, (
-        "Invalid preprocessor function definition {}, first argument "
-        "should be one of {} but is {}".format(function.__name__, valid_itypes,
-                                               itype))
     return itype
-
-
-# Check that the input type of all preprocessor functions is valid
-for _step in DEFAULT_ORDER:
-    _get_itype(_step)
 
 
 def check_preprocessor_settings(settings):
