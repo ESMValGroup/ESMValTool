@@ -1784,7 +1784,7 @@ begin
 
   ; individual case for HadCRUT4 observations
   ; FIX-ME: mean value comes from climatology file (absolute.nc).
-  ; There are no missing values as in the anomaly data. 
+  ; There are no missing values as in the anomaly data.
   datasetnames = metadata_att_as_array(items, "dataset")
   if (any(datasetnames.eq."HadCRUT4-clim")) then
     ind_wo_clim = ind(datasetnames .ne. "HadCRUT4-clim")
