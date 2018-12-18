@@ -217,7 +217,6 @@ def test_simple_recipe(tmpdir, patched_datafinder, config_user):
             for step in DEFAULT_PREPROCESSOR_STEPS:
                 assert step in product.settings
             assert len(product.files) == 2
-            check_provenance(product)
 
     assert len(diagnostic_tasks) == 1
     for task in diagnostic_tasks:
@@ -510,7 +509,6 @@ def test_derive(tmpdir, patched_datafinder, config_user):
     product = task.products.pop()
     assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
-    check_provenance(product)
     assert product.files
 
     ps_product = next(p for a in task.ancestors for p in a.products
@@ -519,8 +517,6 @@ def test_derive(tmpdir, patched_datafinder, config_user):
                         if p.attributes['short_name'] == 'tro3')
     assert ps_product.filename in product.files
     assert tro3_product.filename in product.files
-    check_provenance(ps_product)
-    check_provenance(tro3_product)
 
 
 def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
@@ -559,13 +555,11 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
     product = task.products.pop()
     assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
-    check_provenance(product)
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
-    check_provenance(ancestor_product)
 
 
 def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
