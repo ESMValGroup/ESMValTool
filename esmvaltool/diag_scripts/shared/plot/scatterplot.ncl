@@ -22,7 +22,8 @@ function scatterplot(wks_in[1],
                      source,
                      varname[1]: string,
                      reflines: logical,
-                     stats: logical)
+                     stats: logical,
+                     items: list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
@@ -31,6 +32,7 @@ function scatterplot(wks_in[1],
 ;    varname: variable name in the file.
 ;    reflines: show/hide reference lines (1:1 and +/- factor 2).
 ;    stats: show/hide summary of statistical values on the plot.
+;    items: list of input_file_info metadata
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -77,7 +79,7 @@ begin
   end if
 
   ; Style options
-  colors  = project_style(diag_script_info, "colors")
+  colors  = project_style(items, diag_script_info, "colors")
 
   ; Define x and y points
   xpts = data(0, :)
@@ -92,7 +94,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
@@ -319,7 +321,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Create a 2D scatter plot
   res = True
@@ -438,13 +440,15 @@ end
 undef("scatterplot_markers")
 function scatterplot_markers(wks_in[1],
                              source,
-                             varname[1])
+                             varname[1],
+                             items: list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
+;    items: list of input_file_info metadata
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -493,12 +497,12 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-  annots = project_style(diag_script_info, "annots")
-  colors  = project_style(diag_script_info, "colors")
-  markers = project_style(diag_script_info, "markers")
+  annots = project_style(items, diag_script_info, "annots")
+  colors  = project_style(items, diag_script_info, "colors")
+  markers = project_style(items, diag_script_info, "markers")
 
   ; Create a 2D scatter plot
   res = True

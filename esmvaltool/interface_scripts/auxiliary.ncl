@@ -29,6 +29,7 @@
 ;    procedure write_ignore_warnings
 ;    function get_ref_dataset_idx
 ;    function get_average
+;    funcname get_unique_items
 ;
 ; #############################################################################
 
@@ -1532,5 +1533,55 @@ begin
 
   leave_msg(scriptname, funcname)
   return(data_array)
+
+end
+
+; #############################################################################
+undef("get_unique_items")
+function get_unique_items(items: list,
+                          prio: string)
+
+;
+; Arguments
+;    items: list of input_file_info metadata
+;    prio: string vector with attribute names of elements of items, ordered by
+;          priority for annotation (starting with highest).
+;
+; Description
+;    Return all unique list elements with the given prio.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181218-A-schl_ma: written
+;
+local items, prio, funcname, scriptname, unique_labels, ilist, unique_list, \
+  atts, info
+begin
+
+  funcname = "get_unique_items"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Get unique lables
+  unique_labels = unique_labels_min(items, prio)
+  do ilist = 0, ListCount(items) - 1
+    items[ilist]@label = unique_labels(ilist)
+  end do
+
+  ; Select unique labels (always return 1st element)
+  unique_list = NewList("lifo")
+  unique_labels := get_unique_values(unique_labels)
+  do ilab = 0, dimsizes(unique_labels) - 1
+    atts := True
+    atts@label = unique_labels(ilab)
+    info = select_metadata_by_atts(items, atts)
+    ListAppend(unique_list, info[0])
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(unique_list)
 
 end

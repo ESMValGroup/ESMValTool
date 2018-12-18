@@ -562,12 +562,12 @@ diagnostics:
       - {dataset: CanESM2,        ensemble: r3i1p1}
       - {dataset: CanESM2,        ensemble: r4i1p1}
       - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r1i1p1}
-      - {dataset: CCSM4,          ensemble: r2i1p1}
-      - {dataset: CCSM4,          ensemble: r3i1p1}
-      - {dataset: CCSM4,          ensemble: r4i1p1}
-      - {dataset: CCSM4,          ensemble: r5i1p1}
-      - {dataset: CCSM4,          ensemble: r6i1p1}
+      # - {dataset: CCSM4,          ensemble: r1i1p1}
+      # - {dataset: CCSM4,          ensemble: r2i1p1}
+      # - {dataset: CCSM4,          ensemble: r3i1p1}
+      # - {dataset: CCSM4,          ensemble: r4i1p1}
+      # - {dataset: CCSM4,          ensemble: r5i1p1}
+      # - {dataset: CCSM4,          ensemble: r6i1p1}
       - {dataset: CESM1-BGC,      ensemble: r1i1p1}
       - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
       - {dataset: CESM1-CAM5,     ensemble: r2i1p1}

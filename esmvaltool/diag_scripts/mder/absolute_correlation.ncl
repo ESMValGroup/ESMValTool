@@ -31,7 +31,6 @@
 ;     plot_units: convert variable to these units.
 ;
 ; Caveats:
-;     Modifies input_file_info@dataset and input_file_info@ensemble.
 ;
 ; Modification history:
 ;     20180726_A-schl_ma: ported to v2.0.
@@ -48,59 +47,81 @@ load "./diag_scripts/shared/latlon.ncl"
 
 load "./diag_scripts/shared/plot/mder.ncl"
 
-; load "./diag_scripts/shared/meta_data.ncl"
+; ; load "./diag_scripts/shared/meta_data.ncl"
 
 load "./diag_scripts/shared/mder.ncl"
 
 
 begin
 
-  enter_msg(diag_script, "")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; Variable
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  VAR0 = variable_info[0]
+  var0 = VAR0@short_name
+  DIM_VAR = ListCount(variable_info)
+  if (DIM_VAR .gt. 1) then
+    error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
+              "variable, processing " + VAR0@short_name)
+  end if
 
-  ; Check if variable is multi-dimensional
-  is_multi_dim = .not. isStrSubset(field_type0, "0")
+  ; Input data
+  INFO0 = select_metadata_by_name(input_file_info, var0)
+  ALL_DATASETS = metadata_att_as_array(INFO0, "dataset")
+  is_multi_dim = .not. isStrSubset(INFO0[0]@field, "0")
 
-  ; Extract observations from model-list (case insensitive)
-  IDX_OBS = str_match_ind_ic(input_file_info@project, "OBS")
-  DIM_OBS = dimsizes(IDX_OBS)
+  ; CMIP5 models
+  atts := True
+  atts@project = "CMIP5"
+  CMIP5 = select_metadata_by_atts(INFO0, atts)
+  exps = metadata_att_as_array(CMIP5, "exp")
+  future_exp = get_unique_values(exps(ind(exps .ne. "historical")))
+  if (dimsizes(future_exp) .ne. 1) then
+    error_msg("f", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
+              "projection experiment, got " + future_exp)
+  end if
 
-  ; Extract historical simulations from datasets
-  IDX_HDAT_tmp = ind(input_file_info@start_year .ne. \
-                     max(tofloat(input_file_info@start_year)))
-  IDX_HDAT = IDX_HDAT_tmp(ind(IDX_HDAT_tmp .ne. IDX_OBS))
-  DIM_HDAT = dimsizes(IDX_HDAT)
-  delete(IDX_HDAT_tmp)
+  ; Historical experiment
+  atts@exp = "historical"
+  HIST = select_metadata_by_atts(CMIP5, atts)
+  hist_datasets = metadata_att_as_array(HIST, "dataset")
 
-  ; Extract individual future projections from datasets (= unique models)
+  ; Future experiment
+  atts@exp = future_exp
+  FUT = select_metadata_by_atts(CMIP5, atts)
+  fut_datasets = metadata_att_as_array(FUT, "dataset")
+  fail = False
+  if (dimsizes(hist_datasets) .ne. dimsizes(fut_datasets)) then
+    fail = True
+  else
+    if (all(hist_datasets .ne. fut_datasets)) then
+      fail = True
+    end if
+  end if
+  if (fail) then
+    error_msg("f", DIAG_SCRIPT, "", "historical and future experiment do " + \
+              "not cover the same models, got " + dimsizes(hist_datasets) + \
+              " historical models and " + dimsizes(fut_datasets) + \
+              " projection models")
+  else
+    MODELS = fut_datasets
+  end if
+
+  ; Ensemble averaging (if desired)
   avgens = False
   if (isatt(diag_script_info, "average_ens")) then
     avgens = diag_script_info@average_ens
   end if
   if (avgens) then
-    idx_datasets = UNIQ(input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
-                   DIM_OBS + DIM_HDAT
+    MODELS := get_unique_values(MODELS)
   else
-    idx_datasets = ispan(DIM_OBS + DIM_HDAT, \
-                         dimsizes(input_file_info@dataset) - 1, 1)
-    idx_hist = UNIQ(input_file_info@dataset(DIM_OBS:DIM_OBS + DIM_HDAT))
-    if (dimsizes(idx_hist) .gt. 1) then
-      all_datasets = unique_labels_min((/"dataset", "ensemble"/))
-      input_file_info@dataset := all_datasets
-      delete(all_datasets)
-    end if
-    delete(idx_hist)
+    MODELS := unique_labels_min(FUT, (/"dataset", "ensemble"/))
   end if
+  DIM_MOD = dimsizes(MODELS)
 
-  ; Get dataset variables
-  DIM_DAT = dimsizes(input_file_info@dataset(idx_datasets))
-  input_file_info@ensemble := input_file_info@ensemble(idx_datasets)
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
 end
 
@@ -126,6 +147,7 @@ begin
   time_oper = diag_script_info@time_oper
   time_opt = diag_script_info@time_opt
   calc_type = diag_script_info@calc_type
+  dim_p_time = dimsizes(p_time)
 
   ; For multi-dimensional variables, 'region' and 'area_oper' are required
   if (is_multi_dim) then
@@ -141,142 +163,85 @@ begin
       region@name = flt2string(region(0)) + "_-_" + flt2string(region(1))
       region@DM_tag = "DM_reg"
     else
-      error_msg("f", diag_script, "", diag_script_info@region + \
+      error_msg("f", DIAG_SCRIPT, "", diag_script_info@region + \
                 " is an invalid region type")
     end if
     end if
   end if
 
-  ; Read future projection
-  future_exp = input_file_info@exp(DIM_OBS + DIM_HDAT)
-
   ; Output dir
-  diag_script_base = basename(diag_script)
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
   plot_num = integertochar(ispan(97, 122, 1))
 
   ; Output arrays
-  xx = new((/dimsizes(p_time), DIM_DAT/), float)
-  future_diag = new((/DIM_DAT/), float)
+  xx = new((/dim_p_time, DIM_MOD/), float)
+  future_diag = new((/DIM_MOD/), float)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
   ; ---------------------------------------------------------------------------
 
   ; Call the variable of interest and merge to one timeline
-  do i = 0, DIM_DAT - 1
-    idat = idx_datasets(i)
+  do imod = 0, DIM_MOD - 1
+    log_info(MODELS(imod))
 
-    ; Call projection simulations for regression analysis and time series,
-    ; scale time series and average over 10-year period
-    tmp = read_data(idat, var0, field_type0)
-    idx_hist = ind(input_file_info@dataset(idat) .eq. \
-                   input_file_info@dataset(:DIM_OBS + DIM_HDAT - 1))
-    idx_fut = ind(input_file_info@dataset(idat) .eq. \
-                  input_file_info@dataset(DIM_OBS + DIM_HDAT:)) + \
-      DIM_OBS + DIM_HDAT
+    ; Average over ensemble members if desired
+    if (avgens) then
+      atts := True
+      atts@dataset = MODELS(imod)
+      info_hist := select_metadata_by_atts(HIST, atts)
+      info_fut := select_metadata_by_atts(FUT, atts)
+    else
+      info_hist = NewList("lifo")
+      info_fut = NewList("lifo")
+      ListAppend(info_hist, HIST[imod])
+      ListAppend(info_fut, FUT[imod])
+    end if
+
+    ; Get data
+    data_hist = get_average(info_hist)
+    data_fut = get_average(info_fut)
+    info_hist := info_hist[0]
+    info_fut := info_fut[0]
 
     ; Process multi-dimensional variables
     if (is_multi_dim) then
-      tmp := area_operations(tmp, region(0), region(1), region(2), \
-                             region(3), area_oper, True)
+      data_hist := area_operations(data_hist, region(0), region(1), \
+                                   region(2), region(3), area_oper, True)
+      data_fut := area_operations(data_fut, region(0), region(1), \
+                                  region(2), region(3), area_oper, True)
     end if
 
-    if (dimsizes(idx_hist) .ge. 1) then
-      ; Call historical simulations for time series
-      tmp_hist = read_data(idx_hist(0), var0, field_type0)
-
-      ; Process multi-dimensional variables
-      if (is_multi_dim) then
-        tmp_hist := area_operations(tmp_hist, region(0), region(1), \
-                                    region(2), region(3), area_oper, True)
-      end if
-
-      ; Average over ensemble members if more than one exists (see recipe)
-      if (avgens) then
-        if (dimsizes(idx_fut) .gt. 1) then
-          if (dimsizes(idx_fut) .eq. dimsizes(idx_hist)) then
-            tmp_avg_fut = new((/dimsizes(idx_fut), dimsizes(tmp&time)/), \
-                              typeof(tmp))
-            tmp_avg_hist = new((/dimsizes(idx_hist), \
-                                dimsizes(tmp_hist&time)/), typeof(tmp_hist))
-            tmp_avg_fut!0 = "ensemble_members"
-            tmp_avg_hist!0 = "ensemble_members"
-            copy_VarCoords(tmp, tmp_avg_fut(0, :))
-            copy_VarCoords(tmp_hist, tmp_avg_hist(0, :))
-            tmp_avg_fut(0, :) = tmp
-            tmp_avg_hist(0, :) = tmp_hist
-            delete([/tmp, tmp_hist/])
-
-            ; Loop over ensemble members, read the data and save in array
-            do iens = 1, dimsizes(idx_fut) - 1
-              tmp_fut = read_data(idx_fut(iens), var0, field_type0)
-              tmp_hist = read_data(idx_hist(iens), var0, field_type0)
-
-              ; Process multi-dimensional variables
-              if (is_multi_dim) then
-                tmp_fut := area_operations(tmp_fut, region(0), region(1), \
-                                           region(2), region(3), area_oper, \
-                                           True)
-                tmp_hist := area_operations(tmp_hist, region(0), region(1), \
-                                            region(2), region(3), area_oper, \
-                                            True)
-              end if
-
-              ; Save data in arrays
-              tmp_avg_fut(iens, :) = (/tmp_fut/)
-              tmp_avg_hist(iens, :) = (/tmp_hist/)
-              delete([/tmp_fut, tmp_hist/])
-            end do
-
-            ; Average over ensemble members
-            tmp = tofloat(dim_avg_n_Wrap(tmp_avg_fut, 0))
-            tmp_hist = tofloat(dim_avg_n_Wrap(tmp_avg_hist, 0))
-            copy_VarCoords(tmp_avg_fut(0, :), tmp)
-            copy_VarCoords(tmp_avg_hist(0, :), tmp_hist)
-            delete([/tmp_avg_fut, tmp_avg_hist/])
-          else
-            error_msg("f", diag_script, "", "inconsistent ensemble member " + \
-                      "size for dataset " + input_file_info@dataset(idat))
-          end if
-        end if
-      end if
-
-      ; Append future array to historical array
-      tmpy = array_append_record(tmp_hist, tmp, 0)
-      delete([/tmp, tmp_hist, idx_hist, idx_fut/])
-    else
-      error_msg("f", diag_script, "", "No historical data for model " + \
-                input_file_info@dataset(idat) + " given")
-    end if
+    ; Append future array to historical array
+    data_y = array_append_record(data_hist, data_fut, 0)
+    delete([/data_hist, data_fut/])
 
     ; Convert units if desired
-    if (isatt(variable_info, "plot_units")) then
-      tmpy := convert_units(tmpy, variable_info@plot_units)
-      variable_info@units = variable_info@plot_units
+    if (isatt(VAR0, "plot_units")) then
+      data_y := convert_units(data_y, VAR0@plot_units)
+      VAR0@units = VAR0@plot_units
     end if
 
     ; Calculate future diagnostic for diagnostic scatter plot
-    future_temp = time_operations(tmpy, p_time(0), \
-                                  (/p_time(dimsizes(p_time) - 1) + p_step/), \
+    future_temp = time_operations(data_y, p_time(0), \
+                                  (/p_time(dim_p_time - 1) + p_step/), \
                                   time_oper, time_opt, True)
     if (time_oper .eq. "extract") then
-      future_diag(i) = tofloat(avg(time_operations( \
-        future_temp, p_time(0), (/p_time(dimsizes(p_time) - 1) + p_step/), \
+      future_diag(imod) = tofloat(avg(time_operations( \
+        future_temp, p_time(0), (/p_time(dim_p_time - 1) + p_step/), \
         "average", "yearly", True)))
     else
-      future_diag(i) = tofloat(avg(future_temp))
+      future_diag(imod) = tofloat(avg(future_temp))
     end if
 
     ; Adapt scal_time(1) (necessary of larger than end_year)
-    if (scal_time(1) .gt. \
-        toint(input_file_info@end_year(idat - DIM_HDAT))) then
-      scal_time(1) = toint(input_file_info@end_year(idat - DIM_HDAT))
+    if (scal_time(1) .gt. info_hist@end_year) then
+      scal_time(1) = info_hist@end_year
     end if
 
     ; Calculate average over starting period for trend calculation
-    trend_base = time_operations(tmpy, scal_time(0), scal_time(1), \
+    trend_base = time_operations(data_y, scal_time(0), scal_time(1), \
                                  time_oper, time_opt, True)
     if (time_oper .eq. "extract") then
       trend_base := time_operations(trend_base, scal_time(0), scal_time(1), \
@@ -285,59 +250,64 @@ begin
     trend_base = tofloat(avg(trend_base))
 
     ; Loop over different target periods
-    do pt = 0, dimsizes(p_time) - 1
+    do pt = 0, dim_p_time - 1
       ; Average over var time series
-      temp_mean = time_operations(tmpy, p_time(pt), p_time(pt) + p_step, \
-                                  time_oper, time_opt, True)
+      y_mean = time_operations(data_y, p_time(pt), p_time(pt) + p_step, \
+                               time_oper, time_opt, True)
       if (time_oper .eq. "extract") then
-        temp_mean := time_operations(temp_mean, p_time(pt), \
-                                     p_time(pt) + p_step, "average", \
-                                     "yearly", True)
+        y_mean := time_operations(y_mean, p_time(pt), \
+                                  p_time(pt) + p_step, "average", \
+                                  "yearly", True)
       end if
 
       ; Perform calculation type
       if (calc_type .eq. "trend") then
-        xx(pt, i) = tofloat(avg(temp_mean)) - trend_base
+        xx(pt, imod) = tofloat(avg(y_mean)) - trend_base
       else if (calc_type .eq. "pos") then
-        xx(pt, i) = tofloat(avg(temp_mean))
+        xx(pt, imod) = tofloat(avg(y_mean))
       else if (calc_type .eq. "int") then
-        integrated_vals = temp_mean
-        do tt = 0, dimsizes(temp_mean) - 2
-          integrated_vals(tt + 1) = integrated_vals(tt) + temp_mean(tt + 1)
+        integrated_vals = y_mean
+        do tt = 0, dimsizes(y_mean) - 2
+          integrated_vals(tt + 1) = integrated_vals(tt) + y_mean(tt + 1)
         end do
-        xx(pt, i) = tofloat(avg(integrated_vals))
+        xx(pt, imod) = tofloat(avg(integrated_vals))
         delete([/integrated_vals, tt/])
       else
-        error_msg("f", diag_script, "", "calc_type " + calc_type + \
+        error_msg("f", DIAG_SCRIPT, "", "calc_type " + calc_type + \
                   " not supported")
       end if
       end if
       end if
-      delete(temp_mean)
+      delete(y_mean)
     end do
-    delete([/tmpy, trend_base/])
+    delete([/data_y, trend_base/])
   end do
+
+  ; Consider ensemble averaging
+  if (avgens) then
+    INFO0 := get_unique_items(INFO0, "dataset")
+    HIST := get_unique_items(HIST, "dataset")
+    FUT := get_unique_items(FUT, "dataset")
+  end if
 
   ; Adapt units for "int" calculation
   if (calc_type .eq. "int") then
-    variable_info@units = integrate_time_units(0)
+    VAR0@units = integrate_time_units(0)
   end if
-
-  ; Save unique dataset names (modifies input_file_info@dataset!)
-  input_file_info@dataset := input_file_info@dataset(idx_datasets)
 
   ; ---------------------------------------------------------------------------
   ; Call diagnostics
   ; ---------------------------------------------------------------------------
 
   ; Get input directory (using ancestor diagnostics)
-  input_files = diag_script_info@input_files
-  input_dirs = input_files(ind(input_files .ne. \
-                               str_match(input_files, "_info.ncl")))
-
-  ; Abort when no diagnostics are given
+  input_files := diag_script_info@input_files
+  var_files = str_match(input_files, "_info.ncl")
+  do ivar = 0, dimsizes(var_files) - 1
+    input_files := input_files(ind(input_files .ne. var_files(ivar)))
+  end do
+  input_dirs = input_files
   if (dimsizes(input_dirs) .lt. 1) then
-    error_msg("f", diag_script, "", "no diagnositcs given (use ancestors " + \
+    error_msg("f", DIAG_SCRIPT, "", "no diagnositcs given (use ancestors " + \
               "key in recipe")
   end if
 
@@ -353,32 +323,33 @@ begin
 
   ; Create diagnostic arrays
   DIM_DIAG = dimsizes(file_list)
-  diag_all = new((/DIM_DIAG, DIM_DAT/), float)
-  wdiag = new((/DIM_DIAG/), string)           ; Array with diagnostic names
+  diag_all = new((/DIM_DIAG, DIM_MOD/), float)
+  wdiag = new((/DIM_DIAG/), string)
 
   ; Loop over files in the list and append data
-  do idx_diag = 0, DIM_DIAG - 1
-    data_temp = ncdf_read(file_list(idx_diag), "diag")
+  do idiag = 0, DIM_DIAG - 1
+    log_info("Reading " + file_list(idiag))
+    data_temp = ncdf_read(file_list(idiag), "diag")
 
     ; Loop over datasets and save diagnostic data
-    do i = 0, DIM_DAT - 1
+    do imod = 0, DIM_MOD - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
 
         ; Check if data_temp dataset labels are different
-        if (isStrSubset(input_file_info@dataset(i), "_") .and. .not. \
+        if (isStrSubset(MODELS(imod), "_") .and. .not. \
             isStrSubset(data_temp&datasets(idat), "_")) then
-          dataset_name = str_split(input_file_info@dataset(i), "_")
-          input_file_info@dataset(i) = dataset_name(0)
+          dataset_name = str_split(MODELS(imod), "_")
+          MODELS(imod) = dataset_name(0)
           delete(dataset_name)
         end if
 
         ; Add data if datasets match
-        if (input_file_info@dataset(i) .eq. data_temp&datasets(idat)) then
-          diag_all(idx_diag, i) = data_temp(0, idat, 0)
+        if (MODELS(imod) .eq. data_temp&datasets(idat)) then
+          diag_all(idiag, imod) = data_temp(0, idat, 0)
           if (isdim(data_temp, "diagnostics")) then
-            wdiag(idx_diag) = tostring(data_temp&diagnostics(0))
+            wdiag(idiag) = tostring(data_temp&diagnostics(0))
           else
-            error_msg("f", diag_script, "", "Cannot read diagnostic name " + \
+            error_msg("f", DIAG_SCRIPT, "", "Cannot read diagnostic name " + \
                       "from data " + data_temp + ", need dimension " + \
                       "'diagnostics'")
           end if
@@ -392,46 +363,46 @@ begin
   ; Create scatterplots for each diagnostic
   res_scat = True
   future_diag@future_exp = future_exp
-  var0@units = variable_info@units
-  scatterplots = diag_scatter(res_scat, diag_all, future_diag, var0)
+  var0@units = VAR0@units
+  scatterplots = diag_scatter(res_scat, diag_all, future_diag, var0, FUT)
 
   ; ---------------------------------------------------------------------------
   ; Correlation calculations
   ; ---------------------------------------------------------------------------
 
   ; New arrays
-  corr = new((/dimsizes(p_time), DIM_DIAG/), float)
-  diag_sign = new((/dimsizes(p_time), DIM_DIAG/), string)
+  corr = new((/dim_p_time, DIM_DIAG/), float)
+  diag_sign = new((/dim_p_time, DIM_DIAG/), string)
 
   ; Loop over different target periods
-  do pt = 0, dimsizes(p_time) - 1
+  do pt = 0, dim_p_time - 1
     corr_sig = new((/2, DIM_DIAG/), float)
     r_sig0  = new((/DIM_DIAG/), float)
     r_sig1  = new((/DIM_DIAG/), float)
     r_wdiag  = new((/DIM_DIAG/), string)
 
     ; Iterate over diagnostics
-    do idx_diag = 0, DIM_DIAG - 1
-      hlp = diag_all(idx_diag, :)
+    do idiag = 0, DIM_DIAG - 1
+      hlp = diag_all(idiag, :)
 
       ; Only use models with data (filter missing values)
       good = ind(hlp .ne. 999.0)
       ngood = dimsizes(good)
 
       ; Calculate correlations
-      corr(pt, idx_diag) = escorc(hlp(good), xx(pt, good))
+      corr(pt, idiag) = escorc(hlp(good), xx(pt, good))
       rc = regline(hlp(good), xx(pt, good))
       df = rc@nptxy - 2
-      z = 0.5 * log((1.0 + abs(corr(pt, idx_diag))) / \
-                    (1.0 - abs(corr(pt, idx_diag))))
-      corr_sig(0, idx_diag) = tanh(z - 1.96 / (sqrt(ngood - 3.0)))
-      corr_sig(1, idx_diag) = tanh(z + 1.96 / (sqrt(ngood - 3.0)))
+      z = 0.5 * log((1.0 + abs(corr(pt, idiag))) / \
+                    (1.0 - abs(corr(pt, idiag))))
+      corr_sig(0, idiag) = tanh(z - 1.96 / (sqrt(ngood - 3.0)))
+      corr_sig(1, idiag) = tanh(z + 1.96 / (sqrt(ngood - 3.0)))
 
-      t0 = abs(corr(pt, idx_diag)) / sqrt((1 - corr(pt, idx_diag) ^ 2) / \
-                                          (ngood-2))
+      t0 = abs(corr(pt, idiag)) / sqrt((1 - corr(pt, idiag) ^ 2) / \
+                                       (ngood-2))
       sign0 = 1.0 - betainc(df / (df + rc@tval ^ 2), df / 2.0, 0.5)
 
-      log_info(wdiag(idx_diag) + " corr: " + corr(pt, idx_diag) + \
+      log_info(wdiag(idiag) + " corr: " + corr(pt, idiag) + \
                "  datasets: " + ngood + "  stddv: " + sign0(0))
       delete([/hlp, good, ngood, rc, df/])
     end do
@@ -440,13 +411,13 @@ begin
     acorr = abs(corr(pt, :))
     qsort(acorr)
     acorr = acorr(::-1)
-    do idx_diag = 0, DIM_DIAG - 1
-      i_diag = ind(abs(corr(pt, :)) .eq. acorr(idx_diag))
-      r_wdiag(idx_diag) = wdiag(i_diag)
-      r_sig0(idx_diag) = corr_sig(0, i_diag)
-      r_sig1(idx_diag) = corr_sig(1, i_diag)
-      diag_sign(pt, idx_diag) = where(corr(pt, i_diag) .gt. 0.0, "red", "blue")
-      delete(i_diag)
+    do idiag = 0, DIM_DIAG - 1
+      idx_diag = ind(abs(corr(pt, :)) .eq. acorr(idiag))
+      r_wdiag(idiag) = wdiag(idx_diag)
+      r_sig0(idiag) = corr_sig(0, idx_diag)
+      r_sig1(idiag) = corr_sig(1, idx_diag)
+      diag_sign(pt, idiag) = where(corr(pt, idx_diag) .gt. 0.0, "red", "blue")
+      delete(idx_diag)
     end do
     backup_wdiag = wdiag
     delete([/wdiag, corr_sig/])
@@ -474,8 +445,8 @@ begin
                             MainStg, YStg, wks, "draw")
 
       ; TODO: Add meta data
-      ; climofiles = new(DIM_DAT, string)
-      ; do ii = 0, DIM_DAT - 1
+      ; climofiles = new(DIM_MOD, string)
+      ; do ii = 0, DIM_MOD - 1
       ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
       ;     interface_get_infile(var0, field_type0, ii)
       ; end do
@@ -505,6 +476,6 @@ begin
     delete([/corr_sig, acorr, backup_wdiag/])
   end do
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 
 end

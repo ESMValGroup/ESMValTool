@@ -245,8 +245,13 @@ begin
         info = INFO0[idat]
 
         ; Check datasets
-        if ((info@dataset .ne. INFO1[idat]@dataset) .or. \
-            (info@ensemble .ne. INFO1[idat]@ensemble)) then
+        if (isatt(info, "ensemble")) then
+          fail = ((info@dataset .ne. INFO1[idat]@dataset) .or. \
+                  (info@ensemble .ne. INFO1[idat]@ensemble))
+        else
+          fail = (info@dataset .ne. INFO1[idat]@dataset)
+        end if
+        if (fail) then
           error_msg("f", DIAG_SCRIPT, "", "derivation of 'mmstf' not " + \
                     "possible, 'va' and 'ps' do not cover the same datasets")
         end if

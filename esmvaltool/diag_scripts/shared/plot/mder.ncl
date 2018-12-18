@@ -21,8 +21,6 @@
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "interface_scripts/interface.ncl"
-
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/scatterplot.ncl"
 
@@ -55,7 +53,7 @@ function error_bar_plot(Ydata[*] : numeric, \
 ;     201402??_A-wenz_sa: written.
 ;     201411??_A-wenz_sa: added collor code for pos and ne values.
 ;
-local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels
+local plot, ti, error_bar, error_barend, DIM_VAR
 begin
 
   funcname = "error_bar_plot"
@@ -69,7 +67,6 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = input_file_info@dataset
   DIM_VAR  = dimsizes(Ydata(:))
   error_bar = new(DIM_VAR, graphic)
   error_barend = new(DIM_VAR, graphic)
@@ -168,7 +165,7 @@ function time_raster_plot(Ydata[*][*] : numeric, \
 ;     20180726_A-schl_ma: ported to v2.0.
 ;     201504??_A-wenz_sa: written.
 ;
-local plot, ti, error_bar, error_barend, DIM_VAR, lg_labels, pxi
+local plot, ti, error_bar, error_barend, DIM_VAR, pxi
 begin
 
   funcname = "time_raster_plot"
@@ -187,7 +184,6 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = input_file_info@dataset
   dim_X = dimsizes(Ydata(0, :))
   dim_Y = dimsizes(Ydata(:, 0))
 
@@ -302,7 +298,8 @@ function weight_lin_plot(Ydata[*][*] : numeric, \
                          MainStg[1] : string, \
                          YStg[1] : string, \
                          wks[1], \
-                         opt[1] : string)
+                         opt[1] : string, \
+                         items: list)
 ;
 ; Arguments:
 ;     Ydata: array with Y data for each model.
@@ -315,13 +312,15 @@ function weight_lin_plot(Ydata[*][*] : numeric, \
 ;     opt: type of operations:
 ;          "draw": draws the plot directly and returnes logical.
 ;          "panel": returnes plotvalue for pannel plot.
+;    items: list of input_file_info metadata
 ;
 ; Modification history
 ;     20180726_A-schl_ma: ported to v2.0.
 ;     201410??_A-wenz_sa: written.
 ;
 local plot_array, plot, ploto, lbid, annoid, wtmmm, ummm, colors, dashes, \
-  thicks, plot_num, res, bres, tline, zline, wmmm
+  thicks, plot_num, res, bres, tline, zline, wmmm, atts, obs, dim_obs, \
+  lg_labels, lg_colors, item_type
 begin
 
   funcname = "weight_lin_plot"
@@ -346,48 +345,49 @@ begin
   end if
 
   ; Define line colors (first color is used for the observations)
-  dashes = project_style(diag_script_info, "dashes")
-
-  i_OBS = ind(input_file_info@project .eq. "OBS")
-  DIM_OBS = dimsizes(i_OBS)
+  dashes = project_style(items, diag_script_info, "dashes")
+  atts := True
+  atts@project = "OBS"
+  obs = select_metadata_by_atts(items, atts)
+  dim_obs = ListCount(obs)
 
   if (any(calc_type .eq. (/"pos", "int"/))) then
-    lg_labels = new((/3 + DIM_OBS/), string)
-    lg_colors = new((/3 + DIM_OBS/), string)
-    item_type = new((/3 + DIM_OBS/), string)
+    lg_labels = new((/3 + dim_obs/), string)
+    lg_colors = new((/3 + dim_obs/), string)
+    item_type = new((/3 + dim_obs/), string)
 
     OBSdashes = (/4, 2, 0, 9/)
-    lg_labels(DIM_OBS + 1) = "CMIP5 models"   ; input_file_info@dataset(2)
-    lg_labels(DIM_OBS + 2) = input_file_info@dataset(1)
-    lg_colors(DIM_OBS + 1) = "grey50"         ; "blue2";"slateblue4";colors
-    lg_colors(DIM_OBS + 2) = "blue2"          ; "slateblue4"
-    item_type(DIM_OBS + 1) = "Lines"
-    item_type(DIM_OBS + 2) = "Markers"
+    lg_labels(dim_obs + 1) = "CMIP5 models"
+    lg_labels(dim_obs + 2) = Ydata&dataset(1)
+    lg_colors(dim_obs + 1) = "grey50"         ; "blue2";"slateblue4";colors
+    lg_colors(dim_obs + 2) = "blue2"          ; "slateblue4"
+    item_type(dim_obs + 1) = "Lines"
+    item_type(dim_obs + 2) = "Markers"
   else if (calc_type .eq. "trend") then
-    lg_labels = new((/2 + DIM_OBS/), string)
-    lg_colors = new((/2 + DIM_OBS/), string)
-    item_type = new((/2 + DIM_OBS/), string)
+    lg_labels = new((/2 + dim_obs/), string)
+    lg_colors = new((/2 + dim_obs/), string)
+    item_type = new((/2 + dim_obs/), string)
 
     OBSdashes = (/4, 2, 9/)
-    lg_labels(DIM_OBS + 1) = input_file_info@dataset(1)
-    lg_colors(DIM_OBS + 1) = "blue2"          ; "slateblue4"
-    item_type(DIM_OBS + 1) = "Markers"
+    lg_labels(dim_obs + 1) = Ydata&dataset(1)
+    lg_colors(dim_obs + 1) = "blue2"          ; "slateblue4"
+    item_type(dim_obs + 1) = "Markers"
   else
-    error_msg("f", diag_script, "", "calc_type " + calc_type + \
+    error_msg("f", DIAG_SCRIPT, "", "calc_type " + calc_type + \
               " not supported")
   end if
   end if
 
   ; Define array with legend names
-  lg_labels(:DIM_OBS - 1) = Yobs@name
-  lg_labels(DIM_OBS) = input_file_info@dataset(0)
+  lg_labels(:dim_obs - 1) = Yobs&name
+  lg_labels(dim_obs) = Ydata&dataset(0)
 
   ; Define array with colors
-  lg_colors(:DIM_OBS - 1) = "orange"
-  lg_colors(DIM_OBS) = "red"
+  lg_colors(:dim_obs - 1) = "orange"
+  lg_colors(dim_obs) = "red"
 
   ; Define item types
-  item_type(:DIM_OBS) = "Lines"
+  item_type(:dim_obs) = "Lines"
 
   error_bar = new(dimsizes(Ydata&time), graphic)
   error_barend = new(dimsizes(Ydata&time), graphic)
@@ -556,7 +556,8 @@ function mder_scatter_plot(Xdata[*] : numeric, \
                            XStg[1] : string, \
                            YStg[1] : string, \
                            wks[1], \
-                           opt[1] : string)
+                           opt[1] : string, \
+                           items: list)
 ;
 ; Arguments:
 ;     Xdata: array with X data for each model.
@@ -573,6 +574,7 @@ function mder_scatter_plot(Xdata[*] : numeric, \
 ;     opt: type of operations:
 ;          "draw": draws the plot directly and returnes logical.
 ;          "panel": returnes plotvalue for pannel plot.
+;    items: list of input_file_info metadata
 ;
 local plot_array, plot, colors, dashes, thicks, res, bres
 begin
@@ -588,10 +590,10 @@ begin
   end if
 
   ; Define line colors (first color is used for the observations)
-  colors = project_style(diag_script_info, "colors")
-  dashes = project_style(diag_script_info, "dashes")
-  thicks = project_style(diag_script_info, "thicks")
-  lg_labels = unique_labels_min((/"dataset", "exp", "ensemble"/))
+  colors = project_style(items, diag_script_info, "colors")
+  dashes = project_style(items, diag_script_info, "dashes")
+  thicks = project_style(items, diag_script_info, "thicks")
+  lg_labels = unique_labels_min(items, (/"dataset", "exp", "ensemble"/))
 
   plot = new((/dimsizes(Xdata)/), graphic)
   plot_m = new((/dimsizes(Xdata)/), graphic)
@@ -803,7 +805,6 @@ begin
   end if
 
   ; Define names for x-ticks and dimsizes
-  lg_labels = input_file_info@dataset
   DIM_VAR = dimsizes(Ymean)
   Xdata = ispan(0, DIM_VAR - 1, 1)
   dumAVG = new(DIM_VAR, graphic)
@@ -890,7 +891,8 @@ undef("diag_scatter")
 function diag_scatter(res_in[1] : logical, \
                       diag_all : numeric, \
                       future_diag : numeric, \
-                      target_var : string)
+                      target_var : string, \
+                      items: list)
 ;
 ; Description:
 ;     Scatterplot for each diagnostic of historical simulation vs projection.
@@ -905,6 +907,7 @@ function diag_scatter(res_in[1] : logical, \
 ;     future_diag: [dim_datasets], target diagnostic of projections, can have
 ;                  attribute "future_exp" for plot title.
 ;     target_var: name of target variable, needs attribute 'units'.
+;    items: list of input_file_info metadata
 ;
 ; Modification history:
 ;     20180806_A-schl_ma: ported to v2.0.
@@ -931,7 +934,7 @@ begin
   end if
 
   do id = 0, dimsizes(diags) - 1
-    wks = get_wks(0, diag_script, target_var + "_" + diags(id))
+    wks = get_wks(0, DIAG_SCRIPT, target_var + "_" + diags(id))
     plotnames(id) = wks@fullname
     x_var = (/diag_all(id, :), future_diag/)
     x_var!1 = "datasets"
@@ -945,7 +948,7 @@ begin
     x_var@res_trXMaxF = max(x_var(0, :))
     x_var@res_trYMinF = min(x_var(1, :))
     x_var@res_trYMaxF = max(x_var(1, :))
-    plot = scatterplot(wks, x_var, target_var, False, False)
+    plot = scatterplot(wks, x_var, target_var, False, False, items)
     draw(plot)
     frame(wks)
   end do

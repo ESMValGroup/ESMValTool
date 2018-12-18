@@ -75,6 +75,10 @@ end
 
 begin
 
+  ; ---------------------------------------------------------------------------
+  ; Read recipe and config data
+  ; ---------------------------------------------------------------------------
+
   ; Plot file type
   file_type = config_user_info@output_file_type
   if (ismissing(file_type)) then
@@ -85,8 +89,6 @@ begin
   req_atts = (/"season"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   season = diag_script_info@season
-
-  ; Get datasets (consider ensemble averaging if desired)
 
   ; Output arrays
   val_grad = new((/2, DIM_DAT/), "float")
