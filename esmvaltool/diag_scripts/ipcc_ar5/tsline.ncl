@@ -127,7 +127,8 @@ begin
   end if
 
   ; individual case for HadCRUT4 observations
-  ; mean value comes from climatology file (absolute.nc)
+  ; FIX-ME: mean value comes from climatology file (absolute.nc).
+  ; There are no missing values as in the anomaly data.
   clim_ind = -1
   if (any(datasetnames.eq."HadCRUT4-clim")) then
     clim_ind = ind(datasetnames.eq."HadCRUT4-clim")
@@ -305,7 +306,8 @@ begin
   end do
 
   ; individual case for HadCRUT4 observations
-  ; mean value comes from climatology file (absolute.nc)
+  ; FIX-ME: mean value comes from climatology file (absolute.nc).
+  ; There are no missing values as in the anomaly data.
   if (any(datasetnames.eq."HadCRUT4-clim")) then
     ; Read data
     A0 = read_data(info_items[clim_ind])
