@@ -440,7 +440,7 @@ def mask_fillvalues(products,
 
     if np.any(combined_mask):
         logger.debug("Applying fillvalues mask")
-        used = {p.provcopy() for p in used}
+        used = {p.copy_provenance() for p in used}
         for product in products:
             for cube in product.cubes:
                 cube.data.mask |= combined_mask

@@ -253,7 +253,7 @@ class DiagnosticTask(BaseTask):
         super(DiagnosticTask, self).__init__(ancestors=ancestors, name=name)
         self.script = script
         self.settings = settings
-        self.products = None
+        self.products = set()
         self.output_dir = output_dir
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
@@ -499,7 +499,6 @@ class DiagnosticTask(BaseTask):
 
     def _collect_provenance(self):
         """Process provenance information provided by the diagnostic script."""
-        self.products = set()
         provenance_file = os.path.join(self.settings['run_dir'],
                                        'diagnostic_provenance.yml')
         if not os.path.exists(provenance_file):
@@ -628,7 +627,14 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
         # Handle completed tasks
         for task, result in zip(running, results):
             if result.ready():
-                task.output_files = result.get()
+                task.output_files, updated_products = result.get()
+                for updated in updated_products:
+                    for original in task.products:
+                        if original.filename == updated.filename:
+                            updated.copy_provenance(target=original)
+                            break
+                    else:
+                        task.products.add(updated)
                 running.remove(task)
                 results.remove(result)
 
@@ -651,4 +657,5 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
 
 def _run_task(task):
     """Run task and return the result."""
-    return task.run()
+    output_files = task.run()
+    return output_files, task.products

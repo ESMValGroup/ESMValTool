@@ -120,9 +120,17 @@ class TrackedFile(object):
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.filename)
 
-    def provcopy(self):
+    def copy_provenance(self, target=None):
         """Create a copy with identical provenance information."""
-        new = TrackedFile(self.filename, self.attributes, self._ancestors)
+        if target is None:
+            new = TrackedFile(self.filename, self.attributes, self._ancestors)
+        else:
+            if target.filename != self.filename:
+                raise ValueError(
+                    "Attempt to copy provenance to incompatible file.")
+            new = target
+            new.attributes = copy.deepcopy(self.attributes)
+            new._ancestors = self._ancestors
         new.provenance = copy.deepcopy(self.provenance)
         new.entity = new.provenance.get_record(self.entity.identifier)[0]
         new._activity = new.provenance.get_record(self._activity.identifier)[0]
@@ -135,7 +143,7 @@ class TrackedFile(object):
 
     def initialize_provenance(self, activity):
         """Initialize the provenance document.
-        
+
         Note: this also copies the ancestor provenance. Therefore, changes
         made to ancestor provenance after calling this function will not
         propagate into the provenance of this file.
