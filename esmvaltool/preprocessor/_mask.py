@@ -410,10 +410,10 @@ def mask_fillvalues(products,
                     threshold_fraction,
                     min_value=-1.e10,
                     time_window=1):
-    """Get the final fillvalues mask"""
-    # Combine all fillvalue masks
+    """Compute and apply a multi-dataset fillvalues mask"""
     combined_mask = None
 
+    logger.debug("Creating fillvalues mask")
     used = set()
     for product in products:
         for cube in product.cubes:
@@ -439,20 +439,19 @@ def mask_fillvalues(products,
                     "Unable to handle {} dimensional data".format(n_dims))
 
     if np.any(combined_mask):
-        # Apply masks
         logger.debug("Applying fillvalues mask")
+        used = {p.provcopy() for p in used}
         for product in products:
             for cube in product.cubes:
                 cube.data.mask |= combined_mask
-            for other in used - {product}:
-                product.wasderivedfrom(other)
+            for other in used:
+                if other.filename != product.filename:
+                    product.wasderivedfrom(other)
 
     return products
 
 
 def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
-    # function idea copied from preprocess.py
-    logger.debug("Creating fillvalues mask")
 
     # basic checks
     if threshold_fraction < 0 or threshold_fraction > 1.0:

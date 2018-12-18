@@ -507,9 +507,7 @@ def _update_statistic_settings(products, order, preproc_dir):
         attributes['filename'] = get_statistic_output_file(
             attributes, preproc_dir)
         common_settings = _get_remaining_common_settings(step, order, products)
-        ancestors = {p for p in products if step in p.settings}
-        statistic_product = PreprocessorFile(
-            attributes, common_settings, ancestors=ancestors)
+        statistic_product = PreprocessorFile(attributes, common_settings)
         for product in products:
             if step in product.settings:
                 if 'output_products' not in product.settings[step]:
@@ -614,7 +612,8 @@ def _get_single_preprocessor_task(variables,
         profile=profile,
         order=order,
         ancestor_products=ancestor_products,
-        config_user=config_user)
+        config_user=config_user,
+    )
 
     if not products:
         raise RecipeError(
@@ -626,7 +625,8 @@ def _get_single_preprocessor_task(variables,
         name=name,
         order=order,
         debug=config_user['save_intermediary_cubes'],
-        write_ncl_interface=config_user['write_ncl_interface'])
+        write_ncl_interface=config_user['write_ncl_interface'],
+    )
 
     logger.info("PreprocessingTask %s created. It will create the files:\n%s",
                 task.name, '\n'.join(p.filename for p in task.products))

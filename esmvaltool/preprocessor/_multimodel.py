@@ -337,6 +337,8 @@ def multi_model_statistics(products, span, output_products, statistics):
         # Add to output product and log provenance
         statistic_product = output_products[statistic]
         statistic_product.cubes = [statistic_cube]
+        for product in products:
+            statistic_product.wasderivedfrom(product)
         logger.info("Generated %s", statistic_product)
         statistic_products.add(statistic_product)
 

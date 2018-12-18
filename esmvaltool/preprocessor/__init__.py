@@ -258,9 +258,6 @@ class PreprocessorFile(TrackedFile):
         self._cubes = None
         self._prepared = False
 
-    def __str__(self):
-        return 'PreprocessorFile {}'.format(self.filename)
-
     def check(self):
         """Check preprocessor settings."""
         check_preprocessor_settings(self.settings)
@@ -353,13 +350,15 @@ def _apply_multimodel(products, step, debug):
 class PreprocessingTask(BaseTask):
     """Task for running the preprocessor"""
 
-    def __init__(self,
-                 products,
-                 ancestors=None,
-                 name='',
-                 order=DEFAULT_ORDER,
-                 debug=None,
-                 write_ncl_interface=False):
+    def __init__(
+            self,
+            products,
+            ancestors=None,
+            name='',
+            order=DEFAULT_ORDER,
+            debug=None,
+            write_ncl_interface=False,
+    ):
         """Initialize"""
         super(PreprocessingTask, self).__init__(ancestors=ancestors, name=name)
         _check_multi_model_settings(products)
@@ -368,24 +367,24 @@ class PreprocessingTask(BaseTask):
         self.debug = debug
         self.write_ncl_interface = write_ncl_interface
 
-    def initialize_provenance(self, recipe_entity):
-        """Initialize the provenance documents of the output products."""
-        super(PreprocessingTask, self).initialize_provenance(recipe_entity)
-
+    def _intialize_product_provenance(self):
+        """Initialize product provenance."""
         for product in self.products:
             product.initialize_provenance(self.activity)
 
-        # Hacky way to inialize the multi model products as well.
+        # Hacky way to initialize the multi model products as well.
         step = 'multi_model_statistics'
-        for product in self.products:
-            if step in product.settings:
-                output_products = product.settings[step].get(
-                    'output_products', {}).values()
-                for output_product in output_products:
-                    output_product.initialize_provenance(self.activity)
-                break
+        input_products = [p for p in self.products if step in p.settings]
+        if input_products:
+            statistic_products = input_products[0].settings[step].get(
+                'output_products', {}).values()
+            for product in statistic_products:
+                product.initialize_provenance(self.activity)
 
     def _run(self, _):
+        """Run the preprocessor."""
+        self._intialize_product_provenance()
+
         steps = {
             step
             for product in self.products for step in product.settings

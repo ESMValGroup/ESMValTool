@@ -117,13 +117,29 @@ class TrackedFile(object):
         self._ancestors = [] if ancestors is None else ancestors
         self._activity = None
 
+    def __str__(self):
+        return "{}: {}".format(self.__class__.__name__, self.filename)
+
+    def provcopy(self):
+        """Create a copy with identical provenance information."""
+        new = TrackedFile(self.filename, self.attributes, self._ancestors)
+        new.provenance = copy.deepcopy(self.provenance)
+        new.entity = new.provenance.get_record(self.entity.identifier)[0]
+        new._activity = new.provenance.get_record(self._activity.identifier)[0]
+        return new
+
     @property
     def filename(self):
         """Filename."""
         return self._filename
 
     def initialize_provenance(self, activity):
-        """Initialize the provenance document."""
+        """Initialize the provenance document.
+        
+        Note: this also copies the ancestor provenance. Therefore, changes
+        made to ancestor provenance after calling this function will not
+        propagate into the provenance of this file.
+        """
         if self.provenance is not None:
             raise ValueError(
                 "Provenance of {} already initialized".format(self))
@@ -166,13 +182,13 @@ class TrackedFile(object):
     def wasderivedfrom(self, other):
         """Let the file know that it was derived from other."""
         if isinstance(other, TrackedFile):
-            update_without_duplicating(self.provenance, other.provenance)
-            entity = other.entity
+            other_entity = other.entity
         else:
-            entity = other
+            other_entity = other
+        update_without_duplicating(self.provenance, other_entity.bundle)
         if not self._activity:
             raise ValueError("Activity not initialized.")
-        self.entity.wasDerivedFrom(entity, self._activity)
+        self.entity.wasDerivedFrom(other_entity, self._activity)
 
     def _select_for_include(self):
         attributes = {
