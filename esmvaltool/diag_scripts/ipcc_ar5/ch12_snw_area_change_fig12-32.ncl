@@ -27,20 +27,15 @@ begin
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "syears", "eyears", "begin_ref_year", \
@@ -69,11 +64,11 @@ begin
   if(isvar("MyParam")) then
     delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_info(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
   ; ###########################################
@@ -81,26 +76,26 @@ begin
   ; ###########################################
   ; get data from first model for historical period
   imod = 0  ; NCL array indices start from zero
-  log_info("processing " + dataset_info@dataset(imod) + "_" \
-           + dataset_info@exp(imod) + "_" \
-           + dataset_info@ensemble(imod))
+  log_info("processing " + info_items[imod]@dataset + "_" \
+           + info_items[imod]@exp + "_" \
+           + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(imod, var0, field_type0)
+  A0 = read_data(info_items[imod])
 
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   idx = ind(dims .eq. "lon")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
   end if
 
   ; how many months included in analysis?
@@ -108,12 +103,12 @@ begin
   dim_SEAS = dimsizes(months)
 
   ; we need to calculate the snow area using sftgif and sftlf
-  list_sftgif = read_fx_data(imod, "sftgif")
+  list_sftgif = read_fx_data(info_items[imod], "sftgif")
   var_idx = ListIndexFromName(list_sftgif, "sftgif")
   land_ice_sftgif = list_sftgif[var_idx]
 
   ; read sftlf (land sea mask)
-  list_sftlf = read_fx_data(imod, "sftlf")
+  list_sftlf = read_fx_data(info_items[imod], "sftlf")
   var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
   land_sea_sftlf = list_sftlf[var_idx2]
   sftifl = land_sea_sftlf - land_ice_sftgif
@@ -146,8 +141,13 @@ begin
   dim_file = dimsizes(data2_glob)  ; file size of historical file
 
   ; How many historical model runs?
-  ind_hist = ind(dataset_info@exp .eq. "historical")
-  dim_MOD_hist = dimsizes(dataset_info@dataset(ind_hist))
+  attsh = True
+  attsh@exp = "historical"
+  item_hist = select_metadata_by_atts(info_items, attsh)
+  dim_MOD_hist = ListCount(item_hist)
+
+  ;ind_hist = ind(dataset_info@exp .eq. "historical")
+
   ref_data2 = new((/dim_MOD_hist/), float, A0@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
                   A0@_FillValue)
@@ -162,33 +162,48 @@ begin
   nyearsp1 =  toint(eyears(nperiods - 1)) - toint(eyears(0))
 
   ; How many model runs in 1st scenario?
-  ind_26 = ind(dataset_info@exp .eq. diag_script_info@scenarios(0))
-  dim_MOD_26 = dimsizes(dataset_info@dataset(ind_26))
+  atts1 = True
+  atts1@exp = diag_script_info@scenarios(0)
+  item_rcp26 = select_metadata_by_atts(info_items, atts1)
+  dim_MOD_26 = ListCount(item_rcp26)
   ; indicate array for scenarios
   data26_rel = new((/dim_MOD_26, nyearsp1/), float, \
                    A0@_FillValue)
 
   if (dim_scen .gt. 1) then
     ; How many model runs in 2nd sceanrio?
-    ind_45 = ind(dataset_info@exp .eq. diag_script_info@scenarios(1))
-    dim_MOD_45 = dimsizes(dataset_info@dataset(ind_45))
+    atts2 = True
+    atts2@exp = diag_script_info@scenarios(1)
+    item_rcp45 = select_metadata_by_atts(info_items, atts2)
+    dim_MOD_45 = ListCount(item_rcp45)
     data45_rel = new((/dim_MOD_45, nyearsp1/), float, \
                      A0@_FillValue)
   end if
   if (dim_scen .gt. 2) then
     ; How many model runs in 3rd scenario?
-    ind_60 = ind(dataset_info@exp .eq. diag_script_info@scenarios(2))
-    dim_MOD_60 = dimsizes(dataset_info@dataset(ind_60))
+    atts3 = True
+    atts3@exp = diag_script_info@scenarios(2)
+    item_rcp60 = select_metadata_by_atts(info_items, atts3)
+    dim_MOD_60 = ListCount(item_rcp60)
     data60_rel = new((/dim_MOD_60, nyearsp1/), float, \
                      A0@_FillValue)
   end if
   if (dim_scen .gt. 3) then
     ; How many model runs in 4th scenario?
-    ind_85 = ind(dataset_info@exp .eq. diag_script_info@scenarios(3))
-    dim_MOD_85 = dimsizes(dataset_info@dataset(ind_85))
+    atts4 = True
+    atts4@exp = diag_script_info@scenarios(3)
+    item_rcp85 = select_metadata_by_atts(info_items, atts4)
+    dim_MOD_85 = ListCount(item_rcp85)
     data85_rel = new((/dim_MOD_85, nyearsp1/), float, \
                      A0@_FillValue)
   end if
+  if (dim_scen .gt. 4) then
+    error_msg("f", DIAG_SCRIPT, "", "Too many different scenarios, " + \
+              "code not set up for more than 4.")
+  end if
+  delete([/attsh, atts1, atts2, atts3, atts4/])
+  delete([/item_rcp26, item_rcp45, item_rcp60, item_rcp85/])
+
   i = 0
   i26 = 0
   i45 = 0
@@ -198,14 +213,14 @@ begin
     if (imod .eq. 0) then
       delete(A0)
     else
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       ; we need to calculate the snow area using sftgif (glacier) and sftlf
-      list_sftgif = read_fx_data(imod, "sftgif")
+      list_sftgif = read_fx_data(info_items[imod], "sftgif")
       var_idx = ListIndexFromName(list_sftgif, "sftgif")
       land_ice_sftgif = list_sftgif[var_idx]
 
       ; read sftlf (land sea mask)
-      list_sftlf = read_fx_data(imod, "sftlf")
+      list_sftlf = read_fx_data(info_items[imod], "sftlf")
       var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
       land_sea_sftlf = list_sftlf[var_idx2]
       sftifl = land_sea_sftlf - land_ice_sftgif
@@ -253,19 +268,20 @@ begin
 
     do s = 0, dim_scen - 1
       ; find all other runs from this model and calculate relative ts
-      imodrcp = ind(dataset_info@dataset .eq. dataset_info@dataset(imod) \
-                    .and. dataset_info@exp .eq. diag_script_info@scenarios(s) \
-                    .and. dataset_info@ensemble .eq. \
-                    dataset_info@ensemble(imod))
-      if (.not.all(ismissing(imodrcp))) then
-        A1 = read_data(imodrcp, var0, field_type0)
+      atts = True
+      atts@dataset = info_items[imod]@dataset
+      atts@exp = diag_script_info@scenarios(s)
+      atts@ensemble = info_items[imod]@ensemble
+      item_rcp = select_metadata_by_atts(info_items, atts)  ; matching list
+      if (ListCount(item_rcp) .ne. 0) then
+        A1 = read_data(item_rcp[0])
         ; we need to calculate the snow area using sftgif (glacier) and sftlf
-        list_sftgif = read_fx_data(imodrcp, "sftgif")
+        list_sftgif = read_fx_data(item_rcp[0], "sftgif")
         var_idx = ListIndexFromName(list_sftgif, "sftgif")
         land_ice_sftgif = list_sftgif[var_idx]
 
         ; read sftlf (land sea mask)
-        list_sftlf = read_fx_data(imodrcp, "sftlf")
+        list_sftlf = read_fx_data(item_rcp[0], "sftlf")
         var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
         land_sea_sftlf = list_sftlf[var_idx2]
         sftifl = land_sea_sftlf - land_ice_sftgif  ; land areas sans glaciers
@@ -298,8 +314,8 @@ begin
         if (s .eq. 0) then
           if (dim_data2g .ne. nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
-              error_msg("w", diag_script, "", "Length of dataset " + \
-                        dataset_info@dataset(imod) + " in recipe is " + \
+              error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
+                        info_items[imod]@dataset + " in recipe is " + \
                         "longer than period given in recipe (" + nyearsp1 + \
                         " years)")
             else
@@ -315,8 +331,8 @@ begin
         if (s .eq. 1) then
           if (dim_data2g .ne. nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
-              error_msg("w", diag_script, "", "Length of dataset " + \
-                        dataset_info@dataset(imod) + " in recipe is " + \
+              error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
+                        info_items[imod]@dataset + " in recipe is " + \
                         "longer than period given in recipe (" + nyearsp1 + \
                         " years)")
             else
@@ -332,8 +348,8 @@ begin
         if (s .eq. 2) then
           if (dim_data2g.ne.nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
-              error_msg("w", diag_script, "", "Length of dataset " + \
-                        dataset_info@dataset(imod) + " in recipe is " + \
+              error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
+                        info_items[imod]@dataset + " in recipe is " + \
                         "longer than period given in recipe (" + nyearsp1 + \
                         " years)")
             else
@@ -349,8 +365,8 @@ begin
         if (s .eq. 3) then
           if (dim_data2g.ne.nyearsp1) then
             if (dim_data2g .gt. nyearsp1) then
-              error_msg("w", diag_script, "", "Length of dataset " + \
-                        dataset_info@dataset(imod) + " in recipe is " + \
+              error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
+                        info_items[imod]@dataset + " in recipe is " + \
                         "longer than period given in recipe (" + nyearsp1 + \
                         " years)")
             else
@@ -366,7 +382,7 @@ begin
         ; clean up
         delete([/A1, data2_glob/])
       end if
-      delete(imodrcp)
+      delete(item_rcp)
     end do  ; scenario
     delete([/land_ice_sftgif, land_sea_sftlf, sftifl/])
   end do  ; imod
@@ -412,25 +428,35 @@ begin
   ; check number of datasets for timeperiods in scenarios
   ; if there are less than 5 datasets set to missing
   runs = new((/1 + dim_scen, nperiods/), integer)
-  runs(0, 0) = dimsizes(ind(dataset_info@exp .eq. "historical" .and. \
-                            dataset_info@end_year .eq. \
-                            diag_script_info@eyears(0)))
+  atts_runs = True
+  atts_runs@exp = "historical"
+  item_runs = select_metadata_by_atts(info_items, atts_runs)
+  runs(0, 0) = ListCount(item_runs)
   do scen = 0, dim_scen - 1
     do p = 1, nperiods - 1
-      nrp1 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
-                 .and. toint(dataset_info@end_year) .gt. \
-                 toint(diag_script_info@eyears(p)))
-      tmp = dimsizes(nrp1)
+      atts_runs@exp = diag_script_info@scenarios(scen)
+      item_runs = select_metadata_by_atts(info_items, atts_runs)
+      nrp1 = NewList("fifo")
+      nrp2 = NewList("fifo")
+      do r = 0, ListCount(item_runs) - 1
+        if (item_runs[r]@end_year .gt. toint(diag_script_info@eyears(p))) then
+          ListAppend(nrp1, item_runs[r])
+        else if \
+          (item_runs[r]@end_year .eq. toint(diag_script_info@eyears(p))) then
+          ListAppend(nrp2, item_runs[r])
+        end if
+        end if
+      end do
+      print(nrp1)
+      tmp = ListCount(nrp1)
       ; check if only found missing, in that case set tmp to zero
-      if tmp .eq. 1 .and. ismissing(nrp1) then
+      if tmp .eq. 0 then
         tmp = 0
       end if
-
-      nrp2 = ind(dataset_info@exp .eq. diag_script_info@scenarios(scen) \
-                 .and. dataset_info@end_year .eq. diag_script_info@eyears(p))
-      tmp2 = dimsizes(nrp2)
+      print(nrp2)
+      tmp2 = ListCount(nrp2)
       ; check if only found missing, in that case set tmp2 to zero
-      if tmp2 .eq. 1 .and. ismissing(nrp2) then
+      if tmp2 .eq. 0 then
         tmp2 = 0
       end if
       runs(scen + 1, p) = tmp + tmp2
@@ -440,12 +466,21 @@ begin
         p3 = toint(eyears(p)) - toint(syears(0))
         mean_val(scen + 1, p2 : p3) = mean_val@_FillValue
         std_val(scen + 1, p2 : p3) = std_val@_FillValue
+        log_info("Scenario " + diag_script_info@scenarios(scen) + \
+                 " in period ending " + diag_script_info@eyears(p) + \
+                 " has less than 5 models, set to missing.")
       end if
     end do
   end do
 
   dims_data = dimsizes(mean_val)
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)
+
+  if (isatt(diag_script_info, "spread")) then
+    spread = diag_script_info@spread
+  else
+    spread = 1.0
+  end if
 
   do j = 0, dims_data(0) - 1
     ; if variable sw or lw TOA flux: change direction
@@ -454,29 +489,44 @@ begin
     else
       to_plot(j * 3, :) = mean_val(j, :)
     end if
-    to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + 1. * std_val(j, :)
-    to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - 1. * std_val(j, :)
+    to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + spread * std_val(j, :)
+    to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - spread * std_val(j, :)
   end do
   copy_VarMeta(mean_val, to_plot)
   to_plot!0 = "metric"
+  str_spread = sprintf("%5.2f", spread)
   if (dim_scen .eq. 1) then
-    to_plot&metric = (/"mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std"/)
   else if (dim_scen .eq. 2) then
-    to_plot&metric = (/"mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std"/)
   else if (dim_scen .eq. 3) then
-    to_plot&metric = (/"mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std"/)
   else if (dim_scen .eq. 4) then
-    to_plot&metric = (/"mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std", \
-                       "mean", "+1.std", "-1.std"/)
+    to_plot&metric = (/"mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std"/)
   end if
   end if
   end if
@@ -490,17 +540,17 @@ begin
   if(isatt(to_plot, "diag_script")) then  ; Add to existing entries
     temp = to_plot@diag_script
     delete(to_plot@diag_script)
-    to_plot@diag_script = array_append_record(temp, (/diag_script/), 0)
+    to_plot@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    to_plot@diag_script = (/diag_script/)
+    to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot@var = var0  ; Overwrite existing entry
-  if(isatt(variable_info, "long_name")) then
-    to_plot@var_long_name = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    to_plot@var_long_name = variable_info[0]@long_name
   end if
-  if(isatt(variable_info, "units")) then
-    to_plot@var_units     = variable_info@units
+  if(isatt(variable_info[0], "units")) then
+    to_plot@var_units     = variable_info[0]@units
   end if
 
   runs@var = "nr"
@@ -508,23 +558,23 @@ begin
   runs&scenario = diag_script_info@label
   runs!1 = "period"
   runs&period = diag_script_info@syears
-  runs@diag_script = (/diag_script/)
+  runs@diag_script = (/DIAG_SCRIPT/)
   runs@var_long_name = "number of model runs per scenario and period"
 
   ; ###########################################
   ; # Output to netCDF               #
   ; ###########################################
   ; Output (controlled by diag_script_info)
-  to_plot@ncdf = variable_info@diagnostic + ".nc"
+  to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   if(isatt(diag_script_info, "model_nr") .and. \
      diag_script_info@model_nr .eq. True) then
-    ncdf_file2 = work_dir + "/nr_runs_" + variable_info@diagnostic + ".nc"
+    ncdf_file2 = work_dir + "/nr_runs_" + variable_info[0]@diagnostic + ".nc"
     ncdf_outfile2 = ncdf_write(runs, ncdf_file2)
   end if
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 end

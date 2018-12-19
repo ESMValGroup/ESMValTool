@@ -180,7 +180,7 @@ begin
   end if
   if (dim_scen .gt. 4) then
     error_msg("f", DIAG_SCRIPT, "", "Too many different scenarios, " + \
-              "code not set up for more than 3.")
+              "code not set up for more than 4.")
   end if
   ;i = 0
   do imod = 0, dim_MOD_hist - 1
@@ -222,7 +222,7 @@ begin
       dim_data3g = dimsizes(data3_glob)
       if (dim_data3g .ne. nyearsp1) then
         if (dim_data3g .gt. nyearsp1) then
-          error_msg("w", diag_script, "", "Length of dataset " + \
+          error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
                     info_items[imod]@dataset + " in recipe is " + \
                     "longer than period given in recipe (" + nyearsp1 + \
                     " years)")
@@ -332,8 +332,6 @@ begin
             data85_rel(i85, dim_data3g:) =  data3_glob@_FillValue
           end if
         else
-          print(item_rcp85)
-          print(dim_MOD_85)
           data85_rel(i85, :) = data3_glob - ref_data2(imod)
         end if
         i85 = i85 + 1
@@ -400,7 +398,6 @@ begin
     do p = 1, nperiods - 1
       atts_runs@exp = diag_script_info@scenarios(scen)
       item_runs = select_metadata_by_atts(info_items, atts_runs)
-      print(item_runs)
       nrp1 = NewList("fifo")
       nrp2 = NewList("fifo")
       do r = 0, ListCount(item_runs) - 1
