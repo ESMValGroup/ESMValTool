@@ -123,7 +123,7 @@ begin
               "seasons * scenarios * periods")
   end if
 
-  annots = project_style(diag_script_info, "annots")
+  annots = project_style(info_items, diag_script_info, "annots")
   Fill = default_fillvalue(typeof(A0))
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
@@ -152,7 +152,7 @@ begin
       if isvar((/"A1"/)) then
         delete(A1)
       end if
-      A1 = read_data(imod, var0, field_type0)
+      A1 = read_data(info_items[imod])
       dims = getvardims(A1)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
       if (ismissing(idx)) then
@@ -284,33 +284,39 @@ begin
       do per = 0, dim_per - 1  ; loop over periods
         idx_rcp = ind(dataset_exps .eq. diag_script_info@scenarios(rcp) .and. \
                       dataset_startyears .eq. diag_script_info@periods(per))
-        print("idx_rcp = " + idx_rcp)
         proj = data2(idx_rcp, seas, :, :)
-        ; **cut low values ***
+
+        ; Cut low values
         proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
         proj_avg = dim_avg_n_Wrap(proj, 0)
-        ; find historical runs from same datasets as in rcp
-        idx_hist = ind(dataset_names .eq. dataset_names(idx_rcp) .and. \
-                       dataset_exps .eq. "historical" .and. \
-                       dataset_ensembles .eq. dataset_ensemble(idx_rcp))
 
-                       
-                       ;; find_model_index(dataset_info@dataset(idx_rcp), \
-                       ;;              dataset_info@dataset, "historical",\
-                       ;;              dataset_info@exp, \
-                       ;;              dataset_info@ensemble(idx_rcp), \
-                       ;;              dataset_info@ensemble, 0)
+        ; Find historical runs from same datasets as in rcp
+        do jj = 0, dimsizes(idx_rcp) - 1
+          tmp_idx = ind(dataset_names .eq. dataset_names(idx_rcp(jj)) .and. \
+                        dataset_exps .eq. "historical" .and. \
+                        dataset_ensembles .eq. dataset_ensembles(idx_rcp(jj)))
+          if (isdefined("idx_hist")) then
+            idx_hist := array_append_record(idx_hist, tmp_idx, 0)
+          else
+            idx_hist = tmp_idx
+          end if
+          delete(tmp_idx)
+        end do
+
         base = data2(idx_hist, seas, :, :)
-        ; **cut low values ***
+
+        ; Cut low values
         base = where(abs(base) .gt. 1.e-14, base, base@_FillValue)
         base_avg = dim_avg_n_Wrap(base, 0)
+
         var_diff = proj - base
         delete([/base, proj/])
         to_plot(i, :, :) = proj_avg - base_avg
         if (isatt(diag_script_info, "percent")) then
           ref(i, :, :) = base_avg
         end if
-        ; determine sigma and sign for significance
+
+        ; Determine sigma and sign for significance
         var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
                                          to_plot@_FillValue) .eq. 1., 0)
         var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
@@ -348,6 +354,7 @@ begin
       end do  ; per
     end do  ; rcp
   end do  ; seas
+
   to_plot!0 = "panel"
   to_plot&panel = diag_script_info@label
   to_plot!1 = "lat"
@@ -421,7 +428,7 @@ begin
     delete(to_plot_signif@diag_script)
     to_plot_signif@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
-  else  ; Add as new attribute
+  else  ; add as new attribute
     to_plot_signif@diag_script = (/DIAG_SCRIPT/)
   end if
 
@@ -437,7 +444,7 @@ begin
     to_plot_not_signif@diag_script = array_append_record(temp, \
                                                          (/DIAG_SCRIPT/), 0)
     delete(temp)
-  else  ; Add as new attribute
+  else  ; add as new attribute
     to_plot_not_signif@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot_not_signif@var = "not_signif"
