@@ -1,0 +1,58 @@
+###############################################################################
+# recipe_C3S_51_SPQB.yml
+#
+# Description
+# Independent assessment of single products for the C3S_511 quality brief
+#
+# Author
+# Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+# Birgit Hassler (DLR, Germany - birgit.hassler@dlr.de)
+#
+# Project
+# C3S_511
+#
+# Reference
+
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+datasets:
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+#  - {dataset: XCH4, type: sat, project: OBS,  level: L3, version: CDS, start_year: 2003,  end_year: 2016}
+# looks for: [project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*
+preprocessors:
+  noop: {}
+
+diagnostics:
+  SPQB:
+    description: Single product quality brief.
+    variables:
+      ta:
+#      xch4:
+        preprocessor: noop
+#        field: T2Ms
+        field: T3Ms
+        derive: False
+        mip: Amon
+    scripts:
+      SPQB_basic_report:
+        script: qualassess/ex_C3S_511_SPQB.py
+#        levels: None
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+        show_latex: False #options are: True/False/no_latex
+        
+#  diagnostic1:
+#    description: Multi-product quality brief.
+#    variables:
+#      additional_datasets:
+#        - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+#      ta:
+#        preprocessor: noop
+#        field: T3Ms
+#    scripts:
+#      script0:
+#        script: qualassess/DUMMY_C3S_511_MPQB.py
+#        data_colors: RdYlGn
+#        levels: [30000.,10000.]
+#        show_latex: False
