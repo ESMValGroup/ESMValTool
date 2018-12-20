@@ -223,13 +223,14 @@ diagnostics:
   diag_timeseries_volume_average_no_obs:
     description: Global volume average time series (No observations)
     variables:
-      gtfgco2: # Global Total flux co2
-        preprocessor: prep_timeseries_scalar
-        field: TOM
-        mip: Omon
-        derive: true
-        force_derivation: false
-        fx_files: [areacello, ]
+#      This can't run on jasmin until issue #773 is resolved.
+#      gtfgco2: # Global Total flux co2
+#        preprocessor: prep_timeseries_scalar
+#        field: TOM
+#        mip: Omon
+#        derive: true
+#        force_derivation: false
+#        fx_files: [areacello, ]
       chl: # chlorophyll
         preprocessor: prep_timeseries_global_volume_average
         field: TO3Y
@@ -265,28 +266,28 @@ diagnostics:
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       intpp:
         preprocessor: prep_global_Surface_average_timeseries_2D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       chl:
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO3Y
         mip: Oyr
         thresholds: [0.1, 0.2, 0.5]
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
     #   dfe: # iron
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     field: TO3Y
     #     mip: Oyr
-    #    fx_files: [areacella, areacello]
+    #    fx_files: [areacello, ]
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     field: TO3Y
     #     mip: Oyr
-    #    fx_files: [areacella, areacello]
+    #    fx_files: [areacello, ]
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -301,32 +302,32 @@ diagnostics:
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       so: # Salinity ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       no3: # Nitrate ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       o2: # oxygen
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       si: # Silicate
         preprocessor: prep_global_Surface_average_timeseries_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
     #   po4: # Phosphate
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     field: TO3Y
     #     mip: Oyr
-    #    fx_files: [areacella, areacello]
+    #    fx_files: [areacello, ]
     additional_datasets:
       # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
       - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
@@ -436,32 +437,32 @@ diagnostics:
         preprocessor: prep_surface_map_regrid_3D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       so:
         preprocessor: prep_surface_map_regrid_3D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       no3:
         preprocessor: prep_surface_map_regrid_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       si: # Silicate
         preprocessor: prep_surface_map_regrid_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       o2: # Oxygen
         preprocessor: prep_surface_map_regrid_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
     #   po4:
     #     preprocessor: prep_surface_map_3D
     #     field: TO3Y
     #     mip: Oyr
-    #    fx_files: [areacella, areacello]
+    #    fx_files: [areacello, ]
     additional_datasets:
       # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
       - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
@@ -482,23 +483,29 @@ diagnostics:
         preprocessor: prep_surface_map_2D
         field: TO2M
         mip: Omon
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
+      fgco2:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]            
       chl:
         preprocessor: prep_surface_map_3D
         field: TO3Y
         mip: Oyr
         # thresholds: [0.1, 0.2, 0.5]
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
       dfe:
         preprocessor: prep_surface_map_3D
         field: TO3Y
         mip: Oyr
-        fx_files: [areacella, areacello]
+        fx_files: [areacello, ]
+
     #   dic:
     #     preprocessor: prep_surface_map_3D
     #     field: TO3Y
     #     mip: Oyr
-    #    fx_files: [areacella, areacello]
+    #    fx_files: [areacello, ]
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
