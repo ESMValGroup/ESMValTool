@@ -17,39 +17,43 @@
 
 ; Load config_user_info and diag_script_info from settings.ncl
 begin
-  print("INFO    Loading settings from " + getenv("settings"))
-  loadscript("$settings")
+  if .not. isvar("__interface_ncl__") then
+    print("INFO    Loading settings from " + getenv("settings"))
+    loadscript("$settings")
+  end if
 end
 
 ; #############################################################################
 
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
-  vardeffiles = diag_script_info@input_files
-  nvdf = dimsizes(vardeffiles)
-  do i = 0, nvdf - 1
-    isncl = .not.ismissing(str_match_ic_regex(vardeffiles(i), \
-                                              ".*_info\" + ".ncl"))
-    if (.not. ismissing(vardeffiles(i)) .and. isncl) then
-      vardeffile = vardeffiles(i)
-      print("INFO    Loading input data description from " + vardeffile)
-      loadscript(vardeffile)
-    end if
-  end do
+  if .not. isvar("__interface_ncl__") then
+    vardeffiles = diag_script_info@input_files
+    nvdf = dimsizes(vardeffiles)
+    do i = 0, nvdf - 1
+      isncl = .not.ismissing(str_match_ic_regex(vardeffiles(i), \
+                                                ".*_info\" + ".ncl"))
+      if (.not. ismissing(vardeffiles(i)) .and. isncl) then
+        vardeffile = vardeffiles(i)
+        print("INFO    Loading input data description from " + vardeffile)
+        loadscript(vardeffile)
+      end if
+    end do
+  end if
 end
 
 ; #############################################################################
 
 begin
+  if .not. isvar("__interface_ncl__") then
+    ; Add trailing slash to paths
+    config_user_info@plot_dir = config_user_info@plot_dir + "/"
+    config_user_info@run_dir = config_user_info@run_dir + "/"
+    config_user_info@work_dir = config_user_info@work_dir + "/"
 
-  ; Add trailing slash to paths
-  config_user_info@plot_dir = config_user_info@plot_dir + "/"
-  config_user_info@run_dir = config_user_info@run_dir + "/"
-  config_user_info@work_dir = config_user_info@work_dir + "/"
-
-  ; Define current script name as global variable (following Python syntax)
-  DIAG_SCRIPT = diag_script_info@script
-
+    ; Define current script name as global variable (following Python syntax)
+    DIAG_SCRIPT = diag_script_info@script
+  end if
 end
 
 ; #############################################################################
@@ -206,4 +210,9 @@ begin
   return(out)
   leave_msg(scriptname, funcname)
 
+end
+
+; Remember that the interface is now loaded.
+begin
+  __interface_ncl__ = True
 end
