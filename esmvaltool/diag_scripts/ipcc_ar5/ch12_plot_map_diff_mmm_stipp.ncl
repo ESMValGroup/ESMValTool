@@ -256,11 +256,11 @@ begin
 
   ; function in aux_plotting.ncl
   if (isatt(diag_script_info, "pltname")) then
-    wks = get_wks(0, variable_info@diagnostic, \
+    wks = get_wks(0, variable_info[0]@diagnostic, \
                   diag_script_info@pltname + "_" + \
                   diag_script_info@time_avg)
   else
-    wks = get_wks(0, variable_info@diagnostic, \
+    wks = get_wks(0, variable_info[0]@diagnostic, \
                   var0 + "_" + diag_script_info@time_avg)
   end if
   if (isatt(diag_script_info, "max_vert")) then
