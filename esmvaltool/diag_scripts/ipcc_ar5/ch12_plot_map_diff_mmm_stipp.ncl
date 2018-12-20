@@ -30,27 +30,22 @@ begin
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; above 'interface.ncl' file
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; check if diagnostic is change scaled by global temperature
   ; in this case even if two variables present only one to be plotted
-  tf = isStrSubset(variable_info@diagnostic, "scaleT")
+  tf = isStrSubset(variable_info[0]@diagnostic, "scaleT")
   if (tf) then
     dim_VAR = 1
   end if
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
@@ -88,11 +83,11 @@ begin
   if(isvar("MyParam")) then
       delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_info(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
@@ -100,26 +95,27 @@ begin
   ; # Get data                                #
   ; ###########################################
   if (dim_VAR .eq. 1) then
-    datapath = netcdf_dir + "/" + variable_info@diagnostic + ".nc"
+    datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   else
-    datapath = netcdf_dir + "/" + var0 + "_" + variable_info@diagnostic + ".nc"
+    datapath = netcdf_dir + "/" + var0 + "_" + variable_info[0]@diagnostic + \
+               ".nc"
   end if
   tmp_plot = ncdf_read(datapath, var0)
 
   ; Check dimensions
   dims = getvardims(tmp_plot)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   nlat = dimsizes(tmp_plot&$dims(idx)$)
   idx = ind(dims .eq. "lon")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
   end if
   nlon = dimsizes(tmp_plot&$dims(idx)$)
 
@@ -151,9 +147,9 @@ begin
       ind1 = 0
       ind2 = pan_var - 1
     else
-      datapath = netcdf_dir + "/" + variables(v) + "_" + \
-                 variable_info@diagnostic + ".nc"
-      tmp_plot = ncdf_read(datapath, variables(v))
+      datapath = netcdf_dir + "/" + variable_info[v]@short_name + "_" + \
+                 variable_info[v]@diagnostic + ".nc"
+      tmp_plot = ncdf_read(datapath, variable_info[v]@short_name)
       ind1 = v * pan_var
       ind2 = ind1 + pan_var - 1
     end if
@@ -386,4 +382,5 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, pres)
 
   log_info("Wrote " + outfile)
+  leave_msg(DIAG_SCRIPT, "")
 end
