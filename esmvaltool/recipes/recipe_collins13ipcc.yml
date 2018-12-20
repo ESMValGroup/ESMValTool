@@ -1097,6 +1097,8 @@ diagnostics:
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 0
+        # Plot units
+        plot_units: "-W m-2"  # change sign of radiation flux as in IPCC
 
       ch12_plot_map_diff_mmm_stipp_rlut:
         <<: *rlut_map_settings
@@ -1227,6 +1229,8 @@ diagnostics:
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 0
+        # Plot units
+        plot_units: "-W m-2"  # change sign of radiation flux as in IPCC
 
       ch12_plot_map_diff_mmm_stipp_rsut:
         <<: *rsut_map_settings
@@ -1506,7 +1510,8 @@ diagnostics:
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
-
+        # Plot units
+        plot_units: "hPa"
 
   ###  Mean humidity change in RCPs for multi model mean ######################
   IAV_calc_hurs:
@@ -2226,6 +2231,8 @@ diagnostics:
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
+        # Plot units
+        plot_units: "mm"
 
       ch12_plot_map_diff_mmm_stipp_mrsos:
         <<: *mrsos_map_settings
@@ -2375,6 +2382,8 @@ diagnostics:
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent: 1
+        # Plot units
+        plot_units: "mm d-1"
 
       ch12_plot_map_diff_mmm_stipp_mrro:
         <<: *mrro_map_settings
@@ -2524,6 +2533,8 @@ diagnostics:
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent: 1
+        # Plot units
+        plot_units: "mm d-1"
 
       ch12_plot_map_diff_mmm_stipp_evspsbl:
         <<: *evspsbl_map_settings

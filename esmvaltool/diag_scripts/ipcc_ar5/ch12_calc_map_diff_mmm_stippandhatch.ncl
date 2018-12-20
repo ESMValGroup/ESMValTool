@@ -26,6 +26,7 @@ load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
+load "./diag_scripts/shared/scaling.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 
@@ -398,39 +399,11 @@ begin
   if (isatt(variable_info[0], "long_name")) then
     to_plot@var_long_name = variable_info[0]@long_name
   end if
-  ; check unit and adjust for plotting if necessary
-  if (isatt(variable_info[0], "units")) then
-    if ((var0 .eq. "mrro" .or. var0 .eq. "evspsbl") \
-        .and. variable_info[0]@units .eq. "kg m-2 s-1") then
-      ; convert [kg m-2 s-1] to [mm day-1]
-      to_plot = to_plot * 60 * 60 * 24
-      variable_info[0]@units = "mm day-1"
-      to_plot@var_units   = variable_info[0]@units
-    else if (var0 .eq. "mrsos" .and. \
-             variable_info[0]@units .eq. "kg m-2") then
-      ; convert [kg m-2] to [mm]
-      variable_info[0]@units = "mm"
-      to_plot@var_units   = variable_info[0]@units
-    else if (var0 .eq. "hfls" .and. variable_info[0]@units .eq. "W m-2") then
-      to_plot = to_plot / (2.5 * 10 ^ 6) * 24 * 60 * 60
-      variable_info[0]@units = "mm day-1"
-      to_plot@var_units   = variable_info[0]@units
-    else if (variable_info[0]@units .eq. "Pa") then
-      ; convert to hPa
-      to_plot = to_plot / 100
-      to_plot@var_units     = "hPa"
-    else
-      if (percent .ne. 1) then
-        to_plot@var_units     = variable_info[0]@units
-      end if
-    end if
-    end if
-    end if
-    end if
-  end if
-  ; swap downward/upward radiation fluxes according to IPCC Chapter12
-  if ((var0 .eq. "rsut") .or. (var0 .eq. "rlut")) then
-    to_plot = - to_plot
+
+  ; Check units and adjust for plotting if necessary
+  to_plot@units = variable_info[0]@units
+  if (isatt(diag_script_info, "plot_units")) then
+    to_plot = convert_units(to_plot, diag_script_info@plot_units)
   end if
 
   if(isatt(to_plot_signif, "diag_script")) then  ; add to existing entries
