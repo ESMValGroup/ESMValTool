@@ -62,11 +62,13 @@ diagnostics:
         field: T2Ms
         derive: true
         force_derivation: false
+        frequency: mon
       lwcre: # TOA LW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
+        frequency: mon
       rsns: # Surf SW net all sky
         preprocessor: pp_rad_derive_var
         field: T2Ms
