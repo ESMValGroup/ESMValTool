@@ -34,6 +34,8 @@ begin
 
   ; 'datasets', 'variables' and 'field_types' are fetched from the
   ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -44,8 +46,6 @@ begin
   if (tf) then
     dim_VAR = 1
   end if
-  var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
