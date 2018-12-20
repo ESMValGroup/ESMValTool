@@ -128,9 +128,11 @@ class TestCMORCheck(unittest.TestCase):
         """Test checks succeeds for a good cube"""
         self._check_cube()
 
-    def _check_cube(self, automatic_fixes=False):
+    def _check_cube(self, automatic_fixes=False, frequency=None):
         checker = CMORCheck(
-            self.cube, self.var_info, automatic_fixes=automatic_fixes)
+            self.cube, self.var_info,
+            automatic_fixes=automatic_fixes, frequency=frequency
+        )
         checker.check_metadata()
         checker.check_data()
 
@@ -199,7 +201,8 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_with_scalar_coords(self):
         """Check succeeds even if a required coordinate is a scalar coord"""
         self.cube = self.cube.extract(
-            iris.Constraint(time=self.cube.coord('time').points[0]))
+            iris.Constraint(time=self.cube.coord('time').points[0])
+        )
         self._check_cube()
 
     def test_rank_unestructured_grid(self):
@@ -370,6 +373,17 @@ class TestCMORCheck(unittest.TestCase):
         """Check if generic level has a different"""
         self.cube.coord('depth').standard_name = None
         self._check_cube()
+
+    def test_frequency_month_not_same_day(self):
+        """Fail at metadata if frequency (day) not matches data frequency"""
+        self.cube = self.get_cube(self.var_info, frequency='mon')
+        time = self.cube.coord('time')
+        points = numpy.array(time.points)
+        points[1] = points[1] + 12
+        dims = self.cube.coord_dims(time)
+        self.cube.remove_coord(time)
+        self.cube.add_dim_coord(time.copy(points), dims)
+        self._check_cube(frequency='mon')
 
     def test_bad_frequency_day(self):
         """Fail at metadata if frequency (day) not matches data frequency"""
