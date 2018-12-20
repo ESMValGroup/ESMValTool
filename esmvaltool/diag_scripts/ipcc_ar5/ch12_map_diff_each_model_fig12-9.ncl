@@ -207,7 +207,7 @@ begin
       end if
       maps = new(nmap, graphic)  ; collect individual maps in a graphic array
     end if
-    annots_split = str_split(annots(imod), "_") 
+    annots_split = str_split(annots(imod), "_")
     to_plot@res_tiMainString = annots_split(0) + " " + annots_split(1)
     to_plot@res_gsnRightString = ""
     to_plot@res_tiMainFontHeightF = 0.035
