@@ -24,12 +24,13 @@
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/statistics.ncl"
+load "./diag_scripts/shared/ensemble.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 
 begin
+
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
@@ -44,24 +45,35 @@ begin
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
 
+  ; Save some dataset attributes as arrays for index-based selection below
+  dataset_names = metadata_att_as_array(info_items, "dataset")
+  dataset_exps = metadata_att_as_array(info_items, "exp")
+  dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
+  dataset_startyears = metadata_att_as_array(info_items, "start_year")
+
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg", "label"/)
   exit_if_missing_atts(diag_script_info, req_atts)
+
 end
 
 begin
+
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
 
   input_dir = diag_script_info@input_files(1)
+
 end
 
 begin
+
   ; #############################################
   ; # Get parameters from ./variable_defs/*.ncl #
   ; # passed via the 'info' attribute           #
   ; #############################################
+
   if(isvar("MyParam")) then
     delete(MyParam)
   end if
@@ -76,7 +88,8 @@ begin
   ; ###########################################
   ; # Get data and average time               #
   ; ###########################################
-  ; get data from first dataset
+
+  ; Get data from first dataset
   imod = 0  ; NCL array indicies start from zero
   log_debug("processing " + info_items[imod]@dataset + "_" \
             + info_items[imod]@exp + "_" \
@@ -108,7 +121,7 @@ begin
     dim_seas = 1
   end if
 
-  ; check if diag_script_info@label has correct size, otherwise error message
+  ; Check if diag_script_info@label has correct size, otherwise error message
   dim_periods = dimsizes(diag_script_info@periods)
   dim_scenarios = dimsizes(diag_script_info@scenarios)
   dim_label = dim_seas * dim_scenarios * dim_periods
@@ -117,7 +130,7 @@ begin
               "seasons * scenarios * periods")
   end if
 
-  annots = project_style(input_file_info, diag_script_info, "annots")
+  annots = project_style(info_items, diag_script_info, "annots")
   Fill = default_fillvalue(typeof(A0))
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
@@ -158,7 +171,7 @@ begin
         error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
       end if
       lon_name = dims(idx)
-      ; Average over time,
+      ; Average over time
       if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
           (dim_seas .ne. 4)) then
         tmp_seas = time_operations(A1, -1, -1, "average", \
@@ -204,7 +217,7 @@ begin
 
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
-      ; calculate multi-model mean of iav
+      ; Calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
       natvar_mmm = dim_avg_n(iav, 0) * sqrt(2.)
     else if (diag_script_info@iavmode .eq. "mmm") then
@@ -226,7 +239,7 @@ begin
     end if
     end if
   else
-    ; read already calculated mmm iav as default
+    ; Read already calculated mmm iav as default
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
                           field_type0 + "_" + var0 + "_" + \
@@ -251,10 +264,12 @@ begin
   else
     data2&season = (/0/)
   end if
+
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
-  ; loop over rcps and periods
+
+  ; Loop over rcps and periods
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
 
@@ -276,45 +291,41 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do rcp = 0, dim_scen - 1  ; loop over rcps
       do per = 0, dim_per - 1  ; loop over periods
-        atts = True
-        atts@exp = diag_script_info@scenarios(rcp)
-        atts@start_year = toint(diag_script_info@periods(per))
-        item_rcp = select_metadata_by_atts(info_items, atts)
-        ; idx_rcp = ind((dataset_info@exp .eq. \
-        ;                diag_script_info@scenarios(rcp)) .and. \
-        ;               (dataset_info@start_year .eq. \
-        ;                diag_script_info@periods(per)))
-        print(info_items)
-        print(item_rcp)
-        idx_rcp = ListIndex(info_items, item_rcp)
-        print(idx_rcp)
+        idx_rcp = ind(dataset_exps .eq. diag_script_info@scenarios(rcp) .and. \
+                      dataset_startyears .eq. diag_script_info@periods(per))
         proj = data2(idx_rcp, seas, :, :)
-        ; **cut low values ***
+
+        ; Cut low values
         proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
         proj_avg = dim_avg_n_Wrap(proj, 0)
-        ; find historical runs from same datasets as in rcp
-        ; idx_hist = find_model_index(dataset_info@dataset(idx_rcp), \
-        ;                             dataset_info@dataset, "historical",\
-        ;                             dataset_info@exp, \
-        ;                             dataset_info@ensemble(idx_rcp), \
-        ;                             dataset_info@ensemble, 0)
-        atts_hist = True
-        atts_hist@dataset = info_items[idx_rcp]@dataset
-        atts_hist@exp = "historical"
-        atts_hist@ensemble = info_items[idx_rcp]@ensemble
-        item_hist = select_metadata_by_atts(info_items, atts_hist)
-        idx_hist = ListIndex(info_items, item_hist)
+
+        ; Find historical runs from same datasets as in rcp
+        do jj = 0, dimsizes(idx_rcp) - 1
+          tmp_idx = ind(dataset_names .eq. dataset_names(idx_rcp(jj)) .and. \
+                        dataset_exps .eq. "historical" .and. \
+                        dataset_ensembles .eq. dataset_ensembles(idx_rcp(jj)))
+          if (isdefined("idx_hist")) then
+            idx_hist := array_append_record(idx_hist, tmp_idx, 0)
+          else
+            idx_hist = tmp_idx
+          end if
+          delete(tmp_idx)
+        end do
+
         base = data2(idx_hist, seas, :, :)
-        ; **cut low values ***
+
+        ; Cut low values
         base = where(abs(base) .gt. 1.e-14, base, base@_FillValue)
         base_avg = dim_avg_n_Wrap(base, 0)
+
         var_diff = proj - base
         delete([/base, proj/])
         to_plot(i, :, :) = proj_avg - base_avg
         if (isatt(diag_script_info, "percent")) then
           ref(i, :, :) = base_avg
         end if
-        ; determine sigma and sign for significance
+
+        ; Determine sigma and sign for significance
         var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
                                          to_plot@_FillValue) .eq. 1., 0)
         var_neg_signif = dim_num_n(where(var_diff .lt. 0., 1., \
@@ -352,6 +363,7 @@ begin
       end do  ; per
     end do  ; rcp
   end do  ; seas
+
   to_plot!0 = "panel"
   to_plot&panel = diag_script_info@label
   to_plot!1 = "lat"
@@ -372,8 +384,9 @@ begin
   ; ###########################################
   ; # Other Metadata: diag_script, var        #
   ; ###########################################
+
   ; Add to to_plot, as attributes without prefix
-  if (isatt(to_plot, "diag_script")) then  ; Add to existing entries
+  if (isatt(to_plot, "diag_script")) then  ; add to existing entries
     temp = to_plot@diag_script
     delete(to_plot@diag_script)
     to_plot@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
@@ -391,16 +404,16 @@ begin
         .and. variable_info[0]@units .eq. "kg m-2 s-1") then
       ; convert [kg m-2 s-1] to [mm day-1]
       to_plot = to_plot * 60 * 60 * 24
-      variable_info@units = "mm day-1"
+      variable_info[0]@units = "mm day-1"
       to_plot@var_units   = variable_info[0]@units
     else if (var0 .eq. "mrsos" .and. \
              variable_info[0]@units .eq. "kg m-2") then
       ; convert [kg m-2] to [mm]
-      variable_info@units = "mm"
+      variable_info[0]@units = "mm"
       to_plot@var_units   = variable_info[0]@units
     else if (var0 .eq. "hfls" .and. variable_info[0]@units .eq. "W m-2") then
       to_plot = to_plot / (2.5 * 10 ^ 6) * 24 * 60 * 60
-      variable_info@units = "mm day-1"
+      variable_info[0]@units = "mm day-1"
       to_plot@var_units   = variable_info[0]@units
     else if (variable_info[0]@units .eq. "Pa") then
       ; convert to hPa
@@ -420,7 +433,7 @@ begin
     to_plot = - to_plot
   end if
 
-  if(isatt(to_plot_signif, "diag_script")) then  ; Add to existing entries
+  if(isatt(to_plot_signif, "diag_script")) then  ; add to existing entries
     temp = to_plot_signif@diag_script
     delete(to_plot_signif@diag_script)
     to_plot_signif@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
@@ -451,7 +464,7 @@ begin
 
   model_number!0 = "panel"
   model_number&panel = diag_script_info@label
-  if(isatt(model_number, "diag_script")) then  ; Add to existing entries
+  if(isatt(model_number, "diag_script")) then  ; add to existing entries
     temp = model_number@diag_script
     delete(model_number@diag_script)
     model_number@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
@@ -470,7 +483,6 @@ begin
   to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
-  ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
   ncdf_file@existing = "append"
   ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)

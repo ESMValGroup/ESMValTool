@@ -1,16 +1,15 @@
-###############################################################################
 # recipe_collins13ipcc.yml
 
 ---
 documentation:
-  description: | 
+  description: |
     Reproducing selected figures from IPCC AR5, chap. 12 (Collins et al., 2013)
 
   authors:
-   - lore_ru
+    - lore_ru
 
   references:
-   - collins13ipcc
+    - collins13ipcc
 
   projects:
     - crescendo
@@ -46,7 +45,10 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
     extract_levels:
-      levels: [5., 15., 25., 35., 45., 56., 66., 77., 88., 100, 112., 125., 140., 155., 170., 190., 215., 245., 275., 315., 370., 430., 510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010., 2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
+      levels: [5., 15., 25., 35., 45., 56., 66., 77., 88., 100, 112., 125.,
+               140., 155., 170., 190., 215., 245., 275., 315., 370., 430.,
+               510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010.,
+               2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
       scheme: linear_horizontal_extrapolate_vertical
     zonal_means:
       coordinate: longitude
@@ -54,7 +56,7 @@ preprocessors:
 
 diagnostics:
 
-###  Mean variable change in one RCP for individual models ###
+  ###  Mean variable change in one RCP for individual models ##################
   tas_change_all_models:
     description: Air temperature change for RCP45 for all models as maps.
                  Needs historical and scenario run for each model to be plotted.
@@ -67,9 +69,9 @@ diagnostics:
         mip: Amon
         field: T2Ms
         project: CMIP5
-        ensemble: r1i1p1 
+        ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,          exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CESM1-CAM5,     exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
@@ -88,21 +90,34 @@ diagnostics:
     scripts:
       ch12_map_diff_each_model_fig12-9: &settings
         script: ipcc_ar5/ch12_map_diff_each_model_fig12-9.ncl
-        # Required attributes:
-        time_avg: annualclim             # Time average ('opt' argument of time_operations.ncl)
-        experiment: rcp45                # IPCC Scenario, used to pair historical and rcp runs from same model
-        # Optional attributes:
-        #projection: Robinson             # Map projection, any valid ncl projection
-        max_vert: 9                      # Maximum number of plots in vertical
-        max_hori: 5                      # Maximum number of plots in horizontal
-        title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb # alternative colormap to use
-        diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11] # Contour levels for plots
-        span: False # boolean to decide if span whole colormap (default = False)
 
-### Time series plots
+        ### Required attributes
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # IPCC Scenario, used to pair historical and rcp runs from same model
+        experiment: rcp45
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
+        # Maximum number of plots in vertical
+        max_vert: 9
+        # Maximum number of plots in horizontal
+        max_hori: 5
+        # Plot title
+        title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        # Contour levels for all difference plots
+        diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
+        # Span whole colormap (default false)
+        span: false
+
+
+  ### Time series plots #######################################################
   ts_line_tas:
-    description: Timeseries of relative change of temperature in multiple scenarios incl. spread
+    description: Timeseries of relative change of temperature in
+                 multiple scenarios incl. spread
     themes:
       - phys
     realms:
@@ -272,48 +287,56 @@ diagnostics:
 
     scripts:
       ch12_ts_line_mean_spread_tas: &ts_settings
-        ## Required attributes:
         script: ipcc_ar5/ch12_ts_line_mean_spread.ncl
-        #styleset: CMIP5
-        # Which scenarios shall be included in figure
+
+        ### Required attributes
+        # Plot style
+        # styleset: CMIP5
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # Start years in time periods (e.g. start of historical period and rcps)
         syears: [1850, 2006, 2101]
-        # end years in time periods (end year of historical runs and rcps)
+        # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100, 2300]
-        # start year of reference period (e.g. 1986)
+        # Start year of reference period (e.g. 1986)
         begin_ref_year: 1986
-        # end year of reference period (e.g 2005)
+        # End year of reference period (e.g 2005)
         end_ref_year: 2005
-        # labels to use in legend depending on scenarios
-        label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5] 
-        ## Optional attributes:
-        # Specify title in plot  
+        # Labels to use in legend depending on scenarios
+        label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
+
+        ### Optional attributes
+        # Plot title
         title: "Global surface temperature change (~S~o~N~ C)"
-        # how many standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64
+        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
         spread: 1.64
-        # Specify y-axis title
+        # y-axis title
         yaxis: "(~S~o~N~ C)"
-        # Minimim value on y-axis, default calculated from data
+        # Minimim value on y-axis
         ymin: -2
-        # Maximum value on y-axis          
+        # Maximum value on y-axis
         ymax: 12
-        # Save number of model runs per period and scenario in netcdf to print in plot? (True, False)
-        model_nr: True
-        # Choose file to create colormap from or specify ncl colormap
+        # Save number of model runs per period and scenario in netcdf to print in plot
+        model_nr: true
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitudes and longitudes if not global
-        #ts_minlat: 43
-        #ts_maxlat: 54.5
-        #ts_minlon: -12
-        #ts_maxlon: 35
+        # ts_minlat: 43
+        # ts_maxlat: 54.5
+        # ts_minlon: -12
+        # ts_maxlon: 35
+
       ch12_plot_ts_line_mean_spread_tas:
         <<: *ts_settings
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+
+        ### Required attributes
         ancestors: ['tas', 'ch12_ts_line_mean_spread_tas']
 
+
   ts_line_rsut:
-    description: Timeseries of relative change in TOA short wave radiation, multiple scenarios incl. spread
+    description: Timeseries of relative change in TOA short wave radiation in
+                 multiple scenarios incl. spread
     themes:
       - phys
     realms:
@@ -325,7 +348,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CCSM4,            exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CESM1-CAM5,       exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0,    exp: historical, start_year: 1850, end_year: 2005}
@@ -359,48 +382,56 @@ diagnostics:
 
     scripts:
       ch12_ts_line_mean_spread_rsut: &ts_settings_rsut
-        ## Required attributes:
         script: ipcc_ar5/ch12_ts_line_mean_spread.ncl
-        #styleset: CMIP5
-        # Scenarios included in figure
+
+        ### Required attributes
+        # Plot style
+        # styleset: CMIP5
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods as list (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical period and rcps)
         syears: [1850, 2006]
-        # End years in time periods as list (end year of historical runs and rcps)
+        # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
-        # Start year of reference period (numeric)
+        # Start year of reference period
         begin_ref_year: 1900
-        # End year of reference period (numeric)
+        # End year of reference period
         end_ref_year: 1950
-        # Labels to use in legend depending on scenarios as list
+        # Labels to use in legend depending on scenarios
         label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
-        ## Optional attributes:
-        # Title in plot
+
+        ### Optional attributes
+        # Plot title
         title: "Global TOA short wave radiation change"
-        # Standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64, numeric
+        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
         spread: 1.0
-        # y-axis title, string 
+        # y-axis title
         yaxis: "(Wm~S~-2~N~)"
         # Minimim value on y-axis
         ymin: -3
         # Maximum value on y-axis
         ymax: 6
-        # Save number of model runs per period and scenario in netcdf to print in plot? (False, True)
-        model_nr: True
-        # Alternative colormap, either path to .rgb file or ncl name
+        # Save number of model runs per period and scenario in netcdf to print in plot
+        model_nr: true
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
-        # Minimum and macimum latitude and longitude if not global
-        #ts_minlat: 43
-        #ts_maxlat: 54.5
-        #ts_minlon: -12
-        #ts_maxlon: 35
+        # Minimum and maximum latitude and longitude if not global
+        # ts_minlat: 43
+        # ts_maxlat: 54.5
+        # ts_minlon: -12
+        # ts_maxlon: 35
+
       ch12_plot_ts_line_mean_spread_rsut:
         <<: *ts_settings_rsut
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+
+        ### Required attributes
         ancestors: ['rsut', 'ch12_ts_line_mean_spread_rsut']
 
+
   ts_line_rlut:
-    description: Timeseries of relative change in TOA long wave radiation, multiple scenarios incl. spread
+    description: Timeseries of relative change in TOA long wave radiation in
+                 multiple scenarios incl. spread
     themes:
       - phys
     realms:
@@ -413,7 +444,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,          start_year: 1850, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,          start_year: 1850, end_year: 2005}
       - {dataset: CCSM4,            start_year: 1850, end_year: 2005}
       - {dataset: CESM1-CAM5,       start_year: 1850, end_year: 2005}
       - {dataset: GFDL-ESM2G,       start_year: 1861, end_year: 2005}
@@ -446,48 +477,56 @@ diagnostics:
 
     scripts:
       ch12_ts_line_mean_spread_rlut: &ts_settings_rlut
-        ## Required attributes:
         script: ipcc_ar5/ch12_ts_line_mean_spread.ncl
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
-        # Scenarios included in figure
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods as list (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical period and rcps)
         syears: [1850, 2006]
-        # End years in time periods as list (end year of historical runs and rcps)
+        # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
-        # Start year of reference period (numeric)
+        # Start year of reference period
         begin_ref_year: 1900
-        # End year of reference period (numeric)
+        # End year of reference period
         end_ref_year: 1950
-        # Labels to use in legend depending on scenarios as list
+        # Labels to use in legend depending on scenarios
         label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
-        ## Optional attributes:
-        # Title in plot
+
+        ### Optional attributes
+        # Plot title
         title: "Global TOA long wave radiation change"
-        # Standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64, numeric
+        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
         spread: 1.0
-        # y-axis title, string 
+        # y-axis title
         yaxis: "(Wm~S~-2~N~)"
         # Minimim value on y-axis
         ymin: -3
         # Maximum value on y-axis
         ymax: 4
-        # Save number of model runs per period and scenario in netcdf to print in plot? (False, True)
-        model_nr: True
-        # Alternative colormap, either path to .rgb file or ncl name
+        # Save number of model runs per period and scenario in netcdf to print in plot
+        model_nr: true
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
-        # Minimum and macimum latitude and longitude if not global
-        #ts_minlat: 43
-        #ts_maxlat: 54.5
-        #ts_minlon: -12
-        #ts_maxlon: 35
+        # Minimum and maximum latitude and longitude if not global
+        # ts_minlat: 43
+        # ts_maxlat: 54.5
+        # ts_minlon: -12
+        # ts_maxlon: 35
+
       ch12_plot_ts_line_mean_spread_rlut:
         <<: *ts_settings_rlut
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+
+        ### Required attributes
         ancestors: ['rlut', 'ch12_ts_line_mean_spread_rlut']
 
+
   ts_line_rtmt:
-    description: Timeseries of relative change in TOA net radiation, multiple scenarios incl. spread
+    description: Timeseries of relative change in TOA net radiation in
+                 multiple scenarios incl. spread
     themes:
       - phys
     realms:
@@ -500,7 +539,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CCSM4,            exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CESM1-CAM5,       exp: historical, start_year: 1850, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0,    exp: historical, start_year: 1850, end_year: 2005}
@@ -534,49 +573,57 @@ diagnostics:
 
     scripts:
       ch12_ts_line_mean_spread_rtmt: &ts_settings_rtmt
-        ## Required attributes:
         script: ipcc_ar5/ch12_ts_line_mean_spread.ncl
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
-        # Scenarios included in figure
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods as list (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical period and rcps)
         syears: [1850, 2006]
-        # End years in time periods as list (end year of historical runs and rcps)
+        # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
-        # Start year of reference period (numeric)
+        # Start year of reference period
         begin_ref_year: 1900
-        # End year of reference period (numeric)
+        # End year of reference period
         end_ref_year: 1950
-        # Labels to use in legend depending on scenarios as list
+        # Labels to use in legend depending on scenarios
         label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
-        ## Optional attributes:
-        # Title in plot
+
+        ### Optional attributes
+        # Plot title
         title: "Global TOA net radiation change"
-        # Standard deviations to calculate the spread with? default is 1., ipcc tas used 1.64, numeric
+        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
         spread: 1.0
-        # y-axis title, string 
+        # y-axis title
         yaxis: "(Wm~S~-2~N~)"
         # Minimim value on y-axis
         ymin: -3
         # Maximum value on y-axis
         ymax: 6
-        # Save number of model runs per period and scenario in netcdf to print in plot? (False, True)
-        model_nr: True
-        # Alternative colormap, either path to .rgb file or ncl name
+        # Save number of model runs per period and scenario in netcdf to print in plot
+        model_nr: true
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
-        # Minimum and macimum latitude and longitude if not global
-        #ts_minlat: 43
-        #ts_maxlat: 54.5
-        #ts_minlon: -12
-        #ts_maxlon: 35
+        # Minimum and maximum latitude and longitude if not global
+        # ts_minlat: 43
+        # ts_maxlat: 54.5
+        # ts_minlon: -12
+        # ts_maxlon: 35
+
       ch12_plot_ts_line_mean_spread_rtmt:
         <<: *ts_settings_rtmt
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+
+        ### Required attributes
         ancestors: ['rtmt', 'ch12_ts_line_mean_spread_rtmt']
 
-###  Mean temperature change in RCPs for multi model mean ###
+
+  ###  Mean temperature change in RCPs for multi model mean ###################
   IAV_calc_tas:
-    description: Calculate temperature interannual variability for stippling significance
+    description: Calculate temperature interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -592,27 +639,33 @@ diagnostics:
     additional_datasets:
 
       - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
-      - {dataset: CCSM4,         start_year: 250, end_year: 1300}
-      - {dataset: CESM1-CAM5,    start_year: 1, end_year: 319}
-      - {dataset: CSIRO-Mk3-6-0, start_year: 1, end_year: 500}
-      - {dataset: GFDL-ESM2G,    start_year: 1, end_year: 500}
-      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}     
+      - {dataset: CCSM4,         start_year:  250, end_year: 1300}
+      - {dataset: CESM1-CAM5,    start_year:    1, end_year:  319}
+      - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  500}
+      - {dataset: GFDL-ESM2G,    start_year:    1, end_year:  500}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}
       - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2849}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_tas: &IAV_settings_tas
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Length of period in years to calculate variability over, default is total time period
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
-        #iavmode:   # calculate IAV from multi-model mean or save individual models ("each")?
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+
 
   tas_change_mmm:
-    description: Air temperature change (annual mean or seasonal) in multi-model mean with significance
+    description: Air temperature change (annual mean or seasonal)
+                 in multi-model mean with significance
     themes:
       - phys
     realms:
@@ -620,12 +673,12 @@ diagnostics:
     variables:
       tas:
         preprocessor: preproc_map
-        project: CMIP5 
+        project: CMIP5
         ensemble : r1i1p1
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
 
       - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
@@ -637,50 +690,64 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_tas: &tas_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['tas', 'IAV_calc_tas/ch12_calc_IAV_for_stippandhatch_tas']
-        #list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp45, rcp85]
-        #list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
-        # seasonal or annual means? seasonalclim, annualclim
+        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: annualclim
-        # labels on top of each panel, loop is seasons, scenarios, periods
-        label: ["RCP4.5 2081-2100", "RCP8.5 2081-2100"]   
-        # Optional attributes:
-        # list with seasons index if time_avg "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default is mmm, otherwise set iavmode = "each" and make sure to have these models in IAV_calc_tas
-        # and set iavmode to "each" there too
-        iavmode: mmm  
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
+        label: ["RCP4.5 2081-2100", "RCP8.5 2081-2100"]
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_tas and set iavmode to "each" there too)
+        iavmode: mmm
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_map_diff_mmm_stipp_tas:
         <<: *tas_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['tas', 'ch12_calc_map_diff_mmm_tas']
-        # Optional attributes:
-        # map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
-        title: "Annual mean temperature change"
-        # explicit levels for all contour plots
-        diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 9]
-        max_vert: 2  # maximum number of plots in vertical
-        max_hori: 2  # maximum number of plots in horizontal
-        # alternative colormap,  either path to .rgb file or ncl name
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
-        # boolean to decide if span whole colormap (default = True)
-        span: False
-        sig: True      # plot stippling for significance?
-        not_sig: True  # plot hatching for uncertainty?
-        # alternative name for output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # boolean, true if want number of models included in mmm printet in top right of figure
-        model_nr: True
 
-  ###  Mean Precipitation change in RCPs for multi model mean ###
+        ### Required attributes
+        ancestors: ['tas', 'ch12_calc_map_diff_mmm_tas']
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
+        # Plot title
+        title: "Annual mean temperature change"
+        # Contour levels for all difference plots
+        diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 9]
+        # Maximum number of plots in vertical
+        max_vert: 2
+        # Maximum number of plots in horizontal
+        max_hori: 2
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        # Span whole colormap (default false)
+        span: false
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
+
+
+  ###  Mean Precipitation change in RCPs for multi model mean #################
   IAV_calc_pr:
-    description: Calculate precipitation interannual variability for stippling significance
+    description: Calculate precipitation interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -694,24 +761,30 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: IPSL-CM5A-LR,     start_year: 1800, end_year: 2799}
-      - {dataset: GFDL-ESM2G,       start_year: 1, end_year: 500}
-      - {dataset: MPI-ESM-LR,       start_year: 1850, end_year: 2849}
+      - {dataset: IPSL-CM5A-LR, start_year: 1800, end_year: 2799}
+      - {dataset: GFDL-ESM2G,   start_year:    1, end_year:  500}
+      - {dataset: MPI-ESM-LR,   start_year: 1850, end_year: 2849}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_pr: &IAV_settings_pr
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: seasonalclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   pr_change_mmm:
-    description: Precipitation change (annual mean or seasonal) in multi-model mean with signficance
+    description: Precipitation change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -725,7 +798,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
       - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,    exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,    exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR,  exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,    exp: historical, start_year: 1986, end_year: 2005}
 
@@ -741,31 +814,40 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_pr: &pr_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['pr', 'IAV_calc_pr/ch12_calc_IAV_for_stippandhatch_pr']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081, 2181]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: seasonalclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
-        label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2081-2100 MAM", "RCP8.5 2081-2100 JJA", "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 DJF", "RCP8.5 2181-2200 MAM", "RCP8.5 2181-2200 JJA", "RCP8.5 2181-2200 SON"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
+        label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2081-2100 MAM", "RCP8.5 2081-2100 JJA",
+                "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 DJF", "RCP8.5 2181-2200 MAM",
+                "RCP8.5 2181-2200 JJA", "RCP8.5 2181-2200 SON"]
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 1, 2, 3]
-        # use IAV data from multi-model mean or include identical models to above?
-        # (mmm, each), if "each" calculate them in IAV_calc_pr
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_pr and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
+        # Show difference in percent (1, default 0)
         percent: 1
+
       ch12_plot_map_diff_mmm_stipp_pr:
         <<: *pr_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['pr', 'ch12_calc_map_diff_mmm_pr']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         title: "Seasonal mean percentage precipitation change"
         # Contour levels for all difference plots
         diff_levs: [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
@@ -773,22 +855,24 @@ diagnostics:
         max_vert: 4
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean Total Radiation change in RCPs for multi model mean ###
+
+  ###  Mean Total Radiation change in RCPs for multi model mean ###############
   IAV_calc_rtmt:
-    description: Calculate total radiation interannual variability for stippling significance
+    description: Calculate total radiation interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -802,36 +886,42 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     start_year: 1,    end_year: 500}
-      - {dataset: bcc-csm1-1-m,   start_year: 1,    end_year: 400}
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
       - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     start_year: 1,    end_year: 319}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1,    end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
       - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
       - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
       - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      start_year: 700,  end_year: 1200}
-      - {dataset: NorESM1-ME,     start_year: 901,  end_year: 1152}
- 
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
+
     scripts:
       ch12_calc_IAV_for_stippandhatch_rtmt: &IAV_settings_rtmt
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   rtmt_change_mmm:
-    description: Total Radiation change (annual mean or seasonal) in multi-model mean with signficance
+    description: Total Radiation change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -845,7 +935,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
       - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
       - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
 
@@ -856,31 +946,38 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_rtmt: &rtmt_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['rtmt', 'IAV_calc_rtmt/ch12_calc_IAV_for_stippandhatch_rtmt']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to above? (mmm, each),
-        # if "each" calculate them in IAV_calc_rtmt
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_rtmt and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
+        # Show difference in percent (1, default 0)
         percent: 0
+
       ch12_plot_map_diff_mmm_stipp_rtmt:
         <<: *rtmt_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['rtmt', 'ch12_calc_map_diff_mmm_rtmt']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         title: "Annual mean TOA net radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
@@ -888,22 +985,24 @@ diagnostics:
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean Long Wave Radiation change in RCPs for multi model mean ###
+
+  ###  Mean Long Wave Radiation change in RCPs for multi model mean ###########
   IAV_calc_rlut:
-    description: Calculate long wave radiation interannual variability for stippling significance
+    description: Calculate long wave radiation interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -917,36 +1016,42 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1, start_year: 1, end_year: 500}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1, start_year: 1, end_year: 400}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1, start_year: 1450, end_year: 2008}
-      - {dataset: CanESM2,        ensemble: r1i1p1, start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1, start_year: 1, end_year: 319}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1, start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1, start_year: 1, end_year: 500}
-      - {dataset: inmcm4,         ensemble: r1i1p1, start_year: 1850, end_year: 2349}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1, start_year: 1800, end_year: 2799}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1, start_year: 1800, end_year: 2099}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1, start_year: 1830, end_year: 2129}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1, start_year: 1800, end_year: 2429}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1, start_year: 700, end_year: 1200}
-      - {dataset: NorESM1-ME,     ensemble: r1i1p1, start_year: 901, end_year: 1152}
- 
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
+      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
+      - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
+      - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
+      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
+      - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
+      - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
+      - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
+      - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
+      - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
+
     scripts:
       ch12_calc_IAV_for_stippandhatch_rlut: &IAV_settings_rlut
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   rlut_change_mmm:
-    description: Long Wave Radiation change (annual mean or seasonal) in multi-model mean with signficance
+    description: Long Wave Radiation change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -960,42 +1065,49 @@ diagnostics:
         field: T2Ms
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 1950}
-      - {dataset: IPSL-CM5A-LR, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 1950}
-      - {dataset: NorESM1-ME,   exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 1950}
+      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
+      - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
 
       - {dataset: CESM1-CAM5,   exp: rcp45, start_year: 2081, end_year: 2100}
       - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: NorESM1-ME,   exp: rcp45, ensemble: r1i1p1, start_year: 2081, end_year: 2100}
+      - {dataset: NorESM1-ME,   exp: rcp45, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_map_diff_mmm_rlut: &rlut_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['rlut', 'IAV_calc_rlut/ch12_calc_IAV_for_stippandhatch_rlut']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to above? (mmm, each),
-        # if "each" calculate them in IAV_calc_rlut
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_rlut and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
+        # Show difference in percent (1, default 0)
         percent: 0
+
       ch12_plot_map_diff_mmm_stipp_rlut:
         <<: *rlut_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['rlut', 'ch12_calc_map_diff_mmm_rlut']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         title: "Annual mean long wave TOA radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
@@ -1003,22 +1115,24 @@ diagnostics:
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean Short Wave Radiation change in RCPs for multi model mean ###
+
+  ###  Mean Short Wave Radiation change in RCPs for multi model mean ##########
   IAV_calc_rsut:
-    description: Calculate short wave radiation interannual variability for stippling significance
+    description: Calculate short wave radiation interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -1032,36 +1146,42 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1, start_year: 1, end_year: 500}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1, start_year: 1, end_year: 400}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1, start_year: 1450, end_year: 2008}
-      - {dataset: CanESM2,        ensemble: r1i1p1, start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1, start_year: 1, end_year: 319}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1, start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1, start_year: 1, end_year: 500}
-      - {dataset: inmcm4,         ensemble: r1i1p1, start_year: 1850, end_year: 2349}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1, start_year: 1800, end_year: 2799}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1, start_year: 1800, end_year: 2099}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1, start_year: 1830, end_year: 2129}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1, start_year: 1800, end_year: 2429}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1, start_year: 700, end_year: 1200}
-      - {dataset: NorESM1-ME,     ensemble: r1i1p1, start_year: 901, end_year: 1152}
- 
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
+      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
+      - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
+      - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
+      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
+      - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
+      - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
+      - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
+      - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
+      - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
+
     scripts:
       ch12_calc_IAV_for_stippandhatch_rsut: &IAV_settings_rsut
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   rsut_change_mmm:
-    description: Short Wave Radiation change (annual mean or seasonal) in multi-model mean with signficance
+    description: Short Wave Radiation change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -1075,7 +1195,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
       - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
       - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
 
@@ -1086,31 +1206,38 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_rsut: &rsut_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['rsut', 'IAV_calc_rsut/ch12_calc_IAV_for_stippandhatch_rsut']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to above?
-        # (mmm, each), if "each" calculate them in IAV_calc_rsut
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_rsut and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
+        # Show difference in percent (1, default 0)
         percent: 0
+
       ch12_plot_map_diff_mmm_stipp_rsut:
         <<: *rsut_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['rsut', 'ch12_calc_map_diff_mmm_rsut']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         title: "Annual mean short wave TOA radiation change"
         # Contour levels for all difference plots
         diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
@@ -1118,22 +1245,24 @@ diagnostics:
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-###  Mean cloud cover change in RCPs for multi model mean ###
+
+  ###  Mean cloud cover change in RCPs for multi model mean ###################
   IAV_calc_clt:
-    description: Calculate cloud cover interannual variability for stippling significance
+    description: Calculate cloud cover interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -1149,25 +1278,31 @@ diagnostics:
     additional_datasets:
 
       - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
-      - {dataset: CSIRO-Mk3-6-0, start_year: 1,    end_year: 500}
-      - {dataset: GFDL-ESM2G,    start_year: 1,    end_year: 500}
-      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}     
+      - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  500}
+      - {dataset: GFDL-ESM2G,    start_year:    1, end_year:  500}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}
       - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2849}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_clt: &IAV_settings_clt
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Length of period in years to calculate variability over, default is total time period
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over, default total time period
         periodlength: 20.
-        #iavmode:   # calculate IAV from multi-model mean or save individual models ("each")?
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+
 
   clt_change_mmm:
-    description: Cloud fraction change (annual mean or seasonal) in multi-model mean with significance
+    description: Cloud fraction change (annual mean or seasonal)
+                 in multi-model mean with significance
     themes:
       - phys
     realms:
@@ -1175,12 +1310,12 @@ diagnostics:
     variables:
       clt:
         preprocessor: preproc_map
-        project: CMIP5 
+        project: CMIP5
         ensemble : r1i1p1
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
 
       - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
@@ -1195,52 +1330,62 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_clt: &clt_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['clt', 'IAV_calc_clt/ch12_calc_IAV_for_stippandhatch_clt']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim) 
+        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: annualclim
-        # labels on top of each panel, loop is seasons, scenarios, periods
-        label: ["RCP2.6 2081-2100","RCP4.5 2081-2100", "RCP8.5 2081-2100"]
-        # Optional attributes:
-        # list with seasons index if averagetime is "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default is mmm, otherwise set iavmode = "each" and make sure to have them in IAV_calc_clt and
-        # set iavmode to "each" there too
-        #iavmode:
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
+        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP8.5 2081-2100"]
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_clt and set iavmode to "each" there too)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_map_diff_mmm_stipp_clt:
         <<: *clt_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['clt', 'ch12_calc_map_diff_mmm_clt']
-        # Optional attributes:
-        # map projection, any valid ncl projection, default Robinson  
-        #projection: Robinson
-        title: "Annula mean cloud fraction change"
-        # explicit levels for all contour plots
-        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        max_vert: 2  # maximum number of plots in vertical
-        max_hori: 2  # maximum number of plots in horizontal
-        # use alternative colormap
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span:
-        # plot stippling for significance?
-        sig: True
-        # plot hatching for uncertainty?
-        not_sig: True
-        # an alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # boolean, true if want number of models included in mmm to be printet in top right
-        model_nr: True
 
-###  Mean sea level pressure change in RCPs for multi model mean ###
+        ### Required attributes
+        ancestors: ['clt', 'ch12_calc_map_diff_mmm_clt']
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
+        title: "Annula mean cloud fraction change"
+        # Contour levels for all difference plots
+        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # Maximum number of plots in vertical
+        max_vert: 2
+        # Maximum number of plots in horizontal
+        max_hori: 2
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
+
+  ###  Mean sea level pressure change in RCPs for multi model mean ############
   IAV_calc_psl:
-    description: Calculate sea level pressure interannual variability for stippling significance
+    description: Calculate sea level pressure interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -1256,27 +1401,32 @@ diagnostics:
     additional_datasets:
 
       - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,    start_year: 1, end_year: 319}
-      - {dataset: CSIRO-Mk3-6-0, start_year: 1, end_year: 500}
-      - {dataset: GFDL-ESM2G,    start_year: 1, end_year: 500}
-      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}     
+      - {dataset: CESM1-CAM5,    start_year:    1, end_year:  319}
+      - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  500}
+      - {dataset: GFDL-ESM2G,    start_year:    1, end_year:  500}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}
       - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2849}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_psl: &IAV_settings_psl
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: seasonalclim
-        ## Optional attributes:
-        # Length of period in years to calculate variability over, default is total time period
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over, default total time period
         periodlength: 20.
-        # calculate IAV from multi-model mean or save individual models ("each")?
-        #iavmode:
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+
 
   psl_change_mmm:
-    description: Mean sea level pressure change (annual mean or seasonal) in multi-model mean with significance
+    description: Mean sea level pressure change (annual mean or seasonal)
+                 in multi-model mean with significance
     themes:
       - phys
     realms:
@@ -1284,12 +1434,12 @@ diagnostics:
     variables:
       psl:
         preprocessor: preproc_map
-        project: CMIP5 
+        project: CMIP5
         ensemble : r1i1p1
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
 
       - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
@@ -1304,52 +1454,64 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_psl: &psl_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['psl', 'IAV_calc_psl/ch12_calc_IAV_for_stippandhatch_psl']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
         time_avg: seasonalclim
-        # labels on top of each panel, loop is seasons, scenarios, periods
-        label: ["DJF RCP2.6 2081-2100", "DJF RCP4.5 2081-2100", "DJF RCP8.5 2081-2100", "JJA RCP2.6 2081-2100", "JJA RCP4.5 2081-2100", "JJA RCP8.5 2081-2100"]
-        # Optional attributes:
-        # list with seasons index if averagetime is "seasonalclim" (then required),  DJF:0, MAM:1, JJA:2, SON:3  
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
+        label: ["DJF RCP2.6 2081-2100", "DJF RCP4.5 2081-2100", "DJF RCP8.5 2081-2100",
+                "JJA RCP2.6 2081-2100", "JJA RCP4.5 2081-2100", "JJA RCP8.5 2081-2100"]
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 2]
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default is mmm, otherwise set iavmode = "each" and make sure to have them in
-        # IAV_calc_psl and set iavmode to "each" there too
-        #iavmode:
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_psl and set iavmode to "each" there too)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_map_diff_mmm_stipp_psl:
         <<: *psl_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['psl', 'ch12_calc_map_diff_mmm_psl']
-        # Optional attributes:
-        # map projection, any valid ncl projection, default Robinson  
-        #projection: Robinson
-        title: "Seasonal mean sea level pressure change"
-        # explicit levels for all contour plots
-        diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4] 
-        max_vert: 3  # maximum number of plots in vertical
-        max_hori: 2  # maximum number of plots in horizontal
-        # Alternative colormap, path to rgb file or ncl name
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        span: False
-        # plot stippling for significance?
-        sig: True
-        # plot hatching for uncertainty?
-        not_sig: True
-        # an alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # boolean, true if want number of models included in mmm to be printet in top right of figure 
-        model_nr: True
 
-  ###  Mean humidity change in RCPs for multi model mean ###
+        ### Required attributes
+        ancestors: ['psl', 'ch12_calc_map_diff_mmm_psl']
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
+        title: "Seasonal mean sea level pressure change"
+        # Contour levels for all difference plots
+        diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
+        # Maximum number of plots in vertical
+        max_vert: 3
+        # Maximum number of plots in horizontal
+        max_hori: 2
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        # Span whole colormap (default false)
+        span: false
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
+
+
+  ###  Mean humidity change in RCPs for multi model mean ######################
   IAV_calc_hurs:
-    description: Calculate mean relative humidity interannual variability for stippling significance
+    description: Calculate mean relative humidity interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -1363,35 +1525,41 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     start_year: 1, end_year: 500}
-      - {dataset: bcc-csm1-1-m,   start_year: 1, end_year: 400}
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
       - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     start_year: 1, end_year: 319}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1, end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
       - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
       - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      start_year: 700, end_year: 1200}
-      - {dataset: NorESM1-ME,     start_year: 901, end_year: 1152}
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_hurs: &IAV_settings_hurs
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: seasonalclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   hurs_change_mmm:
-    description: Mean relative humidity change (annual mean or seasonal) in multi-model mean with signficance
+    description: Mean relative humidity change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -1405,7 +1573,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
       - {dataset: CESM1-CAM5,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: NorESM1-ME,   exp: historical, start_year: 1986, end_year: 2005}
 
       - {dataset: CESM1-CAM5,   exp: rcp85, start_year: 2081, end_year: 2100}
@@ -1415,31 +1583,38 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_hurs: &hurs_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['hurs', 'IAV_calc_hurs/ch12_calc_IAV_for_stippandhatch_hurs']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: seasonalclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP8.5 DJF 2081-2100", "RCP8.5 JJA 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list (required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 2]
-        # use IAV data from multi-model mean or include identical models to above?
-        # (mmm, each), if "each" calculate them in IAV_calc_hurs
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_hurs and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
+        # Show difference in percent (1, default 0)
         percent: 1
+
       ch12_plot_map_diff_mmm_stipp_hurs:
         <<: *hurs_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['hurs', 'ch12_calc_map_diff_mmm_hurs']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         # title above plot
         title: "Mean relative humidity change"
         # Contour levels for all difference plots
@@ -1448,22 +1623,24 @@ diagnostics:
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printed in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean Salinity change in RCPs for multi model mean ###
+
+  ###  Mean Salinity change in RCPs for multi model mean ######################
   IAV_calc_sos:
-    description: Calculate salinity interannual variability for stippling significance
+    description: Calculate salinity interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -1477,7 +1654,7 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1,    end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: HadGEM2-CC,     start_year: 1860, end_year: 2099}
       - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
       - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
@@ -1485,17 +1662,23 @@ diagnostics:
     scripts:
       ch12_calc_IAV_for_stippandhatch_sos: &IAV_settings_sos
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   sos_change_mmm:
-    description: Mean salinity change (annual mean or seasonal) in multi-model mean with signficance
+    description: Mean salinity change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -1539,31 +1722,38 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_sos: &sos_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['sos', 'IAV_calc_sos/ch12_calc_IAV_for_stippandhatch_sos']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP8.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [0, 2]
-        # use IAV data from multi-model mean or include identical models to above?
-        # (mmm, each), if "each" calculate them in IAV_calc_sos
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [0, 2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_sos and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
-        #percent: 1
+        # Show difference in percent (1, default 0)
+        # percent: 1
+
       ch12_plot_map_diff_mmm_stipp_sos:
         <<: *sos_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['sos', 'ch12_calc_map_diff_mmm_sos']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         title: "Annual mean surface salinity change"
         # Contour levels for all difference plots
         diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1., 1.5, 2.]
@@ -1571,22 +1761,24 @@ diagnostics:
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean zonal variable change in one RCP for multi model mean ###
+
+  ###  Mean zonal variable change in one RCP for multi model mean #############
   IAV_calc_ta:
-    description: Calculate 3D temperature (ta) IAV for stippling significance in zonal plot
+    description: Calculate 3D temperature (ta) IAV
+                 for stippling significance in zonal plot
     themes:
       - varmodes
     realms:
@@ -1601,22 +1793,28 @@ diagnostics:
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,        exp: piControl, start_year: 2015, end_year: 3010}
-      - {dataset: GFDL-ESM2G,     exp: piControl, start_year: 1, end_year: 500}
+      - {dataset: GFDL-ESM2G,     exp: piControl, start_year:    1, end_year:  500}
       - {dataset: IPSL-CM5A-LR,   exp: piControl, start_year: 1800, end_year: 2799}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_ta:
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Optional attributes:
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
-  ###  Mean air temperature change in one RCP for multi model mean ###
+
+  ###  Mean air temperature change in one RCP for multi model mean ############
   ta_change_mmm:
-    description: Air temperature change for RCPs, periods, significance as zonal plots.
+    description: Air temperature change for RCPs, periods,
+                 significance as zonal plots.
     themes:
       - phys
     realms:
@@ -1630,7 +1828,7 @@ diagnostics:
         field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
 
@@ -1649,39 +1847,53 @@ diagnostics:
     scripts:
       ch12_calc_zonal_diff_mmm_ta: &ta_settings
         script: ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['ta', 'IAV_calc_ta/ch12_calc_IAV_for_stippandhatch_ta']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl), if seasonalclim seasons needed
         time_avg: annualclim
-        # labels on top of each panel, loop to plot is seasons, scenarios, periods, needed to write file
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP8.5 2081-2100"]
-        # Optional attributes:
+
+        ### Optional attributes
+        # Units string
         units: (~F35~J~F~C)
-        # list with seasons index if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons:  
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default if not given is mmm, otherwise set iavmode = "each"  
-        #iavmode:
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons:
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_zonal_diff_mmm_ta:
         <<: *ta_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
-        ancestors: ['ta', 'ch12_calc_zonal_diff_mmm_ta']
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
-        diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
-        sig: True
-        not_sig: True
-        max_hori: 3
-        # boolean, true if want number of models included in mmm to be printet in top right
-        model_nr: True
 
-  ###  Mean zonal variable change in one RCP for multi model mean ###
+        ### Required attributes
+        ancestors: ['ta', 'ch12_calc_zonal_diff_mmm_ta']
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        # Contour levels for all difference plots
+        diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Maximum number of plots in horizontal
+        max_hori: 3
+        # Print number of models at top-right of the figure
+        model_nr: true
+
+
+  ###  Mean zonal variable change in one RCP for multi model mean #############
   IAV_calc_ua:
-    description: Calculate 3D wind (ua) IAV for stippling significance in zonal plot
+    description: Calculate 3D wind (ua) IAV
+                 for stippling significance in zonal plot
     themes:
       - varmodes
     realms:
@@ -1697,22 +1909,28 @@ diagnostics:
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: GFDL-ESM2G,     start_year: 1,    end_year: 500}
+      - {dataset: GFDL-ESM2G,     start_year:    1, end_year:  500}
       - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_ua:
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Optional attributes:
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
-  ###  Mean wind change in RCPs for multi model mean ###
+
+  ###  Mean wind change in RCPs for multi model mean ##########################
   ua_change_mmm:
-    description: Zonal wind change for RCPs, periods, significance as zonal plots.
+    description: Zonal wind change for RCPs, periods,
+                significance as zonal plots.
     themes:
       - phys
     realms:
@@ -1726,7 +1944,7 @@ diagnostics:
         field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
 
@@ -1745,47 +1963,61 @@ diagnostics:
     scripts:
       ch12_calc_zonal_diff_mmm_ua: &ua_settings
         script: ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['ua', 'IAV_calc_ua/ch12_calc_IAV_for_stippandhatch_ua']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl), if seasonalclim seasons needed
         time_avg: annualclim
-        #### map projection, any valid ncl projection  
-        ###projection: Robinson
-        # labels on top of each panel, loop to plot is seasons, scenarios, periods, needed to write file
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP8.5 2081-2100"]
-        # Optional attributes:
-        # boolean, true if want contours of base period as lines, need to save base period field  
-        base_cn: True
+
+        ### Optional attributes
+        # Plot contours of base period as lines (need to save base period field)
+        base_cn: true
+        # Units string
         units: (m s~S~-1~N~)
-        # list with seasons index to be included if averagetime is "seasonalclim",  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons:
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default if not given is mmm, otherwise set iavmode = "each"  
-        #iavmode:
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons:
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_zonal_diff_mmm_ua:
         <<: *ua_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['ua', 'ch12_calc_zonal_diff_mmm_ua']
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        # Contour levels for all difference plots
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-        sig: True
-        not_sig: True
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Maximum number of plots in horizontal
         max_hori: 3
-        # boolean, true if want number of models included in mmm to be printet in top right
-        model_nr: True
-        # if base_cn: True further settings to control contour lines
+        # Print number of models at top-right of the figure
+        model_nr: true
+        # Further settings to control contour lines (for base_cn: true)
         base_cnLevelSpacing: 10.
         base_cnMinLevel: -40
         base_cnMaxLevel: 40
 
-  ###  Mean ocean temperature change in RCPs for multi model mean ###
+
+  ###  Mean ocean temperature change in RCPs for multi model mean #############
   IAV_calc_thetao:
-    description: Calculate 3D ocean temperature (thetao) IAV for stippling significance in zonal plot
+    description: Calculate 3D ocean temperature (thetao) IAV
+                 for stippling significance in zonal plot
     themes:
       - varmodes
     realms:
@@ -1800,22 +2032,28 @@ diagnostics:
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1,    end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: HadGEM2-CC,     start_year: 1860, end_year: 2099}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_thetao:
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Optional attributes:
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
-  ###  Mean air temperature change in one RCP for multi model mean ###
+
+  ###  Mean air temperature change in one RCP for multi model mean ############
   thetao_change_mmm:
-    description: Air temperature change for RCPs, periods, significance as zonal plots.
+    description: Air temperature change for RCPs, periods,
+                 significance as zonal plots.
     themes:
       - phys
     realms:
@@ -1829,7 +2067,7 @@ diagnostics:
         field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: HadGEM2-CC,     exp: historical, start_year: 1986, end_year: 2004}
 
@@ -1840,36 +2078,48 @@ diagnostics:
     scripts:
       ch12_calc_zonal_diff_mmm_thetao: &thetao_settings
         script: ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['thetao', 'IAV_calc_thetao/ch12_calc_IAV_for_stippandhatch_thetao']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # labels on top of each panel, loop to plot is seasons, scenarios, periods, needed to write
-        label: ["RCP8.5 2081-2100"]   
-        # Optional attributes:
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
+        label: ["RCP8.5 2081-2100"]
+
+        ### Optional attributes
+        # Units string
         units: (~F35~J~F~C)
-        # list with seasons index to be included if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons:
-        # use IAV data from multi-model mean or include identical models to the ones plotted?
-        # default if not given is mmm, otherwise set iavmode = "each"  
-        #iavmode:
-        #percent: #0 or 1, difference in percent = 1, default = 0
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons:
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_zonal_diff_mmm_thetao:
         <<: *thetao_settings
         script: ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['thetao', 'ch12_calc_zonal_diff_mmm_thetao']
+        # Plot title
         title: "Annual mean ocean temperature change (2081-2100)"
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        # Contour levels for all difference plots
         diff_levs: [-0.5, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
-        sig: True
-        not_sig: True
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
         max_hori: 3
-        # boolean, true if want number of models included in mmm to be printet in top right
-        model_nr: True
+        # Print number of models at top-right of the figure
+        model_nr: true
 
   ###  Mean Soil Moisture change in RCPs for multi model mean ###
   IAV_calc_mrsos:
@@ -1896,15 +2146,21 @@ diagnostics:
     scripts:
       ch12_calc_IAV_for_stippandhatch_mrsos: &IAV_settings_mrsos
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Optional attributes:
+
+        ### Optional attributes
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   mrsos_change_mmm:
-    description: Soil moisture change (annual mean or seasonal) in multi-model mean with signficance
+    description: Soil moisture change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -1917,7 +2173,7 @@ diagnostics:
         field: T2Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
@@ -1949,52 +2205,62 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_mrsos: &mrsos_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
         ancestors: ['mrsos', 'IAV_calc_mrsos/ch12_calc_IAV_for_stippandhatch_mrsos']
-        # list with scenarios to be included
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # labels on top of each panel, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
-        # Optional attributes:
-        # list with seasons index if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [2]
-        # use IAV data from multi-model mean or include identical models to the ones plotted? default is mmm
-        # otherwise set iavmode to "each" and make sure to have them in IAV_calc_mrsos
-        #iavmode:
-        #percent: 1 #0 or 1, difference in percent = 1, default = 0
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_mrsos and set iavmode to "each" there too)
+        # iavmode:
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_map_diff_mmm_stipp_mrsos:
         <<: *mrsos_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-        ancestors: ['mrsos', 'ch12_calc_map_diff_mmm_mrsos']
-        # Optional attributes:
-        # map projection, any valid ncl projection, default Robinson  
-        projection: Robinson
-        # explicit levels for all contour plots
-        diff_levs: [-2, -1.6, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.6, 2]
-        # maximum number of plots in vertical
-        max_vert: 2
-        # maximum number of plots in horizontal
-        max_hori: 2
-        # Alternative colormap, path to rgb file or ncl name
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span:
-        # plot stippling for significance?  
-        sig: True
-        # plot hatching for uncertainty?
-        not_sig: True
-        # an alternative name for the output plot, default is varname + time_avg
-        #pltname:
-        # boolean, true if want number of models included in mmm to be printet in top right
-        model_nr: True
 
-  ###  Mean runoff change in RCPs for multi model mean ###
+        ### Required attributes
+        ancestors: ['mrsos', 'ch12_calc_map_diff_mmm_mrsos']
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        projection: Robinson
+        # Contour levels for all difference plots
+        diff_levs: [-2, -1.6, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.6, 2]
+        # Maximum number of plots in vertical
+        max_vert: 2
+        # Maximum number of plots in horizontal
+        max_hori: 2
+        # Alternative colormap (path to .rgb file or ncl name)
+        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
+
+
+  ###  Mean runoff change in RCPs for multi model mean ########################
   IAV_calc_mrro:
-    description: Calculate runoff interannual variability for stippling significance
+    description: Calculate runoff interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -2008,36 +2274,42 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     start_year: 1, end_year: 500}
-      - {dataset: bcc-csm1-1-m,   start_year: 1, end_year: 400}
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
       - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     start_year: 1, end_year: 319}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1, end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
-      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}
+      - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
       - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
       - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      start_year: 700, end_year: 1200}
-      - {dataset: NorESM1-ME,     start_year: 901, end_year: 1152}
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_mrro: &IAV_settings_mrro
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   mrro_change_mmm:
-    description: Mean runoff change (annual mean or seasonal) in multi-model mean with signficance
+    description: Mean runoff change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -2050,7 +2322,7 @@ diagnostics:
         mip: Lmon
         field: T2Ms
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
@@ -2082,53 +2354,62 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_mrro: &mrro_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['mrro', 'IAV_calc_mrro/ch12_calc_IAV_for_stippandhatch_mrro']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [0, 2]
-        # use IAV data from multi-model mean or include identical models to above?
-        # (mmm, each), if "each" calculate them in IAV_calc_mrro
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [0, 2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_mrro and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
-        #percent: 1
+        # Show difference in percent (1, default 0)
+        # percent: 1
+
       ch12_plot_map_diff_mmm_stipp_mrro:
         <<: *mrro_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['mrro', 'ch12_calc_map_diff_mmm_mrro']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         # Contour levels for all difference plots
         diff_levs: [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Mean Evaporation change in RCPs for multi model mean ###
+
+  ###  Mean Evaporation change in RCPs for multi model mean ###################
   IAV_calc_evspsbl:
-    description: Calculate evaporation interannual variability for stippling significance
+    description: Calculate evaporation interannual variability
+                 for stippling significance
     themes:
       - varmodes
     realms:
@@ -2142,36 +2423,42 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: bcc-csm1-1,     start_year: 1, end_year: 500}
-      - {dataset: bcc-csm1-1-m,   start_year: 1, end_year: 400}
+      - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
+      - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
       - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,     start_year: 1, end_year: 319}
+      - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
-      - {dataset: CSIRO-Mk3-6-0,  start_year: 1, end_year: 500}
+      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
       - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
       - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
       - {dataset: MIROC-ESM,      start_year: 1800, end_year: 2429}
       - {dataset: MIROC-ESM-CHEM, start_year: 1846, end_year: 2100}
-      - {dataset: NorESM1-M,      start_year: 700, end_year: 1200}
-      - {dataset: NorESM1-ME,     start_year: 901, end_year: 1152}
+      - {dataset: NorESM1-M,      start_year:  700, end_year: 1200}
+      - {dataset: NorESM1-ME,     start_year:  901, end_year: 1152}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_evspsbl: &IAV_settings_evspsbl
         script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
-        # Required attributes:
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        ## Optional attributes:
-        # Calculate multi-model mean or save IAV for each model separately? default is mmm, (mmm, each)
+
+        ### Optional attributes
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         iavmode: mmm
+        # Length of period in years to calculate variability over (default total time period)
         periodlength: 20.
 
+
   evspsbl_change_mmm:
-    description: Mean evaporation change (annual mean or seasonal) in multi-model mean with signficance
+    description: Mean evaporation change (annual mean or seasonal)
+                 in multi-model mean with signficance
     themes:
       - phys
     realms:
@@ -2184,7 +2471,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
@@ -2216,56 +2503,66 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_mmm_evspsbl: &evspsbl_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
-        ## Required attributes:
+
+        ### Required attributes
         ancestors: ['evspsbl', 'IAV_calc_evspsbl/ch12_calc_IAV_for_stippandhatch_evspsbl']
-        # Scenarios to be included as list ([rcp26, rcp45, rcp60, rcp85])
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # Start years of periods to be included as list
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # Labels on top of each panel as list of strings, loop is seasons, scenarios, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
-        ## Optional attributes:
-        # Season indices as list, required for seasonalclim),  DJF:0, MAM:1, JJA:2, SON:3
-        #seasons: [0, 2]
-        # use IAV data from multi-model mean or include identical models to above? (mmm, each),
-        # if "each" calculate them in IAV_calc_evspsbl
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [0, 2]
+        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # (if "each", make sure to have them in IAV_calc_evspsbl and set iavmode to "each" there too)
         iavmode: mmm
-        # Difference in percent? (0, 1) default = 0
-        #percent: 1
+        # Show difference in percent (1, default 0)
+        # percent: 1
+
       ch12_plot_map_diff_mmm_stipp_evspsbl:
         <<: *evspsbl_map_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['evspsbl', 'ch12_calc_map_diff_mmm_evspsbl']
-        ## Optional attributes:
-        # Map projection, any valid ncl projection, default Robinson
-        #projection: Robinson
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
+        # projection: Robinson
         # Contour levels for all difference plots
         diff_levs: [-1., -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1.]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
-        # Specify alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
-        # boolean to decide if span whole colormap (default = True)
-        #span: 
-        # Stippling for significance?
-        sig: True
-        # Hatching for uncertainty?
-        not_sig: True
-        # Alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # Number of models precalculated included in mmm calculated and printet in top right of panel (False, True) 
-        model_nr: True
+        # Span whole colormap (default false)
+        # span:
+        # Plot significance as stippling
+        sig: true
+        # Plot uncertainty as hatching
+        not_sig: true
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Print number of models at top-right of the figure
+        model_nr: true
 
-  ###  Change scaled by global average temperature change ##
+
+  ###  Change scaled by global average temperature change #####################
   tas_change_scaleT:
-    description: Multi-model mean temperature change scaled by global T change map with significance.
-    # Caveat: method requires that the pattern be estimated at a time when the temperature change
-    # signal from CO2 increase has emerged, hence, in IPCC AR5 rcp2.6 FIO-ESM model was excluded because
-    # it did not show any warming by the end of the 21st century.
+    description: Multi-model mean temperature change
+                 scaled by global T change map with significance.
+    # Caveat: method requires that the pattern be estimated at a time when the
+    # temperature change signal from CO2 increase has emerged, hence, in
+    # IPCC AR5 rcp2.6 FIO-ESM model was excluded because it did not show any
+    # warming by the end of the 21st century.
     themes:
       - phys
     realms:
@@ -2280,7 +2577,7 @@ diagnostics:
     additional_datasets:
       - {dataset: CCSM4,            exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: CESM1-CAM5,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR,     exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1986, end_year: 2005}
@@ -2319,114 +2616,145 @@ diagnostics:
     scripts:
       ch12_calc_map_diff_scaleT_tas: &tas_scale_settings
         script: ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
-        # Required attributes:
-        # list with scenarios to be included  
+
+        ### Required attributes
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # list with start years of periods to be included
+        # List with start years of periods to be included
         periods: [2081, 2181]
         # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
         time_avg: annualclim
-        # labels on top of each panel, loop to plot is seasons, periods
+        # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["2081-2100", "2181-2200"]
-        # Optional attributes:
-        # list with seasons index if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3  
-        #seasons: [0, 2]
-        # difference in percent? percent = 1, default = 0
-        #percent:
+
+        ### Optional attributes
+        # List with seasons index (required if time_avg "seasonalclim")
+        # (DJF:0, MAM:1, JJA:2, SON:3)
+        # seasons: [0, 2]
+        # Show difference in percent (1, default 0)
+        # percent:
+
       ch12_plot_map_diff_scaleT_tas:
         <<: *tas_scale_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+        ### Required attributes
         ancestors: ['tas', 'ch12_calc_map_diff_scaleT_tas']
-        # Optional attributes:
-        # map projection, any valid ncl projection  
+
+        ### Optional attributes
+        # Map projection (any valid ncl projection, default Robinson)
         projection: Robinson
-        # plot significance as stippling?
-        sig: True
-        # use explicit levels for contour plot?
+        # Plot significance as stippling
+        sig: true
+        # Contour levels for all difference plots
         diff_levs: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
-        # use alternative colormap
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_temp_scaling.rgb
-        # an alternative name for the output plot, default is diagnostic + varname + time_avg
-        #pltname:
-        # maximum number of plots in vertical  
-        #max_vert: 2
-        # maximum number of plots in horizontal
-        #max_hori: 2
+        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # pltname:
+        # Maximum number of plots in vertical
+        # max_vert: 2
+        # Maximum number of plots in horizontal
+        # max_hori: 2
 
-#   pr_change_scaleT:
-#     description: Multi-model mean precipitation change scaled by global tas change, map with significance
-#     themes:
-#       - phys
-#     realms:
-#       - atmos
-#     variables:
-#       pr:
-#         preprocessor: preproc_map
-#         project: CMIP5
-#         mip: Amon
-#         field: T2Ms
-#         ensemble: r1i1p1
-#       tas:
-#         preprocessor: preproc_map
-#         project: CMIP5
-#         mip: Amon
-#         field: T2Ms
-#         ensemble: r1i1p1 
-#     additional_datasets:
-#       - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p1}
-#       - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
-#       - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
 
-#       - {dataset: CSIRO-Mk3-6-0,  exp: rcp26, start_year: 2081, end_year: 2100}
-#       - {dataset: GFDL-ESM2G,     exp: rcp26, start_year: 2081, end_year: 2100}
-#       - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2081, end_year: 2100}
+  # TO BE ADDED
+  # pr_change_scaleT:
+  #   description: Multi-model mean precipitation change scaled by global tas change,
+  #                map with significance
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     pr:
+  #       preprocessor: preproc_map
+  #       project: CMIP5
+  #       mip: Amon
+  #       field: T2Ms
+  #       ensemble: r1i1p1
+  #     tas:
+  #       preprocessor: preproc_map
+  #       project: CMIP5
+  #       mip: Amon
+  #       field: T2Ms
+  #       ensemble: r1i1p1
+  #   additional_datasets:
+  #     - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
+  #     - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
+  #     - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
 
-#       - {dataset: CanESM2,        exp: rcp26, start_year: 2181, end_year: 2200}
-#       - {dataset: CCSM4,          exp: rcp26, start_year: 2181, end_year: 2200}
-#       - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2181, end_year: 2200}
+  #     - {dataset: CSIRO-Mk3-6-0,  exp: rcp26, start_year: 2081, end_year: 2100}
+  #     - {dataset: GFDL-ESM2G,     exp: rcp26, start_year: 2081, end_year: 2100}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2081, end_year: 2100}
 
-#       - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2081, end_year: 2100}
-#       - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
+  #     - {dataset: CanESM2,        exp: rcp26, start_year: 2181, end_year: 2200}
+  #     - {dataset: CCSM4,          exp: rcp26, start_year: 2181, end_year: 2200}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2181, end_year: 2200}
 
-#       - {dataset: CanESM2,        exp: rcp45, start_year: 2181, end_year: 2200}
-#       - {dataset: CCSM4,          exp: rcp45, start_year: 2181, end_year: 2200}
-# #      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2181, end_year: 2200}
-#       - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2181, end_year: 2200}
+  #     - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2081, end_year: 2100}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
 
-#       - {dataset: CCSM4,          exp: rcp60, start_year: 2081, end_year: 2100}
-# #      - {dataset: CSIRO-Mk3-6-0,  exp: rcp60, start_year: 2081, end_year: 2100}
-#       - {dataset: GFDL-ESM2G,     exp: rcp60, start_year: 2081, end_year: 2100}
+  #     - {dataset: CanESM2,        exp: rcp45, start_year: 2181, end_year: 2200}
+  #     - {dataset: CCSM4,          exp: rcp45, start_year: 2181, end_year: 2200}
+  #     # - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2181, end_year: 2200}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2181, end_year: 2200}
 
-#       - {dataset: GFDL-ESM2G,     exp: rcp85, start_year: 2081, end_year: 2100}
-#       - {dataset: MPI-ESM-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
+  #     - {dataset: CCSM4,          exp: rcp60, start_year: 2081, end_year: 2100}
+  #     # - {dataset: CSIRO-Mk3-6-0,  exp: rcp60, start_year: 2081, end_year: 2100}
+  #     - {dataset: GFDL-ESM2G,     exp: rcp60, start_year: 2081, end_year: 2100}
 
-#     scripts:
-#       ch12_calc_map_diff_scaleT_pr: &pr_scale_settings
-#         script: ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
-#         # Required attributes:
-#         scenarios: [rcp45, rcp85]      #list with scenarios to be included
-#         periods: [2081, 2181]         #list with start years of periods to be included
-#         time_avg: annualclim  #seasonal or annual means
-#         label: ["2081-2100", "2181-2200"]   # labels on top of each panel, loop to plot is seasons, periods
-#         # Optional attributes:
-#         #seasons: [0, 2]  # list with seasons index to be included if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
-#         percent: 1 # difference in percent? percent = 1, default = 0
-#       ch12_plot_map_diff_scaleT_pr:
-#         <<: *pr_scale_settings
-#         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
-#         ancestors: ['pr', 'ch12_calc_map_diff_scaleT_pr']
-#         # Optional attributes:
-#         projection: Robinson   # map projection, any valid ncl projection
-#         sig: True # plot significance as stippling?
-#         diff_levs: [-12, -9, -6, -3, 0, 3, 6, 9, 12] # use explicit levels for contour plot?
-#         colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb # use alternative colormap
-#         #pltname: # an alternative name for the output plot, default is diagnostic + varname + time_avg
-#         #max_vert: 2  # maximum number of plots in vertical
-#         #max_hori: 2  # maximum number of plots in horizontal
+  #     - {dataset: GFDL-ESM2G,     exp: rcp85, start_year: 2081, end_year: 2100}
+  #     - {dataset: MPI-ESM-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
 
-  ###  Northern Hemisphere relative snow cover change timeseries
+  #   scripts:
+  #     ch12_calc_map_diff_scaleT_pr: &pr_scale_settings
+  #       script: ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
+
+  #       ### Required attributes
+  #       # List of scenarios to be included
+  #       scenarios: [rcp45, rcp85]
+  #       # List with start years of periods to be included
+  #       periods: [2081, 2181]
+  #       # Time average ('opt' argument of time_operations.ncl)
+  #       time_avg: annualclim
+  #       # Labels on top of each panel (loop is seasons, scenarios, periods)
+  #       label: ["2081-2100", "2181-2200"]
+
+  #       ### Optional attributes
+  #       # List with seasons index (required if time_avg "seasonalclim")
+  #       # (DJF:0, MAM:1, JJA:2, SON:3)
+  #       # seasons: [0, 2]
+  #       # Show difference in percent (1, default 0)
+  #       percent: 1
+  #     ch12_plot_map_diff_scaleT_pr:
+  #       <<: *pr_scale_settings
+  #       script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
+
+  #       ### Required attributes
+  #       ancestors: ['pr', 'ch12_calc_map_diff_scaleT_pr']
+
+  #       ### Optional attributes
+  #       # Map projection (any valid ncl projection, default Robinson)
+  #       projection: Robinson
+  #       # Plot significance as stippling
+  #       sig: true
+  #       # Contour levels for all difference plots
+  #       diff_levs: [-12, -9, -6, -3, 0, 3, 6, 9, 12]
+  #       # Alternative colormap (path to .rgb file or ncl name)
+  #       colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+  #       # Alternative name for output plot (default diagnostic + varname + time_avg)
+  #       # pltname:
+  #       # Maximum number of plots in vertical
+  #       # max_vert: 2
+  #       # Maximum number of plots in horizontal
+  #       # max_hori: 2
+
+
+  ###  Northern Hemisphere relative snow cover change timeseries ##############
   snw_line:
-    description: Prepare snow area data for timeseries of multiple scenarios incl. spread and then plot
+    description: Prepare snow area data for timeseries of multiple scenarios
+                 incl. spread and then plot
     themes:
       - phys
     realms:
@@ -2436,11 +2764,11 @@ diagnostics:
         project: CMIP5
         mip: LImon
         field: T2Ms
-        ensemble: r1i1p1 
+        ensemble: r1i1p1
         fx_files: [sftlf, sftgif]
 
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1980, end_year: 2005, ensemble: r1i1p1}
+      - {dataset: CanESM2,       exp: historical, start_year: 1980, end_year: 2005}
       - {dataset: CCSM4,         exp: historical, start_year: 1980, end_year: 2005}
       - {dataset: CESM1-CAM5,    exp: historical, start_year: 1980, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1980, end_year: 2005}
@@ -2481,41 +2809,48 @@ diagnostics:
 
     scripts:
       ch12_calc_ts_snw_area_change: &ts_snw_settings
-        # Required attributes:
         script: ipcc_ar5/ch12_snw_area_change_fig12-32.ncl
+
+        ### Required attributes
+        # Plot style
         styleset: CMIP5
-        # which scenarios included in figure
+        # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical period and rcps)
         syears: [1980, 2006]
-        # end years in time periods (end year of historical runs and rcps)
+        # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
-        # start year of reference period (e.g. 1986)
+        # Start year of reference period (e.g. 1986)
         begin_ref_year: 1986
-        # end year of reference period (e.g 2005)
+        # End year of reference period (e.g 2005)
         end_ref_year: 2005
-        # which months included in analysis? e.g. for NH March + April
+        # Months to be included in the analysis (e.g. for NH March + April)
         months: MA
-        # labels to use in legend depending on scenarios
+        # Labels to use in legend depending on scenarios
         label: [Historical, RCP2.6, RCP4.5, RCP6.0, RCP8.5]
-        # Optional attributes:
-        # title in plot  
+
+        ### Optional attributes
+        # title in plot
         title: "Relative snow cover extent change"
-        # y-axis title 
+        # y-axis title
         yaxis: "(-)"
-        # minimim value on y-axis
+        # Minimim value on y-axis
         ymin: -0.4
-        # maximum value on y-axis
+        # Maximum value on y-axis
         ymax: 0.2
-        # boolean, save number of model runs per period and scenario in netcdf to print in plot?
-        model_nr: True
-        # choose file to create colormap from
+        # Print number of models at top-right of the figure
+        model_nr: true
+        # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
-        ts_minlat: 0   # minimum latitude if not global e.g(/0/)
-        ts_maxlat: 90  # maximum latitude if not global e.g.(/90/)
-        ts_minlon: 0   # minimum longitude if not global e.g.(/0/)
-        ts_maxlon: 360 # maximum longitude if not global e.g.(/360/)
+        # Minimum and maximum latitudes and longitudes if not global
+        ts_minlat: 0
+        ts_maxlat: 90
+        ts_minlon: 0
+        ts_maxlon: 360
+
       ch12_plot_ts_line_snw_area_change:
         <<: *ts_snw_settings
         script: ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
+
+        ### Required attributes
         ancestors: ['snw', 'ch12_calc_ts_snw_area_change']
