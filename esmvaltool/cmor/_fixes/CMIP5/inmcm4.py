@@ -104,8 +104,6 @@ class baresoilFrac(Fix):
         iris.cube.Cube
 
         """
-        import iris
-
         typebare = iris.coords.AuxCoord(
             'bare_ground',
             standard_name='area_type',

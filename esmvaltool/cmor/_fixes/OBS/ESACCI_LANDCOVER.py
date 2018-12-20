@@ -1,5 +1,7 @@
 """Fixes for ESA-CCI Landcover."""
 
+import iris
+
 from ..fix import Fix
 
 
@@ -20,8 +22,6 @@ class baresoilFrac(Fix):
         iris.cube.Cube
 
         """
-        import iris
-
         typebare = iris.coords.AuxCoord(
             'bare_ground',
             standard_name='area_type',
