@@ -3,6 +3,7 @@ import copy
 import logging
 import os
 import shutil
+from collections import OrderedDict
 from itertools import groupby
 
 import iris
@@ -187,19 +188,40 @@ def cleanup(files, remove=None):
     return files
 
 
+def _ordered_safe_dump(data, stream):
+    """Write data containing OrderedDicts to yaml file."""
+
+    class _OrderedDumper(yaml.SafeDumper):
+        pass
+
+    def _dict_representer(dumper, data):
+        return dumper.represent_mapping(
+            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items())
+
+    _OrderedDumper.add_representer(OrderedDict, _dict_representer)
+    return yaml.dump(data, stream, _OrderedDumper)
+
+
 def write_metadata(products, write_ncl=False):
     """Write product metadata to file."""
     output_files = []
     for output_dir, prods in groupby(products,
                                      lambda p: os.path.dirname(p.filename)):
-        metadata = {}
-        for product in prods:
+        sorted_products = sorted(
+            prods,
+            key=lambda p: (
+                p.attributes.get('recipe_dataset_index', 1e6),
+                p.attributes.get('dataset', ''),
+            ),
+        )
+        metadata = OrderedDict()
+        for product in sorted_products:
             metadata[product.filename] = product.attributes
 
         output_filename = os.path.join(output_dir, 'metadata.yml')
         output_files.append(output_filename)
         with open(output_filename, 'w') as file:
-            yaml.safe_dump(metadata, file)
+            _ordered_safe_dump(metadata, file)
         if write_ncl:
             output_files.append(_write_ncl_metadata(output_dir, metadata))
 
@@ -208,7 +230,7 @@ def write_metadata(products, write_ncl=False):
 
 def _write_ncl_metadata(output_dir, metadata):
     """Write NCL metadata files to output_dir."""
-    variables = copy.deepcopy(list(metadata.values()))
+    variables = [copy.deepcopy(v) for v in metadata.values()]
 
     for variable in variables:
         fx_files = variable.pop('fx_files', {})

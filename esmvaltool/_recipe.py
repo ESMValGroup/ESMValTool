@@ -850,9 +850,10 @@ class Recipe(object):
         datasets = self._initialize_datasets(
             raw_datasets + raw_variable.pop('additional_datasets', []))
 
-        for dataset in datasets:
+        for index, dataset in enumerate(datasets):
             variable = dict(raw_variable)
             variable.update(dataset)
+            variable['recipe_dataset_index'] = index
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
