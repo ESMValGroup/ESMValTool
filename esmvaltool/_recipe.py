@@ -243,15 +243,20 @@ def _limit_datasets(variables, profile, max_datasets=0):
 
     logger.info("Limiting the number of datasets to %s", max_datasets)
 
-    required_datasets = (
+    required_datasets = {
         (profile.get('extract_levels') or {}).get('levels'),
         (profile.get('regrid') or {}).get('target_grid'),
         variables[0].get('reference_dataset'),
         variables[0].get('alternative_dataset'),
-    )
+    }
 
     limited = [v for v in variables if v['dataset'] in required_datasets]
-    limited.extend(variables[len(limited) - max_datasets:])
+    for variable in variables:
+        if len(limited) >= max_datasets:
+            break
+        if variable not in limited:
+            limited.append(variable)
+
     logger.info("Only considering %s",
                 ', '.join(v['dataset'] for v in limited))
 
@@ -945,6 +950,7 @@ class Recipe(object):
 
     def _resolve_diagnostic_ancestors(self, tasks):
         """Resolve diagnostic ancestors."""
+        tasks = {t.name: t for t in tasks}
         for diagnostic_name, diagnostic in self.diagnostics.items():
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
@@ -966,7 +972,7 @@ class Recipe(object):
     def initialize_tasks(self):
         """Define tasks in recipe."""
         logger.info("Creating tasks from recipe")
-        tasks = {}
+        tasks = set()
 
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
@@ -981,33 +987,45 @@ class Recipe(object):
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)
-                tasks[task_name] = task
-
-            if not self._cfg['run_diagnostic']:
-                continue
+                tasks.add(task)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
-                task_id = diagnostic_name + TASKSEP + script_name
-                logger.info("Creating diagnostic task %s", task_id)
+                task_name = diagnostic_name + TASKSEP + script_name
+                logger.info("Creating diagnostic task %s", task_name)
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],
                     settings=script_cfg['settings'],
-                    name=task_id)
-                tasks[task_id] = task
+                    name=task_name)
+                tasks.add(task)
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)
 
+        # Select only requested tasks
+        tasks = get_flattened_tasks(tasks)
+        if not self._cfg.get('run_diagnostic'):
+            tasks = {t for t in tasks if isinstance(t, PreprocessingTask)}
+        if self._cfg.get('diagnostics'):
+            names = {t.name for t in tasks}
+            selection = set()
+            for pattern in self._cfg.get('diagnostics'):
+                selection |= set(fnmatch.filter(names, pattern))
+            tasks = {t for t in tasks if t.name in selection}
+
+        tasks = get_flattened_tasks(tasks)
+        logger.info("These tasks will be executed: %s",
+                    ', '.join(t.name for t in tasks))
+
         # Initialize task provenance
-        for task in get_flattened_tasks(tasks.values()):
+        for task in tasks:
             task.initialize_provenance(self.entity)
 
         # TODO: check that no loops are created (will throw RecursionError)
 
         # Return smallest possible set of tasks
-        return get_independent_tasks(tasks.values())
+        return get_independent_tasks(tasks)
 
     def __str__(self):
         """Get human readable summary."""
