@@ -270,8 +270,10 @@ def get_output_file(variable, preproc_dir):
 
     outfile = os.path.join(
         preproc_dir,
-        '{diagnostic}_{preprocessor}_{variable_group}'.format(**variable),
-        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
+        variable['diagnostic'],
+        variable['variable_group'],
+        _replace_tags(cfg['output_file'], variable)[0] + '.nc',
+    )
 
     return outfile
 
@@ -280,7 +282,8 @@ def get_statistic_output_file(variable, preproc_dir):
     """Get multi model statistic filename depending on settings"""
     template = os.path.join(
         preproc_dir,
-        '{diagnostic}_{preprocessor}_{short_name}',
+        '{diagnostic}',
+        '{variable_group}',
         '{dataset}_{field}_{short_name}_{start_year}-{end_year}.nc',
     )
 
