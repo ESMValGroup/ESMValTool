@@ -1002,7 +1002,7 @@ class Recipe(object):
                     name=task_name)
                 tasks.add(task)
 
-        check.tasks(tasks)
+        check.tasks_valid(tasks)
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)

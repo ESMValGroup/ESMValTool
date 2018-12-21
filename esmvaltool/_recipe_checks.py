@@ -108,7 +108,7 @@ def data_availability(input_files, var):
                 ", ".join(str(year) for year in missing_years), input_files))
 
 
-def tasks(tasks):
+def tasks_valid(tasks):
     """Check that tasks are consistent."""
     filenames = set()
     msg = "Duplicate preprocessor filename {}, please file a bug report."
