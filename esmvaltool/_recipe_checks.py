@@ -6,7 +6,8 @@ import subprocess
 import yamale
 
 from ._data_finder import get_start_end_year
-from ._task import which
+from ._task import get_flattened_tasks, which
+from .preprocessor import PreprocessingTask
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,8 @@ def diagnostics(diags):
     """Check diagnostics in recipe."""
     for name, diagnostic in diags.items():
         if 'scripts' not in diagnostic:
-            raise RecipeError("Missing scripts section in diagnostic {}"
-                              .format(name))
+            raise RecipeError(
+                "Missing scripts section in diagnostic {}".format(name))
         variable_names = tuple(diagnostic.get('variables', {}))
         scripts = diagnostic.get('scripts')
         if scripts is None:
@@ -105,3 +106,15 @@ def data_availability(input_files, var):
         raise RecipeError(
             "No input data available for years {} in files {}".format(
                 ", ".join(str(year) for year in missing_years), input_files))
+
+
+def tasks(tasks):
+    """Check that tasks are consistent."""
+    filenames = set()
+    msg = "Duplicate preprocessor filename {}, please file a bug report."
+    for task in get_flattened_tasks(tasks):
+        if isinstance(task, PreprocessingTask):
+            for product in task.products:
+                if product.filename in filenames:
+                    raise ValueError(msg.format(product.filename))
+                filenames.add(product.filename)
