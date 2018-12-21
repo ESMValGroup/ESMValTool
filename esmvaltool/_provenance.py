@@ -114,26 +114,28 @@ class TrackedFile(object):
 
         self.provenance = None
         self.entity = None
+        self.activity = None
         self._ancestors = [] if ancestors is None else ancestors
-        self._activity = None
 
     def __str__(self):
+        """Return summary string."""
         return "{}: {}".format(self.__class__.__name__, self.filename)
 
     def copy_provenance(self, target=None):
         """Create a copy with identical provenance information."""
+        if self.provenance is None:
+            raise ValueError("Provenance of {} not initialized".format(self))
         if target is None:
-            new = TrackedFile(self.filename, self.attributes, self._ancestors)
+            new = TrackedFile(self.filename, self.attributes)
         else:
             if target.filename != self.filename:
                 raise ValueError(
                     "Attempt to copy provenance to incompatible file.")
             new = target
             new.attributes = copy.deepcopy(self.attributes)
-            new._ancestors = self._ancestors
         new.provenance = copy.deepcopy(self.provenance)
         new.entity = new.provenance.get_record(self.entity.identifier)[0]
-        new._activity = new.provenance.get_record(self._activity.identifier)[0]
+        new.activity = new.provenance.get_record(self.activity.identifier)[0]
         return new
 
     @property
@@ -164,7 +166,7 @@ class TrackedFile(object):
 
     def _initialize_activity(self, activity):
         """Copy the preprocessor task activity."""
-        self._activity = activity
+        self.activity = activity
         update_without_duplicating(self.provenance, activity.bundle)
 
     def _initialize_entity(self):
@@ -194,9 +196,9 @@ class TrackedFile(object):
         else:
             other_entity = other
         update_without_duplicating(self.provenance, other_entity.bundle)
-        if not self._activity:
+        if not self.activity:
             raise ValueError("Activity not initialized.")
-        self.entity.wasDerivedFrom(other_entity, self._activity)
+        self.entity.wasDerivedFrom(other_entity, self.activity)
 
     def _select_for_include(self):
         attributes = {

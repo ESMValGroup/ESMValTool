@@ -680,6 +680,7 @@ def _get_derive_input_variables(variables, config_user):
     derive_input = {}
 
     def append(group_prefix, var):
+        """Append variable `var` to a derive input group."""
         group = group_prefix + var['short_name']
         var['variable_group'] = group
         if group not in derive_input:
