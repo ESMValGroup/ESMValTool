@@ -21,6 +21,9 @@
 ;                         variable "ts")
 ;                       - False = no additional grid cells masked for
 ;                         variable "ts"
+;   obs_datasets:       names of observations datasets to be displayed 
+;                       with selected colors and line styles in the zonal
+;                       mean plot (models will be displayed as thin gray lines)
 ;   projection:         map projection, e.g., Mollweide, Mercator
 ;   styleset:           style set for zonal mean plot ("CMIP5", "DEFAULT")
 ;   timemean:           time averaging, i.e. "seasonalclim" (DJF, MAM, JJA,
@@ -99,9 +102,6 @@ begin
   dim_MOD0 = ListCount(info0)
   if (isatt(variable_info[mainvarind], "reference_dataset")) then
     refname = variable_info[mainvarind]@reference_dataset
-  end if
-  if (isatt(variable_info[mainvarind], "alternative_dataset")) then
-    refname2 = variable_info[mainvarind]@alternative_dataset
   end if
   names = metadata_att_as_array(info0, "dataset")
   infiles = metadata_att_as_array(info0, "filename")
@@ -188,15 +188,6 @@ begin
   if (ismissing(ref_ind)) then
     error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
               + refname + ") is missing")
-  end if
-
-  if (isvar("refname2")) then
-    ref_ind2 = ind(names .eq. refname2)
-    if (ismissing(ref_ind2)) then
-      ref_ind2 = -1
-    end if
-  else
-    ref_ind2 = -1
   end if
 
   ; get multi-model mean index
@@ -395,22 +386,32 @@ begin
   ; we order the zonal mean array in a way so that
   ; the lines for the multi-model mean and reference model will
   ; be drawn on top of the lines for the individual models, i.e.:
-  ;  (1) individual model(s)
-  ;  (2) reference model(s) (observations)
-  ;  (3) multi-model mean
+  ;  (1) individual models
+  ;  (2) observations w/o reference dataset
+  ;  (3) reference dataset
+  ;  (4) multi-model mean
 
   dims = dimsizes(zm)
   zonalmean = new(dims, float)
   copy_VarMeta(zm, zonalmean)
 
-  ; model indices with no reference model(s) and no multi-model mean
+  ; model indices (datasets to be displayed as thin gray lines in the zonal
+  ; mean plot); obs and multi-model mean are colored according to the selected
+  ; style set
 
   model_ind = ispan(0, dim_MOD0 - 1, 1)
   model_ind(ref_ind) = -1
-  if (ref_ind2 .ge. 0) then
-    model_ind(ref_ind2) = -1
-  end if
   model_ind(mm_ind) = -1
+
+  if (isatt(diag_script_info, "obs_datasets")) then
+    do n = 0, dimsizes(diag_script_info@obs_datasets) - 1
+      obs_ind = ind(names .eq. diag_script_info@obs_datasets(n))
+      if (.not.all(ismissing(obs_ind))) then
+        model_ind(obs_ind) = -1
+      end if
+      delete(obs_ind)
+    end do
+  end if
 
   modelsonly_ind = ind(model_ind.ge.0)
   delete(model_ind)
@@ -429,38 +430,58 @@ begin
 
   ; observation(s)
 
+  nobs = dim_MOD0 - dimsizes(modelsonly_ind) - 2
+  model_ind_rest = new((/nobs/), integer)
+
+  ; get indices of all datasets that are not ref dataset or mmm
+  ; (typically all observations that are not used as ref dataset)
+
+  k = 0
+
+  do i = 0, dim_MOD0 - 1
+    if (any(modelsonly_ind.eq.i)) then
+    else
+      if ((i.ne.mm_ind).and.(i.ne.ref_ind)) then
+        model_ind_rest(k) = i
+        k = k + 1
+      end if
+    end if
+  end do
+
+  ; now add observations to field "zonal mean"
+
   n = n + 1
+
+  do i = 0, k - 1
+    if (numseas.gt.1) then
+      zonalmean(n, :, :) = zm(model_ind_rest(i), :, :)
+    else
+      zonalmean(n, :) = zm(model_ind_rest(i), :)
+    end if
+    zonalmean&model(n) = zm&model(model_ind_rest(i))
+    n = n + 1
+  end do
+
+  ; add reference dataset
+
   zonalmean&model(n) = zm&model(ref_ind)
 
   if (numseas.gt.1) then
     zonalmean(n, :, :) = zm(ref_ind, :, :)
-    if (ref_ind2 .ge. 0) then
-      n = n + 1
-      zonalmean(n, :, :) = zm(ref_ind2, :, :)
-    end if
   else
     zonalmean(n, :) = zm(ref_ind, :)
-    if (ref_ind2 .ge. 0) then
-      n = n + 1
-      zonalmean(n, :) = zm(ref_ind2, :)
-    end if
-  end if
-
-  if (ref_ind2 .ge. 0) then
-    zonalmean&model(n) = zm&model(ref_ind2)
   end if
 
   ; last entry in "zonalmean" = multi-model mean
 
   n = n + 1
+  zonalmean&model(n) = zm&model(mm_ind)
 
   if (numseas.gt.1) then
     zonalmean(n, :, :) = zm(mm_ind, :, :)  ; multi-model mean
   else
     zonalmean(n, :) = zm(mm_ind, :)  ; multi-model mean
   end if
-
-  zonalmean&model(n) = zm&model(mm_ind)
 
   ; update indices for array "zonalmean"
 
@@ -613,8 +634,10 @@ begin
 
     ; the attribute "long_name" will be used as title string for the y-axis
 
-    zonalmean@long_name = zonalmean@long_name + " (" + \
-      zonalmean@units + ")"
+    if (is.eq.0) then
+      zonalmean@long_name = zonalmean@long_name + " (" + \
+                            zonalmean@units + ")"
+    end if
 
     linethickness       = new(dim_MOD0, float)
     linecolor           = new(dim_MOD0, string)

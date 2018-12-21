@@ -1,0 +1,225 @@
+# recipe_lauer17rse.yml
+---
+documentation:
+  description: |
+    Creates the 20 figures from Lauer et al. (2017) using the ESA CCI
+    data sets for sea surface temperature, sea ice, cloud, soil moisture,
+    land cover, aerosol, ozone, and greenhouse gases (CO2).
+
+  authors:
+    - laue_ax
+    - loew_al
+    - muel_bn
+    - righ_ma
+    - senf_da
+    - wenz_sa
+    - will_ul
+
+  references:
+    - lauer17rse
+
+  projects:
+    - cmug
+
+
+preprocessors:
+  clim_1x1_05:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.5
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset, PATMOS, CLARA-A2, ERA-Interim, MODIS]
+
+
+diagnostics:
+
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 7
+  # annual mean cloud cover maps + zonal means
+  # ==========================================================================
+
+#  fig07_a:
+#    description: seasonal mean cloud cover maps
+#    variables:
+#      clt:
+#        mip: Amon
+#        field: T2Ms
+#        start_year: 1982
+#        end_year: 2014
+#    additional_datasets:
+#      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#    scripts:
+#      clt_clim:
+#        script: clouds/clouds.ncl
+#        projection: Robinson
+#        timemean: seasonalclim
+#        panel_labels: false
+#
+#  fig07_b:
+#    description: seasonal mean cloud cover uncertainty maps
+#    variables:
+#      cltStderr:
+#        mip: Amon
+#        field: T2Ms
+#        start_year: 1982
+#        end_year: 2014
+#    additional_datasets:
+#      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#    scripts:
+#      clterr_clim:
+#        script: clouds/clouds.ncl
+#        projection: Robinson
+#        timemean: seasonalclim
+#        panel_labels: false
+#        treat_var_as_error: true
+#
+#  fig07_c:
+#    description: zonal means
+#    variables:
+#      clt:
+#        preprocessor: clim_1x1_05
+#        mip: Amon
+#        field: T2Ms
+#        start_year: 1982
+#        end_year: 2014
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ACCESS1-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ACCESS1-3, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: bcc-csm1-1, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: bcc-csm1-1-m, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CCSM4, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-CAM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CMCC-CM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CMCC-CMS, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: EC-EARTH, project: CMIP5, ensemble: r6i1p1}
+##          - {dataset: FGOALS-g2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: GISS-E2-H-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: GISS-E2-R-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadGEM2-ES, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: inmcm4, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5A-MR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: MIROC4h, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-MR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: PATMOS, project: OBS, type: sat, version: 1, tier: 2}
+##          - {dataset: CLARA-A2, project: OBS, type: sat, version: dev, tier: 2}
+#          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+#          - {dataset: MODIS, project: OBS, type: sat, version: L3-C6, tier: 2,
+#             start_year: 2003, end_year: 2014}
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+##      cltStderr:
+##        mip: Amon
+##        field: T2Ms
+##        preprocessor: clim_1x1_05
+##        start_year: 1982
+##        end_year: 2014
+##        additional_datasets:
+##          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#    scripts:
+#      clt_zonal:
+#        script: clouds/clouds_ipcc.ncl
+#        projection: Robinson
+#        styleset: CMIP5_ESA
+#        timemean: seasonalclim
+#        obs_datasets: [ESACCI-CLOUD, PATMOS, CLARA-A2, ERA-Interim, MODIS]
+
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 8
+  # maps showing interannual variability of cloud cover
+  # ==========================================================================
+
+#  fig08:
+#    description: interannual variability
+#    variables:
+#      clt:
+#        preprocessor: clim_1x1_05
+#        mip: Amon
+#        field: T2Ms
+#        start_year: 1982
+#        end_year: 2014
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ACCESS1-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ACCESS1-3, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: bcc-csm1-1, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: bcc-csm1-1-m, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CCSM4, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-CAM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CMCC-CM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CMCC-CMS, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: EC-EARTH, project: CMIP5, ensemble: r6i1p1}
+##          - {dataset: FGOALS-g2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: GISS-E2-H-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: GISS-E2-R-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: HadGEM2-ES, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: inmcm4, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5A-MR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: MIROC4h, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-MR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: PATMOS, project: OBS, type: sat, version: 1, tier: 2}
+##          - {dataset: CLARA-A2, project: OBS, type: sat, version: dev, tier: 2}
+#          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+#          - {dataset: MODIS, project: OBS, type: sat, version: L3-C6, tier: 2,
+#             start_year: 2003, end_year: 2014}
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#    scripts:
+#      clt_var:
+#        script: clouds/clouds_interannual.ncl
+#        projection: Robinson
+#        colormap: WhiteBlueGreenYellowRed
+#        extrafiles: true
+

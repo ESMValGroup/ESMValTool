@@ -259,6 +259,10 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     email: keith.williams 'at' metoffice.gov.uk
+  will_ul:
+    name: Willen, Ulrika
+    institute: SMHI, Sweden
+    email: ulrika.willen 'at' smhi.se
 ### Viewers (not active developers)
   bala_ve:
     name: Balaji, Venkatramani
@@ -443,7 +447,7 @@ references:
   key04gbc: "Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004."
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
-  lauer17rse: "Lauer et al., Remote Sens. Environ., in press, 2017."
+  lauer17rse: "Lauer et al., Remote Sens. Environ., doi:10.1016/j.rse.2017.01.007, 2017."
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:https://doi.org/10.1175/JCLI-D-13-00337.1, 2014."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
