@@ -1014,8 +1014,11 @@ begin
       NEW_INFO[i]@project = "CMIP5"
       NEW_INFO[i]@dataset = datasets(i)
     end do
-    do idat = 0, DIM_MOD - 1
-      ListAppend(NEW_INFO, FUT[idat])
+    do imod = 0, DIM_MOD - 1
+      ListAppend(NEW_INFO, FUT[imod])
+    end do
+    do iobs = 0, DIM_OBS - 1
+      ListAppend(NEW_INFO, OBS[iobs])
     end do
     delete(datasets)
 
