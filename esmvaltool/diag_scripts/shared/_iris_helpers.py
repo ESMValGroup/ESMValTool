@@ -50,8 +50,8 @@ def iris_project_constraint(projects, cfg, negate=False):
     cfg : dict
         Diagnostic script configuration.
     negate : bool, optional (default: False)
-        Negate constraint (`True`: select all elements that fit `projects`,
-        `False`: select all elements that do not fit `projects`).
+        Negate constraint (`False`: select all elements that fit `projects`,
+        `True`: select all elements that do NOT fit `projects`).
 
     Returns
     -------
