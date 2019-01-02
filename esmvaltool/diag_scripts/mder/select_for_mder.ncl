@@ -124,8 +124,6 @@ begin
 
       ; Check if dataset is available
       new_path = input_dir + "/" + diag_file_name(info@filename, opt)
-      print(input_dir)
-      print(info@filename)
       if (fileexists(new_path)) then
         log_info("Reading " + new_path)
         data_temp = ncdf_read(new_path, var0)

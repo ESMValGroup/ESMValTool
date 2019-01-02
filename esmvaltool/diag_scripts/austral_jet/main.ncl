@@ -284,7 +284,7 @@ begin
           tmp = vt2b({time|:}, {plev|::-1}, {lat|:}, {lon|:})
           delete(vt2b)
           vt2b = tmp
-          delete(tmp)   ; vt2b := vt2b(...) causes memory leaks
+          delete(tmp)  ; vt2b := vt2b(...) causes memory leaks
         end if
 
         ; Calculate zonal meridional stream function
