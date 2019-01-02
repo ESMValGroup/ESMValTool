@@ -276,12 +276,15 @@ begin
 
         ; Preprocess plev (see docu of zonal_mpsi_Wrap)
         pr = va&plev
-        pidx = ind(pr.gt.500.0 .and. pr.lt.100500.0)
+        pidx = ind(pr .gt. 500.0 .and. pr .lt. 100500.0)
         pr := pr(pidx)
         vt2b = va(:, pidx, :, :)
         if (pr(0) .eq. max(pr)) then
           pr := pr(::-1)
-          vt2b := vt2b({time|:}, {plev|::-1}, {lat|:}, {lon|:})
+          tmp = vt2b({time|:}, {plev|::-1}, {lat|:}, {lon|:})
+          delete(vt2b)
+          vt2b = tmp
+          delete(tmp)   ; vt2b := vt2b(...) causes memory leaks
         end if
 
         ; Calculate zonal meridional stream function

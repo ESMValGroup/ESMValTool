@@ -641,7 +641,7 @@ function ncdf_define(ncdf, data)
 ;    20131112-A_gott_kl: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim, atts
+  dimUnlim, atts, ncdf
 begin
 
   funcname = "ncdf_define"
