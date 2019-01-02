@@ -584,7 +584,7 @@ diagnostics:
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
-  # similar to fig. 9.8       
+  # similar to fig. 9.8
   # **********************************************************************
   # Time series of anomalies of annual and global surface temperature
   # **********************************************************************
@@ -593,8 +593,8 @@ diagnostics:
     description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
     variables:
       tas:
-        preprocessor: clim_ref   
-        reference_dataset: HadCRUT4   
+        preprocessor: clim_ref
+        reference_dataset: HadCRUT4
         alternative_dataset: HadCRUT4-clim
         mip: Amon
         field: T2Ms
@@ -659,7 +659,7 @@ diagnostics:
       - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
          start_year: 1990, end_year: 1990, tier: 2}
     scripts:
-      fig09-8: 
+      fig09-8:
         script: ipcc_ar5/tsline.ncl
         time_avg: "yearly"
         ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
@@ -673,9 +673,9 @@ diagnostics:
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
-  # similar to fig. 9.42a       
+  # similar to fig. 9.42a
   # **********************************************************************
-  # 
+  #
   # **********************************************************************
 
   ecs:
