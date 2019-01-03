@@ -258,6 +258,9 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
         var['modeling_realm'] = realm if realm else table.realm
+        # adjust of non-existant 'ocnBgchem'
+        if 'ocnBgchem' in var['modeling_realm']:
+            var['modeling_realm'].append('ocean')
         var['institute'] = get_institutes(variable)
 
         files = _find_input_files(var, rootpath, drs, fx_var)
