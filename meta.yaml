@@ -34,9 +34,6 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
-    - r-base
-    - r-rcpp
-    - libgfortran-ng
   run:
     # esmvaltool
     - python
@@ -46,6 +43,7 @@ requirements:
     - cartopy
     - cf_units
     - cython
+    - esmpy
     - matplotlib<3
     - netCDF4
     - numba
