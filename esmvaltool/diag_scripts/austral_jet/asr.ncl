@@ -158,6 +158,11 @@ begin
     delete([/dummy0, grad, A0/])
   end do
 
+  ; Consider ensemble averaging
+  if (avgens) then
+    INFO0 := get_unique_items(INFO0, "dataset")
+  end if
+
   ; ---------------------------------------------------------------------------
   ; Plots
   ; ---------------------------------------------------------------------------

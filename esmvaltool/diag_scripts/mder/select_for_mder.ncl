@@ -72,6 +72,7 @@ begin
   end if
   if (avgens) then
     DATASETS := get_unique_values(DATASETS)
+    INFO0 := get_unique_items(INFO0, "dataset")
   else
     DATASETS := unique_labels_min(INFO0, (/"dataset", "ensemble"/))
   end if

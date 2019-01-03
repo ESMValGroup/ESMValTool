@@ -443,6 +443,11 @@ begin
     delete([/dummy1, dummy2, dummy3, ttmp, rc/])
   end do
 
+  ; Consider ensemble averaging
+  if (avgens) then
+    INFO0 := get_unique_items(INFO0, "dataset")
+  end if
+
   ; ---------------------------------------------------------------------------
   ; Process additional observations
   ; ---------------------------------------------------------------------------
