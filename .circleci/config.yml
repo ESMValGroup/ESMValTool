@@ -102,6 +102,7 @@ jobs:
             conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
+            export CONDA_BUILD=1
             source activate esmvaltool
             set -x
             pip install . > /logs/install.txt 2>&1
