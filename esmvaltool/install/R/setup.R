@@ -48,4 +48,8 @@ for (package_name in package_list) {
         repos = pkg_mirror,
         dependencies = c("Depends", "Imports")
     )
+    if ( ! library(package_name, character.only=TRUE, logical.return=TRUE) ) {
+    	print(paste("     Failed to install package --> ", package_name))
+        quit(status=1, save='no')
+    }    
 }
