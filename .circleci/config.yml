@@ -10,6 +10,7 @@ jobs:
       - checkout
       - run:
           command: |
+            apt update && apt -y install build-essential gfortran
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -19,7 +20,6 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1          
             conda update -y conda
             conda env update
             conda activate esmvaltool
@@ -54,6 +54,7 @@ jobs:
       - checkout
       - run:
           command: |
+            apt update && apt -y install build-essential gfortran
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -63,7 +64,6 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1          
             conda update -y conda
             if ! test -d "/opt/conda/envs/esmvaltool"; then
               conda create -y --name esmvaltool python=2
@@ -126,7 +126,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
@@ -158,7 +158,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x
@@ -189,7 +189,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x
@@ -217,7 +217,7 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -253,7 +253,7 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
@@ -278,7 +278,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1            
+            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x
