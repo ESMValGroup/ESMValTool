@@ -10,7 +10,6 @@ jobs:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -57,7 +56,6 @@ jobs:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
@@ -100,8 +98,6 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
@@ -133,8 +129,6 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
@@ -166,8 +160,6 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
@@ -199,11 +191,8 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            # TODO: change to Python 3 once issue #218 is fixed.
             conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
@@ -230,8 +219,6 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -267,8 +254,6 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool python=3
@@ -293,8 +278,6 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x
