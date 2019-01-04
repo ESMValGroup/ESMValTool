@@ -20,6 +20,7 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             conda env update
             conda activate esmvaltool
@@ -31,6 +32,7 @@ jobs:
       - run:
           # Activate Conda environment and run tests
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             python setup.py test
       - store_test_results:
@@ -64,6 +66,7 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             if ! test -d "/opt/conda/envs/esmvaltool"; then
               conda create -y --name esmvaltool python=2
@@ -78,6 +81,7 @@ jobs:
       - run:
           # Activate Conda environment and run tests
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             python setup.py test
       - store_test_results:
@@ -98,10 +102,11 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
-            conda activate esmvaltool
+            set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
             Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
@@ -124,16 +129,16 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
-            set +x
-            conda activate esmvaltool
-            set -x
+            set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
             Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
@@ -156,15 +161,15 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
-            set +x
-            conda activate esmvaltool
-            set -x
+            set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
@@ -187,15 +192,15 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
-            set +x
-            conda activate esmvaltool
-            set -x
+            set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -215,10 +220,12 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -251,10 +258,12 @@ jobs:
     steps:
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
@@ -276,15 +285,15 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt update && apt -y install build-essential gfortran > /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
-            set +x
-            conda activate ncl
-            set -x
+            set +x; conda activate ncl; set -x
             conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -301,7 +310,12 @@ workflows:
       - python3_test
       - python2_test
       - python3_install
+      - python2_install
+      - develop
+      - doc
       - conda_build
+      - conda_install
+      - ncl
   nightly:
     triggers:
       - schedule:
