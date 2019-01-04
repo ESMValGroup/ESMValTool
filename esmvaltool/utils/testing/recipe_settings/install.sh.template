@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eo pipefail
+git clone https://github.com/ESMValGroup/ESMValTool
+cd ESMValTool
+git checkout {branch}
+. ~/conda/etc/profile.d/conda.sh
+conda env create --name {branch}
+conda activate {branch}
+pip install .
+Rscript esmvaltool/install/R/setup.R
