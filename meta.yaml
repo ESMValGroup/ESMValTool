@@ -59,7 +59,9 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
-    - gcc
+    - gcc_linux-64
+    - gxx_linux-64
+    - gfortran_linux-64
     - r-base
     - r-rcpp
     - libgfortran-ng
