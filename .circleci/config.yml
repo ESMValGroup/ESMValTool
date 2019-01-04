@@ -94,6 +94,7 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
