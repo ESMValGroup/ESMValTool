@@ -310,12 +310,6 @@ workflows:
       - python3_test
       - python2_test
       - python3_install
-      - python2_install
-      - develop
-      - doc
-      - conda_build
-      - conda_install
-      - ncl
   nightly:
     triggers:
       - schedule:
