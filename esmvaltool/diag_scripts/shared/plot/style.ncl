@@ -5,8 +5,6 @@
 ; Check the header of each routine for documentation.
 ;
 ; Contents:
-;    function unique_labels_min
-;    function unique_labels_all
 ;    function project_style
 ;    function place_debuginfo
 ;    procedure place_description
@@ -19,138 +17,6 @@
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
-
-; #############################################################################
-undef("unique_labels_min")
-function unique_labels_min(items: list, \
-                           prio: string)
-;
-; Arguments
-;    items: list of input_file_info metadata
-;    prio: string vector with attribute names of elements of items, ordered by
-;          priority for annotation (starting with highest).
-;
-; Return value
-;    A vector (string) with one element for each item element, each label
-;    contains the least possible attribute strings.
-;
-; Description
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20181217-A-schl_ma: adapated to new NCL interface of v2.0.
-;    20130422-A_gott_kl: written.
-;
-local funcname, scriptname, prio, result, unique, iprio, index
-begin
-
-  funcname = "unique_labels_min"
-  scriptname = "diag_scripts/shared/plot/style.ncl"
-  enter_msg(scriptname, funcname)
-
-  ; Start with highest priority
-  result = metadata_att_as_array(items, prio(0))
-  unique = get_unique_values(result)
-
-  ; Iterate over priorities
-  iprio = 1
-  do while (dimsizes(unique) .ne. dimsizes(result))
-
-    ; Not enough prios given
-    if (iprio .eq. dimsizes(prio)) then
-      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
-                "to make labels unique! Continuing with non-unique labels")
-      break
-
-    ; Add further prio
-    else
-      do i = 0, dimsizes(unique) - 1
-        index := ind(result .eq. unique(i))
-        new_prio = metadata_att_as_array(items, prio(iprio))
-
-        ; More than one occurence
-        if (dimsizes(index) .gt. 1) then
-          result(index) = result(index) + "_" + new_prio(index)
-        end if
-      end do
-
-      ; Reset
-      unique := get_unique_values(result)
-      iprio = iprio + 1
-    end if
-  end do
-
-  leave_msg(scriptname, funcname)
-  return(result)
-
-end
-
-; #############################################################################
-undef("unique_labels_all")
-function unique_labels_all(items: list, \
-                           prio:string)
-;
-; Arguments
-;    items: list of input_file_info metadata
-;    prio: string vector with attribute names of elements of items, ordered by
-;          priority for annotation (starting with highest).
-;
-; Return value
-;    A vector (string) with one element for each item element, all labels
-;    contain the same (least possible) number of attribute strings.
-
-; Description
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20181217-A-schl_ma: adapated to new NCL interface of v2.0.
-;    20130422-A_gott_kl: written.
-;
-local funcname, scriptname, prio, result, unique, iprio, index
-begin
-
-  funcname = "unique_labels_all"
-  scriptname = "diag_scripts/shared/plot/style.ncl"
-  enter_msg(scriptname, funcname)
-
-  ; Start with highest priority
-  result = metadata_att_as_array(items, prio(0))
-  unique = get_unique_values(result)
-
-  ; Iterate over priorities
-  iprio = 1
-  do while (dimsizes(unique) .ne. dimsizes(result))
-
-    ; Not enough prios given
-    if (iprio .eq. dimsizes(prio)) then
-      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
-                "to make labels unique! Continuing with non-unique labels")
-      break
-
-    ; Add further prio
-    else
-      do i = 0, dimsizes(unique) - 1
-        index := ind(result .eq. unique(i))
-        new_prio = metadata_att_as_array(items, prio(iprio))
-        result(index) = result(index) + "_" + new_prio(index)
-      end do
-
-      ; Reset
-      unique := get_unique_values(result)
-      iprio = iprio + 1
-    end if
-  end do
-
-  leave_msg(scriptname, funcname)
-  return(result)
-
-end
 
 ; #############################################################################
 undef("project_style")
@@ -173,7 +39,7 @@ function project_style(items: list,
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of items list, with the stlye
+;    An array of the same size of items list, with the style
 ;    information for the given flag. The type depends on the flag.
 ;
 ; Description
