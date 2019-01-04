@@ -11,14 +11,10 @@ dependencies:
   - python-stratify
   - esmpy
   # Multi language support:
-  - gcc_linux-64
-  - gxx_linux-64
-  - gfortran_linux-64
   - ncl
   - ncurses=6.1=hfc679d8_1
   - r-base
   - r-rcpp
-  - libgfortran-ng # needed by r packages
   # TODO: add julia
 
   - pip:
