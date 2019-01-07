@@ -287,6 +287,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -390,6 +391,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -490,6 +492,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
