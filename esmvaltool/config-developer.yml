@@ -26,7 +26,12 @@ CMIP6:
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   institutes:
+    'CNRM-CM6-1': ['CNRM-CERFACS']
+    'CNRM-ESM2-1': ['CNRM-CERFACS']
+    'GFDL-AM4': ['NOAA-GFDL']
+    'GISS-E2-1-G': ['NASA-GISS']
     'IPSL-CM6A-LR': ['IPSL']
+
 
 CMIP5:
   input_dir:
