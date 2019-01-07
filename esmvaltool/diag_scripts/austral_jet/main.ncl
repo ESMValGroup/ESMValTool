@@ -271,7 +271,10 @@ begin
         va = read_data(INFO1[idat])
         copy_VarAtts(VAR0, INFO0[idat])
         if (dimsizes(va&lat) .ne. dimsizes(ps&lat)) then
-          ps := ps({time|:}, {lat|va&lat}, {lon|:})
+          tmp = ps({time|:}, {lat|va&lat}, {lon|:})
+          delete(ps)
+          ps = tmp
+          delete(tmp)  ; ps := ps(...) causes memory leaks
         end if
 
         ; Preprocess plev (see docu of zonal_mpsi_Wrap)
@@ -293,7 +296,7 @@ begin
         outvar!1 = va!1
         outvar!2 = va!2
         outvar&time = va&time
-        outvar&plev = va&plev(pidx)
+        outvar&plev = pr
         outvar&lat = va&lat
         outvar@var = new_var
         outvar@diag_script = DIAG_SCRIPT
