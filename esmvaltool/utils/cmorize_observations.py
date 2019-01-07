@@ -197,8 +197,8 @@ def execute_cmorize():
         timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
-    logger.info("INPUTDIR  = %s", config_user["rootpath"]["RAWOBS"][0])
-    logger.info("OUTPUTDIR = %s", config_user["output_dir"])
+    logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
+    logger.info("output_dir = %s", config_user["output_dir"])
     logger.info(70 * "-")
 
     # call the reformat function
