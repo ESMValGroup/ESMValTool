@@ -6,7 +6,10 @@ selecting geographical regions; constructing area averages; etc.
 """
 import logging
 
+import numpy as np
 import iris
+from iris.coords import AuxCoord
+from iris.aux_factory import AuxCoordFactory
 
 
 logger = logging.getLogger(__name__)
@@ -60,12 +63,48 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
     start_latitude = float(start_latitude)
     end_latitude = float(end_latitude)
 
-    region_subset = cube.intersection(
-        longitude=(start_longitude, end_longitude),
-        latitude=(start_latitude, end_latitude))
-    region_subset = region_subset.intersection(longitude=(0., 360.))
+    try:
+        region_subset = cube.intersection(
+            longitude=(start_longitude, end_longitude),
+            latitude=(start_latitude, end_latitude))
+        region_subset = region_subset.intersection(longitude=(0., 360.))
+        return region_subset
+    except iris.exceptions.CoordinateMultiDimError:
+        dims = set(cube.coord_dims('longitude') + cube.coord_dims('latitude'))
+        def in_region(lat, lon):
+            if start_longitude >= 0:
+                if lon < 0:
+                    lon += 360
+            elif start_longitude < 0:
+                if lon > 180:
+                    lon -= 360
 
-    return region_subset
+            if start_latitude > lat  or lat > end_latitude:
+                return 0
+            elif start_longitude > lon  or lon > end_longitude:
+                return 0
+            return 1
+        vectorized = np.vectorize(in_region)
+        in_region = vectorized(
+            cube.coord('latitude').points,
+            cube.coord('longitude').points,
+        )
+        lat_lon_dims = list(set(
+            cube.coord_dims('latitude') +cube.coord_dims('longitude')
+        ))
+        lat_lon_dims.sort()
+        for index, dimension in enumerate(lat_lon_dims):
+            aux_coord = AuxCoord(
+                np.any(
+                    in_region,
+                    axis=tuple(set(range(len(lat_lon_dims))) - {index})
+                ),
+                var_name='extraction'
+            )
+            cube.add_aux_coord(aux_coord, dimension)
+            cube = cube.extract(iris.Constraint(extraction=True))
+            cube.remove_coord('extraction')
+        return cube
 
 
 # get zonal means

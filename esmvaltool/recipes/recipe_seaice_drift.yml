@@ -7,8 +7,20 @@ datasets:
 
 preprocessors:
   extract:
-    extract_levels: False
-    multi_model_statistics: False
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 40
+      end_latitude: 90
+
+  extract_sispeed:
+    custom_order: true
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 40
+      end_latitude: 90
+    derive: true
 
 diagnostics:
   seaice_drift:
@@ -38,7 +50,7 @@ diagnostics:
       sispeed:
         mip: SIday
         field: T2MO
-        preprocessor: extract
+        preprocessor: extract_sispeed
         reference_dataset: MPI-ESM-LR
         derive: true
         force_derivation: false
