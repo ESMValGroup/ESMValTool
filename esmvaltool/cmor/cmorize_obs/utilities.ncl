@@ -4,6 +4,7 @@
 ; General purpose functions called by the reformat_obs_*.ncl scripts.
 ;
 ; Contents
+;    function check_time_range
 ;    function time_attrib
 ;    function plev_attrib
 ;    function lev_attrib
@@ -23,15 +24,163 @@
 ; Time units
 TUNITS = "days since 1950-01-01 00:00:00"
 
-; FillValue
+; CMOR FillValue
 FILL = 1.e+20
 
 ; #############################################################################
+undef("check_time_range")
+function check_time_range(time:numeric,
+                          year1:numeric,
+                          year2:numeric,
+                          frequency:string)
+;
+; Arguments
+;    time: input time coordinate.
+;    year1: start year.
+;    year2: end year.
+;    frequency: time frequency ("M" for monthly, "D" for daily)
+;
+; Return value
+;    An array of the same dimensionality of time.
+;
+; Description
+;    Checks the consistency of time coordinate and sets the day to 15th of the
+;    month (for monthly means) and the time to 00:00:00 (for monthly means) and
+;    to 12:00:00 (for daily means).
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190108-A_righ_ma: rewritten for v2.
+;
+local funcname, verbosity, date, ntime, exp_ntime, tt, yy, mm, calendar, y1, \
+  y2, opt, out
+begin
+
+  funcname = "check_time_range"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  enter_msg(scriptname, funcname)
+
+  date = cd_calendar(time, 0)
+  ntime = dimsizes(time)
+
+  ; Check monotonicity
+  if (isMonotonic(time).ne.1) then
+    error_msg("f", scriptname, funcname, \
+              "non-monotonically-increasing time coordinate in input data")
+  end if
+
+  ; Boundaries
+  if (date(0, 0).gt.year1) then
+    error_msg("f", scriptname, funcname, \
+              "selected period outside range (" + year1 + \
+              "<" + date(0, 0) + ")")
+  end if
+  if (date(ntime - 1, 0).lt.year2) then
+    error_msg("f", scriptname, funcname, \
+              "selected period outside range (" + year2 + \
+              ">" + date(ntime - 1, 0) + ")")
+  end if
+
+  ; Monthly mean case
+  if (frequency.eq."M") then
+
+    ; Check number of timesteps
+    exp_ntime = 12 * (year2 - year1 + 1)
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data (" + \
+                ntime + " != " + exp_ntime + "). Possibly due to " + \
+                "incomplete years in input.")
+    end if
+
+    ; Set time coordinate to 15th of each month at 00:00:00
+    do tt = 0, ntime - 1
+      yy = year1 + tt / 12
+      mm = mod(tt, 12) + 1
+      if (date(tt, 0).ne.yy .or. date(tt, 1).ne.mm) then
+        error_msg("f", scriptname, funcname, \
+                  "inconsistent time coordinate in input data" + \
+                  yy + sprinti("%0.2i", mm))
+      end if
+    end do
+    date(:, 2) = 15   ; 15th of the month
+    date(:, 3:5) = 0  ; midnight
+  end if
+
+  ; Daily mean case
+  if (frequency.eq."D") then
+    calendar = time@calendar
+
+    ; Special treatment for proleptic_gregorian calendars
+    ; (not supported by 'days_in_month(...)'
+    if (calendar .eq. "proleptic_gregorian") then
+      if (year1 .lt. 1582) then
+        error_msg("w", scriptname, funcname, \
+                  "changing calendar from proleptic_gregorian " + \
+                  "to gregorian prior to 1582")
+      end if
+      calendar = "gregorian"
+    end if
+
+    ; Check number of timesteps
+    y1 = year1
+    y1@calendar = calendar
+    y2 = year2
+    y2@calendar = calendar
+    opt = 0
+    opt@calendar = calendar
+
+    exp_ntime = \
+      cd_inv_calendar(y2, 12, days_in_month(y2, 12), 0, 0, 0, TUNITS, opt) - \
+      cd_inv_calendar(y1, 1, 1, 0, 0, 0, TUNITS, opt) + 1
+
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data (" + ntime + \
+                " != " + exp_ntime + "). Possibly due to incomplete " + \
+                "years in input.")
+    end if
+
+    ; Set time coordinate to 12:00:00
+    date(:, 3) = 12
+    date(:, 4:5) = 0
+
+  end if
+
+  ; Instantaneous case
+  ; Nothing to check
+
+  ; Set calendar
+  opt = 0
+  if (isatt(time, "calendar")) then
+    opt@calendar = time@calendar
+  end if
+
+  out = cd_inv_calendar(toint(date(:, 0)), toint(date(:, 1)), \
+                        toint(date(:, 2)), toint(date(:, 3)), \
+                        toint(date(:, 4)), toint(date(:, 5)), \
+                        TUNITS, opt)
+
+  leave_msg(scriptname, funcname)
+  return(out)
+
+end
+
+; #############################################################################
 undef("time_attrib")
-function time_attrib(coord:numeric)
+function time_attrib(coord:numeric,
+                     year1:numeric,
+                     year2:numeric,
+                     frequency:string)
 ;
 ; Arguments
 ;    coord: input time coordinate.
+;    year1: start year.
+;    year2: end year.
+;    frequency: time frequency ("M" for monthly, "D" for daily).
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
@@ -46,11 +195,11 @@ function time_attrib(coord:numeric)
 ; Modification history
 ;    20130528-A_righ_ma: written.
 ;
-local funcname, scriptname, tmp, cal
+local funcname, scriptname, tmp, cal, outcoord
 begin
 
   funcname = "time_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   if (isatt(coord, "calendar")) then
@@ -59,7 +208,7 @@ begin
     cal = "standard"
   end if
 
-  tmp = check_time_range(coord)
+  tmp = check_time_range(coord, year1, year2, frequency)
 
   out_coord = todouble(tmp)  ; this also removes attributes
   copy_VarCoords(coord, out_coord)
@@ -101,7 +250,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "plev_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -150,7 +299,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lev_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -193,7 +342,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lat_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -235,7 +384,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lon_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -255,10 +404,12 @@ end
 
 ; #############################################################################
 undef("read_cmor")
-function read_cmor(name:string)
+function read_cmor(name:string,
+                   table:string)
 ;
 ; Arguments
 ;    name: standard variable name.
+;    string: full path to the CMOR table of the variable.
 ;
 ; Return value
 ;    A logical variable with the CMOR table attached as attributes.
@@ -271,28 +422,52 @@ function read_cmor(name:string)
 ; References
 ;
 ; Modification history
+;    20190107-A_righ_ma: modify to read standard CMIP5 tables
 ;    20130528-A_righ_ma: written.
 ;
-local funcname, scriptname, fn, data, idxu, idxd, attn, attv
+local funcname, scriptname, data, idxu, idxd, attn, attv, out
 begin
 
   funcname = "read_cmor"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
-                                ; Read attributes from cmor table
-  fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
-  if (.not.isfilepresent_esmval(fn)) then
+  ; Read attributes from cmor table
+  if (.not.fileexists(table)) then
     error_msg("f", scriptname, funcname, \
-              "CMOR table for variable " + name + " not found")
+              "cannot find CMOR table " + table)
   end if
 
-  data = readAsciiTable(fn, 1, "string", 0)
-  idxu = ind(str_get_field(data(:, 0), 1, ":").eq."! Variable attributes") + 2
-  idxd = ind(str_get_field(data(:, 0), 1, ":").eq. \
-             "! Additional variable information") - 2
-  attn = str_squeeze(str_get_field(data(idxu:idxd, 0), 1, ":"))
-  attv = str_squeeze(str_get_field(data(idxu:idxd, 0), 2, ":"))
+  if (isStrSubset(table, ".json")) then  ; CMIP6 tables
+
+    error_msg("f", scriptname, funcname, \
+              "use of CMIP6 CMOR tables not supported")
+
+  else  ; CMIP5 and custom tables
+
+    data = readAsciiTable(table, 1, "string", 0)
+
+    ; Extract variable block
+    idxu = ind(data(:, 0).eq."variable_entry:    " + name)
+    tmp = ind(str_get_field(data(:, 0), 1, ":").eq."variable_entry")
+    if (dimsizes(tmp).gt.1) then
+      idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      data := data(idxu:idxd, 0)
+      delete(idxd)
+    else
+      data := data(:, 0)  ; just 1 variable in this table
+    end if
+    delete(idxu)
+    delete(tmp)
+
+    ; Extract attributes
+    idxu = ind(str_get_field(data, 1, ":").eq."! Variable attributes") + 2
+    idxd = ind(str_get_field(data, 1, ":").eq. \
+               "! Additional variable information") - 2
+    attn = str_squeeze(str_get_field(data(idxu:idxd), 1, ":"))
+    attv = str_squeeze(str_get_field(data(idxu:idxd), 2, ":"))
+
+  end if
 
   out = True
   do ii = 0, dimsizes(attn) - 1
@@ -307,11 +482,13 @@ end
 ; #############################################################################
 undef("var_attrib")
 function var_attrib(var:numeric,
-                    name:string)
+                    name:string,
+                    table:string)
 ;
 ; Arguments
 ;    var: the variable's field.
 ;    name: the variable's standard name.
+;    string: full path to the CMOR table of the variable.
 ;
 ; Return value
 ;    An array of the same dimensionality of var.
@@ -324,14 +501,15 @@ function var_attrib(var:numeric,
 ; References
 ;
 ; Modification history
+;    20190107-A_righ_ma: add extra argument for CMOR table
 ;    20161202-A_laue_ax: preserve attribute "coordinates" if present
 ;    20130528-A_righ_ma: written.
 ;
-local funcname, scriptname, tmp, p1, p2, natt, in_units, out_units, tmp, att
+local funcname, scriptname, coordattr, out, tmp, att, ii
 begin
 
   funcname = "var_attrib"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Set fill value first
@@ -357,7 +535,7 @@ begin
 
   ; Append attributes
   out@_FillValue = FILL
-  tmp = read_cmor(name)
+  tmp = read_cmor(name, table)
   att = getvaratts(tmp)
   do ii = 0, dimsizes(att) - 1
     out@$att(dimsizes(att) - 1 - ii)$ = tmp@$att(dimsizes(att) - 1 - ii)$
@@ -392,11 +570,11 @@ function set_size_array()
 ; Modification history
 ;    20130528-A_righ_ma: written.
 ;
-local funcname, scriptname, minsize, maxsize, nbins, bin
+local funcname, scriptname, minsize, maxsize, nbins, bin, out
 begin
 
   funcname = "set_size_array"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Size range (0.5 nm - 10 um)
@@ -450,7 +628,7 @@ local funcname, scriptname, years, YEAR, units, offset, sorted, spy, ileap, \
 begin
 
   funcname = "yyyyfrac_to_ut"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Seconds per year
@@ -525,11 +703,11 @@ function create_timec(y1:integer,
 ; Modification history
 ;    20140124-A_righ_ma: written.
 ;
-local funcname, scriptname, yy, mm
+local funcname, scriptname, yy, mm, out
 begin
 
   funcname = "create_timec"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out = new(12 * (y2 - y1 + 1), double)
@@ -571,11 +749,11 @@ local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
   funcname = "write_nc"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
-  if (isfilepresent(outfile)) then
+  if (fileexists(outfile)) then
     system("rm -f " + outfile)
   end if
   w = addfile(outfile, "c")
@@ -650,11 +828,11 @@ local funcname, scriptname, w, coords, cc, jj, locname, locvar, cname
 begin
 
   funcname = "write_nc_profile"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
-  if (isfilepresent_esmval(outfile)) then
+  if (fileexists(outfile)) then
     system("rm -f " + outfile)
   end if
   w = addfile(outfile, "c")
@@ -752,11 +930,11 @@ function process_EBAS_data(in_vars[*]:string,
 local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
   scode, comp, matr, unit, scale, fills, lline, cols, data_col, flag_col, \
   start_col, end_col, data, value, flag, start_time, end_time, mm, sidx, \
-  monthind, stday, enday, nd, pt1, pt2
+  monthind, stday, enday, nd, pt1, pt2, data_arr
 begin
 
   funcname = "process_EBAS_data"
-  scriptname = "cmor/cmorize_obs/cmorize_obs_utils.ncl"
+  scriptname = "cmor/cmorize_obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; EBAS flags for valid measurements
