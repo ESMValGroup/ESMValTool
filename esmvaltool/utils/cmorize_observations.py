@@ -110,7 +110,7 @@ def _run_ncl_script(in_dir,
     settings_file = _write_ncl_settings(project, dataset, run_dir,
                                         reformat_script, log_level)
     esmvaltool_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(reformat_script))
+        os.path.dirname(os.path.dirname(os.path.dirname(reformat_script)))
     )
 
     # put settings in environment
