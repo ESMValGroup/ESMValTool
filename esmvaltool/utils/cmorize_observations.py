@@ -9,7 +9,7 @@ created in the form of output_dir/CMOR_DATE_TIME/TierTIER/DATASET.
 The user can specify a list of DATASETS that the CMOR reformatting
 can by run on by using -o (--obs-list-cmorize) command line argument.
 The CMOR reformatting scripts are to be found in:
-esmvaltool/cmor/cmorize_obs
+esmvaltool/cmor/cmorizers/obs
 
     Usage
     ------
@@ -229,7 +229,7 @@ def _cmor_reformat(config, obs_list, log_level):
 
     # set the reformat scripts dir
     reformat_scripts = os.path.join(os.path.dirname(__file__),
-                                    '../cmor/cmorize_obs')
+                                    '../cmor/cmorizers/obs')
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)

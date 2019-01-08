@@ -60,7 +60,7 @@ local funcname, verbosity, date, ntime, exp_ntime, tt, yy, mm, calendar, y1, \
 begin
 
   funcname = "check_time_range"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   date = cd_calendar(time, 0)
@@ -199,7 +199,7 @@ local funcname, scriptname, tmp, cal, outcoord
 begin
 
   funcname = "time_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   if (isatt(coord, "calendar")) then
@@ -250,7 +250,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "plev_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -299,7 +299,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lev_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -342,7 +342,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lat_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -384,7 +384,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lon_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -429,7 +429,7 @@ local funcname, scriptname, data, idxu, idxd, attn, attv, out
 begin
 
   funcname = "read_cmor"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Read attributes from cmor table
@@ -509,7 +509,7 @@ local funcname, scriptname, coordattr, out, tmp, att, ii
 begin
 
   funcname = "var_attrib"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Set fill value first
@@ -574,7 +574,7 @@ local funcname, scriptname, minsize, maxsize, nbins, bin, out
 begin
 
   funcname = "set_size_array"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Size range (0.5 nm - 10 um)
@@ -628,7 +628,7 @@ local funcname, scriptname, years, YEAR, units, offset, sorted, spy, ileap, \
 begin
 
   funcname = "yyyyfrac_to_ut"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Seconds per year
@@ -707,7 +707,7 @@ local funcname, scriptname, yy, mm, out
 begin
 
   funcname = "create_timec"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out = new(12 * (y2 - y1 + 1), double)
@@ -749,7 +749,7 @@ local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
   funcname = "write_nc"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
@@ -828,7 +828,7 @@ local funcname, scriptname, w, coords, cc, jj, locname, locvar, cname
 begin
 
   funcname = "write_nc_profile"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
@@ -934,7 +934,7 @@ local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
 begin
 
   funcname = "process_EBAS_data"
-  scriptname = "cmor/cmorize_obs/utilities.ncl"
+  scriptname = "cmor/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; EBAS flags for valid measurements
