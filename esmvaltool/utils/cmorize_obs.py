@@ -10,17 +10,6 @@ The user can specify a list of DATASETS that the CMOR reformatting
 can by run on by using -o (--obs-list-cmorize) command line argument.
 The CMOR reformatting scripts are to be found in:
 esmvaltool/cmor/cmorizers/obs
-
-    Usage
-    ------
-        cmorize_obs --help
-        cmorize_obs -c config-user.yml (for CMORization of
-            all datasets in RAWOBS)
-        cmorize_obs -c config-user.yml -o DATASET1,DATASET2...
-            (for CMORization of select datasets)
-        cmorize_obs -c config-user.yml -o DATA1,DATA2 -l LOGLEVEL
-            (to set the log level: debug, info, warning, error)
-
 """
 import argparse
 import logging
@@ -123,9 +112,10 @@ def _run_ncl_script(in_dir,
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
     process = subprocess.Popen(ncl_call, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, env=env)
-    output, _ = process.communicate()
-    for oline in str(output).split('\\n'):
+    output, err = process.communicate()
+    for oline in str(output.decode('utf-8')).split('\n'):
         logger.info('[NCL] %s', oline)
+    logger.info('[NCL][ERROR] %s', err)
 
 
 def _run_pyt_script(in_dir, out_dir):
@@ -141,7 +131,11 @@ def execute_cmorize():
         '-o',
         '--obs-list-cmorize',
         type=str,
-        help='List of obs datasets to cmorize')
+        help='List of obs datasets to cmorize. \
+              If no list provided: CMORization of \
+              all datasets in RAWOBS; \
+              -o DATASET1,DATASET2... : \
+              for CMORization of select datasets.')
     parser.add_argument(
         '-c',
         '--config-file',
@@ -229,7 +223,7 @@ def _cmor_reformat(config, obs_list):
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized
-    for tier, _ in datasets.items():
+    for tier in datasets:
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(reformat_scripts,
                                                 'cmorize_obs_' + dataset)
