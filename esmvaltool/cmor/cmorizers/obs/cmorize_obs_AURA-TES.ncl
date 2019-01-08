@@ -69,10 +69,13 @@ begin
 
     ; Find files
     fname  = input_dir_path + "/" + \
-      "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + "_F01_10.he5"
+      "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + \
+      "_F01_10.he5"
+
     if (.not.isfilepresent(fname)) then  ; alternative name
       fname = input_dir_path + "/" + \
-      "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + "_C01_F01_10.he5"
+        "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + \
+        "_C01_F01_10.he5"
     end if
 
     if (.not.isfilepresent(fname)) then
