@@ -174,7 +174,7 @@ def execute_cmorize():
     root_logger = logging.getLogger()
     out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
     logging.basicConfig(
-        filename=os.path.join(run_dir, 'cmorization_log.txt'),
+        filename=os.path.join(run_dir, 'main_log.txt'),
         filemode='a',
         format=out_fmt,
         datefmt='%H:%M:%S',
