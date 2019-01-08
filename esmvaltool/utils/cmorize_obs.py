@@ -147,11 +147,6 @@ def execute_cmorize():
         '--config-file',
         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
         help='Config file')
-    parser.add_argument(
-        '-l',
-        '--log-level',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'])
     args = parser.parse_args()
 
     # get and read config file
@@ -178,8 +173,8 @@ def execute_cmorize():
         filemode='a',
         format=out_fmt,
         datefmt='%H:%M:%S',
-        level=logging.DEBUG)
-    root_logger.setLevel(args.log_level.upper())
+        level=config_user['log_level'].upper())
+    root_logger.setLevel(config_user['log_level'].upper())
     logfmt = logging.Formatter(out_fmt)
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(logfmt)
@@ -206,9 +201,7 @@ def execute_cmorize():
         obs_list = args.obs_list_cmorize
     else:
         obs_list = []
-    if not args.log_level:
-        args.log_level = 'info'
-    _cmor_reformat(config_user, obs_list, args.log_level)
+    _cmor_reformat(config_user, obs_list)
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
@@ -220,7 +213,7 @@ def execute_cmorize():
         timestamp2 - timestamp1)
 
 
-def _cmor_reformat(config, obs_list, log_level):
+def _cmor_reformat(config, obs_list):
     """Run the cmorization routine."""
     logger.info("Running the CMORization scripts.")
 
@@ -262,7 +255,7 @@ def _cmor_reformat(config, obs_list, log_level):
                                 run_dir,
                                 dataset,
                                 reformat_script,
-                                log_level)
+                                config['log_level'])
             elif os.path.isfile(reformat_script_root + '.py'):
                 py_reformat_script = reformat_script_root + '.py'
                 logger.info("CMORizing dataset %s using Python script %s",
