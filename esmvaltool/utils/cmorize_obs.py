@@ -13,12 +13,12 @@ esmvaltool/cmor/cmorizers/obs
 
     Usage
     ------
-        cmorize_observations --help
-        cmorize_observations -c config-user.yml (for CMORization of
+        cmorize_obs --help
+        cmorize_obs -c config-user.yml (for CMORization of
             all datasets in RAWOBS)
-        cmorize_observations -c config-user.yml -o DATASET1,DATASET2...
+        cmorize_obs -c config-user.yml -o DATASET1,DATASET2...
             (for CMORization of select datasets)
-        cmorize_observations -c config-user.yml -o DATA1,DATA2 -l LOGLEVEL
+        cmorize_obs -c config-user.yml -o DATA1,DATA2 -l LOGLEVEL
             (to set the log level: debug, info, warning, error)
 
 """
@@ -163,7 +163,7 @@ def execute_cmorize():
         logger.error("Config file %s does not exist", config_file)
 
     # read the file in
-    config_user = read_config_user_file(config_file, 'CMOR')
+    config_user = read_config_user_file(config_file, 'cmorize_obs')
 
     # set the run dir to hold the settings and log files
     run_dir = os.path.join(config_user['output_dir'], 'run')
@@ -273,7 +273,7 @@ def _cmor_reformat(config, obs_list, log_level):
                 sys.path.append(out_data_dir)
                 _run_pyt_script(in_data_dir, out_data_dir)
             else:
-                logger.info("No need to CMORize, could not find CMOR script.")
+                logger.error('Could not find cmorizer for %s', datasets)
 
 
 if __name__ == '__main__':
