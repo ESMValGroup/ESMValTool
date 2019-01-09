@@ -69,7 +69,7 @@ class CMIP6Info(object):
         'tro3': 'o3',
     }
 
-    def __init__(self, cmor_tables_path=None, default=None):
+    def __init__(self, cmor_tables_path, default=None):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
@@ -405,7 +405,7 @@ class CMIP5Info(object):
 
     """
 
-    def __init__(self, cmor_tables_path=None, default=None):
+    def __init__(self, cmor_tables_path, default=None):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')

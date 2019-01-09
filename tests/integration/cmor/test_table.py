@@ -16,7 +16,7 @@ class TestCMIP6Info(unittest.TestCase):
 
         We read CMIP6Info once to keep tests times manageable
         """
-        cls.variables_info = CMIP6Info(default=CustomInfo())
+        cls.variables_info = CMIP6Info('cmip6', default=CustomInfo())
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
@@ -84,7 +84,7 @@ class TestCMIP5Info(unittest.TestCase):
 
         We read CMIP5Info once to keep testing times manageable
         """
-        cls.variables_info = CMIP5Info(default=CustomInfo())
+        cls.variables_info = CMIP5Info('cmip5', default=CustomInfo())
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
