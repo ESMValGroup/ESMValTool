@@ -470,20 +470,6 @@ class CMIP5Info(object):
                 if not self._read_line():
                     return
 
-    def add_custom_table_file(self, table_file, table_name):
-        """
-        Add a file with custom definitions to table.
-
-        Parameters
-        ----------
-        table_file: basestring
-            Path to the file containing the custom table
-        table_name: basestring
-            Name of the the custom table to add
-
-        """
-        self._load_table(table_file, table_name)
-
     def _read_line(self):
         line = self._current_table.readline()
         if line == '':

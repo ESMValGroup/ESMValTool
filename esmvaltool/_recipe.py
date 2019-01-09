@@ -243,26 +243,6 @@ def _update_from_others(variable, keys, datasets):
                 variable[key] = value
 
 
-def _update_cmor_table(table, mip, short_name):
-    """Try to add an ESMValTool custom CMOR table file."""
-    cmor_table = CMOR_TABLES[table]
-    var_info = cmor_table.get_variable(mip, short_name)
-
-    if var_info is None and hasattr(cmor_table, 'add_custom_table_file'):
-        table_file = os.path.join(
-            os.path.dirname(__file__), 'cmor', 'tables', 'custom',
-            'CMOR_' + short_name + '.dat')
-        if os.path.exists(table_file):
-            logger.debug("Loading custom CMOR table from %s", table_file)
-            cmor_table.add_custom_table_file(table_file, mip)
-            var_info = cmor_table.get_variable(mip, short_name)
-
-    if var_info is None:
-        raise RecipeError(
-            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
-            format(table, short_name, mip))
-
-
 def _add_cmor_info(variable, override=False):
     """Add information from CMOR tables to variable."""
     logger.debug("If not present: adding keys from CMOR table to %s", variable)
@@ -754,10 +734,6 @@ def _get_preprocessor_task(variables,
 
         derive_input = {}
         for variable in variables:
-            _update_cmor_table(
-                table=variable['cmor_table'],
-                mip=variable['mip'],
-                short_name=variable['short_name'])
             _add_cmor_info(variable)
             if not variable.get('force_derivation') and get_input_filelist(
                     variable=variable,
