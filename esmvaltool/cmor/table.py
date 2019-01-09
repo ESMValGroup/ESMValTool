@@ -31,10 +31,11 @@ def read_cmor_tables(cfg_developer):
     for table in cfg_developer:
         project = cfg_developer[table]
 
-        table_path = project.get('cmor_tables', '')
-        table_path = os.path.expandvars(os.path.expanduser(table_path))
         cmor_type = project.get('cmor_type', 'CMIP5')
-        cmor_strict = project.get('cmor_strict', False)
+        table_path = project.get('cmor_tables', cmor_type.lower())
+        table_path = os.path.expandvars(os.path.expanduser(table_path))
+
+        cmor_strict = project.get('cmor_strict', True)
         if cmor_strict:
             default = None
         else:
@@ -84,11 +85,8 @@ class CMIP6Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if cmor_tables_path:
-            if os.path.isdir(cmor_tables_path):
-                return cmor_tables_path
-        else:
-            cmor_tables_path = 'cmip6'
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
@@ -428,11 +426,8 @@ class CMIP5Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if cmor_tables_path:
-            if os.path.isdir(cmor_tables_path):
-                return cmor_tables_path
-        else:
-            cmor_tables_path = 'cmip5'
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
