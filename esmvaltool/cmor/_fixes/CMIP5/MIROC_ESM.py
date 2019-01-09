@@ -48,9 +48,7 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        print(cubes[0].units)
         cubes[0].units = '1.0e-6'
-        print(cubes[0].units)
         return cubes
 
 

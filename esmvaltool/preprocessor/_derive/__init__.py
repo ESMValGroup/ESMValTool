@@ -61,20 +61,16 @@ def derive(cubes, variable, fx_files=None):
 
     """
     short_name = variable['short_name']
-    cube_list = iris.cube.CubeList()
-    for lst_cubes in cubes:
-        for cube in lst_cubes:
-            cube_list.append(cube)
-    cubes = cube_list
+    cubes = iris.cube.CubeList(cubes)
 
     # Do nothing if variable is already available
     try:
-        cube = cube_list.extract_strict(
+        cube = cubes.extract_strict(
             iris.Constraint(
                 cube_func=lambda cube: cube.var_name == short_name
             )
         )
-        return cube_list
+        return cubes
     except iris.exceptions.ConstraintMismatchError:
         pass
 

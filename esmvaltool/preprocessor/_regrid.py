@@ -480,7 +480,6 @@ def get_reference_levels(filename, project, dataset, short_name, fix_dir,
         filename = fix_file(filename, short_name, project, dataset, fix_dir)
         cubes = iris.load_raw(filename)
         cube = fix_metadata(cubes, short_name, project, dataset)
-        print(cube)
         coord = cube.coord(coordinate)
 
     except iris.exceptions.CoordinateNotFoundError:
