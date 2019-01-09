@@ -83,10 +83,6 @@ def derive(cubes, variable, fx_files=None):
 
     # Set standard attributes
     cube.var_name = short_name
-    if variable['standard_name'] not in iris.std_names.STD_NAMES:
-        iris.std_names.STD_NAMES[variable['standard_name']] = {
-            'canonical_units': variable['units']
-        }
     for attribute in ('standard_name', 'long_name', 'units'):
         setattr(cube, attribute, variable[attribute])
 
