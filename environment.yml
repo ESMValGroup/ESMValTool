@@ -15,6 +15,7 @@ dependencies:
   - ncl
   - ncurses=6.1=hfc679d8_1
   - r-base
+  - r-rcpp
   - libgfortran-ng # needed by r packages
   - libxml2
   # TODO: add julia
