@@ -333,7 +333,8 @@ class CMORCheck(object):
     def _check_coord_monotonicity_and_direction(self, cmor, coord, var_name):
         if not coord.is_monotonic():
             self.report_error(self._is_msg, var_name, 'monotonic')
-
+        if len(coord.points) == 1:
+            return
         if cmor.stored_direction:
             if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
@@ -415,33 +416,56 @@ class CMORCheck(object):
         tol = 0.001
         intervals = {
             'dec': (3600, 3660),
-            'yr': (360, 366),
-            'mon': (28, 31),
             'day': (1, 1)
         }
-        if self.frequency in intervals:
-            interval = intervals[self.frequency]
-            target_interval = (interval[0] - tol, interval[1] + tol)
-        elif self.frequency.endswith('hr'):
-
-            frequency = self.frequency[:-2]
-            if frequency == 'sub':
-                frequency = 1.0 / 24
-                target_interval = (-tol, frequency + tol)
-            else:
-                frequency = float(frequency) / 24
-                target_interval = (frequency - tol, frequency + tol)
+        if self.frequency == 'mon':
+            with iris.FUTURE.context(cell_datetime_objects=True):
+                for i in range(len(coord.points) - 1):
+                    first = coord.cell(i).point
+                    second = coord.cell(i + 1).point
+                    second_month = first.month + 1
+                    second_year = first.year
+                    if second_month == 13:
+                        second_month = 1
+                        second_year += 1
+                    if second_month != second.month or \
+                       second_year != second.year:
+                        msg = '{}: Frequency {} does not match input data'
+                        self.report_error(msg, var_name, self.frequency)
+                        break
+        elif self.frequency == 'yr':
+            with iris.FUTURE.context(cell_datetime_objects=True):
+                for i in range(len(coord.points) - 1):
+                    first = coord.cell(i).point
+                    second = coord.cell(i + 1).point
+                    second_month = first.month + 1
+                    if first.year + 1 != second.year:
+                        msg = '{}: Frequency {} does not match input data'
+                        self.report_error(msg, var_name, self.frequency)
+                        break
         else:
-            msg = '{}: Frequency {} not supported by checker'
-            self.report_error(msg, var_name, self.frequency)
-            return
-        for i in range(len(coord.points) - 1):
-            interval = coord.points[i + 1] - coord.points[i]
-            if (interval < target_interval[0]
-                    or interval > target_interval[1]):
-                msg = '{}: Frequency {} does not match input data'
+            if self.frequency in intervals:
+                interval = intervals[self.frequency]
+                target_interval = (interval[0] - tol, interval[1] + tol)
+            elif self.frequency.endswith('hr'):
+                frequency = self.frequency[:-2]
+                if frequency == 'sub':
+                    frequency = 1.0 / 24
+                    target_interval = (-tol, frequency + tol)
+                else:
+                    frequency = float(frequency) / 24
+                    target_interval = (frequency - tol, frequency + tol)
+            else:
+                msg = '{}: Frequency {} not supported by checker'
                 self.report_error(msg, var_name, self.frequency)
-                break
+                return
+            for i in range(len(coord.points) - 1):
+                interval = coord.points[i + 1] - coord.points[i]
+                if (interval < target_interval[0]
+                        or interval > target_interval[1]):
+                    msg = '{}: Frequency {} does not match input data'
+                    self.report_error(msg, var_name, self.frequency)
+                    break
 
     CALENDARS = [
         ['gregorian', 'standard'],

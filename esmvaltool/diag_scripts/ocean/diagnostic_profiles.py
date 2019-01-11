@@ -32,14 +32,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -91,8 +89,7 @@ def make_profiles_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
-    times = cube.coord('time')
-    times_float = diagtools.timecoord_to_float(times)
+    times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
     cmap = plt.cm.get_cmap('jet')
@@ -102,11 +99,15 @@ def make_profiles_plots(
 
         color = cmap((time - time_0) / (times_float[-1] - time_0))
 
-        qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'),
-                  c=color)
+        qplt.plot(
+            cube[time_index, :], cube[time_index, :].coord('depth'), c=color)
 
-        plot_details[time_index] = {'c': color, 'ls': '-', 'lw': 1,
-                                    'label': str(int(time))}
+        plot_details[time_index] = {
+            'c': color,
+            'ls': '-',
+            'lw': 1,
+            'label': str(int(time))
+        }
 
     # Add title to plot
     title = ' '.join([
@@ -148,13 +149,10 @@ def main(cfg):
     The cfg is the opened global config.
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info(
-            'metadata filename:\t%s',
-            metadata_filename
-        )
+        logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(

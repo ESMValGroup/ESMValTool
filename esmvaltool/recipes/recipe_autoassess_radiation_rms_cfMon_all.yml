@@ -38,7 +38,7 @@ preprocessors:
 
 diagnostics:
   radiation_cfMon_all_ISCCP:
-    description: "CMIP5 vs ISCCP Clouds" 
+    description: "CMIP5 vs ISCCP Clouds"
     variables:
       cllmtisccp: # Low-intermediate Cloud
         preprocessor: pp_rad_derive_var

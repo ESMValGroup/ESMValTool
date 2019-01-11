@@ -5,25 +5,26 @@ jobs:
     # Run Python 3 tests
     working_directory: /python3_test
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential
+            apt update && apt -y install build-essential gfortran
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           # Update/Create Conda Environment
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
-            if ! test -d "/opt/conda/envs/esmvaltool"; then
-              conda create -y --name esmvaltool python=3
-            fi
-            conda env update --name esmvaltool
+            conda env update
+            conda activate esmvaltool
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -31,7 +32,8 @@ jobs:
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
             python setup.py test
       - store_test_results:
           path: test-reports/
@@ -49,25 +51,29 @@ jobs:
     # Run Python 2 tests
     working_directory: /python2_test
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
-            apt-get update -y && apt-get install -y build-essential
+            apt update && apt -y install build-essential gfortran
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
+            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           # Update/Create Conda Environment
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             if ! test -d "/opt/conda/envs/esmvaltool"; then
               conda create -y --name esmvaltool python=2
             fi
-            conda env update --name esmvaltool
+            conda env update
+            conda activate esmvaltool
+            Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -75,7 +81,8 @@ jobs:
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
             python setup.py test
       - store_test_results:
           path: test-reports/
@@ -86,28 +93,28 @@ jobs:
     # Test Python 3 installation
     working_directory: /python3_install
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x
-            source activate esmvaltool
-            set -x
+            conda env update >> /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
+            python setup.py test --installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
@@ -117,28 +124,29 @@ jobs:
     # Test Python 2 installation
     working_directory: /python2_install
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x
-            source activate esmvaltool
-            set -x
+            conda env update >> /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
+            python setup.py test --installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
@@ -148,30 +156,29 @@ jobs:
     # Test development installation
     working_directory: /develop
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x
-            source activate esmvaltool
-            set -x
+            conda env update >> /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
+            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test
+            python setup.py test --installation
             ncl -V
       - store_artifacts:
           path: /logs
@@ -180,23 +187,20 @@ jobs:
     # Test building documentation
     working_directory: /doc
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            # TODO: change to Python 3 once issue #218 is fixed.
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x
-            source activate esmvaltool
-            set -x
+            conda env update >> /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -211,37 +215,38 @@ jobs:
     # Test conda build
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
-            conda install -y conda-build >> /logs/conda_base.txt 2>&1
+            conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
             conda build . -c conda-forge -c birdhouse > /logs/build_log.txt
             # Install Python 3 conda package
-            conda create -y --name esmvaltool3 python=3 > /logs/conda_esmvaltool3.txt 2>&1
-            set +x; source activate esmvaltool3; set -x
+            conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
+            set +x; conda activate esmvaltool3; set -x
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
-            set +x; source deactivate; set -x
+            set +x; conda deactivate; set -x
             # Install Python 2 conda package
             conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
-            set +x; source activate esmvaltool2; set -x
+            set +x; conda activate esmvaltool2; set -x
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/environment2.yml
             esmvaltool -h
-            set +x; source deactivate; set -x
+            set +x; conda deactivate; set -x
       - store_artifacts:
           path: /logs
 
@@ -249,19 +254,20 @@ jobs:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
-            conda create -y --name esmvaltool python=3
-            set +x; source activate esmvaltool; set -x
+            conda create -y --name esmvaltool
+            set +x; conda activate esmvaltool; set -x
             # Install
             conda install -y esmvaltool -c esmvalgroup -c conda-forge -c birdhouse
             # Log versions
@@ -274,21 +280,20 @@ jobs:
     # Test ncl conda package
     working_directory: /ncl
     docker:
-      - image: continuumio/miniconda
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt-get update > /logs/apt.txt 2>&1
-            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            apt update > /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
-            set +x
-            source activate ncl
-            set -x
+            set +x; conda activate ncl; set -x
             conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -304,6 +309,7 @@ workflows:
     jobs:
       - python3_test
       - python2_test
+      - python3_install
   nightly:
     triggers:
       - schedule:
