@@ -7,7 +7,7 @@ from iris.cube import Cube
 from .._task import AbstractTask
 from ._area_pp import area_average as average_region
 from ._area_pp import area_slice as extract_region
-from ._area_pp import zonal_means
+from ._area_pp import (zonal_means, extract_named_regions)
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, concatenate, extract_metadata, load_cubes, save
@@ -74,6 +74,7 @@ __all__ = [
     # 'diurnal_cycle': diurnal_cycle,
     'multi_model_statistics',
     # Grid-point operations
+    'extract_named_regions',
     'depth_integration',
     'average_region',
     'average_volume',
