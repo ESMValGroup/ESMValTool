@@ -268,8 +268,8 @@ def main(cfg):
     inputpath      = commands.getoutput("pwd")
 
     cdo = Cdo()
-    fourc = Fourier_coeff()
-    lorenz = Lorenz_cycle()
+    fourc = FourierCoeff()
+    lorenz = LorenzCycle()
     mkthe = Mkthe()
     plotsmod = Plot_script() 
 

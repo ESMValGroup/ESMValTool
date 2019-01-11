@@ -1,6 +1,9 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
 """
+A collection of function calls to class fluxogram, serving as interface
+between the main script and the class for flux diagrams design.
+
+Needed for the LEC module.
+
 Created on Mon Jun 18 10:58:00 2018
 
 @author: Valerio Lembo
@@ -9,11 +12,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
-
-import sys
-sys.path.append('./diag_scripts/aux/Thermodynamics/')
 from fluxogram import *
-#import diag_scripts.aux.Thermodynamics.fluxogram as fluxogram
+
 
 class Diagram():
             

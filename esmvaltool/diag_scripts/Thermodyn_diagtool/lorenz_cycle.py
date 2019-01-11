@@ -1,151 +1,128 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
+"""This module contains all the instructions to compute the atmospheric
+Lorenz Energy Cycle in spectral coordinates, with input fields 
+(ta, ua, va, wap) given as Fourier coefficients as a function of zonal
+wavenumbers. 
+
+It follows from a previous Fortran77 script written by Frank Lunkeit, 
+University of Hamburg. 
+
 Created on Thu Jun  7 14:57:47 2018
 
 @author: Valerio2
 """
-import numpy as np
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
+from fluxogram import Fluxogram
 import sys
 import math
 import os
-from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
 import warnings
 warnings.filterwarnings("ignore")
-import imp
-#sys.path.append('./diag_scripts/aux/Thermodynamics/')
-import fluxogram as fluxogram
-import srvfile_read as srv
-from diagram_module import *
-#import diag_scripts.aux.Thermodynamics.fluxogram as fluxogram
-#import diag_scripts.aux.Thermodynamics.srvfile_read as srv
-reload(srv)
+import numpy as np
 
-g     = 9.81
-R     = 287.00
-cp    = 1003.5
-aa    = 6.371E6
-ps    = 101100.0
-nwout = -999
-nwoutf= -999
-ntime = 1000000
-nskip = 0
-nw1   = 3
-nw2   = 9
-nw3   = 21
+G = 9.81
+R = 287.00
+CP = 1003.5
+AA = 6.371E6
+PS = 101100.0
+NW_1 = 3
+NW_2 = 9
+NW_3 = 21
 
-#log = open('lec_new.txt','w')    
 
-class Lorenz_cycle():
+class LorenzCycle():
     
-    from lorenz_cycle import * 
-        
-    def lorenz(self, outpath, model, year, filenc, plotfile, logfile):    
-    #    PROGRAM MAIN
-    #C
-    #C***  *MAIN* MAIN PROGRAM
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     READ NAMELIST AND CONTROL CALCULATION
-    #C
-    #C
-    #C     INPUT.
-    #C     ------
-    #C     NAMELIST : STDIN
-    #C     U,V,W,T  : FORT.10
-    #C
-    #C     DATA STRUCTURE: SERVIVE FORMAT (IH(8),FELD(NY,NRES))
-    #C
-    #C
-    #C     OUTPUT.
-    #C     -------
-    #C     GLOBAL DIAGNOSTIC                              : STDOUT
-    #C     TIME AVERAGED 3-D ENERGY TERMS (NY,NTP,NLEVEL) : FORT.20
-    #C     TIME SERIES (G,N,S) MEANS (NTP,3)              : FORT.21  (SEE NWOUT)
-    #C     TIME SERIES 3-D ENERGY TERMS (NY,NTP,NLEVEL)   : FORT.22  (SEE NWOUTF)
-    #C
-    #C     DATA STRUCTURE: SERVIVE FORMAT (IH(8),FELD(NTP,3) OR (NY,NTP))
-    #C
-    #C     CODES: 4001 KT       (TRANSIENT KIN. ENERGY)
-    #C            4002 AT       (TRANSIENT AVAILABLE POT. ENERGY)
-    #C            4003 A2KT     (A->K TRANSIENT)
-    #C            4004 AE2AZT   (EDDY A -> ZONAL A TRANSIENT)
-    #C            4005 KE2KZT   (EDDY K -> ZONAL K TRANSIENT)
-    #C            4006 AT2AS    (TRANSIENT A -> STATIONARY A)
-    #C            4007 KT2KS    (TRANSIENT K -> STATIONARY K)
-    #C            4008 KS       (STATIONARY KIN ENERGY)
-    #C            4009 AS       (STATIONARY AVAIL. POT. ENERGY)
-    #C            4010 A2KS     (A -> K STATIONARY)
-    #C            4011 AE2AZS   (EDDY A -> ZONAL A STATIONARY)
-    #C            4012 KE2KZS   (EDDY K -> ZONAL K STATIONARY)
-    #C
-    #C     METHOD.
-    #C     -------
-    #C     READ NAMELIST FROM STDIN
-    #C     GET DIMENSIONS BY *GETDIM*
-    #C     CALL *ENERGIE*
-    #C
-    #C     EXTERNALS.
-    #C     ----------
-    #C     *GETDIM*  EXTRACT DIMENSIONS AND LEVELS FROM INPUT DATA
-    #C     *ENERGIE* CALCULATE ENERGY TERMS
-    #C
-    #C     REFERENCES.
-    #C     -----------
-    #C     ULBRICH, U. AND P. SPETH (1991) METEOROL. ATMOS. PHYS. 45 125-138
-    #C
-    #C
-    #C*    VARIABLE     TYPE     PURPOSE.
-    #C     --------     ----     --------
-    #C
-    #C     GRAV         REAL     GRAVITATIONAL ACCELERATION  (9.81)
-    #C     R            REAL     GAS CONSTANT (287.05)
-    #C     CP           REAL     SPECIFIC HEAT OF DRY AIR (1005.46)
-    #C     AA           REAL     PLANET RADIUS (6.371E6)
-    #C     PS           REAL     MEAN SURFACE PRESSURE (1.E5)
-    #C     NWOUT       INTEGET   INTERVAL FOR OUTPUT OF 1 D FIELDS  (NO OUTPUT)
-    #C     NWOUTF      INTEGER   INTERVAL FOR OUTPUT OF FULL 3 D FIELDS (NO OUTPUT)
-    #C     NTIME       INTEGER   NUMPER OF DATA TO BE USED (ALL; 100000)
-    #C     NSKIP       INTEGER   NUMPER OF DATA TO BE SKIPED (NO)
-    #C     NW1         INTEGER   LONG WAVES (1-NW1);FOR PRINT OUT (3)
-    #C     NW2         INTEGER   SYNOPTIC WAVES (NW1+1-NW2); FOR PRINT OUT (10)
-    #C     NW3         INTEGER   SHORT WAVES (NW2+1-NW3); FOR PRINT OUT (21)
-    #C     TITLE       CHARACTER TO BE SET IN THE TITLE OF POSTSCRIPT OUTPUT
-    #C
     
-        lorenz = Lorenz_cycle()
-        diagram = Diagram()
+    """    PROGRAM FOR LEC COMPUTATION
+    The class consists of the following functions:
+        - lorenz: it is the main program, controlling the file input,
+                  separating the real from imaginary part of the Fourier
+                  coefficients, reordering the latitudinal dimension 
+                  (from N to S), interpolating on a reference sigma coordinate,
+                  then computing the reservoirs and conversion terms, storing
+                  them separately in NetCDF files and providing a flux diagram
+                  and a table outputs, the latter separately for the two
+                  hemispheres;
+        - bsslzr: it contains the coefficients for the conversion from regular
+                  lonlat grid to Gaussian grid;
+        - diagram: it is the interface between the main program and a
+                   class "Fluxogram", producing the flux diagram;
+        - gauaw: it uses the coefficients provided in bsslzr for the lonlat to
+                 Gaussian grid conversion;
+        - globall_cg: it computes the global and hemispheric means at each
+                      timestep;
+        - makek: computes the KE reservoirs;
+        - makea: computes the APE reservoirs;
+        - mka2k: computes the APE->KE conversion terms;
+        - mkaeaz: computes the zonal APE - eddy APE conversion terms;
+        - mkkekz: computes the zonal KE - eddy KE conversion terms;
+        - mkatas: computes the stationay eddy - transient eddy APE conversions;
+        - mkktks: computes the stationay eddy - transient eddy KE conversions;
+        - ncdump: provides the attributes of a given variable in a Nc dataset;
+        - pr_output: prints a single component of the LEC computations to a
+                     single Nc file;
+        - removeif: removes a file if it exists;
+        - stabil: calculates the stability parameter;
+        - table: prints the global and hemispheric mean values of 
+                 the reservoirs;
+        - table_conv: prints the global and hemispheric mean values of the 
+                      conversion terms;
+        - varatts: prints the attributes of a variable in a Nc file;
+
+    Constants:
+        G: gravitational acceleration;
+        R: gas constant;
+        CP: specific heat of dry air;
+        AA: planet radius;
+        PS: mean surface pressure;
+        NW_1: wavenumber limit for long waves;
+        NW_2: wavenumber limit for synoptic waves;
+        NW_3: wavenumber limit for short waves;
         
-#        diagscript='diagram_module.py'
-#        diagmod=imp.load_source('diagram_module',diagscript)
+    References:
+        Ulbrich P. and P. Speth (1991) The global energy cycle of stationary 
+        and transient atmospheric waves: Results from ECMWF analyses, Met.
+ 
+    Authors:
+        Frank Lunkeit, Meteorology Department, University of Hamburg
+        Valerio Lembo, Meteorology Department, University of Hamburg
         
-        log = open(logfile,'w')    
+        Contact author: valerio.lembo@uni-hamburg.de .
+    """
         
+    from lorenz_cycle import *
+        
+    def lorenz(self, outpath, model, year, filenc, plotfile, logfile):
+        """ Receive fields t,u,v,w as input fields in Fourier 
+        coefficients (time,level,wave,lon) and compute the LEC.
+        
+        Arguments:
+            - outpath: ath where otput fields are stored (as NetCDF fields);
+            - model: name of the model that is analysed;
+            - year: year that is considered;
+            - filenc: name of the file containing the input fields;
+            - plotfile: name of the file that will contain the flux diagram;
+            - logfile: name of the file containing the table as a .txt file.
+        """
+    
+        lorenz = LorenzCycle()
+        log = open(logfile, 'w')
         log.write('########################################################\n')
         log.write('#                                                      #\n')
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
         log.write('#                                                      #\n')
         log.write('########################################################\n')
-     
-        #filename = filesrv
         filep    = filenc
-        
-    #    f=srv.srvfile(filename,hbyte="4",fbyte="4")
-    #    f=srv.srvfile(filename,hbyte="8",fbyte="8")
-
         dataset0 = Dataset(filenc)
-        ta    = dataset0.variables['ta'][:,:, :, :]
-        ua    = dataset0.variables['ua'][:,:, :, :]
-        va    = dataset0.variables['va'][:,:, :, :]
-        wap   = dataset0.variables['wap'][:,:, :, :]
-    
-        #lats  = dataset0.variables['y'][:]
+        ta    = dataset0.variables['ta'][:, :, :, :]
+        ua    = dataset0.variables['ua'][:, :, :, :]
+        va    = dataset0.variables['va'][:, :, :, :]
+        wap   = dataset0.variables['wap'][:, :, :, :]
         nlat  = np.shape(ta)[2]
-#        print(np.shape(ta))
-        #fc  = dataset0.variables['x'][:]
         nfc  = np.shape(ta)[3]
         lev  = dataset0.variables['plev'][:]
         nlev  = len(lev)
@@ -153,31 +130,25 @@ class Lorenz_cycle():
         ntime = len(time)
         lat = dataset0.variables['lat'][:]
         nlat  = len(lat)
-        if(max(lev)<1000):
-            lev=lev*100
-            wap=wap*100
-#        print(lev)
-        #lat = np.linspace(89.99,-89.99,num=nlat)
-        
+        if(max(lev) < 1000):
+            lev = lev*100
+            wap = wap*100
         ta = np.transpose(ta, (1, 0, 2, 3))
-        ta_r=ta[:,:,:,0::2]
-        #np.where(ta_r[0,:,:,:]==ta_r[1,:,:,:])
-        ta_i=ta[:,:,:,1::2]
+        ta_r=ta[:, :, :, 0::2]
+        ta_i=ta[:, :, :, 1::2]
         ua = np.transpose(ua, (1, 0, 2, 3))
-        ua_r=ua[:,:,:,0::2]
-        ua_i=ua[:,:,:,1::2]
+        ua_r=ua[:, :, :, 0::2]
+        ua_i=ua[:, :, :, 1::2]
         va = np.transpose(va, (1, 0, 2, 3))
-        va_r=va[:,:,:,0::2]
-        va_i=va[:,:,:,1::2]
+        va_r=va[:, :, :, 0::2]
+        va_i=va[:, :, :, 1::2]
         wap = np.transpose(wap, (1, 0, 2, 3))
-        wap_r=wap[:,:,:,0::2]
-        wap_i=wap[:,:,:,1::2]
-        
-        ta_c=ta_r + 1j * ta_i
-        ua_c=ua_r + 1j * ua_i
-        va_c=va_r + 1j * va_i
-        wap_c=wap_r + 1j * wap_i
-           
+        wap_r=wap[:, :, :, 0::2]
+        wap_i=wap[:, :, :, 1::2]
+        ta_c = ta_r + 1j * ta_i
+        ua_c = ua_r + 1j * ua_i
+        va_c = va_r + 1j * va_i
+        wap_c = wap_r + 1j * wap_i
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -188,616 +159,572 @@ class Lorenz_cycle():
         log.write('NUMBER OF LEVEL : {}'.format(nlev))
         log.write('LEVEL  : {} Pa\n'.format(lev))
         log.write(' \n')
-        
-        ntp=nfc/2+1
-        
+        ntp = nfc/2+1
         log.write('WAVES:\n')
         log.write(' \n')
-        log.write('(1) : 1 - {}\n'.format(nw1))
-        log.write('(2) : {} - {}\n'.format(nw1,nw2))
-        log.write('(3) : {} - {}\n'.format(nw2,nw3))
-    
-    # Compute sigma level and dsigma  
-        sig=np.zeros(len(lev))
+        log.write('(1) : 1 - {}\n'.format(NW_1))
+        log.write('(2) : {} - {}\n'.format(NW_1,NW_2))
+        log.write('(3) : {} - {}\n'.format(NW_2,NW_3))
+    # Compute sigma level and dsigma
+        sig = np.zeros(len(lev))
         for jl in range(nlev):
-            sig[jl]=lev[jl]/ps
-        
+            sig[jl] = lev[jl]/PS
         ds=np.zeros(len(lev))
         for jl in range(1,nlev-1,1):
-            ds[jl]=0.5*abs(sig[jl+1]-sig[jl-1])
-        ds[0]=sig[0]+0.5*abs(sig[1]-sig[0])
-        ds[nlev-1]=1-sig[nlev-1]+0.5*abs(sig[nlev-1]-sig[nlev-2])
-    #Compute Gaussian weights
-        #[pa,pw]=lorenz.gauaw(nlat)    
-        gw=np.zeros(nlat)
-        y=np.zeros(nlat)
-        for jy in range(nlat): 
-            #gw[jy]=pw[jy]
-            y[jy]=np.deg2rad(lat[jy])
-            gw[jy]=np.cos(y[jy])
-        
+            ds[jl] = 0.5*abs(sig[jl+1]-sig[jl-1])
+        ds[0] = sig[0]+0.5*abs(sig[1]-sig[0])
+        ds[nlev-1] = 1-sig[nlev-1]+0.5*abs(sig[nlev-1]-sig[nlev-2])
+    # Compute Gaussian weights
+        gw = np.zeros(nlat)
+        y = np.zeros(nlat)
+        for jy in range(nlat):
+            y[jy] = np.deg2rad(lat[jy])
+            gw[jy] = np.cos(y[jy])
         log.write(' \n')
         log.write('GLOBAL DIAGNOSTIC: \n')
         log.write('  \n')
         log.write('                            I GLOBAL I NORTH I SOUTH I\n')
         log.write('------------------------------------------------------\n')
-        
-    #Compute time mean
+    # Compute time mean
         ta_tmn  = np.nanmean(ta_c, axis=1)
         ua_tmn  = np.nanmean(ua_c, axis=1)
         va_tmn  = np.nanmean(va_c, axis=1)
         wap_tmn = np.nanmean(wap_c,axis=1)
-    #Compute zonal mean of time means
-        ta_ztmn   = np.squeeze(np.real(ta_tmn[:,:,0])) 
-        ua_ztmn   = np.squeeze(np.real(ua_tmn[:,:,0])) 
-        va_ztmn   = np.squeeze(np.real(va_tmn[:,:,0]))
-        wap_ztmn  = np.squeeze(np.real(wap_tmn[:,:,0])) 
-    #Compute global mean of time means
-        ta_gmn=np.zeros(len(lev))
-        ua_gmn=np.zeros(len(lev))
-        va_gmn=np.zeros(len(lev))
-        wap_gmn=np.zeros(len(lev))
+    # Compute zonal mean of time means
+        ta_ztmn   = np.squeeze(np.real(ta_tmn[:, :, 0]))
+        ua_ztmn   = np.squeeze(np.real(ua_tmn[:, :, 0]))
+        va_ztmn   = np.squeeze(np.real(va_tmn[:, :, 0]))
+        wap_ztmn  = np.squeeze(np.real(wap_tmn[:, :, 0]))
+    # Compute global mean of time means
+        ta_gmn = np.zeros(len(lev))
+        ua_gmn = np.zeros(len(lev))
+        va_gmn = np.zeros(len(lev))
+        wap_gmn = np.zeros(len(lev))
         for j in range(nlev):
-            ta_gmn[j]   = np.nansum(ta_ztmn[j,:]*gw)/np.nansum(gw)
-            ua_gmn[j]   = np.nansum(ua_ztmn[j,:]*gw)/np.nansum(gw)
-            va_gmn[j]   = np.nansum(va_ztmn[j,:]*gw)/np.nansum(gw)
-            wap_gmn[j]  = np.nansum(wap_ztmn[j,:]*gw)/np.nansum(gw)
-    #Compute stability parameter
-        gam_ztmn=np.zeros([nlev,nlat])
+            ta_gmn[j] = np.nansum(ta_ztmn[j, :]*gw)/np.nansum(gw)
+            ua_gmn[j] = np.nansum(ua_ztmn[j, :]*gw)/np.nansum(gw)
+            va_gmn[j] = np.nansum(va_ztmn[j, :]*gw)/np.nansum(gw)
+            wap_gmn[j] = np.nansum(wap_ztmn[j, :]*gw)/np.nansum(gw)
+    # Compute stability parameter
+        gam_ztmn = np.zeros([nlev,nlat])
         for l in range(nlat):
-            gam_ztmn[:,l] = lorenz.stabil(ta_ztmn[:,l],lev,nlev)    
-        gam_tmn = lorenz.stabil(ta_gmn,lev,nlev)
-        
-        ek=np.zeros([nlev,ntime,nlat,ntp-1])
-        ape=np.zeros([nlev,ntime,nlat,ntp-1])
-        a2k=np.zeros([nlev,ntime,nlat,ntp-1])
-        ae2az=np.zeros([nlev,ntime,nlat,ntp-1])
-        ke2kz=np.zeros([nlev,ntime,nlat,ntp-1])
-        at2as=np.zeros([nlev,ntime,nlat,ntp-1])
-        kt2ks=np.zeros([nlev,ntime,nlat,ntp-1])
-    
+            gam_ztmn[:, l] = lorenz.stabil(ta_ztmn[:, l],lev,nlev)
+        gam_tmn = lorenz.stabil(ta_gmn, lev, nlev)
+        ek = np.zeros([nlev,ntime,nlat,ntp-1])
+        ape = np.zeros([nlev,ntime,nlat,ntp-1])
+        a2k = np.zeros([nlev,ntime,nlat,ntp-1])
+        ae2az = np.zeros([nlev,ntime,nlat,ntp-1])
+        ke2kz = np.zeros([nlev,ntime,nlat,ntp-1])
+        at2as = np.zeros([nlev,ntime,nlat,ntp-1])
+        kt2ks = np.zeros([nlev,ntime,nlat,ntp-1])
         for t in range(ntime):
-            #print('Day {}'.format(t))
-            ta_t     = ta_c[:,t,:,:]
-            ua_t     = ua_c[:,t,:,:]
-            va_t     = va_c[:,t,:,:]
-            wap_t    = wap_c[:,t,:,:]
-            ta_tan   = ta_c[:,t,:,:]-ta_tmn
-            ua_tan   = ua_c[:,t,:,:]-ua_tmn
-            va_tan   = va_c[:,t,:,:]-va_tmn
-            wap_tan  = wap_c[:,t,:,:]-wap_tmn
-        #Compute zonal means
-            ta_tzmn   = np.squeeze(np.real(ta_t[:,:,0])) 
-            ua_tzmn   = np.squeeze(np.real(ua_t[:,:,0])) 
-            va_tzmn   = np.squeeze(np.real(va_t[:,:,0])) 
-            wap_tzmn  = np.squeeze(np.real(wap_t[:,:,0])) 
-            ta_tzan   = np.squeeze(np.real(ta_tan[:,:,0])) 
-            ua_tzan   = np.squeeze(np.real(ua_tan[:,:,0])) 
-            va_tzan   = np.squeeze(np.real(va_tan[:,:,0])) 
-            wap_tzan  = np.squeeze(np.real(wap_tan[:,:,0])) 
-        #Compute global means as a function of levels
-            ta_tgmn=np.zeros(len(lev))
-            ua_tgmn=np.zeros(len(lev))
-            va_tgmn=np.zeros(len(lev))
-            wap_tgmn=np.zeros(len(lev))
-            ta_tgan=np.zeros(len(lev))
-            ua_tgan=np.zeros(len(lev))
-            va_tgan=np.zeros(len(lev))
-            wap_tgan=np.zeros(len(lev))
+            ta_t = ta_c[:, t, :, :]
+            ua_t = ua_c[:, t,: , :]
+            va_t = va_c[:, t, :, :]
+            wap_t = wap_c[:, t, :, :]
+            ta_tan = ta_c[:, t, :, :]-ta_tmn
+            ua_tan = ua_c[:, t, :, :]-ua_tmn
+            va_tan = va_c[:, t, :, :]-va_tmn
+            wap_tan = wap_c[:, t, :, :]-wap_tmn
+        # Compute zonal means
+            ta_tzmn = np.squeeze(np.real(ta_t[:, :, 0]))
+            ua_tzmn = np.squeeze(np.real(ua_t[:, :, 0]))
+            va_tzmn = np.squeeze(np.real(va_t[:, :, 0]))
+            wap_tzmn = np.squeeze(np.real(wap_t[:, :, 0]))
+            ta_tzan = np.squeeze(np.real(ta_tan[:, :, 0]))
+            ua_tzan = np.squeeze(np.real(ua_tan[:, :, 0]))
+            va_tzan = np.squeeze(np.real(va_tan[:, :, 0]))
+            wap_tzan = np.squeeze(np.real(wap_tan[:, :, 0]))
+        # Compute global means as a function of levels
+            ta_tgmn = np.zeros(len(lev))
+            ua_tgmn = np.zeros(len(lev))
+            va_tgmn = np.zeros(len(lev))
+            wap_tgmn = np.zeros(len(lev))
+            ta_tgan = np.zeros(len(lev))
+            ua_tgan = np.zeros(len(lev))
+            va_tgan = np.zeros(len(lev))
+            wap_tgan = np.zeros(len(lev))
             for j in range(nlev):
-                ta_tgmn[j]   = np.nansum(ta_tzmn[j,:]*gw)/np.nansum(gw)
-                ua_tgmn[j]   = np.nansum(ua_tzmn[j,:]*gw)/np.nansum(gw)
-                va_tgmn[j]   = np.nansum(va_tzmn[j,:]*gw)/np.nansum(gw)
-                wap_tgmn[j]  = np.nansum(wap_tzmn[j,:]*gw)/np.nansum(gw)
-                ta_tgan[j]   = np.nansum(ta_tzan[j,:]*gw)/np.nansum(gw)
-                ua_tgan[j]   = np.nansum(ua_tzan[j,:]*gw)/np.nansum(gw)
-                va_tgan[j]   = np.nansum(va_tzan[j,:]*gw)/np.nansum(gw)
-                wap_tgan[j]  = np.nansum(wap_tzan[j,:]*gw)/np.nansum(gw)
-         #Compute kinetic energy   
-            ek[:,t,:,:]=lorenz.makek(ua_tan,va_tan,nlat,ntp,nlev)
-         #Compute available potential energy
-            ape[:,t,:,:]=lorenz.makea(ta_tan,ta_tgan,gam_tmn,nlat,ntp,nlev)
-         #Compute conversion between kin.en. and pot.en.
-            a2k[:,t,:,:]=lorenz.mka2k(wap_tan,ta_tan,wap_tgan,ta_tgan,lev,nlat,ntp,nlev)
-         #Compute conversion between zonal and eddy APE
-            ae2az[:,t,:,:]=lorenz.mkaeaz(va_tan,wap_tan,ta_tan,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
-         #Compute conversion between zonal and eddy KE
-            ke2kz[:,t,:,:]=lorenz.mkkekz(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
-        #Compute conversion between stationary and transient eddy APE
-            #at2as[:,t,:,:]=lorenz.mkatas(ua_t,va_t,wap_t,ta_t,ta_ztmn,gam_ztmn,lev,y,nlat,ntp,nlev)   
-            at2as[:,t,:,:]=lorenz.mkatas(ua_tan,va_tan,wap_tan,ta_tan,ta_ztmn,gam_ztmn,lev,y,nlat,ntp,nlev)   
-        #Compute conversion between stationary and transient eddy KE
-            kt2ks[:,t,:,:]=lorenz.mkktks(ua_tan,va_tan,wap_tan,ua_tmn,va_tmn,wap_tmn,lev,y,nlat,ntp,nlev)
-        ##Average transient terms over time to obtain variables from 4001 to 4007 (transient eddies
-        ## and zonal terms)
-        #Variable 4001
-        ek_tmn=np.nanmean(ek,axis=1)
-        ek_tgmn=lorenz.globall_cg(ek_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table(ek_tgmn,ntp,'TOT. KIN. EN.    ',log)
-        #Variable 4002
-        ape_tmn=np.nanmean(ape,axis=1)
-        ape_tgmn=lorenz.globall_cg(ape_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table(ape_tgmn,ntp,'TOT. POT. EN.   ',log)
-        #Variable 4003
-        a2k_tmn=np.nanmean(a2k,axis=1)
-        a2k_tgmn=lorenz.globall_cg(a2k_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(a2k_tgmn,ntp,'KE -> APE (trans) ',log)
-        #Variable 4004
-        ae2az_tmn=np.nanmean(ae2az,axis=1)
-        ae2az_tgmn=lorenz.globall_cg(ae2az_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(ae2az_tgmn,ntp,'AZ <-> AE (trans) ',log)
-        #Variable 4005
-        ke2kz_tmn=np.nanmean(ke2kz,axis=1)
-        ke2kz_tgmn=lorenz.globall_cg(ke2kz_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(ke2kz_tgmn,ntp,'KZ <-> KE (trans) ',log)
-        #Variable 4006
-        at2as_tmn=np.nanmean(at2as,axis=1)
-        at2as_tgmn=lorenz.globall_cg(at2as_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(at2as_tgmn,ntp,'ASE  <->  ATE   ',log)
-        #Variable 4007
-        kt2ks_tmn=np.nanmean(kt2ks,axis=1)
-        kt2ks_tgmn=lorenz.globall_cg(kt2ks_tmn,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(kt2ks_tgmn,ntp,'KSE  <->  KTE   ',log)
-     
-        ##Use time averaged quantities to obtain variables from 4008 to 4012 (stationary terms)
-        #Variable 4008
-        ek_st=lorenz.makek(ua_tmn,va_tmn,nlat,ntp,nlev)
-        ek_stgmn=lorenz.globall_cg(ek_st,gw,ds,nlat,ntp,nlev)
-        lorenz.table(ek_stgmn,ntp,'STAT. KIN. EN.    ',log)
-        #Variable 4009
-        ape_st=lorenz.makea(ta_tmn,ta_gmn,gam_tmn,nlat,ntp,nlev)
-        ape_stgmn=lorenz.globall_cg(ape_st,gw,ds,nlat,ntp,nlev)
-        lorenz.table(ape_stgmn,ntp,'STAT. POT. EN.    ',log)
-        #Variable 4010
-        a2k_st=lorenz.mka2k(wap_tmn,ta_tmn,wap_gmn,ta_gmn,lev,nlat,ntp,nlev)
-        a2k_stgmn=lorenz.globall_cg(a2k_st,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(a2k_stgmn,ntp,'KE -> APE (stat)',log)
-        #Variable 4011
-        ae2az_st=lorenz.mkaeaz(va_tmn,wap_tmn,ta_tmn,ta_tmn,ta_gmn,lev,y,gam_tmn,nlat,ntp,nlev)
-        ae2az_stgmn=lorenz.globall_cg(ae2az_st,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(ae2az_stgmn,ntp,'AZ <-> AE (stat)',log)
-        #Variable 4012
-        ke2kz_st=lorenz.mkkekz(ua_tmn,va_tmn,wap_tmn,ua_tmn,va_tmn,lev,y,nlat,ntp,nlev)
-        ke2kz_stgmn=lorenz.globall_cg(ke2kz_st,gw,ds,nlat,ntp,nlev)
-        lorenz.table_conv(ke2kz_stgmn,ntp,'KZ <-> KE (stat)',log)
-        
-        #This part is for the flux diagram as in Ulbrich and Speth 1991
-        apz    = '{:.2f}'.format(ape_tgmn[0,0]+ape_stgmn[0,0])
-        az2kz  = '{:.2f}'.format(-1e5*(a2k_tgmn[0,0]))
-        az2at  = '{:.2f}'.format(-1e5*np.nansum(ae2az_tgmn[0,1:ntp-1]))
-        aps    = '{:.2f}'.format(np.nansum(ape_stgmn[0,1:ntp-1]))
-        as2ks  = '{:.2f}'.format(1e5*np.nansum(a2k_stgmn[0,1:ntp-1]))
-        apt    = '{:.2f}'.format(np.nansum(ape_tgmn[0,1:ntp-1]))
-        at2kt  = '{:.2f}'.format(1e5*np.nansum(a2k_tgmn[0,1:ntp-1]))
-        az2as  = '{:.2f}'.format(-1e5*np.nansum(ae2az_stgmn[0,1:ntp-1]))
-        as2at  = '{:.2f}'.format(1e5*np.nansum(at2as_tgmn[0,1:ntp-1]))
-        azin   = '{:.2f}'.format((float(az2at)+float(az2as)-float(az2kz)))
-        asein  = '{:.2f}'.format((float(as2ks)+float(as2at)-float(az2as)))
-        atein  = '{:.2f}'.format(float(at2kt)-float(az2at)-float(as2at))    
-        kz     = '{:.2f}'.format(ek_tgmn[0,0]+ek_stgmn[0,0])
-        kte    = '{:.2f}'.format(np.nansum(ek_tgmn[0,1:ntp-1]))
-        kse    = '{:.2f}'.format(np.nansum(ek_stgmn[0,1:ntp-1]))
-        kt2kz  = '{:.2f}'.format(1e5*np.nansum(ke2kz_tgmn[0,1:ntp-1]))
-        kt2ks  = '{:.2f}'.format(-1e5*np.nansum(kt2ks_tgmn[0,1:ntp-1]))
-        ks2kz  = '{:.2f}'.format(1e5*np.nansum(ke2kz_stgmn[0,1:ntp-1]))
+                ta_tgmn[j] = np.nansum(ta_tzmn[j,:]*gw)/np.nansum(gw)
+                ua_tgmn[j] = np.nansum(ua_tzmn[j,:]*gw)/np.nansum(gw)
+                va_tgmn[j] = np.nansum(va_tzmn[j,:]*gw)/np.nansum(gw)
+                wap_tgmn[j] = np.nansum(wap_tzmn[j,:]*gw)/np.nansum(gw)
+                ta_tgan[j] = np.nansum(ta_tzan[j,:]*gw)/np.nansum(gw)
+                ua_tgan[j] = np.nansum(ua_tzan[j,:]*gw)/np.nansum(gw)
+                va_tgan[j] = np.nansum(va_tzan[j,:]*gw)/np.nansum(gw)
+                wap_tgan[j] = np.nansum(wap_tzan[j,:]*gw)/np.nansum(gw)
+         # Compute kinetic energy   
+            ek[:, t, :, :] = lorenz.makek(ua_tan, va_tan, nlat, ntp, nlev)
+         # Compute available potential energy
+            ape[:, t, :, :] = lorenz.makea(ta_tan, ta_tgan, gam_tmn, nlat,
+               ntp, nlev)
+         # Compute conversion between kin.en. and pot.en.
+            a2k[:, t, :, :] = lorenz.mka2k(wap_tan, ta_tan, wap_tgan, ta_tgan,
+               lev, nlat, ntp, nlev)
+         # Compute conversion between zonal and eddy APE
+            ae2az[:, t, :, :] = lorenz.mkaeaz(va_tan, wap_tan, ta_tan, ta_tmn,
+                 ta_gmn, lev, y, gam_tmn, nlat, ntp, nlev)
+         # Compute conversion between zonal and eddy KE
+            ke2kz[:, t, :, :] = lorenz.mkkekz(ua_tan, va_tan, wap_tan, ua_tmn,
+                 va_tmn, lev, y, nlat, ntp, nlev)
+         # Compute conversion between stationary and transient eddy APE
+            at2as[:, t, :, :] = lorenz.mkatas(ua_tan, va_tan, wap_tan, ta_tan,
+                 ta_ztmn, gam_ztmn, lev, y, nlat, ntp, nlev)
+         # Compute conversion between stationary and transient eddy KE
+            kt2ks[:, t, :, :] = lorenz.mkktks(ua_tan, va_tan, wap_tan, ua_tmn,
+                 va_tmn, wap_tmn, lev, y, nlat, ntp, nlev)
+        ek_tmn = np.nanmean(ek, axis=1)
+        ek_tgmn = lorenz.globall_cg(ek_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log)
+        ape_tmn = np.nanmean(ape, axis=1)
+        ape_tgmn = lorenz.globall_cg(ape_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log)
+        a2k_tmn = np.nanmean(a2k, axis=1)
+        a2k_tgmn = lorenz.globall_cg(a2k_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(a2k_tgmn, ntp, 'KE -> APE (trans) ', log)
+        ae2az_tmn = np.nanmean(ae2az,axis=1)
+        ae2az_tgmn = lorenz.globall_cg(ae2az_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log)
+        ke2kz_tmn = np.nanmean(ke2kz,axis=1)
+        ke2kz_tgmn = lorenz.globall_cg(ke2kz_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', log)
+        at2as_tmn = np.nanmean(at2as, axis=1)
+        at2as_tgmn = lorenz.globall_cg(at2as_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(at2as_tgmn, ntp, 'ASE  <->  ATE   ', log)
+        kt2ks_tmn = np.nanmean(kt2ks, axis=1)
+        kt2ks_tgmn = lorenz.globall_cg(kt2ks_tmn, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log)
+        ek_st = lorenz.makek(ua_tmn, va_tmn, nlat, ntp, nlev)
+        ek_stgmn = lorenz.globall_cg(ek_st, gw, ds, nlat, ntp, nlev)
+        lorenz.table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log)
+        ape_st = lorenz.makea(ta_tmn,ta_gmn,gam_tmn,nlat,ntp,nlev)
+        ape_stgmn = lorenz.globall_cg(ape_st, gw, ds, nlat, ntp, nlev)
+        lorenz.table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log)
+        a2k_st = lorenz.mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev, nlat,
+                              ntp, nlev)
+        a2k_stgmn = lorenz.globall_cg(a2k_st, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(a2k_stgmn, ntp, 'KE -> APE (stat)', log)
+        ae2az_st = lorenz.mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev,
+                                 y, gam_tmn, nlat, ntp, nlev)
+        ae2az_stgmn = lorenz.globall_cg(ae2az_st, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log)
+        ke2kz_st = lorenz.mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev,
+                                 y, nlat, ntp, nlev)
+        ke2kz_stgmn = lorenz.globall_cg(ke2kz_st, gw, ds, nlat, ntp, nlev)
+        lorenz.table_conv(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log)
+        apz = '{:.2f}'.format(ape_tgmn[0,0]+ape_stgmn[0,0])
+        az2kz = '{:.2f}'.format(-1e5*(a2k_tgmn[0,0]))
+        az2at = '{:.2f}'.format(-1e5*np.nansum(ae2az_tgmn[0, 1:ntp-1]))
+        aps = '{:.2f}'.format(np.nansum(ape_stgmn[0, 1:ntp-1]))
+        as2ks = '{:.2f}'.format(1e5*np.nansum(a2k_stgmn[0, 1:ntp-1]))
+        apt = '{:.2f}'.format(np.nansum(ape_tgmn[0, 1:ntp-1]))
+        at2kt = '{:.2f}'.format(1e5*np.nansum(a2k_tgmn[0, 1:ntp-1]))
+        az2as = '{:.2f}'.format(-1e5*np.nansum(ae2az_stgmn[0, 1:ntp-1]))
+        as2at = '{:.2f}'.format(1e5*np.nansum(at2as_tgmn[0, 1:ntp-1]))
+        azin = '{:.2f}'.format((float(az2at)+float(az2as)-float(az2kz)))
+        asein = '{:.2f}'.format((float(as2ks)+float(as2at)-float(az2as)))
+        atein = '{:.2f}'.format(float(at2kt)-float(az2at)-float(as2at))
+        kz = '{:.2f}'.format(ek_tgmn[0, 0]+ek_stgmn[0, 0])
+        kte = '{:.2f}'.format(np.nansum(ek_tgmn[0, 1:ntp-1]))
+        kse = '{:.2f}'.format(np.nansum(ek_stgmn[0, 1:ntp-1]))
+        kt2kz = '{:.2f}'.format(1e5*np.nansum(ke2kz_tgmn[0, 1:ntp-1]))
+        kt2ks = '{:.2f}'.format(-1e5*np.nansum(kt2ks_tgmn[0, 1:ntp-1]))
+        ks2kz = '{:.2f}'.format(1e5*np.nansum(ke2kz_stgmn[0, 1:ntp-1]))
         kteout = '{:.2f}'.format(float(at2kt)-float(kt2ks)-float(kt2kz))
         kseout = '{:.2f}'.format(float(kt2ks)+float(as2ks)-float(ks2kz))
-        kzout  = '{:.2f}'.format(float(kt2kz)+float(ks2kz)-float(az2kz))    
-        diagram.diagram(plotfile,azin,apz,asein,aps,atein,apt,as2ks,at2kt,kteout,
-                               kte,kseout,kse,kzout,kz,az2kz,az2at,az2as,
-                               as2at,kt2kz,kt2ks,ks2kz)
-        lec_strength=float(kteout)+float(kseout)+float(kzout)
-        
-        #Print out to NetCDF files
-        ek_aux=np.zeros([nlev,nlat,ntp-1])
-        ape_aux=np.zeros([nlev,nlat,ntp-1])
-        a2k_aux=np.zeros([nlev,nlat,ntp-1])
-        ae2az_aux=np.zeros([nlev,nlat,ntp-1])
-        ke2kz_aux=np.zeros([nlev,nlat,ntp-1])
+        kzout = '{:.2f}'.format(float(kt2kz)+float(ks2kz)-float(az2kz))
+        lorenz.diagram(plotfile, azin, apz, asein, aps, atein, apt, as2ks,
+                       at2kt, kteout, kte, kseout, kse, kzout, kz, az2kz,
+                       az2at, az2as, as2at, kt2kz, kt2ks, ks2kz)
+        lec_strength = float(kteout)+float(kseout)+float(kzout)
+        ek_aux = np.zeros([nlev, nlat, ntp-1])
+        ape_aux = np.zeros([nlev, nlat, ntp-1])
+        a2k_aux = np.zeros([nlev,  nlat, ntp-1])
+        ae2az_aux = np.zeros([nlev, nlat, ntp-1])
+        ke2kz_aux = np.zeros([nlev, nlat, ntp-1])
         for l in range(nlev):
-            ek_aux[l,:,:]    = ek_tmn[l,:,:]*ds[l]
-            ape_aux[l,:,:]   = ape_tmn[l,:,:]*ds[l]
-            a2k_aux[l,:,:]   = a2k_tmn[l,:,:]*ds[l]
-            ae2az_aux[l,:,:] = ae2az_tmn[l,:,:]*ds[l]
-            ke2kz_aux[l,:,:] = ke2kz_tmn[l,:,:]*ds[l]
-        ek_vmn=np.nansum(ek_aux,axis=0)/np.nansum(ds)
-        ape_vmn=np.nansum(ape_aux,axis=0)/np.nansum(ds)
-        a2k_vmn=np.nansum(a2k_aux,axis=0)/np.nansum(ds)
-        ae2az_vmn=np.nansum(ae2az_aux,axis=0)/np.nansum(ds)
-        ke2kz_vmn=np.nansum(ke2kz_aux,axis=0)/np.nansum(ds)
-    
-        nc_f=outpath+'/ek_tmap_{}_{}.nc'.format(model,year)
+            ek_aux[l, :, :] = ek_tmn[l, :, :]*ds[l]
+            ape_aux[l, :, :] = ape_tmn[l, :, :]*ds[l]
+            a2k_aux[l, :, :] = a2k_tmn[l, :, :]*ds[l]
+            ae2az_aux[l, :, :] = ae2az_tmn[l, :, :]*ds[l]
+            ke2kz_aux[l, :, :] = ke2kz_tmn[l, :, :]*ds[l]
+        ek_vmn = np.nansum(ek_aux, axis=0)/np.nansum(ds)
+        ape_vmn = np.nansum(ape_aux, axis=0)/np.nansum(ds)
+        a2k_vmn = np.nansum(a2k_aux, axis=0)/np.nansum(ds)
+        ae2az_vmn = np.nansum(ae2az_aux, axis=0)/np.nansum(ds)
+        ke2kz_vmn = np.nansum(ke2kz_aux, axis=0)/np.nansum(ds)
+        nc_f = outpath+'/ek_tmap_{}_{}.nc'.format(model,year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1, verb=True)
-        nc_f=outpath+'/ape_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath+'/ape_tmap_{}_{}.nc'.format(model,year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ape_vmn, 'ape', filep, nc_f, 1, verb=True)
-        nc_f=outpath+'/a2k_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath+'/a2k_tmap_{}_{}.nc'.format(model,year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1, verb=True)
-        nc_f=outpath+'/ae2az_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath+'/ae2az_tmap_{}_{}.nc'.format(model,year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1, verb=True)
-        nc_f=outpath+'/ke2kz_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath+'/ke2kz_tmap_{}_{}.nc'.format(model,year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1, verb=True)
-        
         log.close() 
-        
         return lec_strength
-    
+
+
     def bsslzr(self, kdim):
             
-        NDIM=50
+        NDIM = 50
         
         PI = math.pi
       
-        zbes = [ 2.4048255577, 5.5200781103, 8.6537279129,  11.7915344391,  
-                14.9309177086,  18.0710639679, 21.2116366299,  24.3524715308,  
-                27.4934791320,  30.6346064684, 33.7758202136,  36.9170983537,  
-                40.0584257646,  43.1997917132, 46.3411883717,  49.4826098974,  
-                52.6240518411,  55.7655107550, 58.9069839261,  62.0484691902,  
-                65.1899648002,  68.3314693299, 71.4729816036,  74.6145006437,  
-                77.7560256304,  80.8975558711, 84.0390907769,  87.1806298436,  
-                90.3221726372,  93.4637187819, 96.6052679510,  99.7468198587, 
-                102.8883742542, 106.0299309165,109.1714896498, 112.3130502805, 
-                115.4546126537, 118.5961766309, 121.7377420880, 124.8793089132, 
-                128.0208770059, 131.1624462752, 134.3040166383, 137.4455880203, 
-                140.5871603528, 143.7287335737, 146.8703076258, 150.0118824570, 
-                153.1534580192, 156.2950342685 ]
-    
-        pbes=np.zeros(kdim)
+        zbes = [2.4048255577, 5.5200781103, 8.6537279129,  11.7915344391,
+                14.9309177086,  18.0710639679, 21.2116366299,  24.3524715308,
+                27.4934791320,  30.6346064684, 33.7758202136,  36.9170983537,
+                40.0584257646,  43.1997917132, 46.3411883717,  49.4826098974,
+                52.6240518411,  55.7655107550, 58.9069839261,  62.0484691902,
+                65.1899648002,  68.3314693299, 71.4729816036,  74.6145006437,
+                77.7560256304,  80.8975558711, 84.0390907769,  87.1806298436,
+                90.3221726372,  93.4637187819, 96.6052679510,  99.7468198587,
+                102.8883742542, 106.0299309165,109.1714896498, 112.3130502805,
+                115.4546126537, 118.5961766309, 121.7377420880, 124.8793089132,
+                128.0208770059, 131.1624462752, 134.3040166383, 137.4455880203,
+                140.5871603528, 143.7287335737, 146.8703076258, 150.0118824570,
+                153.1534580192, 156.2950342685]
+        pbes = np.zeros(kdim)
         idim = min([kdim,NDIM])
         pbes[0:idim] = zbes[0:idim]
-        for j in range(idim,kdim-1,1):
+        for j in range(idim, kdim-1, 1):
             pbes[j] = pbes[j-1] + PI
-          
         return(pbes)
-    
-    
+
+
+    def diagram(self, filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt, 
+                kteout, kte, kseout, kse, kzout, kz, az2kz, az2at, az2as, 
+                as2at, kt2kz, kt2ks, ks2kz):       
+        """Call the class fluxogram, serving as        
+        interface between the main script and the class for flux 
+        diagrams design.
+        
+        @author: Valerio Lembo
+        """
+
+        FL = Fluxogram(1000, 1000, grid_size=20
+                       )
+        FL.add_storage("AZ", 600, 0, 0)
+        FL.add_storage("ASE", 600, 0.75, 0.25)
+        FL.add_storage("ATE", 600, 1.5, 0)
+        FL.add_storage("KTE", 600, 1.5, 1.5)
+        FL.add_storage("KSE", 600, 0.75,1.25)
+        FL.add_storage("KZ", 600, 0, 1.5)
+        FL.add_storage("AZ+", 0, 0, -1)
+        FL.add_storage("ASE+", 0, 0.75,-1)
+        FL.add_storage("ATE+", 0, 1.5, -1)
+        FL.add_storage("KTE-", 0, 1.5, 2.5)
+        FL.add_storage("KSE-", 0, 0.75, 2.5)
+        FL.add_storage("KZ-", 0, 0, 2.5
+                       )
+        FL.add_flux("A2KZ", FL.storages[5], FL.storages[0], 100)
+        FL.add_flux("AE2AZ", FL.storages[0], FL.storages[2], 150)
+        FL.add_flux("AE2AS", FL.storages[0], FL.storages[1], 60)
+        FL.add_flux("AE2AT", FL.storages[1], FL.storages[2], 60)
+        FL.add_flux("A2KS", FL.storages[1], FL.storages[4], 60)
+        FL.add_flux("A2KT", FL.storages[2], FL.storages[3], 100)
+        FL.add_flux("KE2KS", FL.storages[3], FL.storages[4], 60)
+        FL.add_flux("KS2KZ", FL.storages[4], FL.storages[5], 60)
+        FL.add_flux("KE2KZ", FL.storages[3], FL.storages[5], 150)
+        FL.add_flux("AZ+", FL.storages[6], FL.storages[0], 60)
+        FL.add_flux("ASE+", FL.storages[7], FL.storages[1], 60)
+        FL.add_flux("ATE+", FL.storages[8], FL.storages[2], 60)
+        FL.add_flux("KTE-", FL.storages[3], FL.storages[9], 60)
+        FL.add_flux("KSE-", FL.storages[4], FL.storages[10], 60)
+        FL.add_flux("KZ-", FL.storages[5], FL.storages[11], 60
+                    )
+        FL.draw(filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout, 
+                kte, kseout, kse, kzout, kz, az2kz, az2at, az2as, as2at, 
+                kt2kz, kt2ks, ks2kz)
+        
                 
     def gauaw(self, ny):
+        """Compute the Gaussian coefficients for the lonlat to Gaussian grid
+        conversion.
         
-        lorenz = Lorenz_cycle()
-        
+        @author: Valerio Lembo
+        """       
+        lorenz = LorenzCycle()        
         c = (1-(2/math.pi)**2)/4
-        eps = 0.00000000000001
-      
+        eps = 0.00000000000001    
         kk = ny/2
-        #print(kk)
-        pa=np.zeros(ny)
-        #print(len(bsslzr(kk)))
-        pa[0:kk]=lorenz.bsslzr(kk)
-        #print(len(pa[0:kk]))
-        pw=np.zeros(ny)
+        pa = np.zeros(ny)
+        pa[0:kk] = lorenz.bsslzr(kk)
+        pw = np.zeros(ny)
         for i in range(kk):
             xz = np.cos(pa[i]/math.sqrt((ny+0.5)**2+c))
             iterr = 0.
             zsp  = 1.0
             while (abs(zsp) > eps and iterr <= 10):
-                #print(zsp)
                 pkm1 = xz
                 pkm2 = 1.0
                 for n in range(2,ny,1):
-                    pk   = ((n*2-1.0)*xz*pkm1 - (n-1.0) * pkm2) / n
+                    pk = ((n*2-1.0)*xz*pkm1 - (n-1.0) * pkm2) / n
                     pkm2 = pkm1
                     pkm1 = pk
-                pkm1  = pkm2
+                pkm1 = pkm2
                 pkmrk = (ny * (pkm1 - xz * pk)) / (1.0 - xz**2)
-                zsp   = pk / pkmrk
-                xz    = xz - zsp
-                iterr  = iterr + 1
+                zsp = pk / pkmrk
+                xz = xz - zsp
+                iterr = iterr + 1
             if iterr > 15:
                 sys.exit("*** no convergence in gauaw ***")
             pa[i] = xz
             pw[i] = (2.0 * (1.0 - xz**2))/((ny**2)*(pkm1**2))
             pa[ny-1-i] = -pa[i]
-            pw[ny-1-i] =  pw[i]
-            
+            pw[ny-1-i] = pw[i]
         psi = pa
         pgw = pw
-      
         return psi,pgw
     
     
-    
-    def globall_cg(self, d3v,gw,ds,nlat,ntp,nlev):
-        #C***  *GLOBAL* CALCULATE GLOBAL AND HEMISPHERIC MEANS
-        #C
-        #C     F.LUNKEIT         UNIHH        01.08.94
-        #C
-        #C     PURPOSE.
-        #C     --------
-        #C     CALCULATE GLOBAL AND HEMISPHERIC MEANS
-        #C
-        #C
-    
-        gmn=np.zeros([3,ntp-1])
-        aux1=np.zeros([nlev,nlat/2,ntp-1])
-        aux2=np.zeros([nlev,nlat/2,ntp-1])
-        aux1v=np.zeros([nlev,ntp-1])
-        aux2v=np.zeros([nlev,ntp-1])
+    def globall_cg(self, d3v, gw, ds, nlat, ntp, nlev):
+        """Compute the global and hemispheric averages.
         
-        nhem=nlat/2
-        fac=1/g*ps/1e5
+        @author: Valerio Lembo
+        """    
+        gmn = np.zeros([3, ntp-1])
+        aux1 = np.zeros([nlev, nlat/2, ntp-1])
+        aux2 = np.zeros([nlev, nlat/2, ntp-1])
+        aux1v = np.zeros([nlev, ntp-1])
+        aux2v = np.zeros([nlev, ntp-1])
+        nhem = nlat/2
+        fac = 1/G*PS/1e5
         for l in range(nlev):
             for i in range(nhem):
-                aux1[l,i,:]=fac*np.real(d3v[l,i,:])*gw[i]
-                aux2[l,i,:]=fac*np.real(d3v[l,i+nhem-1,:])*gw[i+nhem-1]
-            aux1v[l,:]=np.nansum(aux1[l,:,:],axis=0)/np.nansum(gw[0:nhem])*ds[l]
-            aux2v[l,:]=np.nansum(aux2[l,:,:],axis=0)/np.nansum(gw[0:nhem])*ds[l]
-        gmn[1,:]=(np.nansum(aux1v,axis=0)/np.nansum(ds))
-        gmn[2,:]=(np.nansum(aux2v,axis=0)/np.nansum(ds))
-        
-        gmn[0,:]=0.5*(gmn[1,:]+gmn[2,:])
-    
+                aux1[l, i, :] = fac*np.real(d3v[l, i, :])*gw[i]
+                aux2[l, i, :] = fac*np.real(d3v[l, i+nhem-1, :])*gw[i+nhem-1]
+            aux1v[l, :] = np.nansum(aux1[l, :, :],
+                 axis=0)/np.nansum(gw[0:nhem])*ds[l]
+            aux2v[l, :] = np.nansum(aux2[l, :, :],
+                 axis=0)/np.nansum(gw[0:nhem])*ds[l]
+        gmn[1, :] = (np.nansum(aux1v, axis=0)/np.nansum(ds))
+        gmn[2, :] = (np.nansum(aux2v, axis=0)/np.nansum(ds))
+        gmn[0, :] = 0.5*(gmn[1, :]+gmn[2, :])
         return(gmn)
     
     
-    def makek(self, u,v,nlat,ntp,nlev):
-    #C
-    #C
-    #C
-    #C***  *MAKEK* CALCULATE KINETIC ENERGY
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF KINETIC ENERGY FRON U AND V
-    #C
-    #C
-    
-        ek=np.zeros([nlev,nlat,ntp-1])
-        ck1=u*np.conj(u)
-        ck2=v*np.conj(v)
-        ek[:,:,0]=0.5*np.real(u[:,:,0]*u[:,:,0]+v[:,:,0]*v[:,:,0])
-        ek=np.real(ck1+ck2)
-        ek[:,:,0]=0.5*np.real(u[:,:,0]*u[:,:,0]+v[:,:,0]*v[:,:,0])
+    def makek(self, u, v, nlat, ntp, nlev):
+        """Compute the kinetic energy reservoirs from u and v.
         
+        @author: Valerio Lembo
+        """  
+        ek = np.zeros([nlev, nlat, ntp-1])
+        ck1 = u*np.conj(u)
+        ck2 = v*np.conj(v)
+        ek[:, :, 0] = 0.5*np.real(u[:, :, 0]*u[:, :, 0]+v[:, :, 0]*v[:, :, 0])
+        ek = np.real(ck1+ck2)
+        ek[:, :, 0] = 0.5*np.real(u[:, :, 0]*u[:, :, 0]+v[:, :, 0]*v[:, :, 0])
         return(ek)
     
         
-    def makea(self, t,tg,gam,nlat,ntp,nlev):
-    #C***  *MAKEA* CALCULATE AVAIL. POT. ENERGY
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF AVAIL. POT. ENERGY FROM T
-    #C
-    #C
-          
-        a=gam[:,np.newaxis,np.newaxis]*np.real(t*np.conj(t))
-        a[:,:,0]=gam[:,np.newaxis]*0.5*np.real((t[:,:,0]-tg[:,np.newaxis])*(t[:,:,0]-tg[:,np.newaxis]))
+    def makea(self, t, tg, gam, nlat, ntp, nlev):
+        """Compute the kinetic energy reservoirs from t.
         
+        @author: Valerio Lembo
+        """  
+        a = gam[:, np.newaxis, np.newaxis]*np.real(t*np.conj(t))
+        a[:, :, 0] = gam[:, np.newaxis]*0.5*np.real((t[:, :, 0] -\
+         tg[:, np.newaxis])*(t[:, :, 0]-tg[:, np.newaxis]))        
         return(a)
     
     def mka2k(self, wap,t,wg,tg,p,nlat,ntp,nlev):
-    
-    #C***  *MKA2K* CALCULATE CONVERSION A->K
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF CONVERSION A->K
-    #C
-    #C
-        a2k=-R/p[:,np.newaxis,np.newaxis]*(t*np.conj(wap)+np.conj(t)*wap)
-#        a2k=-R/p[:,np.newaxis,np.newaxis]*((t-tg[:,np.newaxis,np.newaxis])\
-#                *np.conj(wap)+np.conj(t-tg[:,np.newaxis,np.newaxis])*(wap))
-        #a2k[:,:,0]=-R/p[:,np.newaxis]*np.real((t[:,:,0])*(wap[:,:,0]))
-        #a2k[:,:,0]=-R/p[:,np.newaxis]*np.real((t[:,:,0]-tg[:,np.newaxis])*(wap[:,:,0]-wg[:,np.newaxis]))
-        a2k[:,:,0]=-R/p[:,np.newaxis]*(t[:,:,0]-tg[:,np.newaxis])*(wap[:,:,0]-wg[:,np.newaxis])
-
+        """Compute the KE to APE energy conversions from t and w.
+        
+        @author: Valerio Lembo
+        """  
+        a2k = -R/p[:, np.newaxis, np.newaxis]*(t*np.conj(wap)+np.conj(t)*wap)
+        a2k[:, :, 0]=-R/p[:, np.newaxis]*(t[:, :, 0] -\
+           tg[:, np.newaxis])*(wap[:, :, 0] - wg[:, np.newaxis])
         return(a2k)
         
     
     def mkaeaz(self, v,wap,t,tt,ttg,p,lat,gam,nlat,ntp,nlev):
-    #C
-    #C
-    #C***  *MKAEAZ* CALCULATE CONVERSION EDDY A->ZONAL A
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF CONVERSION EDDY A->ZONAL A
-    #C
-    #C
-    
-        ae2az = np.zeros([nlev,nlat,ntp-1])
-        dtdp  = np.zeros([nlev,nlat])
-        dtdy  = np.zeros([nlev,nlat])
+        """Compute the zonal mean - eddy APE conversions from t and v.
+        
+        @author: Valerio Lembo
+        """  
+        ae2az = np.zeros([nlev, nlat, ntp-1])
+        dtdp = np.zeros([nlev, nlat])
+        dtdy = np.zeros([nlev, nlat])
         for l in np.arange(nlev):
             if l == 0:
-                t1   = np.real(tt[l,:,0])-ttg[l]
-                t2   = np.real(tt[l+1,:,0])-ttg[l+1]
-                dtdp[l,:] = (t2-t1)/(p[l+1]-p[l])
+                t1 = np.real(tt[l, :, 0])-ttg[l]
+                t2 = np.real(tt[l+1, :, 0])-ttg[l+1]
+                dtdp[l, :] = (t2-t1)/(p[l+1]-p[l])
             elif l == nlev-1:
-                t1   = np.real(tt[l-1,:,0])-ttg[l-1]
-                t2   = np.real(tt[l,:,0])-ttg[l]
-                dtdp[l,:] = (t2-t1)/(p[l]-p[l-1])
+                t1 = np.real(tt[l-1, :, 0])-ttg[l-1]
+                t2 = np.real(tt[l, :, 0])-ttg[l]
+                dtdp[l, :] = (t2-t1)/(p[l]-p[l-1])
             else:
-                t1   = np.real(tt[l,:,0])-ttg[l]
-                t2   = np.real(tt[l+1,:,0])-ttg[l+1]
-                dtdp1= (t2-t1)/(p[l+1]-p[l])
-                t2   = t1
-                t1   = np.real(tt[l-1,:,0])-ttg[l-1]
-                dtdp2= (t2-t1)/(p[l]-p[l-1])
-                dtdp[l,:] = (dtdp1*(p[l]-p[l-1])+dtdp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
-            dtdp[l,:] = dtdp[l,:]-R/(cp*p[l])*(tt[l,:,0]-ttg[l])
-        
-        for i in np.arange(nlat):        
+                t1 = np.real(tt[l, :, 0])-ttg[l]
+                t2 = np.real(tt[l+1, :, 0])-ttg[l+1]
+                dtdp1 = (t2-t1)/(p[l+1]-p[l])
+                t2 = t1
+                t1 = np.real(tt[l-1, :, 0])-ttg[l-1]
+                dtdp2 = (t2-t1)/(p[l]-p[l-1])
+                dtdp[l, :] = (dtdp1*(p[l]-p[l-1]) + \
+                    dtdp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
+            dtdp[l, :] = dtdp[l, :]-R/(CP*p[l])*(tt[l, :, 0]-ttg[l])
+        for i in np.arange(nlat):
             if i == 0:
-                t1        = np.real(tt[:,i,0])
-                t2        = np.real(tt[:,i+1,0])
-                dtdy[:,i] = (t2-t1)/(lat[i+1]-lat[i])
+                t1 = np.real(tt[:, i, 0])
+                t2 = np.real(tt[:, i+1, 0])
+                dtdy[:, i] = (t2-t1)/(lat[i+1]-lat[i])
             elif i == nlat-1:
-                t1        = np.real(tt[:,i-1,0])
-                t2        = np.real(tt[:,i,0])
-                dtdy[:,i] = (t2-t1)/(lat[i]-lat[i-1])
+                t1 = np.real(tt[:,i-1,0])
+                t2 = np.real(tt[:,i,0])
+                dtdy[:, i] = (t2-t1)/(lat[i]-lat[i-1])
             else:
-                t1        = np.real(tt[:,i-1,0])
-                t2        = np.real(tt[:,i+1,0])
-                dtdy[:,i] = (t2-t1)/(lat[i+1]-lat[i-1])
-        dtdy  = dtdy/aa
-        c1 =  np.real(v*np.conj(t)+t*np.conj(v))
-        c2 =  np.real(wap*np.conj(t)+t*np.conj(wap))
-        ae2az = gam[:,np.newaxis,np.newaxis]*(dtdy[:,:,np.newaxis]*c1+dtdp[:,:,np.newaxis]*c2)      
-        ae2az[:,:,0]=0.
-    
+                t1 = np.real(tt[:, i-1, 0])
+                t2 = np.real(tt[:, i+1, 0])
+                dtdy[:, i] = (t2-t1)/(lat[i+1]-lat[i-1])
+        dtdy = dtdy/AA
+        c1 = np.real(v*np.conj(t)+t*np.conj(v))
+        c2 = np.real(wap*np.conj(t)+t*np.conj(wap))
+        ae2az = gam[:, np.newaxis, np.newaxis]*(dtdy[:, :, np.newaxis]*c1 +\
+                   dtdp[:, :, np.newaxis]*c2)      
+        ae2az[:, :, 0]=0.
         return(ae2az)
-    
-    
-    
+
+
     def mkkekz(self, u,v,wap,ut,vt,p,lat,nlat,ntp,nlev):
-    #C
-    #C***  *MKKEKZ* CALCULATE CONVERSION EDDY K->ZONAL K
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF CONVERSION EDDY K->ZONAL K
-    #C
-    #C
-        dudp  = np.zeros([nlev,nlat])
-        dvdp  = np.zeros([nlev,nlat])
-        dudy  = np.zeros([nlev,nlat])
-        dvdy  = np.zeros([nlev,nlat])
+        """Compute the zonal mean - eddy KE conversions from u and v.
         
+        @author: Valerio Lembo
+        """  
+        dudp = np.zeros([nlev, nlat])
+        dvdp = np.zeros([nlev, nlat])
+        dudy = np.zeros([nlev, nlat])
+        dvdy = np.zeros([nlev, nlat])
         for l in np.arange(nlev):
             if l == 0:
-                dudp[l,:]  = (np.real(ut[l+1,:,0]-ut[l,:,0]))/(p[l+1]-p[l])
-                dvdp[l,:]  = (np.real(vt[l+1,:,0]-vt[l,:,0]))/(p[l+1]-p[l])
+                dudp[l, :] = (np.real(ut[l+1, :, 0]-ut[l, :, 0]))/(p[l+1]-p[l])
+                dvdp[l, :] = (np.real(vt[l+1, :, 0]-vt[l, :, 0]))/(p[l+1]-p[l])
             elif l == nlev-1:
-                dudp[l,:]  = (np.real(ut[l,:,0]-ut[l-1,:,0]))/(p[l]-p[l-1])
-                dvdp[l,:]  = (np.real(vt[l,:,0]-vt[l-1,:,0]))/(p[l]-p[l-1])
+                dudp[l, :] = (np.real(ut[l, :, 0]-ut[l-1, :, 0]))/(p[l]-p[l-1])
+                dvdp[l, :] = (np.real(vt[l, :, 0]-vt[l-1, :, 0]))/(p[l]-p[l-1])
             else:
-                dudp1  = (np.real(ut[l+1,:,0]-ut[l,:,0]))/(p[l+1]-p[l])
-                dvdp1  = (np.real(vt[l+1,:,0]-vt[l,:,0]))/(p[l+1]-p[l])
-                dudp2  = (np.real(ut[l,:,0]-ut[l-1,:,0]))/(p[l]-p[l-1])
-                dvdp2  = (np.real(vt[l,:,0]-vt[l-1,:,0]))/(p[l]-p[l-1])
-                dudp[l,:] = (dudp1*(p[l]-p[l-1])+dudp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
-                dvdp[l,:] = (dvdp1*(p[l]-p[l-1])+dvdp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
-           
+                dudp1 = (np.real(ut[l+1, :, 0]-ut[l, :, 0]))/(p[l+1]-p[l])
+                dvdp1 = (np.real(vt[l+1, :, 0]-vt[l, :, 0]))/(p[l+1]-p[l])
+                dudp2 = (np.real(ut[l, :, 0]-ut[l-1, :, 0]))/(p[l]-p[l-1])
+                dvdp2 = (np.real(vt[l, :, 0]-vt[l-1, :, 0]))/(p[l]-p[l-1])
+                dudp[l, :] = (dudp1*(p[l]-p[l-1]) +\
+                    dudp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])
+                dvdp[l, :] = (dvdp1*(p[l]-p[l-1]) +\
+                    dvdp2*(p[l+1]-p[l]))/(p[l+1]-p[l-1])         
         for i in np.arange(nlat):    
             if i == 0:
-                dudy[:,i]  = (np.real(ut[:,i+1,0]-ut[:,i,0]))/(lat[i+1]-lat[i])
-                dvdy[:,i]  = (np.real(vt[:,i+1,0]-vt[:,i,0]))/(lat[i+1]-lat[i])
+                dudy[:, i]  = (np.real(ut[:, i+1, 0] -\
+                    ut[:, i, 0]))/(lat[i+1]-lat[i])
+                dvdy[:, i]  = (np.real(vt[:, i+1, 0] -\
+                    vt[:, i, 0]))/(lat[i+1]-lat[i])
             elif i == nlat-1:
-                dudy[:,i]  = (np.real(ut[:,i,0]-ut[:,i-1,0]))/(lat[i]-lat[i-1])
-                dvdy[:,i]  = (np.real(vt[:,i,0]-vt[:,i-1,0]))/(lat[i]-lat[i-1])
+                dudy[:, i]  = (np.real(ut[:, i, 0] -\
+                    ut[:, i-1, 0]))/(lat[i]-lat[i-1])
+                dvdy[:, i]  = (np.real(vt[:, i, 0] -\
+                    vt[:, i-1, 0]))/(lat[i]-lat[i-1])
             else:
-                dudy[:,i]  = (np.real(ut[:,i+1,0]-ut[:,i-1,0]))/(lat[i+1]-lat[i-1])
-                dvdy[:,i]  = (np.real(vt[:,i+1,0]-vt[:,i-1,0]))/(lat[i+1]-lat[i-1])
-        dudy  = dudy/aa
-        dvdy  = dvdy/aa
-        
-        c1   = np.zeros([nlev,nlat,ntp-1])
-        c2   = np.zeros([nlev,nlat,ntp-1])
-        c3   = np.zeros([nlev,nlat,ntp-1])
-        c4   = np.zeros([nlev,nlat,ntp-1])
-        c5   = np.zeros([nlev,nlat,ntp-1])
-        c6   = np.zeros([nlev,nlat,ntp-1])
-        ke2kz= np.zeros([nlev,nlat,ntp-1])
-        
+                dudy[:, i]  = (np.real(ut[:, i+1, 0] -\
+                    ut[:, i-1, 0]))/(lat[i+1]-lat[i-1])
+                dvdy[:, i]  = (np.real(vt[:, i+1, 0] -\
+                    vt[:, i-1, 0]))/(lat[i+1]-lat[i-1])
+        dudy  = dudy/AA
+        dvdy  = dvdy/AA       
+        c1 = np.zeros([nlev, nlat, ntp-1])
+        c2 = np.zeros([nlev, nlat, ntp-1])
+        c3 = np.zeros([nlev, nlat, ntp-1])
+        c4 = np.zeros([nlev, nlat, ntp-1])
+        c5 = np.zeros([nlev, nlat, ntp-1])
+        c6 = np.zeros([nlev, nlat, ntp-1])
+        ke2kz = np.zeros([nlev, nlat, ntp-1])
         uu = u*np.conj(u)+u*np.conj(u)
         uv = u*np.conj(v)+v*np.conj(u)
         vv = v*np.conj(v)+v*np.conj(v)
         uw = u*np.conj(wap)+wap*np.conj(u)
         vw = v*np.conj(wap)+wap*np.conj(v)
-        
         for i in np.arange(nlat):
-            c1[:,i,:]=dudy[:,i][:,np.newaxis]*uv[:,i,:]
-            c2[:,i,:]=dvdy[:,i][:,np.newaxis]*vv[:,i,:]
-    #        c5[:,i,:]= np.tan(np.deg2rad(lat[i]))/aa*np.real(ut[:,i,0])[:,np.newaxis]*(uv[:,i,:])
-    #        c6[:,i,:]=-np.tan(np.deg2rad(lat[i]))/aa*np.real(vt[:,i,0])[:,np.newaxis]*(uu[:,i,:])
-            c5[:,i,:]= np.tan(lat[i])/aa*np.real(ut[:,i,0])[:,np.newaxis]*(uv[:,i,:])
-            c6[:,i,:]=-np.tan(lat[i])/aa*np.real(vt[:,i,0])[:,np.newaxis]*(uu[:,i,:])    
+            c1[:, i, :] = dudy[:, i][:, np.newaxis]*uv[:, i, :]
+            c2[:, i, :] = dvdy[:, i][:, np.newaxis]*vv[:, i, :]
+            c5[:, i, :] = np.tan(lat[i])/AA*np.real(ut[:, i, 0])[:, np.newaxis]*(uv[:, i, :])
+            c6[:, i, :] = -np.tan(lat[i])/AA*np.real(vt[:, i, 0])[:, np.newaxis]*(uu[:, i, :])    
         for l in np.arange(nlev):
-            c3[l,:,:]=dudp[l,:][:,np.newaxis]*uw[l,:,:]
-            c4[l,:,:]=dvdp[l,:][:,np.newaxis]*vw[l,:,:]
-        ke2kz=(c1+c2+c3+c4+c5+c6)
-        ke2kz[:,:,0]=0.
-    
+            c3[l, :, :] = dudp[l, :][:, np.newaxis]*uw[l, :, :]
+            c4[l, :, :] = dvdp[l, :][:, np.newaxis]*vw[l, :, :]
+        ke2kz = (c1+c2+c3+c4+c5+c6)
+        ke2kz[:, :, 0] = 0.
         return(ke2kz)
     
     
     def mkatas(self, u,v,wap,t,tt,gw,p,lat,nlat,ntp,nlev):
-    #C***  *MKATAS* CALCULATE CONVERSION TRANSIENT A -> STATIONARY A
-    #C
-    #C     F.LUNKEIT         UNIHH        01.08.94
-    #C
-    #C     PURPOSE.
-    #C     --------
-    #C     CALCULATE SPECTRAL COMPONENTS OF CONVERSION TRANSIENT A -> STATIONARY A
-    #C
-    #C
-    #C     REFERENCES.
-    #C     -----------
-    #C     ULBRICH, U. AND P. SPETH (1991) METEOROL. ATMOS. PHYS. 45 125-138
-    
-        tr=np.fft.ifft(t,axis=2)
-        ur=np.fft.ifft(u,axis=2)
-        vr=np.fft.ifft(v,axis=2)
-        wr=np.fft.ifft(wap,axis=2)
-        tur=tr*ur
-        tvr=tr*vr
-        twr=tr*wr
-        tu=np.fft.fft(tur,axis=2)
-        tv=np.fft.fft(tvr,axis=2)
-        tw=np.fft.fft(twr,axis=2)
+        """Compute the stationary eddy - transient eddy APE conversions 
+        from u, v, wap and t.
         
-        c1=np.zeros([nlev,nlat,ntp-1])
-        c6=np.zeros([nlev,nlat,ntp-1])
-        c1=tu*np.conj(tt[:,:,np.newaxis])-tt[:,:,np.newaxis]*np.conj(tu)
-        c6=tw*np.conj(tt[:,:,np.newaxis])-tt[:,:,np.newaxis]*np.conj(tw)
-        c2=np.zeros([nlev,nlat,ntp-1])
-        c3=np.zeros([nlev,nlat,ntp-1])
-        c5=np.zeros([nlev,nlat,ntp-1])
-    
+        @author: Valerio Lembo
+        """  
+        tr = np.fft.ifft(t, axis=2)
+        ur = np.fft.ifft(u, axis=2)
+        vr = np.fft.ifft(v, axis=2)
+        wr = np.fft.ifft(wap, axis=2)
+        tur = tr*ur
+        tvr = tr*vr
+        twr = tr*wr
+        tu = np.fft.fft(tur, axis=2)
+        tv = np.fft.fft(tvr, axis=2)
+        tw = np.fft.fft(twr, axis=2)
+        c1 = np.zeros([nlev, nlat, ntp-1])
+        c6 = np.zeros([nlev, nlat, ntp-1])
+        c1 = tu*np.conj(tt[:, :, np.newaxis])-tt[:, :, np.newaxis]*np.conj(tu)
+        c6 = tw*np.conj(tt[:, :, np.newaxis])-tt[:, :, np.newaxis]*np.conj(tw)
+        c2 = np.zeros([nlev, nlat, ntp-1])
+        c3 = np.zeros([nlev, nlat, ntp-1])
+        c5 = np.zeros([nlev, nlat, ntp-1])
         for i in range(nlat):
                 if i == 0:
-                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,np.newaxis] - \
-                      tt[:,i,np.newaxis])/(aa*(lat[i+1]-lat[i]))
-                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,np.newaxis] - \
-                      tt[:,i,np.newaxis])/(aa*(lat[i+1]-lat[i]))
+                    c2[:, i, :] = tv[:, i, :]*np.conj(tt[:, i+1, np.newaxis] -\
+                      tt[:, i, np.newaxis])/(AA*(lat[i+1]-lat[i]))
+                    c3[:, i, :] = np.conj(tv[:, i, :])*(tt[:, i+1, np.newaxis]-\
+                      tt[:, i, np.newaxis])/(AA*(lat[i+1]-lat[i]))
                 elif i == nlat-1:
-                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i,np.newaxis] - \
-                      tt[:,i-1,np.newaxis])/(aa*(lat[i]-lat[i-1]))
-                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i,np.newaxis] - \
-                      tt[:,i-1,np.newaxis])/(aa*(lat[i]-lat[i-1]))
+                    c2[:, i, :] = tv[:, i, :]*np.conj(tt[:, i, np.newaxis] -\
+                      tt[:, i-1, np.newaxis])/(AA*(lat[i]-lat[i-1]))
+                    c3[:, i, :] = np.conj(tv[:, i, :])*(tt[:, i, np.newaxis] -\
+                      tt[:, i-1, np.newaxis])/(AA*(lat[i]-lat[i-1]))
                 else:
-                    c2[:,i,:]  = tv[:,i,:]*np.conj(tt[:,i+1,np.newaxis] - \
-                      tt[:,i-1,np.newaxis])/(aa*(lat[i+1]-lat[i-1]))
-                    c3[:,i,:]  = np.conj(tv[:,i,:])*(tt[:,i+1,np.newaxis] - \
-                      tt[:,i-1,np.newaxis])/(aa*(lat[i+1]-lat[i-1]))
-            
+                    c2[:, i, :] = tv[:, i, :]*np.conj(tt[:, i+1, np.newaxis] -\
+                      tt[:, i-1, np.newaxis])/(AA*(lat[i+1]-lat[i-1]))
+                    c3[:, i, :] = np.conj(tv[:, i, :])*(tt[:, i+1, np.newaxis]-\
+                      tt[:,i-1,np.newaxis])/(AA*(lat[i+1]-lat[i-1]))            
         for l in range(nlev):
             if l == 0:
-                c5[l,:,:]  = (tt[l+1,:,np.newaxis]-tt[l,:,np.newaxis])/(p[l+1]-p[l])
+                c5[l, :, :] = (tt[l+1, :, np.newaxis] -\
+                  tt[l, :, np.newaxis])/(p[l+1]-p[l])
             elif l == nlev-1:
-                c5[l,:,:]  = (tt[l,:,np.newaxis]-tt[l-1,:,np.newaxis])/(p[l]-p[l-1])
+                c5[l, :, :] = (tt[l, :, np.newaxis] -\
+                  tt[l-1, :, np.newaxis])/(p[l]-p[l-1])
             else:
-                c51  = (tt[l+1,:,np.newaxis]-tt[l,:,np.newaxis])/(p[l+1]-p[l])
-                c52  = (tt[l,:,np.newaxis]-tt[l-1,:,np.newaxis])/(p[l]-p[l-1])
-                c5[l,:,:]  = (c51*(p[l]-p[l-1])+c52*(p[l+1]-p[l]))/(p[l+1]-p[l-1])  
-        
+                c51 = (tt[l+1, :, np.newaxis] -\
+                        tt[l, :, np.newaxis])/(p[l+1]-p[l])
+                c52 = (tt[l, :, np.newaxis] -\
+                        tt[l-1, :, np.newaxis])/(p[l]-p[l-1])
+                c5[l, :, :]  = (c51*(p[l]-p[l-1]) +\
+                  c52*(p[l+1]-p[l]))/(p[l+1]-p[l-1])         
         K = np.arange(0,ntp-1)            
-        at2as=gw[:,:,np.newaxis]*((K-1)[np.newaxis,np.newaxis,:]*
-             np.imag(c1)/(aa*np.cos(lat[np.newaxis,:,np.newaxis])) \
+        at2as = gw[:, :, np.newaxis]*((K-1)[np.newaxis, np.newaxis, :]*
+             np.imag(c1)/(AA*np.cos(lat[np.newaxis, :, np.newaxis])) \
             + np.real(c2+c3)+np.real(tw*np.conj(c5)+\
-            np.conj(tw)*c5)+R/(cp*p[:,np.newaxis,np.newaxis])*np.real(c6))        
-        at2as[:,:,0]=0.
-    
+            np.conj(tw)*c5)+R/(CP*p[:, np.newaxis, np.newaxis])*np.real(c6))        
+        at2as[:, :, 0] = 0.
         return(at2as)    
-       
-    
-    
+
+
     def mkktks(self, u,v,wap,ut,vt,wt,p,lat,nlat,ntp,nlev):    
     #C***  *MKKTKS* CALCULATE CONVERSION TRANSIENT K -> STATIONARY K
     #C
@@ -853,9 +780,9 @@ class Lorenz_cycle():
         c42 = vv*np.conj(dvt)/dlat[np.newaxis,:,np.newaxis]
         
         K=np.arange(0,ntp-1)      
-        kt2ks=(K-1)[np.newaxis,np.newaxis,:]/(aa*np.cos(lat)[np.newaxis,:,np.newaxis]) \
-            *np.imag(c1+c6)+np.real(c21+c22+c41+c42)/aa+ \
-            np.tan(lat)[np.newaxis,:,np.newaxis]*np.real(c1-c5)/aa
+        kt2ks=(K-1)[np.newaxis,np.newaxis,:]/(AA*np.cos(lat)[np.newaxis,:,np.newaxis]) \
+            *np.imag(c1+c6)+np.real(c21+c22+c41+c42)/AA+ \
+            np.tan(lat)[np.newaxis,:,np.newaxis]*np.real(c1-c5)/AA
         kt2ks[:,:,0]=0.
         
         return(kt2ks)   
@@ -892,7 +819,7 @@ class Lorenz_cycle():
                         Thanks to K.-Michael Aye for highlighting the issue
         '''
     
-        lorenz = Lorenz_cycle()
+        lorenz = LorenzCycle()
         
         #I need a proxy dataset to extract the information on coordinates and global attributes
         nc_fid = Dataset(filep, 'r')  # Dataset is the class behavior to open the file
@@ -1032,7 +959,7 @@ class Lorenz_cycle():
     #C
     #C
     
-        cpdr = cp/R
+        cpdr = CP/R
         
         t=ta_gmn
         
@@ -1047,7 +974,7 @@ class Lorenz_cycle():
                 dtdp1=(t[i+1]-t[i])/(p[i+1]-p[i])
                 dtdp2=(t[i]-t[i-1])/(p[i]-p[i-1])
                 dtdp = (dtdp1*(p[i]-p[i-1])+dtdp2*(p[i+1]-p[i]))/(p[i+1]-p[i-1])
-            gs[i]=cp/(t[i]-p[i]*dtdp*cpdr)
+            gs[i]=CP/(t[i]-p[i]*dtdp*cpdr)
     
         return gs
     
@@ -1056,9 +983,9 @@ class Lorenz_cycle():
         
         varzon = varin[:,0]
         vared  = np.nansum(varin[:,1:ntp-1],axis=1)
-        vared1 = np.nansum(varin[:,1:nw1-1],axis=1)
-        vared2 = np.nansum(varin[:,nw1:nw2-1],axis=1)
-        vared3 = np.nansum(varin[:,nw2:nw3-1],axis=1)
+        vared1 = np.nansum(varin[:,1:NW_1-1],axis=1)
+        vared2 = np.nansum(varin[:,NW_1:NW_2-1],axis=1)
+        vared3 = np.nansum(varin[:,NW_2:NW_3-1],axis=1)
         vartot = varzon+vared
         
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,vartot[0],vartot[1],vartot[2]))
@@ -1081,9 +1008,9 @@ class Lorenz_cycle():
         varin=fac*varin
         varzon = varin[:,0]
         vared  = np.nansum(varin[:,1:ntp-1],axis=1)
-        vared1 = np.nansum(varin[:,1:nw1-1],axis=1)
-        vared2 = np.nansum(varin[:,nw1:nw2-1],axis=1)
-        vared3 = np.nansum(varin[:,nw2:nw3-1],axis=1)
+        vared1 = np.nansum(varin[:,1:NW_1-1],axis=1)
+        vared2 = np.nansum(varin[:,NW_1:NW_2-1],axis=1)
+        vared3 = np.nansum(varin[:,NW_2:NW_3-1],axis=1)
         vartot = varzon+vared
         
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,vartot[0],vartot[1],vartot[2]))
