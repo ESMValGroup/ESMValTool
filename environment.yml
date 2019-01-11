@@ -15,8 +15,8 @@ dependencies:
   - ncurses=6.1=hfc679d8_1
   - r-base
   - r-rcpp
+  - r-xml
   - libgfortran-ng # needed by r packages
-  - libxml2
   # TODO: add julia
 
   - pip:
