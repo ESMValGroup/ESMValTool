@@ -32,12 +32,10 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
 
 import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -91,8 +89,7 @@ def make_profiles_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     #
-    times = cube.coord('time')
-    times_float = diagtools.timecoord_to_float(times)
+    times_float = diagtools.cube_time_to_float(cube)
     time_0 = times_float[0]
 
     cmap = plt.cm.get_cmap('jet')

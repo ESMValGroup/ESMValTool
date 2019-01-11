@@ -98,3 +98,6 @@ doc/sphinx/build
 *.Rhistory
 *.rdata
 *.pkl
+
+# ESMF log files
+*.ESMF_LogFile
