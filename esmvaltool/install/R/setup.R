@@ -46,6 +46,6 @@ for (package_name in package_list) {
     install.packages(
         package_name,
         repos = pkg_mirror,
-        dependencies = c("Depends", "Imports")
+        dependencies = c("Depends", "Imports", "LinkingTo")
     )
 }
