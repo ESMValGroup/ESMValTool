@@ -178,6 +178,7 @@ begin
 
       ; Add auxiliary coordinate
       type = tochar(TYPES(vv))
+      type!0 = "strlen"
       type@long_name = "surface type"
       type@standard_name = "area_type"
       w = addfile(fout, "w")
