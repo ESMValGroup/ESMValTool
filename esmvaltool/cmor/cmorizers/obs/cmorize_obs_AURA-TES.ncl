@@ -1,5 +1,5 @@
 ; #############################################################################
-; REFORMAT SCRIPT FOR AURA-TES OBSERVATIONAL DATA
+; ESMValTool CMORizer for AURA-TES data
 ; #############################################################################
 ;
 ; Tier
@@ -55,7 +55,7 @@ end
 
 begin
 
-  ; Creat time coordinate
+  ; Create time coordinate
   timec = create_timec(YEAR1, YEAR2)
   datec = ut_calendar(timec, 0)
 
@@ -174,10 +174,10 @@ begin
   gAtt@period        = YEAR1 + "-" + YEAR2
   gAtt@field         = FIELD
   gAtt@tier          = TIER
-  gAtt@source        = " https://search.earthdata.nasa.gov/"
+  gAtt@source        = "https://search.earthdata.nasa.gov/"
   gAtt@reference     = "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
     "44, 1102-1105, doi:10.1109/TGRS.2005.863716, 2006."
-  gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool"
+  gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool v2.0"
   gAtt@conventions = "CF/CMOR"
 
   ; Outfile
