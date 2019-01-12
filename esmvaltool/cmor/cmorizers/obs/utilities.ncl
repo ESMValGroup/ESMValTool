@@ -449,6 +449,11 @@ begin
 
     ; Extract variable block
     idxu = ind(data(:, 0).eq."variable_entry:    " + name)
+    if (any(ismissing(idxu))) then
+      error_msg("f", scriptname, funcname, \
+                "table for variable " + name + " not found in table " + \
+                table)
+    end if
     tmp = ind(str_get_field(data(:, 0), 1, ":").eq."variable_entry")
     if (dimsizes(tmp).gt.1) then
       idxd = tmp(min(ind(tmp.gt.idxu))) - 2
