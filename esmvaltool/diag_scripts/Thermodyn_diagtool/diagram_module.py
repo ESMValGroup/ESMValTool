@@ -1,4 +1,5 @@
 """
+
 A collection of function calls to class fluxogram, serving as interface
 between the main script and the class for flux diagrams design.
 
@@ -12,11 +13,15 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
-from fluxogram import *
+from fluxogram import Fluxogram
 
 
 class Diagram():
-            
+    
+    """A class to transfer LEC reservoirs and conversion terms from the main
+    LEC script to the flux diagram module.
+    """
+    
     def diagram(self,filen,azin,apz,asein,aps,atein,apt,as2ks,at2kt,kteout,kte,
                 kseout,kse,kzout,kz,az2kz,az2at,az2as,as2at,kt2kz,kt2ks,ks2kz):
         
