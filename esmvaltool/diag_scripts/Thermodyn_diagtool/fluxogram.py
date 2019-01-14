@@ -22,15 +22,17 @@ from matplotlib import pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 
+
 class Fluxogram():
-    """A class to draw and maintain all fluxes and storages from a model or
+    """The diagram flux module.
+    
+    A class to draw and maintain all fluxes and storages from a model or
     some similiar kind of thing to be drawn as a sequence of storages
     and fluxes.
     """
-    
-    
+       
     def __init__(self, max_flux, max_storage, grid_size=20, storages=None,
-                 fluxes=None):        
+                 fluxes=None):
         """Initialize a fluxogram. must be called with.
         
         The arguments are:
@@ -77,7 +79,7 @@ class Fluxogram():
         self.update_all_storages(amounts_storages)
 
     def draw(self, filen, azin, apz, asein, aps, atein, apt, a2ks, a2kt,
-             kteout, kte, kseout, kse, kzout, kz, a2kz, ae2az, ae2as, ae2at,
+             kteout, kte, kseout, kse, kzout, k_z, a2kz, ae2az, ae2as, ae2at,
              ke2kz, ke2ks, ks2kz):
         """Draw all fluxes and storages."""
         frame1 = plt.axes()
@@ -111,7 +113,7 @@ class Fluxogram():
             # scale the amount
             scaled_amount_flux = self.scaler(flux.amount, self.max_flux)
             # width multiplied  because if not, the arrows are so tiny
-            arrow = plt.Arrow(flux.x_start, flux.y_start, flux.dx, flux.dy,
+            arrow = plt.Arrow(flux.x_start, flux.y_start, flux.Dx, flux.Dy,
                               width=scaled_amount_flux * 1.7, alpha=0.8)
             if flux.dire == 'r':
                 if idb == 'AZ+':
@@ -121,9 +123,9 @@ class Fluxogram():
                 elif idb == 'ASE+':
                     plt.text(flux.x_start + 0.25 * self.grid_size,
                              flux.y_start + 0.05 * self.grid_size,
-                             asein, size=self.grid_size * 0.7) 
+                             asein, size=self.grid_size * 0.7)
                 elif idb == 'ATE+':
-                    plt.text(flux.x_start + 0.25 *self.grid_size,
+                    plt.text(flux.x_start + 0.25 * self.grid_size,
                              flux.y_start + 0.05 * self.grid_size,
                              atein, size=self.grid_size * 0.7)
                 elif idb == 'A2KS':
@@ -157,7 +159,7 @@ class Fluxogram():
             elif flux.dire == 'rdn':
                 plt.text(flux.x_start + 0.05 * self.grid_size,
                          flux.y_start - 0.25 * self.grid_size,
-                         ae2as, size=self.grid_size * 0.5, rotation=-75) 
+                         ae2as, size=self.grid_size * 0.5, rotation=-75)
             elif flux.dire == 'ldn':
                 plt.text(flux.x_start - 0.35 * self.grid_size,
                          flux.y_start - 0.25 * self.grid_size,
@@ -183,51 +185,48 @@ class Fluxogram():
                 scaled_amount_stor = 0.0001
             # change_x and y, so the storages are centered to the middle
             # of their position and not to upper left
-            x_p = (storage.x + (1 - storage.amount / self.max_storage) * 0.5
-                 * self.grid_size)
-            y_p = (storage.y - (1 - storage.amount / self.max_storage) * 0.5
-                 * self.grid_size)
+            x_p = (storage.x_p + (1 - storage.amount / self.max_storage) * 0.5
+                   * self.grid_size)
+            y_p = (storage.y_p - (1 - storage.amount / self.max_storage) * 0.5
+                   * self.grid_size)
             rectangle = plt.Rectangle((x_p, y_p), scaled_amount_stor,
                                       -scaled_amount_stor, alpha=0.4)
             # label all storages
-            plt.text(storage.x + 0.6 * self.grid_size, 
-                     storage.y - 0.65 * self.grid_size, storage.name, 
+            plt.text(storage.x_p + 0.6 * self.grid_size,
+                     storage.y_p - 0.65 * self.grid_size, storage.name,
                      fontsize=0.7 * self.grid_size)
             if storage.name == 'AZ':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, apz,
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, apz,
                          fontsize=0.7 * self.grid_size)
             elif storage.name == 'ASE':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, aps,
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, aps,
                          fontsize=0.7 * self.grid_size)
             elif storage.name == 'ATE':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, apt,
-                         fontsize =0.7 * self.grid_size)
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, apt,
+                         fontsize=0.7 * self.grid_size)
             elif storage.name == 'KTE':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, kte,
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, kte,
                          fontsize=0.7 * self.grid_size)
             elif storage.name == 'KSE':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, kse,
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, kse,
                          fontsize=0.7 * self.grid_size)
             elif storage.name == 'KZ':
-                plt.text(storage.x + 0.6 * self.grid_size,
-                         storage.y - 0.85 * self.grid_size, kz,
+                plt.text(storage.x_p + 0.6 * self.grid_size,
+                         storage.y_p - 0.85 * self.grid_size, k_z,
                          fontsize=0.7 * self.grid_size)
             # draw a date
             plt.gca().add_patch(rectangle)
             plt.savefig(filen)
-            
-    def show(self):
-        """Show the current fluxogram on screen.
-        """
-        plt.show()
 
     def scaler(self, value_in, base_max):
-        """Scale the fluxes and storages, so they don't overstep their 
+        """Scale the values in the blocks of the diagram.
+        
+        Scale the fluxes and storages, so they don't overstep their
         grafical bounds must be called with:
             - valueIn: the value that needs rescaling
             - baseMax: the upper limit of the original dataset
@@ -243,16 +242,15 @@ class Fluxogram():
         if value_in > base_max:
             raise ValueError("Input value larger than base max")
         return (((limit_max - limit_min) * (value_in - base_min)
-                / (base_max - base_min)) + limit_min)
+                 / (base_max - base_min)) + limit_min)
 
-class Flux:   
-    """Contain a flux of a fluxogram.
-    """
 
+class Flux:
+    """Contain a flux of a fluxogram."""
     
-    def __init__(self, name, grid_size, from_storage, to_storage, amount = 0):
+    def __init__(self, name, grid_size, from_storage, to_storage, amount=0):
         """Initialize a flux.
-        
+
         Arguments are:
             - name: name of the flux
             - grid_size: grid size of the diagram
@@ -265,113 +263,114 @@ class Flux:
         self.to_storage = to_storage
         self.amount = amount
         self.grid_size = grid_size
-        self.x_start, self.y_start, self.x_end, self.y_end, self.dx, self.dy,
+        self.x_start, self.y_start, self.x_end, self.y_end, self.Dx, self.Dy,
         self.dire = (self.calc_start_end_dx_dy())
         
     def update_flux(self, amount):
-        """Update the amount of the flux.
-        """
+        """Update the amount of the flux."""
         self.amount = amount
 
     def calc_start_end_dx_dy(self):
-        """Calculate the starting and ending point of an arrow depending on the
+        """A scaler for the arrows.
+        
+        Calculate the starting and ending point of an arrow depending on the
         order and offset of the starting and ending storages. This helps
         determine the direction of the arrow
         returns the start and end xy coordinates of the arrow as tuples.
         """
         # arrow pointing to left up
         if (self.from_storage.offset > self.to_storage.offset and
-            self.from_storage.order > self.to_storage.order):
-            x_start = self.from_storage.x + 0.85 * self.grid_size
-            y_start = self.from_storage.y - self.grid_size * 0.5
-            x_end = self.to_storage.x + self.grid_size * 0.65
-            y_end = self.to_storage.y - 0.7 * self.grid_size
-            dx = abs(x_start - x_end) * (-1)
-            dy = abs(y_start - y_end)
+                self.from_storage.order > self.to_storage.order):
+            x_start = self.from_storage.x_p + 0.85 * self.grid_size
+            y_start = self.from_storage.y_p - self.grid_size * 0.5
+            x_end = self.to_storage.x_p + self.grid_size * 0.65
+            y_end = self.to_storage.y_p - 0.7 * self.grid_size
+            Dx = abs(x_start - x_end) * (-1)
+            Dy = abs(y_start - y_end)
             dire = 'lup'
         # arrow pointing up
         elif (self.from_storage.offset == self.to_storage.offset and
-              self.from_storage.order > self.to_storage.order):
-            x_start = self.from_storage.x + 0.85 * self.grid_size
-            y_start = self.from_storage.y - 0.5 * self.grid_size
-            x_end = self.to_storage.x + 0.85 * self.grid_size
-            y_end = self.to_storage.y - 0.25 * self.grid_size
-            dx = abs(x_start - x_end)
-            dy = abs(y_start - y_end)
+                  self.from_storage.order > self.to_storage.order):
+            x_start = self.from_storage.x_p + 0.85 * self.grid_size
+            y_start = self.from_storage.y_p - 0.5 * self.grid_size
+            x_end = self.to_storage.x_p + 0.85 * self.grid_size
+            y_end = self.to_storage.y_p - 0.25 * self.grid_size
+            Dx = abs(x_start - x_end)
+            Dy = abs(y_start - y_end)
             dire = 'up'
-        # arrow pointing right up    
+        # arrow pointing right up
         elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order > self.to_storage.order):
-            x_start = (self.from_storage.x + self.grid_size)
-            y_start = self.from_storage.y - 0.5 * self.grid_size
-            x_end = self.to_storage.x + 0.05 * self.grid_size
-            y_end = self.to_storage.y - 0.75 * self.grid_size
-            dx = abs(x_start - x_end)
-            dy = abs(y_start - y_end)
+                  self.from_storage.order > self.to_storage.order):
+            x_start = (self.from_storage.x_p + self.grid_size)
+            y_start = self.from_storage.y_p - 0.5 * self.grid_size
+            x_end = self.to_storage.x_p + 0.05 * self.grid_size
+            y_end = self.to_storage.y_p - 0.75 * self.grid_size
+            Dx = abs(x_start - x_end)
+            Dy = abs(y_start - y_end)
             dire = 'rup'
         # arrow pointing right
         elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order == self.to_storage.order):
-            x_start = (self.from_storage.x + self.grid_size)
-            y_start = self.from_storage.y - 0.8 * self.grid_size
-            x_end = self.to_storage.x + 1.25*self.grid_size
-            y_end = self.to_storage.y - 0.8 * self.grid_size
-            dx = abs(x_start - x_end)
-            dy = abs(y_start - y_end)
+                  self.from_storage.order == self.to_storage.order):
+            x_start = (self.from_storage.x_p + self.grid_size)
+            y_start = self.from_storage.y_p - 0.8 * self.grid_size
+            x_end = self.to_storage.x_p + 1.25 * self.grid_size
+            y_end = self.to_storage.y_p - 0.8 * self.grid_size
+            Dx = abs(x_start - x_end)
+            Dy = abs(y_start - y_end)
             dire = 'r'
-            # arrow pointing right down    
+        # arrow pointing right down
         elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
-            x_start = (self.from_storage.x + 0.85*self.grid_size)
-            y_start = self.from_storage.y - 1.12*self.grid_size
-            x_end = self.to_storage.x + 0.85 * self.grid_size
-            y_end = self.to_storage.y - 0.9 * self.grid_size
-            dx = abs(x_start - x_end)
-            dy = abs(y_start - y_end) * (-1)
+                  self.from_storage.order < self.to_storage.order):
+            x_start = (self.from_storage.x_p + 0.85*self.grid_size)
+            y_start = self.from_storage.y_p - 1.12*self.grid_size
+            x_end = self.to_storage.x_p + 0.85 * self.grid_size
+            y_end = self.to_storage.y_p - 0.9 * self.grid_size
+            Dx = abs(x_start - x_end)
+            Dy = abs(y_start - y_end) * (-1)
             dire = 'rdn'
-            # arrow pointing down
+        # arrow pointing down
         elif (self.from_storage.offset == self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
-            x_start = self.from_storage.x + 0.8 * self.grid_size
-            y_start = (self.from_storage.y - 1.12 * self.grid_size)
-            x_end = self.to_storage.x +  0.8 * self.grid_size
-            y_end = self.to_storage.y - 1.4 * self.grid_size
-            dx = abs(x_start - x_end)
-            dy = abs(y_start - y_end) * (-1)
+                  self.from_storage.order < self.to_storage.order):
+            x_start = self.from_storage.x_p + 0.8 * self.grid_size
+            y_start = (self.from_storage.y_p - 1.12 * self.grid_size)
+            x_end = self.to_storage.x_p + 0.8 * self.grid_size
+            y_end = self.to_storage.y_p - 1.4 * self.grid_size
+            Dx = abs(x_start - x_end)
+            Dy = abs(y_start - y_end) * (-1)
             dire = 'dn'
-            # arrow pointing left down
+        # arrow pointing left down
         elif (self.from_storage.offset > self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
-            x_start = self.from_storage.x + 0.75 * self.grid_size
-            y_start = (self.from_storage.y - 1.1 * self.grid_size)
-            x_end = self.to_storage.x + 0.6 * self.grid_size
-            y_end = self.to_storage.y - 0.9 * self.grid_size
-            dx = abs(x_start - x_end) * (-1)
-            dy = abs(y_start - y_end) * (-1)
+                  self.from_storage.order < self.to_storage.order):
+            x_start = self.from_storage.x_p + 0.75 * self.grid_size
+            y_start = (self.from_storage.y_p - 1.1 * self.grid_size)
+            x_end = self.to_storage.x_p + 0.6 * self.grid_size
+            y_end = self.to_storage.y_p - 0.9 * self.grid_size
+            Dx = abs(x_start - x_end) * (-1)
+            Dy = abs(y_start - y_end) * (-1)
             dire = 'ldn'
-            # arrow pointing left
+        # arrow pointing left
         elif (self.from_storage.offset > self.to_storage.offset and
-              self.from_storage.order == self.to_storage.order):
-            x_start = self.from_storage.x + 0.5 * self.grid_size
-            y_start = self.from_storage.y - 0.75 * self.grid_size
-            x_end = self.to_storage.x + 0.25 * self.grid_size
-            y_end = self.to_storage.y - 0.75 * self.grid_size
-            dx = abs(x_start - x_end) * (-1)
-            dy = abs(y_start - y_end)
+                  self.from_storage.order == self.to_storage.order):
+            x_start = self.from_storage.x_p + 0.5 * self.grid_size
+            y_start = self.from_storage.y_p - 0.75 * self.grid_size
+            x_end = self.to_storage.x_p + 0.25 * self.grid_size
+            y_end = self.to_storage.y_p - 0.75 * self.grid_size
+            Dx = abs(x_start - x_end) * (-1)
+            Dy = abs(y_start - y_end)
             dire = 'l'
         # multiply by 0.9 so there is a gap between storages and arrows
-        dx = dx * 0.75
-        dy = dy * 0.75
-        return x_start, y_start, x_end, y_end, dx, dy, dire
+        Dx = Dx * 0.75
+        Dy = Dy * 0.75
+        return x_start, y_start, x_end, y_end, Dx, Dy, dire
+
 
 class Storage:
-    """ Contain a storage of a fluxogram."""
-    
-    
+    """Contain a storage of a fluxogram."""   
+
     def __init__(self, name, grid_size, number, amount=0, order=0,
                  offset=0):
         """Initialize a storage.
-        
+
         Arguments are:
                 - name: name of the storage
                 - number: consecutive number
@@ -387,18 +386,21 @@ class Storage:
         self.order = order
         self.offset = offset
         self.grid_size = grid_size
-        self.x, self.y = self.calculate_xy()
+        self.x_p, self.y_p= self.calculate_xy()
 
     def update_storage(self, amount):
         """Update the amount of the storage."""
         self.amount = amount
 
     def calculate_xy(self):
-        """Calculate the xy coordinates of the starting point from where
-        the recangle is drawn. The additional multiplication by two is
+        """Coordinates of the blocks in the diagram.
+        
+        Calculate the xy coordinates of the starting point from where
+        the rectangle is drawn. The additional multiplication by two is
         to produce the gaps in the diagram.
         """
-        x = self.offset * self.grid_size * 2
+        x_p = self.offset * self.grid_size * 2
         # multiply by -1 to draw the diagram from top to bottom
-        y = self.order * self.grid_size * 2  * -1
-        return x,y
+        y_p = self.order * self.grid_size * 2 * -1
+        return x_p, y_p
+    
