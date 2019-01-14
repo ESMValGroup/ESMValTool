@@ -1,4 +1,6 @@
-"""Computation of the Fourier coefficients from lonlat grids 
+"""Module for Fourier coefficients computation from lonlat grid.
+
+Computation of the Fourier coefficients from lonlat grids
 on pressure levels at every timestep.
 
 The spectral truncation is determined by the number of longitudinal
@@ -16,8 +18,8 @@ from netCDF4 import Dataset
 
 tainput = 'inputen.nc'
 tasinput = 'tas.nc'
-gpres = np.array([16,32,48,64,96,128,256,384,512,1024,2048,4096])
-fcres = np.array([5,10,15,21,31,43,85,127,171,341,683,1365])
+gpres = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
+fcres = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
 g0 = 9.81               # Gravity acceleration
 gam = 0.0065            # Standard atmosphere lapse rate
 gascon = 287.0         # Gas constant
@@ -26,19 +28,22 @@ p0 = 10000              # Reference tropospheric pressure
 
 
 class FourierCoeff():
-
-    """A class that allows for conversion of lonlat fields on pressure levels
+    """Class with methods for Fourier coefficients computation and storage.
+    
+    A class that allows for conversion of lonlat fields on pressure levels
     at each timestep into Fourier coefficients in the zonal direction.
     """
     
     from fourier_coefficients import *
     
     def fourier_coeff(self, tadiagfile, outfile, tainput, tasinput):
-        """Receive as input:
-            - tadiagfile: the name of a file to store modified t fields;
-            - outfile: the name of a file to store the Fourier coefficients;
-            - tainput: the name of a file containing t,u,v,w fields;
-            - tasinput: the name of a file containing t2m field.
+        """Main script for Fourier coefficients computation.
+
+        Receive as input:
+        - tadiagfile: the name of a file to store modified t fields;
+        - outfile: the name of a file to store the Fourier coefficients;
+        - tainput: the name of a file containing t,u,v,w fields;
+        - tasinput: the name of a file containing t2m field.
         """
         fourcoeff = FourierCoeff()
         
@@ -46,16 +51,16 @@ class FourierCoeff():
         fileta = tadiagfile
         
         dataset = Dataset(tainput)
-        lon   = dataset.variables['lon'][:]
-        lat   = dataset.variables['lat'][:]
-        lev   = dataset.variables['plev'][:]
-        time  = dataset.variables['time'][:]
-        nlon  = len(lon)
-        nlat  = len(lat)
-        nlev  = len(lev)
+        lon = dataset.variables['lon'][:]
+        lat = dataset.variables['lat'][:]
+        lev = dataset.variables['plev'][:]
+        time = dataset.variables['time'][:]
+        nlon = len(lon)
+        nlat = len(lat)
+        nlev = len(lev)
         ntime = len(time)
         i = np.min(np.where(2 * nlat <= gpres))
-        trunc = fcres[i]+1
+        trunc = fcres[i] + 1
         wave2 = np.linspace(0, trunc - 1, trunc)
     
         ta = dataset.variables['ta'][:, :, :, :]
@@ -73,21 +78,24 @@ class FourierCoeff():
             h1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0,
                                     ta1_fx[:, i, :, :])
             if np.any(h1.mask > 0):
-                deltat[:, i-1, :, :] = np.where(ta1_fx[:, i-1, :, :] != 0,
-                      deltat[:, i-1, :, :], (ta1_fx[:, i, :, :] - tas))
-                deltat[:, i-1, :, :] = (1*np.array(h1.mask))*np.array(deltat[:, i-1, :, :])
-                dp = -((p0*g0/(gam*gascon))*deltat[:, i-1, :, :]/tas)
-                ps = np.where(ta1_fx[:, i-1, :, :] !=0 , ps, lev[i-1] + dp)
+                deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
+                      deltat[:, i - 1, :, :], (ta1_fx[:, i, :, :] - tas))
+                deltat[:, i - 1, :, :] = (1 * np.array(h1.mask)) *\
+                np.array(deltat[:, i - 1, :, :])
+                dp = -((p0 * g0 / (gam * gascon)) * deltat[:, i - 1, :, :] / tas)
+                ps = np.where(ta1_fx[:, i - 1, :, :] != 0, ps, lev[i - 1] + dp)
                 for k in np.arange(0, nlev-i-1, 1):
-                    h3 = np.ma.masked_where(ta1_fx[:, i+k, :, :] != 0, 
-                                            ta1_fx[:, i+k, :, :])
+                    h3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
+                                            ta1_fx[:, i + k, :, :])
                     if np.any(h3.mask > 0):
-                        deltat[:, i-1, :, :] = np.where(ta1_fx[:, i+k, :, :] \
-                              != 0, deltat[:, i-1, :, :],
-                              (ta1_fx[:, i+k+1, :, :] - tas))
-                        dp = -((p0*g0/(gam*gascon))*deltat[:, i-1, :, :]/tas)
-                        ps = np.where(ta1_fx[:, i+k, :, :] != 0,
-                                      ps, lev[i+k] + dp)
+                        deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i + k, :,:]
+                                                  != 0, deltat[:, i-1, :, :], 
+                                                  (ta1_fx[:, i + k + 1, :, :]
+                                                  - tas))
+                        dp = -((p0 * g0 / (gam * gascon)) *
+                               deltat[:, i - 1, :, :] / tas)
+                        ps = np.where(ta1_fx[:, i + k, :, :] != 0, ps,
+                                      lev[i + k] + dp)
                     else:
                         pass
             else:
@@ -99,20 +107,21 @@ class FourierCoeff():
         deltap = np.zeros([ntime, nlev, nlat, nlon])
         for i in np.arange(nlev):
             deltap[:, i, :, :] = ps - lev[i]
-            h2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0, 
+            h2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
                                     ta2_fx[:, i, :, :])
-            mask[i, :, :, :] = np.array(h2.mask)       
-            tafr_bar[i, :, :, :] = 1*np.array(mask[i, :, :, :])*(tas - \
-                    gam*gascon/(g0*ps)*deltap[:, i, :, :]*tas)
-            dat[i, :, :, :] = ta2_fx[:, i, :, :] * (1 - \
-               1*np.array(mask[i, :, :, :]))
-            ta[:, i, :, :] = dat[i, :, :, :]+tafr_bar[i, :, :, :]
+            mask[i, :, :, :] = np.array(h2.mask)
+            tafr_bar[i, :, :, :] = 1 * np.array(mask[i, :, :, :]) * (tas -
+                                   gam * gascon / (g0 * ps) *
+                                   deltap[:, i, :, :] * tas)
+            dat[i, :, :, :] = ta2_fx[:, i, :, :] * (1 -
+                              1 * np.array(mask[i, :, :, :]))
+            ta[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
         fourcoeff.pr_output_diag(ta, tainput, fileta, 'ta', verb=True)
         
-        tafft_p = np.fft.fft(ta, axis=3)[:, :, :, :trunc/2]/(nlon)
-        uafft_p = np.fft.fft(ua, axis=3)[:, :, :, :trunc/2]/(nlon)
-        vafft_p = np.fft.fft(va, axis=3)[:, :, :, :trunc/2]/(nlon)
-        wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc/2]/(nlon)
+        tafft_p = np.fft.fft(ta, axis=3)[:, :, :, :trunc/2] / (nlon)
+        uafft_p = np.fft.fft(ua, axis=3)[:, :, :, :trunc/2] / (nlon)
+        vafft_p = np.fft.fft(va, axis=3)[:, :, :, :trunc/2] / (nlon)
+        wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc/2] / (nlon)
         
         tafft = np.zeros([ntime, nlev, nlat, trunc])
         uafft = np.zeros([ntime, nlev, nlat, trunc])
@@ -150,7 +159,7 @@ class FourierCoeff():
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """       
-        from fourier_coefficients import *
+        from fourier_coefficients import FourierCoeff
         
         fourcoeff = FourierCoeff()
     
@@ -237,7 +246,7 @@ class FourierCoeff():
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """      
-        from fourier_coefficients import *
+        from fourier_coefficients import FourierCoeff
         
         fourcoeff = FourierCoeff()
     
@@ -334,17 +343,3 @@ class FourierCoeff():
             w_nc_var.setncatts({'long_name': u"Lagrangian tendency of air pressure",
                                 'units': u"Pa s-1",
                                 'level_desc': 'pressure levels'})
-            
-    def print_ncattr(self, key):
-            """Print the NetCDF file attributes for a given variable.
-    
-            Arguments:
-            - key: the name of a variable to write the attributes to.
-            """
-            try:
-                print "\t\ttype:", repr(nc_fid.variables[key].dtype)
-                for ncattr in nc_fid.variables[key].ncattrs():
-                    print '\t\t%s:' % ncattr,
-                    repr(nc_fid.variables[key].getncattr(ncattr))
-            except KeyError:
-                print "\t\tWARNING: %s does not contain variable attributes" % key
