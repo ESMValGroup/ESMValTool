@@ -17,18 +17,18 @@ from netCDF4 import Dataset
 import numpy as np
 from cdo import Cdo
 
-Alv = 2.5008e6    # Latent heat of vaporization
-g_0 = 9.81        # Gravity acceleration
-p_0 = 100000.     # reference pressure
-Rv = 461.51       # Gas constant for water vapour
-t_melt = 273.15   # freezing temp.
-Akap = 0.286      # Kappa (Poisson constant R/Cp)
-gas_con = 287.0   # Gas constant
-ra_1 = 610.78     # Parameter for Magnus-Teten-Formula
-h_s = 300.        # stable boundary layer height (m)
-h_u = 1000.       # unstable boundary layer height (m)
-ric_rs = 0.39     # Critical Richardson number for stable layer
-ric_ru = 0.28     # Critical Richardson number for unstable layer
+ALV = 2.5008e6    # Latent heat of vaporization
+G_0 = 9.81        # Gravity acceleration
+P_0 = 100000.     # reference pressure
+RV = 461.51       # Gas constant for water vapour
+T_MELT = 273.15   # freezing temp.
+AKAP = 0.286      # Kappa (Poisson constant R/Cp)
+GAS_CON = 287.0   # Gas constant
+RA_1 = 610.78     # Parameter for Magnus-Teten-Formula
+H_S = 300.        # stable boundary layer height (m)
+H_U = 1000.       # unstable boundary layer height (m)
+RIC_RS= 0.39     # Critical Richardson number for stable layer
+RIC_RU = 0.28     # Critical Richardson number for unstable layer
 
 
 class Mkthe():
@@ -110,12 +110,12 @@ class Mkthe():
             aux = hus[:, l, :, :]
             aux = np.where((p_s >= lev[l]), aux, 0.)
             huss = huss + aux
-        ricr = ric_ru
-        h_bl = h_u
-        ricr = np.where(hfss >= 0.75, ricr, ric_rs)
-        h_bl = np.where(hfss >= 0.75, h_bl, h_s)
-        ev_p = huss * p_s/(huss + gas_con / Rv)        # Water vapour pressure
-        td_inv = (1 / t_melt) - (Rv / Alv) * np.log(ev_p / ra_1) # Dewpoint t.
+        ricr = RIC_RU
+        h_bl = H_U
+        ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
+        h_bl = np.where(hfss >= 0.75, h_bl, H_S)
+        ev_p = huss * p_s/(huss + GAS_CON / RV)        # Water vapour pressure
+        td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1) # Dewpoint t.
         t_d = 1 / td_inv
         hlcl = 125. * (t_s - t_d) # Empirical formula for LCL height
     #
@@ -123,14 +123,14 @@ class Mkthe():
     #  boundary layer (lower constraint to the height of the cloud layer)
     #
         hlcl = np.where(hlcl >= 0., hlcl, h_bl)
-        cp_d = gas_con / Akap
-        ztlcl = t_s - (g_0 / cp_d) * hlcl
+        cp_d = GAS_CON / AKAP
+        ztlcl = t_s - (G_0 / cp_d) * hlcl
     #
     # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
     # top knowing emission temperature.
     #
-        gw_pa = (g_0 / cp_d) * (1 + ((Alv * huss) / (gas_con * ztlcl)) /\
-             (1 + ((Alv ** 2 * huss * 0.622) / (cp_d * gas_con * ztlcl ** 2))))
+        gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) /\
+             (1 + ((ALV ** 2 * huss * 0.622) / (cp_d * GAS_CON * ztlcl ** 2))))
         htop = - (t_e - ztlcl) / gw_pa + hlcl
     #
     #  Compute equivalent potential temperature (optional output)
@@ -140,10 +140,10 @@ class Mkthe():
     #  Use potential temperature and critical Richardson number to compute
     #  temperature and height of the boundary layer top
     #
-        ths = t_s * (p_0 / p_s) ** Akap
+        ths = t_s * (P_0 / p_s) ** AKAP
         thz = ths + 0.03 * ricr * (V_hor) ** 2 / h_bl
-        pz = p_s * np.exp((- g_0 * h_bl) / (gas_con * t_s)) # Barometric eq.
-        t_z = thz * (p_0 / pz) ** (-Akap)
+        pz = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s)) # Barometric eq.
+        t_z = thz * (P_0 / pz) ** (-AKAP)
         nc_attrs, nc_dims, nc_vars = mkthe.ncdump(dataset0, 'ts', True)
         nc_f = wdir + '/tlcl.nc'.format(modelname)
         mkthe.removeif(nc_f)

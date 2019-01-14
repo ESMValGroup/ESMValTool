@@ -1,11 +1,7 @@
 """Module for LEC computation in climate models.
 
 This module contains all the instructions to compute the atmospheric
-Lorenz Energy Cycle in spectral coordinates, with input fields
-(ta, ua, va, wap) given as Fourier coefficients as a function of zonal
-wavenumbers.
-
-Created on Thu Jun  7 14:57:47 2018
+Lorenz Energy Cycle in spectral coordinates.
 
 @author: Valerio Lembo, University of Hamburg
 """
@@ -35,6 +31,7 @@ NW_3 = 21
 
 class LorenzCycle():
     """PROGRAM FOR LEC COMPUTATION.
+
     The class consists of the following functions:
         - lorenz: it is the main program, controlling the file input,
                   separating the real from imaginary part of the Fourier
@@ -128,21 +125,21 @@ class LorenzCycle():
         ntime = len(time)
         lat = dataset0.variables['lat'][:]
         nlat = len(lat)
-        if(max(lev) < 1000):
-            lev = lev*100
-            wap = wap*100
+        if max(lev) < 1000:
+            lev = lev * 100
+            wap = wap * 100
         t_a = np.transpose(t_a, (1, 0, 2, 3))
-        ta_r=t_a[:, :, :, 0::2]
-        ta_i=t_a[:, :, :, 1::2]
+        ta_r = t_a[:, :, :, 0::2]
+        ta_i = t_a[:, :, :, 1::2]
         u_a = np.transpose(u_a, (1, 0, 2, 3))
-        ua_r=u_a[:, :, :, 0::2]
-        ua_i=u_a[:, :, :, 1::2]
+        ua_r = u_a[:, :, :, 0::2]
+        ua_i = u_a[:, :, :, 1::2]
         v_a = np.transpose(v_a, (1, 0, 2, 3))
-        va_r=v_a[:, :, :, 0::2]
-        va_i=v_a[:, :, :, 1::2]
+        va_r = v_a[:, :, :, 0::2]
+        va_i = v_a[:, :, :, 1::2]
         wap = np.transpose(wap, (1, 0, 2, 3))
-        wap_r=wap[:, :, :, 0::2]
-        wap_i=wap[:, :, :, 1::2]
+        wap_r = wap[:, :, :, 0::2]
+        wap_i = wap[:, :, :, 1::2]
         ta_c = ta_r + 1j * ta_i
         ua_c = ua_r + 1j * ua_i
         va_c = va_r + 1j * va_i
@@ -161,17 +158,18 @@ class LorenzCycle():
         log.write('WAVES:\n')
         log.write(' \n')
         log.write('(1) : 1 - {}\n'.format(NW_1))
-        log.write('(2) : {} - {}\n'.format(NW_1,NW_2))
-        log.write('(3) : {} - {}\n'.format(NW_2,NW_3))
+        log.write('(2) : {} - {}\n'.format(NW_1, NW_2))
+        log.write('(3) : {} - {}\n'.format(NW_2, NW_3))
     # Compute sigma level and dsigma
         sig = np.zeros(len(lev))
-        for jl in range(nlev):
-            sig[jl] = lev[jl]/PS
-        ds=np.zeros(len(lev))
-        for jl in range(1,nlev-1,1):
-            ds[jl] = 0.5*abs(sig[jl+1]-sig[jl-1])
-        ds[0] = sig[0]+0.5*abs(sig[1]-sig[0])
-        ds[nlev-1] = 1-sig[nlev-1]+0.5*abs(sig[nlev-1]-sig[nlev-2])
+        for j_l in range(nlev):
+            sig[j_l] = lev[j_l] / PS
+        ds = np.zeros(len(lev))
+        for j_l in range(1, nlev - 1, 1):
+            ds[j_l] = 0.5 * abs(sig[j_l + 1] - sig[j_l - 1])
+        ds[0] = sig[0] + 0.5 * abs(sig[1] - sig[0])
+        ds[nlev - 1] = 1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] -
+                       sig[nlev - 2])
     # Compute Gaussian weights
         gw = np.zeros(nlat)
         y = np.zeros(nlat)

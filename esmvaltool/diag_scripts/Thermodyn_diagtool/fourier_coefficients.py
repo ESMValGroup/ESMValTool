@@ -16,13 +16,13 @@ Created on Mon Oct  8 15:40:08 2018
 import numpy as np
 from netCDF4 import Dataset
 
-gp_res = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
-fc_res = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
-g_0 = 9.81               # Gravity acceleration
-Gam = 0.0065            # Standard atmosphere lapse rate
-gas_con = 287.0         # Gas constant
-# rho_0 = 1.2              # Mean air density
-p_0 = 10000              # Reference tropospheric pressure
+GP_RES = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
+FC_RES = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
+G_0 = 9.81              # Gravity acceleration
+GAM = 0.0065            # Standard atmosphere lapse rate
+GAS_CON = 287.0         # Gas constant
+# rho_0 = 1.2           # Mean air density
+P_0 = 10000             # Reference tropospheric pressure
 
 
 class FourierCoeff():
@@ -57,8 +57,8 @@ class FourierCoeff():
         nlat = len(lat)
         nlev = len(lev)
         ntime = len(time)
-        i = np.min(np.where(2 * nlat <= gp_res))
-        trunc = fc_res[i] + 1
+        i = np.min(np.where(2 * nlat <= GP_RES))
+        trunc = FC_RES[i] + 1
         wave2 = np.linspace(0, trunc - 1, trunc)
     
         t_a = dataset.variables['ta'][:, :, :, :]
@@ -71,35 +71,35 @@ class FourierCoeff():
         
         ta1_fx = np.array(t_a)
         deltat = np.zeros([ntime, nlev, nlat, nlon])
-        p_s = np.full([ntime, nlat, nlon], p_0)
+        p_s = np.full([ntime, nlat, nlon], P_0)
         for i in np.arange(nlev - 1, 0, -1):
             h_1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0,
-                                    ta1_fx[:, i, :, :])
+                                     ta1_fx[:, i, :, :])
             if np.any(h_1.mask > 0):
                 deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
                                                   deltat[:, i - 1, :, :],
                                                   (ta1_fx[:, i, :, :] - tas))
                 deltat[:, i - 1, :, :] = (1 * np.array(h_1.mask)) *\
-                                         np.array(deltat[:, i - 1, :, :])
-                d_p = -((p_0 * g_0 / (Gam * gas_con)) *
+                                          np.array(deltat[:, i - 1, :, :])
+                d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
                         deltat[:, i - 1, :, :] / tas)
                 p_s = np.where(ta1_fx[:, i - 1, :, :] != 0,
                                p_s, lev[i - 1] + d_p)
                 for k in np.arange(0, nlev - i - 1, 1):
                     h_3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
-                                            ta1_fx[:, i + k, :, :])
+                                             ta1_fx[:, i + k, :, :])
                     if np.any(h_3.mask > 0):
-                        deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i + k, :,:]
-                                                          != 0,
+                        deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i + k,
+                                                                 :, :] != 0,
                                                           deltat[:, i - 1,
                                                                  :, :],
                                                           (ta1_fx[:, i + k + 1,
                                                                   :, :]
                                                            - tas))
-                        dp = -((p_0 * g_0 / (Gam * gas_con)) *
-                               deltat[:, i - 1, :, :] / tas)
+                        d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
+                                deltat[:, i - 1, :, :] / tas)
                         p_s = np.where(ta1_fx[:, i + k, :, :] != 0, p_s,
-                                      lev[i + k] + dp)
+                                       lev[i + k] + d_p)
                     else:
                         pass
             else:
@@ -112,23 +112,20 @@ class FourierCoeff():
         for i in np.arange(nlev):
             deltap[:, i, :, :] = p_s - lev[i]
             h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
-                                    ta2_fx[:, i, :, :])
+                                     ta2_fx[:, i, :, :])
             mask[i, :, :, :] = np.array(h_2.mask)
             tafr_bar[i, :, :, :] = 1 *\
-                                   np.array(mask[i, :, :, :]) * (tas - Gam *
-                                           gas_con / (g_0 * p_s) * deltap[:, i,
-                                                                          :, :]
-                                                                 * tas)
+                                   np.array(mask[i, :, :, :]) *\
+                                   (tas - GAM * GAS_CON / (G_0 * p_s)
+                                   * deltap[:, i, :, :] * tas)
             dat[i, :, :, :] = ta2_fx[:, i, :, :] *\
                               (1 - 1 * np.array(mask[i, :, :, :]))
             t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
         fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta', verb=True)
-        
         tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc / 2] / (nlon)
-        
         tafft = np.zeros([ntime, nlev, nlat, trunc])
         uafft = np.zeros([ntime, nlev, nlat, trunc])
         vafft = np.zeros([ntime, nlev, nlat, trunc])
@@ -142,8 +139,8 @@ class FourierCoeff():
         wapfft[:, :, :, 0::2] = np.real(wapfft_p)
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
             
-        fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo, wave2,
-                            'ta', 'ua', 'va', 'wap', verb=True)
+        fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo,
+                            wave2, 'ta', 'ua', 'va', 'wap', verb=True)
 
     def pr_output(self, var1, var2, var3, var4, nc_f, fileo, wave2, name1,
                   name2, name3, name4, verb=True):
@@ -165,9 +162,7 @@ class FourierCoeff():
               
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
-        """       
-        from fourier_coefficients import FourierCoeff
-        
+        """        
         fourcoeff = FourierCoeff()
     
         nc_fid = Dataset(nc_f, 'r')
@@ -182,7 +177,7 @@ class FourierCoeff():
         var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
         var_nc_fid.description = "Fourier coefficients"
         
-        # Using our previous dimension info, we can create the new dimensions.        
+        # Using our previous dimension info, we can create the new dimensions.
         var_nc_fid.createDimension('time', len(time))
         var_nc_dim = var_nc_fid.createVariable('time',
                                                nc_fid.variables['time'].dtype,
@@ -258,8 +253,6 @@ class FourierCoeff():
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
-        from fourier_coefficients import FourierCoeff
-        
         fourcoeff = FourierCoeff()
     
         nc_fid = Dataset(nc_f, 'r')
@@ -318,19 +311,16 @@ class FourierCoeff():
 
     def ncdump(self, nc_fid, key, verb):
         """Print the NetCDF file attributes for a given key.
-    
+
         Arguments:
         - nc_fid: the ID of a NetCDF file containing variable 'key';
         - key: the name of a variable to obtain the attributes from.
         """
-    
-        # NetCDF global attributes
         nc_attrs = nc_fid.ncattrs()
         nc_dims = [dim for dim in nc_fid.dimensions]
-        nc_vars = [var for var in nc_fid.variables]
-        
+        nc_vars = [var for var in nc_fid.variables] 
         return nc_attrs, nc_dims, nc_vars
-    
+
     def varatts(self, w_nc_var, varname):
         """Add attibutes to the variables, depending on their name.
 
@@ -338,7 +328,6 @@ class FourierCoeff():
         - w_nc_var: a variable object;
         - varname: the name of the variable, among ta, ua, va and wap.
         """
-        
         if varname == 'ta':
             w_nc_var.setncatts({'long_name': u"Air temperature",
                                 'units': u"K",
