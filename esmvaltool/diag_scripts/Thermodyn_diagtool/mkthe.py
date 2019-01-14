@@ -1,289 +1,291 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
+"""Module for computation of some auxiliary variables.
+
+Module needed by the main thermodynamic diagnosticl tool script for
+computation of some auxiliary variables.
+
+It computes equivalent potential temperatures and temperatures representative
+of the sensible and latent heat exchanges in the lower layers of the
+troposphere. Estimates of the boundary layer height and lifting condensation
+level are also provided.
+
+Authors: Frank Lunkeit and Valerio Lembo (University of Hamburg)
+
 Created on Fri Jun 15 10:06:30 2018
-
-@author: Valerio2
-
-!
-!     This script computes equivalent potential temperatures and 
-!     temperatures representative of the sensible and latent heat
-!     exchanges in the lower layers of the troposphere. Some
-!     estimate of the boundary layer height and lifting condensation
-!     level is also provided.
-!
-!     Authors: Frank Lunkeit and Valerio Lembo (University of Hamburg)
-!
-
 """
-
+import os
 from netCDF4 import Dataset
 import numpy as np
-import os
-from cdo import *
+from cdo import Cdo
 
-#cdo = Cdo()
+Alv = 2.5008e6    # Latent heat of vaporization
+g_0 = 9.81        # Gravity acceleration
+p_0 = 100000.     # reference pressure
+Rv = 461.51       # Gas constant for water vapour
+t_melt = 273.15   # freezing temp.
+Akap = 0.286      # Kappa (Poisson constant R/Cp)
+gas_con = 287.0   # Gas constant
+ra_1 = 610.78     # Parameter for Magnus-Teten-Formula
+h_s = 300.        # stable boundary layer height (m)
+h_u = 1000.       # unstable boundary layer height (m)
+ric_rs = 0.39     # Critical Richardson number for stable layer
+ric_ru = 0.28     # Critical Richardson number for unstable layer
 
-#Temporary definitions
-#modelname = 'MPI-ESM-LR'
-
-
-alv     = 2.5008e6    #Latent heat of vaporization
-p0      = 100000.     #reference pressure
-rv      = 461.51      #Gas constant for water vapour
-tmelt   = 273.15      #freezing temp.
-akap    = 0.286       #Kappa (Poisson constant R/Cp)
-gascon  = 287.0       #Gas constant
-cpv     = 719.         #specific heat capacity for water vapour
-ra1     = 610.78      #Parameter for Magnus-Teten-Formula
-ra2     = 17.2693882  #for saturation vapor pressure
-ra4     = 35.86       #over liquid water
-hs      = 300.        #stable boundary layer height (m)
-hu      = 1000.       #unstable boundary layer height (m)
-ricrs   = 0.39        #Critical Richardson number for stable layer
-ricru   = 0.28        #Critical Richardson number for unstable layer
-bp      = 0.03        #buoyancy parameter (m*s^-2*K^-1)
-g       = 9.81        #Gravity acceleration (m*s^-2)
-
-#folder   = '/Users/Valerio2/LEC_python/data/'
-#ts_file  = folder+'CMIP5_Amon_historical_{}_r1i1p1_T2Ms_ts_1990-1995.nc'.format(modelname) #fort.10
-#hus_file = folder+'CMIP5_Amon_historical_{}_r1i1p1_T3M_hus_1990-1995.nc'.format(modelname) #fort.11
-#tas_file = folder+'{}_tas.nc'.format(modelname) #fort.12
-#ps_file  = folder+'CMIP5_Amon_historical_MPI-ESM-LR_r1i1p1_T2Ms_ps_1990-1995.nc' #fort.13
-#V_file   = folder+'MPI-ESM-LR_V.nc' #fort.14
-#hfss_file= folder+'CMIP5_Amon_historical_MPI-ESM-LR_r1i1p1_T2Ms_hfss_1990-1995.nc' #fort.15
-#te_file  = folder+'MPI-ESM-LR_te.nc' #fort.16
 
 class Mkthe():
+    """The auxiliary variables module.
+
+    A class to compute LCL temperature, boundary layer top temperature,
+    boundary layer thickness.
     
-    from mkthe import *
-    
-    def mkthe_main(self,wdir,ts_file,hus_file,tas_file,ps_file,uas_file,vas_file,hfss_file,te_file,modelname):
-        
-        cdo = Cdo()        
+    It ingests monthly mean fields of:
+    - specific humidity (near-surface or 3D) (hus);
+    - skin temperature (ts);
+    - surface pressure (ps);
+    - near-surface horizontal velocity (uas and vas);
+    - surface turbulent sensible heat fluxes (hfss);
+    - emission temperature (te).
+    """
+
+    from mkthe import Mkthe
+
+    def mkthe_main(self, wdir, ts_file, hus_file, ps_file, uas_file,
+                   vas_file, hfss_file, te_file, modelname):
+        """The main script in the module for computation of aux. variables.
+
+        Arguments:
+        - wdir: the working directory path;
+        - ts_file: the path to the NetCDF containing ts;
+        - hus_file: the path to the NetCDF containing hus;
+        - ps_file: the path to the NetCDF containing ps;
+        - uas_file: the path to the NetCDF containing uas;
+        - vas_file: the path to the NetCDF containing vas;
+        - hfss_file: the path to the NetCDF containing hfss;
+        - te_file: the path to the NetCDF containing te;
+        - modelname: the name of the model from which the fields are;
+        """
+        cdo = Cdo()
         mkthe = Mkthe()
-    
-        ts_miss_file=wdir+'/ts.nc'
+        ts_miss_file = wdir + '/ts.nc'
         mkthe.removeif(ts_miss_file)
-        cdo.setctomiss('0',input=ts_file,output = ts_miss_file)
-        hus_miss_file=wdir+'/hus.nc'
+        cdo.setctomiss('0', input=ts_file, output=ts_miss_file)
+        hus_miss_file = wdir + '/hus.nc'
         mkthe.removeif(hus_miss_file)
-        cdo.setctomiss('0',input=hus_file,output = hus_miss_file)
-        tas_miss_file=wdir+'/tas.nc'
-        mkthe.removeif(tas_miss_file)
-        cdo.setctomiss('0',input=tas_file,output = tas_miss_file)
-        ps_miss_file=wdir+'/ps.nc'
+        cdo.setctomiss('0', input=hus_file, output=hus_miss_file)
+        ps_miss_file=wdir + '/ps.nc'
         mkthe.removeif(ps_miss_file)
-        cdo.setctomiss('0',input=ps_file,output = ps_miss_file)
-        V_miss_file=wdir+'/V.nc'
+        cdo.setctomiss('0', input=ps_file, output=ps_miss_file)
+        V_miss_file=wdir + '/V.nc'
         mkthe.removeif(V_miss_file)
-        V_file=wdir+'/{}_V.nc'.format(modelname)
+        V_file=wdir + '/{}_V.nc'.format(modelname)
         mkthe.removeif(V_file)
-        cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file,vas_file),options='-b F32',output = V_file)
-        cdo.setctomiss('0',input=V_file,output = V_miss_file)
-        hfss_miss_file=wdir+'/hfss.nc'
+        cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file, vas_file),
+                 options='-b F32', output=V_file)
+        cdo.setctomiss('0', input=V_file, output=V_miss_file)
+        hfss_miss_file = wdir+'/hfss.nc'
         mkthe.removeif(hfss_miss_file)
-        cdo.setctomiss('0',input=hfss_file,output = hfss_miss_file)
-        te_miss_file=wdir+'/te.nc'
+        cdo.setctomiss('0', input=hfss_file, output=hfss_miss_file)
+        te_miss_file = wdir + '/te.nc'
         mkthe.removeif(te_miss_file)
-        cdo.setctomiss('0',input=te_file,output = te_miss_file)
-        
+        cdo.setctomiss('0', input=te_file, output=te_miss_file)
         dataset0 = Dataset(ts_miss_file)
-        ts    = dataset0.variables['ts'][:, :, :]
-        lats  = dataset0.variables['lat'][:]
-        nlat  = len(lats)
-        lons  = dataset0.variables['lon'][:]
-        nlon  = len(lons)
-        time  = dataset0.variables['time'][:]
-        ntime = len(time)
-        
+        t_s = dataset0.variables['ts'][:, :, :]
+        lats = dataset0.variables['lat'][:]
+        lons = dataset0.variables['lon'][:]
+        time = dataset0.variables['time'][:]
         dataset = Dataset(hus_miss_file)
-        hus     = dataset.variables['hus'][:, :, :, :]
-        lev     = dataset.variables['plev'][:]
-        nlev    = len(lev)
-        dataset = Dataset(tas_miss_file)
-        tas     = dataset.variables['tas'][:, :, :]
+        hus = dataset.variables['hus'][:, :, :, :]
+        lev = dataset.variables['plev'][:]
+        nlev = len(lev)
         dataset = Dataset(ps_miss_file)
-        ps      = dataset.variables['ps'][:, :, :]
+        p_s = dataset.variables['ps'][:, :, :]
         dataset = Dataset(V_miss_file)
-        V       = dataset.variables['uas'][:, :, :]
+        V_hor = dataset.variables['uas'][:, :, :]
         dataset = Dataset(hfss_miss_file)
-        hfss    = dataset.variables['hfss'][:, :, :]
+        hfss = dataset.variables['hfss'][:, :, :]
         dataset = Dataset(te_miss_file)
-        te    = dataset.variables['rlut'][:, :, :]
-        
-        #print(lev)
-        #print(np.shape(hus))
-        huss = hus[:,0,:,:]
-        huss = np.where(lev[0] >= ps, huss, 0.)  
-        #ps_m = np.where(lev[0] <= ps, ps, 0.)  
-        #print(lev[0])
+        t_e = dataset.variables['rlut'][:, :, :]
+        huss = hus[:, 0, :, :]
+        huss = np.where(lev[0] >= p_s, huss, 0.)
         for l in range(nlev):
-            y=np.where(lev[l] <= ps)  
-            aux = hus[:,l,:,:]
-            #print(lev[l])
-            #aux = np.where((huss == 0.), aux, 0.)
-            aux = np.where((ps >= lev[l]), aux, 0.)       
+            aux = hus[:, l, :, :]
+            aux = np.where((p_s >= lev[l]), aux, 0.)
             huss = huss + aux
-        
-        ricr = ricru
-        h    = hu
-        ricr = np.where(hfss>=0.75,ricr,ricrs)
-        h    = np.where(hfss>=0.75,h   ,hs)
-        
-    #  !
-    #  !get tlcl from Magnus formula (as in PlaSim)
-    #  !
-        e      = huss*ps/(huss+gascon/rv)          #!Water vapour pressure
-        td_inv = (1/tmelt)-(rv/alv)*np.log(e/ra1)  #!Dewpoint temperature
-        td     = 1/td_inv
-        hlcl   = 125.*(ts-td)                     #!Empirical formula for LCL height
-                         
-    #  !
-    #  !Negative heights are replaced by the height of the stable
-    #  !boundary layer (lower constraint to the height of the cloud layer)
-    #  !
-        hlcl   = np.where(hlcl >= 0.,hlcl,h)
-        
-        cp=gascon/akap
-        ztlcl=ts-(g/cp)*hlcl
-        
-    #  !
-    #  !Compute the pseudo-adiabatic lapse rate to obtain the height of cloud top knowing emission temperature
-    #  !
-        gw=(g/cp)*(1+((alv*huss)/(gascon*ztlcl))/(1+((alv**2*huss*0.622)/(cp*gascon*ztlcl**2))))
-    #   hlcl=-(ztlcl-ts)/gw
-    #   hlcl   = np.where(hlcl >= 0.,hlcl,h)
-        htop=-(te-ztlcl)/gw+hlcl
-    #  !
-    #  !Compute equivalent potential temperature (optional output)
-    #  !
-       # thes=ths*np.exp((alv*huss)/(cp*ztlcl))
-    #  !
-    #  !Use potential temperature and critical Richardson number to compute
-    #  !temperature and height of the boundary layer top
-    #  !
-        ths=ts*(p0/ps)**akap
-        thz=ths+0.03*ricr*(V)**2/h
-        pz=ps*np.exp((-g*h)/(gascon*ts))  # Barometric equation 
-        tz=thz*(p0/pz)**(-akap)
-        
-        nc_attrs, nc_dims, nc_vars = mkthe.ncdump(dataset0,'ts',True)
-        
-        nc_f = wdir+'/tlcl.nc'.format(modelname)
+        ricr = ric_ru
+        h_bl = h_u
+        ricr = np.where(hfss >= 0.75, ricr, ric_rs)
+        h_bl = np.where(hfss >= 0.75, h_bl, h_s)
+        ev_p = huss * p_s/(huss + gas_con / Rv)        # Water vapour pressure
+        td_inv = (1 / t_melt) - (Rv / Alv) * np.log(ev_p / ra_1) # Dewpoint t.
+        t_d = 1 / td_inv
+        hlcl = 125. * (t_s - t_d) # Empirical formula for LCL height
+    #
+    #  Negative heights are replaced by the height of the stable
+    #  boundary layer (lower constraint to the height of the cloud layer)
+    #
+        hlcl = np.where(hlcl >= 0., hlcl, h_bl)
+        cp_d = gas_con / Akap
+        ztlcl = t_s - (g_0 / cp_d) * hlcl
+    #
+    # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
+    # top knowing emission temperature.
+    #
+        gw_pa = (g_0 / cp_d) * (1 + ((Alv * huss) / (gas_con * ztlcl)) /\
+             (1 + ((Alv ** 2 * huss * 0.622) / (cp_d * gas_con * ztlcl ** 2))))
+        htop = - (t_e - ztlcl) / gw_pa + hlcl
+    #
+    #  Compute equivalent potential temperature (optional output)
+    #
+       # thes=ths*np.exp((Alv*huss)/(cp*ztlcl))
+    #
+    #  Use potential temperature and critical Richardson number to compute
+    #  temperature and height of the boundary layer top
+    #
+        ths = t_s * (p_0 / p_s) ** Akap
+        thz = ths + 0.03 * ricr * (V_hor) ** 2 / h_bl
+        pz = p_s * np.exp((- g_0 * h_bl) / (gas_con * t_s)) # Barometric eq.
+        t_z = thz * (p_0 / pz) ** (-Akap)
+        nc_attrs, nc_dims, nc_vars = mkthe.ncdump(dataset0, 'ts', True)
+        nc_f = wdir + '/tlcl.nc'.format(modelname)
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-        w_nc_fid.description = "Monthly mean LCL temperature from {} model. Calculated by Thermodynamics model diagnostics \
-                                in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
+        w_nc_fid.description = "Monthly mean LCL temperature from {} model. \
+                                Calculated by Thermodynamics model diagnostics\
+                                in ESMValTool. Author Valerio Lembo, \
+                                Meteorologisches Institut, Universität \
+                                Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
-        w_nc_dim = w_nc_fid.createVariable('time', dataset0.variables['time'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('time',
+                                           dataset0.variables['time'].dtype,\
                                            ('time',))
         for ncattr in dataset0.variables['time'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['time'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['time'].getncattr(ncattr))
         # Assign the dimension data to the new NetCDF file.
         w_nc_fid.variables['time'][:] = time
         w_nc_fid.createDimension('lat', len(lats))
-        w_nc_dim = w_nc_fid.createVariable('lat',dataset0.variables['lat'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lat',
+                                           dataset0.variables['lat'].dtype,
                                            ('lat',))
         for ncattr in dataset0.variables['lat'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lat'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lat'].getncattr(ncattr))
         w_nc_fid.variables['lat'][:] = lats
         w_nc_fid.createDimension('lon', len(lons))
-        w_nc_dim = w_nc_fid.createVariable('lon', dataset0.variables['lon'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lon',
+                                           dataset0.variables['lon'].dtype,
                                            ('lon',))
         for ncattr in dataset0.variables['lon'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lon'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lon'].getncattr(ncattr))
         w_nc_fid.variables['lon'][:] = lons
-        w_nc_var = w_nc_fid.createVariable('tlcl', 'f8', ('time','lat','lon'))
-        w_nc_var.setncatts({'long_name': u"LCL Temperature",'units': u"K", 'level_desc': u"surface",\
-                        'var_desc': u"LCL temperature from LCL height (Magnus formulas \
-                        and dry adiabatic lapse ratio",'statistic': 'monthly mean'})
+        w_nc_var = w_nc_fid.createVariable('tlcl', 'f8',
+                                           ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({'long_name': u"LCL Temperature",
+                            'units': u"K", 'level_desc': u"surface",
+                            'var_desc': u"LCL temperature from LCL \
+                            height (Magnus formulas and dry adiabatic \
+                            lapse ratio",'statistic': 'monthly mean'})
         w_nc_fid.variables['tlcl'][:] = ztlcl
         w_nc_fid.close()  # close the new file
-        
-        nc_f = wdir+'/tabl.nc'.format(modelname)
+        nc_f = wdir + '/tabl.nc'.format(modelname)
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-        w_nc_fid.description = "Monthly mean temperature at BL top for {} model. Calculated by Thermodynamics model diagnostics \
-                                in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
+        w_nc_fid.description = "Monthly mean temperature at BL top for {} \
+                                model. Calculated by Thermodynamics model \
+                                diagnostics in ESMValTool. Author Valerio \
+                                Lembo, Meteorologisches Institut, Universität \
+                                Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
-        w_nc_dim = w_nc_fid.createVariable('time', dataset0.variables['time'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('time',
+                                           dataset0.variables['time'].dtype,
                                            ('time',))
         for ncattr in dataset0.variables['time'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['time'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['time'].getncattr(ncattr))
         # Assign the dimension data to the new NetCDF file.
         w_nc_fid.variables['time'][:] = time
         w_nc_fid.createDimension('lat', len(lats))
-        w_nc_dim = w_nc_fid.createVariable('lat', dataset0.variables['lat'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lat',
+                                           dataset0.variables['lat'].dtype,
                                            ('lat',))
         for ncattr in dataset0.variables['lat'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lat'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lat'].getncattr(ncattr))
         w_nc_fid.variables['lat'][:] = lats
         w_nc_fid.createDimension('lon', len(lons))
-        w_nc_dim = w_nc_fid.createVariable('lon', dataset0.variables['lon'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lon',
+                                           dataset0.variables['lon'].dtype,
                                            ('lon',))
         for ncattr in dataset0.variables['lon'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lon'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lon'].getncattr(ncattr))
         w_nc_fid.variables['lon'][:] = lons
-        w_nc_var = w_nc_fid.createVariable('tabl', 'f8', ('time','lat','lon'))
-        w_nc_var.setncatts({'long_name': u"Temperature at BL top",'units': u"K", 'level_desc': u"surface",\
-                        'var_desc': u"Temperature at the Boundary Layer top, from boundary layer thickness \
-                        and barometric equation",'statistic': u'monthly mean'})
-        w_nc_fid.variables['tabl'][:] = tz
+        w_nc_var = w_nc_fid.createVariable('tabl', 'f8',
+                                           ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({'long_name': u"Temperature at BL top",
+                            'units': u"K", 'level_desc': u"surface",
+                            'var_desc': u"Temperature at the Boundary Layer \
+                            top, from boundary layer thickness and barometric \
+                            equation",'statistic': u'monthly mean'})
+        w_nc_fid.variables['tabl'][:] = t_z
         w_nc_fid.close()  # close the new file
-        
-        nc_f = wdir+'/htop.nc'.format(modelname)
+        nc_f = wdir + '/htop.nc'.format(modelname)
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-        w_nc_fid.description = "Monthly mean height of the BL top for {} model. Calculated by Thermodynamics model diagnostics \
-                                in ESMValTool. Author Valerio Lembo, Meteorologisches Institut, Universität Hamburg.".format(modelname)
+        w_nc_fid.description = "Monthly mean height of the BL top for {} \
+                                model. Calculated by Thermodynamics model \
+                                diagnostics in ESMValTool. Author Valerio \
+                                Lembo, Meteorologisches Institut, Universität \
+                                Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
-        w_nc_dim = w_nc_fid.createVariable('time', dataset0.variables['time'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('time',
+                                           dataset0.variables['time'].dtype,
                                            ('time',))
         for ncattr in dataset0.variables['time'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['time'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['time'].getncattr(ncattr))
         # Assign the dimension data to the new NetCDF file.
         w_nc_fid.variables['time'][:] = time
         w_nc_fid.createDimension('lat', len(lats))
-        w_nc_dim = w_nc_fid.createVariable('lat', dataset0.variables['lat'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lat',
+                                           dataset0.variables['lat'].dtype,\
                                            ('lat',))
         for ncattr in dataset0.variables['lat'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lat'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lat'].getncattr(ncattr))
         w_nc_fid.variables['lat'][:] = lats
         w_nc_fid.createDimension('lon', len(lons))
-        w_nc_dim = w_nc_fid.createVariable('lon', dataset0.variables['lon'].dtype,\
+        w_nc_dim = w_nc_fid.createVariable('lon',
+                                           dataset0.variables['lon'].dtype,\
                                            ('lon',))
         for ncattr in dataset0.variables['lon'].ncattrs():
-            w_nc_dim.setncattr(ncattr, dataset0.variables['lon'].getncattr(ncattr))
+            w_nc_dim.setncattr(ncattr,
+                               dataset0.variables['lon'].getncattr(ncattr))
         w_nc_fid.variables['lon'][:] = lons
-        w_nc_var = w_nc_fid.createVariable('htop', 'f8', ('time','lat','lon'))
-        w_nc_var.setncatts({'long_name': u"Height at BL top",'units': u"m", 'level_desc': u"surface",\
-                        'var_desc': u"Height at the Boundary Layer top, from boundary layer thickness \
-                        and barometric equation",'statistic': u'monthly mean'})
+        w_nc_var = w_nc_fid.createVariable('htop', 'f8',
+                                           ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({'long_name': u"Height at BL top",
+                            'units': u"m", 'level_desc': u"surface",
+                            'var_desc': u"Height at the Boundary Layer top, \
+                            from boundary layer thickness and barometric \
+                            equation",'statistic': u'monthly mean'})
         w_nc_fid.variables['htop'][:] = htop
         w_nc_fid.close()  # close the new file
-        
-        #return ztlcl,tz,htop
     
     def ncdump(self,nc_fid,key,verb):
+        """Print the NetCDF file attributes for a given key.
+
+        Arguments:
+        - nc_fid: the ID of a NetCDF file containing variable 'key';
+        - key: the name of a variable to obtain the attributes from.
         """
-        Prints the NetCDF file attributes for a given key
-    
-        Parameters
-        ----------
-        key : unicode
-            a valid netCDF4.Dataset.variables key
-        """
-    
-        # NetCDF global attributes
         nc_attrs = nc_fid.ncattrs()
-        nc_dims = [dim for dim in nc_fid.dimensions]  # list of nc dimensions
+        nc_dims = [dim for dim in nc_fid.dimensions] # list of nc dimensions
         nc_vars = [var for var in nc_fid.variables]  # list of nc variables
-        
         return nc_attrs, nc_dims, nc_vars
-    
-        
+
     def removeif(self,filename):
+        """Remove filename if it exists."""
         try:
             os.remove(filename)
         except OSError:
