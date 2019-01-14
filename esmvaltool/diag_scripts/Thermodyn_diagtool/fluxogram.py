@@ -25,7 +25,7 @@ matplotlib.use('Agg')
 
 class Fluxogram():
     """The diagram flux module.
-    
+
     A class to draw and maintain all fluxes and storages from a model or
     some similiar kind of thing to be drawn as a sequence of storages
     and fluxes.
@@ -263,8 +263,9 @@ class Flux:
         self.to_storage = to_storage
         self.amount = amount
         self.grid_size = grid_size
-        self.x_start, self.y_start, self.x_end, self.y_end, self.d_x, self.d_y,
-        self.dire = (self.calc_start_end_dx_dy())
+        self.x_start, self.y_start, self.x_end, \
+        self.y_end, self.d_x, self.d_y, self.dire \
+        = (self.calc_start_end_dx_dy())
         
     def update_flux(self, amount):
         """Update the amount of the flux."""
@@ -272,7 +273,7 @@ class Flux:
 
     def calc_start_end_dx_dy(self):
         """A scaler for the arrows.
-        
+
         Calculate the starting and ending point of an arrow depending on the
         order and offset of the starting and ending storages. This helps
         determine the direction of the arrow
@@ -310,7 +311,7 @@ class Flux:
             dire = 'rup'
         # arrow pointing right
         elif (self.from_storage.offset < self.to_storage.offset and
-                  self.from_storage.order == self.to_storage.order):
+              self.from_storage.order == self.to_storage.order):
             x_start = (self.from_storage.x_p + self.grid_size)
             y_start = self.from_storage.y_p - 0.8 * self.grid_size
             x_end = self.to_storage.x_p + 1.25 * self.grid_size
@@ -320,7 +321,7 @@ class Flux:
             dire = 'r'
         # arrow pointing right down
         elif (self.from_storage.offset < self.to_storage.offset and
-                  self.from_storage.order < self.to_storage.order):
+              self.from_storage.order < self.to_storage.order):
             x_start = (self.from_storage.x_p + 0.85 * self.grid_size)
             y_start = self.from_storage.y_p - 1.12 * self.grid_size
             x_end = self.to_storage.x_p + 0.85 * self.grid_size
@@ -330,7 +331,7 @@ class Flux:
             dire = 'rdn'
         # arrow pointing down
         elif (self.from_storage.offset == self.to_storage.offset and
-                  self.from_storage.order < self.to_storage.order):
+              self.from_storage.order < self.to_storage.order):
             x_start = self.from_storage.x_p + 0.8 * self.grid_size
             y_start = (self.from_storage.y_p - 1.12 * self.grid_size)
             x_end = self.to_storage.x_p + 0.8 * self.grid_size

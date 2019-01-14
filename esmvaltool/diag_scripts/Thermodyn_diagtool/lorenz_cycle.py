@@ -1,14 +1,13 @@
-"""This module contains all the instructions to compute the atmospheric
-Lorenz Energy Cycle in spectral coordinates, with input fields 
-(ta, ua, va, wap) given as Fourier coefficients as a function of zonal
-wavenumbers. 
+"""Module for LEC computation in climate models.
 
-It follows from a previous Fortran77 script written by Frank Lunkeit, 
-University of Hamburg. 
+This module contains all the instructions to compute the atmospheric
+Lorenz Energy Cycle in spectral coordinates, with input fields
+(ta, ua, va, wap) given as Fourier coefficients as a function of zonal
+wavenumbers.
 
 Created on Thu Jun  7 14:57:47 2018
 
-@author: Valerio2
+@author: Valerio Lembo, University of Hamburg
 """
 
 from __future__ import absolute_import
@@ -21,8 +20,8 @@ import sys
 import math
 import os
 import warnings
-warnings.filterwarnings("ignore")
 import numpy as np
+warnings.filterwarnings("ignore")
 
 G = 9.81
 R = 287.00
@@ -35,13 +34,11 @@ NW_3 = 21
 
 
 class LorenzCycle():
-    
-    
-    """    PROGRAM FOR LEC COMPUTATION
+    """PROGRAM FOR LEC COMPUTATION.
     The class consists of the following functions:
         - lorenz: it is the main program, controlling the file input,
                   separating the real from imaginary part of the Fourier
-                  coefficients, reordering the latitudinal dimension 
+                  coefficients, reordering the latitudinal dimension
                   (from N to S), interpolating on a reference sigma coordinate,
                   then computing the reservoirs and conversion terms, storing
                   them separately in NetCDF files and providing a flux diagram
@@ -67,9 +64,9 @@ class LorenzCycle():
                      single Nc file;
         - removeif: removes a file if it exists;
         - stabil: calculates the stability parameter;
-        - table: prints the global and hemispheric mean values of 
+        - table: prints the global and hemispheric mean values of
                  the reservoirs;
-        - table_conv: prints the global and hemispheric mean values of the 
+        - table_conv: prints the global and hemispheric mean values of the
                       conversion terms;
         - varatts: prints the attributes of a variable in a Nc file;
 
@@ -84,20 +81,22 @@ class LorenzCycle():
         NW_3: wavenumber limit for short waves;
         
     References:
-        Ulbrich P. and P. Speth (1991) The global energy cycle of stationary 
+        Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
         and transient atmospheric waves: Results from ECMWF analyses, Met.
  
     Authors:
         Frank Lunkeit, Meteorology Department, University of Hamburg
         Valerio Lembo, Meteorology Department, University of Hamburg
         
-        Contact author: valerio.lembo@uni-hamburg.de .
+        Contact author: valerio.lembo@uni-hamburg.de.
     """
         
-    from lorenz_cycle import *
+    from lorenz_cycle import LorenzCycle
         
     def lorenz(self, outpath, model, year, filenc, plotfile, logfile):
-        """ Receive fields t,u,v,w as input fields in Fourier 
+        """Main script, managing input and output fields and calling functions.
+
+        Receive fields t,u,v,w as input fields in Fourier
         coefficients (time,level,wave,lon) and compute the LEC.
         
         Arguments:
@@ -108,7 +107,6 @@ class LorenzCycle():
             - plotfile: name of the file that will contain the flux diagram;
             - logfile: name of the file containing the table as a .txt file.
         """
-    
         lorenz = LorenzCycle()
         log = open(logfile, 'w')
         log.write('########################################################\n')
@@ -116,32 +114,32 @@ class LorenzCycle():
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
         log.write('#                                                      #\n')
         log.write('########################################################\n')
-        filep    = filenc
+        filep = filenc
         dataset0 = Dataset(filenc)
-        ta    = dataset0.variables['ta'][:, :, :, :]
-        ua    = dataset0.variables['ua'][:, :, :, :]
-        va    = dataset0.variables['va'][:, :, :, :]
-        wap   = dataset0.variables['wap'][:, :, :, :]
-        nlat  = np.shape(ta)[2]
-        nfc  = np.shape(ta)[3]
-        lev  = dataset0.variables['plev'][:]
-        nlev  = len(lev)
-        time  = dataset0.variables['time'][:]
+        t_a = dataset0.variables['ta'][:, :, :, :]
+        u_a = dataset0.variables['ua'][:, :, :, :]
+        v_a = dataset0.variables['va'][:, :, :, :]
+        wap = dataset0.variables['wap'][:, :, :, :]
+        nlat = np.shape(t_a)[2]
+        nfc = np.shape(t_a)[3]
+        lev = dataset0.variables['plev'][:]
+        nlev = len(lev)
+        time = dataset0.variables['time'][:]
         ntime = len(time)
         lat = dataset0.variables['lat'][:]
-        nlat  = len(lat)
+        nlat = len(lat)
         if(max(lev) < 1000):
             lev = lev*100
             wap = wap*100
-        ta = np.transpose(ta, (1, 0, 2, 3))
-        ta_r=ta[:, :, :, 0::2]
-        ta_i=ta[:, :, :, 1::2]
-        ua = np.transpose(ua, (1, 0, 2, 3))
-        ua_r=ua[:, :, :, 0::2]
-        ua_i=ua[:, :, :, 1::2]
-        va = np.transpose(va, (1, 0, 2, 3))
-        va_r=va[:, :, :, 0::2]
-        va_i=va[:, :, :, 1::2]
+        t_a = np.transpose(t_a, (1, 0, 2, 3))
+        ta_r=t_a[:, :, :, 0::2]
+        ta_i=t_a[:, :, :, 1::2]
+        u_a = np.transpose(u_a, (1, 0, 2, 3))
+        ua_r=u_a[:, :, :, 0::2]
+        ua_i=u_a[:, :, :, 1::2]
+        v_a = np.transpose(v_a, (1, 0, 2, 3))
+        va_r=v_a[:, :, :, 0::2]
+        va_i=v_a[:, :, :, 1::2]
         wap = np.transpose(wap, (1, 0, 2, 3))
         wap_r=wap[:, :, :, 0::2]
         wap_i=wap[:, :, :, 1::2]

@@ -16,15 +16,13 @@ Created on Mon Oct  8 15:40:08 2018
 import numpy as np
 from netCDF4 import Dataset
 
-tainput = 'inputen.nc'
-tasinput = 'tas.nc'
-gpres = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
-fcres = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
-g0 = 9.81               # Gravity acceleration
-gam = 0.0065            # Standard atmosphere lapse rate
-gascon = 287.0         # Gas constant
-rho0 = 1.2              # Mean air density
-p0 = 10000              # Reference tropospheric pressure
+gp_res = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
+fc_res = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
+g_0 = 9.81               # Gravity acceleration
+Gam = 0.0065            # Standard atmosphere lapse rate
+gas_con = 287.0         # Gas constant
+# rho_0 = 1.2              # Mean air density
+p_0 = 10000              # Reference tropospheric pressure
 
 
 class FourierCoeff():
@@ -34,23 +32,23 @@ class FourierCoeff():
     at each timestep into Fourier coefficients in the zonal direction.
     """
     
-    from fourier_coefficients import *
+    from fourier_coefficients import FourierCoeff
     
-    def fourier_coeff(self, tadiagfile, outfile, tainput, tasinput):
+    def fourier_coeff(self, tadiagfile, outfile, ta_input, tas_input):
         """Main script for Fourier coefficients computation.
 
         Receive as input:
         - tadiagfile: the name of a file to store modified t fields;
         - outfile: the name of a file to store the Fourier coefficients;
-        - tainput: the name of a file containing t,u,v,w fields;
-        - tasinput: the name of a file containing t2m field.
+        - ta_input: the name of a file containing t,u,v,w fields;
+        - tas_input: the name of a file containing t2m field.
         """
         fourcoeff = FourierCoeff()
         
         fileo = outfile
         fileta = tadiagfile
         
-        dataset = Dataset(tainput)
+        dataset = Dataset(ta_input)
         lon = dataset.variables['lon'][:]
         lat = dataset.variables['lat'][:]
         lev = dataset.variables['plev'][:]
@@ -59,69 +57,77 @@ class FourierCoeff():
         nlat = len(lat)
         nlev = len(lev)
         ntime = len(time)
-        i = np.min(np.where(2 * nlat <= gpres))
-        trunc = fcres[i] + 1
+        i = np.min(np.where(2 * nlat <= gp_res))
+        trunc = fc_res[i] + 1
         wave2 = np.linspace(0, trunc - 1, trunc)
     
-        ta = dataset.variables['ta'][:, :, :, :]
-        ua = dataset.variables['ua'][:, :, :, :]
-        va = dataset.variables['va'][:, :, :, :]
+        t_a = dataset.variables['ta'][:, :, :, :]
+        u_a = dataset.variables['ua'][:, :, :, :]
+        v_a = dataset.variables['va'][:, :, :, :]
         wap = dataset.variables['wap'][:, :, :, :]
-        dataset = Dataset(tasinput)
+        dataset = Dataset(tas_input)
         tas = dataset.variables['tas'][:, :, :]
         tas = tas[:, ::-1, :]
         
-        ta1_fx = np.array(ta)
+        ta1_fx = np.array(t_a)
         deltat = np.zeros([ntime, nlev, nlat, nlon])
-        ps = np.full([ntime, nlat, nlon], p0)
+        p_s = np.full([ntime, nlat, nlon], p_0)
         for i in np.arange(nlev - 1, 0, -1):
-            h1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0,
+            h_1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0,
                                     ta1_fx[:, i, :, :])
-            if np.any(h1.mask > 0):
+            if np.any(h_1.mask > 0):
                 deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
-                      deltat[:, i - 1, :, :], (ta1_fx[:, i, :, :] - tas))
-                deltat[:, i - 1, :, :] = (1 * np.array(h1.mask)) *\
-                np.array(deltat[:, i - 1, :, :])
-                dp = -((p0 * g0 / (gam * gascon)) * deltat[:, i - 1, :, :] / tas)
-                ps = np.where(ta1_fx[:, i - 1, :, :] != 0, ps, lev[i - 1] + dp)
-                for k in np.arange(0, nlev-i-1, 1):
-                    h3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
+                                                  deltat[:, i - 1, :, :],
+                                                  (ta1_fx[:, i, :, :] - tas))
+                deltat[:, i - 1, :, :] = (1 * np.array(h_1.mask)) *\
+                                         np.array(deltat[:, i - 1, :, :])
+                d_p = -((p_0 * g_0 / (Gam * gas_con)) *
+                        deltat[:, i - 1, :, :] / tas)
+                p_s = np.where(ta1_fx[:, i - 1, :, :] != 0,
+                               p_s, lev[i - 1] + d_p)
+                for k in np.arange(0, nlev - i - 1, 1):
+                    h_3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
                                             ta1_fx[:, i + k, :, :])
-                    if np.any(h3.mask > 0):
+                    if np.any(h_3.mask > 0):
                         deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i + k, :,:]
-                                                  != 0, deltat[:, i-1, :, :], 
-                                                  (ta1_fx[:, i + k + 1, :, :]
-                                                  - tas))
-                        dp = -((p0 * g0 / (gam * gascon)) *
+                                                          != 0,
+                                                          deltat[:, i - 1,
+                                                                 :, :],
+                                                          (ta1_fx[:, i + k + 1,
+                                                                  :, :]
+                                                           - tas))
+                        dp = -((p_0 * g_0 / (Gam * gas_con)) *
                                deltat[:, i - 1, :, :] / tas)
-                        ps = np.where(ta1_fx[:, i + k, :, :] != 0, ps,
+                        p_s = np.where(ta1_fx[:, i + k, :, :] != 0, p_s,
                                       lev[i + k] + dp)
                     else:
                         pass
             else:
                 pass
-        ta2_fx = np.array(ta)
+        ta2_fx = np.array(t_a)
         mask = np.zeros([nlev, ntime, nlat, nlon])
         dat = np.zeros([nlev, ntime, nlat, nlon])
         tafr_bar = np.zeros([nlev, ntime, nlat, nlon])
         deltap = np.zeros([ntime, nlev, nlat, nlon])
         for i in np.arange(nlev):
-            deltap[:, i, :, :] = ps - lev[i]
-            h2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
+            deltap[:, i, :, :] = p_s - lev[i]
+            h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
                                     ta2_fx[:, i, :, :])
-            mask[i, :, :, :] = np.array(h2.mask)
-            tafr_bar[i, :, :, :] = 1 * np.array(mask[i, :, :, :]) * (tas -
-                                   gam * gascon / (g0 * ps) *
-                                   deltap[:, i, :, :] * tas)
-            dat[i, :, :, :] = ta2_fx[:, i, :, :] * (1 -
-                              1 * np.array(mask[i, :, :, :]))
-            ta[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
-        fourcoeff.pr_output_diag(ta, tainput, fileta, 'ta', verb=True)
+            mask[i, :, :, :] = np.array(h_2.mask)
+            tafr_bar[i, :, :, :] = 1 *\
+                                   np.array(mask[i, :, :, :]) * (tas - Gam *
+                                           gas_con / (g_0 * p_s) * deltap[:, i,
+                                                                          :, :]
+                                                                 * tas)
+            dat[i, :, :, :] = ta2_fx[:, i, :, :] *\
+                              (1 - 1 * np.array(mask[i, :, :, :]))
+            t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
+        fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta', verb=True)
         
-        tafft_p = np.fft.fft(ta, axis=3)[:, :, :, :trunc/2] / (nlon)
-        uafft_p = np.fft.fft(ua, axis=3)[:, :, :, :trunc/2] / (nlon)
-        vafft_p = np.fft.fft(va, axis=3)[:, :, :, :trunc/2] / (nlon)
-        wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc/2] / (nlon)
+        tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
+        uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
+        vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
+        wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc / 2] / (nlon)
         
         tafft = np.zeros([ntime, nlev, nlat, trunc])
         uafft = np.zeros([ntime, nlev, nlat, trunc])
@@ -136,13 +142,14 @@ class FourierCoeff():
         wapfft[:, :, :, 0::2] = np.real(wapfft_p)
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
             
-        fourcoeff.pr_output(tafft, uafft, vafft, wapfft, tainput, fileo, wave2,
+        fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo, wave2,
                             'ta', 'ua', 'va', 'wap', verb=True)
-        
-        
+
     def pr_output(self, var1, var2, var3, var4, nc_f, fileo, wave2, name1,
                   name2, name3, name4, verb=True):
-        """Save fields to NetCDF, retrieving information from an existing
+        """Print outputs to NetCDF.
+
+        Save fields to NetCDF, retrieving information from an existing
         NetCDF file. Metadata are transferred from the existing file to the
         new one.
         Arguments:
@@ -163,7 +170,7 @@ class FourierCoeff():
         
         fourcoeff = FourierCoeff()
     
-        nc_fid = Dataset(nc_f, 'r')  
+        nc_fid = Dataset(nc_f, 'r')
         nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid, 'ta', verb)
         
         # Extract coordinates from NetCDF file
@@ -171,94 +178,6 @@ class FourierCoeff():
         plev = nc_fid.variables['plev'][:]
         lats = nc_fid.variables['lat'][:]
                     
-        # Writing NetCDF files
-        var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
-        var_nc_fid.description = "Fourier coefficients"
-        
-        # Using our previous dimension info, we can create the new dimensions.        
-        var_nc_fid.createDimension('time', len(time))
-        var_nc_dim = var_nc_fid.createVariable('time', 
-                                               nc_fid.variables['time'].dtype,
-                                               ('time',))
-        for ncattr in nc_fid.variables['time'].ncattrs():
-            var_nc_dim.setncattr(ncattr,
-                                 nc_fid.variables['time'].getncattr(ncattr))
-        var_nc_fid.variables['time'][:] = time
-        
-        var_nc_fid.createDimension('plev', len(plev))
-        var_nc_dim = var_nc_fid.createVariable('plev', 
-                                               nc_fid.variables['plev'].dtype,
-                                               ('plev',))
-        for ncattr in nc_fid.variables['plev'].ncattrs():
-            var_nc_dim.setncattr(ncattr,
-                                 nc_fid.variables['plev'].getncattr(ncattr))
-        var_nc_fid.variables['plev'][:] = plev
-        
-        var_nc_fid.createDimension('wave', len(wave2))
-        var_nc_dim = var_nc_fid.createVariable('wave',
-                                               nc_fid.variables['plev'].dtype,
-                                               ('wave',))
-        var_nc_fid.variables['wave'][:] = wave2
-            
-        var_nc_fid.createDimension('lat', len(lats))
-        var_nc_dim = var_nc_fid.createVariable('lat', 
-                                               nc_fid.variables['lat'].dtype,
-                                               ('lat',))
-        for ncattr in nc_fid.variables['lat'].ncattrs():
-            var_nc_dim.setncattr(ncattr,
-                                 nc_fid.variables['lat'].getncattr(ncattr))
-        var_nc_fid.variables['lat'][:] = lats
-    
-        nc_fid.close()
-        
-        var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
-                                                ('time', 'plev', 'lat', 'wave'))
-        fourcoeff.varatts(var1_nc_var,name1)
-        var_nc_fid.variables[name1][:, :, :, :] = var1
-        var2_nc_var = var_nc_fid.createVariable(name2, 'f8',
-                                                ('time', 'plev', 'lat', 'wave'))
-        fourcoeff.varatts(var2_nc_var,name2)
-        var_nc_fid.variables[name2][:, :, :, :] = var2
-        var3_nc_var = var_nc_fid.createVariable(name3, 'f8',
-                                                ('time', 'plev', 'lat', 'wave'))
-        fourcoeff.varatts(var3_nc_var,name3)
-        var_nc_fid.variables[name3][:, :, :, :] = var3
-        var4_nc_var = var_nc_fid.createVariable(name4, 'f8',
-                                                ('time', 'plev', 'lat', 'wave'))
-        fourcoeff.varatts(var4_nc_var,name4)
-        var_nc_fid.variables[name4][:, :, :, :] = var4
-        
-        var_nc_fid.close()  # close the new file
-        
-    
-    def pr_output_diag(self, var1, nc_f, fileo, name1, verb=True):
-        """Save fields to NetCDF, retrieving information from an existing
-        NetCDF file. Metadata are transferred from the existing file to the
-        new one.
-        Arguments:
-            - var1: the field to be stored, with shape (time,level,lat,lon);
-            - nc_f: the existing dataset, from where the metadata are
-              retrieved. Coordinates time,level, lat and lon have to be the 
-              same dimension as the fields to be saved to the new files;
-            - fileo: the name of the output file;
-            - name1: the name of the variable to be saved;
-              
-        PROGRAMMER(S)
-            Chris Slocum (2014), modified by Valerio Lembo (2018).
-        """      
-        from fourier_coefficients import FourierCoeff
-        
-        fourcoeff = FourierCoeff()
-    
-        nc_fid = Dataset(nc_f, 'r')
-        nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid, 'ta', verb)
-        
-        # Extract data from NetCDF file
-        time = nc_fid.variables['time'][:]
-        plev = nc_fid.variables['plev'][:]
-        lats = nc_fid.variables['lat'][:]
-        lons = nc_fid.variables['lon'][:]
-            
         # Writing NetCDF files
         var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
         var_nc_fid.description = "Fourier coefficients"
@@ -278,7 +197,101 @@ class FourierCoeff():
                                                nc_fid.variables['plev'].dtype,
                                                ('plev',))
         for ncattr in nc_fid.variables['plev'].ncattrs():
-            var_nc_dim.setncattr(ncattr, nc_fid.variables['plev'].getncattr(ncattr))
+            var_nc_dim.setncattr(ncattr,
+                                 nc_fid.variables['plev'].getncattr(ncattr))
+        var_nc_fid.variables['plev'][:] = plev
+        
+        var_nc_fid.createDimension('wave', len(wave2))
+        var_nc_dim = var_nc_fid.createVariable('wave',
+                                               nc_fid.variables['plev'].dtype,
+                                               ('wave',))
+        var_nc_fid.variables['wave'][:] = wave2
+            
+        var_nc_fid.createDimension('lat', len(lats))
+        var_nc_dim = var_nc_fid.createVariable('lat',
+                                               nc_fid.variables['lat'].dtype,
+                                               ('lat',))
+        for ncattr in nc_fid.variables['lat'].ncattrs():
+            var_nc_dim.setncattr(ncattr,
+                                 nc_fid.variables['lat'].getncattr(ncattr))
+        var_nc_fid.variables['lat'][:] = lats
+
+        nc_fid.close()
+
+        var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
+                                                ('time', 'plev',
+                                                 'lat', 'wave'))
+        fourcoeff.varatts(var1_nc_var, name1)
+        var_nc_fid.variables[name1][:, :, :, :] = var1
+        var2_nc_var = var_nc_fid.createVariable(name2, 'f8',
+                                                ('time', 'plev',
+                                                 'lat', 'wave'))
+        fourcoeff.varatts(var2_nc_var, name2)
+        var_nc_fid.variables[name2][:, :, :, :] = var2
+        var3_nc_var = var_nc_fid.createVariable(name3, 'f8',
+                                                ('time', 'plev',
+                                                 'lat', 'wave'))
+        fourcoeff.varatts(var3_nc_var, name3)
+        var_nc_fid.variables[name3][:, :, :, :] = var3
+        var4_nc_var = var_nc_fid.createVariable(name4, 'f8',
+                                                ('time', 'plev',
+                                                 'lat', 'wave'))
+        fourcoeff.varatts(var4_nc_var, name4)
+        var_nc_fid.variables[name4][:, :, :, :] = var4
+        
+        var_nc_fid.close()  # close the new file
+
+    def pr_output_diag(self, var1, nc_f, fileo, name1, verb=True):
+        """Print processed ta field to NetCDF file.
+        
+        Save fields to NetCDF, retrieving information from an existing
+        NetCDF file. Metadata are transferred from the existing file to the
+        new one.
+        Arguments:
+            - var1: the field to be stored, with shape (time,level,lat,lon);
+            - nc_f: the existing dataset, from where the metadata are
+              retrieved. Coordinates time,level, lat and lon have to be the
+              same dimension as the fields to be saved to the new files;
+            - fileo: the name of the output file;
+            - name1: the name of the variable to be saved;
+              
+        PROGRAMMER(S)
+            Chris Slocum (2014), modified by Valerio Lembo (2018).
+        """
+        from fourier_coefficients import FourierCoeff
+        
+        fourcoeff = FourierCoeff()
+    
+        nc_fid = Dataset(nc_f, 'r')
+        nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid, 'ta', verb)
+        
+        # Extract data from NetCDF file
+        time = nc_fid.variables['time'][:]
+        plev = nc_fid.variables['plev'][:]
+        lats = nc_fid.variables['lat'][:]
+        lons = nc_fid.variables['lon'][:]
+            
+        # Writing NetCDF files
+        var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
+        var_nc_fid.description = "Fourier coefficients"
+        
+        # Using our previous dimension info, we can create the new dimensions.
+        var_nc_fid.createDimension('time', len(time))
+        var_nc_dim = var_nc_fid.createVariable('time',
+                                               nc_fid.variables['time'].dtype,
+                                               ('time',))
+        for ncattr in nc_fid.variables['time'].ncattrs():
+            var_nc_dim.setncattr(ncattr,
+                                 nc_fid.variables['time'].getncattr(ncattr))
+        var_nc_fid.variables['time'][:] = time
+        
+        var_nc_fid.createDimension('plev', len(plev))
+        var_nc_dim = var_nc_fid.createVariable('plev',
+                                               nc_fid.variables['plev'].dtype,
+                                               ('plev',))
+        for ncattr in nc_fid.variables['plev'].ncattrs():
+            var_nc_dim.setncattr(ncattr,
+                                 nc_fid.variables['plev'].getncattr(ncattr))
         var_nc_fid.variables['plev'][:] = plev
         
         var_nc_fid.createDimension('lon', len(lons))
@@ -302,9 +315,8 @@ class FourierCoeff():
         fourcoeff.varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
         var_nc_fid.close()  # close the new file
-        
-        
-    def ncdump(self, nc_fid,key,verb):
+
+    def ncdump(self, nc_fid, key, verb):
         """Print the NetCDF file attributes for a given key.
     
         Arguments:
@@ -319,9 +331,9 @@ class FourierCoeff():
         
         return nc_attrs, nc_dims, nc_vars
     
-    def varatts(self, w_nc_var,varname):
-        """Add attibutes to the variables, depending on their name
-    
+    def varatts(self, w_nc_var, varname):
+        """Add attibutes to the variables, depending on their name.
+
         Arguments:
         - w_nc_var: a variable object;
         - varname: the name of the variable, among ta, ua, va and wap.
@@ -338,8 +350,9 @@ class FourierCoeff():
         elif varname == 'va':
             w_nc_var.setncatts({'long_name': u"Northward wind",
                                 'units': u"m s-1",
-                                'level_desc':'pressure levels'})
+                                'level_desc': 'pressure levels'})
         elif varname == 'wap':
-            w_nc_var.setncatts({'long_name': u"Lagrangian tendency of air pressure",
+            w_nc_var.setncatts({'long_name': u"Lagrangian tendency \
+                                of air pressure",
                                 'units': u"Pa s-1",
                                 'level_desc': 'pressure levels'})
