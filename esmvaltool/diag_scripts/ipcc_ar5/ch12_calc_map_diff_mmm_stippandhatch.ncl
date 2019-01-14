@@ -377,7 +377,7 @@ begin
     percent = diag_script_info@percent
     if (percent .eq. 1) then
       to_plot = 100 * to_plot / where(ref .ne. 0., ref, ref@_FillValue)
-      to_plot@var_units     = "%"
+      to_plot@units     = "%"
       delete(ref)
     end if
   end if
@@ -402,6 +402,10 @@ begin
 
   ; Check units and adjust for plotting if necessary
   to_plot@units = variable_info[0]@units
+  ; difference in K is the same as difference in degC, only change label
+  if (to_plot@units.eq."K") then
+    to_plot@units = "degC"
+  end if
   if (isatt(diag_script_info, "plot_units")) then
     to_plot = convert_units(to_plot, diag_script_info@plot_units)
   end if
