@@ -223,3 +223,223 @@ diagnostics:
 #        colormap: WhiteBlueGreenYellowRed
 #        extrafiles: true
 
+
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 14
+  # AOD maps
+  # ==========================================================================
+
+  fig14_a:
+    description: maps of total AOD
+    variables:
+      od550aer:
+        preprocessor: clim_1x1_05
+        mip: aero
+        field: T2Ms
+        start_year: 1997
+        end_year: 2011
+        exp: [historical, rcp45]
+        reference_dataset: ESACCI-AEROSOL
+        additional_datasets:
+          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+    scripts:
+      latlon:
+        script: perfmetrics/main.ncl
+        plot_type: latlon
+        projection: Robinson
+        time_avg: annualclim
+        region: Global
+        legend_outside: false
+        plot_diff: true
+        latlon_cmap: WhiteBlueGreenYellowRed
+        t_test: true
+        stippling: false
+        conf_level: 0.95
+        abs_levs: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3,
+                   0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
+                   0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
+        diff_levs: [-0.5, -0.45, -0.4, -0.35, -0.3, -0.25,
+                    -0.2, -0.15, -0.1, -0.05, 0, 0.05,
+                    0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,
+                    0.45, 0.5]
+
+  fig14_b:
+    description: maps of fine mode AOD
+    variables:
+      od550lt1aer:
+        preprocessor: clim_1x1_05
+        mip: aero
+        field: T2Ms
+        start_year: 1997
+        end_year: 2011
+        exp: [historical, rcp45]
+        reference_dataset: ESACCI-AEROSOL
+        additional_datasets:
+          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+    scripts:
+      latlon:
+        script: perfmetrics/main.ncl
+        plot_type: latlon
+        projection: Robinson
+        time_avg: annualclim
+        region: Global
+        legend_outside: false
+        plot_diff: true
+        latlon_cmap: WhiteBlueGreenYellowRed
+        t_test: true
+        stippling: false
+        conf_level: 0.95
+        abs_levs: [0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15,
+                   0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325,
+                   0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5]
+        diff_levs: [-0.25, -0.225, -0.2, -0.175, -0.15, -0.125,
+                    -0.1, -0.075, -0.05, -0.025, 0, 0.025,
+                    0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2,
+                    0.225, 0.25]
+
+  fig14_c:
+    description: maps of absorption AOD
+    variables:
+      abs550aer:
+        preprocessor: clim_1x1_05
+        mip: aero
+        field: T2Ms
+        start_year: 1997
+        end_year: 2011
+        exp: [historical, rcp45]
+        reference_dataset: ESACCI-AEROSOL
+        additional_datasets:
+          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+    scripts:
+      latlon:
+        script: perfmetrics/main.ncl
+        plot_type: latlon
+        projection: Robinson
+        time_avg: annualclim
+        region: Global
+        legend_outside: false
+        plot_diff: true
+        latlon_cmap: WhiteBlueGreenYellowRed
+        t_test: true
+        stippling: false
+        conf_level: 0.95
+        abs_levs: [0, 0.0025, 0.005, 0.0075, 0.01, 0.0125, 0.015,
+                   0.0175, 0.02, 0.0225, 0.025, 0.0275, 0.03, 0.0325,
+                   0.035, 0.0375, 0.04, 0.0425, 0.045, 0.0475, 0.05]
+        diff_levs: [-0.025, -0.0225, -0.02, -0.0175, -0.015, -0.0125,
+                    -0.01, -0.0075, -0.005, -0.0025, 0, 0.0025,
+                    0.005, 0.0075, 0.01, 0.0125, 0.015, 0.0175, 0.02,
+                    0.0225, 0.025]
+
+
+  # ==========================================================================
+  # Lauer and Hamilton (2013) - Figure 3
+  # Taylor plots of multi-year mean quantities
+  # ==========================================================================
+
+#  clouds_fig3_clt:
+#    description: climatological annual means
+#    variables:
+#      clt:
+#        preprocessor: clim
+#        reference_dataset: MODIS
+#        mip: Amon
+#        field: T2Ms
+#    additional_datasets:
+#      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+#         start_year: 2001, end_year: 2010, tier: 1}
+#    scripts:
+#      clim: &taylor_settings
+#        script: clouds/clouds_taylor.ncl
+#        # emrabcelegend
+#        # -------------
+#        # - true:  1) save legend to separate file
+#        #          2) plot alternative reference data set (if available) as a
+#        #             black or red star and use "altern. ref. dataset" as label
+#        # - false: 1) plot legend into taylor plot (same file)
+#        #          2) plot alternative reference data set (if available) using
+#        #             model symbols and use name of observations as label
+#        embracelegend: false
+#        # estimate_obs_uncertainty
+#        # ------------------------
+#        # - true:  estimate observational uncertainties from mean values
+#        #          (assuming fractions of obs. RMSE from documentation of the
+#        #          obs data); only available for "CERES-EBAF", "MODIS",
+#        #          "MODIS-L3"
+#        # - false: do not estimate obs. uncertainties from mean values
+#        estimate_obs_uncertainty: false
+#        # mask_ts_sea_ice
+#        # ---------------
+#        # - true:  mask T < 272 K as sea ice (only for variable "ts")
+#        # - false: no additional grid cells masked for variable "ts"
+#        mask_ts_sea_ice: false
+#        # styleset
+#        # --------
+#        # styleset (line styles + symbols) used for plotting
+#        # ("CMIP5", "DEFAULT")
+#        styleset: CMIP5_ESA
+#        # timemean
+#        # --------
+#        # - annualclim: 1 plot (annual mean)
+#        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+#        timemean: annualclim
+#        # valid_fraction
+#        # --------------
+#        # used for creating sea ice mask (mask_ts_sea_ice = true): fraction of
+#        # valid time steps required to mask grid cell as valid data
+#        valid_fraction: 0.5
+
+  # ==========================================================================
+  # Lauer and Hamilton (2013) - Equation 2, part of Figure 8
+  # Interannual variability: relative temporal standard deviation calculated
+  # from monthly mean anomalies after subtracting the climatological mean
+  # seasonal cycle
+  # ==========================================================================
+
+#  clouds_fig8_lwp:
+#    description: interannual variability
+#    variables:
+#      lwp:
+#        preprocessor: clim
+#        reference_dataset: UWisc
+#        mip: Amon
+#        field: T2Ms
+#        derive: true
+#    additional_datasets:
+#      - {dataset: UWisc, project: OBS, type: sat, version: v2,
+#         start_year: 1988, end_year: 2007, tier: 3}
+#    scripts:
+#      clim: &intera_settings
+#        script: clouds/clouds_interannual.ncl
+#        # colormap
+#        # --------
+#        # colors for scale bar (e.g., WhiteBlueGreenYellowRed, rainbow)
+#        colormap: WhiteBlueGreenYellowRed
+#        # extrafiles
+#        # ----------
+#        # write plots for individual models to separate files (true, false)
+#        extrafiles: false
+#        # projection
+#        # ----------
+#        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+#        projection: CylindricalEquidistant
+#        # timemean
+#        # --------
+#        # - annualclim: 1 plot (annual mean)
+#        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+#        timemean: annualclim
