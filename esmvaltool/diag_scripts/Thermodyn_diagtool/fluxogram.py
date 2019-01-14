@@ -113,7 +113,7 @@ class Fluxogram():
             # scale the amount
             scaled_amount_flux = self.scaler(flux.amount, self.max_flux)
             # width multiplied  because if not, the arrows are so tiny
-            arrow = plt.Arrow(flux.x_start, flux.y_start, flux.Dx, flux.Dy,
+            arrow = plt.Arrow(flux.x_start, flux.y_start, flux.d_x, flux.d_y,
                               width=scaled_amount_flux * 1.7, alpha=0.8)
             if flux.dire == 'r':
                 if idb == 'AZ+':
@@ -247,7 +247,7 @@ class Fluxogram():
 
 class Flux:
     """Contain a flux of a fluxogram."""
-    
+
     def __init__(self, name, grid_size, from_storage, to_storage, amount=0):
         """Initialize a flux.
 
@@ -263,7 +263,7 @@ class Flux:
         self.to_storage = to_storage
         self.amount = amount
         self.grid_size = grid_size
-        self.x_start, self.y_start, self.x_end, self.y_end, self.Dx, self.Dy,
+        self.x_start, self.y_start, self.x_end, self.y_end, self.d_x, self.d_y,
         self.dire = (self.calc_start_end_dx_dy())
         
     def update_flux(self, amount):
@@ -285,28 +285,28 @@ class Flux:
             y_start = self.from_storage.y_p - self.grid_size * 0.5
             x_end = self.to_storage.x_p + self.grid_size * 0.65
             y_end = self.to_storage.y_p - 0.7 * self.grid_size
-            Dx = abs(x_start - x_end) * (-1)
-            Dy = abs(y_start - y_end)
+            d_x = abs(x_start - x_end) * (-1)
+            d_y = abs(y_start - y_end)
             dire = 'lup'
         # arrow pointing up
         elif (self.from_storage.offset == self.to_storage.offset and
-                  self.from_storage.order > self.to_storage.order):
+              self.from_storage.order > self.to_storage.order):
             x_start = self.from_storage.x_p + 0.85 * self.grid_size
             y_start = self.from_storage.y_p - 0.5 * self.grid_size
             x_end = self.to_storage.x_p + 0.85 * self.grid_size
             y_end = self.to_storage.y_p - 0.25 * self.grid_size
-            Dx = abs(x_start - x_end)
-            Dy = abs(y_start - y_end)
+            d_x = abs(x_start - x_end)
+            d_y = abs(y_start - y_end)
             dire = 'up'
         # arrow pointing right up
         elif (self.from_storage.offset < self.to_storage.offset and
-                  self.from_storage.order > self.to_storage.order):
+              self.from_storage.order > self.to_storage.order):
             x_start = (self.from_storage.x_p + self.grid_size)
             y_start = self.from_storage.y_p - 0.5 * self.grid_size
             x_end = self.to_storage.x_p + 0.05 * self.grid_size
             y_end = self.to_storage.y_p - 0.75 * self.grid_size
-            Dx = abs(x_start - x_end)
-            Dy = abs(y_start - y_end)
+            d_x = abs(x_start - x_end)
+            d_y = abs(y_start - y_end)
             dire = 'rup'
         # arrow pointing right
         elif (self.from_storage.offset < self.to_storage.offset and
@@ -315,18 +315,18 @@ class Flux:
             y_start = self.from_storage.y_p - 0.8 * self.grid_size
             x_end = self.to_storage.x_p + 1.25 * self.grid_size
             y_end = self.to_storage.y_p - 0.8 * self.grid_size
-            Dx = abs(x_start - x_end)
-            Dy = abs(y_start - y_end)
+            d_x = abs(x_start - x_end)
+            d_y = abs(y_start - y_end)
             dire = 'r'
         # arrow pointing right down
         elif (self.from_storage.offset < self.to_storage.offset and
                   self.from_storage.order < self.to_storage.order):
-            x_start = (self.from_storage.x_p + 0.85*self.grid_size)
-            y_start = self.from_storage.y_p - 1.12*self.grid_size
+            x_start = (self.from_storage.x_p + 0.85 * self.grid_size)
+            y_start = self.from_storage.y_p - 1.12 * self.grid_size
             x_end = self.to_storage.x_p + 0.85 * self.grid_size
             y_end = self.to_storage.y_p - 0.9 * self.grid_size
-            Dx = abs(x_start - x_end)
-            Dy = abs(y_start - y_end) * (-1)
+            d_x = abs(x_start - x_end)
+            d_y = abs(y_start - y_end) * (-1)
             dire = 'rdn'
         # arrow pointing down
         elif (self.from_storage.offset == self.to_storage.offset and
@@ -335,37 +335,37 @@ class Flux:
             y_start = (self.from_storage.y_p - 1.12 * self.grid_size)
             x_end = self.to_storage.x_p + 0.8 * self.grid_size
             y_end = self.to_storage.y_p - 1.4 * self.grid_size
-            Dx = abs(x_start - x_end)
-            Dy = abs(y_start - y_end) * (-1)
+            d_x = abs(x_start - x_end)
+            d_y = abs(y_start - y_end) * (-1)
             dire = 'dn'
         # arrow pointing left down
         elif (self.from_storage.offset > self.to_storage.offset and
-                  self.from_storage.order < self.to_storage.order):
+              self.from_storage.order < self.to_storage.order):
             x_start = self.from_storage.x_p + 0.75 * self.grid_size
             y_start = (self.from_storage.y_p - 1.1 * self.grid_size)
             x_end = self.to_storage.x_p + 0.6 * self.grid_size
             y_end = self.to_storage.y_p - 0.9 * self.grid_size
-            Dx = abs(x_start - x_end) * (-1)
-            Dy = abs(y_start - y_end) * (-1)
+            d_x = abs(x_start - x_end) * (-1)
+            d_y = abs(y_start - y_end) * (-1)
             dire = 'ldn'
         # arrow pointing left
         elif (self.from_storage.offset > self.to_storage.offset and
-                  self.from_storage.order == self.to_storage.order):
+              self.from_storage.order == self.to_storage.order):
             x_start = self.from_storage.x_p + 0.5 * self.grid_size
             y_start = self.from_storage.y_p - 0.75 * self.grid_size
             x_end = self.to_storage.x_p + 0.25 * self.grid_size
             y_end = self.to_storage.y_p - 0.75 * self.grid_size
-            Dx = abs(x_start - x_end) * (-1)
-            Dy = abs(y_start - y_end)
+            d_x = abs(x_start - x_end) * (-1)
+            d_y = abs(y_start - y_end)
             dire = 'l'
         # multiply by 0.9 so there is a gap between storages and arrows
-        Dx = Dx * 0.75
-        Dy = Dy * 0.75
-        return x_start, y_start, x_end, y_end, Dx, Dy, dire
+        d_x = d_x * 0.75
+        d_y = d_y * 0.75
+        return x_start, y_start, x_end, y_end, d_x, d_y, dire
 
 
 class Storage:
-    """Contain a storage of a fluxogram."""   
+    """Contain a storage of a fluxogram."""
 
     def __init__(self, name, grid_size, number, amount=0, order=0,
                  offset=0):
@@ -386,15 +386,15 @@ class Storage:
         self.order = order
         self.offset = offset
         self.grid_size = grid_size
-        self.x_p, self.y_p= self.calculate_xy()
+        self.x_p, self.y_p = self.calculate_xy()
 
     def update_storage(self, amount):
         """Update the amount of the storage."""
         self.amount = amount
 
     def calculate_xy(self):
-        """Coordinates of the blocks in the diagram.
-        
+        """Provide coordinates of the blocks in the diagram.
+
         Calculate the xy coordinates of the starting point from where
         the rectangle is drawn. The additional multiplication by two is
         to produce the gaps in the diagram.
@@ -403,4 +403,3 @@ class Storage:
         # multiply by -1 to draw the diagram from top to bottom
         y_p = self.order * self.grid_size * 2 * -1
         return x_p, y_p
-    
