@@ -436,9 +436,9 @@ def main(cfg):
         if entr in {'y','yes'}:
                 if met in {'2','3'}:
                     os.chdir(diagworkdir)
-                    mkthe.mkthe_main(diagworkdir,ts_file,hus_file,tasmn_file,
-                                      ps_file,uasmn_file,vasmn_file,hfss_file,
-                                      te_file,model_name)
+                    mkthe.mkthe_main(diagworkdir, ts_file, hus_file, ps_file,
+                                     uasmn_file, vasmn_file, hfss_file, 
+                                     te_file, model_name)
                     tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
                     cdo.setrtomiss('400,1e36',input = 'tlcl.nc ', output = tlcl_file) 
                     tabl_file = diagworkdir+'/{}_tabl.nc'.format(model_name)
