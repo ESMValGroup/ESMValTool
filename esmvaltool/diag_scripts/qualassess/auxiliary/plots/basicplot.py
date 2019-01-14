@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LogFormatterMathtext
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
@@ -27,6 +28,9 @@ def label_in_perc_multiple(x, pos=0):
 
 def label_in_perc_single(x, pos=0):
     return '%1.1f%%' % (x * 100)
+
+def label_in_exp(x,pos=0):
+    return r"$10^{%.1f}$" % (x)
 
 
 MPLSTYLE = os.path.dirname(
@@ -554,8 +558,10 @@ class Plot2D(object):
         if ax is None:
             ax = [plt.gca()]
         try:
-            if len(ax) == 3:
+            if len(ax) == 3 and not summary_plot:
                 summary_plot = True
+                self.logger.warning("Too many plot axes (3)! Summary plot "
+                                    "will automatically be added.")
             elif len(ax) > 3 or len(ax) < 2:
                 raise ValueError("Invalid input: axes should not be more "
                                  "than 3 or less than 2!")
@@ -628,11 +634,14 @@ class Plot2D(object):
             # Plot
             iplt.plot(x, y)
             if y_logarithmic:
-                locs = plt.gca().get_yticks()
-                (bottom, top) = plt.gca().get_ylim()
-                labels = np.round(10**locs, decimals=1)
-                plt.gca().set_yticklabels(labels)
-                plt.gca().set_ylim(bottom=bottom, top=top)
+#                locs = plt.gca().get_yticks()
+#                (bottom, top) = plt.gca().get_ylim()
+#                labels = np.round(10**locs, decimals=1)
+#                plt.gca().set_yticklabels(labels)
+                plt.gca().set_ylim(levrange[::-1])
+                plt.gca().yaxis.set_major_formatter(
+                        FuncFormatter(label_in_exp))
+
 
         # Setup axes for plotting multiple cubes
         n_columns = min([self.n_cubes, self.__class__.MAX_COLUMNS])
@@ -658,8 +667,8 @@ class Plot2D(object):
             # (this needs to be done due to an error in cartopy)
             try:
                 if y_logarithmic:
-                    cube.coord('air_pressure').points = np.log10(
-                        cube.coord('air_pressure').points)
+                    cube.coord(lev_var).points = np.log10(
+                        cube.coord(lev_var).points)
                 if contour_levels:
                     options = {
                         'colors': 'black',
@@ -685,11 +694,12 @@ class Plot2D(object):
                                 vmin=vmin,
                                 vmax=vmax)
                 if y_logarithmic:
-                    (locs, _) = plt.yticks()
-                    (bottom, top) = plt.ylim()
-                    labels = np.round(10**locs, decimals=1)
-                    plt.yticks(locs, labels)
-                    plt.ylim(bottom=bottom, top=top)
+#                    (locs, _) = plt.yticks()
+#                    (bottom, top) = plt.ylim()
+#                    labels = np.round(10**locs, decimals=1)
+#                    plt.yticks(locs, labels)
+                    plt.ylim(levrange[::-1])
+                    plt.gca().yaxis.set_major_formatter(FuncFormatter(label_in_exp))
                 if 'time' in self.plot_type:
                     time_coord = cube.coord(self.time_vars[idx])
                     locs = [tp for tp in time_coord.points if
