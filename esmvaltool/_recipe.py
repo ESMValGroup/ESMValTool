@@ -243,18 +243,7 @@ def _update_from_others(variable, keys, datasets):
                 variable[key] = value
 
 
-def _update_cmor_table(table, mip, short_name):
-    """Try to add an ESMValTool custom CMOR table file."""
-    cmor_table = CMOR_TABLES[table]
-    var_info = cmor_table.get_variable(mip, short_name)
-
-    if var_info is None:
-        raise RecipeError(
-            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
-            format(table, short_name, mip))
-
-
-def _add_cmor_info(variable, override=False):
+def _add_cmor_info(variable, override=False, derive=False):
     """Add information from CMOR tables to variable."""
     logger.debug("If not present: adding keys from CMOR table to %s", variable)
 
@@ -269,8 +258,23 @@ def _add_cmor_info(variable, override=False):
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
     ]
-    table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
-        variable['mip'], variable['short_name'])
+    cmor_table = variable['cmor_table']
+    mip = variable['mip']
+    short_name = variable['short_name']
+    table_entry = CMOR_TABLES[cmor_table].get_variable(
+        mip, short_name)
+
+    if derive and table_entry is None:
+        custom_table = CMOR_TABLES['custom']
+        table_entry = custom_table.get_variable(mip, short_name)
+        if table_entry is not None:
+            mip_info = CMOR_TABLES[cmor_table].get_table(mip)
+            table_entry.frequency = mip_info.frequency
+
+    if table_entry is None:
+        raise RecipeError(
+            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
+            format(cmor_table, short_name, mip))
 
     for key in cmor_keys:
         if key not in variable or override:
@@ -284,7 +288,6 @@ def _add_cmor_info(variable, override=False):
 
     # Check that keys are available
     check_variable(variable, required_keys=cmor_keys)
-
 
 def _special_name_to_dataset(variable, special_name):
     """Convert special names to dataset names."""
@@ -742,19 +745,13 @@ def _get_preprocessor_task(variables,
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = _split_derive_profile(profile)
-
         derive_input = {}
         for variable in variables:
-            _update_cmor_table(
-                table=variable['cmor_table'],
-                mip=variable['mip'],
-                short_name=variable['short_name']
-            )
-            _add_cmor_info(variable)
             if not variable.get('force_derivation') and get_input_filelist(
                     variable=variable,
                     rootpath=config_user['rootpath'],
                     drs=config_user['drs']):
+                _add_cmor_info(variable)
                 # No need to derive, just process normally up to derive step
                 short_name = variable['short_name']
                 if short_name not in derive_input:
@@ -762,6 +759,7 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
+                _add_cmor_info(variable, derive=True)
                 for new_variable in get_required(variable['short_name'],
                                                  variable['field'])['vars']:
                     short_name = new_variable['short_name']
@@ -771,17 +769,17 @@ def _get_preprocessor_task(variables,
                     variable.update(new_variable)
                     variable['filename'] = get_output_file(
                         variable, config_user['preproc_dir'])
-                    _add_cmor_info(variable, override=True)
+                    _add_cmor_info(variable, override=True, derive=True)
                     derive_input[short_name].append(variable)
 
         for derive_variables in derive_input.values():
             task = _get_single_preprocessor_task(derive_variables,
                                                  derive_profile, config_user)
             derive_tasks.append(task)
-
-    # Add CMOR info
-    for variable in variables:
-        _add_cmor_info(variable)
+    else:
+        # Add CMOR info
+        for variable in variables:
+            _add_cmor_info(variable)
 
     # Create (final) preprocessor task
     profile['extract_metadata'] = {'write_ncl': write_ncl_interface}
