@@ -289,6 +289,7 @@ def _add_cmor_info(variable, override=False, derive=False):
     # Check that keys are available
     check_variable(variable, required_keys=cmor_keys)
 
+
 def _special_name_to_dataset(variable, special_name):
     """Convert special names to dataset names."""
     if special_name in ('reference_dataset', 'alternative_dataset'):
