@@ -1,6 +1,6 @@
 """
-Model vs Observations maps Diagnostic
-=====================================
+Model vs Observations maps Diagnostic.
+======================================
 
 Diagnostic to produce comparison of model and data.
 The first kind of image shows four maps and the other shows a scatter plot.
