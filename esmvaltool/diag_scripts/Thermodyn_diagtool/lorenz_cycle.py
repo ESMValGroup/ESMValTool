@@ -10,12 +10,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
-from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-from fluxogram import Fluxogram
 import sys
 import math
 import os
 import warnings
+from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
+from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -206,13 +206,13 @@ class LorenzCycle():
         for l_l in range(nlat):
             gam_ztmn[:, l_l] = lorenz.stabil(ta_ztmn[:, l_l], lev, nlev)
         gam_tmn = lorenz.stabil(ta_gmn, lev, nlev)
-        ek = np.zeros([nlev, ntime, nlat, ntp-1])
-        ape = np.zeros([nlev, ntime, nlat, ntp-1])
-        a2k = np.zeros([nlev, ntime, nlat, ntp-1])
-        ae2az = np.zeros([nlev, ntime, nlat, ntp-1])
-        ke2kz = np.zeros([nlev, ntime, nlat, ntp-1])
-        at2as = np.zeros([nlev, ntime, nlat, ntp-1])
-        kt2ks = np.zeros([nlev, ntime, nlat, ntp-1])
+        e_k = np.zeros([nlev, ntime, nlat, ntp - 1])
+        ape = np.zeros([nlev, ntime, nlat, ntp - 1])
+        a2k = np.zeros([nlev, ntime, nlat, ntp - 1])
+        ae2az = np.zeros([nlev, ntime, nlat, ntp - 1])
+        ke2kz = np.zeros([nlev, ntime, nlat, ntp - 1])
+        at2as = np.zeros([nlev, ntime, nlat, ntp - 1])
+        kt2ks = np.zeros([nlev, ntime, nlat, ntp - 1])
         for t_t in range(ntime):
             ta_t = ta_c[:, t_t, :, :]
             ua_t = ua_c[:, t_t, :, :]
@@ -249,31 +249,31 @@ class LorenzCycle():
                 ua_tgan[j] = np.nansum(ua_tzan[j, :] * g_w) / np.nansum(g_w)
                 va_tgan[j] = np.nansum(va_tzan[j, :] * g_w) / np.nansum(g_w)
                 wap_tgan[j] = np.nansum(wap_tzan[j, :] * g_w) / np.nansum(g_w)
-         # Compute kinetic energy   
-            ek[:, t_t, :, :] = lorenz.makek(ua_tan, va_tan, nlat, ntp, nlev)
-         # Compute available potential energy
+            # Compute kinetic energy
+            e_k[:, t_t, :, :] = lorenz.makek(ua_tan, va_tan, nlat, ntp, nlev)
+            # Compute available potential energy
             ape[:, t_t, :, :] = lorenz.makea(ta_tan, ta_tgan, gam_tmn, nlat,
                                              ntp, nlev)
-         # Compute conversion between kin.en. and pot.en.
+            # Compute conversion between kin.en. and pot.en.
             a2k[:, t_t, :, :] = lorenz.mka2k(wap_tan, ta_tan, wap_tgan,
                                              ta_tgan, lev, nlat, ntp, nlev)
-         # Compute conversion between zonal and eddy APE
+            # Compute conversion between zonal and eddy APE
             ae2az[:, t_t, :, :] = lorenz.mkaeaz(va_tan, wap_tan, ta_tan,
                                                 ta_tmn, ta_gmn, lev, y_l,
                                                 gam_tmn, nlat, ntp, nlev)
-         # Compute conversion between zonal and eddy KE
+            # Compute conversion between zonal and eddy KE
             ke2kz[:, t_t, :, :] = lorenz.mkkekz(ua_tan, va_tan, wap_tan,
                                                 ua_tmn, va_tmn, lev, y_l,
                                                 nlat, ntp, nlev)
-         # Compute conversion between stationary and transient eddy APE
+            # Compute conversion between stationary and transient eddy APE
             at2as[:, t_t, :, :] = lorenz.mkatas(ua_tan, va_tan, wap_tan,
                                                 ta_tan, ta_ztmn, gam_ztmn,
                                                 lev, y_l, nlat, ntp, nlev)
-         # Compute conversion between stationary and transient eddy KE
+            # Compute conversion between stationary and transient eddy KE
             kt2ks[:, t_t, :, :] = lorenz.mkktks(ua_tan, va_tan, wap_tan,
                                                 ua_tmn, va_tmn, wap_tmn,
                                                 lev, y_l, nlat, ntp, nlev)
-        ek_tmn = np.nanmean(ek, axis=1)
+        ek_tmn = np.nanmean(e_k, axis=1)
         ek_tgmn = lorenz.globall_cg(ek_tmn, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log)
         ape_tmn = np.nanmean(ape, axis=1)
@@ -282,10 +282,10 @@ class LorenzCycle():
         a2k_tmn = np.nanmean(a2k, axis=1)
         a2k_tgmn = lorenz.globall_cg(a2k_tmn, g_w, d_s, nlat, ntp, nlev)
         lorenz.table_conv(a2k_tgmn, ntp, 'KE -> APE (trans) ', log)
-        ae2az_tmn = np.nanmean(ae2az,axis=1)
+        ae2az_tmn = np.nanmean(ae2az, axis=1)
         ae2az_tgmn = lorenz.globall_cg(ae2az_tmn, g_w, d_s, nlat, ntp, nlev)
         lorenz.table_conv(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log)
-        ke2kz_tmn = np.nanmean(ke2kz,axis=1)
+        ke2kz_tmn = np.nanmean(ke2kz, axis=1)
         ke2kz_tgmn = lorenz.globall_cg(ke2kz_tmn, g_w, d_s, nlat, ntp, nlev)
         lorenz.table_conv(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', log)
         at2as_tmn = np.nanmean(at2as, axis=1)
@@ -297,7 +297,7 @@ class LorenzCycle():
         ek_st = lorenz.makek(ua_tmn, va_tmn, nlat, ntp, nlev)
         ek_stgmn = lorenz.globall_cg(ek_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log)
-        ape_st = lorenz.makea(ta_tmn,ta_gmn,gam_tmn,nlat,ntp,nlev)
+        ape_st = lorenz.makea(ta_tmn, ta_gmn, gam_tmn, nlat, ntp, nlev)
         ape_stgmn = lorenz.globall_cg(ape_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log)
         a2k_st = lorenz.mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev, nlat,
@@ -324,7 +324,7 @@ class LorenzCycle():
         azin = '{:.2f}'.format((float(az2at) + float(az2as) - float(az2kz)))
         asein = '{:.2f}'.format((float(as2ks) + float(as2at) - float(az2as)))
         atein = '{:.2f}'.format(float(at2kt) - float(az2at) - float(as2at))
-        kz = '{:.2f}'.format(ek_tgmn[0, 0] + ek_stgmn[0, 0])
+        k_z = '{:.2f}'.format(ek_tgmn[0, 0] + ek_stgmn[0, 0])
         kte = '{:.2f}'.format(np.nansum(ek_tgmn[0, 1:ntp - 1]))
         kse = '{:.2f}'.format(np.nansum(ek_stgmn[0, 1:ntp - 1]))
         kt2kz = '{:.2f}'.format(1e5 * np.nansum(ke2kz_tgmn[0, 1:ntp - 1]))
@@ -334,14 +334,14 @@ class LorenzCycle():
         kseout = '{:.2f}'.format(float(kt2ks) + float(as2ks) - float(ks2kz))
         kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
         lorenz.diagram(plotfile, azin, apz, asein, aps, atein, apt, as2ks,
-                       at2kt, kteout, kte, kseout, kse, kzout, kz, az2kz,
+                       at2kt, kteout, kte, kseout, kse, kzout, k_z, az2kz,
                        az2at, az2as, as2at, kt2kz, kt2ks, ks2kz)
         lec_strength = float(kteout) + float(kseout) + float(kzout)
-        ek_aux = np.zeros([nlev, nlat, ntp-1])
-        ape_aux = np.zeros([nlev, nlat, ntp-1])
-        a2k_aux = np.zeros([nlev, nlat, ntp-1])
-        ae2az_aux = np.zeros([nlev, nlat, ntp-1])
-        ke2kz_aux = np.zeros([nlev, nlat, ntp-1])
+        ek_aux = np.zeros([nlev, nlat, ntp - 1])
+        ape_aux = np.zeros([nlev, nlat, ntp - 1])
+        a2k_aux = np.zeros([nlev, nlat, ntp - 1])
+        ae2az_aux = np.zeros([nlev, nlat, ntp - 1])
+        ke2kz_aux = np.zeros([nlev, nlat, ntp - 1])
         for l in range(nlev):
             ek_aux[l, :, :] = ek_tmn[l, :, :] * d_s[l]
             ape_aux[l, :, :] = ape_tmn[l, :, :] * d_s[l]
@@ -353,7 +353,7 @@ class LorenzCycle():
         a2k_vmn = np.nansum(a2k_aux, axis=0) / np.nansum(d_s)
         ae2az_vmn = np.nansum(ae2az_aux, axis=0) / np.nansum(d_s)
         ke2kz_vmn = np.nansum(ke2kz_aux, axis=0) / np.nansum(d_s)
-        nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1, verb=True)
         nc_f = outpath + '/ape_tmap_{}_{}.nc'.format(model, year)
@@ -362,22 +362,25 @@ class LorenzCycle():
         nc_f = outpath + '/a2k_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1, verb=True)
-        nc_f = outpath + '/ae2az_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath + '/ae2az_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1, verb=True)
-        nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model,year)
+        nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
         lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1, verb=True)
         log.close()
         return lec_strength
 
     def bsslzr(self, kdim):
-            
-        NDIM = 50
+        """Parameters for the Gaussian coefficients.
         
-        PI = math.pi
+        @author: Valerio Lembo
+        """ 
+        ndim = 50
+        
+        p_i = math.pi
       
-        zbes = [2.4048255577, 5.5200781103, 8.6537279129,  11.7915344391,
+        zbes = [2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391,
                 14.9309177086, 18.0710639679, 21.2116366299, 24.3524715308,
                 27.4934791320, 30.6346064684, 33.7758202136, 36.9170983537,
                 40.0584257646, 43.1997917132, 46.3411883717, 49.4826098974,
@@ -385,97 +388,97 @@ class LorenzCycle():
                 65.1899648002, 68.3314693299, 71.4729816036, 74.6145006437,
                 77.7560256304, 80.8975558711, 84.0390907769, 87.1806298436,
                 90.3221726372, 93.4637187819, 96.6052679510, 99.7468198587,
-                102.8883742542, 106.0299309165,109.1714896498, 112.3130502805,
+                102.8883742542, 106.0299309165, 109.1714896498, 112.3130502805,
                 115.4546126537, 118.5961766309, 121.7377420880, 124.8793089132,
                 128.0208770059, 131.1624462752, 134.3040166383, 137.4455880203,
                 140.5871603528, 143.7287335737, 146.8703076258, 150.0118824570,
                 153.1534580192, 156.2950342685]
         pbes = np.zeros(kdim)
-        idim = min([kdim, NDIM])
+        idim = min([kdim, ndim])
         pbes[0:idim] = zbes[0:idim]
         for j in range(idim, kdim - 1, 1):
-            pbes[j] = pbes[j - 1] + PI
-        return(pbes)
+            pbes[j] = pbes[j - 1] + p_i
+        return pbes
 
-    def diagram(self, filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt, 
-                kteout, kte, kseout, kse, kzout, kz, az2kz, az2at, az2as, 
-                as2at, kt2kz, kt2ks, ks2kz):       
+    def diagram(self, filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt,
+                kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as,
+                as2at, kt2kz, kt2ks, ks2kz):
         """Diagram interface script.
 
-        Call the class fluxogram, serving as        
-        interface between the main script and the class for flux 
+        Call the class fluxogram, serving as  
+        interface between the main script and the class for flux
         diagrams design.
-        
+
         @author: Valerio Lembo
         """
-        FL = Fluxogram(1000, 1000, grid_size=20)
-        FL.add_storage("AZ", 600, 0, 0)
-        FL.add_storage("ASE", 600, 0.75, 0.25)
-        FL.add_storage("ATE", 600, 1.5, 0)
-        FL.add_storage("KTE", 600, 1.5, 1.5)
-        FL.add_storage("KSE", 600, 0.75,1.25)
-        FL.add_storage("KZ", 600, 0, 1.5)
-        FL.add_storage("AZ+", 0, 0, -1)
-        FL.add_storage("ASE+", 0, 0.75,-1)
-        FL.add_storage("ATE+", 0, 1.5, -1)
-        FL.add_storage("KTE-", 0, 1.5, 2.5)
-        FL.add_storage("KSE-", 0, 0.75, 2.5)
-        FL.add_storage("KZ-", 0, 0, 2.5)
-        FL.add_flux("A2KZ", FL.storages[5], FL.storages[0], 100)
-        FL.add_flux("AE2AZ", FL.storages[0], FL.storages[2], 150)
-        FL.add_flux("AE2AS", FL.storages[0], FL.storages[1], 60)
-        FL.add_flux("AE2AT", FL.storages[1], FL.storages[2], 60)
-        FL.add_flux("A2KS", FL.storages[1], FL.storages[4], 60)
-        FL.add_flux("A2KT", FL.storages[2], FL.storages[3], 100)
-        FL.add_flux("KE2KS", FL.storages[3], FL.storages[4], 60)
-        FL.add_flux("KS2KZ", FL.storages[4], FL.storages[5], 60)
-        FL.add_flux("KE2KZ", FL.storages[3], FL.storages[5], 150)
-        FL.add_flux("AZ+", FL.storages[6], FL.storages[0], 60)
-        FL.add_flux("ASE+", FL.storages[7], FL.storages[1], 60)
-        FL.add_flux("ATE+", FL.storages[8], FL.storages[2], 60)
-        FL.add_flux("KTE-", FL.storages[3], FL.storages[9], 60)
-        FL.add_flux("KSE-", FL.storages[4], FL.storages[10], 60)
-        FL.add_flux("KZ-", FL.storages[5], FL.storages[11], 60)
-        FL.draw(filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout, 
-                kte, kseout, kse, kzout, kz, az2kz, az2at, az2as, as2at, 
-                kt2kz, kt2ks, ks2kz) 
+        flux = Fluxogram(1000, 1000, grid_size=20)
+        flux.add_storage("AZ", 600, 0, 0)
+        flux.add_storage("ASE", 600, 0.75, 0.25)
+        flux.add_storage("ATE", 600, 1.5, 0)
+        flux.add_storage("KTE", 600, 1.5, 1.5)
+        flux.add_storage("KSE", 600, 0.75, 1.25)
+        flux.add_storage("KZ", 600, 0, 1.5)
+        flux.add_storage("AZ+", 0, 0,  -1)
+        flux.add_storage("ASE+", 0, 0.75, -1)
+        flux.add_storage("ATE+", 0, 1.5, -1)
+        flux.add_storage("KTE-", 0, 1.5, 2.5)
+        flux.add_storage("KSE-", 0, 0.75, 2.5)
+        flux.add_storage("KZ-", 0, 0, 2.5)
+        flux.add_flux("A2KZ", flux.storages[5], flux.storages[0], 100)
+        flux.add_flux("AE2AZ", flux.storages[0], flux.storages[2], 150)
+        flux.add_flux("AE2AS", flux.storages[0], flux.storages[1], 60)
+        flux.add_flux("AE2AT", flux.storages[1], flux.storages[2], 60)
+        flux.add_flux("A2KS", flux.storages[1], flux.storages[4], 60)
+        flux.add_flux("A2KT", flux.storages[2], flux.storages[3], 100)
+        flux.add_flux("KE2KS", flux.storages[3], flux.storages[4], 60)
+        flux.add_flux("KS2KZ", flux.storages[4], flux.storages[5], 60)
+        flux.add_flux("KE2KZ", flux.storages[3], flux.storages[5], 150)
+        flux.add_flux("AZ+", flux.storages[6], flux.storages[0], 60)
+        flux.add_flux("ASE+", flux.storages[7], flux.storages[1], 60)
+        flux.add_flux("ATE+", flux.storages[8], flux.storages[2], 60)
+        flux.add_flux("KTE-", flux.storages[3], flux.storages[9], 60)
+        flux.add_flux("KSE-", flux.storages[4], flux.storages[10], 60)
+        flux.add_flux("KZ-", flux.storages[5], flux.storages[11], 60)
+        flux.draw(filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt,
+                  kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as,
+                  as2at, kt2kz, kt2ks, ks2kz) 
          
-    def gauaw(self, ny):
+    def gauaw(self, n_y):
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
         
         @author: Valerio Lembo
         """       
-        lorenz = LorenzCycle()        
-        c = (1 - (2 / math.pi) ** 2) / 4
-        eps = 0.00000000000001    
-        kk = ny/2
-        pa = np.zeros(ny)
-        pa[0:kk] = lorenz.bsslzr(kk)
-        pw = np.zeros(ny)
+        lorenz = LorenzCycle()    
+        c_c = (1 - (2 / math.pi) ** 2) / 4
+        eps = 0.00000000000001
+        kk = n_y / 2
+        p_a = np.zeros(n_y)
+        p_a[0:kk] = lorenz.bsslzr(kk)
+        p_w = np.zeros(n_y)
         for i in range(kk):
-            xz = np.cos(pa[i] / math.sqrt((ny + 0.5) ** 2 + c))
+            x_z = np.cos(p_a[i] / math.sqrt((n_y + 0.5) ** 2 + c_c))
             iterr = 0.
             zsp = 1.0
             while (abs(zsp) > eps and iterr <= 10):
-                pkm1 = xz
+                pkm1 = x_z
                 pkm2 = 1.0
-                for n in range(2, ny, 1):
-                    pk = ((n * 2 - 1.0) * xz * pkm1 - (n - 1.0) * pkm2) / n
+                for n in range(2, n_y, 1):
+                    pk = ((n * 2 - 1.0) * x_z * pkm1 - (n - 1.0) * pkm2) / n
                     pkm2 = pkm1
                     pkm1 = pk
                 pkm1 = pkm2
-                pkmrk = (ny * (pkm1 - xz * pk)) / (1.0 - xz ** 2)
+                pkmrk = (n_y * (pkm1 - x_z * pk)) / (1.0 - x_z ** 2)
                 zsp = pk / pkmrk
-                xz = xz - zsp
+                x_z = x_z - zsp
                 iterr = iterr + 1
             if iterr > 15:
                 sys.exit("*** no convergence in gauaw ***")
-            pa[i] = xz
-            pw[i] = (2.0 * (1.0 - xz ** 2)) / ((ny ** 2) * (pkm1 ** 2))
-            pa[ny - 1 - i] = - pa[i]
-            pw[ny - 1 - i] = pw[i]
-        psi = pa
-        pgw = pw
+            p_a[i] = x_z
+            p_w[i] = (2.0 * (1.0 - x_z ** 2)) / ((n_y ** 2) * (pkm1 ** 2))
+            p_a[n_y - 1 - i] = - p_a[i]
+            p_w[n_y - 1 - i] = p_w[i]
+        psi = p_a
+        pgw = p_w
         return psi, pgw
 
     def globall_cg(self, d3v, g_w, d_s, nlat, ntp, nlev):
@@ -483,7 +486,7 @@ class LorenzCycle():
         
         @author: Valerio Lembo
         """    
-        gmn = np.zeros([3, ntp-1])
+        gmn = np.zeros([3, ntp - 1])
         aux1 = np.zeros([nlev, nlat / 2, ntp - 1])
         aux2 = np.zeros([nlev, nlat / 2, ntp - 1])
         aux1v = np.zeros([nlev, ntp - 1])
@@ -493,12 +496,12 @@ class LorenzCycle():
         for l in range(nlev):
             for i in range(nhem):
                 aux1[l, i, :] = fac * np.real(d3v[l, i, :]) * g_w[i]
-                aux2[l, i, :] = fac * np.real(d3v[l, i + nhem - 1, :]) *\
-                g_w[i + nhem - 1]
+                aux2[l, i, :] = fac * np.real(d3v[l, i + nhem - 1, :])\
+                                * g_w[i + nhem - 1]
             aux1v[l, :] = np.nansum(aux1[l, :, :],
-                                    axis = 0) / np.nansum(g_w[0:nhem]) * d_s[l]
+                                    axis=0) / np.nansum(g_w[0:nhem]) * d_s[l]
             aux2v[l, :] = np.nansum(aux2[l, :, :],
-                                    axis = 0) / np.nansum(g_w[0:nhem]) * d_s[l]
+                                    axis=0) / np.nansum(g_w[0:nhem]) * d_s[l]
         gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
         gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
         gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
@@ -506,10 +509,10 @@ class LorenzCycle():
 
     def makek(self, u, v, nlat, ntp, nlev):
         """Compute the kinetic energy reservoirs from u and v.
-        
+
         @author: Valerio Lembo
-        """  
-        ek = np.zeros([nlev, nlat, ntp-1])
+        """
+        ek = np.zeros([nlev, nlat, ntp - 1])
         ck1 = u * np.conj(u)
         ck2 = v * np.conj(v)
         ek[:, :, 0] = 0.5 * np.real(u[:, :, 0] * u[:, :, 0] +

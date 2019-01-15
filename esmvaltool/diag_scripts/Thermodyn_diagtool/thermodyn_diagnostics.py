@@ -271,7 +271,7 @@ def main(cfg):
     fourc = FourierCoeff()
     lorenz = LorenzCycle()
     mkthe = Mkthe()
-    plotsmod = Plot_script() 
+    plotsmod = PlotScript() 
 
     data = e.Datasets(cfg)
     logger.debug(data)
@@ -1178,7 +1178,7 @@ def main(cfg):
             plotsmod.balances(diagworkdir_up, plotpath2, 
                               [toab_file, atmb_file, surb_file],
                               ['toab','atmb','surb'],
-                              model_name, lsm)
+                              model_name)
             oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'toab')
             caption = "TOA EB annual mean time series (global; NH; SH)"
             plot_id = "#TOAEBtimeser"      
@@ -1221,7 +1221,7 @@ def main(cfg):
             plotsmod.balances(diagworkdir_up, plotpath2,
                               [wmassBudget_file, latentEnergy_file],
                               ['wmass','latent'], 
-                              model_name, lsm)               
+                              model_name)               
             oname = '{}/{}_{}_timeser.png'.format(plotpath2,model_name,'wmass')
             caption = "Water mass annual mean time series (global; NH; SH)"
             plot_id = "#wmasstimeser"       
