@@ -45,35 +45,47 @@
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
+load "./diag_scripts/shared/scaling.ncl"
+
+load "./diag_scripts/shared/plot/style.ncl"
 
 begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
   if (dim_VAR .eq. 2) then
-    var0 = variables(0)
-    var1 = variables(1)
+    var0 = variable_info[0]@short_name
+    var1 = variable_info[1]@short_name
+    info_items2 = select_metadata_by_name(input_file_info, var1)
   else
-    var0 = variables(0)
-    var1 = variables(0)
+    var0 = variable_info[0]@short_name
+    var1 = var0
+    info_items2 = info_items
   end if
-  field_type0 = field_types(0)
+
+  if (var1 .ne. "tas") then
+    error_msg("f", DIAG_SCRIPT, "", "first variable must be tas " + \
+              "to scale by global mean tas change")
+  end if
+
+  ; Save some dataset attributes as arrays for index-based selection below
+  dataset_names = metadata_att_as_array(info_items, "dataset")
+  dataset_exps = metadata_att_as_array(info_items, "exp")
+  dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
+  dataset_startyears = metadata_att_as_array(info_items, "start_year")
+
   if (isatt(diag_script_info, "seasons")) then
     dim_seas = dimsizes(diag_script_info@seasons)
   else
@@ -87,13 +99,6 @@ begin
 end
 
 begin
-  ; Get environment variables
-  if (isatt(diag_script_info, "plot_type")) then
-    file_type = diag_script_info@plot_type
-  else
-    file_type = "pdf"
-  end if
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
@@ -107,11 +112,11 @@ begin
   if(isvar("MyParam")) then
       delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_info(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
@@ -120,28 +125,28 @@ begin
   ; ###########################################
   ; get data from first model
   imod = 0  ; NCL array indices start from zero
-  log_info("processing " + dataset_info@dataset(imod) + "_"\
-           + dataset_info@exp(imod) + "_"\
-           + dataset_info@ensemble(imod))
+  log_info("processing " + info_items[imod]@dataset + "_" \
+            + info_items[imod]@exp + "_" \
+            + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(imod, var0, field_type0)
+  A0 = read_data(info_items[imod])
   Fill = default_fillvalue(typeof(A0))  ; 1e20
 
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   nlat = dimsizes(A0&lat)
   idx = ind(dims .eq. "lon")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
   end if
   nlon = dimsizes(A0&lon)
 
@@ -170,18 +175,14 @@ begin
   end if
   rad = (4.0 * atan(1.0) / 180.0)
   do imod = 0, dim_MOD - 1
-    A0_temp = read_data(imod, var1, field_type0)
+    A0_temp = read_data(info_items2[imod])
     temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
     latw = cos(data1&lat * rad)
     temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
     delete(temp_tavg)
     delete(latw)
     if (imod .ne. 0) then
-      A0_temp = read_data(imod, var1, field_type0)
-      temp_tavg = dim_avg_n_Wrap(A0_temp, 0)
-      latw = cos(temp_tavg&lat * rad)
-      temp_avg(imod) = wgt_areaave_Wrap(temp_tavg, latw, 1.0, 0)
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       ; Average over time,
       ; function in ./diag_scripts/lib/ncl/statistics.ncl)
       if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
@@ -228,28 +229,35 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
       do rcp = 0, dim_scen - 1  ; loop over rcps
-        idx_rcp = ind((dataset_info@exp .eq. diag_script_info@scenarios(rcp)) \
-                      .and. (dataset_info@start_year .eq. \
+        idx_rcp = ind((dataset_exps .eq. diag_script_info@scenarios(rcp)) \
+                      .and. (dataset_startyears .eq. \
                       diag_script_info@periods(per)))
         proj = data1(idx_rcp, seas, :, :)
         temp_proj = temp_avg(idx_rcp)
-        ; **cut low values ***
+        ; Cut low values
         proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
         ; find historical runs from same models as in rcp
-        idx_hist = find_model_index(dataset_info@dataset(idx_rcp), \
-                                    dataset_info@dataset, "historical", \
-                                    dataset_info@exp, \
-                                    dataset_info@ensemble(idx_rcp), \
-                                    dataset_info@ensemble, 0)
+        do jj = 0, dimsizes(idx_rcp) - 1
+          tmp_idx = ind(dataset_names .eq. dataset_names(idx_rcp(jj)) .and. \
+                        dataset_exps .eq. "historical" .and. \
+                        dataset_ensembles .eq. dataset_ensembles(idx_rcp(jj)))
+          if (isdefined("idx_hist")) then
+            idx_hist := array_append_record(idx_hist, tmp_idx, 0)
+          else
+            idx_hist = tmp_idx
+          end if
+          delete(tmp_idx)
+        end do
+
         base = data1(idx_hist, seas, :, :)
         temp_base = temp_avg(idx_hist)
-        ; **cut low values ***
+        ; Cut low values
         base = where(abs(base) .gt. 1.e-14, base, base@_FillValue)
         ; scale each model by global T change
         log_debug("Scale each model by global T change")
         dim_mod = dimsizes(idx_rcp)
         if (dim_mod .lt. 2) then
-          error_msg("f", diag_script, "", \
+          error_msg("f", DIAG_SCRIPT, "", \
                     "Only one model found, multi-model needs at least two.")
         end if
         var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
@@ -266,10 +274,7 @@ begin
                                         (temp_proj(imod) - temp_base(imod))
           end if
         end do
-        delete(base)
-        delete(proj)
-        delete(temp_proj)
-        delete(temp_base)
+        delete([/base, proj, temp_proj, temp_base/])
         if rcp .eq. 0 then
           var_diff_scal_all_mod = var_diff_scal
         else
@@ -279,9 +284,7 @@ begin
             array_append_record(tmp_scal_all_mod, var_diff_scal, 0)
           delete(tmp_scal_all_mod)
         end if
-        delete(idx_hist)
-        delete(idx_rcp)
-        delete(var_diff_scal)
+        delete([/idx_hist, idx_rcp, var_diff_scal/])
       end do  ; rcp
       var_diff_scal_all_mod!0 = "models"
       var_diff_scal_all_mod!1 = "lat"
@@ -296,8 +299,6 @@ begin
       ; distribution) over all models and scenarios
       nvalid = dim_num_n(.not.ismissing(var_diff_scal_all_mod(:, nlat / 2, \
                                                               nlon / 2)), 0)
-      printVarSummary(nvalid)
-      print(nvalid)
       perc95(i, :, :) = dim_stddev_n_Wrap(var_diff_scal_all_mod, 0) * 1.96 / \
         sqrt(nvalid)  ; standard error
       ; compare change to perc95
@@ -313,9 +314,9 @@ begin
   to_plot&lat = data1&lat
   to_plot!2 = "lon"
   to_plot&lon = data1&lon
-
+  to_plot@units     = variable_info[0]@units
   if (percent .eq. 1) then
-    to_plot@units     = "% per ~F35~J~F~C"
+    to_plot@units     = "%"
   end if
 
   ; ###########################################
@@ -325,53 +326,29 @@ begin
   if (isatt(to_plot, "diag_script")) then  ; Add to existing entries
     tmp = to_plot@diag_script
     delete(to_plot@diag_script)
-    to_plot@diag_script = array_append_record(tmp, (/diag_script/), 0)
+    to_plot@diag_script = array_append_record(tmp, (/DIAG_SCRIPT/), 0)
     delete(tmp)
   else  ; Add as new attribute
-    to_plot@diag_script = (/diag_script/)
+    to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot@var = var0  ; Overwrite existing entry
   if (isatt(variable_info, "long_name")) then
     to_plot@var_long_name = variable_info@long_name
   end if
-  ; check unit and adjust for plotting if necessary
-  if (isatt(variable_info, "units")) then
-    if ((var0 .eq. "mrro" .or. var0 .eq. "evspsbl") \
-        .and. variable_info@units .eq. "kg m-2 s-1") then
-      ; convert [kg m-2 s-1] to [mm day-1]
-      to_plot = to_plot * 60 * 60 * 24
-      variable_info@units = "mm day-1"
-      to_plot@var_units   = variable_info@units
-    else if (var0 .eq. "mrsos" .and. variable_info@units .eq. "kg m-2") then
-      ; convert [kg m-2] to [mm]
-      variable_info@units = "mm"
-      to_plot@var_units   = variable_info@units
-    else if (var0 .eq. "hfls" .and. variable_info@units .eq. "W m-2") then
-      ; convert [W m-2] to [mm day-1]
-      ; ET[kg m**-2 s**-1] = LH / lambda
-      ;                    = LE / (2.5 * 10 ^ 6 [J kg**-1])
-      ; [kg m**-2 s**-1] * 24 * 60 * 60 = [mm / day]
-      to_plot = to_plot / (2.5 * 10 ^ 6) * 24 * 60 * 60
-      variable_info@units = "mm day-1"
-      to_plot@var_units   = variable_info@units
-    else if (variable_info@units .eq. "Pa") then
-      ; convert to hPa
-      to_plot = to_plot / 100
-      to_plot@var_units     = "hPa"
-    else
-      to_plot@var_units     = variable_info@units
-    end if
-    end if
-    end if
-    end if
-  end if
-  ; swap downward/upward radiation fluxes according to IPCC Chapter12
-  if ((var0 .eq. "rsut") .or. (var0 .eq. "rlut")) then
-    to_plot = - to_plot
-  end if
-  copy_VarCoords(to_plot, to_plot_signif)
 
-  to_plot_signif@diag_script = (/diag_script/)
+  ; Check units and adjust for plotting if necessary
+  ; difference in K is the same as difference in degC, only change label
+  if (to_plot@units.eq."K") then
+    to_plot@units = "degC"
+  end if
+  if (isatt(diag_script_info, "plot_units")) then
+    to_plot = convert_units(to_plot, diag_script_info@plot_units)
+  end if
+  tmp_unit = to_plot@units
+  to_plot@units = tmp_unit + " per degC"
+
+  copy_VarMeta(to_plot, to_plot_signif)
+  to_plot_signif@diag_script = (/DIAG_SCRIPT/)
   to_plot_signif@var = "signif"
   to_plot_signif@var_long_name = "significance: where average change over" + \
                                  "all realizations is larger than " + \
@@ -379,17 +356,16 @@ begin
   to_plot_signif@var_units     = 1
 
   copy_VarCoords(to_plot, perc95)
-
-  perc95@diag_script = (/diag_script/)
+  perc95@diag_script = (/DIAG_SCRIPT/)
   perc95@var = "95perc"
   perc95@var_long_name = "95-percentile of distribution of models"
   perc95@var_units     = 1
 
   ; ###########################################
-  ; # Output to netCDF               #
+  ; # Output to netCDF                        #
   ; ###########################################
-  to_plot@ncdf = variable_info@diagnostic + ".nc"
-  ncdf_file = work_dir + to_plot@ncdf
+  to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
+  ncdf_file = work_dir +  "/" +to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
@@ -397,6 +373,5 @@ begin
   ncdf_outfile = ncdf_write(to_plot_signif, ncdf_file)
   ncdf_outfile = ncdf_write(perc95, ncdf_file)
 
-  ; copy preproc info file to work dir
-  system("cp " + diag_script_info@input_files + " " + work_dir)
+  leave_msg(DIAG_SCRIPT, "")
 end
