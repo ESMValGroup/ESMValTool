@@ -27,7 +27,7 @@ GAS_CON = 287.0   # Gas constant
 RA_1 = 610.78     # Parameter for Magnus-Teten-Formula
 H_S = 300.        # stable boundary layer height (m)
 H_U = 1000.       # unstable boundary layer height (m)
-RIC_RS= 0.39     # Critical Richardson number for stable layer
+RIC_RS = 0.39     # Critical Richardson number for stable layer
 RIC_RU = 0.28     # Critical Richardson number for unstable layer
 
 
@@ -36,7 +36,7 @@ class Mkthe():
 
     A class to compute LCL temperature, boundary layer top temperature,
     boundary layer thickness.
-    
+
     It ingests monthly mean fields of:
     - specific humidity (near-surface or 3D) (hus);
     - skin temperature (ts);
@@ -71,16 +71,16 @@ class Mkthe():
         hus_miss_file = wdir + '/hus.nc'
         mkthe.removeif(hus_miss_file)
         cdo.setctomiss('0', input=hus_file, output=hus_miss_file)
-        ps_miss_file=wdir + '/ps.nc'
+        ps_miss_file = wdir + '/ps.nc'
         mkthe.removeif(ps_miss_file)
         cdo.setctomiss('0', input=ps_file, output=ps_miss_file)
-        V_miss_file=wdir + '/V.nc'
-        mkthe.removeif(V_miss_file)
-        V_file=wdir + '/{}_V.nc'.format(modelname)
-        mkthe.removeif(V_file)
+        vv_missfile = wdir + '/V.nc'
+        mkthe.removeif(vv_missfile)
+        vv_file = wdir + '/{}_V.nc'.format(modelname)
+        mkthe.removeif(vv_file)
         cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file, vas_file),
-                 options='-b F32', output=V_file)
-        cdo.setctomiss('0', input=V_file, output=V_miss_file)
+                 options='-b F32', output=vv_file)
+        cdo.setctomiss('0', input=vv_file, output=vv_missfile)
         hfss_miss_file = wdir+'/hfss.nc'
         mkthe.removeif(hfss_miss_file)
         cdo.setctomiss('0', input=hfss_file, output=hfss_miss_file)
@@ -98,26 +98,26 @@ class Mkthe():
         nlev = len(lev)
         dataset = Dataset(ps_miss_file)
         p_s = dataset.variables['ps'][:, :, :]
-        dataset = Dataset(V_miss_file)
-        V_hor = dataset.variables['uas'][:, :, :]
+        dataset = Dataset(vv_missfile)
+        vv_hor = dataset.variables['uas'][:, :, :]
         dataset = Dataset(hfss_miss_file)
         hfss = dataset.variables['hfss'][:, :, :]
         dataset = Dataset(te_miss_file)
         t_e = dataset.variables['rlut'][:, :, :]
         huss = hus[:, 0, :, :]
         huss = np.where(lev[0] >= p_s, huss, 0.)
-        for l in range(nlev):
-            aux = hus[:, l, :, :]
-            aux = np.where((p_s >= lev[l]), aux, 0.)
+        for l_l in range(nlev):
+            aux = hus[:, l_l, :, :]
+            aux = np.where((p_s >= lev[l_l]), aux, 0.)
             huss = huss + aux
         ricr = RIC_RU
         h_bl = H_U
         ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
         h_bl = np.where(hfss >= 0.75, h_bl, H_S)
-        ev_p = huss * p_s/(huss + GAS_CON / RV)        # Water vapour pressure
-        td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1) # Dewpoint t.
+        ev_p = huss * p_s / (huss + GAS_CON / RV)        # Water vapour pressure
+        td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1)  # Dewpoint t.
         t_d = 1 / td_inv
-        hlcl = 125. * (t_s - t_d) # Empirical formula for LCL height
+        hlcl = 125. * (t_s - t_d)  # Empirical formula for LCL height
     #
     #  Negative heights are replaced by the height of the stable
     #  boundary layer (lower constraint to the height of the cloud layer)
@@ -129,23 +129,24 @@ class Mkthe():
     # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
     # top knowing emission temperature.
     #
-        gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) /\
-             (1 + ((ALV ** 2 * huss * 0.622) / (cp_d * GAS_CON * ztlcl ** 2))))
+        gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) /
+                                (1 + ((ALV ** 2 * huss * 0.622) /
+                                      (cp_d * GAS_CON * ztlcl ** 2))))
         htop = - (t_e - ztlcl) / gw_pa + hlcl
     #
     #  Compute equivalent potential temperature (optional output)
     #
-       # thes=ths*np.exp((Alv*huss)/(cp*ztlcl))
+    #   thes=ths*np.exp((Alv*huss)/(cp*ztlcl))
     #
     #  Use potential temperature and critical Richardson number to compute
     #  temperature and height of the boundary layer top
     #
         ths = t_s * (P_0 / p_s) ** AKAP
-        thz = ths + 0.03 * ricr * (V_hor) ** 2 / h_bl
-        pz = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s)) # Barometric eq.
-        t_z = thz * (P_0 / pz) ** (-AKAP)
-        nc_attrs, nc_dims, nc_vars = mkthe.ncdump(dataset0, 'ts', True)
-        nc_f = wdir + '/tlcl.nc'.format(modelname)
+        thz = ths + 0.03 * ricr * (vv_hor) ** 2 / h_bl
+        p_z = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
+        t_z = thz * (P_0 / p_z) ** (-AKAP)
+        nc_attrs, nc_dims = mkthe.ncdump(dataset0, 'ts', True)
+        nc_f = wdir + '/tlcl.nc'
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean LCL temperature from {} model. \
@@ -155,7 +156,7 @@ class Mkthe():
                                 Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
-                                           dataset0.variables['time'].dtype,\
+                                           dataset0.variables['time'].dtype,
                                            ('time',))
         for ncattr in dataset0.variables['time'].ncattrs():
             w_nc_dim.setncattr(ncattr,
@@ -184,10 +185,10 @@ class Mkthe():
                             'units': u"K", 'level_desc': u"surface",
                             'var_desc': u"LCL temperature from LCL \
                             height (Magnus formulas and dry adiabatic \
-                            lapse ratio",'statistic': 'monthly mean'})
+                            lapse ratio", 'statistic': 'monthly mean'})
         w_nc_fid.variables['tlcl'][:] = ztlcl
         w_nc_fid.close()  # close the new file
-        nc_f = wdir + '/tabl.nc'.format(modelname)
+        nc_f = wdir + '/tabl.nc'
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean temperature at BL top for {} \
@@ -226,10 +227,10 @@ class Mkthe():
                             'units': u"K", 'level_desc': u"surface",
                             'var_desc': u"Temperature at the Boundary Layer \
                             top, from boundary layer thickness and barometric \
-                            equation",'statistic': u'monthly mean'})
+                            equation", 'statistic': u'monthly mean'})
         w_nc_fid.variables['tabl'][:] = t_z
         w_nc_fid.close()  # close the new file
-        nc_f = wdir + '/htop.nc'.format(modelname)
+        nc_f = wdir + '/htop.nc'
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Monthly mean height of the BL top for {} \
@@ -248,7 +249,7 @@ class Mkthe():
         w_nc_fid.variables['time'][:] = time
         w_nc_fid.createDimension('lat', len(lats))
         w_nc_dim = w_nc_fid.createVariable('lat',
-                                           dataset0.variables['lat'].dtype,\
+                                           dataset0.variables['lat'].dtype,
                                            ('lat',))
         for ncattr in dataset0.variables['lat'].ncattrs():
             w_nc_dim.setncattr(ncattr,
@@ -256,7 +257,7 @@ class Mkthe():
         w_nc_fid.variables['lat'][:] = lats
         w_nc_fid.createDimension('lon', len(lons))
         w_nc_dim = w_nc_fid.createVariable('lon',
-                                           dataset0.variables['lon'].dtype,\
+                                           dataset0.variables['lon'].dtype,
                                            ('lon',))
         for ncattr in dataset0.variables['lon'].ncattrs():
             w_nc_dim.setncattr(ncattr,
@@ -268,11 +269,11 @@ class Mkthe():
                             'units': u"m", 'level_desc': u"surface",
                             'var_desc': u"Height at the Boundary Layer top, \
                             from boundary layer thickness and barometric \
-                            equation",'statistic': u'monthly mean'})
+                            equation", 'statistic': u'monthly mean'})
         w_nc_fid.variables['htop'][:] = htop
         w_nc_fid.close()  # close the new file
-    
-    def ncdump(self,nc_fid,key,verb):
+
+    def ncdump(self, nc_fid, key):
         """Print the NetCDF file attributes for a given key.
 
         Arguments:
@@ -281,10 +282,9 @@ class Mkthe():
         """
         nc_attrs = nc_fid.ncattrs()
         nc_dims = [dim for dim in nc_fid.dimensions] # list of nc dimensions
-        nc_vars = [var for var in nc_fid.variables]  # list of nc variables
-        return nc_attrs, nc_dims, nc_vars
+        return nc_attrs, nc_dims
 
-    def removeif(self,filename):
+    def removeif(self, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)

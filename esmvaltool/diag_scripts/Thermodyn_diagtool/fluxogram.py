@@ -34,7 +34,7 @@ class Fluxogram():
     def __init__(self, max_flux, max_storage, grid_size=20, storages=None,
                  fluxes=None):
         """Initialize a fluxogram. must be called with.
-        
+
         The arguments are:
             - max_flux: aximum flux of all fluxes; needed for scaling
             - max_storage: maximum storages of all storages; needed for scaling
@@ -225,7 +225,7 @@ class Fluxogram():
 
     def scaler(self, value_in, base_max):
         """Scale the values in the blocks of the diagram.
-        
+
         Scale the fluxes and storages, so they don't overstep their
         grafical bounds must be called with:
             - valueIn: the value that needs rescaling
@@ -263,9 +263,8 @@ class Flux:
         self.to_storage = to_storage
         self.amount = amount
         self.grid_size = grid_size
-        self.x_start, self.y_start, self.x_end, \
-        self.y_end, self.d_x, self.d_y, self.dire \
-        = (self.calc_start_end_dx_dy())
+        self.x_start, self.y_start, self.x_end, self.y_end, self.d_x,\
+        self.d_y, self.dire = (self.calc_start_end_dx_dy())
 
     def update_flux(self, amount):
         """Update the amount of the flux."""
