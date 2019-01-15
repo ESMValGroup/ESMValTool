@@ -745,6 +745,11 @@ def _get_preprocessor_task(variables,
 
         derive_input = {}
         for variable in variables:
+            _update_cmor_table(
+                table=variable['cmor_table'],
+                mip=variable['mip'],
+                short_name=variable['short_name']
+            )
             _add_cmor_info(variable)
             if not variable.get('force_derivation') and get_input_filelist(
                     variable=variable,
@@ -776,10 +781,6 @@ def _get_preprocessor_task(variables,
 
     # Add CMOR info
     for variable in variables:
-        _update_cmor_table(
-            table=variable['cmor_table'],
-            mip=variable['mip'],
-            short_name=variable['short_name'])
         _add_cmor_info(variable)
 
     # Create (final) preprocessor task
