@@ -37,7 +37,7 @@ class TestsRlutcs(unittest.TestCase):
 
     def setUp(self):
         """Prepare tests"""
-        self.cube = Cube([1, 2], var_name='rlut')
+        self.cube = Cube([1, 2], var_name='rlutcs')
         self.cube.add_dim_coord(DimCoord([0.50001, 1.499999],
                                          standard_name='latitude',
                                          bounds=[[0.00001, 0.999999],

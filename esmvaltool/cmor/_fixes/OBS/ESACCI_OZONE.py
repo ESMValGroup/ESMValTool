@@ -23,7 +23,7 @@ class tro3prof(Fix):
         iris.cube.CubeList
 
         """
-        cube = cubes[0]
+        cube = self.get_cube_from_list(cubes)
         old = cube.coord('air_pressure')
         dims = cube.coord_dims(old)
         cube.remove_coord(old)

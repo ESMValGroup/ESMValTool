@@ -48,7 +48,7 @@ class co2(Fix):
         iris.cube.Cube
 
         """
-        cubes[0].units = '1.0e-6'
+        self.get_cube_from_list(cubes).units = '1.0e-6'
         return cubes
 
 
@@ -71,7 +71,7 @@ class gpp(Fix):
 
         """
         # Fixing the metadata, automatic unit conversion should do the trick
-        cubes[0].units = cf_units.Unit('g m-2 day-1')
+        self.get_cube_from_list(cubes).units = cf_units.Unit('g m-2 day-1')
         return cubes
 
 
@@ -93,18 +93,18 @@ class allvars(Fix):
         iris.cube.CubeList
 
         """
-        try:
-            cube = cubes[0]
-            old = cube.coord('AR5PL35')
-            dims = cube.coord_dims(old)
-            cube.remove_coord(old)
+        for cube in cubes:
+            try:
+                old = cube.coord('AR5PL35')
+                dims = cube.coord_dims(old)
+                cube.remove_coord(old)
 
-            plev = DimCoord.from_coord(old)
-            plev.var_name = plev
-            plev.standard_name = 'air_pressure'
-            plev.long_name = 'Pressure '
-            cube.add_dim_coord(plev, dims)
-        except CoordinateNotFoundError:
-            pass
+                plev = DimCoord.from_coord(old)
+                plev.var_name = plev
+                plev.standard_name = 'air_pressure'
+                plev.long_name = 'Pressure '
+                cube.add_dim_coord(plev, dims)
+            except CoordinateNotFoundError:
+                pass
 
         return cubes

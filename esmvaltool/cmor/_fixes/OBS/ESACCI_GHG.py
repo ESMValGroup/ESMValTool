@@ -23,7 +23,7 @@ class xco2Stderr(Fix):
         iris.cube.CubeList
 
         """
-        cubes[0].units = cf_units.Unit('1.0e-6')
+        self.get_cube_from_list(cubes).units = cf_units.Unit('1.0e-6')
         return cubes
 
     def fix_data(self, cube):
@@ -73,7 +73,7 @@ class xch4Stderr(Fix):
         iris.cube.CubeList
 
         """
-        cubes[0].units = cf_units.Unit('1.0e-9')
+        self.get_cube_from_list(cubes).units = cf_units.Unit('1.0e-9')
         return cubes
 
     def fix_data(self, cube):

@@ -19,9 +19,10 @@ class allvars(Fix):
         Cube:
             Fixed cube. It is the same instance that was received
         """
-        latitude = cubes[0].coord('latitude')
-        latitude.var_name = 'lat'
+        for cube in cubes:
+            latitude = cube.coord('latitude')
+            latitude.var_name = 'lat'
 
-        longitude = cubes[0].coord('longitude')
-        longitude.var_name = 'lon'
+            longitude = cube.coord('longitude')
+            longitude.var_name = 'lon'
         return cubes

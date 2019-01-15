@@ -54,6 +54,34 @@ class Fix(object):
         """
         return cubes
 
+    def get_cube_from_list(self, cubes, short_name=None):
+        """
+        Gets a cube from the list with a given short name
+
+        Parameters
+        ----------
+        cubes : iris.cube.CubeList
+            List of cubes to search
+        short_name : str
+            Cube's variable short name. If None, short name is the class name
+
+        Raises
+        ------
+        Exception
+            If no cube is found
+
+        Returns
+        -------
+        iris.Cube
+            Variable's cube
+        """
+        if short_name is None:
+            short_name = self.__class__.__name__
+        for cube in cubes:
+            if cube.var_name == short_name:
+                return cube
+        raise Exception('Cube for variable "{}" not found'.format(short_name))
+
     def fix_data(self, cube):
         """
         Apply fixes to the data of the cube.

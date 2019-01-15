@@ -23,7 +23,7 @@ class rlut(Fix):
         iris.cube.Cube
 
         """
-        cube = cubes[0]
+        cube = self.get_cube_from_list(cubes)
         lat = cube.coord('latitude')
         lat.points = np.round(lat.points, 3)
         lat.bounds = np.round(lat.bounds, 3)
@@ -66,5 +66,5 @@ class so(Fix):
         iris.cube.Cube
 
         """
-        cubes[0].units = '1e3'
+        self.get_cube_from_list(cubes).units = '1e3'
         return cubes

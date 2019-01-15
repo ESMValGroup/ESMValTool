@@ -22,6 +22,7 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        time = cubes[0].coord('time')
-        time.units = Unit(time.units.name, time.units.calendar)
+        for cube in cubes:
+            time = cube.coord('time')
+            time.units = Unit(time.units.name, time.units.calendar)
         return cubes

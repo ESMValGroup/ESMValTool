@@ -2,7 +2,7 @@
 
 import unittest
 
-from esmvaltool.cmor.fix import fix_file, fix_data, fix_metadata
+from esmvaltool.cmor.fix import fix_file, fix_data, fix_metadata, Fix
 import mock
 
 
@@ -31,6 +31,46 @@ class TestFixFile(unittest.TestCase):
             file_returned = fix_file('filename', 'short_name', 'project',
                                      'model', 'output_dir')
             self.assertEqual(file_returned, self.filename)
+
+
+class TestGetCube(unittest.TestCase):
+    """Test get cube by var_name method"""
+
+    def setUp(self):
+        """Prepare for testing"""
+        self.cube_1 = mock.Mock()
+        self.cube_1.var_name = 'cube1'
+        self.cube_2 = mock.Mock()
+        self.cube_2.var_name = 'cube2'
+        self.cubes = [self.cube_1, self.cube_2]
+        self.fix = Fix()
+
+    def test_get_first_cube(self):
+        """Test selecting first cube"""
+        self.assertIs(
+            self.cube_1,
+            self.fix.get_cube_from_list(self.cubes, "cube1")
+        )
+
+    def test_get_second_cube(self):
+        """Test selecting second cube"""
+        self.assertIs(
+            self.cube_2,
+            self.fix.get_cube_from_list(self.cubes, "cube2")
+        )
+
+    def test_get_default_raises(self):
+        """Check that the default raises (Fix is not a cube)"""
+        with self.assertRaises(Exception):
+            self.fix.get_cube_from_list(self.cubes)
+
+    def test_get_default(self):
+        """Check that the default raises (Fix is a cube)"""
+        self.cube_1.var_name = 'Fix'
+        self.assertIs(
+            self.cube_1,
+            self.fix.get_cube_from_list(self.cubes)
+        )
 
 
 class TestFixMetadata(unittest.TestCase):

@@ -27,10 +27,10 @@ class allvars(Fix):
         )
         end_time = self._get_and_remove(cubes, 'End time for average period')
         length = self._get_and_remove(cubes, 'Length of average period')
-
-        self._add_aux_coord(cubes[0], start_time)
-        self._add_aux_coord(cubes[0], end_time)
-        self._add_aux_coord(cubes[0], length)
+        for cube in cubes:
+            self._add_aux_coord(cube, start_time)
+            self._add_aux_coord(cube, end_time)
+            self._add_aux_coord(cube, length)
 
         return cubes
 

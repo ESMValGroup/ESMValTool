@@ -22,7 +22,7 @@ class fgco2(Fix):
         iris.cube.Cube
 
         """
-        cubes[0].units = Unit('kg m-2 s-1')
+        self.get_cube_from_list(cubes).units = Unit('kg m-2 s-1')
         return cubes
 
     def fix_data(self, cube):
@@ -64,7 +64,7 @@ class ch4(Fix):
         iris.cube.CubeList
 
         """
-        cubes[0].units = Unit('1e-9')
+        self.get_cube_from_list(cubes).units = Unit('1e-9')
         return cubes
 
     def fix_data(self, cube):
@@ -106,7 +106,7 @@ class co2(Fix):
         iris.cube.CubeList
 
         """
-        cubes[0].units = Unit('1e-6')
+        self.get_cube_from_list(cubes).units = Unit('1e-6')
         return cubes
 
     def fix_data(self, cube):
