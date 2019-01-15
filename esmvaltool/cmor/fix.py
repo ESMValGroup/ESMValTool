@@ -13,7 +13,7 @@ from .check import _get_cmor_checker
 
 def fix_file(filename, short_name, project, dataset, output_dir):
     """
-    Fix files before ESMValTool can load them
+    Fix files before ESMValTool can load them.
 
     This fixes are only for issues that prevent iris from loading the cube or
     that cannot be fixed after the cube is loaded.
@@ -46,7 +46,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                  mip=None):
     """
-    Fix cube metadata if fixes are required and check it anyway
+    Fix cube metadata if fixes are required and check it anyway.
 
     This method collects all the relevant fixes for a given variable, applies
     them and checks the resulting cube (or the original if no fixes were

@@ -56,7 +56,7 @@ class Fix(object):
 
     def get_cube_from_list(self, cubes, short_name=None):
         """
-        Gets a cube from the list with a given short name
+        Get a cube from the list with a given short name.
 
         Parameters
         ----------

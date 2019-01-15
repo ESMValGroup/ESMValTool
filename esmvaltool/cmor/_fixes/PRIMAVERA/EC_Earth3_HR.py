@@ -7,7 +7,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fixes cube metadata
+        Fix cube metadata.
 
         Parameters
         ----------

@@ -74,17 +74,17 @@ class TestGetCube(unittest.TestCase):
 
 
 class TestFixMetadata(unittest.TestCase):
-    """Fix metadata tests"""
+    """Fix metadata tests."""
 
     def setUp(self):
-        """Prepare for testing"""
+        """Prepare for testing."""
         self.cube = mock.Mock()
         self.fixed_cube = mock.Mock()
         self.mock_fix = mock.Mock()
         self.mock_fix.fix_metadata.return_value = [[self.fixed_cube]]
 
     def test_fix(self):
-        """Check that the returned fix is applied"""
+        """Check that the returned fix is applied."""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[self.mock_fix]):
             cube_returned = fix_metadata([self.cube], 'short_name', 'project',
@@ -93,7 +93,7 @@ class TestFixMetadata(unittest.TestCase):
             self.assertTrue(cube_returned is self.fixed_cube)
 
     def test_nofix(self):
-        """Check that the same cube is returned if no fix is available"""
+        """Check that the same cube is returned if no fix is available."""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[]):
             cube_returned = fix_metadata([self.cube], 'short_name', 'project',
@@ -103,7 +103,7 @@ class TestFixMetadata(unittest.TestCase):
             self.assertTrue(cube_returned is not self.fixed_cube)
 
     def test_cmor_checker_called(self):
-        """Check that the cmor check is done"""
+        """Check that the cmor check is done."""
         checker = mock.Mock()
         checker.return_value = mock.Mock()
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
