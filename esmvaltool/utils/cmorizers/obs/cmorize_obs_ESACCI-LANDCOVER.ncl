@@ -16,9 +16,10 @@
 ;    Download the CCI-LC Tools from:
 ;      http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
 ;    Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-;      bash lc-user-tools/bin/aggregate-map.sh -PgridName=GEOGRAPHIC_LAT_LON \
-;      -PnumMajorityClasses=1 -PoutputAccuracy=false -PoutputPFTClasses=true \
-;      -PoutputLCCSClasses=false <inputfile.nc>
+;      bash lc-user-tools-3.14/bin/aggregate-map.sh \
+;      -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
+;      -PoutputAccuracy=false -PoutputPFTClasses=true \
+;      -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
 ;    Put the resulting processed data in the input_dir_path.
 ;
 ; Caveat
@@ -49,7 +50,7 @@ begin
   YEARS = (/2000, 2005, 2010/)
 
   ; Version
-  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.083333Deg"
+  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
 
   ; Field
   FIELD = "T2Ms"
@@ -59,13 +60,20 @@ begin
     getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
 
   ; Variable names
-  VARIABLES = (/"baresoilFrac"/)
-
-  ; Auxiliary coordinate
-  TYPES = (/"bare_ground"/)
+  VARIABLES = \
+    (/"baresoilFrac", "cropFrac", "grassFrac", "shrubFrac", "treeFrac"/)
 
   ; Corresponding aggregation classes in the raw data
-  CLASSES = [/"Bare_Soil"/]
+  CLASSES = [/"Bare_Soil", \
+              "Managed_Grass", \
+              "Natural_Grass", \
+              (/"Shrub_Broadleaf_Deciduous",    \
+                "Shrub_Broadleaf_Evergreen",    \
+                "Shrub_Needleleaf_Evergreen"/), \
+              (/"Tree_Broadleaf_Deciduous",  \
+                "Tree_Broadleaf_Evergreen",  \
+                "Tree_Needleleaf_Deciduous", \
+                "Tree_Needleleaf_Evergreen"/)/]
 
 end
 
@@ -122,12 +130,6 @@ begin
       output = output * 100
       output@units = "%"
 
-      ; Set variable attributes
-      tmp = var_attrib(output, VARIABLES(vv), CMOR_TABLE)
-      delete(output)
-      output = tmp
-      delete(tmp)
-
       ; Format time coordinate
       ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
       delete(output&time)
@@ -148,8 +150,16 @@ begin
       output&lon = clon
       delete(clon)
 
-      ; Add auxiliary coordinate
-      output@coordinates = "type"
+      ; Set variable attributes
+      tmp = var_attrib(output, VARIABLES(vv), CMOR_TABLE)
+      delete(output)
+      output = tmp
+      delete(tmp)
+
+      ; Special case for bareFrac: add auxiliary coordinate
+      if (VARIABLES(vv).eq."bareFrac") then
+        output@coordinates = "type"
+      end if
 
       ; Set global attributes
       gAtt = True
@@ -176,14 +186,16 @@ begin
       delete(gAtt)
       delete(output)
 
-      ; Add auxiliary coordinate
-      type = tochar(TYPES(vv))
-      type!0 = "strlen"
-      type@long_name = "surface type"
-      type@standard_name = "area_type"
-      w = addfile(fout, "w")
-      w->type = type
-      delete(w)
+      ; Special case for bareFrac: add auxiliary coordinate
+      if (VARIABLES(vv).eq."bareFrac") then
+        type = tochar("bare_ground")
+        type!0 = "strlen"
+        type@long_name = "surface type"
+        type@standard_name = "area_type"
+        w = addfile(fout, "w")
+        w->type = type
+        delete(w)
+      end if
 
     end do
   end do
