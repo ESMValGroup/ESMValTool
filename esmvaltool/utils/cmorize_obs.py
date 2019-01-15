@@ -17,7 +17,6 @@ import os
 import sys
 import datetime
 import subprocess
-import shutil
 
 from .._task import write_ncl_settings
 from .._config import read_config_user_file
@@ -108,7 +107,7 @@ def _run_ncl_script(in_dir,
     env['esmvaltool_root'] = esmvaltool_root
 
     # call NCL
-    ncl_call = ['ncl', os.path.basename(reformat_script)]
+    ncl_call = ['ncl', reformat_script]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
     process = subprocess.Popen(ncl_call, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, env=env)
@@ -118,10 +117,10 @@ def _run_ncl_script(in_dir,
     logger.info('[NCL][ERROR] %s', err)
 
 
-def _run_pyt_script(in_dir, out_dir):
+def _run_pyt_script(in_dir, out_dir, reformat_module):
     """Run the Python cmorization mechanism."""
-    import py_cmor
-    py_cmor.cmorization(in_dir, out_dir)
+    import reformat_module
+    reformat_module.cmorization(in_dir, out_dir)
 
 
 def execute_cmorize():
@@ -241,8 +240,7 @@ def _cmor_reformat(config, obs_list):
                 reformat_script = reformat_script_root + '.ncl'
                 logger.info("CMORizing dataset %s using NCL script %s",
                             dataset, reformat_script)
-                # copy over the reformat script
-                shutil.copy2(reformat_script, out_data_dir)
+
                 # call the ncl script
                 _run_ncl_script(in_data_dir,
                                 out_data_dir,
@@ -254,11 +252,9 @@ def _cmor_reformat(config, obs_list):
                 py_reformat_script = reformat_script_root + '.py'
                 logger.info("CMORizing dataset %s using Python script %s",
                             dataset, py_reformat_script)
-                # copy over the reformat script
-                shutil.copy2(py_reformat_script,
-                             os.path.join(out_data_dir, 'py_cmor.py'))
-                sys.path.append(out_data_dir)
-                _run_pyt_script(in_data_dir, out_data_dir)
+                sys.path.append(reformat_scripts)
+                _run_pyt_script(in_data_dir, out_data_dir,
+                                reformat_script_root)
             else:
                 logger.info('Could not find cmorizer for %s', datasets)
 
