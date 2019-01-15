@@ -1,134 +1,160 @@
-# -*- coding: utf-8 -*-
+"""Module for plot scripts in Thermodyn_diagtool.
 
+The module provides plots for a single model of:
+- climatological mean maps of TOA, atmospheric and surface energy budgets;
+- annual mean time series of TOA, atmospheric and surface energy budgets anom.;
+- climatological mean maps of latent energy and water mass budgets;
+- annual mean time series of latent energy and water mass budget anom.;
+- meridional section of meridional enthalpy transports;
+- meridional section of meridional water mass transports;
+- scatter plots of atmospheric vs. oceani peak magnitudes in the two hem.;
+- climatological mean maps of every component of the entropy budget.
+
+@author: Valerio Lembo, Meteorologisches Institut, University of Hamburg, 2018.
+"""
 import os
 from shutil import move
+import math
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import AxesGrid
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+# from mpl_toolkits.axes_grid1 import AxesGrid
+# from mpl_toolkits.axes_grid1 import make_axes_locatable
 from netCDF4 import Dataset as netcdf_dataset
 import numpy as np
 from scipy import interpolate
-import math
-import logging
-#from cartopy import config
 import cartopy.crs as ccrs
-from cartopy.mpl.geoaxes import GeoAxes
-from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+# from cartopy.mpl.geoaxes import GeoAxes
+# from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from PyAstronomy import pyaC
-from cdo import *
-#from auxiliary import verbosity
+from cdo import Cdo
+# from auxiliary import verbosity
 
-###############################################################################
 
-class Plot_script():
-    
-    from plot_script import *
+class PlotScript():
+    """Class with methods for plotting results for an individual model.
+   
+    CONTENT
+    - latwgt: compute weighted average over latitudes;
+    - hemean: compute hemispheric averages;
+    - transport: compute meridional transports computation;
+    - transp_max: compute meridional transport peak magnitudes and locations;
+    - postsealand: compute transports over land and sea and produce plot;
+    - balances: produce plots/maps/scatter of energy and water mass budgets;
+    - entropy: produce maps of material entropy production budget components;
+    - plot_ellipse: plot an ellipse in a scatter plot;
+    - pr_output: print fields to NetCDF file;
+    - ncdump: print out metadata from a NetCDF file;
+    - varatts: retrieve attributes from a NetCDF file;
+    - removeif: remove file if it exists;
+    """
+    from plot_script import PlotScript
         
-    def latwgt(self,lat,tr):
+    def latwgt(self, lat, t_r):
+        """Compute weighted average over latitudes.
         
-        #Routine to weigh fields with cosines of latitude
-        pi    = math.pi
-        conv  = 2*pi/360
+        Arguments:
+        - lat: latitude (in degrees);
+        - tr: the field to be averaged (time,lat);
         
+        @author: Valerio Lembo, 2018.
+        """
+        pi = math.pi
+        conv = 2 * pi / 360    
         dlat = np.zeros(len(lat))
-        for i in range(len(lat)-1):
-            dlat[i]=abs(lat[i+1]-lat[i])
-        dlat[len(lat)-1] = dlat[len(lat)-2]
-        
-        latr  = conv*lat
-        dlatr = conv*dlat
-        
-        tr2=np.zeros((np.shape(tr)[0],np.shape(tr)[1]))
+        for i in range(len(lat) - 1):
+            dlat[i] = abs(lat[i + 1] - lat[i])
+        dlat[len(lat) - 1] = dlat[len(lat) - 2]
+        latr = conv * lat
+        dlatr = conv * dlat
+        tr2 = np.zeros((np.shape(t_r)[0], np.shape(t_r)[1]))
         for j in range(len(lat)):
-            tr2[:,j] = tr[:,j]*np.cos(latr[j])*dlatr[j]/2
-        return tr2
+            tr2[:, j] = t_r[:, j] * np.cos(latr[j]) * dlatr[j] / 2
+        return tr2    
     
-###############################################################################
-    
-    
-    def hemean(self,hem,lat,inp):
+    def hemean(self, hem, lat, inp):
+        """Compute hemispheric averages.
         
-        #Routine for hemispheric means:
-        #hem=1 indicates SH, hem=else indicates NH
+        Arguments:
+        - hem: a parameter for the choice of the hemisphere (1 stands for SH);
+        - lat: latitude (in degrees);
+        - inp: input field;
         
-        plotsmod = Plot_script()
-        
+        @author: Valerio Lembo, 2018.
+        """
+        plotsmod = PlotScript()
         j_end = np.shape(inp)[1]
-        zmn = plotsmod.latwgt(lat,inp)
+        zmn = plotsmod.latwgt(lat, inp)
         hmean = []
         if hem == 1:
-            if j_end%2 == 0:
-                hmean = np.nansum(zmn[:,j_end/2+1:j_end],axis=1)
+            if j_end % 2 == 0:
+                hmean = np.nansum(zmn[:, j_end / 2 + 1:j_end], axis=1)
             else:
-                hmean = (np.nansum(zmn[:,(j_end+3)/2:j_end],axis=1)+0.5*zmn[:,(j_end+3)/2-1])
+                hmean = (np.nansum(zmn[:,(j_end + 3) / 2:j_end], axis=1)\
+                         + 0.5 * zmn[:, (j_end + 3) / 2 - 1])
         else:
-            if j_end%2 == 0:
-                hmean = np.nansum(zmn[:,1:j_end/2],axis=1)
+            if j_end % 2 == 0:
+                hmean = np.nansum(zmn[:, 1:j_end / 2], axis=1)
             else:
-                hmean = (np.nansum(zmn[:,1:(j_end-1)/2],axis=1)+0.5*zmn[:,(j_end-1)/2+1])
-            
-        return hmean
+                hmean = (np.nansum(zmn[:, 1:(j_end - 1)/2], axis=1)\
+                         + 0.5 * zmn[:, (j_end - 1) / 2 + 1])
+        return hmean   
     
-    ###############################################################################
-    
-    
-    def transport(self,zmean,gmean,lat):
+    def transport(self, zmean, gmean, lat):
+        """Integrate the energy/water mass budgets to obtain meridional transp.
         
-        #Routine for the computation of meridional transports (of energy,
-        # as well as other quantities)
-        plotsmod = Plot_script()
+        Arguments:
+        - zmean: zonal mean input fields;
+        - gmean: the global mean of the input fields;
+        - lat: a latitudinal array (in degrees of latitude);
         
-        pi  = math.pi
-        
-        dlat             = np.zeros(len(lat))
-        for i in range(len(lat)-1):
-            dlat[i] = abs(lat[i+1]-lat[i])
-        dlat[len(lat)-1] = dlat[len(lat)-2]
-        
-        zmn_ub           = np.zeros((np.shape(zmean)[0],np.shape(zmean)[1]))
+        @author: Valerio Lembo, 2018.
+        """
+        plotsmod = PlotScript()
+        p_i = math.pi
+        dlat = np.zeros(len(lat))
+        for i in range(len(lat) - 1):
+            dlat[i] = abs(lat[i + 1] - lat[i])
+        dlat[len(lat) - 1] = dlat[len(lat) - 2]
+        zmn_ub = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         for i in range(len(gmean)):
             for j in range(np.shape(zmean)[1]):
-                zmn_ub[i,j] = zmean[i,j]-gmean[i]
-        
-        zmn_ub[np.isnan(zmn_ub)]    = 0
-        cumb                        = np.zeros((np.shape(zmean)[0],np.shape(zmean)[1]))
-        transp                      = np.zeros((np.shape(zmean)[0],np.shape(zmean)[1]))
-        
-        for j in range(len(lat)-1):
-            cumb[:,j] = -2*np.nansum(plotsmod.latwgt(lat[j:len(lat)],zmn_ub[:,j:len(lat)]),axis=1)
-        
-        R      = 6.371*10**6
-        transp = 2*pi*cumb*R*R
+                zmn_ub[i, j] = zmean[i, j] - gmean[i]
+        zmn_ub[np.isnan(zmn_ub)] = 0
+        cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
+        transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
+        for j in range(len(lat) - 1):
+            cumb[:, j] = -2 * np.nansum(plotsmod.latwgt(lat[j:len(lat)],
+                                        zmn_ub[:, j:len(lat)]), axis=1)      
+        r_earth = 6.371 * 10 ** 6
+        transp = 2 * p_i * cumb * r_earth * r_earth
+        return [zmn_ub, transp]
     
-    
-        return [zmn_ub,transp]
-    
-    ###############################################################################
-    
-    def transp_max(self,lat,transp,lim):
+    def transp_max(self, lat, transp, lim):
+        """Obtain transport peak magnitude and location from interpolation.
         
-        deriv  = np.gradient(transp)
-        #print(deriv)
+        Arguments:
+        - lat: a latitudinal array;
+        - transp: the meridional transport a 1D array (lat);
+        - lim: limits to constrain the peak search in 
+        (necessary for ocean transp.)
+        
+        @author: Valerio Lembo, 2018.
+        """
+        deriv = np.gradient(transp)
         xc, xi = pyaC.zerocross1d(lat, deriv, getIndices=True)
-        #print(xc)
-        yi     = np.zeros(2)
+        yi = np.zeros(2)
         xc_cut = np.zeros(2)
-        j=0
+        j = 0
         for i in range(len(xc)):
                 if abs(xc[i])<=lim:
                     xc_cut[j] = xc[i]
-                    yi[j]     = interpolate.interp1d(lat,transp,kind='cubic')(xc[i])
-                    #print(xc_cut[j],yi[j])
-                    j=j+1
+                    yi[j] = interpolate.interp1d(lat,
+                                                 transp, kind='cubic')(xc[i])
+                    j = j + 1
                     if j==2:
                         break
                 else:
                     pass
-        #print(xc_cut,yi)
-        
-        return [xc_cut,yi]
-    
-    ###############################################################################
+        return [xc_cut, yi]
     
     def postsealand(self,path,file,filemask,model,name,transp_name,transpy,time,lat,lon,opt):
         

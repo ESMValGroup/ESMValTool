@@ -80,7 +80,7 @@ class FourierCoeff():
                                                   deltat[:, i - 1, :, :],
                                                   (ta1_fx[:, i, :, :] - tas))
                 deltat[:, i - 1, :, :] = (1 * np.array(h_1.mask)) *\
-                np.array(deltat[:, i - 1, :, :])
+                                          np.array(deltat[:, i - 1, :, :])
                 d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
                         deltat[:, i - 1, :, :] / tas)
                 p_s = np.where(ta1_fx[:, i - 1, :, :] != 0,
@@ -115,11 +115,11 @@ class FourierCoeff():
                                      ta2_fx[:, i, :, :])
             mask[i, :, :, :] = np.array(h_2.mask)
             tafr_bar[i, :, :, :] = 1 *\
-            np.array(mask[i, :, :, :]) *\
-            (tas - GAM * GAS_CON / (G_0 * p_s) *\
-             deltap[:, i, :, :] * tas)
+                                   np.array(mask[i, :, :, :]) *\
+                                   (tas - GAM * GAS_CON / (G_0 * p_s) *\
+                                    deltap[:, i, :, :] * tas)
             dat[i, :, :, :] = ta2_fx[:, i, :, :] *\
-            (1 - 1 * np.array(mask[i, :, :, :]))
+                              (1 - 1 * np.array(mask[i, :, :, :]))
             t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
         fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta', verb=True)
         tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
@@ -140,10 +140,10 @@ class FourierCoeff():
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
             
         fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo,
-                            wave2, 'ta', 'ua', 'va', 'wap', verb=True)
+                            wave2, 'ta', 'ua', 'va', 'wap')
 
     def pr_output(self, var1, var2, var3, var4, nc_f, fileo, wave2, name1,
-                  name2, name3, name4, verb=True):
+                  name2, name3, name4):
         """Print outputs to NetCDF.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -166,7 +166,7 @@ class FourierCoeff():
         fourcoeff = FourierCoeff()
     
         nc_fid = Dataset(nc_f, 'r')
-        nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid, 'ta', verb)
+        nc_attrs, nc_dims = fourcoeff.ncdump(nc_fid)
         
         # Extract coordinates from NetCDF file
         time = nc_fid.variables['time'][:]
@@ -238,7 +238,7 @@ class FourierCoeff():
 
     def pr_output_diag(self, var1, nc_f, fileo, name1, verb=True):
         """Print processed ta field to NetCDF file.
-        
+
         Save fields to NetCDF, retrieving information from an existing
         NetCDF file. Metadata are transferred from the existing file to the
         new one.
@@ -256,7 +256,7 @@ class FourierCoeff():
         fourcoeff = FourierCoeff()
     
         nc_fid = Dataset(nc_f, 'r')
-        nc_attrs, nc_dims, nc_vars = fourcoeff.ncdump(nc_fid, 'ta')
+        nc_attrs, nc_dims = fourcoeff.ncdump(nc_fid)
         
         # Extract data from NetCDF file
         time = nc_fid.variables['time'][:]
@@ -292,7 +292,7 @@ class FourierCoeff():
                                                nc_fid.variables['plev'].dtype,
                                                ('lon',))
         var_nc_fid.variables['lon'][:] = lons
-            
+
         var_nc_fid.createDimension('lat', len(lats))
         var_nc_dim = var_nc_fid.createVariable('lat',
                                                nc_fid.variables['lat'].dtype,
@@ -309,17 +309,15 @@ class FourierCoeff():
         var_nc_fid.variables[name1][:, :, :, :] = var1
         var_nc_fid.close()  # close the new file
 
-    def ncdump(self, nc_fid, key):
+    def ncdump(self, nc_fid):
         """Print the NetCDF file attributes for a given key.
 
         Arguments:
-        - nc_fid: the ID of a NetCDF file containing variable 'key';
-        - key: the name of a variable to obtain the attributes from.
-        """
+        - nc_fid: the ID of a NetCDF file containing variable 'key';        """
         nc_attrs = nc_fid.ncattrs()
         nc_dims = [dim for dim in nc_fid.dimensions]
-        nc_vars = [var for var in nc_fid.variables]
-        return nc_attrs, nc_dims, nc_vars
+        # nc_vars = [var for var in nc_fid.variables]
+        return nc_attrs, nc_dims
 
     def varatts(self, w_nc_var, varname):
         """Add attibutes to the variables, depending on their name.

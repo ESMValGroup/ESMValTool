@@ -30,7 +30,7 @@ class Fluxogram():
     some similiar kind of thing to be drawn as a sequence of storages
     and fluxes.
     """
-       
+  
     def __init__(self, max_flux, max_storage, grid_size=20, storages=None,
                  fluxes=None):
         """Initialize a fluxogram. must be called with.
