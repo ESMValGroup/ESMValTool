@@ -221,9 +221,9 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
-                'cmorize_obs = esmvaltool.utils.cmorize_obs:execute_cmorize',
+                'cmorize_obs = esmvaltool.utils.cmorizers.obs.cmorize_obs:execute_cmorize',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
-                'mip_convert_setup = esmvaltool.utils.mip_convert.esmvt_mipconv_setup:main'
+                'mip_convert_setup = esmvaltool.utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
             ],
         },
         cmdclass={
