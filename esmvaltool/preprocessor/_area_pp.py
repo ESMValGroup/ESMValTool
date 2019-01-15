@@ -4,7 +4,6 @@ Area operations on data cubes.
 Allows for selecting data subsets using certain latitude and longitude bounds;
 selecting geographical regions; constructing area averages; etc.
 """
-import os
 import logging
 
 import iris
@@ -68,17 +67,16 @@ def area_slice(cube, start_longitude, end_longitude, start_latitude,
             latitude=(start_latitude, end_latitude))
         region_subset = region_subset.intersection(longitude=(0., 360.))
         return region_subset
-    else:
-        # irregular grids
-        lats = cube.coord('latitude').points
-        lons = cube.coord('longitude').points
-        mask = np.ma.array(cube.data).mask
-        mask += np.ma.masked_where(lats < start_latitude, lats).mask
-        mask += np.ma.masked_where(lats > end_latitude, lats).mask
-        mask += np.ma.masked_where(lons > start_longitude, lons).mask
-        mask += np.ma.masked_where(lons > end_longitude, lons).mask
-        cube.data = np.ma.masked_where(mask, cube.data)
-        return cube
+    # irregular grids
+    lats = cube.coord('latitude').points
+    lons = cube.coord('longitude').points
+    mask = np.ma.array(cube.data).mask
+    mask += np.ma.masked_where(lats < start_latitude, lats).mask
+    mask += np.ma.masked_where(lats > end_latitude, lats).mask
+    mask += np.ma.masked_where(lons > start_longitude, lons).mask
+    mask += np.ma.masked_where(lons > end_longitude, lons).mask
+    cube.data = np.ma.masked_where(mask, cube.data)
+    return cube
 
 
 # get zonal means
@@ -173,10 +171,9 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
                                      [cube_shape[0], 1, 1])
 
     if not use_fx_files and cube.coord('latitude').points.ndim == 2:
-            logger.error('area_average ERROR: fx_file needed to calculate grid'
-                         + ' cell area for irregular grids.')
-            raise iris.exceptions.CoordinateMultiDimError(
-               cube.coord('latitude'))
+        logger.error('area_average ERROR: fx_file needed to calculate grid'
+                     + ' cell area for irregular grids.')
+        raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
     if not grid_areas_found:
         cube = _guess_bounds(cube, [coord1, coord2])
@@ -184,9 +181,9 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
         logger.info('Calculated grid area...', grid_areas.shape)
 
     if cube.data.shape != grid_areas.shape:
-        logger.error('Cube shape (%s) doesn`t match grid area (%s)',
-                     cube.data.shape, grid_areas.shape)
-        assert 0
+
+        raise ValueError('Cube shape ({}) doesn`t match grid area shape '
+                         '({})'.format(cube.data.shape, grid_areas.shape))
 
     result = cube.collapsed([coord1, coord2],
                             iris.analysis.MEAN,

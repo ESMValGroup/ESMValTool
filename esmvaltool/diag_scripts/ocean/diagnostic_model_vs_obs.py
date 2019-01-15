@@ -47,7 +47,7 @@ import os
 import sys
 import matplotlib
 matplotlib.use('Agg')  # noqa
-from matplotlib import ticker, pyplot
+from matplotlib import pyplot
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 
@@ -101,9 +101,9 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
                                    cmap=plt.cm.get_cmap(cmap),
                                    zmin=nspace.min(),
                                    zmax=nspace.max())
-        cb = pyplot.colorbar(orientation='horizontal')
-        cb.set_ticks([nspace.min(), (nspace.max() + nspace.min())/2.,
-                      nspace.max()])
+        cbar = pyplot.colorbar(orientation='horizontal')
+        cbar.set_ticks([nspace.min(), (nspace.max() + nspace.min()) / 2.,
+                        nspace.max()])
 
     plt.gca().coastlines()
     plt.title(title)
@@ -180,7 +180,6 @@ def make_model_vs_obs_plots(
         zrange3 = diagtools.get_cube_range_diff([cube223])
 
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
-        zrange4 = [0.1, 10.]
 
         n_points = 12
         linspace12 = np.linspace(zrange12[0], zrange12[1], n_points,
@@ -215,14 +214,13 @@ def make_model_vs_obs_plots(
         plt.close()
 
 
-def round_sig(x, sig=3):
+def round_sig(value, sig=3):
     """
-    Function to round a float to a specific number of significant figures
-    and return it as a string.
+    Rounds a float to a specific number of sig. figs. & return it as a string.
 
     Parameters
     ----------
-    x: float
+    value: float
        The float that is to be rounded.
     sig: int
         The number of significant figures.
@@ -233,16 +231,16 @@ def round_sig(x, sig=3):
         The rounded output string.
 
     """
-    if x == 0.:
+    if value == 0.:
         return str(0.)
-    if x < 0.:
-        return str(-1. * round(abs(x),
-                               sig - int(math.floor(math.log10(abs(x)))) - 1))
-    else:
-        return str(round(x, sig - int(math.floor(math.log10(x))) - 1))
+    if value < 0.:
+        value = abs(value)
+        return str(-1. * round(value,
+                               sig - int(math.floor(math.log10(value))) - 1))
+    return str(round(value, sig - int(math.floor(math.log10(value))) - 1))
 
 
-def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
+def add_linear_regression(ax, arr_x, arr_y, showtext=True, add_diagonal=False,
                           extent=None):
     """
     Add a straight line fit to an axis.
@@ -257,18 +255,17 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
         The data for the y coordinate.
     showtext: bool
         A flag to turn on or off the result of the fit on the plot.
-    addOneToOne: bool
-        A flag to also add a 1:1 line to the figure
+    add_diagonal: bool
+        A flag to also add the 1:1 diagonal line to the figure
     extent: list of floats
         The extent of the plot axes.
     """
-
-    beta1, beta0, rValue, pValue, stdErr = linregress(arr_x, arr_y)
+    beta1, beta0, rValue, pValue, stderr = linregress(arr_x, arr_y)
     texts = [r'$\^\beta_0$ = ' + round_sig(beta0),
              r'$\^\beta_1$ = ' + round_sig(beta1),
              r'R = ' + round_sig(rValue),
              r'P = ' + round_sig(pValue),
-             r'N = '+str(int(len(arr_x)))]
+             r'N = ' + str(int(len(arr_x)))]
     thetext = '\n'.join(texts)
 
     if showtext:
@@ -276,24 +273,25 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, addOneToOne=False,
                     verticalalignment='top', transform=ax.transAxes)
 
     if extent is None:
-        fx = arange(arr_x.min(), arr_x.max(),
-                    (arr_x.max() - arr_x.min()) / 20.)
-        fy = [beta0 + beta1 * a for a in fx]
+        x_values = np.arange(arr_x.min(), arr_x.max(),
+                             (arr_x.max() - arr_x.min()) / 20.)
+        y_values = [beta0 + beta1 * a for a in x_values]
     else:
         minv = min(extent)
         maxv = max(extent)
-        fx = np.arange(minv, maxv, (maxv - minv)/1000.)
-        fy = np.array([beta0 + beta1 * a for a in fx])
+        x_values = np.arange(minv, maxv, (maxv - minv) / 1000.)
+        y_values = np.array([beta0 + beta1 * a for a in x_values])
 
-        mask = (fx < minv) + (fy < minv) + (fx > maxv) + (fy > maxv)
-        fx = np.ma.masked_where(mask, fx)
-        fy = np.ma.masked_where(mask, fy)
+        mask = (x_values < minv) + (y_values < minv) \
+            + (x_values > maxv) + (y_values > maxv)
+        x_values = np.ma.masked_where(mask, x_values)
+        y_values = np.ma.masked_where(mask, y_values)
 
-    pyplot.plot(fx, fy, 'k')
+    pyplot.plot(x_values, y_values, 'k')
 
-    if addOneToOne:
+    if add_diagonal:
         axis = pyplot.gca().axis()
-        step = (max(axis) - min(axis))/100.
+        step = (max(axis) - min(axis)) / 100.
         one_to_one = np.arange(min(axis), max(axis) + step, step)
         pyplot.plot(one_to_one, one_to_one, 'k--')
 
@@ -336,7 +334,7 @@ def make_scatter(
             layers[layer] = True
 
     logger.debug('layers: %s', layers)
-    logger.debug('cubes: %s', ', '.join(cubes.keys()))
+    logger.debug('cubes: %s', ', '.join(cubes))
 
     # ####
     # load names:
@@ -366,17 +364,17 @@ def make_scatter(
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-        hexbin = pyplot.hexbin(model_data,
-                               obs_data,
-                               # xscale='log',
-                               # yscale='log',
-                               bins='log',
-                               # extent=np.log10(plotrange),
-                               gridsize=50,
-                               cmap=pyplot.get_cmap(colours),
-                               mincnt=0)
-        cb = pyplot.colorbar()
-        cb.set_label('log10(N)')
+        pyplot.hexbin(model_data,
+                      obs_data,
+                      xscale='log',
+                      # yscale='log',
+                      bins='log',
+                      # extent=np.log10(plotrange),
+                      gridsize=50,
+                      cmap=pyplot.get_cmap(colours),
+                      mincnt=0)
+        cbar = pyplot.colorbar()
+        cbar.set_label('log10(N)')
 
         pyplot.gca().set_aspect("equal")
         pyplot.axis(plotrange)
@@ -384,7 +382,7 @@ def make_scatter(
         add_linear_regression(pyplot.gca(),
                               model_data, obs_data,
                               showtext=True,
-                              addOneToOne=True,
+                              add_diagonal=True,
                               extent=plotrange)
 
         pyplot.title(long_name)
@@ -415,7 +413,6 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s, %s',

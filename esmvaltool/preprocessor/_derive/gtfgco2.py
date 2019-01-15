@@ -3,7 +3,6 @@ import iris
 from iris import Constraint
 
 import numpy as np
-import cf_units
 
 from ._derived_variable_base import DerivedVariableBase
 
@@ -29,16 +28,14 @@ def calculate_total_flux(fgco2_cube, cube_area):
     """
     data = []
     times = fgco2_cube.coord('time')
-    time_dim = fgco2_cube.coord_dims('time')[0]
 
     fgco2_cube.data = np.ma.array(fgco2_cube.data)
-    for time_itr, time in enumerate(times.points):
+    for time_itr in np.arange(len(times.points)):
 
         total_flux = fgco2_cube[time_itr].data * cube_area.data
 
         total_flux = np.ma.masked_where(fgco2_cube[time_itr].data.mask,
                                         total_flux)
-        # print (time_itr, time, total_flux.sum())
         data.append(total_flux.sum())
 
     ######
@@ -54,10 +51,8 @@ class DerivedVariable(DerivedVariableBase):
     _required_variables = {
         'vars': [{
             'short_name': 'fgco2',
-            'field': 'TO2M'
-         }],
-        'fx_files': ['areacello', ]
-    }
+            'field': 'TO2M', }],
+        'fx_files': ['areacello', ]}
 
     def calculate(self, cubes, use_fx_files=False, fx_files={None}):
         """Compute longwave cloud radiative effect."""

@@ -142,7 +142,6 @@ def calculate_volume(cube, coordz):
     # ####
     # Load depth field and figure out which dim is which.
     depth = cube.coord(coordz)
-    t_dim = cube.coord_dims('time')[0]
     z_dim = cube.coord_dims(coordz)[0]
 
     # ####
@@ -229,7 +228,8 @@ def volume_average(
                               [cube_shape[0], 1, 1, 1])
 
     if cube.data.shape != grid_volume.shape:
-        assert 0
+        raise ValueError('Cube shape ({}) doesn`t match grid volume shape '
+                         '({})'.format(cube.data.shape, grid_volume.shape))
 
     # #####
     # Calculate global volume weighted average
@@ -248,16 +248,15 @@ def volume_average(
             # ####
             # Calculate weighted mean for this time and layer
             total = cube[time_itr, z_itr].collapsed(
-                [coordz, coord1,  coord2], iris.analysis.MEAN,
-                weights=grid_volume[time_itr, z_itr]
-                ).data
+                [coordz, coord1, coord2],
+                iris.analysis.MEAN,
+                weights=grid_volume[time_itr, z_itr]).data
             column.append(total)
 
             try:
                 layer_vol = np.ma.masked_where(
                     cube[time_itr, z_itr].data.mask,
-                    grid_volume[time_itr, z_itr]
-                    ).sum()
+                    grid_volume[time_itr, z_itr]).sum()
 
             except AttributeError:
                 # ####

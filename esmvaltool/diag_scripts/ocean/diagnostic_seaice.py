@@ -70,7 +70,6 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def create_ice_cmap(threshold=0.15):
     """
     Create colour map with ocean blue below a threshold and white above.
-    The threshold defaults to 15%.
 
     Parameters
     ----------

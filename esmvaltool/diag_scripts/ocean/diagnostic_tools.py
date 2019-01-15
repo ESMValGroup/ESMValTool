@@ -13,6 +13,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+import iris
 
 import numpy as np
 import cftime
@@ -664,9 +665,7 @@ def get_array_range(arrays):
     list:
         A list of two values, the overall minumum and maximum values of the
         list of cubes.
-
     """
-
     mins = []
     maxs = []
     for arr in arrays:
