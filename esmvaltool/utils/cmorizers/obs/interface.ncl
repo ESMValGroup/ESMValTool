@@ -14,4 +14,4 @@ loadscript("$settings")
 loadscript(getenv("esmvaltool_root") + "/interface_scripts/logging.ncl")
 
 ; Load utility functions
-loadscript(getenv("esmvaltool_root") + "/cmor/cmorizers/obs/utilities.ncl")
+loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/utilities.ncl")
