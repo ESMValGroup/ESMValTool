@@ -271,7 +271,7 @@ class VariableInfo(JsonInfo):
         """
         super(VariableInfo, self).__init__()
         self.table_type = table_type
-        self.modeling_realm = ""
+        self.modeling_realm = []
         """Modeling realm"""
         self.short_name = short_name
         """Short name"""
@@ -318,7 +318,8 @@ class VariableInfo(JsonInfo):
         self.valid_min = self._read_json_variable('valid_min')
         self.valid_max = self._read_json_variable('valid_max')
         self.positive = self._read_json_variable('positive')
-        self.modeling_realm = self._read_json_variable('modeling_realm')
+        self.modeling_realm = \
+            self._read_json_variable('modeling_realm').split()
 
         self.dimensions = self._read_json_variable('dimensions').split()
 
@@ -509,7 +510,7 @@ class CMIP5Info(object):
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
                 break
-            if key in ('dimensions',):
+            if key in ('dimensions', 'modelling_realm'):
                 setattr(var, key, value.split(' '))
             elif hasattr(var, key):
                 setattr(var, key, value)
