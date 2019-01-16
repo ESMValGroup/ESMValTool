@@ -34,9 +34,6 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
-    - r-base
-    - r-rcpp
-    - libgfortran-ng
   run:
     # esmvaltool
     - python
@@ -46,6 +43,7 @@ requirements:
     - cartopy
     - cf_units
     - cython
+    - esmpy
     - matplotlib<3
     - netCDF4
     - numba
@@ -61,10 +59,8 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
-    - gcc
     - r-base
     - r-rcpp
-    - libgfortran-ng
     # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
