@@ -749,6 +749,7 @@ def _get_preprocessor_task(variables,
         derive_profile, profile = _split_derive_profile(profile)
         derive_input = {}
         for variable in variables:
+            _add_cmor_info(variable, derive=True)
             if not variable.get('force_derivation') and get_input_filelist(
                     variable=variable,
                     rootpath=config_user['rootpath'],
@@ -761,7 +762,6 @@ def _get_preprocessor_task(variables,
                 derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
-                _add_cmor_info(variable, derive=True)
                 for new_variable in get_required(variable['short_name'],
                                                  variable['field'])['vars']:
                     short_name = new_variable['short_name']
