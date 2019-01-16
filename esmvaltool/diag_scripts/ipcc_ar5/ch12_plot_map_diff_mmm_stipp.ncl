@@ -353,15 +353,7 @@ begin
   if (isatt(diag_script_info, "units")) then
     pres@lbTitleString = diag_script_info@units
   else
-;    if (isatt(diag_script_info, "percent")) then
-;      if (diag_script_info@percent .eq. 1) then
-;        unit_string = to_plot@units
-;      else
-;        unit_string = format_units(to_plot@units)
-;      end if
-;    else
-      unit_string = format_units(to_plot@units)
-;    end if
+    unit_string = format_units(to_plot@units)
     pres@lbTitleString = "(" + unit_string + ")"
   end if
   pres@lbTitleFontHeightF = 0.017
