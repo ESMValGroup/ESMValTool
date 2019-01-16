@@ -1,30 +1,12 @@
-#### summary
-#recipe_autoassess_radiation_rms_Amon_all.yml
-#
-#Description
-#Diagnostics of spatial RMS errors of radiation and clouds
-#
-#Author
-#Yoko Tsushima (Met Office, United Kingdom - yoko.tsushima@metoffice.gov.uk)
-#
-#Contributor
-#Simon Read (University of Reading,  United Kingdom)
-#
-#Author version2
-#Valeriu Predoi: VP (University of Reading, UK)
-#
-#Project
-#CMUG
-#
-#Port to ESMValTool v2: July 2018
-# Final version of recipe: July 2018
-#
-#References
-#Technical report or a paper will be written in the future.
-#
-#This recipe is part of the ESMValTool
-###########################################################################################################
 ---
+documentation:
+  description: Diagnostics of spatial RMS errors of radiation and clouds.
+  authors:
+    - tsus_yo
+    - read_si
+    - pred_va
+  projects:
+    - cmug
 
 datasets:
   - {dataset: MRI-CGCM3,  project: CMIP5,  mip: cfMon,  exp: amip,  ensemble: r1i1p1,  start_year: 1985,  end_year: 1988}
