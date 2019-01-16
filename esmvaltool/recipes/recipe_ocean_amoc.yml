@@ -9,10 +9,10 @@ documentation:
     the years 2001-2004.
 
   authors:
-    - ledm
+    - demo_le
 
   references:
-    - BGC-val:gmd-2018-103, https://doi.org/10.5194/gmd-11-4215-2018, 2018.
+    - demora2018gmd
 
   projects:
     - ukesm
