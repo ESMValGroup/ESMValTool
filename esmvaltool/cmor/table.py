@@ -510,8 +510,8 @@ class CMIP5Info(object):
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):
                 break
-            if key in ('dimensions', 'modelling_realm'):
-                setattr(var, key, value.split(' '))
+            if key in ('dimensions', 'modeling_realm'):
+                setattr(var, key, value.split())
             elif hasattr(var, key):
                 setattr(var, key, value)
         for dim in var.dimensions:
