@@ -23,6 +23,7 @@
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
 load "./diag_scripts/shared/plot/contourplot.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
@@ -32,20 +33,15 @@ begin
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods"/)
@@ -73,6 +69,7 @@ begin
     dim_seas = 1
   end if
 end
+
 begin
   ; #############################################
   ; # Get parameters from ./variable_defs/*.ncl #
@@ -81,33 +78,33 @@ begin
   if(isvar("MyParam")) then
     delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_info(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
   ; ###########################################
   ; # Get data                                #
   ; ###########################################
-  datapath = netcdf_dir + "/" + variable_info@diagnostic + ".nc"
+  datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   to_plot = ncdf_read(datapath, var0)
 
   ; Check dimensions
   dims = getvardims(to_plot)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lon dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
   end if
   lev_name = dims(idx)
 
@@ -133,7 +130,7 @@ begin
   ; # Separate output to a graphics file, Panelling      #
   ; ######################################################
   ; function in aux_plotting.ncl
-  wks = get_wks(0, variable_info@diagnostic, \
+  wks = get_wks(0, variable_info[0]@diagnostic, \
                 var0 + "_" + diag_script_info@time_avg)
 
   if (isatt(diag_script_info, "max_vert")) then
@@ -350,7 +347,8 @@ begin
   if (isatt(diag_script_info, "units")) then
     psles@lbTitleString = diag_script_info@units
   else
-    psles@lbTitleString = "(" + to_plot@var_units + ")"
+    unit_string = format_units(to_plot@units)
+    psles@lbTitleString = "(" + unit_string + ")"
   end if
   psles@lbTitleFontHeightF = 0.017
   psles@lbTitleDirection = "across"
@@ -370,5 +368,5 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, psles)
 
   log_info(" Wrote " + outfile)
-
+  leave_msg(DIAG_SCRIPT, "")
 end

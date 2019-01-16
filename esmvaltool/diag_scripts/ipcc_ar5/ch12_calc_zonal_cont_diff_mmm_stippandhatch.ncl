@@ -46,29 +46,32 @@
 ; Passes on a number of variables from Python to NCL
 load "./interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
+load "./diag_scripts/shared/scaling.ncl"
+
+load "./diag_scripts/shared/plot/style.ncl"
 
 begin
   ; ##############################################################
   ; # Fetch general parameters, set in namelist_collins13ipcc.xml#
   ; # passed via environment variables by python code            #
   ; ##############################################################
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
-  ; 'diag_script' and 'variables' are fetched from the
-  ; above 'ncl.interface' file
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; above 'interface.ncl' file
+  var0 = variable_info[0]@short_name
+  field_type0 = variable_info[0]@field
+  info_items = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info_items)
+  dim_VAR = ListCount(variable_info)
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'ncl.interface' file
-  dim_MOD = dimsizes(dataset_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
+  ; Save some dataset attributes as arrays for index-based selection below
+  dataset_names = metadata_att_as_array(info_items, "dataset")
+  dataset_exps = metadata_att_as_array(info_items, "exp")
+  dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
+  dataset_startyears = metadata_att_as_array(info_items, "start_year")
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "periods", "time_avg", "label"/)
@@ -98,11 +101,11 @@ begin
   if(isvar("MyParam")) then
       delete(MyParam)
   end if
-  if(isatt(variable_info, "long_name")) then
-    MyParam = variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    MyParam = variable_info[0]@long_name
     log_info(" MyParam = " + MyParam)
   else
-    error_msg("f", diag_script, "", "missing variable attribute " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing variable attribute " + \
               "'long_name'")
   end if
 
@@ -111,28 +114,28 @@ begin
   ; ###########################################
   ; get data from first model
   imod = 0  ; NCL array indicies start from zero
-  log_info("processing " + dataset_info@dataset(imod) + "_"\
-           + dataset_info@exp(imod) + "_"\
-           + dataset_info@ensemble(imod))
+  log_info("processing " + info_items[imod]@dataset + "_"\
+           + info_items[imod]@exp + "_"\
+           + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(imod, var0, field_type0)
+  A0 = read_data(info_items[imod])
 
   ; Check dimensions
   dims = getvardims(A0)
   if (dimsizes(dims) .lt. 2) then
-    error_msg("f", diag_script, "", dimsizes(dims) + " dimensions, " + \
+    error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 2 or 3")
   end if
   idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no lat dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
   end if
   lat_name = dims(idx)
 
   idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
   if (ismissing(idx)) then
-    error_msg("f", diag_script, "", "no level dimension")
+    error_msg("f", DIAG_SCRIPT, "", "no level dimension")
   end if
   lev_name = dims(idx)
 
@@ -147,11 +150,11 @@ begin
   dim_scenarios = dimsizes(diag_script_info@scenarios)
   dim_label = dim_seas * dim_scenarios * dim_periods
   if (dim_label .ne. dimsizes(diag_script_info@label)) then
-    error_msg("f", diag_script, "", "wrong number of labels, needs to be " + \
+    error_msg("f", DIAG_SCRIPT, "", "wrong number of labels, needs to be " + \
               "seasons * scenarios * periods")
   end if
 
-  annots = project_style(diag_script_info, "annots")
+  annots = project_style(info_items, diag_script_info, "annots")
   Fill = default_fillvalue(typeof(A0))
 
   var_reg = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
@@ -182,17 +185,17 @@ begin
 
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
-      A0 = read_data(imod, var0, field_type0)
+      A0 = read_data(info_items[imod])
       data1 = time_operations(A0, -1, -1, "average", "annualclim", True)
       dims = getvardims(A0)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
       if (ismissing(idx)) then
-        error_msg("f", diag_script, "", "no lat dimension")
+        error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
       end if
       lat_name = dims(idx)
       idx = ind(dims .eq. "lev" .or. dims .eq. "plev")
       if (ismissing(idx)) then
-        error_msg("f", diag_script, "", "no level dimension")
+        error_msg("f", DIAG_SCRIPT, "", "no level dimension")
       end if
       lev_name = dims(idx)
     end if
@@ -209,17 +212,22 @@ begin
         ; #########################################################
         iav_file = addfile(input_dir + "/" + \
                            "IAV_piControl_" + \
-                           dataset_info@dataset(imod) + "_" + \
-                           dataset_info@ensemble(imod) + "_" + field_type0 \
+                           info_items[imod]@dataset + "_" + \
+                           info_items[imod]@ensemble + "_" + field_type0 \
                            + "_" + var0 + "_" + \
                            diag_script_info@time_avg + ".nc", "r")
         iav_zon = iav_file->iav
-        if (dim_seas .eq. 1) then
+        if ((dim_seas .eq. 1) .and. \
+            (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_zon
+        else if ((dim_seas .eq. 1) .and. \
+                 (diag_script_info@time_avg .eq. "seasonalclim")) then
+          tmp_iav = iav_zon
+          iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
         else
           iav(imod, :, :, :) = iav_zon
         end if
-        delete(iav_native)
+        end if
       end if
     end if
     delete(A0)
@@ -229,21 +237,53 @@ begin
       ; calculate multi-model mean of iav
       tmp_pow = dim_avg_n(iav ^ 2, 0)
       natvar_mmm = rm_single_dims(tmp_pow * sqrt(2.))
+    else if (diag_script_info@iavmode .eq. "mmm") then
+      log_info("Read precalculated natural variability for multi-model")
+      ; read already calculated mmm iav
+      natvar_file = addfile(input_dir + "/" + \
+                            "IAV_mmm_piControl_" + field_type0 + \
+                            "_" + var0 + "_" + diag_script_info@time_avg + \
+                            ".nc", "r")
+      natvar_mmm = natvar_file->iav
+      if ((dim_seas .ne. 4) .and. \
+          (diag_script_info@time_avg .ne. "annualclim")) then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
+                          dimsizes(A0&lev), dimsizes(A0&lat)/), float)
+        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+      end if
     else
-      log_info("Error: This iavmode is not know")
+      error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
+    end if
     end if
   else
+    log_info("Read precalculated natural variability for multi-model")
     ; read already calculated mmm iav
     natvar_file = addfile(input_dir + "/" + \
                           "IAV_mmm_piControl_" + field_type0 + \
                           "_" + var0 + "_" + diag_script_info@time_avg + \
                           ".nc", "r")
     natvar_mmm = natvar_file->iav
+    if ((dim_seas .ne. 4) .and. \
+        (diag_script_info@time_avg .ne. "annualclim")) then
+      tmp = natvar_mmm
+      delete(natvar_mmm)
+      natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
+                        dimsizes(A0&lev), dimsizes(A0&lat)/), float)
+      natvar_mmm = tmp(diag_script_info@seasons, :, :)
+    end if
   end if
 
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
   ; loop over rcps and periods
   dim_scen = dimsizes(diag_script_info@scenarios)
   dim_per = dimsizes(diag_script_info@periods)
@@ -269,18 +309,22 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do rcp = 0, dim_scen - 1  ; loop over rcps
       do per = 0, dim_per - 1  ; loop over periods
-        idx_rcp = ind((dataset_info@exp .eq. \
-                       diag_script_info@scenarios(rcp)) .and. \
-                      (dataset_info@start_year .eq. \
-                       diag_script_info@periods(per)))
+        idx_rcp = ind(dataset_exps .eq. diag_script_info@scenarios(rcp) .and. \
+                      dataset_startyears .eq. diag_script_info@periods(per))
         proj = var_reg(idx_rcp, seas, :, :)
         proj_avg = dim_avg_n_Wrap(proj, 0)
-        ; find historical runs from same models as in rcp
-        idx_hist = find_model_index(dataset_info@dataset(idx_rcp), \
-                                    dataset_info@dataset, "historical",\
-                                    dataset_info@exp, \
-                                    dataset_info@ensemble(idx_rcp), \
-                                    dataset_info@ensemble, 0)
+        ; Find historical runs from same models as in rcp
+        do jj = 0, dimsizes(idx_rcp) - 1
+          tmp_idx = ind(dataset_names .eq. dataset_names(idx_rcp(jj)) .and. \
+                        dataset_exps .eq. reference_run_name .and. \
+                        dataset_ensembles .eq. dataset_ensembles(idx_rcp(jj)))
+          if (isdefined("idx_hist")) then
+            idx_hist := array_append_record(idx_hist, tmp_idx, 0)
+          else
+            idx_hist = tmp_idx
+          end if
+          delete(tmp_idx)
+        end do
         base = var_reg(idx_hist, seas, :, :)
         base_avg = dim_avg_n_Wrap(base, 0)
         var_diff = proj - base
@@ -289,7 +333,8 @@ begin
         if (isatt(diag_script_info, "base_cn")) then
           to_plot_base(i, :, :) = base_avg
         end if
-        ; determine sigma and sign for significance
+
+        ; Determine sigma and sign for significance
         log_debug("determine sigma and sign for significance")
         var_pos_signif = dim_num_n(where(var_diff .gt. 0., 1., \
                                          to_plot@_FillValue) .eq. 1., 0)
@@ -353,39 +398,39 @@ begin
   if(isatt(to_plot, "diag_script")) then  ; Add to existing entries
     temp = to_plot@diag_script
     delete(to_plot@diag_script)
-    to_plot@diag_script = array_append_record(temp, (/diag_script/), 0)
+    to_plot@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    to_plot@diag_script = (/diag_script/)
+    to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot@var = var0  ; Overwrite existing entry
-  if(isatt(variable_info, "long_name")) then
-    to_plot@var_long_name = "change in " + variable_info@long_name
+  if(isatt(variable_info[0], "long_name")) then
+    to_plot@var_long_name = "change in " + variable_info[0]@long_name
   end if
-  if(isatt(variable_info, "units")) then
-    to_plot@var_units     = variable_info@units
+  if (isatt(diag_script_info, "plot_units")) then
+    to_plot = convert_units(to_plot, diag_script_info@plot_units)
   end if
 
   if (isatt(diag_script_info, "base_cn")) then
     if(isatt(to_plot_base, "diag_script")) then  ; Add to existing entries
       temp = to_plot_base@diag_script
       delete(to_plot_base@diag_script)
-      to_plot_base@diag_script = array_append_record(temp, (/diag_script/), 0)
+      to_plot_base@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
       delete(temp)
     else
-      to_plot_base@diag_script = (/diag_script/)
+      to_plot_base@diag_script = (/DIAG_SCRIPT/)
     end if
     to_plot_base@var = var0 + "_base"
-    to_plot_base@var_long_name = variable_info@long_name
-    to_plot_base@var_units     = variable_info@units
+    to_plot_base@var_long_name = variable_info[0]@long_name
+    to_plot_base@var_units     = variable_info[0]@units
   end if
   if(isatt(to_plot_signif, "diag_script")) then  ; Add to existing entries
     temp = to_plot_signif@diag_script
     delete(to_plot_signif@diag_script)
-    to_plot_signif@diag_script = array_append_record(temp, (/diag_script/), 0)
+    to_plot_signif@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    to_plot_signif@diag_script = (/diag_script/)
+    to_plot_signif@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot_signif@var = "signif"
   to_plot_signif@var_long_name = "significance: mean change larger than" +\
@@ -397,10 +442,10 @@ begin
     temp = to_plot_not_signif@diag_script
     delete(to_plot_not_signif@diag_script)
     to_plot_not_signif@diag_script = array_append_record(temp, \
-                                                         (/diag_script/), 0)
+                                                         (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    to_plot_not_signif@diag_script = (/diag_script/)
+    to_plot_not_signif@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot_not_signif@var = "not_signif"
   to_plot_not_signif@var_long_name = "not significant: mean change smaller"\
@@ -412,10 +457,10 @@ begin
   if(isatt(model_number, "diag_script")) then  ; Add to existing entries
     temp = model_number@diag_script
     delete(model_number@diag_script)
-    model_number@diag_script = array_append_record(temp, (/diag_script/), 0)
+    model_number@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
     delete(temp)
   else  ; Add as new attribute
-    model_number@diag_script = (/diag_script/)
+    model_number@diag_script = (/DIAG_SCRIPT/)
   end if
   model_number@var = "model_nr"
   model_number@var_long_name = "number of models in mmm"
@@ -425,8 +470,7 @@ begin
   ; # Output to netCDF                        #
   ; ###########################################
   ; Output (controlled by diag_script_info)
-  log_info("Write to netcdf")
-  to_plot@ncdf = variable_info@diagnostic + ".nc"
+  to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
   ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
@@ -440,4 +484,5 @@ begin
     ncdf_outfile = ncdf_write(to_plot_base, ncdf_file)
   end if
 
+  leave_msg(DIAG_SCRIPT, "")
 end
