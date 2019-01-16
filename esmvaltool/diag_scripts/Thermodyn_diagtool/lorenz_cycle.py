@@ -56,7 +56,6 @@ class LorenzCycle():
         - mkkekz: computes the zonal KE - eddy KE conversion terms;
         - mkatas: computes the stationay eddy - transient eddy APE conversions;
         - mkktks: computes the stationay eddy - transient eddy KE conversions;
-        - ncdump: provides the attributes of a given variable in a Nc dataset;
         - pr_output: prints a single component of the LEC computations to a
                      single Nc file;
         - removeif: removes a file if it exists;
@@ -405,7 +404,7 @@ class LorenzCycle():
                 as2at, kt2kz, kt2ks, ks2kz):
         """Diagram interface script.
 
-        Call the class fluxogram, serving as  
+        Call the class fluxogram, serving as
         interface between the main script and the class for flux
         diagrams design.
 
@@ -418,7 +417,7 @@ class LorenzCycle():
         flux.add_storage("KTE", 600, 1.5, 1.5)
         flux.add_storage("KSE", 600, 0.75, 1.25)
         flux.add_storage("KZ", 600, 0, 1.5)
-        flux.add_storage("AZ+", 0, 0,  -1)
+        flux.add_storage("AZ+", 0, 0, -1)
         flux.add_storage("ASE+", 0, 0.75, -1)
         flux.add_storage("ATE+", 0, 1.5, -1)
         flux.add_storage("KTE-", 0, 1.5, 2.5)
@@ -441,34 +440,35 @@ class LorenzCycle():
         flux.add_flux("KZ-", flux.storages[5], flux.storages[11], 60)
         flux.draw(filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt,
                   kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as,
-                  as2at, kt2kz, kt2ks, ks2kz) 
+                  as2at, kt2kz, kt2ks, ks2kz)
          
     def gauaw(self, n_y):
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
         
         @author: Valerio Lembo
         """       
-        lorenz = LorenzCycle()    
+        lorenz = LorenzCycle()
         c_c = (1 - (2 / math.pi) ** 2) / 4
         eps = 0.00000000000001
-        kk = n_y / 2
+        k_k = n_y / 2
         p_a = np.zeros(n_y)
-        p_a[0:kk] = lorenz.bsslzr(kk)
+        p_a[0:k_k] = lorenz.bsslzr(k_k)
         p_w = np.zeros(n_y)
-        for i in range(kk):
+        for i in range(k_k):
             x_z = np.cos(p_a[i] / math.sqrt((n_y + 0.5) ** 2 + c_c))
             iterr = 0.
             zsp = 1.0
             while (abs(zsp) > eps and iterr <= 10):
                 pkm1 = x_z
                 pkm2 = 1.0
-                for n in range(2, n_y, 1):
-                    pk = ((n * 2 - 1.0) * x_z * pkm1 - (n - 1.0) * pkm2) / n
+                for n_n in range(2, n_y, 1):
+                    p_k = ((n_n * 2 - 1.0) * x_z \
+                           * pkm1 - (n_n - 1.0) * pkm2) / n_n
                     pkm2 = pkm1
-                    pkm1 = pk
+                    pkm1 = p_k
                 pkm1 = pkm2
-                pkmrk = (n_y * (pkm1 - x_z * pk)) / (1.0 - x_z ** 2)
-                zsp = pk / pkmrk
+                pkmrk = (n_y * (pkm1 - x_z * p_k)) / (1.0 - x_z ** 2)
+                zsp = p_k / pkmrk
                 x_z = x_z - zsp
                 iterr = iterr + 1
             if iterr > 15:
@@ -485,7 +485,7 @@ class LorenzCycle():
         """Compute the global and hemispheric averages.
         
         @author: Valerio Lembo
-        """    
+        """
         gmn = np.zeros([3, ntp - 1])
         aux1 = np.zeros([nlev, nlat / 2, ntp - 1])
         aux2 = np.zeros([nlev, nlat / 2, ntp - 1])
@@ -496,8 +496,8 @@ class LorenzCycle():
         for l in range(nlev):
             for i in range(nhem):
                 aux1[l, i, :] = fac * np.real(d3v[l, i, :]) * g_w[i]
-                aux2[l, i, :] = fac * np.real(d3v[l, i + nhem - 1, :])\
-                                * g_w[i + nhem - 1]
+                aux2[l, i, :] = (fac * np.real(d3v[l, i + nhem - 1, :])\
+                                 * g_w[i + nhem - 1])
             aux1v[l, :] = np.nansum(aux1[l, :, :],
                                     axis=0) / np.nansum(g_w[0:nhem]) * d_s[l]
             aux2v[l, :] = np.nansum(aux2[l, :, :],
@@ -505,95 +505,98 @@ class LorenzCycle():
         gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
         gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
         gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
-        return(gmn)
+        return gmn
 
-    def makek(self, u, v, nlat, ntp, nlev):
+    def makek(self, u_t, v_t, nlat, ntp, nlev):
         """Compute the kinetic energy reservoirs from u and v.
 
         @author: Valerio Lembo
         """
-        ek = np.zeros([nlev, nlat, ntp - 1])
-        ck1 = u * np.conj(u)
-        ck2 = v * np.conj(v)
-        ek[:, :, 0] = 0.5 * np.real(u[:, :, 0] * u[:, :, 0] +
-                                    v[:, :, 0] * v[:, :, 0])
-        ek = np.real(ck1 + ck2)
-        ek[:, :, 0] = 0.5 * np.real(u[:, :, 0] * u[:, :, 0] +
-                                    v[:, :, 0] * v[:, :, 0])
-        return(ek)
-    
-        
-    def makea(self, t, tg, gam, nlat, ntp, nlev):
+        e_k = np.zeros([nlev, nlat, ntp - 1])
+        ck1 = u_t * np.conj(u_t)
+        ck2 = v_t * np.conj(v_t)
+        e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
+                                     v_t[:, :, 0] * v_t[:, :, 0])
+        e_k = np.real(ck1 + ck2)
+        e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
+                                     v_t[:, :, 0] * v_t[:, :, 0])
+        return e_k
+     
+    def makea(self, t_t, t_g, gam, nlat, ntp, nlev):
         """Compute the kinetic energy reservoirs from t.
         
         @author: Valerio Lembo
         """  
-        a = gam[:, np.newaxis, np.newaxis] * np.real(t * np.conj(t))
-        a[:, :, 0] = gam[:, np.newaxis] * 0.5 * \
-        np.real((t[:, :, 0] - tg[:, np.newaxis]) *
-                (t[:, :, 0]-tg[:, np.newaxis]))        
-        return(a)
+        ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
+        ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 
+                        * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) 
+                                  * (t_t[:, :, 0] - t_g[:, np.newaxis])))        
+        return ape
 
-    def mka2k(self, wap,t,wg,tg,p,nlat,ntp,nlev):
+    def mka2k(self, wap, t_t, w_g, t_g, p_l, nlat, ntp, nlev):
         """Compute the KE to APE energy conversions from t and w.
         
         @author: Valerio Lembo
         """  
-        a2k = -R / p[:, np.newaxis, np.newaxis] *\
-        (t * np.conj(wap) + np.conj(t) * wap)
-        a2k[:, :, 0]=-R/p[:, np.newaxis]*(t[:, :, 0] -\
-        tg[:, np.newaxis])*(wap[:, :, 0] - wg[:, np.newaxis])
-        return(a2k)   
+        a2k = -R / p_l[:, np.newaxis, np.newaxis] *\
+        (t_t * np.conj(wap) + np.conj(t_t) * wap)
+        a2k[:, :, 0]= - (R / p_l[:, np.newaxis]
+                         * (t_t[:, :, 0] - t_g[:, np.newaxis])
+                         * (wap[:, :, 0] - w_g[:, np.newaxis]))
+        return a2k   
     
-    def mkaeaz(self, v,wap, t, tt, ttg, p, lat, gam, nlat, ntp, nlev):
+    def mkaeaz(self, v_t, wap, t_t, tt, ttg, p_l, lat, gam, nlat, ntp, nlev):
         """Compute the zonal mean - eddy APE conversions from t and v.
         
         @author: Valerio Lembo
         """  
-        ae2az = np.zeros([nlev, nlat, ntp-1])
+        ae2az = np.zeros([nlev, nlat, ntp - 1])
         dtdp = np.zeros([nlev, nlat])
         dtdy = np.zeros([nlev, nlat])
         for l in np.arange(nlev):
             if l == 0:
-                t1 = np.real(tt[l, :, 0]) - ttg[l]
-                t2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
-                dtdp[l, :] = (t2 - t1)/(p[l+1] - p[l])
+                t_1 = np.real(tt[l, :, 0]) - ttg[l]
+                t_2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
+                dtdp[l, :] = (t_2 - t_1) / (p_l[l + 1] - p_l[l])
             elif l == nlev-1:
-                t1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
-                t2 = np.real(tt[l, :, 0]) - ttg[l]
-                dtdp[l, :] = (t2 - t1)/(p[l] - p[l - 1])
+                t_1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
+                t_2 = np.real(tt[l, :, 0]) - ttg[l]
+                dtdp[l, :] = (t_2 - t_1) / (p_l[l] - p_l[l - 1])
             else:
-                t1 = np.real(tt[l, :, 0])-ttg[l]
-                t2 = np.real(tt[l + 1, :, 0])-ttg[l + 1]
-                dtdp1 = (t2 - t1) / (p[l + 1]-p[l])
-                t2 = t1
-                t1 = np.real(tt[l - 1, :, 0])-ttg[l - 1]
-                dtdp2 = (t2 - t1)/(p[l]-p[l - 1])
-                dtdp[l, :] = (dtdp1*(p[l] - p[l - 1]) + \
-                    dtdp2*(p[l + 1]-p[l]))/(p[l + 1]-p[l - 1])
-            dtdp[l, :] = dtdp[l, :]-R / (CP * p[l])*(tt[l, :, 0] - ttg[l])
+                t_1 = np.real(tt[l, :, 0]) - ttg[l]
+                t_2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
+                dtdp1 = (t_2 - t_1) / (p_l[l + 1] - p_l[l])
+                t_2 = t_1
+                t_1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
+                dtdp2 = (t_2 - t_1) / (p_l[l] - p_l[l - 1])
+                dtdp[l, :] = ((dtdp1 * (p_l[l] - p_l[l - 1]) +
+                               dtdp2 * (p_l[l + 1] - p_l[l]))
+                              / (p_l[l + 1] - p_l[l - 1]))
+            dtdp[l, :] = dtdp[l, :] - (R / (CP * p_l[l]) 
+                                       * (tt[l, :, 0] - ttg[l]))
         for i in np.arange(nlat):
             if i == 0:
-                t1 = np.real(tt[:, i, 0])
-                t2 = np.real(tt[:, i + 1, 0])
-                dtdy[:, i] = (t2 - t1)/(lat[i + 1] - lat[i])
+                t_1 = np.real(tt[:, i, 0])
+                t_2 = np.real(tt[:, i + 1, 0])
+                dtdy[:, i] = (t_2 - t_1) / (lat[i + 1] - lat[i])
             elif i == nlat-1:
-                t1 = np.real(tt[:, i - 1,0])
-                t2 = np.real(tt[:, i, 0])
-                dtdy[:, i] = (t2 - t1) / (lat[i] - lat[i - 1])
+                t_1 = np.real(tt[:, i - 1,0])
+                t_2 = np.real(tt[:, i, 0])
+                dtdy[:, i] = (t_2 - t_1) / (lat[i] - lat[i - 1])
             else:
-                t1 = np.real(tt[:, i - 1, 0])
-                t2 = np.real(tt[:, i + 1, 0])
-                dtdy[:, i] = (t2 - t1) / (lat[i + 1] - lat[i - 1])
+                t_1 = np.real(tt[:, i - 1, 0])
+                t_2 = np.real(tt[:, i + 1, 0])
+                dtdy[:, i] = (t_2 - t_1) / (lat[i + 1] - lat[i - 1])
         dtdy = dtdy / AA
-        c1 = np.real(v * np.conj(t) + t * np.conj(v))
-        c2 = np.real(wap * np.conj(t) + t * np.conj(wap))
-        ae2az = gam[:, np.newaxis, np.newaxis]\
-        * (dtdy[:, :, np.newaxis] * c1 + dtdp[:, :, np.newaxis] * c2)      
+        c1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
+        c2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
+        ae2az = (gam[:, np.newaxis, np.newaxis] 
+                 * (dtdy[:, :, np.newaxis] * c1 +
+                    dtdp[:, :, np.newaxis] * c2))
         ae2az[:, :, 0] = 0.
         return(ae2az)
 
-    def mkkekz(self, u, v, wap, ut, vt, p, lat, nlat, ntp, nlev):
+    def mkkekz(self, u_t, v_t, wap, ut, vt, p_l, lat, nlat, ntp, nlev):
         """Compute the zonal mean - eddy KE conversions from u and v.
         
         @author: Valerio Lembo
@@ -602,208 +605,211 @@ class LorenzCycle():
         dvdp = np.zeros([nlev, nlat])
         dudy = np.zeros([nlev, nlat])
         dvdy = np.zeros([nlev, nlat])
-        for l in np.arange(nlev):
-            if l == 0:
-                dudp[l, :] = (np.real(ut[l + 1, :, 0] - ut[l, :, 0]))\
-                / (p[l + 1] - p[l])
-                dvdp[l, :] = (np.real(vt[l + 1, :, 0] - vt[l, :, 0]))\
-                / (p[l + 1] - p[l])
-            elif l == nlev-1:
-                dudp[l, :] = (np.real(ut[l, :, 0] - ut[l - 1, :, 0]))\
-                / (p[l]-p[l - 1])
-                dvdp[l, :] = (np.real(vt[l, :, 0] - vt[l - 1, :, 0]))\
-                / (p[l]-p[l - 1])
+        for l_l in np.arange(nlev):
+            if l_l == 0:
+                dudp[l_l, :] = ((np.real(ut[l_l + 1, :, 0] - ut[l_l, :, 0]))
+                                / (p_l[l_l + 1] - p_l[l_l]))
+                dvdp[l_l, :] = ((np.real(vt[l_l + 1, :, 0] - vt[l_l, :, 0]))
+                                / (p_l[l_l + 1] - p_l[l_l]))
+            elif l_l == nlev-1:
+                dudp[l_l, :] = ((np.real(ut[l_l, :, 0] - ut[l_l - 1, :, 0]))
+                                / (p_l[l_l]-p_l[l_l - 1]))
+                dvdp[l_l, :] = ((np.real(vt[l_l, :, 0] - vt[l_l - 1, :, 0]))
+                                / (p_l[l_l] - p_l[l_l - 1]))
             else:
-                dudp1 = (np.real(ut[l + 1, :, 0] - ut[l, :, 0]))\
-                / (p[l + 1] - p[l])
-                dvdp1 = (np.real(vt[l + 1, :, 0] - vt[l, :, 0]))\
-                / (p[l + 1] - p[l])
-                dudp2 = (np.real(ut[l, :, 0] - ut[l - 1, :, 0]))\
-                / (p[l] - p[l - 1])
-                dvdp2 = (np.real(vt[l, :, 0] - vt[l - 1, :, 0]))\
-                / (p[l] - p[l - 1])
-                dudp[l, :] = (dudp1 * (p[l] - p[l - 1]) +\
-                dudp2 * (p[l + 1] - p[l])) / (p[l + 1] - p[l - 1])
-                dvdp[l, :] = (dvdp1 * (p[l]-p[l - 1]) +\
-                dvdp2 * (p[l + 1] - p[l])) / (p[l + 1] - p[l - 1])         
-        for i in np.arange(nlat):    
-            if i == 0:
-                dudy[:, i]  = (np.real(ut[:, i + 1, 0] - ut[:, i, 0]))\
-                / (lat[i + 1] - lat[i])
-                dvdy[:, i]  = (np.real(vt[:, i + 1, 0] - vt[:, i, 0]))\
-                / (lat[i + 1]-lat[i])
-            elif i == nlat - 1:
-                dudy[:, i]  = (np.real(ut[:, i, 0] - ut[:, i - 1, 0]))\
-                / (lat[i] - lat[i - 1])
-                dvdy[:, i]  = (np.real(vt[:, i, 0] - vt[:, i - 1, 0]))\
-                / (lat[i] - lat[i - 1])
+                dudp1 = ((np.real(ut[l_l + 1, :, 0] - ut[l_l, :, 0]))
+                         / (p_l[l_l + 1] - p_l[l_l]))
+                dvdp1 = ((np.real(vt[l_l + 1, :, 0] - vt[l_l, :, 0]))
+                         / (p_l[l_l + 1] - p_l[l_l]))
+                dudp2 = ((np.real(ut[l_l, :, 0] - ut[l_l - 1, :, 0]))
+                         / (p_l[l_l] - p_l[l_l - 1]))
+                dvdp2 = ((np.real(vt[l_l, :, 0] - vt[l_l - 1, :, 0]))
+                         / (p_l[l_l] - p_l[l_l - 1]))
+                dudp[l_l, :] = ((dudp1 * (p_l[l_l] - p_l[l_l - 1]) +
+                                 dudp2 * (p_l[l_l + 1] - p_l[l_l]))
+                                / (p_l[l_l + 1] - p_l[l_l - 1]))
+                dvdp[l_l, :] = ((dvdp1 * (p_l[l_l] - p_l[l_l - 1]) +
+                                 dvdp2 * (p_l[l_l + 1] - p_l[l_l]))
+                                / (p_l[l_l + 1] - p_l[l_l - 1]))     
+        for i_l in np.arange(nlat):
+            if i_l == 0:
+                dudy[:, i_l]  = ((np.real(ut[:, i_l + 1, 0] - ut[:, i_l, 0]))
+                                 / (lat[i_l + 1] - lat[i_l]))
+                dvdy[:, i_l]  = ((np.real(vt[:, i_l + 1, 0] - vt[:, i_l, 0]))
+                                 / (lat[i_l + 1] - lat[i_l]))
+            elif i_l == nlat - 1:
+                dudy[:, i_l]  = ((np.real(ut[:, i_l, 0] - ut[:, i_l - 1, 0]))
+                                 / (lat[i_l] - lat[i_l - 1]))
+                dvdy[:, i_l]  = ((np.real(vt[:, i_l, 0] - vt[:, i_l - 1, 0]))
+                                 / (lat[i_l] - lat[i_l - 1]))
             else:
-                dudy[:, i]  = (np.real(ut[:, i + 1, 0] - ut[:, i-1, 0]))\
-                / (lat[i + 1] - lat[i - 1])
-                dvdy[:, i]  = (np.real(vt[:, i+1, 0] - vt[:, i - 1, 0]))\
-                / (lat[i + 1] - lat[i - 1])
+                dudy[:, i_l]  = ((np.real(ut[:, i_l + 1, 0] - ut[:, i_l-1, 0]))
+                                 / (lat[i_l + 1] - lat[i_l - 1]))
+                dvdy[:, i_l]  = ((np.real(vt[:, i_l+1, 0] - vt[:, i_l - 1, 0]))
+                                 / (lat[i_l + 1] - lat[i_l - 1]))
         dudy  = dudy / AA
         dvdy  = dvdy / AA       
-        c1 = np.zeros([nlev, nlat, ntp - 1])
-        c2 = np.zeros([nlev, nlat, ntp - 1])
-        c3 = np.zeros([nlev, nlat, ntp - 1])
-        c4 = np.zeros([nlev, nlat, ntp - 1])
-        c5 = np.zeros([nlev, nlat, ntp - 1])
-        c6 = np.zeros([nlev, nlat, ntp - 1])
+        c_1 = np.zeros([nlev, nlat, ntp - 1])
+        c_2 = np.zeros([nlev, nlat, ntp - 1])
+        c_3 = np.zeros([nlev, nlat, ntp - 1])
+        c_4 = np.zeros([nlev, nlat, ntp - 1])
+        c_5 = np.zeros([nlev, nlat, ntp - 1])
+        c_6 = np.zeros([nlev, nlat, ntp - 1])
         ke2kz = np.zeros([nlev, nlat, ntp - 1])
-        uu = u * np.conj(u) + u * np.conj(u)
-        uv = u * np.conj(v) + v * np.conj(u)
-        vv = v * np.conj(v) + v * np.conj(v)
-        uw = u * np.conj(wap) + wap * np.conj(u)
-        vw = v * np.conj(wap) + wap * np.conj(v)
+        uu = u_t * np.conj(u_t) + u_t * np.conj(u_t)
+        uv = u_t * np.conj(v_t) + v_t * np.conj(u_t)
+        vv = v_t * np.conj(v_t) + v_t * np.conj(v_t)
+        uw = u_t * np.conj(wap) + wap * np.conj(u_t)
+        vw = v_t * np.conj(wap) + wap * np.conj(v_t)
         for i in np.arange(nlat):
-            c1[:, i, :] = dudy[:, i][:, np.newaxis] * uv[:, i, :]
-            c2[:, i, :] = dvdy[:, i][:, np.newaxis] * vv[:, i, :]
-            c5[:, i, :] = np.tan(lat[i]) / AA \
-            * np.real(ut[:, i, 0])[:, np.newaxis] * (uv[:, i, :])
-            c6[:, i, :] = - np.tan(lat[i]) / AA \
-            * np.real(vt[:, i, 0])[:, np.newaxis] * (uu[:, i, :])    
+            c_1[:, i, :] = dudy[:, i][:, np.newaxis] * uv[:, i, :]
+            c_2[:, i, :] = dvdy[:, i][:, np.newaxis] * vv[:, i, :]
+            c_5[:, i, :] = (np.tan(lat[i]) / AA *
+                            np.real(ut[:, i, 0])[:, np.newaxis] *
+                            (uv[:, i, :]))
+            c_6[:, i, :] = - (np.tan(lat[i]) / AA *
+                              np.real(vt[:, i, 0])[:, np.newaxis] *
+                              (uu[:, i, :]))
         for l in np.arange(nlev):
-            c3[l, :, :] = dudp[l, :][:, np.newaxis] * uw[l, :, :]
-            c4[l, :, :] = dvdp[l, :][:, np.newaxis] * vw[l, :, :]
-        ke2kz = (c1 + c2 + c3 + c4 + c5 + c6)
+            c_3[l, :, :] = dudp[l, :][:, np.newaxis] * uw[l, :, :]
+            c_4[l, :, :] = dvdp[l, :][:, np.newaxis] * vw[l, :, :]
+        ke2kz = (c_1 + c_2 + c_3 + c_4 + c_5 + c_6)
         ke2kz[:, :, 0] = 0.
-        return(ke2kz)
+        return ke2kz
 
-    def mkatas(self, u, v, wap, t, tt, g_w, p, lat, nlat, ntp, nlev):
+    def mkatas(self, u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
         """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
         
         @author: Valerio Lembo
         """  
-        tr = np.fft.ifft(t, axis=2)
-        ur = np.fft.ifft(u, axis=2)
-        vr = np.fft.ifft(v, axis=2)
-        wr = np.fft.ifft(wap, axis=2)
-        tur = tr * ur
-        tvr = tr * vr
-        twr = tr * wr
-        tu = np.fft.fft(tur, axis=2)
-        tv = np.fft.fft(tvr, axis=2)
-        tw = np.fft.fft(twr, axis=2)
-        c1 = np.zeros([nlev, nlat, ntp-1])
-        c6 = np.zeros([nlev, nlat, ntp-1])
-        c1 = tu * np.conj(tt[:, :, np.newaxis]) \
-        - tt[:, :, np.newaxis] * np.conj(tu)
-        c6 = tw * np.conj(tt[:, :, np.newaxis]) \
-        - tt[:, :, np.newaxis] * np.conj(tw)
-        c2 = np.zeros([nlev, nlat, ntp - 1])
-        c3 = np.zeros([nlev, nlat, ntp - 1])
-        c5 = np.zeros([nlev, nlat, ntp - 1])
+        t_r = np.fft.ifft(t_t, axis=2)
+        u_r = np.fft.ifft(u_t, axis=2)
+        v_r = np.fft.ifft(v_t, axis=2)
+        w_r = np.fft.ifft(wap, axis=2)
+        tur = t_r * u_r
+        tvr = t_r * v_r
+        twr = t_r * w_r
+        t_u = np.fft.fft(tur, axis=2)
+        t_v = np.fft.fft(tvr, axis=2)
+        t_w = np.fft.fft(twr, axis=2)
+        c_1 = np.zeros([nlev, nlat, ntp-1])
+        c_6 = np.zeros([nlev, nlat, ntp-1])
+        c_1 = (t_u * np.conj(ttt[:, :, np.newaxis]) -
+               ttt[:, :, np.newaxis] * np.conj(t_u))
+        c_6 = (t_w * np.conj(ttt[:, :, np.newaxis]) -
+               ttt[:, :, np.newaxis] * np.conj(t_w))
+        c_2 = np.zeros([nlev, nlat, ntp - 1])
+        c_3 = np.zeros([nlev, nlat, ntp - 1])
+        c_5 = np.zeros([nlev, nlat, ntp - 1])
         for i in range(nlat):
                 if i == 0:
-                    c2[:, i, :] = tv[:, i, :] / (AA * (lat[i + 1]-lat[i]))\
-                    * np.conj(tt[:, i + 1, np.newaxis] - tt[:, i, np.newaxis]) 
-                    c3[:, i, :] = np.conj(tv[:, i, :]) /\
-                    (AA * (lat[i + 1] - lat[i])) * (tt[:, i + 1, np.newaxis] - 
-                                                    tt[:, i, np.newaxis])
+                    c_2[:, i, :] = (t_v[:, i, :] / (AA * (lat[i + 1] - lat[i]))
+                                    * np.conj(ttt[:, i + 1, np.newaxis] -
+                                              ttt[:, i, np.newaxis]))
+                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
+                                    (AA * (lat[i + 1] - lat[i])) *
+                                    (ttt[:, i + 1, np.newaxis] -
+                                     ttt[:, i, np.newaxis]))
                 elif i == nlat - 1:
-                    c2[:, i, :] = tv[:, i, :] / (AA * (lat[i] - lat[i - 1])) \
-                    * np.conj(tt[:, i, np.newaxis] - tt[:, i - 1, np.newaxis])
-                    c3[:, i, :] = np.conj(tv[:, i, :]) /\
-                    (AA * (lat[i] - lat[i - 1])) * (tt[:, i, np.newaxis] -
-                                                    tt[:, i - 1, np.newaxis])
+                    c_2[:, i, :] = (t_v[:, i, :] / (AA * (lat[i] - lat[i - 1]))
+                                    * np.conj(ttt[:, i, np.newaxis] -
+                                              ttt[:, i - 1, np.newaxis]))
+                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
+                                    (AA * (lat[i] - lat[i - 1])) *
+                                    (ttt[:, i, np.newaxis] -
+                                     ttt[:, i - 1, np.newaxis]))
                 else:
-                    c2[:, i, :] = tv[:, i, :] / (AA * (lat[i + 1] - lat[i - 1]))\
-                    * np.conj(tt[:, i + 1, np.newaxis] - tt[:, i - 1, np.newaxis])
-                    c3[:, i, :] = np.conj(tv[:, i, :]) /\
-                    (AA * (lat[i + 1] - lat[i - 1])) * (tt[:, i + 1, np.newaxis] -\
-                                                        tt[:, i - 1, np.newaxis])       
-        for l in range(nlev):
-            if l == 0:
-                c5[l, :, :] = (tt[l + 1, :, np.newaxis] 
-                               - tt[l, :, np.newaxis]) / (p[l + 1] - p[l])
-            elif l == nlev-1:
-                c5[l, :, :] = (tt[l, :, np.newaxis] 
-                               - tt[l - 1, :, np.newaxis]) / (p[l] - p[l - 1])
+                    c_2[:, i, :] = (t_v[:, i, :] /
+                                    (AA * (lat[i + 1] - lat[i - 1]))
+                                    * np.conj(ttt[:, i + 1, np.newaxis] -
+                                              ttt[:, i - 1, np.newaxis]))
+                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /\
+                                    (AA * (lat[i + 1] - lat[i - 1])) *
+                                    (ttt[:, i + 1, np.newaxis] -
+                                     ttt[:, i - 1, np.newaxis]))
+        for l_l in range(nlev):
+            if l_l == 0:
+                c_5[l_l, :, :] = ((ttt[l_l + 1, :, np.newaxis] -
+                                   ttt[l_l, :, np.newaxis]) /
+                                  (p_l[l_l + 1] - p_l[l_l]))
+            elif l_l == nlev - 1:
+                c_5[l_l, :, :] = ((ttt[l_l, :, np.newaxis] -
+                                   ttt[l_l - 1, :, np.newaxis]) /
+                                  (p_l[l_l] - p_l[l_l - 1]))
             else:
-                c51 = (tt[l + 1, :, np.newaxis] - tt[l, :, np.newaxis])\
-                / (p[l + 1] - p[l])
-                c52 = (tt[l, :, np.newaxis] - tt[l - 1, :, np.newaxis])\
-                / (p[l] - p[l - 1])
-                c5[l, :, :]  = (c51 * (p[l] - p[l - 1])
-                                + c52 * (p[l + 1] - p[l]))\
-                / (p[l + 1] - p[l - 1])         
+                c51 = ((ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis])
+                       / (p_l[l_l + 1] - p_l[l_l]))
+                c52 = ((ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis])
+                       / (p_l[l_l] - p_l[l_l - 1]))
+                c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) +
+                                   c52 * (p_l[l_l + 1] - p_l[l_l]))
+                                  / (p_l[l_l + 1] - p_l[l_l - 1]))  
         K = np.arange(0, ntp - 1)            
-        at2as = ((K - 1)[np.newaxis, np.newaxis, :] * np.imag(c1) \
-                 / (AA * np.cos(lat[np.newaxis, :, np.newaxis])) \
-                 + np.real(tw * np.conj(c5) + np.conj(tw) * c5) \
-                 + np.real(c2 + c3) + R / (CP * p[:, np.newaxis, np.newaxis]) \
-                 * np.real(c6)) * g_w[:, :, np.newaxis]        
+        at2as = (((K - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1)
+                  / (AA * np.cos(lat[np.newaxis, :, np.newaxis]))
+                  + np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5)
+                  + np.real(c_2 + c_3)
+                  + R / (CP * p_l[:, np.newaxis, np.newaxis])
+                  * np.real(c_6)) * g_w[:, :, np.newaxis])      
         at2as[:, :, 0] = 0.
-        return(at2as)    
+        return at2as    
 
-    def mkktks(self, u, v, wap, ut, vt, wt, p, lat, nlat, ntp, nlev):    
+    def mkktks(self, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
         """Compute the stat.-trans. eddy KE conversions from u, v, wap and t.
         
         @author: Valerio Lembo
         """
         kt2ks = np.zeros([nlev, nlat, ntp - 1])
-        c1 = np.zeros([nlev, nlat, ntp - 1])
+        c_1 = np.zeros([nlev, nlat, ntp - 1])
         c21 = np.zeros([nlev, nlat, ntp - 1])
         c22 = np.zeros([nlev, nlat, ntp - 1])
-        c3 = np.zeros([nlev, nlat, ntp - 1])
+        c_3 = np.zeros([nlev, nlat, ntp - 1])
         c41 = np.zeros([nlev, nlat, ntp - 1])
         c42 = np.zeros([nlev, nlat, ntp - 1])
-        c5 = np.zeros([nlev, nlat, ntp - 1])
-        c6 = np.zeros([nlev, nlat, ntp - 1])
+        c_5 = np.zeros([nlev, nlat, ntp - 1])
+        c_6 = np.zeros([nlev, nlat, ntp - 1])
         dut = np.zeros([nlev, nlat, ntp - 1])
         dvt = np.zeros([nlev, nlat, ntp - 1])
         dlat =np.zeros([nlat])
-        ur = np.fft.irfft(u, axis=2)
-        vr = np.fft.irfft(v, axis=2)
-        uur = ur * ur
-        uvr = ur * vr
-        vvr = vr * vr
-        uu = np.fft.rfft(uur, axis=2)
-        vv = np.fft.rfft(vvr, axis=2)
-        uv = np.fft.rfft(uvr, axis=2)
-        c1 = uu * np.conj(ut) - ut * np.conj(uu)
-        c3 = uv * np.conj(ut) + ut * np.conj(uv)
-        c5 = uu * np.conj(vt) + vt * np.conj(uu)
-        c6 = uv * np.conj(vt) - vt * np.conj(uv)
+        u_r = np.fft.irfft(u_t, axis=2)
+        v_r = np.fft.irfft(v_t, axis=2)
+        uur = u_r * u_r
+        uvr = u_r * v_r
+        vvr = v_r * v_r
+        u_u = np.fft.rfft(uur, axis=2)
+        v_v = np.fft.rfft(vvr, axis=2)
+        u_v = np.fft.rfft(uvr, axis=2)
+        c_1 = u_u * np.conj(u_t) - u_t * np.conj(u_u)
+        c_3 = u_v * np.conj(u_t) + u_t * np.conj(u_v)
+        c_5 = u_u * np.conj(v_t) + v_t * np.conj(u_u)
+        c_6 = u_v * np.conj(v_t) - v_t * np.conj(u_v)
         for i in range(nlat):
             if i == 0:
-                dut[:, i, :]=(ut[:, i + 1, :] - ut[:, i, :])
-                dvt[:, i, :]=(vt[:, i + 1, :] - vt[:, i, :])
+                dut[:, i, :]=(utt[:, i + 1, :] - utt[:, i, :])
+                dvt[:, i, :]=(vtt[:, i + 1, :] - vtt[:, i, :])
                 dlat[i] = (lat[i + 1] - lat[i])
             elif i == nlat-1:
-                dut[:, i, :] = (ut[:, i, :] - ut[:, i - 1, :])
-                dvt[:, i, :] = (vt[:, i, :] - vt[:, i - 1, :])
+                dut[:, i, :] = (utt[:, i, :] - utt[:, i - 1, :])
+                dvt[:, i, :] = (vtt[:, i, :] - vtt[:, i - 1, :])
                 dlat[i] = (lat[i] - lat[i - 1])
             else:
-                dut[:, i, :] = (ut[:, i + 1, :] - ut[:, i - 1, :])
-                dvt[:, i, :] = (vt[:, i + 1, :] - vt[:, i - 1, :])
+                dut[:, i, :] = (utt[:, i + 1, :] - utt[:, i - 1, :])
+                dvt[:, i, :] = (vtt[:, i + 1, :] - vtt[:, i - 1, :])
                 dlat[i] = (lat[i + 1] - lat[i - 1])           
-        c21 = np.conj(uu) * dut / dlat[np.newaxis, :, np.newaxis]
-        c22 = uu * np.conj(dut) / dlat[np.newaxis, :, np.newaxis]
-        c41 = np.conj(vv) * dvt / dlat[np.newaxis, :, np.newaxis]
-        c42 = vv * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
+        c21 = np.conj(u_u) * dut / dlat[np.newaxis, :, np.newaxis]
+        c22 = u_u * np.conj(dut) / dlat[np.newaxis, :, np.newaxis]
+        c41 = np.conj(v_v) * dvt / dlat[np.newaxis, :, np.newaxis]
+        c42 = v_v * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
         K = np.arange(0, ntp - 1)      
-        kt2ks =  np.real(c21 + c22 + c41 + c42) / AA \
-        + np.tan(lat)[np.newaxis, :, np.newaxis] * np.real(c1 - c5) / AA \
-        + np.imag(c1 + c6) * (K - 1)[np.newaxis, np.newaxis, :] \
-        / (AA * np.cos(lat)[np.newaxis, :, np.newaxis])
+        kt2ks =  (np.real(c21 + c22 + c41 + c42) / AA \
+                  + np.tan(lat)[np.newaxis, :, np.newaxis] 
+                  * np.real(c_1 - c_5) / AA + np.imag(c_1 + c_6) 
+                  * (K - 1)[np.newaxis, np.newaxis, :] 
+                  / (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
         kt2ks[:, :, 0] = 0
-        return(kt2ks)   
+        return kt2ks   
 
-    def ncdump(self, nc_fid, key):
-        """Print the NetCDF file attributes for a given key.
-
-        Arguments:
-        - nc_fid: the ID of a NetCDF file containing variable 'key';
-        - key: the name of a variable to obtain the attributes from.
-        """
-        nc_attrs = nc_fid.ncattrs()
-        nc_dims = [dim for dim in nc_fid.dimensions]
-        nc_vars = [var for var in nc_fid.variables]
-        return nc_attrs, nc_dims, nc_vars
-
-    def pr_output(self, varo, varname, filep, nc_f, opt, verb=True):
+    def pr_output(self, varo, varname, filep, nc_f, opt):
         """Print outputs to NetCDF.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -821,7 +827,6 @@ class LorenzCycle():
         """
         lorenz = LorenzCycle()
         nc_fid = Dataset(filep, 'r')
-        nc_attrs, nc_dims, nc_vars = lorenz.ncdump(nc_fid, 'var130', verb)
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract/copy the data
         time = nc_fid.variables['time'][:]
@@ -841,7 +846,7 @@ class LorenzCycle():
             w_nc_fid.variables['time'][:] = time
             w_nc_fid.createDimension('lat', len(lats))
             w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,\
+                                               nc_fid.variables['lat'].dtype,
                                                ('lat',))
             for ncattr in nc_fid.variables['lat'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -849,7 +854,7 @@ class LorenzCycle():
             w_nc_fid.variables['lat'][:] = lats
             w_nc_fid.createDimension('wave', ntp)
             w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,\
+                                               nc_fid.variables['wave'].dtype,
                                                ('wave',))
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8',
@@ -860,7 +865,7 @@ class LorenzCycle():
         elif opt == 1:
             w_nc_fid.createDimension('lat', len(lats))
             w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,\
+                                               nc_fid.variables['lat'].dtype,
                                                ('lat',))
             for ncattr in nc_fid.variables['lat'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -868,7 +873,7 @@ class LorenzCycle():
             w_nc_fid.variables['lat'][:] = lats
             w_nc_fid.createDimension('wave', ntp)
             w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,\
+                                               nc_fid.variables['wave'].dtype,
                                                ('wave',))
             for ncattr in nc_fid.variables['wave'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -881,7 +886,7 @@ class LorenzCycle():
         elif opt == 2:
             w_nc_fid.createDimension('lat', len(lats))
             w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,\
+                                               nc_fid.variables['lat'].dtype,
                                                ('lat',))
             for ncattr in nc_fid.variables['lat'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -894,12 +899,12 @@ class LorenzCycle():
         elif opt == 3:
             w_nc_fid.createDimension('hem', 3)
             w_nc_dim = w_nc_fid.createVariable('hem',
-                                               nc_fid.variables['hem'].dtype,\
+                                               nc_fid.variables['hem'].dtype,
                                                ('hem',))
             w_nc_fid.variables['hem'][:] = [0, 1, 2]
             w_nc_fid.createDimension('time', None)
             w_nc_dim = w_nc_fid.createVariable('time',
-                                               nc_fid.variables['time'].dtype,\
+                                               nc_fid.variables['time'].dtype,
                                                ('time',))
             for ncattr in nc_fid.variables['time'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -912,12 +917,12 @@ class LorenzCycle():
         elif opt == 4:
             w_nc_fid.createDimension('hem', 3)
             w_nc_dim = w_nc_fid.createVariable('hem',
-                                               nc_fid.variables['hem'].dtype,\
+                                               nc_fid.variables['hem'].dtype,
                                                ('hem',))
             w_nc_fid.variables['hem'][:] = [0, 1, 2]
             w_nc_fid.createDimension('time', None)
             w_nc_dim = w_nc_fid.createVariable('time',
-                                               nc_fid.variables['time'].dtype,\
+                                               nc_fid.variables['time'].dtype,
                                                ('time',))
             for ncattr in nc_fid.variables['time'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -925,7 +930,7 @@ class LorenzCycle():
             w_nc_fid.variables['time'][:] = time
             w_nc_fid.createDimension('wave', ntp)
             w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,\
+                                               nc_fid.variables['wave'].dtype,
                                                ('wave',))
             for ncattr in nc_fid.variables['wave'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
@@ -945,37 +950,38 @@ class LorenzCycle():
         except OSError:
             pass
   
-    def stabil(self, ta_gmn,p,nlev):
+    def stabil(self, ta_gmn,p_l,nlev):
         """Compute the stability parameter from temp. and pressure levels.
         
         @author: Valerio Lembo
         """
         cpdr = CP / R
-        t = ta_gmn
-        gs = np.zeros(nlev)
-        for i in range(nlev):
-            if i == 0:
-                dtdp=(t[i + 1] - t[i]) / (p[i + 1] - p[i])
-            elif i == nlev - 1:
-                dtdp = (t[i] - t[i - 1]) / (p[i] - p[i-1])
+        t_g = ta_gmn
+        g_s = np.zeros(nlev)
+        for i_l in range(nlev):
+            if i_l == 0:
+                dtdp=(t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
+            elif i_l == nlev - 1:
+                dtdp = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l-1])
             else:
-                dtdp1 = (t[i + 1] - t[i]) / (p[i + 1] - p[i])
-                dtdp2 = (t[i] - t[i - 1]) / (p[i] - p[i - 1])
-                dtdp = (dtdp1 * (p[i] - p[i - 1]) + dtdp2 * (p[i + 1] - p[i]))\
-                / (p[i + 1] - p[i - 1])
-            gs[i] = CP / (t[i] - p[i] * dtdp * cpdr)
-        return gs
+                dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
+                dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
+                dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + 
+                         dtdp2 * (p_l[i_l + 1] - p_l[i_l]))
+                        / (p_l[i_l + 1] - p_l[i_l - 1]))
+            g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
+        return g_s
 
     def table(self, varin, ntp, name, log):
         """Write global and hem. storage terms to .txt table.
         
         @author: Valerio Lembo
         """
-        varzon = varin[:,0]
-        vared = np.nansum(varin[:, 1:ntp - 1],axis = 1)
-        vared1 = np.nansum(varin[:, 1:NW_1-1],axis = 1)
-        vared2 = np.nansum(varin[:, NW_1:NW_2-  1],axis = 1)
-        vared3 = np.nansum(varin[:, NW_2:NW_3 - 1],axis = 1)
+        varzon = varin[:, 0]
+        vared = np.nansum(varin[:, 1:ntp - 1], axis=1)
+        vared1 = np.nansum(varin[:, 1:NW_1 - 1], axis=1)
+        vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
+        vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
         vartot = varzon + vared
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
                   vartot[0], vartot[1], vartot[2]))
@@ -995,8 +1001,7 @@ class LorenzCycle():
         log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
                   vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')
-        
-    
+
     def table_conv(self, varin, ntp, name, log):
         """Write global and hem. conversion terms to .txt table.
         
@@ -1028,7 +1033,7 @@ class LorenzCycle():
         log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
                   vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')   
-    
+
     def varatts(self, w_nc_var, varname, tres, vres):
         """Add attibutes to the variables, depending on name and time res.
 
@@ -1037,6 +1042,8 @@ class LorenzCycle():
         - varname: the name of the variable, among ta, ua, va and wap;
         - tres: the time resolution (daily or annual);
         - vres: the vertical resolution (pressure levels or vert. integr.).
+        
+        @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         if tres == 0:
             tatt = u"Daily\nM"
