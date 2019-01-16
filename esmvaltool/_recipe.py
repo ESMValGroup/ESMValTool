@@ -269,7 +269,8 @@ def _add_cmor_info(variable, override=False, derive=False):
         table_entry = custom_table.get_variable(mip, short_name)
         if table_entry is not None:
             mip_info = CMOR_TABLES[cmor_table].get_table(mip)
-            table_entry.frequency = mip_info.frequency
+            if mip_info:
+                table_entry.frequency = mip_info.frequency
 
     if table_entry is None:
         raise RecipeError(
