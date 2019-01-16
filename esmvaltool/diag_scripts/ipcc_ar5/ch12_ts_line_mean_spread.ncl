@@ -120,8 +120,15 @@ begin
   end if
 
   ; How many historical model runs?
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
+
   attsh = True
-  attsh@exp = "historical"
+  attsh@exp = reference_run_name
   item_hist = select_metadata_by_atts(info_items, attsh)
   dim_MOD_hist = ListCount(item_hist)
 
@@ -391,7 +398,7 @@ begin
   ; if there are less than 5 models set to missing
   runs = new((/1 + dim_scen, nperiods/), integer)
   atts_runs = True
-  atts_runs@exp = "historical"
+  atts_runs@exp = reference_run_name
   item_runs = select_metadata_by_atts(info_items, atts_runs)
   runs(0, 0) = ListCount(item_runs)
   do scen = 0, dim_scen - 1

@@ -141,12 +141,17 @@ begin
   dim_file = dimsizes(data2_glob)  ; file size of historical file
 
   ; How many historical model runs?
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
+
   attsh = True
-  attsh@exp = "historical"
+  attsh@exp = reference_run_name
   item_hist = select_metadata_by_atts(info_items, attsh)
   dim_MOD_hist = ListCount(item_hist)
-
-  ;ind_hist = ind(dataset_info@exp .eq. "historical")
 
   ref_data2 = new((/dim_MOD_hist/), float, A0@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
@@ -429,7 +434,7 @@ begin
   ; if there are less than 5 datasets set to missing
   runs = new((/1 + dim_scen, nperiods/), integer)
   atts_runs = True
-  atts_runs@exp = "historical"
+  atts_runs@exp = reference_run_name
   item_runs = select_metadata_by_atts(info_items, atts_runs)
   runs(0, 0) = ListCount(item_runs)
   do scen = 0, dim_scen - 1

@@ -269,6 +269,12 @@ begin
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
 
   ; Loop over rcps and periods
   dim_scen = dimsizes(diag_script_info@scenarios)
@@ -303,7 +309,7 @@ begin
         ; Find historical runs from same datasets as in rcp
         do jj = 0, dimsizes(idx_rcp) - 1
           tmp_idx = ind(dataset_names .eq. dataset_names(idx_rcp(jj)) .and. \
-                        dataset_exps .eq. "historical" .and. \
+                        dataset_exps .eq. reference_run_name .and. \
                         dataset_ensembles .eq. dataset_ensembles(idx_rcp(jj)))
           if (isdefined("idx_hist")) then
             idx_hist := array_append_record(idx_hist, tmp_idx, 0)
