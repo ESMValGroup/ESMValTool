@@ -12,6 +12,7 @@ CORE DEVELOPMENT TEAM AND CONTACTS:
   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
   Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
   Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
 
 For further help, please read the documentation at
