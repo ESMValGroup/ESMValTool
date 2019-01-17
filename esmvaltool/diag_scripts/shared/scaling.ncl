@@ -227,7 +227,17 @@ begin
 
   if (units_from.eq."kg m-2 s-1") then
     if (units_to.eq."mm d-1") then
+      out = out * 24 * 3600.
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."W m-2") then
+    if (units_to.eq."mm d-1") then
       out = out / 2.5e6 * 24 * 3600.
+      out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
     end if
@@ -236,6 +246,14 @@ begin
   if (units_from.eq."Pa") then
     if (units_to.eq."hPa") then
       out = out / 100.
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."kg m-2") then
+    if (units_to.eq."mm") then  ; change only the label
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
