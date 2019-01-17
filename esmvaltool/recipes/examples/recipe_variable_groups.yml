@@ -9,6 +9,9 @@ documentation:
   authors:
     - schl_ma
 
+  maintainer:
+    - schl_ma
+
   projects:
     - crescendo
 
