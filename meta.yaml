@@ -37,6 +37,7 @@ requirements:
   run:
     # esmvaltool
     - python
+    - graphviz    
     - iris=1.13
     - python-stratify
     # Normally installed via pip:
@@ -49,7 +50,9 @@ requirements:
     - numba
     - numpy
     - pillow
+    - prov
     - psutil
+    - pydot
     - python-cdo
     - pyyaml
     - shapely

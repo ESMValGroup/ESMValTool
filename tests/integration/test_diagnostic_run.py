@@ -1,9 +1,7 @@
 """Test diagnostic script runs."""
 import contextlib
 import os
-import shutil
 import sys
-import tempfile
 from textwrap import dedent
 
 import pytest
@@ -12,18 +10,16 @@ import yaml
 from esmvaltool._main import run
 
 
-@pytest.fixture
-def tempdir():
-    dirname = tempfile.mkdtemp()
-    yield dirname
-    shutil.rmtree(dirname)
-
-
 def write_config_user_file(dirname):
     config_file = os.path.join(dirname, 'config-user.yml')
     cfg = {
-        'output_dir': dirname,
-        'rootpath': {},
+        'output_dir': os.path.join(dirname, 'output_dir'),
+        'rootpath': {
+            'default': os.path.join(dirname, 'input_dir'),
+        },
+        'drs': {
+            'CMIP5': 'BADC',
+        },
         'log_level': 'debug',
     }
     with open(config_file, 'w') as file:
@@ -103,11 +99,11 @@ SCRIPTS = {
 
 @pytest.mark.install
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tempdir, script_file, script):
+def test_diagnostic_run(tmpdir, script_file, script):
 
-    recipe_file = os.path.join(tempdir, 'recipe_test.yml')
-    script_file = os.path.join(tempdir, script_file)
-    result_file = os.path.join(tempdir, 'result.yml')
+    recipe_file = os.path.join(tmpdir, 'recipe_test.yml')
+    script_file = os.path.join(tmpdir, script_file)
+    result_file = os.path.join(tmpdir, 'result.yml')
 
     # Write script to file
     with open(script_file, 'w') as file:
@@ -115,6 +111,10 @@ def test_diagnostic_run(tempdir, script_file, script):
 
     # Create recipe
     recipe = dedent("""
+        documentation:
+          description: Recipe with no data.
+          authors: [ande_bo]
+
         diagnostics:
           diagnostic_name:
             scripts:
@@ -125,7 +125,7 @@ def test_diagnostic_run(tempdir, script_file, script):
     with open(recipe_file, 'w') as file:
         file.write(recipe)
 
-    config_user_file = write_config_user_file(tempdir)
+    config_user_file = write_config_user_file(tmpdir)
     with arguments('esmvaltool', '-c', config_user_file, recipe_file):
         run()
 
