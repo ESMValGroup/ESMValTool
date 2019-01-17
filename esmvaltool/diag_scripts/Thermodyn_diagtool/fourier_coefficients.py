@@ -155,7 +155,7 @@ class FourierCoeff():
             - wave2: an array containing the zonal wavenumbers;
             - name1, name2, name3, name4: the name of the variables to be
               saved;
-              
+     
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
@@ -260,7 +260,7 @@ class FourierCoeff():
             var_nc_dim.setncattr(ncattr,
                                  nc_fid.variables['time'].getncattr(ncattr))
         var_nc_fid.variables['time'][:] = time
-        
+
         var_nc_fid.createDimension('plev', len(plev))
         var_nc_dim = var_nc_fid.createVariable('plev',
                                                nc_fid.variables['plev'].dtype,

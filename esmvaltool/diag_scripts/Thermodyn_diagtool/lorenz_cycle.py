@@ -15,7 +15,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-from fluxogram import Fluxogram
+import fluxogram as Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -195,11 +195,11 @@ class LorenzCycle():
         ua_gmn = np.zeros(len(lev))
         va_gmn = np.zeros(len(lev))
         wap_gmn = np.zeros(len(lev))
-        for j in range(nlev):
-            ta_gmn[j] = np.nansum(ta_ztmn[j, :] * g_w) / np.nansum(g_w)
-            ua_gmn[j] = np.nansum(ua_ztmn[j, :] * g_w) / np.nansum(g_w)
-            va_gmn[j] = np.nansum(va_ztmn[j, :] * g_w) / np.nansum(g_w)
-            wap_gmn[j] = np.nansum(wap_ztmn[j, :] * g_w) / np.nansum(g_w)
+        for l_l in range(nlev):
+            ta_gmn[l_l] = np.nansum(ta_ztmn[l_l, :] * g_w) / np.nansum(g_w)
+            ua_gmn[l_l] = np.nansum(ua_ztmn[l_l, :] * g_w) / np.nansum(g_w)
+            va_gmn[l_l] = np.nansum(va_ztmn[l_l, :] * g_w) / np.nansum(g_w)
+            wap_gmn[l_l] = np.nansum(wap_ztmn[l_l, :] * g_w) / np.nansum(g_w)
     # Compute stability parameter
         gam_ztmn = np.zeros([nlev, nlat])
         for l_l in range(nlat):
@@ -341,12 +341,12 @@ class LorenzCycle():
         a2k_aux = np.zeros([nlev, nlat, ntp - 1])
         ae2az_aux = np.zeros([nlev, nlat, ntp - 1])
         ke2kz_aux = np.zeros([nlev, nlat, ntp - 1])
-        for l in range(nlev):
-            ek_aux[l, :, :] = ek_tmn[l, :, :] * d_s[l]
-            ape_aux[l, :, :] = ape_tmn[l, :, :] * d_s[l]
-            a2k_aux[l, :, :] = a2k_tmn[l, :, :] * d_s[l]
-            ae2az_aux[l, :, :] = ae2az_tmn[l, :, :] * d_s[l]
-            ke2kz_aux[l, :, :] = ke2kz_tmn[l, :, :] * d_s[l]
+        for l_l in range(nlev):
+            ek_aux[l_l, :, :] = ek_tmn[l_l, :, :] * d_s[l_l]
+            ape_aux[l_l, :, :] = ape_tmn[l_l, :, :] * d_s[l_l]
+            a2k_aux[l_l, :, :] = a2k_tmn[l_l, :, :] * d_s[l_l]
+            ae2az_aux[l_l, :, :] = ae2az_tmn[l_l, :, :] * d_s[l_l]
+            ke2kz_aux[l_l, :, :] = ke2kz_tmn[l_l, :, :] * d_s[l_l]
         ek_vmn = np.nansum(ek_aux, axis=0) / np.nansum(d_s)
         ape_vmn = np.nansum(ape_aux, axis=0) / np.nansum(d_s)
         a2k_vmn = np.nansum(a2k_aux, axis=0) / np.nansum(d_s)
@@ -374,11 +374,9 @@ class LorenzCycle():
         """Parameters for the Gaussian coefficients.
         
         @author: Valerio Lembo
-        """ 
+        """
         ndim = 50
-        
         p_i = math.pi
-      
         zbes = [2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391,
                 14.9309177086, 18.0710639679, 21.2116366299, 24.3524715308,
                 27.4934791320, 30.6346064684, 33.7758202136, 36.9170983537,
@@ -454,8 +452,8 @@ class LorenzCycle():
         p_a = np.zeros(n_y)
         p_a[0:k_k] = lorenz.bsslzr(k_k)
         p_w = np.zeros(n_y)
-        for i in range(k_k):
-            x_z = np.cos(p_a[i] / math.sqrt((n_y + 0.5) ** 2 + c_c))
+        for i_l in range(k_k):
+            x_z = np.cos(p_a[i_l] / math.sqrt((n_y + 0.5) ** 2 + c_c))
             iterr = 0.
             zsp = 1.0
             while (abs(zsp) > eps and iterr <= 10):
@@ -473,10 +471,10 @@ class LorenzCycle():
                 iterr = iterr + 1
             if iterr > 15:
                 sys.exit("*** no convergence in gauaw ***")
-            p_a[i] = x_z
-            p_w[i] = (2.0 * (1.0 - x_z ** 2)) / ((n_y ** 2) * (pkm1 ** 2))
-            p_a[n_y - 1 - i] = - p_a[i]
-            p_w[n_y - 1 - i] = p_w[i]
+            p_a[i_l] = x_z
+            p_w[i_l] = (2.0 * (1.0 - x_z ** 2)) / ((n_y ** 2) * (pkm1 ** 2))
+            p_a[n_y - 1 - i_l] = - p_a[i_l]
+            p_w[n_y - 1 - i_l] = p_w[i_l]
         psi = p_a
         pgw = p_w
         return psi, pgw
@@ -555,40 +553,40 @@ class LorenzCycle():
         ae2az = np.zeros([nlev, nlat, ntp - 1])
         dtdp = np.zeros([nlev, nlat])
         dtdy = np.zeros([nlev, nlat])
-        for l in np.arange(nlev):
-            if l == 0:
-                t_1 = np.real(tt[l, :, 0]) - ttg[l]
-                t_2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
-                dtdp[l, :] = (t_2 - t_1) / (p_l[l + 1] - p_l[l])
-            elif l == nlev - 1:
-                t_1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
-                t_2 = np.real(tt[l, :, 0]) - ttg[l]
-                dtdp[l, :] = (t_2 - t_1) / (p_l[l] - p_l[l - 1])
+        for l_l in np.arange(nlev):
+            if l_l == 0:
+                t_1 = np.real(tt[l_l, :, 0]) - ttg[l_l]
+                t_2 = np.real(tt[l_l + 1, :, 0]) - ttg[l_l + 1]
+                dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
+            elif l_l == nlev - 1:
+                t_1 = np.real(tt[l_l - 1, :, 0]) - ttg[l_l - 1]
+                t_2 = np.real(tt[l_l, :, 0]) - ttg[l_l]
+                dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
             else:
-                t_1 = np.real(tt[l, :, 0]) - ttg[l]
-                t_2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
-                dtdp1 = (t_2 - t_1) / (p_l[l + 1] - p_l[l])
+                t_1 = np.real(tt[l_l, :, 0]) - ttg[l_l]
+                t_2 = np.real(tt[l_l + 1, :, 0]) - ttg[l_l + 1]
+                dtdp1 = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
                 t_2 = t_1
-                t_1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
-                dtdp2 = (t_2 - t_1) / (p_l[l] - p_l[l - 1])
-                dtdp[l, :] = ((dtdp1 * (p_l[l] - p_l[l - 1]) +
-                               dtdp2 * (p_l[l + 1] - p_l[l]))
-                              / (p_l[l + 1] - p_l[l - 1]))
-            dtdp[l, :] = dtdp[l, :] - (R / (CP * p_l[l])
-                                       * (tt[l, :, 0] - ttg[l]))
-        for i in np.arange(nlat):
-            if i == 0:
-                t_1 = np.real(tt[:, i, 0])
-                t_2 = np.real(tt[:, i + 1, 0])
-                dtdy[:, i] = (t_2 - t_1) / (lat[i + 1] - lat[i])
-            elif i == nlat-1:
-                t_1 = np.real(tt[:, i - 1,0])
-                t_2 = np.real(tt[:, i, 0])
-                dtdy[:, i] = (t_2 - t_1) / (lat[i] - lat[i - 1])
+                t_1 = np.real(tt[l_l - 1, :, 0]) - ttg[l_l - 1]
+                dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
+                dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) +
+                                 dtdp2 * (p_l[l_l + 1] - p_l[l_l]))
+                                 / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l])
+                                       * (tt[l_l, :, 0] - ttg[l_l]))
+        for i_l in np.arange(nlat):
+            if i_l == 0:
+                t_1 = np.real(tt[:, i_l, 0])
+                t_2 = np.real(tt[:, i_l + 1, 0])
+                dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l])
+            elif i_l == nlat - 1:
+                t_1 = np.real(tt[:, i_l - 1, 0])
+                t_2 = np.real(tt[:, i_l, 0])
+                dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l] - lat[i_l - 1])
             else:
-                t_1 = np.real(tt[:, i - 1, 0])
-                t_2 = np.real(tt[:, i + 1, 0])
-                dtdy[:, i] = (t_2 - t_1) / (lat[i + 1] - lat[i - 1])
+                t_1 = np.real(tt[:, i_l - 1, 0])
+                t_2 = np.real(tt[:, i_l + 1, 0])
+                dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l - 1])
         dtdy = dtdy / AA
         c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
         c_2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
@@ -613,9 +611,9 @@ class LorenzCycle():
                                 / (p_l[l_l + 1] - p_l[l_l]))
                 dvdp[l_l, :] = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0]))
                                 / (p_l[l_l + 1] - p_l[l_l]))
-            elif l_l == nlev-1:
+            elif l_l == nlev - 1:
                 dudp[l_l, :] = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0]))
-                                / (p_l[l_l]-p_l[l_l - 1]))
+                                / (p_l[l_l] - p_l[l_l - 1]))
                 dvdp[l_l, :] = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0]))
                                 / (p_l[l_l] - p_l[l_l - 1]))
             else:
@@ -636,23 +634,23 @@ class LorenzCycle():
         for i_l in np.arange(nlat):
             if i_l == 0:
                 dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0]))
-                                 / (lat[i_l + 1] - lat[i_l]))
+                                / (lat[i_l + 1] - lat[i_l]))
                 dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0]))
-                                 / (lat[i_l + 1] - lat[i_l]))
+                                / (lat[i_l + 1] - lat[i_l]))
             elif i_l == nlat - 1:
                 dudy[:, i_l] = ((np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0]))
-                                 / (lat[i_l] - lat[i_l - 1]))
+                                / (lat[i_l] - lat[i_l - 1]))
                 dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0]))
-                                 / (lat[i_l] - lat[i_l - 1]))
+                                / (lat[i_l] - lat[i_l - 1]))
             else:
-                dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - 
+                dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] -
                                          utt[:, i_l - 1, 0]))
-                                 / (lat[i_l + 1] - lat[i_l - 1]))
+                                / (lat[i_l + 1] - lat[i_l - 1]))
                 dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] -
                                          vtt[:, i_l - 1, 0]))
-                                 / (lat[i_l + 1] - lat[i_l - 1]))
+                                / (lat[i_l + 1] - lat[i_l - 1]))
         dudy = dudy / AA
-        dvdy = dvdy / AA       
+        dvdy = dvdy / AA
         c_1 = np.zeros([nlev, nlat, ntp - 1])
         c_2 = np.zeros([nlev, nlat, ntp - 1])
         c_3 = np.zeros([nlev, nlat, ntp - 1])
@@ -685,7 +683,7 @@ class LorenzCycle():
         """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
         
         @author: Valerio Lembo
-        """  
+        """
         t_r = np.fft.ifft(t_t, axis=2)
         u_r = np.fft.ifft(u_t, axis=2)
         v_r = np.fft.ifft(v_t, axis=2)
@@ -705,32 +703,34 @@ class LorenzCycle():
         c_2 = np.zeros([nlev, nlat, ntp - 1])
         c_3 = np.zeros([nlev, nlat, ntp - 1])
         c_5 = np.zeros([nlev, nlat, ntp - 1])
-        for i in range(nlat):
-                if i == 0:
-                    c_2[:, i, :] = (t_v[:, i, :] / (AA * (lat[i + 1] - lat[i]))
-                                    * np.conj(ttt[:, i + 1, np.newaxis] -
-                                              ttt[:, i, np.newaxis]))
-                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
-                                    (AA * (lat[i + 1] - lat[i])) *
-                                    (ttt[:, i + 1, np.newaxis] -
-                                     ttt[:, i, np.newaxis]))
-                elif i == nlat - 1:
-                    c_2[:, i, :] = (t_v[:, i, :] / (AA * (lat[i] - lat[i - 1]))
-                                    * np.conj(ttt[:, i, np.newaxis] -
-                                              ttt[:, i - 1, np.newaxis]))
-                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
-                                    (AA * (lat[i] - lat[i - 1])) *
-                                    (ttt[:, i, np.newaxis] -
-                                     ttt[:, i - 1, np.newaxis]))
-                else:
-                    c_2[:, i, :] = (t_v[:, i, :] /
-                                    (AA * (lat[i + 1] - lat[i - 1]))
-                                    * np.conj(ttt[:, i + 1, np.newaxis] -
-                                              ttt[:, i - 1, np.newaxis]))
-                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
-                                    (AA * (lat[i + 1] - lat[i - 1])) *
-                                    (ttt[:, i + 1, np.newaxis] -
-                                     ttt[:, i - 1, np.newaxis]))
+        for i_l in range(nlat):
+            if i_l == 0:
+                c_2[:, i_l, :] = (t_v[:, i_l, :] /
+                                  (AA * (lat[i_l + 1] - lat[i_l])) *
+                                  np.conj(ttt[:, i_l + 1, np.newaxis] -
+                                          ttt[:, i_l, np.newaxis]))
+                c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
+                                  (AA * (lat[i_l + 1] - lat[i_l])) *
+                                  (ttt[:, i_l + 1, np.newaxis] -
+                                   ttt[:, i_l, np.newaxis]))
+            elif i_l == nlat - 1:
+                c_2[:, i_l, :] = (t_v[:, i_l, :] /
+                                  (AA * (lat[i_l] - lat[i_l - 1])) *
+                                  np.conj(ttt[:, i_l, np.newaxis] -
+                                          ttt[:, i_l - 1, np.newaxis]))
+                c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
+                                  (AA * (lat[i_l] - lat[i_l - 1])) *
+                                  (ttt[:, i_l, np.newaxis] -
+                                   ttt[:, i_l - 1, np.newaxis]))
+            else:
+                c_2[:, i_l, :] = (t_v[:, i_l, :] /
+                                  (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                                  np.conj(ttt[:, i_l + 1, np.newaxis] -
+                                          ttt[:, i_l - 1, np.newaxis]))
+                c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
+                                  (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                                  (ttt[:, i_l + 1, np.newaxis] -
+                                   ttt[:, i_l - 1, np.newaxis]))
         for l_l in range(nlev):
             if l_l == 0:
                 c_5[l_l, :, :] = ((ttt[l_l + 1, :, np.newaxis] -
@@ -748,8 +748,8 @@ class LorenzCycle():
                 c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) +
                                    c52 * (p_l[l_l + 1] - p_l[l_l]))
                                   / (p_l[l_l + 1] - p_l[l_l - 1]))
-        K = np.arange(0, ntp - 1)
-        at2as = (((K - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1)
+        k_k = np.arange(0, ntp - 1)
+        at2as = (((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1)
                   / (AA * np.cos(lat[np.newaxis, :, np.newaxis]))
                   + np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5)
                   + np.real(c_2 + c_3)
@@ -784,7 +784,7 @@ class LorenzCycle():
         v_v = np.fft.rfft(vvr, axis=2)
         u_v = np.fft.rfft(uvr, axis=2)
         c_1 = u_u * np.conj(u_t) - u_t * np.conj(u_u)
-        c_3 = u_v * np.conj(u_t) + u_t * np.conj(u_v)
+        # c_3 = u_v * np.conj(u_t) + u_t * np.conj(u_v)
         c_5 = u_u * np.conj(v_t) + v_t * np.conj(u_u)
         c_6 = u_v * np.conj(v_t) - v_t * np.conj(u_v)
         for i_l in range(nlat):
@@ -804,11 +804,11 @@ class LorenzCycle():
         c22 = u_u * np.conj(dut) / dlat[np.newaxis, :, np.newaxis]
         c41 = np.conj(v_v) * dvt / dlat[np.newaxis, :, np.newaxis]
         c42 = v_v * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
-        K = np.arange(0, ntp - 1)
+        k_k = np.arange(0, ntp - 1)
         kt2ks = (np.real(c21 + c22 + c41 + c42) / AA
                  + np.tan(lat)[np.newaxis, :, np.newaxis]
                  * np.real(c_1 - c_5) / AA + np.imag(c_1 + c_6)
-                 * (K - 1)[np.newaxis, np.newaxis, :]
+                 * (k_k - 1)[np.newaxis, np.newaxis, :]
                  / (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
         kt2ks[:, :, 0] = 0
         return kt2ks
@@ -863,7 +863,7 @@ class LorenzCycle():
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8',
                                                ('time', 'lat', 'wave'))
-            lorenz.varatts(w_nc_var,varname,0,0)
+            lorenz.varatts(w_nc_var, varname, 0, 0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()
         elif opt == 1:
@@ -884,7 +884,7 @@ class LorenzCycle():
                                    nc_fid.variables['wave'].getncattr(ncattr))
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
-            lorenz.varatts(w_nc_var,varname, 1, 0)
+            lorenz.varatts(w_nc_var, varname, 1, 0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()
         elif opt == 2:
@@ -915,7 +915,7 @@ class LorenzCycle():
                                    nc_fid.variables['time'].getncattr(ncattr))
             w_nc_fid.variables['time'][:] = time
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('hem', 'time'))
-            lorenz.varatts(w_nc_var,varname,0,0)
+            lorenz.varatts(w_nc_var, varname,0,0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()  # close the new file
         elif opt == 4:
@@ -942,7 +942,7 @@ class LorenzCycle():
             w_nc_fid.variables['wave'][:] = wave[0:ntp]
             w_nc_var = w_nc_fid.createVariable(varname, 'f8',
                                                ('hem', 'time', 'wave'))
-            lorenz.varatts(w_nc_var,varname, 0, 0)
+            lorenz.varatts(w_nc_var, varname, 0, 0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()
         nc_fid.close()
@@ -954,7 +954,7 @@ class LorenzCycle():
         except OSError:
             pass
 
-    def stabil(self, ta_gmn,p_l,nlev):
+    def stabil(self, ta_gmn, p_l, nlev):
         """Compute the stability parameter from temp. and pressure levels.
 
         @author: Valerio Lembo
@@ -966,7 +966,7 @@ class LorenzCycle():
             if i_l == 0:
                 dtdp=(t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
             elif i_l == nlev - 1:
-                dtdp = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l-1])
+                dtdp = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
             else:
                 dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
                 dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
@@ -1013,8 +1013,8 @@ class LorenzCycle():
         """
         fac = 1e5
         varin = fac * varin
-        varzon = varin[:,0]
-        vared  = np.nansum(varin[:, 1:ntp - 1], axis=1)
+        varzon = varin[:, 0]
+        vared = np.nansum(varin[:, 1:ntp - 1], axis=1)
         vared1 = np.nansum(varin[:, 1:NW_1 - 1], axis=1)
         vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
         vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)

@@ -11,7 +11,7 @@ Nikolay Koldunov
 (MARUM/AWI, nikolay.koldunov@awi.de, Germany)
 
 Project
-CRC - TRR 181 ”Energy transfers in Atmosphere and Ocean“
+CRC - TRR 181 "Energy transfers in Atmosphere and Ocean"
 
 #############################################################################
 
@@ -203,9 +203,9 @@ from matplotlib import rcParams
 # import srvfile_read as srv
 # import fluxogram as fluxogram
 from mkthe import Mkthe
-from fourier_coefficients import FourierCoeff
-from lorenz_cycle import LorenzCycle
-from plot_script import PlotScript
+import fourier_coefficients
+import lorenz_cycle
+import plot_script
 
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -224,7 +224,7 @@ def main(cfg):
     Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
-    logger.info('Entering the diagnostic tool')    
+    logger.info('Entering the diagnostic tool')
     # Load paths
     workdir = cfg['work_dir']
     plotdir = cfg['plot_dir']
@@ -242,7 +242,7 @@ def main(cfg):
     models = data.get_info_list('dataset')
     model_names = list(set(models))
     model_names.sort()
-    logger.info(model_names)         
+    logger.info(model_names)
     varnames = data.get_info_list('short_name')
     curr_vars = list(set(varnames))
     logger.debug(curr_vars)
@@ -272,14 +272,15 @@ def main(cfg):
     latent_all = np.zeros([modnum, 2])
     latent_oc_all = np.zeros(modnum)
     latent_la_all = np.zeros(modnum)
-    barocEff_all = np.zeros(modnum)
-    lec_all = np.zeros([modnum,2])
+    baroc_eff_all = np.zeros(modnum)
+    lec_all = np.zeros([modnum, 2])
     horzentr_all = np.zeros([modnum, 2])
     vertentr_all = np.zeros([modnum, 2])
-    matentr_all  = np.zeros([modnum, 2])
+    matentr_all = np.zeros([modnum, 2])
     irrevers_all = np.zeros(modnum)
     diffentr_all = np.zeros([modnum, 2])
     logger.info("Entering main loop\n")
+    i_m = 0
     for model_name in model_names:
         # Load paths to individual models output and plotting directories
         diagworkdir = os.path.join(diagworkdir_up, model_name)
@@ -301,7 +302,7 @@ def main(cfg):
                     os.remove(file_path)
                 for name in dirs:
                     file_path = os.path.join(plotpath2, name)
-                    os.rmdir(file_path)  
+                    os.rmdir(file_path)
         # Reading file names for the specific model
         filenames = data.get_info_list('filename', dataset=model_name)
         logger.info('Processing model: {}\n'.format(model_name))
@@ -330,7 +331,7 @@ def main(cfg):
         head = Dataset(ta_file)
         info = getattr(head, 'metadata')
         attr = info.split()
-        diction = {attr[i]: attr[i + 1] for i in range(len(attr) - 1)}
+        diction = {attr[i_m]: attr[i_m + 1] for i_m in range(len(attr) - 1)}
         sftlf_fx = str(diction['{sftlf:'])
         sftlf_fx = sftlf_fx.replace("}", "")
         # Compute monthly mean fields from 2D surface daily fields
@@ -338,45 +339,45 @@ def main(cfg):
         cdo.selvar('tas', input=tas_file, output=aux_file)
         move(aux_file, tas_file)
         tasmn_file = diagworkdir + '/{}_tas_mm.nc'.format(model_name)
-        cdo.selvar('tas', input='-monmean {}'.format(tas_file), 
+        cdo.selvar('tas', input='-monmean {}'.format(tas_file),
                    option='-b F32', output=tasmn_file)
         cdo.selvar('uas', input=uas_file, output=aux_file)
-        move(aux_file, uas_file)    
+        move(aux_file, uas_file)
         uasmn_file = diagworkdir + '/{}_uas_mm.nc'.format(model_name)
-        cdo.selvar('uas', input='-monmean {}'.format(uas_file), 
+        cdo.selvar('uas', input='-monmean {}'.format(uas_file),
                    option='-b F32', output=uasmn_file)
         cdo.selvar('vas', input=vas_file, output=aux_file)
-        move(aux_file, vas_file)    
+        move(aux_file, vas_file)
         vasmn_file = diagworkdir + '/{}_vas_mm.nc'.format(model_name)
-        cdo.selvar('vas', input='-monmean {}'.format(vas_file), 
+        cdo.selvar('vas', input='-monmean {}'.format(vas_file),
                    option='-b F32', output=vasmn_file)
         logger.info('Computing auxiliary variables\n')
         # emission temperature
         te_file = diagworkdir + '/{}_te.nc'.format(model_name)
-        cdo.sqrt(input="-sqrt -mulc,{} {}".format(sigmainv, rlut_file), 
+        cdo.sqrt(input="-sqrt -mulc,{} {}".format(sigmainv, rlut_file),
                  output=te_file)
         te_ymm_file = diagworkdir + '/{}_te_ymm.nc'.format(model_name)
         cdo.yearmonmean(input=te_file, output=te_ymm_file)
         te_gmean_file = diagworkdir + '/{}_te_gmean.nc'.format(model_name)
-        cdo.timmean(input='-fldmean {}'.format(te_ymm_file), 
+        cdo.timmean(input='-fldmean {}'.format(te_ymm_file),
                     output=te_gmean_file)
         fl = Dataset(te_gmean_file)
         te_gmean_constant = fl.variables['rlut'][0, 0, 0]
         logger.info('Global mean emission temperature: {}\n'
-                  .format(te_gmean_constant))
-        te_all[i] = te_gmean_constant
+                    .format(te_gmean_constant))
+        te_all[i_m] = te_gmean_constant
         # temperature of the atmosphere-surface interface
         tasvert_file = diagworkdir + '/{}_tvertavg.nc'.format(model_name)
         removeif(tasvert_file)
         cdo.fldmean(input='-mulc,0.5 -add {} -selvar,tas {}'.format(ts_file,
-                     tasmn_file), options='-b F32', output=tasvert_file) 
+                     tasmn_file), options='-b F32', output=tasvert_file)
         # evaporation from latent heat fluxes at the surface
         if (wat in {'y', 'yes'} or met in {'2', '3'}):
-                    evspsbl_file = (diagworkdir 
+                    evspsbl_file = (diagworkdir
                                     + '/{}_evspsbl.nc'.format(model_name))
-                    cdo.divc(str(lc), input="{}".format(hfls_file), 
+                    cdo.divc(str(lc), input="{}".format(hfls_file),
                              output=evspsbl_file)
-                    #Rainfall precipitation 
+                    # Rainfall precipitation 
                     prr_file = diagworkdir + '/{}_prr.nc'.format(model_name)
                     cdo.sub(input="{} {}".format(pr_file, prsn_file),
                             output=aux_file)
@@ -388,29 +389,29 @@ def main(cfg):
                 if met in {'2', '3'}:
                     os.chdir(diagworkdir)
                     mkthe.mkthe_main(diagworkdir, ts_file, hus_file, ps_file,
-                                     uasmn_file, vasmn_file, hfss_file, 
+                                     uasmn_file, vasmn_file, hfss_file,
                                      te_file, model_name)
                     tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
                     cdo.setrtomiss('400,1e36', input='tlcl.nc ',
-                                   output=tlcl_file) 
+                                   output=tlcl_file)
                     tabl_file = diagworkdir + '/{}_tabl.nc'.format(model_name)
                     cdo.setrtomiss('400,1e36', input='tabl.nc ',
-                                   output=tabl_file) 
+                                   output=tabl_file)
                     htop_file = diagworkdir + '/{}_htop.nc'.format(model_name)
                     cdo.setrtomiss('12000,1e36', input='htop.nc ',
-                                   output=htop_file) 
+                                   output=htop_file)
                     # Working temperatures for the hydrological cycle
                     tcloud_file = (diagworkdir
                                    + '/{}_tcloud.nc'.format(model_name))
                     removeif(tcloud_file)
                     cdo.mulc('0.5',
-                             input='-add {} {}'.format(tlcl_file, te_file), 
+                             input='-add {} {}'.format(tlcl_file, te_file),
                              options='-b F32', output=tcloud_file)
                     tcolumn_file = (diagworkdir
                                     + '/{}_t_vertav_pot.nc'.format(model_name))
                     removeif(tcolumn_file)
                     cdo.mulc('0.5', input='-add {} {}'.
-                             format(ts_file, tcloud_file), options='-b F32', 
+                             format(ts_file, tcloud_file), options='-b F32',
                              output=tcolumn_file)
                     # Working temperatures for the kin. en. diss. (updated)
                     tasvert_file = (diagworkdir
@@ -421,7 +422,7 @@ def main(cfg):
                                 output=tasvert_file)
                     os.chdir(inputpath)
                 else:
-                    pass   
+                    pass
         # Compute energy budgets
         if eb in {'y', 'yes'}:
             logger.info('Computing energy budgets\n')
@@ -430,60 +431,60 @@ def main(cfg):
             removeif(toab_file)
             removeif(aux_file)
             cdo.sub(input="-sub {} {} {}".format(rsdt_file, rsut_file,
-                                                 rlut_file), output=aux_file)  
+                                                 rlut_file), output=aux_file)
             cdo.chname('rsdt,toab', input=aux_file, options='-b F32',
                        output=toab_file)
             toab_gmean_file = (diagworkdir
                                + '/{}_toab_gmean.nc'.format(model_name))
-            cdo.fldmean(input='-yearmonmean {}'.format(toab_file), 
-                        output=toab_gmean_file)        
+            cdo.fldmean(input='-yearmonmean {}'.format(toab_file),
+                        output=toab_gmean_file)
             fl = Dataset(toab_gmean_file)
             toab_gmean_constant = fl.variables['toab'][:, :, :]
-            toab_all[i, 0] = np.nanmean(toab_gmean_constant)
-            toab_all[i, 1] = np.nanstd(toab_gmean_constant)
-            logger.info('TOA energy budget: {}\n'.format(toab_all[i, 0]))
+            toab_all[i_m, 0] = np.nanmean(toab_gmean_constant)
+            toab_all[i_m, 1] = np.nanstd(toab_gmean_constant)
+            logger.info('TOA energy budget: {}\n'.format(toab_all[i_m, 0]))
             toab_ymm_file = diagworkdir + '/{}_toab_ymm.nc'.format(model_name)
             cdo.yearmonmean(input=toab_file, output=toab_ymm_file)
-        	    # Surface energy budget 
+            # Surface energy budget
             surb_file = diagworkdir + '/{}_surb.nc'.format(model_name)
             aux_surb_file = diagworkdir + '/{}_aux_surb.nc'.format(model_name)
             removeif(surb_file)
             removeif(aux_file)
             cdo.add(input=" {} {}".format(rsds_file, rlds_file),
-                    output=aux_surb_file) 
+                    output=aux_surb_file)
             cdo.sub(input="-sub -sub -sub {} {} {} {} {}"
                     .format(aux_surb_file, rsus_file, rlus_file,
                             hfls_file, hfss_file),
-                    output=aux_file) 
+                    output=aux_file)
             cdo.chname('rsds,surb', input=aux_file, options='-b F32',
                        output=surb_file)
             surb_gmean_file = (diagworkdir
                                + '/{}_surb_gmean.nc'.format(model_name))
-            cdo.fldmean(input='-yearmonmean {}'.format(surb_file), 
-                        output=surb_gmean_file)        
+            cdo.fldmean(input='-yearmonmean {}'.format(surb_file),
+                        output=surb_gmean_file)
             fl = Dataset(surb_gmean_file)
             surb_gmean_constant = fl.variables['surb'][:, :, :]
-            surb_all[i, 0] = np.nanmean(surb_gmean_constant)
-            surb_all[i, 1] = np.nanstd(surb_gmean_constant)
-            logger.info('Surface energy budget: {}\n'.format(surb_all[i, 0]))
-        	    # Atmospheric energy budget
+            surb_all[i_m, 0] = np.nanmean(surb_gmean_constant)
+            surb_all[i_m, 1] = np.nanstd(surb_gmean_constant)
+            logger.info('Surface energy budget: {}\n'.format(surb_all[i_m, 0]))
+            # Atmospheric energy budget
             atmb_file = diagworkdir + '/{}_atmb.nc'.format(model_name)
             removeif(atmb_file)
             removeif(aux_file)
             cdo.sub(input="{} {}".format(toab_file, surb_file),
-                    output=aux_file)  
+                    output=aux_file)
             cdo.chname('toab,atmb', input=aux_file, options='-b F32',
                        output=atmb_file)
             atmb_gmean_file = (diagworkdir
                                + '/{}_atmb_gmean.nc'.format(model_name))
-            cdo.fldmean(input='-yearmonmean {}'.format(atmb_file), 
-                        output=atmb_gmean_file)        
+            cdo.fldmean(input='-yearmonmean {}'.format(atmb_file),
+                        output=atmb_gmean_file)
             fl = Dataset(atmb_gmean_file)
             atmb_gmean_constant = fl.variables['atmb'][:, :, :]
-            atmb_all[i, 0] = np.nanmean(atmb_gmean_constant)
-            atmb_all[i, 1] = np.nanstd(atmb_gmean_constant)
+            atmb_all[i_m, 0] = np.nanmean(atmb_gmean_constant)
+            atmb_all[i_m, 1] = np.nanstd(atmb_gmean_constant)
             logger.info('Atmospheric energy budget: {}\n'
-                        .format(atmb_all[i, 0]))
+                        .format(atmb_all[i_m, 0]))
             logger.info('Done\n')
             # Baroclinic efficiency
             maskGain_file = diagworkdir + '/{}_maskGain.nc'.format(model_name)
@@ -492,11 +493,11 @@ def main(cfg):
             cdo.ltc('0', input=toab_ymm_file, output=maskLoss_file)
             toabGain_file = diagworkdir + '/{}_toabGain.nc'.format(model_name)
             cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                           .format(toab_ymm_file, maskGain_file), 
+                           .format(toab_ymm_file, maskGain_file),
                            output=toabGain_file)
             toabLoss_file = diagworkdir + '/{}_toabLoss.nc'.format(model_name)
             cdo.setrtomiss('0,1000', input='-mul {} {}'
-                           .format(toab_ymm_file, maskLoss_file), 
+                           .format(toab_ymm_file, maskLoss_file),
                            output=toabLoss_file)
             teGain_file = diagworkdir + '/{}_teGain.nc'.format(model_name)
             cdo.setrtomiss('-1000,0', input='-mul {} {}'
@@ -527,7 +528,7 @@ def main(cfg):
             barocEff = fl.variables['toab'][0, 0, 0]
             logger.info('Baroclinic efficiency (Lucarini et al., 2011): {}\n'
                         .format(barocEff))
-            barocEff_all[i] = barocEff
+            baroc_eff_all[i_m] = barocEff
         else:
         	    pass
         # Water mass budget
@@ -543,13 +544,13 @@ def main(cfg):
                        output=wmassBudget_file)
             wmass_gmean_file = (diagworkdir +
                                 '/{}_wmass_gmean.nc'.format(model_name))
-            cdo.fldmean(input='-yearmonmean {}'.format(wmassBudget_file), 
-                        output=wmass_gmean_file)        
+            cdo.fldmean(input='-yearmonmean {}'.format(wmassBudget_file),
+                        output=wmass_gmean_file)
             fl = Dataset(wmass_gmean_file)
             wmass_gmean_constant = fl.variables['wmass'][:, :, :]
-            wmass_all[i, 0] = np.nanmean(wmass_gmean_constant)
-            wmass_all[i, 1] = np.nanstd(wmass_gmean_constant)
-            logger.info('Water mass budget: {}\n'.format(wmass_all[i, 0]))
+            wmass_all[i_m, 0] = np.nanmean(wmass_gmean_constant)
+            wmass_all[i_m, 1] = np.nanstd(wmass_gmean_constant)
+            logger.info('Water mass budget: {}\n'.format(wmass_all[i_m, 0]))
             # Latent energy budget
             latentEnergy_file = (diagworkdir +
                                  '/{}_latentEnergy.nc'.format(model_name))
@@ -559,38 +560,39 @@ def main(cfg):
                     .format(hfls_file, str(lcsub), prsn_file,
                             str(lc), prr_file),
                     output=aux_file)
-            cdo.chname('hfls,latent', 
+            cdo.chname('hfls,latent',
                        input=aux_file, options='-b F32',
                        output=latentEnergy_file)
             laten_gmean_file = (diagworkdir +
                                 '/{}_latenergy_gmean.nc'.format(model_name))
-            cdo.fldmean(input='-yearmonmean {}'.format(latentEnergy_file), 
-                        output=laten_gmean_file)        
+            cdo.fldmean(input='-yearmonmean {}'.format(latentEnergy_file),
+                        output=laten_gmean_file)
             fl = Dataset(laten_gmean_file)
             laten_gmean_constant = fl.variables['latent'][:, :, :]
-            latent_all[i, 0] = np.nanmean(laten_gmean_constant)
-            latent_all[i, 1] = np.nanstd(laten_gmean_constant)
-            logger.info('Latent energy budget: {}\n'.format(latent_all[i, 0]))
+            latent_all[i_m, 0] = np.nanmean(laten_gmean_constant)
+            latent_all[i_m, 1] = np.nanstd(laten_gmean_constant)
+            logger.info('Latent energy budget: {}\n'
+                        .format(latent_all[i_m, 0]))
             logger.info('Done\n')
         else:
         	    pass
         # Compute budgets over oceans and land separately.
-        if lsm in {'y', 'yes'}:	
+        if lsm in {'y', 'yes'}:
             if eb in {'y', 'yes'}:
                 logger.info('Computing energy budgets over land and oceans\n')
                 toab_ocean_file = (diagworkdir +
                                    '/{}_toab_ocean.nc'.format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'.format(toab_file, sftlf_fx), 
+                cdo.mul(input='{} -eqc,0 {}'.format(toab_file, sftlf_fx),
                         output=toab_ocean_file)
                 toab_oc_gmean_file = diagworkdir + \
                                      '/{}_toab_oc_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(toab_ocean_file), 
-                            output=toab_oc_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(toab_ocean_file),
+                            output=toab_oc_gmean_file)
                 fl = Dataset(toab_oc_gmean_file)
                 toab_oc_gmean_constant = fl.variables['toab'][0, 0, 0]
                 logger.info('TOA energy budget over oceans: {}\n'
                           .format(toab_oc_gmean_constant))
-                toab_oc_all[i] = toab_oc_gmean_constant
+                toab_oc_all[i_m] = toab_oc_gmean_constant
                 toab_land_file = (diagworkdir +
                                   '/{}_toab_land.nc'.format(model_name))
                 cdo.sub(input='{} {}'.format(toab_file, toab_ocean_file),
@@ -601,28 +603,29 @@ def main(cfg):
                 move(aux_file, toab_land_file)
                 toab_la_gmean_file = diagworkdir + \
                                      '/{}_toab_la_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(toab_land_file), 
-                            output=toab_la_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(toab_land_file),
+                            output=toab_la_gmean_file)
                 fl = Dataset(toab_la_gmean_file)
                 toab_la_gmean_constant = fl.variables['toab'][0, 0, 0]
-                logger.info('TOA energy budget over land: {}\n'.format(toab_la_gmean_constant))
-                toab_la_all[i] = toab_la_gmean_constant   
+                logger.info('TOA energy budget over land: {}\n'
+                            .format(toab_la_gmean_constant))
+                toab_la_all[i_m] = toab_la_gmean_constant
                 atmb_ocean_file = (diagworkdir +
                                    '/{}_atmb_ocean.nc'.format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'.format(atmb_file, sftlf_fx), 
+                cdo.mul(input='{} -eqc,0 {}'.format(atmb_file, sftlf_fx),
                         output=atmb_ocean_file)
                 atmb_oc_gmean_file = diagworkdir + \
                                      '/{}_atmb_oc_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(atmb_ocean_file), 
-                            output=atmb_oc_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(atmb_ocean_file),
+                            output=atmb_oc_gmean_file)
                 fl = Dataset(atmb_oc_gmean_file)
                 atmb_oc_gmean_constant = fl.variables['atmb'][0, 0, 0]
                 logger.info('Atmospheric energy budget over oceans: {}\n'
                             .format(atmb_oc_gmean_constant))
-                atmb_oc_all[i] = atmb_oc_gmean_constant
+                atmb_oc_all[i_m] = atmb_oc_gmean_constant
                 atmb_land_file = (diagworkdir +
                                   '/{}_atmb_land.nc'.format(model_name))
-                cdo.sub(input='{} {}'.format(atmb_file, atmb_ocean_file), 
+                cdo.sub(input='{} {}'.format(atmb_file, atmb_ocean_file),
                         output=atmb_land_file)
                 aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
                 cdo.setctomiss('0', input=atmb_ocean_file, output=aux_file)
@@ -631,29 +634,29 @@ def main(cfg):
                 move(aux_file, atmb_land_file)
                 atmb_la_gmean_file = diagworkdir + \
                                      '/{}_atmb_la_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(atmb_land_file), 
-                            output=atmb_la_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(atmb_land_file),
+                            output=atmb_la_gmean_file)
                 fl = Dataset(atmb_la_gmean_file)
                 atmb_la_gmean_constant = fl.variables['atmb'][0, 0, 0]
                 logger.info('Atmospheric energy budget over land: {}\n'
                             .format(atmb_la_gmean_constant))
-                atmb_la_all[i] = atmb_la_gmean_constant
+                atmb_la_all[i_m] = atmb_la_gmean_constant
                 surb_ocean_file = (diagworkdir +
                                    '/{}_surb_ocean.nc'.format(model_name))
                 cdo.mul(input='{} -eqc,0 {}'.format(surb_file, sftlf_fx),
                         output=surb_ocean_file)
                 surb_oc_gmean_file = diagworkdir + \
                                      '/{}_surb_oc_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(surb_ocean_file), 
-                            output=surb_oc_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(surb_ocean_file),
+                            output=surb_oc_gmean_file)
                 fl = Dataset(surb_oc_gmean_file)
                 surb_oc_gmean_constant = fl.variables['surb'][0, 0, 0]
                 logger.info('Surface energy budget over oceans: {}\n'
                             .format(surb_oc_gmean_constant))
-                surb_oc_all[i] = surb_oc_gmean_constant
+                surb_oc_all[i_m] = surb_oc_gmean_constant
                 surb_land_file = (diagworkdir +
                                   '/{}_surb_land.nc'.format(model_name))
-                cdo.sub(input='{} {}'.format(surb_file, surb_ocean_file), 
+                cdo.sub(input='{} {}'.format(surb_file, surb_ocean_file),
                         output=surb_land_file)
                 aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
                 cdo.setctomiss('0', input=surb_ocean_file, output=aux_file)
@@ -662,17 +665,17 @@ def main(cfg):
                 move(aux_file, surb_land_file)
                 surb_la_gmean_file = diagworkdir + \
                                      '/{}_surb_la_gmean.nc'.format(model_name)
-                cdo.timmean(input='-fldmean {}'.format(surb_land_file), 
-                            output=surb_la_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(surb_land_file),
+                            output=surb_la_gmean_file)
                 fl = Dataset(surb_la_gmean_file)
                 surb_la_gmean_constant = fl.variables['surb'][0, 0, 0]
                 logger.info('Surface energy budget over land: {}\n'
                             .format(surb_la_gmean_constant))
-                surb_la_all[i] = surb_la_gmean_constant
+                surb_la_all[i_m] = surb_la_gmean_constant
                 logger.info('Done\n')
             else:
-                pass   
-            if wat in {'y','yes'}:
+                pass
+            if wat in {'y', 'yes'}:
                 logger.info('Computing water mass and latent energy'
                             ' budgets over land and oceans\n')
                 toab_ocean_file = (diagworkdir +
@@ -681,7 +684,7 @@ def main(cfg):
                                           '/{}_wmassBudget_ocean.nc'
                                           .format(model_name))
                 cdo.mul(input='{} -eqc,0 {}'
-                        .format(wmassBudget_file, sftlf_fx), 
+                        .format(wmassBudget_file, sftlf_fx),
                         output=wmassBudget_ocean_file)
                 wmassBudget_land_file = (diagworkdir +
                                          '/{}_wmassBudget_land.nc'
@@ -689,7 +692,8 @@ def main(cfg):
                 cdo.sub(input='{} {}'
                         .format(wmassBudget_file, wmassBudget_ocean_file), 
                         output=wmassBudget_land_file)
-                cdo.setctomiss('0', input=wmassBudget_ocean_file, output=aux_file)
+                cdo.setctomiss('0', input=wmassBudget_ocean_file,
+                               output=aux_file)
                 move(aux_file, wmassBudget_ocean_file)
                 cdo.setctomiss('0', input=wmassBudget_land_file, output=aux_file)
                 move(aux_file, wmassBudget_land_file)
@@ -697,69 +701,70 @@ def main(cfg):
                                        '/{}_wmass_oc_gmean.nc'
                                        .format(model_name))
                 cdo.timmean(input='-fldmean {}'
-                            .format(wmassBudget_ocean_file), 
-                            output=wmass_oc_gmean_file)        
+                            .format(wmassBudget_ocean_file),
+                            output=wmass_oc_gmean_file)
                 fl = Dataset(wmass_oc_gmean_file)
                 wmass_oc_gmean_constant = fl.variables['wmass'][0, 0, 0]
                 logger.info('Water mass budget over oceans: {}\n'
                             .format(wmass_oc_gmean_constant))
-                wmass_oc_all[i] = wmass_oc_gmean_constant
+                wmass_oc_all[i_m] = wmass_oc_gmean_constant
                 wmass_la_gmean_file = (diagworkdir +
                                        '/{}_wmass_la_gmean.nc'
                                        .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(wmassBudget_land_file), 
-                            output=wmass_la_gmean_file)        
+                cdo.timmean(input='-fldmean {}'.format(wmassBudget_land_file),
+                            output=wmass_la_gmean_file)
                 fl = Dataset(wmass_la_gmean_file)
                 wmass_la_gmean_constant = fl.variables['wmass'][0, 0, 0]
                 logger.info('Water mass budget over land: {}\n'
                             .format(wmass_la_gmean_constant))
-                wmass_la_all[i] = wmass_la_gmean_constant    
+                wmass_la_all[i_m] = wmass_la_gmean_constant
                 latentEnergy_ocean_file = (diagworkdir +
                                            '/{}_latentEnergy_ocean.nc'
                                            .format(model_name))
                 cdo.mul(input='{} -eqc,0 {}'
-                        .format(latentEnergy_file, sftlf_fx), 
+                        .format(latentEnergy_file, sftlf_fx),
                         output=latentEnergy_ocean_file)
                 latentEnergy_land_file = (diagworkdir +
                                           '/{}_latentEnergy_land.nc'
                                           .format(model_name))
                 cdo.sub(input='{} {}'
-                        .format(latentEnergy_file, latentEnergy_ocean_file), 
+                        .format(latentEnergy_file, latentEnergy_ocean_file),
                         output=latentEnergy_land_file)
                 aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
-                cdo.setctomiss('0', input=latentEnergy_ocean_file, 
+                cdo.setctomiss('0', input=latentEnergy_ocean_file,
                                output=aux_file)
                 move(aux_file, latentEnergy_ocean_file)
-                cdo.setctomiss('0', input=latentEnergy_land_file, 
+                cdo.setctomiss('0', input=latentEnergy_land_file,
                                output=aux_file)
                 move(aux_file, latentEnergy_land_file)
                 latent_oc_gmean_file = (diagworkdir +
                                         '/{}_latent_oc_gmean.nc'
                                         .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(latentEnergy_ocean_file),
-                            output=latent_oc_gmean_file)        
+                cdo.timmean(input='-fldmean {}'
+                            .format(latentEnergy_ocean_file),
+                            output=latent_oc_gmean_file)   
                 fl = Dataset(latent_oc_gmean_file)
                 latent_oc_gmean_constant = fl.variables['latent'][0, 0, 0]
                 logger.info('Latent energy budget over oceans: {}\n'
                             .format(latent_oc_gmean_constant))
-                latent_oc_all[i] = latent_oc_gmean_constant
+                latent_oc_all[i_m] = latent_oc_gmean_constant
                 latent_la_gmean_file = (diagworkdir +
                                         '/{}_latent_la_gmean.nc'
                                         .format(model_name))
                 cdo.timmean(input='-fldmean {}'.format(latentEnergy_land_file),
-                            output=latent_la_gmean_file)        
+                            output=latent_la_gmean_file)
                 fl = Dataset(latent_la_gmean_file)
                 latent_la_gmean_constant = fl.variables['latent'][0, 0, 0]
                 logger.info('Latent energy budget over land: {}\n'
                             .format(latent_la_gmean_constant))
-                latent_la_all[i] = latent_la_gmean_constant
+                latent_la_all[i_m] = latent_la_gmean_constant
                 logger.info('Done\n')
             else:
-                pass          
+                pass
         else:
             pass
         # Compute the Lorenz Energy Cycle.
-        if lec in {'y','yes'}: 
+        if lec in {'y','yes'}:
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
             lecpath = os.path.join(plotpath2, 'LEC_results')
@@ -786,12 +791,12 @@ def main(cfg):
             cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000'
                                        '-merge {} {} {} {}')
                            .format(ta_file, ua_file_mask,
-                                   va_file_mask, wap_file), 
+                                   va_file_mask, wap_file),
                            options='-b F32', output=energy3_file)
             yrs = cdo.showyear(input=energy3_file)
             yrs = str(yrs)
             yrs2 = yrs.split()
-            y = 0
+            y_i = 0
             lect = np.zeros(len(yrs2))
             for yr in yrs2:
                 yr = int(filter(str.isdigit,yr))
@@ -808,23 +813,23 @@ def main(cfg):
                             '/{}_{}_lec_diagram.png'.format(model_name, yr))
                 logfile = (lecpath +
                            '/{}_{}_lec_table.txt'.format(model_name, yr))
-                lect[y] = lorenz.lorenz(diagworkdir, model_name,
-                                        yr, ncfile, diagfile, logfile)
+                lect[y_i] = lorenz.lorenz(diagworkdir, model_name,
+                                          yr, ncfile, diagfile, logfile)
                 # caption = ("Lorenz Energy Cycle for {}, year {}"
                 #           .format(model_name, yr))
                 # plot_id = "#lecdiag"
                 # dataIDs = "ta, ua, va, wap (time res:
-                # daily, vertical: pressure levels)"       
-                #ESMValMD("both", diagfile, plot_tags, caption, plot_id, 
+                # daily, vertical: pressure levels)"
+                #ESMValMD("both", diagfile, plot_tags, caption, plot_id,
                 #         dataIDs, diag_script, authors)
-                y = y + 1
+                y_i = y_i + 1
                 removeif(ncfile)
                 removeif(enfile_yr)
                 removeif(tasfile_yr)
-            lec_all[i, 0] = np.nanmean(lect)
-            lec_all[i, 1] = np.nanstd(lect)
+            lec_all[i_m, 0] = np.nanmean(lect)
+            lec_all[i_m, 1] = np.nanstd(lect)
             logger.info('Intensity of the annual mean Lorenz Energy '
-                        'Cycle: {}\n'.format(lec_all[i, 0]))
+                        'Cycle: {}\n'.format(lec_all[i_m, 0]))
             logger.info('Done\n')
             os.chdir(inputpath)
             os.remove(ua_file_mask)
@@ -855,10 +860,10 @@ def main(cfg):
                             options='-b F32', output=horizEntropy_mean_file)
                 fl = Dataset(horizEntropy_mean_file)
                 horzentr_mean = fl.variables['shor'][:, :, :]
-                horzentr_all[i, 0] = np.nanmean(horzentr_mean)
-                horzentr_all[i, 1] = np.nanstd(horzentr_mean)
+                horzentr_all[i_m, 0] = np.nanmean(horzentr_mean)
+                horzentr_all[i_m, 1] = np.nanstd(horzentr_mean)
                 logger.info('Horizontal component of the material entropy'
-                            'production: {}\n'.format(horzentr_all[i,0]))
+                            'production: {}\n'.format(horzentr_all[i_m, 0]))
                 #Vertical material entropy production
                 verticalEntropy_file = (diagworkdir +
                                         '/{}_verticalEntropy.nc'
@@ -873,7 +878,7 @@ def main(cfg):
                          output=verticalEntropy_file)
                 cdo.chname('ts,sver', input=verticalEntropy_file,
                            options='-b F32', output=aux_file)
-                move(aux_file, verticalEntropy_file)	
+                move(aux_file, verticalEntropy_file)
                 verticalEntropy_mean_file = (diagworkdir +
                                              '/{}_vertEntropy_gmean.nc'
                                              .format(model_name))
@@ -885,10 +890,10 @@ def main(cfg):
                 move(aux_file, verticalEntropy_mean_file)
                 fl = Dataset(verticalEntropy_mean_file)
                 vertentr_mean = fl.variables['sver'][:, :, :]
-                vertentr_all[i, 0] = np.nanmean(vertentr_mean)
-                vertentr_all[i, 1] = np.nanstd(vertentr_mean)
+                vertentr_all[i_m, 0] = np.nanmean(vertentr_mean)
+                vertentr_all[i_m, 1] = np.nanstd(vertentr_mean)
                 logger.info('Vertical component of the material entropy '
-                            'production: {}\n'.format(vertentr_all[i, 0]))
+                            'production: {}\n'.format(vertentr_all[i_m, 0]))
                 logger.info('Done\n')
             if met in {'2', '3'}:
                 logger.info('Computation of the material entropy '
@@ -921,7 +926,8 @@ def main(cfg):
                 logger.info('Done\n')
                 logger.info('2. Hydrological cycle\n')
                 logger.info('2.1 Evaporation fluxes\n')
-                evapentr_file = diagworkdir + '/{}_evap_entr.nc'.format(model_name)
+                evapentr_file = (diagworkdir +
+                                 '/{}_evap_entr.nc'.format(model_name))
                 removeif(evapentr_file)
                 removeif(aux_file)
                 cdo.timmean(input='-yearmonmean -monmean -div {} {}'
@@ -959,7 +965,7 @@ def main(cfg):
                 prsnmask_file = (diagworkdir +
                                  '/{}_prsn_masked.nc'.format(model_name))
                 removeif(prsnmask_file)
-                cdo.mul(input='{} {}'.format(masksnow_file, prsn_file), 
+                cdo.mul(input='{} {}'.format(masksnow_file, prsn_file),
                         options='-b F32', output=prsnmask_file)
                 # Temperatures of the rainfall and snowfall clouds
                 tliq_file = diagworkdir + '/{}_tliq.nc'.format(model_name)
@@ -974,24 +980,24 @@ def main(cfg):
                                options='-b F32', output=tsol_file)
                 tdegl_file = diagworkdir + '/{}_tliqdeg.nc'.format(model_name)
                 removeif(tdegl_file)
-                cdo.subc('273.15', input=tliq_file, options='-b F32', 
+                cdo.subc('273.15', input=tliq_file, options='-b F32',
                          output=tdegl_file)
                 tdegs_file = diagworkdir + '/{}_tsoldeg.nc'.format(model_name)
                 removeif(tdegs_file)
-                cdo.subc('273.15', input=tsol_file, options='-b F32', 
+                cdo.subc('273.15', input=tsol_file, options='-b F32',
                          output=tdegs_file)
-                # Mask for ice cloud and original temperature 
+                # Mask for ice cloud and original temperature
                 # for phase changes from ice to rain
                 maskice_file = (diagworkdir +
                                 '/{}_maskice.nc'.format(model_name))
                 removeif(maskice_file)
-                cdo.ltc('0.0', input=tdegl_file, options='-b F32', 
+                cdo.ltc('0.0', input=tdegl_file, options='-b F32',
                         output=maskice_file)
                 ticer_file = (diagworkdir +
                               '/{}_t_icerain_file'.format(model_name))
                 removeif(ticer_file)
                 cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tliq_file,maskice_file), 
+                               .format(tliq_file,maskice_file),
                                options='-b F32', output=ticer_file)
                 prrice_file = (diagworkdir +
                                '/{}_prr_ice_file.nc'.format(model_name))
@@ -1003,24 +1009,24 @@ def main(cfg):
                 maskvap_file = (diagworkdir +
                                 '/{}_maskvap.nc'.format(model_name))
                 removeif(maskvap_file)
-                cdo.gtc('0.0', input=tdegs_file, options='-b F32', 
+                cdo.gtc('0.0', input=tdegs_file, options='-b F32',
                         output=maskvap_file)
                 tvaps_file = (diagworkdir +
                               '/{}_t_vapsnow.nc'.format(model_name))
                 removeif(tvaps_file)
                 cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tsol_file, maskvap_file), 
+                               .format(tsol_file, maskvap_file),
                                options='-b F32', output=tvaps_file)
                 prsnvap_file = (diagworkdir +
                                 '/{}_prsn_vap.nc'.format(model_name))
                 removeif(prsnvap_file)
-                cdo.mul(input='{} {}'.format(maskvap_file, prsn_file), 
+                cdo.mul(input='{} {}'.format(maskvap_file, prsn_file),
                         options='-b F32', output=prsnvap_file)
                 logger.info('2.2 Rainfall precipitation\n')
                 latrain_file = (diagworkdir +
                                 '/{}_latentEnergy_rain.nc'.format(model_name))
                 removeif(latrain_file)
-                cdo.mulc(str(lc), input=prrmask_file, options='-b F32', 
+                cdo.mulc(str(lc), input=prrmask_file, options='-b F32',
                          output=latrain_file)
                 rainentr_file = (diagworkdir +
                                  '/{}_rain_entr.nc'.format(model_name))
@@ -1028,7 +1034,7 @@ def main(cfg):
                 removeif(aux_file)
                 cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0'
                                    ' -div {} {}').format(latrain_file,
-                                                         tcloud_file), 
+                                                         tcloud_file),
                             options='-b F32', output=aux_file)
                 cdo.chname('prr,srain', input=aux_file, options='-b F32',
                            output=rainentr_file)
@@ -1063,7 +1069,7 @@ def main(cfg):
                                       '/{}_snowEntropy_gmean.nc'
                                       .format(model_name))
                 removeif(snowentr_mean_file)
-                cdo.fldmean(input=snowentr_file, 
+                cdo.fldmean(input=snowentr_file,
                             options='-b F32', output=snowentr_mean_file)
                 fl = Dataset(snowentr_mean_file)
                 snowentr_mean = fl.variables['ssnow'][0, 0, 0]
@@ -1075,7 +1081,7 @@ def main(cfg):
                                 '/{}_latentEnergy_snowmelt.nc'
                                 .format(model_name))
                 removeif(latmelt_file)
-                cdo.mulc(str(ls), 
+                cdo.mulc(str(ls),
                          input='-divc,{} {}'.format(str(lcsub),latsnow_file),
                          options='-b F32', output=latmelt_file)
                 meltentr_file = (diagworkdir +
@@ -1083,7 +1089,7 @@ def main(cfg):
                 removeif(meltentr_file)
                 removeif(aux_file)
                 cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
-                                   '-divc,273.15 {}').format(latmelt_file), 
+                                   '-divc,273.15 {}').format(latmelt_file),
                             options='-b F32', output=aux_file)
                 cdo.chname('prsn,smelt', input=aux_file, options='-b F32',
                            output=meltentr_file)
@@ -1091,7 +1097,7 @@ def main(cfg):
                                       '/{}_snowmeltEntropy_gmean.nc'
                                      .format(model_name))
                 removeif(meltentr_mean_file)
-                cdo.fldmean(input=meltentr_file, 
+                cdo.fldmean(input=meltentr_file,
                             options='-b F32', output=meltentr_mean_file)
                 fl = Dataset(meltentr_mean_file)
                 meltentr_mean = fl.variables['smelt'][0, 0, 0]
@@ -1104,22 +1110,22 @@ def main(cfg):
                               .format(model_name))
                 removeif(poten_file)
                 cdo.mulc(grav, input='-mul {} -add {} {}'
-                         .format(htop_file,prrmask_file,prsnmask_file), 
+                         .format(htop_file,prrmask_file,prsnmask_file),
                          options='-b F32', output=poten_file)
                 potentr_file = (diagworkdir +
                                 '/{}_pot_drop_entr.nc'.format(model_name))
                 removeif(potentr_file)
                 removeif(aux_file)
                 cdo.timmean(input='-yearmonmean -monmean -div {} {}'
-                            .format(poten_file, tcolumn_file), options='-b F32',
-                            output=aux_file)
-                cdo.chname('htop,spotp', input=aux_file, options='-b F32', 
+                            .format(poten_file, tcolumn_file),
+                            options='-b F32', output=aux_file)
+                cdo.chname('htop,spotp', input=aux_file, options='-b F32',
                            output=potentr_file)
                 potentr_mean_file = (diagworkdir +
                                      '/{}_potentialdropEnergy_gmean.nc'
                                      .format(model_name))
                 removeif(potentr_mean_file)
-                cdo.fldmean(input=potentr_file, 
+                cdo.fldmean(input=potentr_file,
                             options='-b F32', output=potentr_mean_file)
                 fi = Dataset(potentr_mean_file)
                 potentr_mean = fi.variables['spotp'][0, 0, 0]
@@ -1127,9 +1133,8 @@ def main(cfg):
                             'potential energy of the droplet: {}\n'
                             .format(potentr_mean))
                 logger.info('Done\n')
-                ##############################################################################################
                 logger.info('3. Kinetic energy dissipation\n')
-                if lec in {'y', 'yes'}: 
+                if lec in {'y', 'yes'}:
                     cdo.yearmonmean(input=tasvert_file, output=aux_file)
                     fl = Dataset(aux_file)
                     tabl_mean = fl.variables['ts'][:, 0, 0]
@@ -1144,7 +1149,6 @@ def main(cfg):
                     logger.info('I will assign a given value for the material '
                                 'entropy production attributed to LEC '
                                 '(0.01 W/m2*K)\n')
-                ###########################################################################################
                 sensentr_mean = masktonull(sensentr_mean)
                 evapentr_mean = masktonull(evapentr_mean)
                 rainentr_mean = masktonull(rainentr_mean)
@@ -1152,135 +1156,135 @@ def main(cfg):
                 meltentr_mean = masktonull(meltentr_mean)
                 potentr_mean = masktonull(potentr_mean)
                 minentr_mean = masktonull(minentr_mean)
-                matentr = (float(sensentr_mean) - float(evapentr_mean) + 
-                           float(rainentr_mean) + float(snowentr_mean) + 
-                           float(potentr_mean) + float(minentr_mean) - 
+                matentr = (float(sensentr_mean) - float(evapentr_mean) +
+                           float(rainentr_mean) + float(snowentr_mean) +
+                           float(potentr_mean) + float(minentr_mean) -
                            float(meltentr_mean))
                 logger.info('Material entropy production with '
                             'the direct method: {}\n'.format(matentr))
-                matentr_all[i, 0] = matentr
+                matentr_all[i_m, 0] = matentr
                 if met in {'3'}:
                     diffentr = (float(np.nanmean(vertentr_mean)) +
                                 float(np.nanmean(horzentr_mean)) -
                                 matentr)
                     logger.info('Difference between the two '
                                 'methods: {}\n'.format(diffentr))
-                    diffentr_all[i, 0] = diffentr
+                    diffentr_all[i_m, 0] = diffentr
                 else:
                     pass
                 irrevers = ((matentr - float(minentr_mean)) /
                             float(minentr_mean))
                 logger.info('Degree of irreversibility of the '
                             'system: {}\n'.format(irrevers))
-                irrevers_all[i] = irrevers
+                irrevers_all[i_m] = irrevers
             else:
                 pass
      	else:
             pass
-        # Produce plots for the specific model 
+        # Produce plots for the specific model
         logger.info('Running the plotting module for the budgets\n')
         if eb in {'y', 'yes'}:
-            plotsmod.balances(diagworkdir_up, plotpath2, 
+            plotsmod.balances(diagworkdir_up, plotpath2,
                               [toab_file, atmb_file, surb_file],
                               ['toab', 'atmb', 'surb'],
                               model_name)
             oname = '{}/{}_{}_timeser.png'.format(plotpath2,
                                                   model_name, 'toab')
 #            caption = "TOA EB annual mean time series (global; NH; SH)"
-#            plot_id = "#TOAEBtimeser"      
-#            dataIDs = "rlut, rsdt, rsut (time res: monthly, vertical: 2D TOA)" 
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#            plot_id = "#TOAEBtimeser"
+#            dataIDs = "rlut, rsdt, rsut (time res: monthly, vertical: 2D TOA)"
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'atmb')
-#            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut 
-#                       (time res: monthly, vertical: 2D TOA/surf)" 
+#            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut
+#                       (time res: monthly, vertical: 2D TOA/surf)"
 #            caption = "Atmospheric EB annual mean time series
 #                       (global; NH; SH)"
-#            plot_id = "#AtmEBtimeser"       
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#            plot_id = "#AtmEBtimeser"
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'surb')
 #            dataIDs = "hfls, hfss, rlds, rlus, rsds, rsus (time res: monthly,
-#                       vertical: 2D TOA/surf)" 
+#                       vertical: 2D TOA/surf)"
 #            caption = "Surface EB annual mean time series (global; NH; SH)"
-#            plot_id = "#SurEBtimeser"       
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#            plot_id = "#SurEBtimeser"
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_transp.png'.format(plotpath2, model_name)
 #            caption = "Annual mean northward heat transports
 #                       (total,atmospheric,oceanic)"
-#            plot_id = "#transp"       
+#            plot_id = "#transp"
 #            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus,
-#                       rsut (time res: monthly, vertical: 2D TOA/surf)" 
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                       rsut (time res: monthly, vertical: 2D TOA/surf)"
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_energy_climap.png'.format(plotpath2, model_name)
 #            caption = "Climatological annual mean energy budgets (EB)
 #                       (TOA,atmospheric,surface)"
-#            plot_id = "#enclimap"       
+#            plot_id = "#enclimap"
 #            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt,
 #                       rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_scatpeak.png'.format(plotpath2,model_name)
 #            caption = "Meridional heat transports hemispheric peak magnitudes
 #                       vs. positions (total,atmospheric,oceanic)"
-#            plot_id = "#scatpeak"       
+#            plot_id = "#scatpeak"
 #            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus,
-#                       rsut (time res: monthly, vertical: 2D TOA/surf)" 
-#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                       rsut (time res: monthly, vertical: 2D TOA/surf)"
+#            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
             logger.info('Done\n')
         if wat in {'y', 'yes'}:
             logger.info('Running the plotting module for the water budgets\n')         
             plotsmod.balances(diagworkdir_up, plotpath2,
                               [wmassBudget_file, latentEnergy_file],
-                              ['wmass', 'latent'], 
-                              model_name)               
+                              ['wmass', 'latent'],
+                              model_name)
 #            oname = '{}/{}_{}_timeser.png'.format(plotpath2,model_name,'wmass')
 #            caption = "water mass annual mean time series (global; nh; sh)"
-#            plot_id = "#wmasstimeser"       
+#            plot_id = "#wmasstimeser"
 #            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both",oname, plot_tags, caption, plot_id, dataids, 
+#            #esmvalmd("both",oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
 #            oname = '{}/{}_{}_timeser.png'.format(plotpath2,model_name,'latent')
 #            caption = "latent energy annual mean time series (global; nh; sh)"
-#            plot_id = "#latentimeser"       
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids, 
+#            plot_id = "#latentimeser"
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
+#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
 #            oname = '{}/{}_latent_transp.png'.format(plotpath2, model_name)
 #            caption = "annual mean northward latent heat transports"
-#            plot_id = "#latentransp"       
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids, 
+#            plot_id = "#latentransp"
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
+#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
 #            oname = '{}/{}_wmass_transp.png'.format(plotpath2, model_name)
 #            caption = "annual mean northward water mass transports"
-#            plot_id = "#wmassransp"       
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids, 
+#            plot_id = "#wmassransp"
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
+#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
 #            oname = '{}/{}_wmass_climap.png'.format(plotpath2, model_name)
 #            caption = "climatological annual mean water mass budgets"
-#            plot_id = "#wmclimap"       
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids, 
+#            plot_id = "#wmclimap"
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
+#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
 #            oname = '{}/{}_latent_climap.png'.format(plotpath2, model_name)
 #            caption = "climatological annual mean latent energy budgets"
-#            plot_id = "#leclimap"       
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
-#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids, 
+#            plot_id = "#leclimap"
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
+#            #esmvalmd("both", oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
             logger.info('Done\n')
         else:
-            pass        
+            pass
         if entr in {'y', 'yes'}:
             if met in {'1'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (indirect method)\n')
-                plotsmod.entropy(plotpath2, verticalEntropy_file, 'sver', 
+                plotsmod.entropy(plotpath2, verticalEntropy_file, 'sver',
                                  'Vertical entropy production', model_name)
 #                oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
 #                caption = "Climatological annual mean vertical
@@ -1304,151 +1308,153 @@ def main(cfg):
             elif met in {'2'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (direct method)\n')
-                plotsmod.entropy(plotpath2, sensentr_file, 'ssens', 
+                plotsmod.entropy(plotpath2, sensentr_file, 'ssens',
                                  'Sensible Heat entropy production',
                                  model_name)
 #                oname = '{}/{}_ssens_climap.png'.format(plotpath2, model_name)
 #                caption = "Climatological annual mean entropy production "
 #                          "associated with sensible heat fluxes"
-#                plot_id = "#ssensclimap"       
-#                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res: monthly, vertical: 2D TOA/surf)" 
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                plot_id = "#ssensclimap"
+#                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas (time res:
+#                            monthly, vertical: 2D TOA/surf)"
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, evapentr_file, 'sevap', 
+                plotsmod.entropy(plotpath2, evapentr_file, 'sevap',
                                  'Evaporation entropy production',
                                  model_name)
 #                oname = '{}/{}_sevap_climap.png'.format(plotpath2, model_name)
 #                caption = "Climatological annual mean entropy production
 #                           associated with evaporation"
-#                plot_id = "#sevapclimap"      
+#                plot_id = "#sevapclimap"
 #                dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas
-#                           (time res: monthly, vertical: 2D TOA/surf)" 
+#                           (time res: monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, rainentr_file, 'srain', 
+                plotsmod.entropy(plotpath2, rainentr_file, 'srain',
                                  'Rainfall precipitation entropy production',
                                  model_name)
 #                oname = '{}/{}_srain_climap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean entropy production 
+#                caption = "Climatological annual mean entropy production
 #                           associated with rainfall"
-#                plot_id = "#srainclimap"       
+#                plot_id = "#srainclimap"
 #                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas,
-#                           vas (time res: monthly, vertical: 2D TOA/surf)" 
+#                           vas (time res: monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow', 
+                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow',
                                  'Snowfall precipitation entropy production',
                                  model_name)
 #                oname = '{}/{}_ssnow_climap.png'.format(plotpath2, model_name)
 #                caption = "Climatological annual mean entropy production
 #                           associated with snowfall"
-#                plot_id = "#snowclimap"       
+#                plot_id = "#snowclimap"
 #                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas
-#                           (time res: monthly, vertical: 2D TOA/surf)" 
+#                           (time res: monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, meltentr_file, 'smelt', 
+                plotsmod.entropy(plotpath2, meltentr_file, 'smelt',
                                  'Snow melting entropy production', model_name)
 #                oname = '{}/{}_smeltclimap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean entropy production 
+#                caption = "Climatological annual mean entropy production
 #                            associated with snow melting"
-#                plot_id = "#snowmeltclimap"       
-#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas 
-#                            (time res: monthly, vertical: 2D TOA/surf)" 
-                plotsmod.entropy(plotpath2, potentr_file, 'spotp', 
-                                 'Potential energy entropy production', 
+#                plot_id = "#snowmeltclimap"
+#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas
+#                            (time res: monthly, vertical: 2D TOA/surf)"
+                plotsmod.entropy(plotpath2, potentr_file, 'spotp',
+                                 'Potential energy entropy production',
                                  model_name)
 #                oname = '{}/{}_spotp_climap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean entropy production 
+#                caption = "Climatological annual mean entropy production
 #                             associated with potential energy"
-#                plot_id = "#spotpclimap"       
+#                plot_id = "#spotpclimap"
 #                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas
-#                           (time res: monthly, vertical: 2D TOA/surf)" 
+#                           (time res: monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
                 logger.info('Done\n')
             elif met in {'3'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (indirect method)\n')
-                plotsmod.entropy(plotpath2, verticalEntropy_file, 'sver', 
+                plotsmod.entropy(plotpath2, verticalEntropy_file, 'sver',
                                  'Vertical entropy production', model_name)
 #                oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean vertical entropy 
+#                caption = "Climatological annual mean vertical entropy
 #                           production"
-#                plot_id = "#verclimap"       
-#                dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res: 
-#                           monthly, vertical: 2D TOA/surf)" 
+#                plot_id = "#verclimap"
+#                dataIDs = "rlds, rlus, rlut, rsds, rsus, tas (time res:
+#                           monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
                 plotsmod.entropy(plotpath2,horizEntropy_file,'shor',
                                  'Horizontal entropy production',model_name)
 #                oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean horizontal entropy 
+#                caption = "Climatological annual mean horizontal entropy
 #                           production"
-#                plot_id = "#hprclimap"       
-#                dataIDs = "rlut, rsdt rsut (time res: monthly, 
-#                           vertical: 2D TOA)" 
+#                plot_id = "#hprclimap"
+#                dataIDs = "rlut, rsdt rsut (time res: monthly,
+#                           vertical: 2D TOA)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
                 logger.info('Done\n')
                 logger.info('Running the plotting module for the material '
                             'entropy production (direct method)\n')
-                plotsmod.entropy(plotpath2, sensentr_file, 'ssens', 
+                plotsmod.entropy(plotpath2, sensentr_file, 'ssens',
                                  'Sensible Heat entropy production',
                                  model_name)
 #                oname = '{}/{}_ssens_climap.png'.format(plotpath2, model_name)
 #                caption = "Sensible heat fluxes"
-#                plot_id = "#ssensclimap"       
-#                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas \
-#                        (time res: monthly, vertical: 2D TOA/surf)" 
+#                plot_id = "#ssensclimap"
+#                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas
+#                        (time res: monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, evapentr_file, 'sevap', 
+                plotsmod.entropy(plotpath2, evapentr_file, 'sevap',
                                  'Evaporation entropy production', model_name)
 #                oname = '{}/{}_sevap_climap.png'.format(plotpath2, model_name)
 #                caption = "Evaporation"
-#                plot_id = "#sevapclimap"      
+#                plot_id = "#sevapclimap"
 #                dataIDs = "hfls, hfss, hus, ps, rlut, tas, ts, uas, vas (time
-#                           res: monthly, vertical: 2D TOA/surf)" 
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                           res: monthly, vertical: 2D TOA/surf)"
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, rainentr_file, 'srain', 
+                plotsmod.entropy(plotpath2, rainentr_file, 'srain',
                                  'Rainfall precipitation entropy production',
                                  model_name)
 #                oname = '{}/{}_srain_climap.png'.format(plotpath2, model_name)
 #                caption = "Rainfall precipitation"
-#                plot_id = "#srainclimap"       
-#                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas \
-#                        (time res: monthly, vertical: 2D TOA/surf)" 
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                plot_id = "#srainclimap"
+#                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas
+#                        (time res: monthly, vertical: 2D TOA/surf)"
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow', 
-                                 'Snowfall precipitation entropy production', 
+                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow',
+                                 'Snowfall precipitation entropy production',
                                  model_name)
 #                oname = '{}/{}_ssnow_climap.png'.format(plotpath2, model_name)
 #                caption = "Snowfall precipitation"
-#                plot_id = "#snowclimap"       
-#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas \
-#                        (time res: monthly, vertical: 2D TOA/surf)" 
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                plot_id = "#snowclimap"
+#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas
+#                        (time res: monthly, vertical: 2D TOA/surf)"
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2, meltentr_file, 'smelt', 
+                plotsmod.entropy(plotpath2, meltentr_file, 'smelt',
                                  'Snow melting entropy production',
                                  model_name)
 #                oname = '{}/{}_smeltclimap.png'.format(plotpath2, model_name)
-#                caption = "Climatological annual mean entropy production \
+#                caption = "Climatological annual mean entropy production
 #                            associated with snow melting"
-#                plot_id = "#snowmeltclimap"       
-#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas \
-#                            (time res: monthly, vertical: 2D TOA/surf)" 
-                plotsmod.entropy(plotpath2, potentr_file, 'spotp', 
-                                 'Potential energy entropy production', model_name)
+#                plot_id = "#snowmeltclimap"
+#                dataIDs = "hfss, hus, prsn, ps, rlut, tas, ts, uas, vas
+#                            (time res: monthly, vertical: 2D TOA/surf)"
+                plotsmod.entropy(plotpath2, potentr_file, 'spotp',
+                                 'Potential energy entropy production',
+                                 model_name)
 #                oname = '{}/{}_spotp_climap.png'.format(plotpath2, model_name)
 #                caption = "Potential energy of the droplet"
-#                plot_id = "#spotpclimap"       
+#                plot_id = "#spotpclimap"
 #                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas,
 #                           vas (time res: monthly, vertical: 2D TOA/surf)" 
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
                 logger.info('Done\n')
             else:
@@ -1456,12 +1462,12 @@ def main(cfg):
         else:
             pass
         logger.info('Done for model: {} \n'.format(model_name))
-        i = i + 1
+        i_m = i_m + 1
     # Produce multi-model ensemble plots (if more than one model are taken
     # into account).
     logger.info('I will now start multi-model plots')
-    if eb in {'y', 'yes'}:           
-        logger.info('Meridional heat transports\n')       
+    if eb in {'y', 'yes'}:
+        logger.info('Meridional heat transports\n')
         fig = plt.figure()
         fig.set_size_inches(12, 22)
         axi = plt.subplot(311)
@@ -1482,7 +1488,7 @@ def main(cfg):
         plt.ylim([-6.25E15, 6.25E15])
         plt.xlim(-90, 90)
         axi.tick_params(axis='both', which='major', labelsize=12)
-        plt.grid()   
+        plt.grid()
         axi=plt.subplot(312)
         axi.set_figsize=(50, 50)
         for model_name in model_names:
@@ -1492,7 +1498,7 @@ def main(cfg):
             name = 'atmos_{}'.format(model_name)
             atmt = dataset.variables[name][:]
             lats = dataset.variables['lat'][:]
-            plt.plot(np.array(lats), np.array(atmt), color='black', 
+            plt.plot(np.array(lats), np.array(atmt), color='black',
                      linewidth=1.)
         plt.title('(b) Atmospheric heat transports', fontsize=18)
         plt.xlabel('Latitude [deg]', fontsize=14)
@@ -1501,7 +1507,7 @@ def main(cfg):
         plt.ylim([-6.25E15, 6.25E15])
         plt.xlim(-90, 90)
         axi.tick_params(axis='both', which='major', labelsize=12)
-        plt.grid()  
+        plt.grid()
         axi=plt.subplot(313)
         axi.set_figsize=(50, 50)
         for model_name in model_names:
@@ -1511,7 +1517,7 @@ def main(cfg):
             name = 'ocean_{}'.format(model_name)
             surt = dataset.variables[name][:]
             lats = dataset.variables['lat'][:]
-            plt.plot(np.array(lats), np.array(surt), color='black', 
+            plt.plot(np.array(lats), np.array(surt), color='black',
                      linewidth=1.)
         plt.title('(c) Oceanic heat transports',fontsize=18)
         plt.xlabel('Latitude [deg]', fontsize=14)
@@ -1526,12 +1532,12 @@ def main(cfg):
         plt.show(fig)
         plt.close(fig)
 #        caption = "Annual mean meridional northward heat transports"
-#        plot_id = "#Mertransp"       
-#        dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut" 
-#        ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#        plot_id = "#Mertransp"
+#        dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut"
+#        ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                 diag_script, authors)
     else:
-        pass    
+        pass
     logger.info('Scatter plots')
     fig=plt.figure()
     fig.set_size_inches(12, 22)
@@ -1553,32 +1559,32 @@ def main(cfg):
     plt.ylabel('F_a [W m-2]',fontsize=14)
     dx = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
     dy = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (toab_all[i, 0], atmb_all[i, 0]), 
-                    xytext=(toab_all[i, 0] + dx, atmb_all[i, 0] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (toab_all[i_m, 0], atmb_all[i_m, 0]),
+                    xytext=(toab_all[i_m, 0] + dx, atmb_all[i_m, 0] + dy),
                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
-    plt.grid()  
+    plt.grid()
     axi = plt.subplot(322)
     axi.set_figsize=(50, 50)
-    plt.scatter(barocEff_all, lec_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(barocEff_all), np.nanmean(lec_all[:,0]), c='red')
-    sl, interc, r_2, p, std=stats.linregress(barocEff_all, lec_all[:, 0])    
-    plotsmod.plot_ellipse(semimin=np.nanstd(barocEff_all), 
+    plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
+    plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:,0]), c='red')
+    sl, interc, r_2, p, std=stats.linregress(baroc_eff_all, lec_all[:, 0])
+    plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(barocEff_all),
+                          phi=np.arctan(sl), x_cent=np.nanmean(baroc_eff_all),
                           y_cent=np.nanmean(lec_all[:, 0]), ax=axi)
     plt.title('(b) Baroclinic efficiency vs. Intensity of LEC', fontsize=12)
-    rcParams['axes.titlepad'] = 1.
+    rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('Eta', fontsize=14)
     plt.ylabel('W [W/m2]', fontsize=14)
-    dx = 0.01 * (max(barocEff_all) - min(barocEff_all))
+    dx = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
     dy = 0.01 * (max(lec_all[:, 0]) - min(lec_all[:, 0]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (barocEff_all[i], lec_all[i, 0]), 
-                    xytext=(barocEff_all[i] + dx, lec_all[i, 0] + dy), 
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (baroc_eff_all[i_m], lec_all[i_m, 0]),
+                    xytext=(baroc_eff_all[i_m] + dx, lec_all[i_m, 0] + dy),
                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1586,11 +1592,11 @@ def main(cfg):
     axi = plt.subplot(323)
     axi.set_figsize = (50, 50)
     plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]), 
+    plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
     sl, interc, r_2, p, std = stats.linregress(horzentr_all[:, 0],
-                                               vertentr_all[:, 0])    
-    plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]), 
+                                               vertentr_all[:, 0])
+    plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
                           phi=np.arctan(sl),
                           x_cent=np.nanmean(horzentr_all[:, 0]),
@@ -1611,7 +1617,7 @@ def main(cfg):
     X, Y = np.meshgrid(xx, yy)
     Z = X + Y
     cp = plt.contour(X, Y, Z, colors='black', linestyles='dashed',
-                     linewidths=1.)    
+                     linewidths=1.)
     plt.clabel(cp, inline=True, inline_spacing=-4, fontsize=8)
     plt.title('(c) Vertical vs. horizontal component', fontsize=12)
     rcParams['axes.titlepad'] = 1
@@ -1620,9 +1626,11 @@ def main(cfg):
     plt.ylabel('S_ver [W m-2 K-1]', fontsize=14)
     dx=0.01 * (max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
     dy=0.01 * (max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (horzentr_all[i, 0], vertentr_all[i, 0]), 
-                    xytext=(horzentr_all[i, 0] + dx, vertentr_all[i, 0] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (horzentr_all[i_m, 0],
+                                    vertentr_all[i_m, 0]),
+                     xytext=(horzentr_all[i_m, 0] + dx,
+                             vertentr_all[i_m, 0] + dy),
                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1633,8 +1641,8 @@ def main(cfg):
     plt.scatter(indentr_all, matentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(indentr_all, matentr_all[:, 0])    
-    plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all), 
+    sl, interc, r_2, p, std = stats.linregress(indentr_all, matentr_all[:, 0])
+    plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
                           phi=np.arctan(sl),
                           x_cent=np.nanmean(indentr_all),
@@ -1647,9 +1655,9 @@ def main(cfg):
     plt.ylabel('S_dir [W m-2 K-1]', fontsize=14)
     dx = 0.01 * (max(indentr_all) - min(indentr_all))
     dy = 0.01 * (max(matentr_all[:, 0]) - min(matentr_all[:, 0]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (indentr_all[i], matentr_all[i, 0]),
-                     xytext=(indentr_all[i] + dx, matentr_all[i, 0] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (indentr_all[i_m], matentr_all[i_m, 0]),
+                     xytext=(indentr_all[i_m] + dx, matentr_all[i_m, 0] + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1658,11 +1666,11 @@ def main(cfg):
     axi.set_figsize=(50, 50)
     plt.scatter(te_all, indentr_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(indentr_all), c='red')
-    sl, interc, r_2, p, std=stats.linregress(te_all, indentr_all)        
-    plotsmod.plot_ellipse(semimaj=np.nanstd(te_all), 
+    sl, interc, r_2, p, std=stats.linregress(te_all, indentr_all)
+    plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(indentr_all),
                           phi=np.arctan(sl),
-                          x_cent=np.nanmean(te_all), 
+                          x_cent=np.nanmean(te_all),
                           y_cent=np.nanmean(indentr_all),
                           ax=axi)
     plt.title('(e) Indirect method vs. emission temperature', fontsize=12)
@@ -1672,23 +1680,23 @@ def main(cfg):
     plt.ylabel('S_mat [W m-2 K-1]', fontsize=14)
     dx= 0.01 * (max(te_all) - min(te_all))
     dy= 0.01 * (max(indentr_all) - min(indentr_all))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (te_all[i], indentr_all[i]), 
-                     xytext=(te_all[i] + dx, (indentr_all[i]) + dy), 
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (te_all[i_m], indentr_all[i_m]),
+                     xytext=(te_all[i_m] + dx, (indentr_all[i_m]) + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
     axi=plt.subplot(326)
     axi.set_figsize=(50, 50)
-    plt.scatter(te_all, barocEff_all, c=colors, alpha=1)
-    plt.scatter(np.nanmean(te_all), np.nanmean(barocEff_all), c='red')
-    sl, interc, r_2, p, std = stats.linregress(te_all, barocEff_all)        
-    plotsmod.plot_ellipse(semimaj=np.nanstd(te_all), 
-                          semimin=np.nanstd(barocEff_all),
+    plt.scatter(te_all, baroc_eff_all, c=colors, alpha=1)
+    plt.scatter(np.nanmean(te_all), np.nanmean(baroc_eff_all), c='red')
+    sl, interc, r_2, p, std = stats.linregress(te_all, baroc_eff_all)
+    plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
+                          semimin=np.nanstd(baroc_eff_all),
                           phi=np.arctan(sl),
-                          x_cent=np.nanmean(te_all), 
-                          y_cent=np.nanmean(barocEff_all),
+                          x_cent=np.nanmean(te_all),
+                          y_cent=np.nanmean(baroc_eff_all),
                           ax=axi)
     plt.title('(f) Baroclinic efficiency vs. emission temperature',fontsize=12)
     rcParams['axes.titlepad'] = 1
@@ -1696,10 +1704,10 @@ def main(cfg):
     plt.xlabel('T_E [K]', fontsize=14)
     plt.ylabel('Eta', fontsize=14)
     dx = 0.01 * (max(te_all) - min(te_all))
-    dy = 0.01 * (max(barocEff_all) - min(barocEff_all))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (te_all[i], barocEff_all[i]),
-                     xytext=(te_all[i] + dx,barocEff_all[i] + dy),
+    dy = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (te_all[i_m], baroc_eff_all[i_m]),
+                     xytext=(te_all[i_m] + dx, baroc_eff_all[i_m] + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.grid()
@@ -1708,14 +1716,14 @@ def main(cfg):
     plt.subplots_adjust(hspace=.3)
 #    caption = "Summary scatters from thermodynamics"
 #    plot_id = "#scatsum"
-#    dataIDs = "hfss, hfls, hus, pr, prsn, ps, rlds, rlus, rlut, rsds, 
-#               rsdt, rsus, rsut, ta, tas, ts, ua, uas, va, vas, wap" 
+#    dataIDs = "hfss, hfls, hus, pr, prsn, ps, rlds, rlus, rlut, rsds,
+#               rsdt, rsus, rsut, ta, tas, ts, ua, uas, va, vas, wap"
 #    ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
-#                diag_script, authors)    
-
-    # Scatter plot of climatological mean values vs. interannual variability for each model
+#                diag_script, authors)
+    # Scatter plot of climatological mean values vs. interannual
+    # variability for each model
     logger.info('Scatter plots for inter-annual variability of '
-                'some quantities')    
+                'some quantities')
     fig = plt.figure()
     fig.set_size_inches(12, 22)
     colors = (0, 0, 0)
@@ -1725,9 +1733,9 @@ def main(cfg):
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
     sl, interc, r_2, p, std = stats.linregress(toab_all[:, 0], toab_all[:,1])
-    plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]), 
+    plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]), 
+                          phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]),
                           y_cent=np.nanmean(toab_all[:, 1]), ax=axi)
     plt.title('(a) TOA energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
@@ -1736,9 +1744,9 @@ def main(cfg):
     plt.ylabel('Sigma (R_t) [W m-2]', fontsize=14)
     dx = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
     dy = 0.01 * (max(toab_all[:, 1]) - min(toab_all[:, 1]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (toab_all[i, 0], toab_all[i, 1]), 
-                     xytext=(toab_all[i, 0] + dx, toab_all[i, 1] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (toab_all[i_m, 0], toab_all[i_m, 1]),
+                     xytext=(toab_all[i_m, 0] + dx, toab_all[i_m, 1] + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1749,10 +1757,10 @@ def main(cfg):
     plt.scatter(atmb_all[:, 0], atmb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(atmb_all[:, 0], atmb_all[:,1])    
-    plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]), 
+    sl, interc, r_2, p, std = stats.linregress(atmb_all[:, 0], atmb_all[:,1]) 
+    plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(atmb_all[:, 0]), 
+                          phi=np.arctan(sl), x_cent=np.nanmean(atmb_all[:, 0]),
                           y_cent=np.nanmean(atmb_all[:, 1]), ax=axi)
     plt.title('(b) Atmospheric energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
@@ -1761,9 +1769,9 @@ def main(cfg):
     plt.ylabel('Sigma (F_a) [W m-2]', fontsize=14)
     dx = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
     dy = 0.01 * (max(atmb_all[:, 1]) - min(atmb_all[:, 1]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (atmb_all[i, 0], atmb_all[i, 1]), 
-                     xytext=(atmb_all[i, 0] + dx,atmb_all[i, 1] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (atmb_all[i_m, 0], atmb_all[i_m, 1]),
+                     xytext=(atmb_all[i_m, 0] + dx,atmb_all[i_m, 1] + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1786,9 +1794,9 @@ def main(cfg):
     plt.ylabel('Sigma (F_s) [W m-2]', fontsize=14)
     dx = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
     dy = 0.01 * (max(surb_all[:, 1]) - min(surb_all[:, 1]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (surb_all[i, 0], surb_all[i, 1]), 
-                    xytext=(surb_all[i, 0] + dx,surb_all[i, 1] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (surb_all[i_m, 0], surb_all[i_m, 1]),
+                    xytext=(surb_all[i_m, 0] + dx,surb_all[i_m, 1] + dy),
                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1796,7 +1804,7 @@ def main(cfg):
     plt.grid()
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
-    plt.errorbar(x=atmb_all[:, 0], y=surb_all[:, 0],  
+    plt.errorbar(x=atmb_all[:, 0], y=surb_all[:, 0],
                  xerr=atmb_all[:, 1], yerr=surb_all[:, 1],
                  fmt='none', ecolor=colors)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
@@ -1813,20 +1821,20 @@ def main(cfg):
     plt.ylabel('F_s [W m-2]', fontsize=14)
     dx = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
     dy = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
-    for i in np.arange(modnum):
-        axi.annotate(str(i + 1), (atmb_all[i, 0], surb_all[i, 0]), 
-                     xytext=(atmb_all[i, 0] + dx,surb_all[i, 0] + dy),
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (atmb_all[i_m, 0], surb_all[i_m, 0]),
+                     xytext=(atmb_all[i_m, 0] + dx,surb_all[i_m, 0] + dy),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
-    
     plt.savefig(plotdir + '/scatters_variability.png')
     plt.close(fig)
     # caption = "Inter-annual variability vs. annual mean EBs and entropy"
     # plot_id = "#scatsum"
-    # dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut, ta, tas, va, wap" 
-    # ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+    # dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut,
+    # ta, tas, va, wap"
+    # ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
     # diag_script, authors)
     logger.info("The diagnostic has finished. Now closing...\n")
 

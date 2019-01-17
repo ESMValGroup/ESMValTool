@@ -183,16 +183,16 @@ class PlotScript():
         model = model_name
         timesery = np.zeros([nsub, 2])
         if nsub == 3:
-            ext_name=['TOA Energy Budget', 'Atmospheric Energy Budget',
-                      'Surface Energy Budget']
+            ext_name = ['TOA Energy Budget', 'Atmospheric Energy Budget',
+                        'Surface Energy Budget']
             timesery[0, :] = (-2, 2)
             rangect = [-100, 100]
             transpty = (-6E15, 6E15)
             timesery[1, :] = (-1, 1)
-            timesery[2,:] = (-3, 3)
+            timesery[2, :] = (-3, 3)
         elif nsub == 2:
-            ext_name=['Water mass budget', 'Latent heat budget']
-            timesery[0, :] =(-3E-6, 3E-6)
+            ext_name = ['Water mass budget', 'Latent heat budget']
+            timesery[0, :] = (-3E-6, 3E-6)
             rangecw = [-1E-4, 1E-4]
             transpwy = (-2E9, 2E9)
             timesery[1, :] = (-20, 20)
@@ -210,8 +210,8 @@ class PlotScript():
         nlats = len(lats)
         nlons = len(lons)
         ntime = len(time)
-        yr = len(time) / 12
-        timey = np.linspace(0, yr - 1, num=yr)
+        yr_0 = len(time) / 12
+        timey = np.linspace(0, yr_0 - 1, num=yr_0)
         var = np.zeros([nsub, ntime, nlats, nlons])
         for i in np.arange(nsub):
             filena[i] = filena[i].split(sep, 1)[0]
@@ -247,7 +247,7 @@ class PlotScript():
             for t_t in range(len(timey)):
                 yr_ext = plotsmod.transp_max(lats, transpp[t_t, :], lim[i_f])
                 lat_max.append(yr_ext[0])
-                tr_max.append(yr_ext[1])    
+                tr_max.append(yr_ext[1])
             for t_t in range(len(timey)):
                 lat_maxm[i_f, :, t_t] = lat_max[t_t]
                 tr_maxm[i_f, :, t_t] = tr_max[t_t]
@@ -256,15 +256,15 @@ class PlotScript():
             axi.plot(timey, timeser[:, 0], 'k', label='Global')
             axi.plot(timey, timeser[:, 1], 'r', label='SH')
             axi.plot(timey, timeser[:, 2], 'b', label='NH')
-            plt.title('Annual mean {}'.format(ext_name[i]))
+            plt.title('Annual mean {}'.format(ext_name[i_f]))
             plt.xlabel('Years')
             plt.ylabel('[W/m2]')
             axi.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
                        shadow=True, ncol=3)
             plt.tight_layout()
-            plt.ylim(timesery[i, :])
+            plt.ylim(timesery[i_f, :])
             plt.grid()
-            plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i]))
+            plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
             plt.close(fig)
         c_m = 'bwr'
         if nsub == 3:
@@ -388,7 +388,7 @@ class PlotScript():
             plt.savefig(path + '/{}_latent_transp.png'.format(model))
             plt.close(fig)
         colors = (0, 0, 0)
-        if nsub == 3:    
+        if nsub == 3:
             fig = plt.figure()
             fig.set_size_inches(12, 12)
             axi = plt.subplot(221)
@@ -398,8 +398,8 @@ class PlotScript():
             plt.xlabel('Atmos. trans. [W]', fontsize=11)
             plt.ylabel('Oceanic trans. [W]', fontsize=11)
             plt.grid()
-            axi  = plt.subplot(222)
-            axi.set_figsize=(50, 50)
+            axi = plt.subplot(222)
+            axi.set_figsize = (50, 50)
             plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=colors, alpha=1)
             plt.title('(b) Atm. vs ocean magnitude - NH', fontsize=13, y=1.02)
             plt.xlabel('Atmos. trans. [W]', fontsize=11)
@@ -425,7 +425,7 @@ class PlotScript():
             plt.ylabel('Oceanic trans. position [degrees of latitude]',
                        fontsize=11)
             plt.grid()
-            plt.savefig(path + '/{}_scatpeak.png'.format(model))         
+            plt.savefig(path + '/{}_scatpeak.png'.format(model))   
             plt.close(fig)
 
     def entropy(self, plotpath, filename, name, ext_name, model_name):
@@ -440,6 +440,7 @@ class PlotScript():
 
         @author: Valerio Lembo, 2018.
         """
+        netcdf_dataset = Dataset()
         path = plotpath
         model = model_name
         if ext_name == 'Vertical entropy production':
@@ -465,14 +466,14 @@ class PlotScript():
             c_m = 'YlOrBr'
         elif ext_name == 'Phase changes vapor -> snow entropy production':
             rangec = [0, 0.001]
-            c_m = 'YlOrBr'     
+            c_m = 'YlOrBr'
         elif ext_name == 'Snow melting entropy production':
             rangec = [0, 0.05]
             c_m = 'YlOrBr'
         elif ext_name == 'Potential energy entropy production':
             rangec = [0, 0.1]
             c_m = 'YlOrBr'
-        else: 
+        else:
             quit()
         dataset = netcdf_dataset(filename)
         var = dataset.variables[name][:, :, :]
@@ -481,8 +482,8 @@ class PlotScript():
         # Compute the climatological mean map
         tmean = np.nanmean(var, axis=0)
         fig = plt.figure()
-        ax = plt.axes(projection=ccrs.PlateCarree())
-        ax.coastlines()
+        axi = plt.axes(projection=ccrs.PlateCarree())
+        axi.coastlines()
         plt.contourf(lons, lats, tmean, 60, transform=ccrs.PlateCarree())
         plt.pcolor(lons, lats, tmean, vmin=rangec[0], vmax=rangec[1],
                    cmap=c_m, antialiaseds='True')
@@ -497,9 +498,9 @@ class PlotScript():
                      axi, plot_kwargs, fill, fill_kwargs, data_out, cov,
                      mass_level):
         """A simple method for plotting ellipses in Python.
-        
+
         This method plots ellipses with matplotlib.
-        
+
         Arguments:
         - semimaj: the length of the major axis;
         - semimin: the length of the minor axis;
@@ -514,13 +515,13 @@ class PlotScript():
         - cov: a 2x2 covariance matrix;
         - mass_level: a number defining the fractional probability enclosed, if
         cov is given;
-        
+
         @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
         """
         plotsmod = PlotScript()
         # Get Ellipse Properties from cov matrix
         if cov is not None:
-            eig_vec,eig_val, u = np.linalg.svd(cov)
+            eig_vec, eig_val, u_u = np.linalg.svd(cov)
             # Make sure 0th eigenvector has positive x-coordinate
             if eig_vec[0][0] < 0:
                 eig_vec[0] *= -1
@@ -532,29 +533,30 @@ class PlotScript():
                 distances = np.linspace(0, 20, 20001)
                 chi2_cdf = plotsmod.chi2.cdf(distances, df=2)
                 multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf -
-                                                               mass_level) 
-                                               == np.abs(chi2_cdf - 
-                                                         mass_level)
-                                               .min())[0][0]])
+                                                               mass_level)
+                                                        == np.abs(chi2_cdf -
+                                                                  mass_level)
+                                                        .min())[0][0]])
             semimaj *= multiplier
             semimin *= multiplier
             phi = np.arccos(np.dot(eig_vec[0], np.array([1, 0])))
             if eig_vec[0][1] < 0 and phi > 0:
                 phi *= -1
         # Generate data for ellipse structure
-        theta = np.linspace(0, 2*np.pi, theta_num)
-        r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
-        x = r * np.cos(theta)
-        y = r * np.sin(theta)
-        data = np.array([x, y])
-        S = np.array([[semimaj, 0], [0, semimin]])
-        R = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
-        T = np.dot(R, S)
-        data = np.dot(T, data)
+        theta = np.linspace(0, 2 * np.pi, theta_num)
+        r_r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
+        x_x = r_r * np.cos(theta)
+        y_x = r_r * np.sin(theta)
+        data = np.array([x_x, y_x])
+        s_ax = np.array([[semimaj, 0], [0, semimin]])
+        r_angle = np.array([[np.cos(phi), -np.sin(phi)],
+                            [np.sin(phi), np.cos(phi)]])
+        t_t = np.dot(r_angle, s_ax)
+        data = np.dot(t_t, data)
         data[0] += x_cent
         data[1] += y_cent
         # Output data?
-        if data_out == True:
+        if data_out is True:
             return data
         # Plot!
         return_fig = False
@@ -565,13 +567,13 @@ class PlotScript():
             axi.plot(data[0], data[1], color='b', linestyle='-')
         else:
             axi.plot(data[0], data[1], **plot_kwargs)
-        plot_kwargs = {'color':'black'}
-        if fill == True:
+        plot_kwargs = {'color': 'black'}
+        if fill is True:
             axi.fill(data[0], data[1], **fill_kwargs)
-        if return_fig == True:
+        if return_fig is True:
             return fig
 
-    def pr_output(self,varout, filep, nc_f, nameout):
+    def pr_output(self, varout, filep, nc_f, nameout):
         """Print processed ta field to NetCDF file.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -611,7 +613,7 @@ class PlotScript():
         w_nc_fid.close()
         nc_fid.close()
     
-    def varatts(self,w_nc_var,varname):
+    def varatts(self, w_nc_var, varname):
         """Add attibutes to the variables, depending on name and time res.
 
         Arguments:
@@ -630,16 +632,15 @@ class PlotScript():
                                 'level_desc': 'Vertically integrated'})
         elif varname == 'ocean':
             w_nc_var.setncatts({'long_name': u"Ocean. merid. heat transport",
-                                'units': u"W",
-                                'level_desc':'sfc'})
+                                'units': u"W", 'level_desc': 'sfc'})
         elif varname == 'wmass':
             w_nc_var.setncatts({'long_name': u"Merid. water mass transport",
                                 'units': u"W", 'level_desc': 'sfc'})
         elif varname == 'latent':
-             w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
-                                 'units': u"W", 'level_desc': 'sfc'})
+            w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
+                                'units': u"W", 'level_desc': 'sfc'})
 
-    def removeif(self,filename):
+    def removeif(self, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)

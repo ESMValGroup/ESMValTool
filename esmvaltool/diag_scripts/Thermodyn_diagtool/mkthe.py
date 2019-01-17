@@ -151,7 +151,7 @@ class Mkthe():
         w_nc_fid.description = "Monthly mean LCL temperature from {} model. \
                                 Calculated by Thermodynamics model diagnostics\
                                 in ESMValTool. Author Valerio Lembo, \
-                                Meteorologisches Institut, Universität \
+                                Meteorologisches Institut, Universitaet \
                                 Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
@@ -193,7 +193,7 @@ class Mkthe():
         w_nc_fid.description = "Monthly mean temperature at BL top for {} \
                                 model. Calculated by Thermodynamics model \
                                 diagnostics in ESMValTool. Author Valerio \
-                                Lembo, Meteorologisches Institut, Universität \
+                                Lembo, Meteorologisches Institut, Universitaet \
                                 Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
@@ -235,7 +235,7 @@ class Mkthe():
         w_nc_fid.description = "Monthly mean height of the BL top for {} \
                                 model. Calculated by Thermodynamics model \
                                 diagnostics in ESMValTool. Author Valerio \
-                                Lembo, Meteorologisches Institut, Universität \
+                                Lembo, Meteorologisches Institut, Universitaet \
                                 Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
