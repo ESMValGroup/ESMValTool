@@ -252,14 +252,6 @@ begin
     end if
   end if
 
-  if (units_from.eq."kg m-2") then
-    if (units_to.eq."mm") then  ; change only the label
-      out@units = units_to
-      leave_msg(scriptname, funcname)
-      return(out)
-    end if
-  end if
-
   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
             " to " + units_to + " not defined")
 
