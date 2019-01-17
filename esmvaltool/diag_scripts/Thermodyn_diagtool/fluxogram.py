@@ -263,8 +263,8 @@ class Flux:
         self.to_storage = to_storage
         self.amount = amount
         self.grid_size = grid_size
-        self.x_start, self.y_start, self.x_end,\
-        self.y_end, self.d_x, self.d_y, self.dire = (self.calc_start_end_dx_dy())
+        (self.x_start, self.y_start, self.x_end, self.y_end, self.d_x,
+         self.d_y, self.dire) = (self.calc_start_end_dx_dy())
 
     def update_flux(self, amount):
         """Update the amount of the flux."""

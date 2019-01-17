@@ -79,7 +79,7 @@ class FourierCoeff():
                 deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
                                                   deltat[:, i - 1, :, :],
                                                   (ta1_fx[:, i, :, :] - tas))
-                deltat[:, i - 1, :, :] = ((1 * np.array(h_1.mask))\
+                deltat[:, i - 1, :, :] = ((1 * np.array(h_1.mask))
                                           * np.array(deltat[:, i - 1, :, :]))
                 d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
                         deltat[:, i - 1, :, :] / tas)
@@ -114,13 +114,13 @@ class FourierCoeff():
             h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
                                      ta2_fx[:, i, :, :])
             mask[i, :, :, :] = np.array(h_2.mask)
-            tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :])\
-                                    * (tas - GAM * GAS_CON / (G_0 * p_s) \
+            tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :])
+                                    * (tas - GAM * GAS_CON / (G_0 * p_s)
                                        * deltap[:, i, :, :] * tas))
-            dat[i, :, :, :] = (ta2_fx[:, i, :, :]\
+            dat[i, :, :, :] = (ta2_fx[:, i, :, :]
                                * (1 - 1 * np.array(mask[i, :, :, :])))
             t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
-        fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta', verb=True)
+        fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta')
         tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
@@ -164,7 +164,7 @@ class FourierCoeff():
         """
         fourcoeff = FourierCoeff()
     
-        nc_fid = Dataset(nc_f, 'r')        
+        nc_fid = Dataset(nc_f, 'r')
         # Extract coordinates from NetCDF file
         time = nc_fid.variables['time'][:]
         plev = nc_fid.variables['plev'][:]
@@ -198,7 +198,6 @@ class FourierCoeff():
                                                nc_fid.variables['plev'].dtype,
                                                ('wave',))
         var_nc_fid.variables['wave'][:] = wave2
-            
         var_nc_fid.createDimension('lat', len(lats))
         var_nc_dim = var_nc_fid.createVariable('lat',
                                                nc_fid.variables['lat'].dtype,
@@ -254,11 +253,9 @@ class FourierCoeff():
         plev = nc_fid.variables['plev'][:]
         lats = nc_fid.variables['lat'][:]
         lons = nc_fid.variables['lon'][:]
-            
         # Writing NetCDF files
         var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
         var_nc_fid.description = "Fourier coefficients"
-        
         # Using our previous dimension info, we can create the new dimensions.
         var_nc_fid.createDimension('time', len(time))
         var_nc_dim = var_nc_fid.createVariable('time',
@@ -283,7 +280,6 @@ class FourierCoeff():
                                                nc_fid.variables['plev'].dtype,
                                                ('lon',))
         var_nc_fid.variables['lon'][:] = lons
-
         var_nc_fid.createDimension('lat', len(lats))
         var_nc_dim = var_nc_fid.createVariable('lat',
                                                nc_fid.variables['lat'].dtype,

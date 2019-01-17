@@ -32,7 +32,7 @@ RIC_RU = 0.28     # Critical Richardson number for unstable layer
 
 
 class Mkthe():
-    """The auxiliary variables module.
+    """The auxiliary variables are computed here.
 
     A class to compute LCL temperature, boundary layer top temperature,
     boundary layer thickness.
@@ -81,7 +81,7 @@ class Mkthe():
         cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file, vas_file),
                  options='-b F32', output=vv_file)
         cdo.setctomiss('0', input=vv_file, output=vv_missfile)
-        hfss_miss_file = wdir+'/hfss.nc'
+        hfss_miss_file = wdir + '/hfss.nc'
         mkthe.removeif(hfss_miss_file)
         cdo.setctomiss('0', input=hfss_file, output=hfss_miss_file)
         te_miss_file = wdir + '/te.nc'
@@ -114,7 +114,7 @@ class Mkthe():
         h_bl = H_U
         ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
         h_bl = np.where(hfss >= 0.75, h_bl, H_S)
-        ev_p = huss * p_s / (huss + GAS_CON / RV)        # Water vapour pressure
+        ev_p = huss * p_s / (huss + GAS_CON / RV)      # Water vapour pressure
         td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1)  # Dewpoint t.
         t_d = 1 / td_inv
         hlcl = 125. * (t_s - t_d)  # Empirical formula for LCL height
@@ -145,7 +145,6 @@ class Mkthe():
         thz = ths + 0.03 * ricr * (vv_hor) ** 2 / h_bl
         p_z = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
         t_z = thz * (P_0 / p_z) ** (-AKAP)
-        nc_attrs, nc_dims = mkthe.ncdump(dataset0, 'ts', True)
         nc_f = wdir + '/tlcl.nc'
         mkthe.removeif(nc_f)
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
@@ -272,17 +271,6 @@ class Mkthe():
                             equation", 'statistic': u'monthly mean'})
         w_nc_fid.variables['htop'][:] = htop
         w_nc_fid.close()  # close the new file
-
-    def ncdump(self, nc_fid, key):
-        """Print the NetCDF file attributes for a given key.
-
-        Arguments:
-        - nc_fid: the ID of a NetCDF file containing variable 'key';
-        - key: the name of a variable to obtain the attributes from.
-        """
-        nc_attrs = nc_fid.ncattrs()
-        nc_dims = [dim for dim in nc_fid.dimensions] # list of nc dimensions
-        return nc_attrs, nc_dims
 
     def removeif(self, filename):
         """Remove filename if it exists."""
