@@ -13,8 +13,10 @@ documentation:
     - stac_to
 
   references:
-    - esacci-landcover
     - georgievski18tac
+
+  observation references:
+    - esacci-landcover
 
   projects:
     - crescendo
