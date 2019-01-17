@@ -360,13 +360,13 @@ begin
   to_plot_signif@var_long_name = "significance: where average change over" + \
                                  "all realizations is larger than " + \
                                  "95-percentile of distribution of models."
-  to_plot_signif@var_units     = 1
+  to_plot_signif@units     = 1
 
   copy_VarCoords(to_plot, perc95)
   perc95@diag_script = (/DIAG_SCRIPT/)
   perc95@var = "95perc"
   perc95@var_long_name = "95-percentile of distribution of models"
-  perc95@var_units     = 1
+  perc95@units     = 1
 
   ; ###########################################
   ; # Output to netCDF                        #

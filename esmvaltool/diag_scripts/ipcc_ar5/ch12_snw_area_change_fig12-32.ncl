@@ -555,7 +555,7 @@ begin
     to_plot@var_long_name = variable_info[0]@long_name
   end if
   if(isatt(variable_info[0], "units")) then
-    to_plot@var_units     = variable_info[0]@units
+    to_plot@units     = variable_info[0]@units
   end if
 
   runs@var = "nr"

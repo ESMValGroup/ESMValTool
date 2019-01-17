@@ -422,7 +422,7 @@ begin
     end if
     to_plot_base@var = var0 + "_base"
     to_plot_base@var_long_name = variable_info[0]@long_name
-    to_plot_base@var_units     = variable_info[0]@units
+    to_plot_base@units     = variable_info[0]@units
   end if
   if(isatt(to_plot_signif, "diag_script")) then  ; Add to existing entries
     temp = to_plot_signif@diag_script
@@ -436,7 +436,7 @@ begin
   to_plot_signif@var_long_name = "significance: mean change larger than" +\
                                  " 2*natvar and 90% of models have the same"\
                                  + " sign"
-  to_plot_signif@var_units     = 1
+  to_plot_signif@units     = 1
 
   if(isatt(to_plot_not_signif, "diag_script")) then  ; Add to existing entries
     temp = to_plot_not_signif@diag_script
@@ -450,7 +450,7 @@ begin
   to_plot_not_signif@var = "not_signif"
   to_plot_not_signif@var_long_name = "not significant: mean change smaller"\
                                      + " than 1*natvar"
-  to_plot_not_signif@var_units     = 1
+  to_plot_not_signif@units     = 1
 
   model_number!0 = "panel"
   model_number&panel = diag_script_info@label
@@ -464,7 +464,7 @@ begin
   end if
   model_number@var = "model_nr"
   model_number@var_long_name = "number of models in mmm"
-  model_number@var_units     = 1
+  model_number@units     = 1
 
   ; ###########################################
   ; # Output to netCDF                        #

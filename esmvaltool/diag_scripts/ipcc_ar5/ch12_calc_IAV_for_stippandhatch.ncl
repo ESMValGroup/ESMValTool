@@ -294,7 +294,7 @@ begin
           data1@var_long_name = "iav of " + variable_info[0]@long_name
         end if
         if (isatt(variable_info[0], "units")) then
-          data1@var_units     = variable_info[0]@units
+          data1@units     = variable_info[0]@units
         end if
       end if
       ; ###########################################
@@ -351,7 +351,7 @@ begin
       IAV_mmm@var_long_name = "iav of " + variable_info[0]@long_name
     end if
     if (isatt(variable_info[0], "units")) then
-      IAV_mmm@var_units     = variable_info[0]@units
+      IAV_mmm@units     = variable_info[0]@units
     end if
     IAV_mmm@comment = metadata_att_as_array(info_items, "dataset")
     ; Function in ~/interface_scripts/auxiliary.ncl

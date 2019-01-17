@@ -512,7 +512,7 @@ begin
     to_plot@var_long_name = variable_info[0]@long_name
   end if
   if(isatt(variable_info[0], "units")) then
-    to_plot@var_units     = variable_info[0]@units
+    to_plot@units     = variable_info[0]@units
   end if
 
   runs!0 = "scenario"
@@ -529,7 +529,7 @@ begin
   end if
   runs@var = "nr"
   runs@var_long_name = "number of model runs per scenario and period"
-  runs@var_units     = 1
+  runs@units     = 1
   ; ###########################################
   ; # Output to netCDF                        #
   ; ###########################################
