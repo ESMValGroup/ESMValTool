@@ -60,7 +60,6 @@ class FourierCoeff():
         i = np.min(np.where(2 * nlat <= GP_RES))
         trunc = FC_RES[i] + 1
         wave2 = np.linspace(0, trunc - 1, trunc)
-    
         t_a = dataset.variables['ta'][:, :, :, :]
         u_a = dataset.variables['ua'][:, :, :, :]
         v_a = dataset.variables['va'][:, :, :, :]
@@ -68,7 +67,6 @@ class FourierCoeff():
         dataset = Dataset(tas_input)
         tas = dataset.variables['tas'][:, :, :]
         tas = tas[:, ::-1, :]
-        
         ta1_fx = np.array(t_a)
         deltat = np.zeros([ntime, nlev, nlat, nlon])
         p_s = np.full([ntime, nlat, nlon], P_0)
@@ -137,7 +135,6 @@ class FourierCoeff():
         vafft[:, :, :, 1::2] = np.imag(vafft_p)
         wapfft[:, :, :, 0::2] = np.real(wapfft_p)
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
-            
         fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo,
                             wave2, 'ta', 'ua', 'va', 'wap')
 
@@ -169,7 +166,6 @@ class FourierCoeff():
         time = nc_fid.variables['time'][:]
         plev = nc_fid.variables['plev'][:]
         lats = nc_fid.variables['lat'][:]
-                    
         # Writing NetCDF files
         var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
         var_nc_fid.description = "Fourier coefficients"
@@ -192,7 +188,6 @@ class FourierCoeff():
             var_nc_dim.setncattr(ncattr,
                                  nc_fid.variables['plev'].getncattr(ncattr))
         var_nc_fid.variables['plev'][:] = plev
-        
         var_nc_fid.createDimension('wave', len(wave2))
         var_nc_dim = var_nc_fid.createVariable('wave',
                                                nc_fid.variables['plev'].dtype,
@@ -274,7 +269,6 @@ class FourierCoeff():
             var_nc_dim.setncattr(ncattr,
                                  nc_fid.variables['plev'].getncattr(ncattr))
         var_nc_fid.variables['plev'][:] = plev
-        
         var_nc_fid.createDimension('lon', len(lons))
         var_nc_dim = var_nc_fid.createVariable('lon',
                                                nc_fid.variables['plev'].dtype,

@@ -18,7 +18,7 @@ import math
 import matplotlib.pyplot as plt
 # from mpl_toolkits.axes_grid1 import AxesGrid
 # from mpl_toolkits.axes_grid1 import make_axes_locatable
-from netCDF4 import Dataset as netcdf_dataset
+from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
 import cartopy.crs as ccrs
@@ -174,6 +174,7 @@ class PlotScript():
         
         @author: Valerio Lembo, 2018.
         """
+        netcdf_dataset = Dataset()
         plotsmod = PlotScript()
         cdo = Cdo()
         nsub = len(filena)
@@ -588,6 +589,7 @@ class PlotScript():
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         plotsmod = PlotScript()
+        netcdf_dataset = Dataset()
         nc_fid = netcdf_dataset(filep, 'r')
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract the coordinate

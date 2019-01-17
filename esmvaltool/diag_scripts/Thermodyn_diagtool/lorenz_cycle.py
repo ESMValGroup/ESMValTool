@@ -354,19 +354,19 @@ class LorenzCycle():
         ke2kz_vmn = np.nansum(ke2kz_aux, axis=0) / np.nansum(d_s)
         nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1, verb=True)
+        lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1)
         nc_f = outpath + '/ape_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ape_vmn, 'ape', filep, nc_f, 1, verb=True)
+        lorenz.pr_output(ape_vmn, 'ape', filep, nc_f, 1)
         nc_f = outpath + '/a2k_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1, verb=True)
+        lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1)
         nc_f = outpath + '/ae2az_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1, verb=True)
+        lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1)
         nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1, verb=True)
+        lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1)
         log.close()
         return lec_strength
 
@@ -446,7 +446,7 @@ class LorenzCycle():
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
         
         @author: Valerio Lembo
-        """       
+        """
         lorenz = LorenzCycle()
         c_c = (1 - (2 / math.pi) ** 2) / 4
         eps = 0.00000000000001
@@ -462,7 +462,7 @@ class LorenzCycle():
                 pkm1 = x_z
                 pkm2 = 1.0
                 for n_n in range(2, n_y, 1):
-                    p_k = ((n_n * 2 - 1.0) * x_z \
+                    p_k = ((n_n * 2 - 1.0) * x_z
                            * pkm1 - (n_n - 1.0) * pkm2) / n_n
                     pkm2 = pkm1
                     pkm1 = p_k
@@ -493,15 +493,17 @@ class LorenzCycle():
         aux2v = np.zeros([nlev, ntp - 1])
         nhem = nlat / 2
         fac = 1 / G * PS / 1e5
-        for l in range(nlev):
-            for i in range(nhem):
-                aux1[l, i, :] = fac * np.real(d3v[l, i, :]) * g_w[i]
-                aux2[l, i, :] = (fac * np.real(d3v[l, i + nhem - 1, :])\
-                                 * g_w[i + nhem - 1])
-            aux1v[l, :] = np.nansum(aux1[l, :, :],
-                                    axis=0) / np.nansum(g_w[0:nhem]) * d_s[l]
-            aux2v[l, :] = np.nansum(aux2[l, :, :],
-                                    axis=0) / np.nansum(g_w[0:nhem]) * d_s[l]
+        for l_l in range(nlev):
+            for i_h in range(nhem):
+                aux1[l_l, i_h, :] = fac * np.real(d3v[l_l, i_h, :]) * g_w[i_h]
+                aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :])
+                                     * g_w[i_h + nhem - 1])
+            aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :],
+                                       axis=0) / np.nansum(g_w[0:nhem])
+                             * d_s[l_l])
+            aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :],
+                                       axis=0) / np.nansum(g_w[0:nhem])
+                             * d_s[l_l])
         gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
         gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
         gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
@@ -528,9 +530,9 @@ class LorenzCycle():
         @author: Valerio Lembo
         """  
         ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
-        ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 
-                        * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) 
-                                  * (t_t[:, :, 0] - t_g[:, np.newaxis])))        
+        ape[:, :, 0] = (gam[:, np.newaxis] * 0.5
+                        * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                                  (t_t[:, :, 0] - t_g[:, np.newaxis])))
         return ape
 
     def mka2k(self, wap, t_t, w_g, t_g, p_l, nlat, ntp, nlev):
@@ -538,12 +540,12 @@ class LorenzCycle():
         
         @author: Valerio Lembo
         """  
-        a2k = -R / p_l[:, np.newaxis, np.newaxis] *\
-        (t_t * np.conj(wap) + np.conj(t_t) * wap)
-        a2k[:, :, 0]= - (R / p_l[:, np.newaxis]
-                         * (t_t[:, :, 0] - t_g[:, np.newaxis])
-                         * (wap[:, :, 0] - w_g[:, np.newaxis]))
-        return a2k   
+        a2k = - (R / p_l[:, np.newaxis, np.newaxis]
+                 * (t_t * np.conj(wap) + np.conj(t_t) * wap))
+        a2k[:, :, 0] = - (R / p_l[:, np.newaxis]
+                          * (t_t[:, :, 0] - t_g[:, np.newaxis])
+                          * (wap[:, :, 0] - w_g[:, np.newaxis]))
+        return a2k
     
     def mkaeaz(self, v_t, wap, t_t, tt, ttg, p_l, lat, gam, nlat, ntp, nlev):
         """Compute the zonal mean - eddy APE conversions from t and v.
@@ -558,7 +560,7 @@ class LorenzCycle():
                 t_1 = np.real(tt[l, :, 0]) - ttg[l]
                 t_2 = np.real(tt[l + 1, :, 0]) - ttg[l + 1]
                 dtdp[l, :] = (t_2 - t_1) / (p_l[l + 1] - p_l[l])
-            elif l == nlev-1:
+            elif l == nlev - 1:
                 t_1 = np.real(tt[l - 1, :, 0]) - ttg[l - 1]
                 t_2 = np.real(tt[l, :, 0]) - ttg[l]
                 dtdp[l, :] = (t_2 - t_1) / (p_l[l] - p_l[l - 1])
@@ -572,7 +574,7 @@ class LorenzCycle():
                 dtdp[l, :] = ((dtdp1 * (p_l[l] - p_l[l - 1]) +
                                dtdp2 * (p_l[l + 1] - p_l[l]))
                               / (p_l[l + 1] - p_l[l - 1]))
-            dtdp[l, :] = dtdp[l, :] - (R / (CP * p_l[l]) 
+            dtdp[l, :] = dtdp[l, :] - (R / (CP * p_l[l])
                                        * (tt[l, :, 0] - ttg[l]))
         for i in np.arange(nlat):
             if i == 0:
@@ -588,15 +590,15 @@ class LorenzCycle():
                 t_2 = np.real(tt[:, i + 1, 0])
                 dtdy[:, i] = (t_2 - t_1) / (lat[i + 1] - lat[i - 1])
         dtdy = dtdy / AA
-        c1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
-        c2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
-        ae2az = (gam[:, np.newaxis, np.newaxis] 
-                 * (dtdy[:, :, np.newaxis] * c1 +
-                    dtdp[:, :, np.newaxis] * c2))
+        c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
+        c_2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
+        ae2az = (gam[:, np.newaxis, np.newaxis]
+                 * (dtdy[:, :, np.newaxis] * c_1 +
+                    dtdp[:, :, np.newaxis] * c_2))
         ae2az[:, :, 0] = 0.
-        return(ae2az)
+        return ae2az
 
-    def mkkekz(self, u_t, v_t, wap, ut, vt, p_l, lat, nlat, ntp, nlev):
+    def mkkekz(self, u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         """Compute the zonal mean - eddy KE conversions from u and v.
         
         @author: Valerio Lembo
@@ -607,23 +609,23 @@ class LorenzCycle():
         dvdy = np.zeros([nlev, nlat])
         for l_l in np.arange(nlev):
             if l_l == 0:
-                dudp[l_l, :] = ((np.real(ut[l_l + 1, :, 0] - ut[l_l, :, 0]))
+                dudp[l_l, :] = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0]))
                                 / (p_l[l_l + 1] - p_l[l_l]))
-                dvdp[l_l, :] = ((np.real(vt[l_l + 1, :, 0] - vt[l_l, :, 0]))
+                dvdp[l_l, :] = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0]))
                                 / (p_l[l_l + 1] - p_l[l_l]))
             elif l_l == nlev-1:
-                dudp[l_l, :] = ((np.real(ut[l_l, :, 0] - ut[l_l - 1, :, 0]))
+                dudp[l_l, :] = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0]))
                                 / (p_l[l_l]-p_l[l_l - 1]))
-                dvdp[l_l, :] = ((np.real(vt[l_l, :, 0] - vt[l_l - 1, :, 0]))
+                dvdp[l_l, :] = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0]))
                                 / (p_l[l_l] - p_l[l_l - 1]))
             else:
-                dudp1 = ((np.real(ut[l_l + 1, :, 0] - ut[l_l, :, 0]))
+                dudp1 = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0]))
                          / (p_l[l_l + 1] - p_l[l_l]))
-                dvdp1 = ((np.real(vt[l_l + 1, :, 0] - vt[l_l, :, 0]))
+                dvdp1 = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0]))
                          / (p_l[l_l + 1] - p_l[l_l]))
-                dudp2 = ((np.real(ut[l_l, :, 0] - ut[l_l - 1, :, 0]))
+                dudp2 = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0]))
                          / (p_l[l_l] - p_l[l_l - 1]))
-                dvdp2 = ((np.real(vt[l_l, :, 0] - vt[l_l - 1, :, 0]))
+                dvdp2 = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0]))
                          / (p_l[l_l] - p_l[l_l - 1]))
                 dudp[l_l, :] = ((dudp1 * (p_l[l_l] - p_l[l_l - 1]) +
                                  dudp2 * (p_l[l_l + 1] - p_l[l_l]))
@@ -633,22 +635,24 @@ class LorenzCycle():
                                 / (p_l[l_l + 1] - p_l[l_l - 1]))     
         for i_l in np.arange(nlat):
             if i_l == 0:
-                dudy[:, i_l]  = ((np.real(ut[:, i_l + 1, 0] - ut[:, i_l, 0]))
+                dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0]))
                                  / (lat[i_l + 1] - lat[i_l]))
-                dvdy[:, i_l]  = ((np.real(vt[:, i_l + 1, 0] - vt[:, i_l, 0]))
+                dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0]))
                                  / (lat[i_l + 1] - lat[i_l]))
             elif i_l == nlat - 1:
-                dudy[:, i_l]  = ((np.real(ut[:, i_l, 0] - ut[:, i_l - 1, 0]))
+                dudy[:, i_l] = ((np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0]))
                                  / (lat[i_l] - lat[i_l - 1]))
-                dvdy[:, i_l]  = ((np.real(vt[:, i_l, 0] - vt[:, i_l - 1, 0]))
+                dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0]))
                                  / (lat[i_l] - lat[i_l - 1]))
             else:
-                dudy[:, i_l]  = ((np.real(ut[:, i_l + 1, 0] - ut[:, i_l-1, 0]))
+                dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - 
+                                         utt[:, i_l - 1, 0]))
                                  / (lat[i_l + 1] - lat[i_l - 1]))
-                dvdy[:, i_l]  = ((np.real(vt[:, i_l+1, 0] - vt[:, i_l - 1, 0]))
+                dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] -
+                                         vtt[:, i_l - 1, 0]))
                                  / (lat[i_l + 1] - lat[i_l - 1]))
-        dudy  = dudy / AA
-        dvdy  = dvdy / AA       
+        dudy = dudy / AA
+        dvdy = dvdy / AA       
         c_1 = np.zeros([nlev, nlat, ntp - 1])
         c_2 = np.zeros([nlev, nlat, ntp - 1])
         c_3 = np.zeros([nlev, nlat, ntp - 1])
@@ -656,23 +660,23 @@ class LorenzCycle():
         c_5 = np.zeros([nlev, nlat, ntp - 1])
         c_6 = np.zeros([nlev, nlat, ntp - 1])
         ke2kz = np.zeros([nlev, nlat, ntp - 1])
-        uu = u_t * np.conj(u_t) + u_t * np.conj(u_t)
-        uv = u_t * np.conj(v_t) + v_t * np.conj(u_t)
-        vv = v_t * np.conj(v_t) + v_t * np.conj(v_t)
-        uw = u_t * np.conj(wap) + wap * np.conj(u_t)
-        vw = v_t * np.conj(wap) + wap * np.conj(v_t)
-        for i in np.arange(nlat):
-            c_1[:, i, :] = dudy[:, i][:, np.newaxis] * uv[:, i, :]
-            c_2[:, i, :] = dvdy[:, i][:, np.newaxis] * vv[:, i, :]
-            c_5[:, i, :] = (np.tan(lat[i]) / AA *
-                            np.real(ut[:, i, 0])[:, np.newaxis] *
-                            (uv[:, i, :]))
-            c_6[:, i, :] = - (np.tan(lat[i]) / AA *
-                              np.real(vt[:, i, 0])[:, np.newaxis] *
-                              (uu[:, i, :]))
-        for l in np.arange(nlev):
-            c_3[l, :, :] = dudp[l, :][:, np.newaxis] * uw[l, :, :]
-            c_4[l, :, :] = dvdp[l, :][:, np.newaxis] * vw[l, :, :]
+        u_u = u_t * np.conj(u_t) + u_t * np.conj(u_t)
+        u_v = u_t * np.conj(v_t) + v_t * np.conj(u_t)
+        v_v = v_t * np.conj(v_t) + v_t * np.conj(v_t)
+        u_w = u_t * np.conj(wap) + wap * np.conj(u_t)
+        v_w = v_t * np.conj(wap) + wap * np.conj(v_t)
+        for i_l in np.arange(nlat):
+            c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
+            c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
+            c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA *
+                              np.real(utt[:, i_l, 0])[:, np.newaxis] *
+                              (u_v[:, i_l, :]))
+            c_6[:, i_l, :] = - (np.tan(lat[i_l]) / AA *
+                                np.real(vtt[:, i_l, 0])[:, np.newaxis] *
+                                (u_u[:, i_l, :]))
+        for l_l in np.arange(nlev):
+            c_3[l_l, :, :] = dudp[l_l, :][:, np.newaxis] * u_w[l_l, :, :]
+            c_4[l_l, :, :] = dvdp[l_l, :][:, np.newaxis] * v_w[l_l, :, :]
         ke2kz = (c_1 + c_2 + c_3 + c_4 + c_5 + c_6)
         ke2kz[:, :, 0] = 0.
         return ke2kz
@@ -692,8 +696,8 @@ class LorenzCycle():
         t_u = np.fft.fft(tur, axis=2)
         t_v = np.fft.fft(tvr, axis=2)
         t_w = np.fft.fft(twr, axis=2)
-        c_1 = np.zeros([nlev, nlat, ntp-1])
-        c_6 = np.zeros([nlev, nlat, ntp-1])
+        c_1 = np.zeros([nlev, nlat, ntp - 1])
+        c_6 = np.zeros([nlev, nlat, ntp - 1])
         c_1 = (t_u * np.conj(ttt[:, :, np.newaxis]) -
                ttt[:, :, np.newaxis] * np.conj(t_u))
         c_6 = (t_w * np.conj(ttt[:, :, np.newaxis]) -
@@ -723,7 +727,7 @@ class LorenzCycle():
                                     (AA * (lat[i + 1] - lat[i - 1]))
                                     * np.conj(ttt[:, i + 1, np.newaxis] -
                                               ttt[:, i - 1, np.newaxis]))
-                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /\
+                    c_3[:, i, :] = (np.conj(t_v[:, i, :]) /
                                     (AA * (lat[i + 1] - lat[i - 1])) *
                                     (ttt[:, i + 1, np.newaxis] -
                                      ttt[:, i - 1, np.newaxis]))
@@ -743,16 +747,16 @@ class LorenzCycle():
                        / (p_l[l_l] - p_l[l_l - 1]))
                 c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) +
                                    c52 * (p_l[l_l + 1] - p_l[l_l]))
-                                  / (p_l[l_l + 1] - p_l[l_l - 1]))  
-        K = np.arange(0, ntp - 1)            
+                                  / (p_l[l_l + 1] - p_l[l_l - 1]))
+        K = np.arange(0, ntp - 1)
         at2as = (((K - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1)
                   / (AA * np.cos(lat[np.newaxis, :, np.newaxis]))
                   + np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5)
                   + np.real(c_2 + c_3)
                   + R / (CP * p_l[:, np.newaxis, np.newaxis])
-                  * np.real(c_6)) * g_w[:, :, np.newaxis])      
+                  * np.real(c_6)) * g_w[:, :, np.newaxis])
         at2as[:, :, 0] = 0.
-        return at2as    
+        return at2as
 
     def mkktks(self, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
         """Compute the stat.-trans. eddy KE conversions from u, v, wap and t.
@@ -770,7 +774,7 @@ class LorenzCycle():
         c_6 = np.zeros([nlev, nlat, ntp - 1])
         dut = np.zeros([nlev, nlat, ntp - 1])
         dvt = np.zeros([nlev, nlat, ntp - 1])
-        dlat =np.zeros([nlat])
+        dlat = np.zeros([nlat])
         u_r = np.fft.irfft(u_t, axis=2)
         v_r = np.fft.irfft(v_t, axis=2)
         uur = u_r * u_r
@@ -783,31 +787,31 @@ class LorenzCycle():
         c_3 = u_v * np.conj(u_t) + u_t * np.conj(u_v)
         c_5 = u_u * np.conj(v_t) + v_t * np.conj(u_u)
         c_6 = u_v * np.conj(v_t) - v_t * np.conj(u_v)
-        for i in range(nlat):
-            if i == 0:
-                dut[:, i, :]=(utt[:, i + 1, :] - utt[:, i, :])
-                dvt[:, i, :]=(vtt[:, i + 1, :] - vtt[:, i, :])
-                dlat[i] = (lat[i + 1] - lat[i])
-            elif i == nlat-1:
-                dut[:, i, :] = (utt[:, i, :] - utt[:, i - 1, :])
-                dvt[:, i, :] = (vtt[:, i, :] - vtt[:, i - 1, :])
-                dlat[i] = (lat[i] - lat[i - 1])
+        for i_l in range(nlat):
+            if i_l == 0:
+                dut[:, i_l, :] = (utt[:, i_l + 1, :] - utt[:, i_l, :])
+                dvt[:, i_l, :] = (vtt[:, i_l + 1, :] - vtt[:, i_l, :])
+                dlat[i_l] = (lat[i_l + 1] - lat[i_l])
+            elif i_l == nlat - 1:
+                dut[:, i_l, :] = (utt[:, i_l, :] - utt[:, i_l - 1, :])
+                dvt[:, i_l, :] = (vtt[:, i_l, :] - vtt[:, i_l - 1, :])
+                dlat[i_l] = (lat[i_l] - lat[i_l - 1])
             else:
-                dut[:, i, :] = (utt[:, i + 1, :] - utt[:, i - 1, :])
-                dvt[:, i, :] = (vtt[:, i + 1, :] - vtt[:, i - 1, :])
-                dlat[i] = (lat[i + 1] - lat[i - 1])           
+                dut[:, i_l, :] = (utt[:, i_l + 1, :] - utt[:, i_l - 1, :])
+                dvt[:, i_l, :] = (vtt[:, i_l + 1, :] - vtt[:, i_l - 1, :])
+                dlat[i_l] = (lat[i_l + 1] - lat[i_l - 1])
         c21 = np.conj(u_u) * dut / dlat[np.newaxis, :, np.newaxis]
         c22 = u_u * np.conj(dut) / dlat[np.newaxis, :, np.newaxis]
         c41 = np.conj(v_v) * dvt / dlat[np.newaxis, :, np.newaxis]
         c42 = v_v * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
-        K = np.arange(0, ntp - 1)      
-        kt2ks =  (np.real(c21 + c22 + c41 + c42) / AA \
-                  + np.tan(lat)[np.newaxis, :, np.newaxis] 
-                  * np.real(c_1 - c_5) / AA + np.imag(c_1 + c_6) 
-                  * (K - 1)[np.newaxis, np.newaxis, :] 
-                  / (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
+        K = np.arange(0, ntp - 1)
+        kt2ks = (np.real(c21 + c22 + c41 + c42) / AA
+                 + np.tan(lat)[np.newaxis, :, np.newaxis]
+                 * np.real(c_1 - c_5) / AA + np.imag(c_1 + c_6)
+                 * (K - 1)[np.newaxis, np.newaxis, :]
+                 / (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
         kt2ks[:, :, 0] = 0
-        return kt2ks   
+        return kt2ks
 
     def pr_output(self, varo, varname, filep, nc_f, opt):
         """Print outputs to NetCDF.
@@ -942,17 +946,17 @@ class LorenzCycle():
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()
         nc_fid.close()
-        
+
     def removeif(self, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)
         except OSError:
             pass
-  
+
     def stabil(self, ta_gmn,p_l,nlev):
         """Compute the stability parameter from temp. and pressure levels.
-        
+
         @author: Valerio Lembo
         """
         cpdr = CP / R
@@ -966,7 +970,7 @@ class LorenzCycle():
             else:
                 dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
                 dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
-                dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + 
+                dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) +
                          dtdp2 * (p_l[i_l + 1] - p_l[i_l]))
                         / (p_l[i_l + 1] - p_l[i_l - 1]))
             g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
@@ -974,7 +978,7 @@ class LorenzCycle():
 
     def table(self, varin, ntp, name, log):
         """Write global and hem. storage terms to .txt table.
-        
+
         @author: Valerio Lembo
         """
         varzon = varin[:, 0]
@@ -1004,7 +1008,7 @@ class LorenzCycle():
 
     def table_conv(self, varin, ntp, name, log):
         """Write global and hem. conversion terms to .txt table.
-        
+
         @author: Valerio Lembo
         """
         fac = 1e5
@@ -1032,7 +1036,7 @@ class LorenzCycle():
         log.write('--------------------------------------\n')
         log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
                   vared3[0], vared3[1], vared3[2]))
-        log.write('--------------------------------------\n')   
+        log.write('--------------------------------------\n')
 
     def varatts(self, w_nc_var, varname, tres, vres):
         """Add attibutes to the variables, depending on name and time res.
@@ -1042,7 +1046,7 @@ class LorenzCycle():
         - varname: the name of the variable, among ta, ua, va and wap;
         - tres: the time resolution (daily or annual);
         - vres: the vertical resolution (pressure levels or vert. integr.).
-        
+
         @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         if tres == 0:

@@ -1,210 +1,202 @@
-"""
-;;#############################################################################
-;; Diagnostic tool for several aspects of climate system thermodynamics
-;;
-;; Author
-;; Valerio Lembo
-;;(Meteorological Institute, Hamburg University - valerio.lembo@uni-hamburg.de)
-;;
-;; Contributors
-;; Frank   Lunkeit
-;; (Meteorological Insitute, Hamburg University - f.lunkeit@uni-hamburg.de)
-;; Nikolay Koldunov
-;; (MARUM/AWI, nikolay.koldunov@awi.de, Germany)
-;;
-;; Project
-;; CRC - TRR 181 ”Energy transfers in Atmosphere and Ocean“
-;;
-;;#############################################################################
-;; 
-;; PREREQUISITES
-;; 
-;; The programme shares the same prerequisites with the overall ESMValTool
-;; architecture (see http://esmvaltool.readthedocs.io/en/latest/install.html)
-;;
-;; ADDITIONAL REQUIREMENTS
-;; - NCO: NCO command operators are required for attributes and coordinates
-;;        manipulation on NetCDF files. The programme has been tested with
-;;        the following  versions of NCO precompiled libraries:
-;;        * Unix:   nco-4.6.7
-;;        * Mac-OS: nco-4.6.6
-;; - PyAstronomy: Python package PyAstronomy contains a function "zeocross1d"
-;;                which is needed for the computation of transport maxima
-;;                locations. We tested the method with v. 0.12.0 of the
-;;                package, available in pip repositories.
-;;
-;; USAGE
-;;
-;; 1: Obtain the datasets: the programme accepts the following variables as
-;;    input for the computations:
-;;      Monthly mean resolution or higher:
-;;      - TOA shortwave radiation downwards;
-;;      - TOA shortwave radiation upwards;
-;;      - TOA longwave radiation upwards (OLR);
-;;      - Surface shortwave radiation downwards;
-;;      - Surface shortwave radiation upwards;
-;;      - Surface longwave radiation downwards;
-;;      - Surface longwave radiation upwards;
-;;      - Surface turbulent latent heat fluxes;
-;;      - Surface turbulent sensible heat fluxes;
-;;      - Surface temperature;
-;;      - Specific humidity;
-;;      - Near-surface (or 10m) zonal velocity;
-;;      - Near-surface (or 10m) meridional velocity;
-;;      Daily mean resolution or higher:
-;;      - Near-surface temperature;
-;;      - Air temperature (on pressure levels);
-;;      - Horizontal velocity (on pressure levels);
-;;      - Meridional velocity (on pressure levels);
-;;      - Vertical velocity (on pressure levels);
-;;    Data on lonlat grid are accepted, with CMOR-compliant coordinate system.
-;;    The pre-processing modules of ESMValTool scheme will take care of
-;;    converting known grids and recognized datasets to CMOR standards. For a
-;;    a list of known formats, see
-;;       http://esmvaltool.readthedocs.io/en/latest/running.html#tab-obs-dat
-;;    Whether you need to use non-recognized datasets (provided that they are
-;;    globally gridded), ask for support!
-;;
-;; 2: A configuration template is available in the ESMValTool release. Set your
-;;   own paths to local directories here. Input datasets are read in MODELPATH,
-;;   MODELPATH2, OBSPATH or OBSPATH2 output datasets are stored in WORKPATH,
-;;   plots in PLOTPATH (refer to the manual for ESMValTool).
-;;
-;; 3: Set the namelist with your own input datasets. Here you can also set the
-;;    length of the dataset you want to subset, the time resolution, and
-;;    whether you are working on a MacOS or Linux machine.
-;; 4: Run the tool by typing:
-;;          python main.py nml/namelist_lembo17.xml
-;; 5: After the data preprocessing, choose the options as required by the
-;;    program;
-;;
-;; OUTPUT
-;;
-;; In the output directory, NetCDF files containing annual mean fields and
-;; global mean time series for budgets and material entropy production time
-;; series.
-;; Log files containing the values of the LEC components are stored in
-;; subdirectories, identified by the year for which they are computed. LEC
-;; quantities are stored in different files, one for each year.
-;; - energy_gns_* contains global, NH and SH time mean fields as a function of
-;;   wavenumbers;
-;; - energy_mean_* contains time mean (lon,wave,plev) fields;
-;; - energy_ts3d_* contains (time,lon,wave,plev) fields;
-;; - <MODELNAME>_energy_*.ps is a diagram flux displaying annual mean
-;;   components of the LEC;
-;;
-;; In the plot directory figures are stored as PNG files in each model subdir.
-;; 
-;; For the budgets (toab: TOA energy budget, atmb: atmospheric energy budget,
-;; surb: surface energy budget, latent: latent energy budget, wmass: water mass
-;; budget) there can be found:
-;;  - climatological mean fields (*_climap.png);
-;;  - time series evolution of global, NH and SH mean fields (*_timeser.png)
-;;  - meridional transports (*_transp.pdf);
-;;  - scatter plots of annual peak magnitudes vs. locations (*_scatpeak.png)
-;;  - LEC diagrams for each year (*_lec_diagram.png)
-;;
-;; For the multi-model ensembles scatter plots of EB mean values vs. their
-;; interannual variability are provided (scatters_variability.png), a summary
-;; panel of the main thermodynamic quantities averaged for each model
-;; (scatters_summary.png), and the zonal mean meridional heat transports for
-;; each model (meridional_transp.png).
-;;
-;; For the material entropy production (sver: vertical, shor: horizontal
-;; (indirect method), sevap: evaporation component, slatpr: ice-rain
-;; phase changes, slatps: vapor-snow phase changes, spotp: potential energy,
-;; srain: rainfall, ssens: sensible heat, ssnow: snowfall) climatological mean
-;; fields are shown.
-;;
-;; In the working directory, a log file (lembo17_log.txt) is produced,
-;; containing the global mean values of all the quantities.
-;; 
-;; N.B.: multi-model ensembles and means are performed on the results of the
-;;       analysis. No multi-model mean analysis is performed on input fields.
-;;       It is thus a deliberate choice not to use the multi-model mean tools
-;;       provided by the postprocessor.
-;;
-;; SOFTWARE TREE DESCRIPTION
-;; 
-;; The tool is divided in three modules; one for the
-;; computation of energy and water mass budgets (and related meridional
-;; transports), one for the Lorenz Energy Cycle (LEC), one for the material
-;; entropy production.
-;; 
-;; Module Dependencies:
-;;   - MODULE 1: Budgets and Transports --> none;
-;;   - MODULE 2: Lorenz Energy Cycle    --> none;
-;;   - MODULE 3: Material Entropy Production:
-;;                                  * Indirect method --> requires Budgets
-;;                                  * Direct method   --> requires Budgets and
-;;                                                        LEC
-;;
-;; - MODULE 1
-;; Earth's energy budgets from radiative and heat fluxes at Top-of-Atmosphere,
-;; at the surface and in the atmosphere (as a residual).
-;; If required by the user, water mass and latent energy budgets are computed
-;; from rainfall, snowfall and evaporation fluxes.
-;; If required by the user, computations are also separately performed over
-;; land and oceans. A land-sea mask (either binary or percentual) has to be
-;; provided.
-;; Meridional transports, magnitude and location of the peaks in each
-;; hemisphere (only for heat transports) are also computed.
-;; The baroclinic efficiency is computed from TOA energy budgets, emission
-;; temperature (in turn retrieved from OLR) and near-surface temperature.
-;;
-;; - MODULE 2
-;;
-;; The Lorenz Energy Cycle (LEC) is computed in spectral components from near-
-;; surface temperatures, temperatures and the three components of velocities
-;; over pressure levels.
-;; The storage and conversion terms are directly computed, the sources and
-;; sinks are retrieved as residuals.
-;; Components are grouped into a zonal mean, stationary and transient eddy
-;; part.
-;; 
-;; - MODULE 3
-;;
-;; The material entropy production is computed using the indirect method, the
-;; direct method or both (following Lucarini et al., 2014).
-;; For the indirect method a vertical and a horizontal component are provided.
-;; For the direct method, all components are combined, related to the
-;; hydrological cycle (attributable to evaporation, rainfall and snowfall
-;; precipitation, phase changes and potential energy of the droplet), to the
-;; sensible heat fluxes and to kinetic energy dissipation. For the latter the
-;; LEC computation is required, given that the strength of the LEC can be
-;; considered as equal to the kinetic energy dissipated to heating.
-;;
-;;
-;;
-;;
-;;#############################################################################
-;;
-;; 20170803-A_lemb_va: Modified header with description and caveats
-;; 20170629-A_kold_ni: Atmospheric budgets diagnostics written
-;; 20180524-A_lemb_va: first complete working thermodynamics diagnostics
-;;
-;;
-;;#############################################################################
+"""Diagnostic tool for several aspects of climate system thermodynamics.
+
+Author
+Valerio Lembo
+(Meteorological Institute, Hamburg University - valerio.lembo@uni-hamburg.de)
+
+Contributors
+Frank   Lunkeit
+(Meteorological Insitute, Hamburg University - f.lunkeit@uni-hamburg.de)
+Nikolay Koldunov
+(MARUM/AWI, nikolay.koldunov@awi.de, Germany)
+
+Project
+CRC - TRR 181 ”Energy transfers in Atmosphere and Ocean“
+
+#############################################################################
+
+PREREQUISITES
+
+The programme shares the same prerequisites with the overall ESMValTool
+architecture (see http://esmvaltool.readthedocs.io/en/latest/install.html)
+
+ADDITIONAL REQUIREMENTS
+- NCO: NCO command operators are required for attributes and coordinates
+       manipulation on NetCDF files. The programme has been tested with
+       the following  versions of NCO precompiled libraries:
+       * Unix:   nco-4.6.7
+       * Mac-OS: nco-4.6.6
+- PyAstronomy: Python package PyAstronomy contains a function "zeocross1d"
+               which is needed for the computation of transport maxima
+               locations. We tested the method with v. 0.12.0 of the
+               package, available in pip repositories.
+
+USAGE
+
+1: Obtain the datasets: the programme accepts the following variables as
+   input for the computations:
+     Monthly mean resolution or higher:
+     - TOA shortwave radiation downwards;
+     - TOA shortwave radiation upwards;
+     - TOA longwave radiation upwards (OLR);
+     - Surface shortwave radiation downwards;
+     - Surface shortwave radiation upwards;
+     - Surface longwave radiation downwards;
+     - Surface longwave radiation upwards;
+     - Surface turbulent latent heat fluxes;
+     - Surface turbulent sensible heat fluxes;
+     - Surface temperature;
+     - Specific humidity;
+     - Near-surface (or 10m) zonal velocity;
+     - Near-surface (or 10m) meridional velocity;
+     Daily mean resolution or higher:
+     - Near-surface temperature;
+     - Air temperature (on pressure levels);
+     - Horizontal velocity (on pressure levels);
+     - Meridional velocity (on pressure levels);
+     - Vertical velocity (on pressure levels);
+   Data on lonlat grid are accepted, with CMOR-compliant coordinate system.
+   The pre-processing modules of ESMValTool scheme will take care of
+   converting known grids and recognized datasets to CMOR standards. For a
+   a list of known formats, see
+      http://esmvaltool.readthedocs.io/en/latest/running.html#tab-obs-dat
+   Whether you need to use non-recognized datasets (provided that they are
+   globally gridded), ask for support!
+
+2: A configuration template is available in the ESMValTool release. Set your
+  own paths to local directories here. Input datasets are read in MODELPATH,
+  MODELPATH2, OBSPATH or OBSPATH2 output datasets are stored in WORKPATH,
+  plots in PLOTPATH (refer to the manual for ESMValTool).
+
+3: Set the namelist with your own input datasets. Here you can also set the
+   length of the dataset you want to subset, the time resolution, and
+   whether you are working on a MacOS or Linux machine.
+4: Run the tool by typing:
+         python main.py nml/namelist_lembo17.xml
+5: After the data preprocessing, choose the options as required by the
+   program;
+
+OUTPUT
+
+In the output directory, NetCDF files containing annual mean fields and
+global mean time series for budgets and material entropy production time
+series.
+Log files containing the values of the LEC components are stored in
+subdirectories, identified by the year for which they are computed. LEC
+quantities are stored in different files, one for each year.
+- energy_gns_* contains global, NH and SH time mean fields as a function of
+  wavenumbers;
+- energy_mean_* contains time mean (lon,wave,plev) fields;
+- energy_ts3d_* contains (time,lon,wave,plev) fields;
+- <MODELNAME>_energy_*.ps is a diagram flux displaying annual mean
+  components of the LEC;
+
+In the plot directory figures are stored as PNG files in each model subdir.
+
+For the budgets (toab: TOA energy budget, atmb: atmospheric energy budget,
+surb: surface energy budget, latent: latent energy budget, wmass: water mass
+budget) there can be found:
+ - climatological mean fields (*_climap.png);
+ - time series evolution of global, NH and SH mean fields (*_timeser.png)
+ - meridional transports (*_transp.pdf);
+ - scatter plots of annual peak magnitudes vs. locations (*_scatpeak.png)
+ - LEC diagrams for each year (*_lec_diagram.png)
+
+For the multi-model ensembles scatter plots of EB mean values vs. their
+interannual variability are provided (scatters_variability.png), a summary
+panel of the main thermodynamic quantities averaged for each model
+(scatters_summary.png), and the zonal mean meridional heat transports for
+each model (meridional_transp.png).
+
+For the material entropy production (sver: vertical, shor: horizontal
+(indirect method), sevap: evaporation component, slatpr: ice-rain
+phase changes, slatps: vapor-snow phase changes, spotp: potential energy,
+srain: rainfall, ssens: sensible heat, ssnow: snowfall) climatological mean
+fields are shown.
+
+In the working directory, a log file (lembo17_log.txt) is produced,
+containing the global mean values of all the quantities.
+
+N.B.: multi-model ensembles and means are performed on the results of the
+      analysis. No multi-model mean analysis is performed on input fields.
+      It is thus a deliberate choice not to use the multi-model mean tools
+      provided by the postprocessor.
+
+SOFTWARE TREE DESCRIPTION
+
+The tool is divided in three modules; one for the
+computation of energy and water mass budgets (and related meridional
+transports), one for the Lorenz Energy Cycle (LEC), one for the material
+entropy production.
+
+Module Dependencies:
+  - MODULE 1: Budgets and Transports --> none;
+  - MODULE 2: Lorenz Energy Cycle    --> none;
+  - MODULE 3: Material Entropy Production:
+                                 * Indirect method --> requires Budgets
+                                 * Direct method   --> requires Budgets and
+                                                       LEC
+
+- MODULE 1
+Earth's energy budgets from radiative and heat fluxes at Top-of-Atmosphere,
+at the surface and in the atmosphere (as a residual).
+If required by the user, water mass and latent energy budgets are computed
+from rainfall, snowfall and evaporation fluxes.
+If required by the user, computations are also separately performed over
+land and oceans. A land-sea mask (either binary or percentual) has to be
+provided.
+Meridional transports, magnitude and location of the peaks in each
+hemisphere (only for heat transports) are also computed.
+The baroclinic efficiency is computed from TOA energy budgets, emission
+temperature (in turn retrieved from OLR) and near-surface temperature.
+
+- MODULE 2
+
+The Lorenz Energy Cycle (LEC) is computed in spectral components from near-
+surface temperatures, temperatures and the three components of velocities
+over pressure levels.
+The storage and conversion terms are directly computed, the sources and
+sinks are retrieved as residuals.
+Components are grouped into a zonal mean, stationary and transient eddy
+part.
+
+- MODULE 3
+
+The material entropy production is computed using the indirect method, the
+direct method or both (following Lucarini et al., 2014).
+For the indirect method a vertical and a horizontal component are provided.
+For the direct method, all components are combined, related to the
+hydrological cycle (attributable to evaporation, rainfall and snowfall
+precipitation, phase changes and potential energy of the droplet), to the
+sensible heat fluxes and to kinetic energy dissipation. For the latter the
+LEC computation is required, given that the strength of the LEC can be
+considered as equal to the kinetic energy dissipated to heating.
+
+
+
+
+#############################################################################
+
+20170803-A_lemb_va: Modified header with description and caveats
+20170629-A_kold_ni: Atmospheric budgets diagnostics written
+20180524-A_lemb_va: first complete working thermodynamics diagnostics
+
+
+#############################################################################
 """
 
 import os
 from shutil import move
 import commands
 import warnings
-warnings.filterwarnings("ignore", message="numpy.dtype size changed")
-
 # New packages for version 2.0 of ESMValTool
 import logging
-import esmvaltool.diag_scripts.shared as e 
-# from esmvaltool.diag_scripts.shared import(group_metadata, run_diagnostic,
-#					   select_metadata, sorted_metadata)
+import esmvaltool.diag_scripts.shared as e
 from cdo import Cdo
 from netCDF4 import Dataset
-
 import numpy as np
 from scipy import stats
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used classe
@@ -215,19 +207,21 @@ from fourier_coefficients import FourierCoeff
 from lorenz_cycle import LorenzCycle
 from plot_script import PlotScript
 
+matplotlib.use('Agg')
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
 
 sigmainv = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
-lc       =  2501000 		    # latent heat of condensation
-lcsub    =  2835000 		    # latent heat of sublimation
-ls       =   334000		    # latent heat of solidification
-grav     =        9.81		# gravity acceleration
+lc = 2501000 		        # latent heat of condensation
+lcsub = 2835000 		    # latent heat of sublimation
+ls = 334000		            # latent heat of solidification
+grav = 9.81		            # gravity acceleration
 
 
 def main(cfg):
     """Execute the diagnostic tool.
-    
-    Argument cfg, containing directory paths, preprocessed input dataset 
+
+    Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
     logger.info('Entering the diagnostic tool')    
@@ -242,7 +236,7 @@ def main(cfg):
     fourc = FourierCoeff()
     lorenz = LorenzCycle()
     mkthe = Mkthe()
-    plotsmod = PlotScript() 
+    plotsmod = PlotScript()
     data = e.Datasets(cfg)
     logger.debug(data)
     models = data.get_info_list('dataset')
@@ -250,19 +244,19 @@ def main(cfg):
     model_names.sort()
     logger.info(model_names)         
     varnames = data.get_info_list('short_name')
-    currVars = list(set(varnames))
-    logger.debug(currVars)
+    curr_vars = list(set(varnames))
+    logger.debug(curr_vars)
     # load user-defined options
-    eb=str(cfg['eb'])
-    lsm=str(cfg['lsm'])
-    wat=str(cfg['wat'])
-    lec=str(cfg['lec'])
-    entr=str(cfg['entr'])
-    met=str(cfg['met'])
-    logger.info(eb)  
+    eb = str(cfg['eb'])
+    lsm = str(cfg['lsm'])
+    wat = str(cfg['wat'])
+    lec = str(cfg['lec'])
+    entr = str(cfg['entr'])
+    met = str(cfg['met'])
+    logger.info(eb)
     # Initialize multi-model arrays
-    modnum  = len(model_names)
-    te_all  = np.zeros(modnum)
+    modnum = len(model_names)
+    te_all = np.zeros(modnum)
     toab_all = np.zeros([modnum, 2])
     toab_oc_all = np.zeros(modnum)
     toab_la_all = np.zeros(modnum)
@@ -286,7 +280,6 @@ def main(cfg):
     irrevers_all = np.zeros(modnum)
     diffentr_all = np.zeros([modnum, 2])
     logger.info("Entering main loop\n")
-    i = 0
     for model_name in model_names:
         # Load paths to individual models output and plotting directories
         diagworkdir = os.path.join(diagworkdir_up, model_name)
@@ -308,9 +301,9 @@ def main(cfg):
                     os.remove(file_path)
                 for name in dirs:
                     file_path = os.path.join(plotpath2, name)
-                    os.rmdir(file_path)       
+                    os.rmdir(file_path)  
         # Reading file names for the specific model
-        filenames = data.get_info_list('filename',dataset = model_name)
+        filenames = data.get_info_list('filename', dataset=model_name)
         logger.info('Processing model: {}\n'.format(model_name))
         hfls_file = filenames[0]
         hfss_file = filenames[1]
@@ -339,12 +332,12 @@ def main(cfg):
         attr = info.split()
         diction = {attr[i]: attr[i + 1] for i in range(len(attr) - 1)}
         sftlf_fx = str(diction['{sftlf:'])
-        sftlf_fx = sftlf_fx.replace("}","")
+        sftlf_fx = sftlf_fx.replace("}", "")
         # Compute monthly mean fields from 2D surface daily fields
         aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
         cdo.selvar('tas', input=tas_file, output=aux_file)
         move(aux_file, tas_file)
-        tasmn_file=diagworkdir + '/{}_tas_mm.nc'.format(model_name)
+        tasmn_file = diagworkdir + '/{}_tas_mm.nc'.format(model_name)
         cdo.selvar('tas', input='-monmean {}'.format(tas_file), 
                    option='-b F32', output=tasmn_file)
         cdo.selvar('uas', input=uas_file, output=aux_file)
