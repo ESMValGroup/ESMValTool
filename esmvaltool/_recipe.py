@@ -457,13 +457,23 @@ def _apply_preprocessor_profile(settings, profile_settings):
             settings[step].update(args)
 
 
-def _get_common_attributes(products):
-    """Get attributes that is shared between products."""
+def _get_statistic_attributes(products):
+    """Get attributes for the statistic output products."""
     attributes = {}
     some_product = next(iter(products))
     for key, value in some_product.attributes.items():
         if all(p.attributes.get(key, object()) == value for p in products):
             attributes[key] = value
+
+    # Ensure start_year and end_year attributes are available
+    for product in products:
+        start = product.attributes['start_year']
+        if 'start_year' not in attributes or start < attributes['start_year']:
+            attributes['start_year'] = start
+        end = product.attributes['end_year']
+        if 'end_year' not in attributes or end > attributes['end_year']:
+            attributes['end_year'] = end
+
     return attributes
 
 
@@ -499,27 +509,23 @@ def _update_statistic_settings(products, order, preproc_dir):
     # But how to check, with a dry-run option?
     step = 'multi_model_statistics'
 
-    settings = None
-    for product in products:
-        if step in product.settings:
-            settings = product.settings[step]
-            break
-    if not settings:
+    products = {p for p in products if step in p.settings}
+    if not products:
         return
 
-    for statistic in settings['statistics']:
-        attributes = _get_common_attributes(products)
+    some_product = next(iter(products))
+    for statistic in some_product.settings[step]['statistics']:
+        attributes = _get_statistic_attributes(products)
         attributes['dataset'] = 'MultiModel{}'.format(statistic.title())
         attributes['filename'] = get_statistic_output_file(
             attributes, preproc_dir)
         common_settings = _get_remaining_common_settings(step, order, products)
         statistic_product = PreprocessorFile(attributes, common_settings)
         for product in products:
-            if step in product.settings:
-                if 'output_products' not in product.settings[step]:
-                    product.settings[step]['output_products'] = {}
-                product.settings[step]['output_products'][
-                    statistic] = statistic_product
+            settings = product.settings[step]
+            if 'output_products' not in settings:
+                settings['output_products'] = {}
+            settings['output_products'][statistic] = statistic_product
 
 
 def _match_products(products, variables):

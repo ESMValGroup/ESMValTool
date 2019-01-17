@@ -223,6 +223,7 @@ with open('README.md') as readme:
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
                 'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+                'mip_convert_setup = esmvaltool.utils.mip_convert.esmvt_mipconv_setup:main'
             ],
         },
         cmdclass={

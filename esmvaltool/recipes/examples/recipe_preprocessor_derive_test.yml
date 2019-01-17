@@ -1,10 +1,17 @@
+# ESMValTool
+# recipe_preprocessor_derive_test.yml
 ---
 documentation:
   description: |
     Recipe that demonstrates various uses of the preprocessor derive functionality.
+    
   authors:
     - ande_bo
     - schl_ma
+
+  maintainer:
+    - righ_ma
+    
   projects:
     - c3s-magic
 

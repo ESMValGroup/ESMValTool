@@ -1,3 +1,5 @@
+# ESMValTool
+# recipe_python.yml
 ---
 documentation:
   description: |
@@ -7,6 +9,9 @@ documentation:
     - ande_bo
     - righ_ma
 
+  maintainer:
+    - schl_ma
+    
   references:
     - acknow_project
 
@@ -15,7 +20,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CanESM2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
@@ -44,7 +49,7 @@ diagnostics:
       ta:
         preprocessor: preprocessor1
         field: T3M
-        reference_dataset: bcc-csm1-1
+        reference_dataset: CanESM2
       pr:
         field: T2Ms
         reference_dataset: MPI-ESM-LR

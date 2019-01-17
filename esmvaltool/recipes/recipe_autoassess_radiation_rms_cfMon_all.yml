@@ -1,10 +1,18 @@
+# ESMValTool
+# recipe_autoassess_radiation_rms_cfMon_all.yml
 ---
 documentation:
-  description: Diagnostics of spatial RMS errors of radiation and clouds.
+  description: |
+    Diagnostics of spatial RMS errors of radiation and clouds.
+
   authors:
     - tsus_yo
     - read_si
     - pred_va
+
+  maintainer:
+    - pred_va
+
   projects:
     - cmug
 

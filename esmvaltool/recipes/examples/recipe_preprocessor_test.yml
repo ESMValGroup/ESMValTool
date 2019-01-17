@@ -1,11 +1,18 @@
+# ESMValTool
+# recipe_preprocessor_test.yml
 ---
 documentation:
   description: |
     Various example preprocessors.
+    
   authors:
     - righ_ma
     - ande_bo
     - schl_ma
+
+  maintainer:
+    - righ_ma
+    
   projects:
     - c3s-magic
 
