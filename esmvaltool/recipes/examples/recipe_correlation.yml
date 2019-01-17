@@ -1,9 +1,16 @@
+# ESMValTool
+# recipe_correlation.yml
 ---
-documentation:
+documentation: 
   description: |
     Calculate the Pearsons r correlation coefficient over specified dimensions.
+    
   authors:
     - ande_bo
+
+  maintainer:
+    - ande_bo
+    
   projects:
     - c3s-magic
 
