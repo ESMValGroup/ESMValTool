@@ -2,6 +2,7 @@
 
 get_output_file:
   - variable: &variable
+      variable_group: test
       short_name: ta
       dataset: HadGEM2-ES
       project: CMIP5
