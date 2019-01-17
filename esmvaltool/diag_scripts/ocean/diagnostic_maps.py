@@ -143,6 +143,8 @@ def main(cfg):
             # Time series of individual model
             make_map_plots(cfg, metadatas[filename], filename)
 
+            # TODO add threshold figure like in diagnostics_transects.py
+            
     logger.info('Success')
 
 
