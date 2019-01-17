@@ -21,6 +21,7 @@ load "./interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
+load "./diag_scripts/shared/scaling.ncl"
 
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
@@ -148,6 +149,14 @@ begin
     end if
     if(isatt(variable_info[0], "units")) then
       to_plot@units = variable_info[0]@units
+      ; difference in K is the same as difference in degC, only change label
+      if (to_plot@units.eq."K") then
+        to_plot@units = "degC"
+      end if
+      if (isatt(diag_script_info, "plot_units")) then
+        to_plot = convert_units(to_plot, diag_script_info@plot_units)
+      end if
+      plot_units = to_plot@units
     end if
 
     ; ###########################################
@@ -248,7 +257,12 @@ begin
   pres@gsnPaperOrientation = "portrait"
   pres@gsnPanelTop = 0.96
 
-  pres@lbTitleString = "(~F35~J~F~C)"
+  if (isatt(diag_script_info, "units")) then
+    pres@lbTitleString = diag_script_info@units
+  else
+    unit_string = format_units(plot_units)
+    pres@lbTitleString = "(" + unit_string + ")"
+  end if
   pres@lbTitleFontHeightF = 0.017
   pres@lbTitleDirection = "across"
   pres@lbTitlePosition = "Right"

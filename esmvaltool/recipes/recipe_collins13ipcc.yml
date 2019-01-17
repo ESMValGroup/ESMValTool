@@ -112,7 +112,10 @@ diagnostics:
         diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
         # Span whole colormap (default false)
         span: false
-
+        # Unit for colorbar, only affects label
+        units: (~F35~J~F~C)
+        # Plot units, triggers conversion into this unit
+        #plot_units: 
 
   ### Time series plots #######################################################
   ts_line_tas:
