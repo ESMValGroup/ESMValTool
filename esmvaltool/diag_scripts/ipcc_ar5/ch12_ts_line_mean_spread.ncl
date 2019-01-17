@@ -189,7 +189,6 @@ begin
     error_msg("f", DIAG_SCRIPT, "", "Too many different scenarios, " + \
               "code not set up for more than 4.")
   end if
-  ;i = 0
   do imod = 0, dim_MOD_hist - 1
     if (imod .eq. 0) then
       data2 = data1
