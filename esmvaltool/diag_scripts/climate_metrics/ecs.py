@@ -31,9 +31,10 @@ import iris
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (
-    group_metadata, plot, run_diagnostic, save_iris_cube, select_metadata,
-    variables_available, extract_variables)
+from esmvaltool.diag_scripts.shared import (extract_variables, group_metadata,
+                                            plot, run_diagnostic,
+                                            select_metadata,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -109,7 +110,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
         **extract_variables(cfg, as_iris=True)['rtmt'])
     filepath = os.path.join(cfg['work_dir'],
                             'ecs_regression_' + dataset_name + '.nc')
-    save_iris_cube(cube, filepath, cfg)
+    iris.save(cube, filepath)
     return
 
 
@@ -175,7 +176,7 @@ def main(cfg):
         # Save file
         filepath = os.path.join(cfg['work_dir'],
                                 cfg.get('output_name', 'ecs') + '.nc')
-        save_iris_cube(cube, filepath, cfg)
+        iris.save(cube, filepath)
 
 
 if __name__ == '__main__':

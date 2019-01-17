@@ -37,9 +37,9 @@ import os
 import iris
 from iris import Constraint
 
-from esmvaltool.diag_scripts.shared import (
-    plot, run_diagnostic, save_iris_cube, variables_available,
-    extract_variables)
+from esmvaltool.diag_scripts.shared import (extract_variables, plot,
+                                            run_diagnostic,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -125,7 +125,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         # Save file
         filepath = os.path.join(cfg['work_dir'],
                                 cfg.get('output_name', 'fig09_42a') + '.nc')
-        save_iris_cube(cube, filepath, cfg)
+        iris.save(cube, filepath)
 
 
 def main(cfg):
