@@ -1,22 +1,24 @@
-###############################################################################
+# ESMValTool
 # recipe_OceanBGC.yml
 ---
 documentation:
   description: |
     Recipe to demonstrate a couple simple plots based on the annual ocean
     biogeochemistry. Please use this file as a template for adding additional
-    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103. 
-    Written by Lee de Mora, Plymouth Marine Laboratory
-    
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
   authors:
     - demo_le
+
+  maintainer:
+    - schl_ma
 
   references:
     - demora2018gmd
 
   projects:
     - ukesm
-    
+
 
 datasets:
 # working datasets
@@ -31,23 +33,23 @@ datasets:
 # datasets with Errors (right now):
 
 # Problem with latitude > 90.
-#  - {dataset: HadGEM2-CC,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
-#  - {dataset: HadGEM2-ES,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
+#  - {dataset: HadGEM2-CC,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: HadGEM2-ES,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 
-  
+
 ###
 # Problem with times
 #  - {dataset: MIROC-ESM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 #  - {dataset: MIROC-ESM-CHEM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 
-# Unstructured grids                 
+# Unstructured grids
 #  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2003}
 #  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-#  - {dataset: ACCESS1-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}  
+#  - {dataset: ACCESS1-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 #  - {dataset: ACCESS1-3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 
-  
-  
+
+
 preprocessors:
   # --------------------------------------------------
   # Depth-profile preprocessors
@@ -56,8 +58,8 @@ preprocessors:
     depth_integration:
       coordz: depth
 #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
-    time_average:  
-    
+    time_average:
+
 
 
   # --------------------------------------------------
@@ -66,20 +68,20 @@ preprocessors:
   prep_surface_map_1: # For a 2D global surface map
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical  
-    time_average:  
-        
+      scheme: linear_horizontal_extrapolate_vertical
+    time_average:
+
 diagnostics:
   # --------------------------------------------------
   # Depth integrated diagnostics
-  # --------------------------------------------------  
+  # --------------------------------------------------
   diag_depthInt_1:
     description: Global Ocean Depth Integrated mean timeseries
-    variables:       
-      chl: 
+    variables:
+      chl:
         preprocessor: prep_depth_integration_1
         field: TO3Y
-      no3: 
+      no3:
         preprocessor: prep_depth_integration_1
         field: TO3Y
     scripts:
@@ -88,24 +90,24 @@ diagnostics:
 
   # --------------------------------------------------
   # Map diagnostics
-  # --------------------------------------------------  
+  # --------------------------------------------------
   diag_map_1:
     description: Global Ocean Surface mean timeseries
-    variables:       
-      chl: 
+    variables:
+      chl:
         preprocessor: prep_surface_map_1
         field: TO3Y
-      no3:  
+      no3:
         preprocessor: prep_surface_map_1
         field: TO3Y
-                
+
     scripts:
       Global_Ocean_surface_map: &Global_Ocean_surface_map
         script: ocean/diagnostic_maps.py
-                
-    
-    
-      
+
+
+
+
 
 
 

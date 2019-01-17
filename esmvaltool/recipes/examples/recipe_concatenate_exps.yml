@@ -1,16 +1,15 @@
+# ESMValTool
 # recipe_concatenate_exps.yml
 ---
 documentation:
-
   description: |
-    Example recipe to demonstrate concatenation of different experiments.
+    Concatenate time series of different experiments at the preprocessor level.
 
   authors:
     - schl_ma
 
-  projects:
-    - crescendo
-
+  maintainer:
+    - schl_ma
 
 datasets:
   - {dataset: CanESM2}

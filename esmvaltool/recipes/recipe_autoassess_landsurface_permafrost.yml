@@ -1,16 +1,15 @@
-#################
-#it runs:
-#  - permafrost
-#################
-#### CAVEATS
-# land_surface_area and ice masks are fixed (not time-dependent)
-#################
-# RECIPE IS FULLY WORKING BUT MASKS NEED TO BE CHECKED !!!
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_landsurface_permafrost.yml
 ---
 documentation:
-  description: Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Land surface area and ice masks are time independent.
+    
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:
