@@ -199,10 +199,10 @@ def regrid(cube, target_grid, scheme):
 
     # Guess bounds for area weighted regridding if necessary
     if scheme.lower() == 'area_weighted':
-        if not src_cube.coord('latitude').has_bounds():
-            src_cube.coord('latitude').guess_bounds()
-        if not src_cube.coord('longitude').has_bounds():
-            src_cube.coord('longitude').guess_bounds()
+        if not cube.coord('latitude').has_bounds():
+            cube.coord('latitude').guess_bounds()
+        if not cube.coord('longitude').has_bounds():
+            cube.coord('longitude').guess_bounds()
         if not target_grid.coord('latitude').has_bounds():
             target_grid.coord('latitude').guess_bounds()
         if not target_grid.coord('longitude').has_bounds():
