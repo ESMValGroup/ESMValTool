@@ -1,21 +1,18 @@
-#### summary 
-#### recipe that runs the Autoassess Land-surface assessment area diagnostic
-#### Version: 23 August 2018 
-#### Author: V. Predoi UREAD (valeriu.predoi@ncas.ac.uk)
-#################
-#### Description:
-#################
-#it runs:
-#  - snow
-#################
-#### CAVEATS
-# climatological files are stored externally to avoid
-# overloading the ESMValTool source;
-# JASMIN location: /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
-#################
-# RECIPE IS FULLY WORKING
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_landsurface_snow.yml
 ---
+documentation:
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Climatological files are stored externally to avoid overloading the
+    ESMValTool source. See /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
+    (on JASMIN).
+
+  authors:
+    - pred_va
+
+  maintainer:
+    - pred_va
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
