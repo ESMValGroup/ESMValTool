@@ -1,4 +1,4 @@
-###############################################################################
+# ESMValTool
 # recipe_OceanBGC.yml
 ---
 documentation:
@@ -488,7 +488,7 @@ diagnostics:
         preprocessor: prep_surface_map_2D
         field: TO2M
         mip: Omon
-        fx_files: [areacello, ]            
+        fx_files: [areacello, ]
       chl:
         preprocessor: prep_surface_map_3D
         field: TO3Y

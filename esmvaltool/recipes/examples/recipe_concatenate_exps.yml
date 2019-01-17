@@ -1,4 +1,16 @@
+# ESMValTool
+# recipe_concatenate_exps.yml
 ---
+documentation: 
+  description: |
+    Concatenate time series of different experiments at the preprocessor level.
+    
+  authors:
+    - schl_ma
+
+  maintainer:
+    - schl_ma
+
 datasets:
   - {dataset: CanESM2}
   - {dataset: GFDL-ESM2M}

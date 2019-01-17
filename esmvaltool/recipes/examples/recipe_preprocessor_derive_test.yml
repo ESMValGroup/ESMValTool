@@ -1,7 +1,20 @@
-# Note: the different diagnostics are necessary because some of the derived
-# variables use the same basic variables, which leads to PermissionDenied
-# errors.
+# ESMValTool
+# recipe_preprocessor_derive_test.yml
 ---
+documentation:
+  description: |
+    Recipe that demonstrates various uses of the preprocessor derive functionality.
+    
+  authors:
+    - ande_bo
+    - schl_ma
+
+  maintainer:
+    - righ_ma
+    
+  projects:
+    - c3s-magic
+
 preprocessors:
 
   regrid:
