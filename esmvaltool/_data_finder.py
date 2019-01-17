@@ -11,7 +11,7 @@ import re
 
 import six
 
-from ._config import get_institutes, get_project_config, replace_mip_fx
+from ._config import get_project_config, replace_mip_fx
 from .cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
@@ -242,7 +242,6 @@ def _find_input_files(variable, rootpath, drs, fx_var=None):
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    variable['institute'] = get_institutes(variable)
     files = _find_input_files(variable, rootpath, drs)
     files = select_files(files, variable['start_year'], variable['end_year'])
     return files
@@ -258,7 +257,6 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
         var['modeling_realm'] = realm if realm else table.realm
-        var['institute'] = get_institutes(variable)
 
         files = _find_input_files(var, rootpath, drs, fx_var)
         fx_files[fx_var] = files[0] if files else None
@@ -277,23 +275,23 @@ def get_output_file(variable, preproc_dir):
 
     outfile = os.path.join(
         preproc_dir,
-        '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
-        _replace_tags(cfg['output_file'], variable)[0] + '.nc')
+        variable['diagnostic'],
+        variable['variable_group'],
+        _replace_tags(cfg['output_file'], variable)[0] + '.nc',
+    )
 
     return outfile
 
 
-def get_statistic_output_file(variable, statistic, preproc_dir):
+def get_statistic_output_file(variable, preproc_dir):
     """Get multi model statistic filename depending on settings."""
-    values = dict(variable)
-    values['stat'] = statistic.title()
-
     template = os.path.join(
         preproc_dir,
-        '{diagnostic}_{preprocessor}_{short_name}',
-        'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
+        '{diagnostic}',
+        '{variable_group}',
+        '{dataset}_{field}_{short_name}_{start_year}-{end_year}.nc',
     )
 
-    outfile = template.format(**values)
+    outfile = template.format(**variable)
 
     return outfile
