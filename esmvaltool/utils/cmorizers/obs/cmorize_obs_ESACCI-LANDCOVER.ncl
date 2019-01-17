@@ -95,21 +95,42 @@ begin
 
       log_info("Processing variable " + VARIABLES(vv))
 
-      ; Sum up classes
+      ; Set classes to be added up
       class = CLASSES[vv]
+
+      ; Save mask before adding up classes
+      do cc = 0, dimsizes(class) - 1
+        qq = f->$class(cc)$
+        replace_ieeenan(qq, FILL, 0)
+        qq@_FillValue = FILL
+        tmp = ismissing(qq)
+        delete(qq)
+        if (cc.eq.0) then
+          lmask = tmp
+        else
+          lmask := lmask .and. tmp
+        end if
+        delete(tmp)
+      end do
+
+      ; Add up classes
       do cc = 0, dimsizes(class) - 1
         log_info("  adding class " + class(cc))
+        tmp = f->$class(cc)$
+        replace_ieeenan(tmp, FILL, 0)
+        tmp@_FillValue = FILL
+        tmp = where(ismissing(tmp), 0., tmp)
         if (cc.eq.0) then
-          xx = f->$class(cc)$
+          xx = tmp
         else
-          xx = xx + f->$class(cc)$
+          xx = xx + tmp
         end if
+        delete(tmp)
       end do
       delete(class)
 
-      ; Replace NaNs with missing
-      replace_ieeenan(xx, FILL, 0)
-      xx@_FillValue = FILL
+      ; Reapply mask of missing values
+      xx = where(lmask, xx@_FillValue, xx)
 
       ; Define output field
       output = \
@@ -156,8 +177,8 @@ begin
       output = tmp
       delete(tmp)
 
-      ; Special case for bareFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."bareFrac") then
+      ; Special case for baresoilFrac: add auxiliary coordinate
+      if (VARIABLES(vv).eq."baresoilFrac") then
         output@coordinates = "type"
       end if
 
@@ -186,8 +207,8 @@ begin
       delete(gAtt)
       delete(output)
 
-      ; Special case for bareFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."bareFrac") then
+      ; Special case for baresoilFrac: add auxiliary coordinate
+      if (VARIABLES(vv).eq."baresoilFrac") then
         type = tochar("bare_ground")
         type!0 = "strlen"
         type@long_name = "surface type"
