@@ -363,7 +363,6 @@ def main(cfg):
     for obs_name in tas_obs:
         logger.info("Observation for tas: %s", obs_name)
         plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name)
-    logger.info("")
     for obs_name in psi_obs:
         logger.info("Observation for psi: %s", obs_name)
         plot_psi(cfg, psi_cubes, lambda_cube, obs_name)
