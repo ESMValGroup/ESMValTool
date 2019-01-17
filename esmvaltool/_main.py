@@ -12,6 +12,7 @@ CORE DEVELOPMENT TEAM AND CONTACTS:
   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
   Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
   Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
 
 For further help, please read the documentation at
@@ -39,7 +40,7 @@ from multiprocessing import cpu_count
 
 from . import __version__
 from ._config import configure_logging, read_config_user_file
-from ._recipe import read_recipe_file
+from ._recipe import read_recipe_file, TASKSEP
 from ._task import resource_usage_logger
 
 # set up logging
@@ -89,6 +90,14 @@ def get_args():
         '--max-years',
         type=int,
         help='Limit the number of years to MAX_YEARS.')
+    parser.add_argument(
+        '--skip-nonexistent',
+        action='store_true',
+        help="Skip datasets that cannot be found.")
+    parser.add_argument(
+        '--diagnostics',
+        nargs='*',
+        help="Only run the named diagnostics from the recipe.")
     args = parser.parse_args()
     return args
 
@@ -129,6 +138,11 @@ def main(args):
     logger.info("Using config file %s", config_file)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
+    cfg['skip-nonexistent'] = args.skip_nonexistent
+    cfg['diagnostics'] = {
+        pattern if TASKSEP in pattern else pattern + TASKSEP + '*'
+        for pattern in args.diagnostics or ()
+    }
     cfg['synda_download'] = args.synda_download
     for limit in ('max_datasets', 'max_years'):
         value = getattr(args, limit)
@@ -221,6 +235,11 @@ def run():
             "Program terminated abnormally, see stack trace "
             "below for more information",
             exc_info=True)
+        logger.info(
+            "If you suspect this is a bug or need help, please open an issue "
+            "on https://github.com/ESMValGroup/ESMValTool/issues and attach "
+            "the run/recipe_*.yml and run/main_log_debug.txt files from the "
+            "output directory.")
         sys.exit(1)
     else:
         if conf["remove_preproc_dir"]:

@@ -1,9 +1,3 @@
-#### summary 
-#### recipe that runs the Autoassess Land-surface assessment area diagnostic
-#### Version: 18 September 2018 
-#### Author: V. Predoi UREAD (valeriu.predoi@ncas.ac.uk)
-#################
-#### Description:
 #################
 #it runs:
 #  - permafrost
@@ -14,6 +8,10 @@
 # RECIPE IS FULLY WORKING BUT MASKS NEED TO BE CHECKED !!!
 ###########################################################################################################
 ---
+documentation:
+  description: Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+  authors:
+    - pred_va
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}

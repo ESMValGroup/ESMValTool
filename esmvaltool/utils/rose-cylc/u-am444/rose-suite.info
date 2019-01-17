@@ -1,0 +1,6 @@
+esmvaltool=version2_development
+access-list=valeriupredoi
+description=Prototype suite for running ESMValTool
+owner=valeriupredoi
+project=esmvaltool
+title=esmvaltool-rose-cylc

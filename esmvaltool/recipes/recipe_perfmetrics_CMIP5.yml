@@ -281,6 +281,10 @@ diagnostics:
 
   ta200:
     description: Air temperature at 200 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: pp200
@@ -359,6 +363,10 @@ diagnostics:
 
   ta30:
     description: Air temperature at 30 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: pp30
@@ -431,6 +439,10 @@ diagnostics:
 
   ta5:
     description: Air temperature at 5 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: pp5
@@ -503,6 +515,10 @@ diagnostics:
 
   taZONAL:
     description: Air temperature zonal mean
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: ppALL
@@ -594,6 +610,10 @@ diagnostics:
   ### ua: EASTWARD WIND #######################################################
   ua850:
     description: Eastward wind at 850 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
     variables:
       ua:
         preprocessor: pp850
@@ -669,6 +689,10 @@ diagnostics:
 
   ua200:
     description: Eastward wind at 200 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
     variables:
       ua:
         preprocessor: pp200
@@ -745,6 +769,10 @@ diagnostics:
   ### va: NORTHWARD WIND ######################################################
   va850:
     description: Northward wind at 850 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
     variables:
       va:
         preprocessor: pp850
@@ -819,6 +847,10 @@ diagnostics:
 
   va200:
     description: Northward wind at 200 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
     variables:
       va:
         preprocessor: pp200
@@ -894,6 +926,10 @@ diagnostics:
   ### zg: GEOPOTENTIAL HEIGHT #################################################
   zg500:
     description: Geopotential height 500 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       zg:
         preprocessor: pp500
@@ -968,6 +1004,10 @@ diagnostics:
   ### hus: SPECIFIC HUMIDITY ##################################################
   hus400:
     description: Specific humidity at 400 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       hus:
         preprocessor: pp400
@@ -1035,6 +1075,10 @@ diagnostics:
   ### tas: NEAR-SURFACE TEMPERATURE ###########################################
   tas:
     description: Near-surface air temperature
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         preprocessor: ppNOLEV2
@@ -1132,6 +1176,11 @@ diagnostics:
   ### ts: SEA-SURFACE (SKIN) TEMPERATURE ######################################
   ts:
     description: Sea-surface (skin) temperature
+    themes:
+      - phys
+    realms:
+      - atmos
+      - ocean
     variables:
       ts:
         preprocessor: ppNOLEV1x1
@@ -1201,6 +1250,10 @@ diagnostics:
   ### pr: PRECIPITATION #######################################################
   pr:
     description: Precipitation
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: ppNOLEV1
@@ -1275,6 +1328,10 @@ diagnostics:
   ### clt: TOTAL CLOUD COVER ##################################################
   clt:
     description: Total cloud cover
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: ppNOLEV2
@@ -1351,6 +1408,10 @@ diagnostics:
   ### rlut: ALL-SKY LONGWAVE RADIATION ########################################
   rlut:
     description: All-sky longwave radiation
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       rlut:
         preprocessor: ppNOLEV1
@@ -1418,6 +1479,10 @@ diagnostics:
   ### rsut: ALL-SKY SHORTWAVE RADIATION #######################################
   rsut:
     description: All-sky shortwave radiation
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       rsut:
         preprocessor: ppNOLEV1
@@ -1482,6 +1547,10 @@ diagnostics:
   ### lwcre: LONGWAVE CLOUD FORCING ###########################################
   lwcre:
     description: Longwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: ppNOLEV1
@@ -1550,6 +1619,10 @@ diagnostics:
   ### swcre: SHORTWAVE CLOUD FORCING ##########################################
   swcre:
     description: Shortwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: ppNOLEV1
