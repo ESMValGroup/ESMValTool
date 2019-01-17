@@ -1427,7 +1427,6 @@ diagnostics:
         # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
         # iavmode:
 
-
   psl_change_mmm:
     description: Mean sea level pressure change (annual mean or seasonal)
                  in multi-model mean with significance
@@ -1480,6 +1479,8 @@ diagnostics:
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
+        # Plot units
+        plot_units: "hPa"
 
       ch12_plot_map_diff_mmm_stipp_psl:
         <<: *psl_map_settings
@@ -1495,9 +1496,9 @@ diagnostics:
         # Contour levels for all difference plots
         diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
         # Maximum number of plots in vertical
-        max_vert: 3
+        max_vert: 2
         # Maximum number of plots in horizontal
-        max_hori: 2
+        max_hori: 3
         # Alternative colormap (path to .rgb file or ncl name)
         colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
@@ -1510,8 +1511,6 @@ diagnostics:
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
-        # Plot units
-        plot_units: "hPa"
 
   ###  Mean humidity change in RCPs for multi model mean ######################
   IAV_calc_hurs:
