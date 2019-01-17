@@ -269,7 +269,7 @@ def get_output_file(variable, preproc_dir):
     cfg = get_project_config(variable['project'])
 
     # Join different experiment names
-    if isinstance(variable['exp'], (list, tuple)):
+    if isinstance(variable.get('exp'), (list, tuple)):
         variable = dict(variable)
         variable['exp'] = '-'.join(variable['exp'])
 
