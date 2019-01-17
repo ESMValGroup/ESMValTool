@@ -178,7 +178,7 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     if not grid_areas_found:
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
-        logger.info('Calculated grid area...', grid_areas.shape)
+        logger.info('Calculated grid area:{}'.format(grid_areas.shape))
 
     if cube.data.shape != grid_areas.shape:
 

@@ -86,7 +86,6 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
         Flag to plot the colour scale linearly (False) or
         logarithmically (True)
     """
-
     plt.subplot(subplot)
     logger.info('add_map_subplot: %s', subplot)
     if log:
@@ -214,7 +213,7 @@ def make_model_vs_obs_plots(
         plt.close()
 
 
-def round_sig(value, sig=3):
+def rounds_sig(value, sig=3):
     """
     Rounds a float to a specific number of sig. figs. & return it as a string.
 
@@ -261,10 +260,10 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, add_diagonal=False,
         The extent of the plot axes.
     """
     beta1, beta0, rValue, pValue, stderr = linregress(arr_x, arr_y)
-    texts = [r'$\^\beta_0$ = ' + round_sig(beta0),
-             r'$\^\beta_1$ = ' + round_sig(beta1),
-             r'R = ' + round_sig(rValue),
-             r'P = ' + round_sig(pValue),
+    texts = [r'$\^\beta_0$ = ' + rounds_sig(beta0),
+             r'$\^\beta_1$ = ' + rounds_sig(beta1),
+             r'R = ' + rounds_sig(rValue),
+             r'P = ' + rounds_sig(pValue),
              r'N = ' + str(int(len(arr_x)))]
     thetext = '\n'.join(texts)
 
@@ -302,6 +301,8 @@ def make_scatter(
         model_filename,
         obs_filename):
     """
+    Makes Scatter plots of model vs observational data.
+
     Make scatter plot showing the matched model and observational data with the
     model data as the x-axis coordinate and the observational data as the
     y-axis coordinate. A linear regression is also applied to the matched
