@@ -1,16 +1,8 @@
-#### summary
-#recipe_validation.yml
-#
-#Description
-#Validation of CONTROL and EXPERIMENT datasets
-#
-#Author version2
-#Valeriu Predoi: VP (University of Reading, UK)
-#
-#August 2018
-#This recipe is part of the ESMValTool
-###########################################################################################################
 ---
+documentation:
+  description: Validation of CONTROL and EXPERIMENT datasets.
+  authors:
+    - pred_va
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}

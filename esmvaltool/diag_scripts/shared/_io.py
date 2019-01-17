@@ -2,9 +2,10 @@
 import fnmatch
 import logging
 import os
-from datetime import datetime
 
 import iris
+
+from ._base import get_diagnostic_filename
 
 logger = logging.getLogger(__name__)
 
@@ -182,40 +183,47 @@ def metadata_to_netcdf(cube, metadata, cfg):
         if isinstance(val, bool):
             metadata[attr] = str(val)
     cube.attributes.update(metadata)
-    save_iris_cube(cube, metadata['filename'], cfg)
+    save_iris_cube(cube, cfg, path=metadata['filename'])
 
 
-def save_iris_cube(cube, path, cfg):
-    """Save `iris.cube.Cube` and append ESMValTool information.
+def save_iris_cube(cube, cfg, basename=None, path=None):
+    """Save `iris.cube.Cube`.
+
+    Save `iris.cube.Cube`. Either `basename` or `path` must be specified, if
+    both are given `path` overwrites `basename`.
 
     Parameters
     ----------
     cube : iris.cube.Cube
         Cube to be saved.
-    path : str
-        Desired path.
     cfg : dict
         Diagnostic script configuration.
+    basename : str, optional
+        Basename of the file.
+    path : str, optional
+        Path of the file.
+
+    Raises
+    ------
+    ValueError
+        Neither `basename` nor `path` are given.
 
     """
+    if basename is None and path is None:
+        raise ValueError("Neither 'basename' nor 'path' are given, specify at "
+                         "least one of them")
+    if path is None:
+        path = get_diagnostic_filename(basename, cfg)
     if not cfg['write_netcdf']:
-        logger.warning(
-            "Could not write netcdf file '%s', 'write_netcdf' is "
-            "set to 'False' in user configuration file.", path)
+        logger.debug(
+            "Did not write netcdf file '%s', 'write_netcdf' is set to "
+            "'False' in user configuration file.", path)
         return
-    attr = {
-        'created_by':
-        'ESMValTool version {}'.format(cfg['version']) +
-        ', diagnostic {}'.format(cfg['script']),
-        'creation_date':
-        datetime.utcnow().isoformat(' ') + ' UTC',
-    }
-    cube.attributes.update(attr)
     iris.save(cube, path)
     logger.info("Wrote %s", path)
 
 
-def save_scalar_data(data, path, cfg, var_attrs, attributes=None):
+def save_scalar_data(data, basename, cfg, var_attrs, attributes=None):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -225,8 +233,8 @@ def save_scalar_data(data, path, cfg, var_attrs, attributes=None):
     ----------
     data : dict
         Scalar data (values) and corresponding datasets (keys).
-    path : str
-        Desired path.
+    basename : str
+        Basename of the file.
     cfg : dict
         Diagnostic script configuration.
     var_attrs : dict
@@ -236,6 +244,7 @@ def save_scalar_data(data, path, cfg, var_attrs, attributes=None):
         Additional attributes for the cube.
 
     """
+    path = get_diagnostic_filename(basename, cfg)
     if not _has_necessary_attributes(
             [var_attrs], only_var_attrs=True, log_level='error'):
         logger.error("Cannot write file '%s'", path)
@@ -251,4 +260,4 @@ def save_scalar_data(data, path, cfg, var_attrs, attributes=None):
         attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path
-    save_iris_cube(cube, path, cfg)
+    save_iris_cube(cube, cfg, path=path)

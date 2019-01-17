@@ -32,8 +32,8 @@ import iris
 from iris import Constraint
 
 from esmvaltool.diag_scripts.shared import (
-    extract_variables, get_ancestor_file, plot, run_diagnostic, save_iris_cube,
-    variables_available)
+    extract_variables, get_ancestor_file, get_plot_filename, plot,
+    run_diagnostic, save_iris_cube, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -71,13 +71,12 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         })
 
     # Plot data
-    filepath = os.path.join(cfg['plot_dir'],
-                            'ch09_fig09_42a.' + cfg['output_file_type'])
+    path = get_plot_filename('ch09_fig09_42a', cfg)
     plot.multi_dataset_scatterplot(
         x_data,
         y_data,
         dataset_names,
-        filepath,
+        path,
         plot_kwargs=plot_kwargs,
         save_kwargs=cfg.get('save', {}),
         axes_functions=cfg.get('axes_functions', {}))
@@ -116,8 +115,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
                                  (tas_picontrol_coord, 0)])
 
         # Save file
-        filepath = os.path.join(cfg['work_dir'], 'ch09_fig09_42a.nc')
-        save_iris_cube(cube, filepath, cfg)
+        save_iris_cube(cube, cfg, basename='ch09_fig09_42a')
 
 
 def main(cfg):

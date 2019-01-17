@@ -1,0 +1,3 @@
+export PATH=/home/users/valeriu/anaconda3Nov2018/bin:$PATH
+export PATH=/home/users/valeriu/anaconda3Nov2018/envs/esmvaltool/lib/python3.6/site-packages:$PATH
+export PATH=/home/users/valeriu/anaconda3Nov2018/envs/esmvaltool/bin:$PATH

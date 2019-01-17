@@ -32,9 +32,9 @@ import iris
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (group_metadata, metadata_to_netcdf,
-                                            run_diagnostic, save_scalar_data,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    get_diagnostic_filename, group_metadata, metadata_to_netcdf,
+    run_diagnostic, save_scalar_data, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -104,17 +104,15 @@ def main(cfg):
         data.update(psi_attrs)
 
         # Save psi for every dataset
-        path = os.path.join(cfg['work_dir'], 'psi_{}.nc'.format(dataset))
-        data['filename'] = path
+        data['filename'] = get_diagnostic_filename('psi_' + dataset, cfg)
         metadata_to_netcdf(psi_cube, data, cfg)
 
         # Save averaged psi
         psis[dataset] = np.mean(psi_cube.data)
 
     # Save averaged psis for every dataset in one file
-    path = os.path.join(cfg['work_dir'], 'psi.nc')
     save_scalar_data(
-        psis, path, cfg, psi_attrs, attributes=psi_cube.attributes)
+        psis, 'psi', cfg, psi_attrs, attributes=psi_cube.attributes)
 
 
 if __name__ == '__main__':

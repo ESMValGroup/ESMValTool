@@ -1,4 +1,17 @@
+# recipe_concatenate_exps.yml
 ---
+documentation:
+
+  description: |
+    Example recipe to demonstrate concatenation of different experiments.
+
+  authors:
+    - schl_ma
+
+  projects:
+    - crescendo
+
+
 datasets:
   - {dataset: CanESM2}
   - {dataset: GFDL-ESM2M}

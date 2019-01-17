@@ -32,9 +32,9 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 from esmvaltool.diag_scripts.shared import (
-    get_ancestor_file, group_metadata, iris_project_constraint,
-    match_dataset_coordinates, netcdf_to_metadata, plot, run_diagnostic,
-    variables_available)
+    get_ancestor_file, get_plot_filename, group_metadata,
+    iris_project_constraint, match_dataset_coordinates, netcdf_to_metadata,
+    plot, run_diagnostic, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -88,10 +88,9 @@ def _get_line_plot_legend():
     return AXES.legend(handles=handles, loc='upper left')
 
 
-def _save_fig(cfg, filename, legend=None):
+def _save_fig(cfg, basename, legend=None):
     """Save matplotlib figure."""
-    path = os.path.join(cfg['plot_dir'], '{}.{}'.format(
-        filename, cfg['output_file_type']))
+    path = get_plot_filename(basename, cfg)
     if legend is None:
         legend = []
     else:

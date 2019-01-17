@@ -35,8 +35,8 @@ import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    extract_variables, group_metadata, plot, run_diagnostic, save_iris_cube,
-    save_scalar_data, select_metadata, variables_available)
+    extract_variables, get_plot_filename, group_metadata, plot, run_diagnostic,
+    save_iris_cube, save_scalar_data, select_metadata, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -71,8 +71,6 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
     if not (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
         return
     ecs = -regression_stats.intercept / (2 * regression_stats.slope)
-    filepath = os.path.join(cfg['plot_dir'],
-                            dataset_name + '.' + cfg['output_file_type'])
 
     # Regression line
     x_reg = np.linspace(-1.0, 8.0, 2)
@@ -83,10 +81,11 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
            r'$\lambda$ = {:.2f}, '.format(-regression_stats.slope) + \
            'F = {:.2f}, '.format(regression_stats.intercept) + \
            'ECS = {:.2f}'.format(ecs)
+    path = get_plot_filename(dataset_name, cfg)
     plot.scatterplot(
         [tas_cube.data, x_reg],
         [rtmt_cube.data, y_reg],
-        filepath,
+        path,
         plot_kwargs=[{
             'linestyle': 'none',
             'markeredgecolor': 'b',
@@ -116,8 +115,6 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
     )
 
     # Write netcdf file for every plot
-    if not cfg['write_netcdf']:
-        return
     tas_coord = iris.coords.AuxCoord(
         tas_cube.data,
         **extract_variables(cfg, as_iris=True)['tas'])
@@ -134,9 +131,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube,
         attributes=attrs,
         aux_coords_and_dims=[(tas_coord, 0)],
         **extract_variables(cfg, as_iris=True)['rtmt'])
-    filepath = os.path.join(cfg['work_dir'],
-                            'ecs_regression_' + dataset_name + '.nc')
-    save_iris_cube(cube, filepath, cfg)
+    save_iris_cube(cube, cfg, basename='ecs_regression_' + dataset_name)
     return
 
 
@@ -197,22 +192,20 @@ def main(cfg):
         clim_sens[dataset] = -reg.slope
 
     # Write data
-    path = os.path.join(cfg['work_dir'], 'ecs.nc')
     var_attrs = {
         'short_name': 'ecs',
         'standard_name': 'equilibrium_climate_sensitivity',
         'long_name': 'Equilibrium Climate Sensitivity (ECS)',
         'units': cf_units.Unit('K'),
     }
-    save_scalar_data(ecs, path, cfg, var_attrs)
-    path = os.path.join(cfg['work_dir'], 'lambda.nc')
+    save_scalar_data(ecs, var_attrs['short_name'], cfg, var_attrs)
     var_attrs = {
         'short_name': 'lambda',
         'standard_name': 'climate_sensitivity',
         'long_name': 'Climate Sensitivity',
         'units': cf_units.Unit('W m-2 K-1'),
     }
-    save_scalar_data(clim_sens, path, cfg, var_attrs)
+    save_scalar_data(clim_sens, var_attrs['short_name'], cfg, var_attrs)
 
 
 if __name__ == '__main__':
