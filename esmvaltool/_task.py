@@ -1,4 +1,4 @@
-"""ESMValtool task definition"""
+"""ESMValtool task definition."""
 import contextlib
 import datetime
 import errno
@@ -13,6 +13,9 @@ from multiprocessing import Pool, cpu_count
 
 import psutil
 import yaml
+
+from ._config import TAGS, replace_tags
+from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
 
@@ -186,15 +189,22 @@ def write_ncl_settings(settings, filename, mode='wt'):
         file.write('\n')
 
 
-class AbstractTask(object):
-    """Base class for defining task classes"""
+class BaseTask(object):
+    """Base class for defining task classes."""
 
-    def __init__(self, settings, output_dir, ancestors=None):
+    def __init__(self, ancestors=None, name=''):
         """Initialize task."""
-        self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
-        self.output_dir = output_dir
         self.output_files = None
+        self.name = name
+        self.activity = None
+
+    def initialize_provenance(self, recipe_entity):
+        """Initialize task provenance activity."""
+        if self.activity is not None:
+            raise ValueError(
+                "Provenance of {} already initialized".format(self))
+        self.activity = get_task_provenance(self, recipe_entity)
 
     def flatten(self):
         """Return a flattened set of all ancestor tasks and task itself."""
@@ -225,27 +235,26 @@ class AbstractTask(object):
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
-        txt = 'settings:\n{}\nancestors:\n{}'.format(
-            pprint.pformat(self.settings, indent=2),
-            '\n\n'.join(
-                _indent(str(task))
-                for task in self.ancestors) if self.ancestors else 'None',
-        )
+        txt = 'ancestors:\n{}'.format(
+            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
+            if self.ancestors else 'None')
         return txt
 
 
 class DiagnosticError(Exception):
-    """Error in diagnostic"""
+    """Error in diagnostic."""
 
 
-class DiagnosticTask(AbstractTask):
-    """Task for running a diagnostic"""
+class DiagnosticTask(BaseTask):
+    """Task for running a diagnostic."""
 
-    def __init__(self, script, settings, output_dir, ancestors=None):
-        """Initialize"""
-        super(DiagnosticTask, self).__init__(
-            settings=settings, output_dir=output_dir, ancestors=ancestors)
+    def __init__(self, script, settings, output_dir, ancestors=None, name=''):
+        """Create a diagnostic task."""
+        super(DiagnosticTask, self).__init__(ancestors=ancestors, name=name)
         self.script = script
+        self.settings = settings
+        self.products = set()
+        self.output_dir = output_dir
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
         self.resource_log = os.path.join(settings['run_dir'],
@@ -295,7 +304,7 @@ class DiagnosticTask(AbstractTask):
         return cmd
 
     def write_settings(self):
-        """Write settings to file"""
+        """Write settings to file."""
         run_dir = self.settings['run_dir']
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
@@ -313,7 +322,7 @@ class DiagnosticTask(AbstractTask):
         return filename
 
     def _write_ncl_settings(self):
-        """Write settings to NCL file"""
+        """Write settings to NCL file."""
         filename = os.path.join(self.settings['run_dir'], 'settings.ncl')
 
         config_user_keys = {
@@ -476,17 +485,73 @@ class DiagnosticTask(AbstractTask):
                 time.sleep(0.001)
 
         if returncode == 0:
+            self._collect_provenance()
             return [self.output_dir]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
             "in {}".format(self.script, returncode, self.log))
 
+    def _collect_provenance(self):
+        """Process provenance information provided by the diagnostic script."""
+        provenance_file = os.path.join(self.settings['run_dir'],
+                                       'diagnostic_provenance.yml')
+        if not os.path.exists(provenance_file):
+            logger.warning("No provenance information was written to %s",
+                           provenance_file)
+            return
+
+        with open(provenance_file, 'r') as file:
+            table = yaml.safe_load(file)
+
+        ignore = (
+            'exit_on_ncl_warning',
+            'input_files',
+            'log_level',
+            'max_data_filesize',
+            'output_file_type',
+            'plot_dir',
+            'profile_diagnostic',
+            'recipe',
+            'run_dir',
+            'version',
+            'write_netcdf',
+            'write_ncl_interface',
+            'write_plots',
+            'work_dir',
+        )
+        attrs = {
+            'script_file': self.script,
+        }
+        for key in self.settings:
+            if key not in ignore:
+                attrs[key] = self.settings[key]
+
+        ancestor_products = {p for a in self.ancestors for p in a.products}
+
+        for filename, attributes in table.items():
+            ancestor_files = attributes.pop('ancestors', [])
+            ancestors = {
+                p
+                for p in ancestor_products if p.filename in ancestor_files
+            }
+
+            attributes.update(attrs)
+            for key in attributes:
+                if key in TAGS:
+                    attributes[key] = replace_tags(key, attributes[key])
+
+            product = TrackedFile(filename, attributes, ancestors)
+            product.initialize_provenance(self.activity)
+            product.save_provenance()
+            self.products.add(product)
+
     def __str__(self):
         """Get human readable description."""
-        txt = "{}:\nscript: {}\n{}".format(
+        txt = "{}:\nscript: {}\n{}\nsettings:\n{}\n".format(
             self.__class__.__name__,
             self.script,
+            pprint.pformat(self.settings, indent=2),
             super(DiagnosticTask, self).str(),
         )
         return txt
@@ -516,7 +581,7 @@ def run_tasks(tasks, max_parallel_tasks=None):
 
 
 def _run_tasks_sequential(tasks):
-    """Run tasks sequentially"""
+    """Run tasks sequentially."""
     n_tasks = len(get_flattened_tasks(tasks))
     logger.info("Running %s tasks sequentially", n_tasks)
 
@@ -525,7 +590,7 @@ def _run_tasks_sequential(tasks):
 
 
 def _run_tasks_parallel(tasks, max_parallel_tasks=None):
-    """Run tasks in parallel"""
+    """Run tasks in parallel."""
     scheduled = get_flattened_tasks(tasks)
     running = []
     results = []
@@ -557,7 +622,14 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
         # Handle completed tasks
         for task, result in zip(running, results):
             if result.ready():
-                task.output_files = result.get()
+                task.output_files, updated_products = result.get()
+                for updated in updated_products:
+                    for original in task.products:
+                        if original.filename == updated.filename:
+                            updated.copy_provenance(target=original)
+                            break
+                    else:
+                        task.products.add(updated)
                 running.remove(task)
                 results.remove(result)
 
@@ -570,9 +642,9 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
             n_scheduled, n_running = len(scheduled), len(running)
             n_done = n_tasks - n_scheduled - n_running
             logger.info(
-                "Progress: %s tasks running or queued, %s tasks "
-                "waiting for ancestors, %s/%s done", n_running, n_scheduled,
-                n_done, n_tasks)
+                "Progress: %s tasks running or queued, %s tasks waiting for "
+                "ancestors, %s/%s done", n_running, n_scheduled, n_done,
+                n_tasks)
 
     pool.close()
     pool.join()
@@ -580,4 +652,5 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
 
 def _run_task(task):
     """Run task and return the result."""
-    return task.run()
+    output_files = task.run()
+    return output_files, task.products

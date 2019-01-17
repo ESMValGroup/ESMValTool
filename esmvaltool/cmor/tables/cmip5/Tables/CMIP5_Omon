@@ -142,9 +142,9 @@ long_name:        ocean basin
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
-out_name:         basin
+out_name:         region
 type:             character
-requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates 
+requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates
 must_have_bounds: no
 coords_attrib:    region
 !----------------------------------
@@ -180,7 +180,7 @@ axis_entry: oline
 ! Axis attributes:
 !----------------------------------
 standard_name:    region
-long_name:        ocean passage 
+long_name:        ocean passage
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
