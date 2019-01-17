@@ -1,18 +1,17 @@
-#################
-#it runs:
-#  - snow
-#################
-#### CAVEATS
-# climatological files are stored externally to avoid
-# overloading the ESMValTool source;
-# JASMIN location: /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
-#################
-# RECIPE IS FULLY WORKING
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_landsurface_snow.yml
 ---
 documentation:
-  description: Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Climatological files are stored externally to avoid overloading the
+    ESMValTool source. See /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
+    (on JASMIN).
+
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:
