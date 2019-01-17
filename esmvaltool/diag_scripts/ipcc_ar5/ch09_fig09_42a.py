@@ -32,16 +32,37 @@ import iris
 from iris import Constraint
 
 from esmvaltool.diag_scripts.shared import (
-    extract_variables, get_ancestor_file, get_plot_filename, plot,
-    run_diagnostic, save_iris_cube, variables_available)
+    ProvenanceLogger, extract_variables, get_ancestor_file,
+    get_diagnostic_filename, get_plot_filename, plot, run_diagnostic,
+    save_iris_cube, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': ('Equilibrium climate sensitivity (ECS) against the global '
+                    'mean surface temperature of CMIP5 models, both for the '
+                    'period 1961-1990 (larger symbols) and for the '
+                    'pre-industrial control runs (smaller symbols).'),
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_types': ['scatter'],
+        'authors': ['schl_ma'],
+        'references': ['flato13ipcc'],
+        'realms': ['atmos'],
+        'themes': ['phys'],
+        'ancestors':
+        ancestor_files,
+    }
+    return record
 
 
 def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
     if not cfg['write_plots']:
-        return
+        return None
     x_data = []
     y_data = []
     dataset_names = []
@@ -80,42 +101,43 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         plot_kwargs=plot_kwargs,
         save_kwargs=cfg.get('save', {}),
         axes_functions=cfg.get('axes_functions', {}))
-    return
+    return path
 
 
 def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Write netcdf file."""
-    if cfg['write_plots']:
-        datasets = list(hist_cubes)
+    datasets = list(hist_cubes)
 
-        # Collect data
-        data_ecs = []
-        data_hist = []
-        data_pi = []
-        for dataset in datasets:
-            data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
-            data_hist.append(hist_cubes[dataset].data)
-            data_pi.append(pi_cubes[dataset].data)
+    # Collect data
+    data_ecs = []
+    data_hist = []
+    data_pi = []
+    for dataset in datasets:
+        data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        data_hist.append(hist_cubes[dataset].data)
+        data_pi.append(pi_cubes[dataset].data)
 
-        # Create cube
-        dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
-        tas_hist_coord = iris.coords.AuxCoord(
-            data_hist,
-            attributes={'exp': 'historical'},
-            **extract_variables(cfg, as_iris=True)['tas'])
-        tas_picontrol_coord = iris.coords.AuxCoord(
-            data_pi,
-            attributes={'exp': 'piControl'},
-            **extract_variables(cfg, as_iris=True)['tas'])
-        cube = iris.cube.Cube(
-            data_ecs,
-            var_name='ecs',
-            long_name='equilibrium_climate_sensitivity',
-            aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
-                                 (tas_picontrol_coord, 0)])
+    # Create cube
+    dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
+    tas_hist_coord = iris.coords.AuxCoord(
+        data_hist,
+        attributes={'exp': 'historical'},
+        **extract_variables(cfg, as_iris=True)['tas'])
+    tas_picontrol_coord = iris.coords.AuxCoord(
+        data_pi,
+        attributes={'exp': 'piControl'},
+        **extract_variables(cfg, as_iris=True)['tas'])
+    cube = iris.cube.Cube(
+        data_ecs,
+        var_name='ecs',
+        long_name='equilibrium_climate_sensitivity',
+        aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
+                             (tas_picontrol_coord, 0)])
 
-        # Save file
-        save_iris_cube(cube, cfg, basename='ch09_fig09_42a')
+    # Save file
+    path = get_diagnostic_filename('ch09_fig09_42a', cfg)
+    save_iris_cube(cube, path)
+    return path
 
 
 def main(cfg):
@@ -151,10 +173,18 @@ def main(cfg):
             pass
 
     # Plot data
-    plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+    plot_path = plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)
 
     # Write netcdf file
-    write_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+    netcdf_path = write_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+
+    # Provenance
+    ancestor_files = [d['filename'] for d in input_data]
+    provenance_record = get_provenance_record(ancestor_files)
+    if plot_path is not None:
+        provenance_record['plot_file'] = plot_path
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':

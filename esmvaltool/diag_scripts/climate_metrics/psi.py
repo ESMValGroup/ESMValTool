@@ -33,8 +33,8 @@ import numpy as np
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    get_diagnostic_filename, group_metadata, metadata_to_netcdf,
-    run_diagnostic, save_scalar_data, variables_available)
+    ProvenanceLogger, get_diagnostic_filename, group_metadata,
+    metadata_to_netcdf, run_diagnostic, save_scalar_data, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -80,6 +80,21 @@ def calculate_psi(cube, cfg):
     return psi_cube
 
 
+def get_provenance_record(caption, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['var', 'diff', 'corr', 'detrend'],
+        'domains': ['global'],
+        'authors': ['schl_ma'],
+        'references': ['cox18nature'],
+        'realms': ['atmos'],
+        'themes': ['phys'],
+        'ancestors': ancestor_files,
+    }
+    return record
+
+
 def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
@@ -98,21 +113,38 @@ def main(cfg):
     }
     grouped_data = group_metadata(input_data, 'dataset')
     for (dataset, [data]) in grouped_data.items():
+        logger.info("Processing %s", dataset)
         cube = iris.load_cube(data['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
 
+        # Provenance
+        caption = ("Temporal evolution of temperature variability metric psi "
+                   "between {start_year} and {end_year} for {dataset}.".format(
+                       **data))
+        provenance_record = get_provenance_record(caption, [data['filename']])
+        out_path = get_diagnostic_filename('psi_' + dataset, cfg)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(out_path, provenance_record)
+
         # Save psi for every dataset
-        data['filename'] = get_diagnostic_filename('psi_' + dataset, cfg)
-        metadata_to_netcdf(psi_cube, data, cfg)
+        data['filename'] = out_path
+        metadata_to_netcdf(psi_cube, data)
 
         # Save averaged psi
         psis[dataset] = np.mean(psi_cube.data)
 
     # Save averaged psis for every dataset in one file
-    save_scalar_data(
-        psis, 'psi', cfg, psi_attrs, attributes=psi_cube.attributes)
+    out_path = get_diagnostic_filename('psi', cfg)
+    save_scalar_data(psis, out_path, psi_attrs, attributes=psi_cube.attributes)
+
+    # Provenance
+    caption = "{long_name} for mutliple climate models.".format(**psi_attrs)
+    ancestor_files = [d['filename'] for d in input_data]
+    provenance_record = get_provenance_record(caption, ancestor_files)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(out_path, provenance_record)
 
 
 if __name__ == '__main__':

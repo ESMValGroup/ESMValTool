@@ -32,9 +32,10 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 from esmvaltool.diag_scripts.shared import (
-    get_ancestor_file, get_plot_filename, group_metadata,
-    iris_project_constraint, match_dataset_coordinates, netcdf_to_metadata,
-    plot, run_diagnostic, variables_available)
+    ProvenanceLogger, get_ancestor_file, get_diagnostic_filename,
+    get_plot_filename, group_metadata, iris_project_constraint,
+    match_dataset_coordinates, netcdf_to_metadata, plot, run_diagnostic,
+    variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
