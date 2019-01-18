@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_OceanPhysics.yml
+# recipe_ocean_example.yml
 ---
 documentation:
   description: |
