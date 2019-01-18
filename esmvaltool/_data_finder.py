@@ -268,6 +268,11 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file."""
     cfg = get_project_config(variable['project'])
 
+    # Join different experiment names
+    if isinstance(variable.get('exp'), (list, tuple)):
+        variable = dict(variable)
+        variable['exp'] = '-'.join(variable['exp'])
+
     outfile = os.path.join(
         preproc_dir,
         variable['diagnostic'],
