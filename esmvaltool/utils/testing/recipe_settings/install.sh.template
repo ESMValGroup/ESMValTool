@@ -1,9 +1,14 @@
 #!/bin/bash
 set -eo pipefail
-git clone https://github.com/ESMValGroup/ESMValTool
+mkdir {branch}
+cd {branch}
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b -p conda
+. conda/etc/profile.d/conda.sh 
+git clone --depth 1 https://github.com/ESMValGroup/ESMValTool
 cd ESMValTool
 git checkout {branch}
-. ~/conda/etc/profile.d/conda.sh
+# TODO: add option to merge with development branch
 conda env create --name {branch}
 conda activate {branch}
 pip install .
