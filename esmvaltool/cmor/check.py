@@ -543,7 +543,7 @@ class CMORCheck(object):
         """
         msg = message.format(*args)
         if self._failerr:
-            self.logger.warning('WARNING: {0}'.format(msg))
+            print('WARNING: {0}'.format(msg))
         else:
             self._warnings.append(msg)
 
