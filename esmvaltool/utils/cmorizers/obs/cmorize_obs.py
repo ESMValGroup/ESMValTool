@@ -13,8 +13,8 @@ esmvaltool/cmor/cmorizers/obs
 """
 import argparse
 import logging
+import importlib
 import os
-import sys
 import datetime
 import subprocess
 
@@ -40,16 +40,16 @@ def _assemble_datasets(raw_obs, obs_list):
     # check for desired datasets only (if any)
     # if not, walk all over rawobs dir
     # assume a RAWOBS/TierX/DATASET input structure
-    tiers = []
     datasets = {}
 
     # get all available tiers in source dir
-    for _, tier, _ in os.walk(raw_obs, followlinks=True):
-        tiers.append(tier)
+    tiers = ['Tier{}'.format(i) for i in range(2, 4)]
+    tiers = [tier for tier in tiers if os.path.exists(os.path.join(raw_obs,
+                                                                   tier))]
 
     # if user specified obs list
     if obs_list:
-        for tier in tiers[0]:
+        for tier in tiers:
             datasets[tier] = []
             for dataset_name in obs_list.split(','):
                 if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
@@ -57,12 +57,10 @@ def _assemble_datasets(raw_obs, obs_list):
 
     # otherwise go through the whole raw_obs dir
     else:
-        for tier in tiers[0]:
+        for tier in tiers:
             datasets[tier] = []
-            for _, dats, _ in os.walk(os.path.join(raw_obs, tier),
-                                      followlinks=True):
+            for dats in os.listdir(os.path.join(raw_obs, tier)):
                 datasets[tier].append(dats)
-            datasets[tier] = datasets[tier][0]
 
     return datasets
 
@@ -114,13 +112,14 @@ def _run_ncl_script(in_dir,
     output, err = process.communicate()
     for oline in str(output.decode('utf-8')).split('\n'):
         logger.info('[NCL] %s', oline)
-    logger.info('[NCL][ERROR] %s', err)
+    if err:
+        logger.info('[NCL][subprocess.Popen ERROR] %s', err)
 
 
 def _run_pyt_script(in_dir, out_dir, reformat_module):
     """Run the Python cmorization mechanism."""
-    import reformat_module
-    reformat_module.cmorization(in_dir, out_dir)
+    py_cmor = importlib.import_module(reformat_module)
+    py_cmor.cmorization(in_dir, out_dir)
 
 
 def execute_cmorize():
@@ -251,9 +250,9 @@ def _cmor_reformat(config, obs_list):
                 py_reformat_script = reformat_script_root + '.py'
                 logger.info("CMORizing dataset %s using Python script %s",
                             dataset, py_reformat_script)
-                sys.path.append(reformat_scripts)
+                module_root = 'esmvaltool.utils.cmorizers.obs.cmorize_obs_'
                 _run_pyt_script(in_data_dir, out_data_dir,
-                                reformat_script_root)
+                                module_root + dataset)
             else:
                 logger.info('Could not find cmorizer for %s', datasets)
 
