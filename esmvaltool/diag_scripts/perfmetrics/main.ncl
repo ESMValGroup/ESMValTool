@@ -92,6 +92,8 @@ load "./diag_scripts/shared/scaling.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 
+load "./diag_scripts/shared/meta_data.ncl"
+
 begin
 
   enter_msg(DIAG_SCRIPT, "")
