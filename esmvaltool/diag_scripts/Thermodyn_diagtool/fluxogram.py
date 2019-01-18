@@ -30,9 +30,10 @@ class Fluxogram():
     some similiar kind of thing to be drawn as a sequence of storages
     and fluxes.
     """
-
-    def __init__(self, max_flux, max_storage, grid_size=20, storages=None,
-                 fluxes=None):
+    # pylint: disable=too-many-arguments
+    # Twentythree is reasonable in this case.
+    
+    def __init__(self, max_flux, max_storage, grid_size=20):
         """Initialize a fluxogram. must be called with.
 
         The arguments are:
@@ -45,10 +46,8 @@ class Fluxogram():
             - fluxes: all the fluxes the fluxogram has (usually empty to begin
             with).
         """
-        if storages is None:
-            self.storages = []
-        if fluxes is None:
-            self.fluxes = []
+        self.storages = []
+        self.fluxes = []
         self.max_flux = max_flux
         self.max_storage = max_storage
         self.grid_size = grid_size
@@ -78,9 +77,7 @@ class Fluxogram():
         self.update_all_fluxes(amounts_fluxes)
         self.update_all_storages(amounts_storages)
 
-    def draw(self, filen, azin, apz, asein, aps, atein, apt, a2ks, a2kt,
-             kteout, kte, kseout, kse, kzout, k_z, a2kz, ae2az, ae2as, ae2at,
-             ke2kz, ke2ks, ks2kz):
+    def draw(self, filen, listv):
         """Draw all fluxes and storages."""
         frame1 = plt.axes()
         fig = plt.figure()
@@ -106,8 +103,13 @@ class Fluxogram():
         plt.axis([x_min, x_max, y_min, y_max])
         frame1.axes.get_xaxis().set_visible(False)
         frame1.axes.get_yaxis().set_visible(False)
-
         # draw all fluxes
+        dict_r = {'AZ+': listv[0], 'ASE+': listv[2], 'ATE+': listv[4],
+                  'A2KS': listv[6], 'A2KT': listv[7], 'KTE-': listv[8],
+                  'KSE-': listv[10], 'KZ-': listv[12]}
+        dict_oth = {'l': listv[14], 'dn': listv[15], 'rdn': listv[16],
+                    'ldn': listv[17], 'up': listv[18], 'lup': listv[19],
+                    'rup': listv[20]}
         for flux in self.fluxes:
             idb = flux.name
             # scale the amount
@@ -116,66 +118,17 @@ class Fluxogram():
             arrow = plt.Arrow(flux.x_start, flux.y_start, flux.d_x, flux.d_y,
                               width=scaled_amount_flux * 1.7, alpha=0.8)
             if flux.dire == 'r':
-                if idb == 'AZ+':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             azin, size=self.grid_size * 0.7)
-                elif idb == 'ASE+':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             asein, size=self.grid_size * 0.7)
-                elif idb == 'ATE+':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             atein, size=self.grid_size * 0.7)
-                elif idb == 'A2KS':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             a2ks, size=self.grid_size * 0.7)
-                elif idb == 'A2KT':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             a2kt, size=self.grid_size * 0.7)
-                elif idb == 'KTE-':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             kteout, size=self.grid_size * 0.7)
-                elif idb == 'KSE-':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             kseout, size=self.grid_size * 0.7)
-                elif idb == 'KZ-':
-                    plt.text(flux.x_start + 0.25 * self.grid_size,
-                             flux.y_start + 0.05 * self.grid_size,
-                             kzout, size=self.grid_size * 0.7)
-            elif flux.dire == 'l':
-                plt.text(flux.x_start - 1.35 * self.grid_size,
-                         flux.y_start + 0.05 * self.grid_size,
-                         a2kz, size=self.grid_size * 0.7)
-            elif flux.dire == 'dn':
-                plt.text(flux.x_start - 0.2 * self.grid_size,
-                         flux.y_start - 0.45 * self.grid_size,
-                         ae2az, size=self.grid_size * 0.7, rotation=-90)
-            elif flux.dire == 'rdn':
-                plt.text(flux.x_start + 0.05 * self.grid_size,
-                         flux.y_start - 0.25 * self.grid_size,
-                         ae2as, size=self.grid_size * 0.5, rotation=-75)
-            elif flux.dire == 'ldn':
-                plt.text(flux.x_start - 0.35 * self.grid_size,
-                         flux.y_start - 0.25 * self.grid_size,
-                         ae2at, size=self.grid_size * 0.5, rotation=-110)
-            elif flux.dire == 'up':
-                plt.text(flux.x_start + 0.05 * self.grid_size,
-                         flux.y_start + 0.75 * self.grid_size,
-                         ke2kz, size=self.grid_size * 0.7, rotation=90)
-            elif flux.dire == 'lup':
-                plt.text(flux.x_start - 0.35 * self.grid_size,
-                         flux.y_start + 0.45 * self.grid_size,
-                         ke2ks, size=self.grid_size * 0.5, rotation=110)
-            elif flux.dire == 'rup':
-                plt.text(flux.x_start - 0.1 * self.grid_size,
-                         flux.y_start + 0.45 * self.grid_size,
-                         ks2kz, size=self.grid_size * 0.5, rotation=75)
+                for key, value in dict_r.iterkeys():
+                    if idb == key:
+                        plt.text(flux.x_start + 0.25 * self.grid_size,
+                                 flux.y_start + 0.05 * self.grid_size,
+                                 value, size=self.grid_size * 0.7)
+            else:
+                for key, value in dict_oth.iterkeys():
+                    if flux.dire == key:
+                        plt.text(flux.x_start - 1.35 * self.grid_size,
+                                 flux.y_start + 0.05 * self.grid_size,
+                                 value, size=self.grid_size * 0.7)
             plt.gca().add_patch(arrow)
         # draw all storages
         for storage in self.storages:
@@ -195,30 +148,13 @@ class Fluxogram():
             plt.text(storage.x_p + 0.6 * self.grid_size,
                      storage.y_p - 0.65 * self.grid_size, storage.name,
                      fontsize=0.7 * self.grid_size)
-            if storage.name == 'AZ':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, apz,
-                         fontsize=0.7 * self.grid_size)
-            elif storage.name == 'ASE':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, aps,
-                         fontsize=0.7 * self.grid_size)
-            elif storage.name == 'ATE':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, apt,
-                         fontsize=0.7 * self.grid_size)
-            elif storage.name == 'KTE':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, kte,
-                         fontsize=0.7 * self.grid_size)
-            elif storage.name == 'KSE':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, kse,
-                         fontsize=0.7 * self.grid_size)
-            elif storage.name == 'KZ':
-                plt.text(storage.x_p + 0.6 * self.grid_size,
-                         storage.y_p - 0.85 * self.grid_size, k_z,
-                         fontsize=0.7 * self.grid_size)
+            dict_s = {'AZ': listv[1], 'ASE': listv[3], 'ATE': listv[5],
+                      'KTE': listv[9], 'KSE': listv[11], 'KZ': listv[13]}
+            for key, value in dict_s.iterkeys():
+                    if storage.name == key:
+                        plt.text(storage.x_p + 0.6 * self.grid_size,
+                                 storage.y_p - 0.85 * self.grid_size, value,
+                                 fontsize=0.7 * self.grid_size)
             # draw a date
             plt.gca().add_patch(rectangle)
             plt.savefig(filen)
@@ -247,6 +183,9 @@ class Fluxogram():
 
 class Flux:
     """Contain a flux of a fluxogram."""
+
+    # pylint: disable=too-many-instance-attributes
+    # Twelve is reasonable in this case.
 
     def __init__(self, name, grid_size, from_storage, to_storage, amount=0):
         """Initialize a flux.
@@ -367,8 +306,10 @@ class Flux:
 class Storage:
     """Contain a storage of a fluxogram."""
 
-    def __init__(self, name, grid_size, number, amount=0, order=0,
-                 offset=0):
+    # pylint: disable=too-many-instance-attributes
+    # Eight is reasonable in this case.
+
+    def __init__(self, name, grid_size, number):
         """Initialize a storage.
 
         Arguments are:
@@ -381,10 +322,10 @@ class Storage:
                     in relationship to the center.
         """
         self.name = name
-        self.amount = amount
+        self.amount = 0
         self.number = number
-        self.order = order
-        self.offset = offset
+        self.order = 0
+        self.offset = 0
         self.grid_size = grid_size
         self.x_p, self.y_p = self.calculate_xy()
 

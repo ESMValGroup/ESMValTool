@@ -1,3 +1,4 @@
+# pylint: disable=C0302
 """Module for LEC computation in climate models.
 
 This module contains all the instructions to compute the atmospheric
@@ -15,7 +16,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-import fluxogram as Fluxogram
+from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -31,7 +32,7 @@ NW_3 = 21
 
 class LorenzCycle():
     """PROGRAM FOR LEC COMPUTATION.
-
+    
     The class consists of the following functions:
         - lorenz: it is the main program, controlling the file input,
                   separating the real from imaginary part of the Fourier
@@ -65,7 +66,7 @@ class LorenzCycle():
         - table_conv: prints the global and hemispheric mean values of the
                       conversion terms;
         - varatts: prints the attributes of a variable in a Nc file;
-
+    
     Constants:
         G: gravitational acceleration;
         R: gas constant;
@@ -79,7 +80,7 @@ class LorenzCycle():
     References:
         Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
         and transient atmospheric waves: Results from ECMWF analyses, Met.
- 
+     
     Authors:
         Frank Lunkeit, Meteorology Department, University of Hamburg
         Valerio Lembo, Meteorology Department, University of Hamburg
@@ -88,7 +89,8 @@ class LorenzCycle():
     """
         
     from lorenz_cycle import LorenzCycle
-        
+
+    @classmethod
     def lorenz(self, outpath, model, year, filenc, plotfile, logfile):
         """Main script, managing input and output fields and calling functions.
 
@@ -332,9 +334,10 @@ class LorenzCycle():
         kteout = '{:.2f}'.format(float(at2kt) - float(kt2ks) - float(kt2kz))
         kseout = '{:.2f}'.format(float(kt2ks) + float(as2ks) - float(ks2kz))
         kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
-        lorenz.diagram(plotfile, azin, apz, asein, aps, atein, apt, as2ks,
-                       at2kt, kteout, kte, kseout, kse, kzout, k_z, az2kz,
-                       az2at, az2as, as2at, kt2kz, kt2ks, ks2kz)
+        list_lorenz = [azin, apz, asein, aps, atein, apt, as2ks, at2kt,
+                       kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at,
+                       az2as, as2at, kt2kz, kt2ks, ks2kz]
+        lorenz.diagram(plotfile, list_lorenz)
         lec_strength = float(kteout) + float(kseout) + float(kzout)
         ek_aux = np.zeros([nlev, nlat, ntp - 1])
         ape_aux = np.zeros([nlev, nlat, ntp - 1])
@@ -370,6 +373,7 @@ class LorenzCycle():
         log.close()
         return lec_strength
 
+    @classmethod
     def bsslzr(self, kdim):
         """Parameters for the Gaussian coefficients.
         
@@ -397,9 +401,8 @@ class LorenzCycle():
             pbes[j] = pbes[j - 1] + p_i
         return pbes
 
-    def diagram(self, filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt,
-                kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as,
-                as2at, kt2kz, kt2ks, ks2kz):
+    @classmethod
+    def diagram(self, filen, list_lorenz):
         """Diagram interface script.
 
         Call the class fluxogram, serving as
@@ -436,10 +439,9 @@ class LorenzCycle():
         flux.add_flux("KTE-", flux.storages[3], flux.storages[9], 60)
         flux.add_flux("KSE-", flux.storages[4], flux.storages[10], 60)
         flux.add_flux("KZ-", flux.storages[5], flux.storages[11], 60)
-        flux.draw(filen, azin, apz, asein, aps, atein, apt, as2ks, at2kt,
-                  kteout, kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as,
-                  as2at, kt2kz, kt2ks, ks2kz)
-         
+        flux.draw(filen, list_lorenz)
+
+    @classmethod         
     def gauaw(self, n_y):
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
         
@@ -479,6 +481,7 @@ class LorenzCycle():
         pgw = p_w
         return psi, pgw
 
+    @classmethod
     def globall_cg(self, d3v, g_w, d_s, nlat, ntp, nlev):
         """Compute the global and hemispheric averages.
         
@@ -507,6 +510,7 @@ class LorenzCycle():
         gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
         return gmn
 
+    @classmethod
     def makek(self, u_t, v_t, nlat, ntp, nlev):
         """Compute the kinetic energy reservoirs from u and v.
 
@@ -521,8 +525,9 @@ class LorenzCycle():
         e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
                                      v_t[:, :, 0] * v_t[:, :, 0])
         return e_k
-     
-    def makea(self, t_t, t_g, gam, nlat, ntp, nlev):
+
+    @classmethod
+    def makea(self, t_t, t_g, gam):
         """Compute the kinetic energy reservoirs from t.
         
         @author: Valerio Lembo
@@ -533,7 +538,8 @@ class LorenzCycle():
                                   (t_t[:, :, 0] - t_g[:, np.newaxis])))
         return ape
 
-    def mka2k(self, wap, t_t, w_g, t_g, p_l, nlat, ntp, nlev):
+    @classmethod
+    def mka2k(self, wap, t_t, w_g, t_g, p_l):
         """Compute the KE to APE energy conversions from t and w.
         
         @author: Valerio Lembo
@@ -544,48 +550,48 @@ class LorenzCycle():
                           * (t_t[:, :, 0] - t_g[:, np.newaxis])
                           * (wap[:, :, 0] - w_g[:, np.newaxis]))
         return a2k
-    
-    def mkaeaz(self, v_t, wap, t_t, tt, ttg, p_l, lat, gam, nlat, ntp, nlev):
+
+    @classmethod
+    def mkaeaz(self, v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
         """Compute the zonal mean - eddy APE conversions from t and v.
         
         @author: Valerio Lembo
         """  
-        ae2az = np.zeros([nlev, nlat, ntp - 1])
         dtdp = np.zeros([nlev, nlat])
         dtdy = np.zeros([nlev, nlat])
         for l_l in np.arange(nlev):
             if l_l == 0:
-                t_1 = np.real(tt[l_l, :, 0]) - ttg[l_l]
-                t_2 = np.real(tt[l_l + 1, :, 0]) - ttg[l_l + 1]
+                t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
+                t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
                 dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
             elif l_l == nlev - 1:
-                t_1 = np.real(tt[l_l - 1, :, 0]) - ttg[l_l - 1]
-                t_2 = np.real(tt[l_l, :, 0]) - ttg[l_l]
+                t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
+                t_2 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
                 dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
             else:
-                t_1 = np.real(tt[l_l, :, 0]) - ttg[l_l]
-                t_2 = np.real(tt[l_l + 1, :, 0]) - ttg[l_l + 1]
+                t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
+                t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
                 dtdp1 = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
                 t_2 = t_1
-                t_1 = np.real(tt[l_l - 1, :, 0]) - ttg[l_l - 1]
+                t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
                 dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
                 dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) +
                                  dtdp2 * (p_l[l_l + 1] - p_l[l_l]))
-                                 / (p_l[l_l + 1] - p_l[l_l - 1]))
-            dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l])
-                                       * (tt[l_l, :, 0] - ttg[l_l]))
+                                / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l]) *
+                                           (ttt[l_l, :, 0] - ttg[l_l]))
         for i_l in np.arange(nlat):
             if i_l == 0:
-                t_1 = np.real(tt[:, i_l, 0])
-                t_2 = np.real(tt[:, i_l + 1, 0])
+                t_1 = np.real(ttt[:, i_l, 0])
+                t_2 = np.real(ttt[:, i_l + 1, 0])
                 dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l])
             elif i_l == nlat - 1:
-                t_1 = np.real(tt[:, i_l - 1, 0])
-                t_2 = np.real(tt[:, i_l, 0])
+                t_1 = np.real(ttt[:, i_l - 1, 0])
+                t_2 = np.real(ttt[:, i_l, 0])
                 dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l] - lat[i_l - 1])
             else:
-                t_1 = np.real(tt[:, i_l - 1, 0])
-                t_2 = np.real(tt[:, i_l + 1, 0])
+                t_1 = np.real(ttt[:, i_l - 1, 0])
+                t_2 = np.real(ttt[:, i_l + 1, 0])
                 dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l - 1])
         dtdy = dtdy / AA
         c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
@@ -596,11 +602,12 @@ class LorenzCycle():
         ae2az[:, :, 0] = 0.
         return ae2az
 
+    @classmethod
     def mkkekz(self, u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         """Compute the zonal mean - eddy KE conversions from u and v.
         
         @author: Valerio Lembo
-        """  
+        """
         dudp = np.zeros([nlev, nlat])
         dvdp = np.zeros([nlev, nlat])
         dudy = np.zeros([nlev, nlat])
@@ -630,7 +637,7 @@ class LorenzCycle():
                                 / (p_l[l_l + 1] - p_l[l_l - 1]))
                 dvdp[l_l, :] = ((dvdp1 * (p_l[l_l] - p_l[l_l - 1]) +
                                  dvdp2 * (p_l[l_l + 1] - p_l[l_l]))
-                                / (p_l[l_l + 1] - p_l[l_l - 1]))     
+                                / (p_l[l_l + 1] - p_l[l_l - 1]))
         for i_l in np.arange(nlat):
             if i_l == 0:
                 dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0]))
@@ -657,7 +664,6 @@ class LorenzCycle():
         c_4 = np.zeros([nlev, nlat, ntp - 1])
         c_5 = np.zeros([nlev, nlat, ntp - 1])
         c_6 = np.zeros([nlev, nlat, ntp - 1])
-        ke2kz = np.zeros([nlev, nlat, ntp - 1])
         u_u = u_t * np.conj(u_t) + u_t * np.conj(u_t)
         u_v = u_t * np.conj(v_t) + v_t * np.conj(u_t)
         v_v = v_t * np.conj(v_t) + v_t * np.conj(v_t)
@@ -679,6 +685,7 @@ class LorenzCycle():
         ke2kz[:, :, 0] = 0.
         return ke2kz
 
+    @classmethod
     def mkatas(self, u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
         """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
         
@@ -694,8 +701,6 @@ class LorenzCycle():
         t_u = np.fft.fft(tur, axis=2)
         t_v = np.fft.fft(tvr, axis=2)
         t_w = np.fft.fft(twr, axis=2)
-        c_1 = np.zeros([nlev, nlat, ntp - 1])
-        c_6 = np.zeros([nlev, nlat, ntp - 1])
         c_1 = (t_u * np.conj(ttt[:, :, np.newaxis]) -
                ttt[:, :, np.newaxis] * np.conj(t_u))
         c_6 = (t_w * np.conj(ttt[:, :, np.newaxis]) -
@@ -758,20 +763,12 @@ class LorenzCycle():
         at2as[:, :, 0] = 0.
         return at2as
 
+    @classmethod
     def mkktks(self, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
         """Compute the stat.-trans. eddy KE conversions from u, v, wap and t.
-        
+
         @author: Valerio Lembo
         """
-        kt2ks = np.zeros([nlev, nlat, ntp - 1])
-        c_1 = np.zeros([nlev, nlat, ntp - 1])
-        c21 = np.zeros([nlev, nlat, ntp - 1])
-        c22 = np.zeros([nlev, nlat, ntp - 1])
-        c_3 = np.zeros([nlev, nlat, ntp - 1])
-        c41 = np.zeros([nlev, nlat, ntp - 1])
-        c42 = np.zeros([nlev, nlat, ntp - 1])
-        c_5 = np.zeros([nlev, nlat, ntp - 1])
-        c_6 = np.zeros([nlev, nlat, ntp - 1])
         dut = np.zeros([nlev, nlat, ntp - 1])
         dvt = np.zeros([nlev, nlat, ntp - 1])
         dlat = np.zeros([nlat])
@@ -813,6 +810,7 @@ class LorenzCycle():
         kt2ks[:, :, 0] = 0
         return kt2ks
 
+    @classmethod
     def pr_output(self, varo, varname, filep, nc_f, opt):
         """Print outputs to NetCDF.
 
@@ -825,7 +823,7 @@ class LorenzCycle():
             - filep: the existing dataset, containing the metadata;
             - nc_f: the name of the output file;
             - opt: depends on the shape of the output variable to be saved;
-            
+
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
@@ -897,7 +895,7 @@ class LorenzCycle():
                                    nc_fid.variables['lat'].getncattr(ncattr))
             w_nc_fid.variables['lat'][:] = lats
             w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat'))
-            lorenz.varatts(w_nc_var,varname, 1, 0)
+            lorenz.varatts(w_nc_var, varname, 1, 0)
             w_nc_fid.variables[varname][:] = varo
             w_nc_fid.close()
         elif opt == 3:
@@ -947,6 +945,7 @@ class LorenzCycle():
             w_nc_fid.close()
         nc_fid.close()
 
+    @classmethod
     def removeif(self, filename):
         """Remove filename if it exists."""
         try:
@@ -954,6 +953,7 @@ class LorenzCycle():
         except OSError:
             pass
 
+    @classmethod
     def stabil(self, ta_gmn, p_l, nlev):
         """Compute the stability parameter from temp. and pressure levels.
 
@@ -964,7 +964,7 @@ class LorenzCycle():
         g_s = np.zeros(nlev)
         for i_l in range(nlev):
             if i_l == 0:
-                dtdp=(t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
+                dtdp = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
             elif i_l == nlev - 1:
                 dtdp = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
             else:
@@ -976,6 +976,7 @@ class LorenzCycle():
             g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
         return g_s
 
+    @classmethod
     def table(self, varin, ntp, name, log):
         """Write global and hem. storage terms to .txt table.
 
@@ -1006,6 +1007,7 @@ class LorenzCycle():
                   vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')
 
+    @classmethod
     def table_conv(self, varin, ntp, name, log):
         """Write global and hem. conversion terms to .txt table.
 
@@ -1038,6 +1040,7 @@ class LorenzCycle():
                   vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')
 
+    @classmethod
     def varatts(self, w_nc_var, varname, tres, vres):
         """Add attibutes to the variables, depending on name and time res.
 

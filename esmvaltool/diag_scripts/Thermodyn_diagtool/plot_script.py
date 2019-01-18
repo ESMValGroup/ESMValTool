@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
+from scipy.stats import chi2
 import cartopy.crs as ccrs
 # from cartopy.mpl.geoaxes import GeoAxes
 # from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -45,7 +46,8 @@ class PlotScript():
     """
 
     from plot_script import PlotScript
-        
+
+    @classmethod
     def latwgt(self, lat, t_r):
         """Compute weighted average over latitudes.
         
@@ -67,7 +69,8 @@ class PlotScript():
         for j in range(len(lat)):
             tr2[:, j] = t_r[:, j] * np.cos(latr[j]) * dlatr[j] / 2
         return tr2
-    
+
+    @classmethod
     def hemean(self, hem, lat, inp):
         """Compute hemispheric averages.
         
@@ -95,7 +98,8 @@ class PlotScript():
                 hmean = (np.nansum(zmn[:, 1:(j_end - 1) / 2], axis=1)
                          + 0.5 * zmn[:, (j_end - 1) / 2 + 1])
         return hmean
-    
+
+    @classmethod
     def transport(self, zmean, gmean, lat):
         """Integrate the energy/water mass budgets to obtain meridional transp.
         
@@ -113,20 +117,22 @@ class PlotScript():
             dlat[i] = abs(lat[i + 1] - lat[i])
         dlat[len(lat) - 1] = dlat[len(lat) - 2]
         zmn_ub = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
-        for i in range(len(gmean)):
-            for j in range(np.shape(zmean)[1]):
-                zmn_ub[i, j] = zmean[i, j] - gmean[i]
+        for index, value in enumerate(gmean):
+            for j_l in range(np.shape(zmean)[1]):
+                zmn_ub[index, j_l] = zmean[index, j_l] - value[index]
         zmn_ub[np.isnan(zmn_ub)] = 0
         cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
-        for j in range(len(lat) - 1):
-            cumb[:, j] = -2 * np.nansum(plotsmod.latwgt(lat[j:len(lat)],
-                                                        zmn_ub[:, j:len(lat)]),
-                                        axis=1)
+        for j_l in range(len(lat) - 1):
+            cumb[:, j_l] = (-2 * 
+                            np.nansum(plotsmod.latwgt(lat[j_l:len(lat)],
+                                                      zmn_ub[:, j_l:len(lat)]),
+                                      axis=1))
         r_earth = 6.371 * 10 ** 6
         transp = 2 * p_i * cumb * r_earth * r_earth
         return [zmn_ub, transp]
-    
+
+    @classmethod    
     def transp_max(self, lat, transp, lim):
         """Obtain transport peak magnitude and location from interpolation.
         
@@ -143,19 +149,20 @@ class PlotScript():
         y_i = np.zeros(2)
         xc_cut = np.zeros(2)
         j_p = 0
-        for i_p in range(len(x_c)):
-            if abs(x_c[i_p]) <= lim:
-                xc_cut[j_p] = x_c[i_p]
+        for value in x_c:
+            if abs(value) <= lim:
+                xc_cut[j_p] = value
                 y_i[j_p] = interpolate.interp1d(lat, transp,
-                                                kind='cubic')(x_c[i_p])
+                                                kind='cubic')(value)
                 j_p = j_p + 1
                 if j_p == 2:
                     break
             else:
                 pass
         return [xc_cut, y_i]
-    
-    def balances(self, workdir, plotpath, filena, name, model_name):
+
+    @classmethod    
+    def balances(workdir, plotpath, filena, name, model_name):
         """Method for various plots related to energy and water mass budgets.
         
         This method provides climatological annal mean maps of TOA, atmospheric
@@ -182,24 +189,6 @@ class PlotScript():
         path = plotpath
         model = model_name
         timesery = np.zeros([nsub, 2])
-        if nsub == 3:
-            ext_name = ['TOA Energy Budget', 'Atmospheric Energy Budget',
-                        'Surface Energy Budget']
-            timesery[0, :] = (-2, 2)
-            rangect = [-100, 100]
-            transpty = (-6E15, 6E15)
-            timesery[1, :] = (-1, 1)
-            timesery[2, :] = (-3, 3)
-        elif nsub == 2:
-            ext_name = ['Water mass budget', 'Latent heat budget']
-            timesery[0, :] = (-3E-6, 3E-6)
-            rangecw = [-1E-4, 1E-4]
-            transpwy = (-2E9, 2E9)
-            timesery[1, :] = (-20, 20)
-            rangecl = [-150, 150]
-            transply = (-6E15, 6E15)
-        else:           
-            quit()
         # Import files
         filena[0] = filena[0].split(sep, 1)[0]
         filename = filena[0] + '.nc'
@@ -251,23 +240,15 @@ class PlotScript():
             for t_t in range(len(timey)):
                 lat_maxm[i_f, :, t_t] = lat_max[t_t]
                 tr_maxm[i_f, :, t_t] = tr_max[t_t]
-            fig = plt.figure()
-            axi = plt.subplot(111)
-            axi.plot(timey, timeser[:, 0], 'k', label='Global')
-            axi.plot(timey, timeser[:, 1], 'r', label='SH')
-            axi.plot(timey, timeser[:, 2], 'b', label='NH')
-            plt.title('Annual mean {}'.format(ext_name[i_f]))
-            plt.xlabel('Years')
-            plt.ylabel('[W/m2]')
-            axi.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
-                       shadow=True, ncol=3)
-            plt.tight_layout()
-            plt.ylim(timesery[i_f, :])
-            plt.grid()
-            plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
-            plt.close(fig)
         c_m = 'bwr'
         if nsub == 3:
+            ext_name = ['TOA Energy Budget', 'Atmospheric Energy Budget',
+                        'Surface Energy Budget']
+            timesery[0, :] = (-2, 2)
+            rangect = [-100, 100]
+            transpty = (-6E15, 6E15)
+            timesery[1, :] = (-1, 1)
+            timesery[2, :] = (-3, 3)
             fig = plt.figure(figsize=(12, 22))
             axi = plt.subplot(311, projection=ccrs.PlateCarree())
             axi.coastlines()
@@ -298,32 +279,6 @@ class PlotScript():
             plt.grid()
             plt.savefig(path + '/{}_energy_climap.png'.format(model))
             plt.close(fig)
-        elif nsub == 2:
-            fig = plt.figure()
-            axi = plt.subplot(111, projection=ccrs.PlateCarree())
-            axi.coastlines()
-            plt.contourf(lons, lats, tmean[0, :, :], 60,
-                         transform=ccrs.PlateCarree())
-            plt.pcolor(lons, lats, tmean[0, :, :], vmin=rangecw[0],
-                       vmax=rangecw[1], cmap=c_m, antialiaseds='True')
-            plt.colorbar()
-            plt.title('Climatological Mean {}'.format(ext_name[0]))
-            plt.grid()
-            plt.savefig(path + '/{}_{}_climap.png'.format(model, name[0]))
-            plt.close(fig)
-            fig = plt.figure()
-            axi = plt.subplot(111, projection=ccrs.PlateCarree())
-            axi.coastlines()
-            plt.contourf(lons, lats, tmean[1, :, :], 60,
-                         transform=ccrs.PlateCarree())
-            plt.pcolor(lons, lats, tmean[1, :, :], vmin=rangecl[0],
-                       vmax=rangecl[1], cmap=c_m, antialiaseds='True')
-            plt.colorbar()
-            plt.title('Climatological Mean {}'.format(ext_name[1]))
-            plt.grid()
-            plt.savefig(path + '/{}_{}_climap.png'.format(model, name[1]))
-            plt.close(fig)
-        if nsub == 3:
             fig = plt.figure()
             axi = plt.subplot(111)
             for i in np.arange(nsub):
@@ -356,7 +311,78 @@ class PlotScript():
             plt.grid()
             plt.savefig(path + '/{}_transp.png'.format(model))
             plt.close(fig)
+            colors = (0, 0, 0)
+            fig = plt.figure()
+            fig.set_size_inches(12, 12)
+            axi = plt.subplot(221)
+            axi.set_figsize = (50, 50)
+            plt.scatter(tr_maxm[1, 0, :], tr_maxm[2, 0, :], c=colors, alpha=1)
+            plt.title('(a) Atm. vs ocean magnitude - SH', fontsize=13, y=1.02)
+            plt.xlabel('Atmos. trans. [W]', fontsize=11)
+            plt.ylabel('Oceanic trans. [W]', fontsize=11)
+            plt.grid()
+            axi = plt.subplot(222)
+            axi.set_figsize = (50, 50)
+            plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=colors, alpha=1)
+            plt.title('(b) Atm. vs ocean magnitude - NH', fontsize=13, y=1.02)
+            plt.xlabel('Atmos. trans. [W]', fontsize=11)
+            plt.ylabel('Oceanic trans. [W]', fontsize=11)
+            plt.grid()
+            axi = plt.subplot(223)
+            axi.set_figsize = (50, 50)
+            plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=colors,
+                        alpha=1)
+            plt.title('(c) Atm. vs ocean location - SH', fontsize=13, y=1.02)
+            plt.xlabel('Atmos. trans. position [degrees of latitude]',
+                       fontsize=11)
+            plt.ylabel('Oceanic trans. position [degrees of latitude]',
+                       fontsize=11)
+            plt.grid()
+            axi = plt.subplot(224)
+            axi.set_figsize = (50, 50)
+            plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=colors,
+                        alpha=1)
+            plt.title('(d) Atm. vs ocean location - NH', fontsize=13, y=1.02)
+            plt.xlabel('Atmos. trans. position [degrees of latitude]',
+                       fontsize=11)
+            plt.ylabel('Oceanic trans. position [degrees of latitude]',
+                       fontsize=11)
+            plt.grid()
+            plt.savefig(path + '/{}_scatpeak.png'.format(model))
+            plt.close(fig)
         elif nsub == 2:
+            ext_name = ['Water mass budget', 'Latent heat budget']
+            timesery[0, :] = (-3E-6, 3E-6)
+            rangecw = [-1E-4, 1E-4]
+            transpwy = (-2E9, 2E9)
+            timesery[1, :] = (-20, 20)
+            rangecl = [-150, 150]
+            transply = (-6E15, 6E15)
+
+            fig = plt.figure()
+            axi = plt.subplot(111, projection=ccrs.PlateCarree())
+            axi.coastlines()
+            plt.contourf(lons, lats, tmean[0, :, :], 60,
+                         transform=ccrs.PlateCarree())
+            plt.pcolor(lons, lats, tmean[0, :, :], vmin=rangecw[0],
+                       vmax=rangecw[1], cmap=c_m, antialiaseds='True')
+            plt.colorbar()
+            plt.title('Climatological Mean {}'.format(ext_name[0]))
+            plt.grid()
+            plt.savefig(path + '/{}_{}_climap.png'.format(model, name[0]))
+            plt.close(fig)
+            fig = plt.figure()
+            axi = plt.subplot(111, projection=ccrs.PlateCarree())
+            axi.coastlines()
+            plt.contourf(lons, lats, tmean[1, :, :], 60,
+                         transform=ccrs.PlateCarree())
+            plt.pcolor(lons, lats, tmean[1, :, :], vmin=rangecl[0],
+                       vmax=rangecl[1], cmap=c_m, antialiaseds='True')
+            plt.colorbar()
+            plt.title('Climatological Mean {}'.format(ext_name[1]))
+            plt.grid()
+            plt.savefig(path + '/{}_{}_climap.png'.format(model, name[1]))
+            plt.close(fig)
             fig = plt.figure()
             axi = plt.subplot(111)
             nc_f = workdir + '/{}_transp_mean_{}.nc'.format('wmass', model)
@@ -387,47 +413,26 @@ class PlotScript():
             plt.grid()
             plt.savefig(path + '/{}_latent_transp.png'.format(model))
             plt.close(fig)
-        colors = (0, 0, 0)
-        if nsub == 3:
+        else:
+            quit()            
+        for i_f in np.arange(nsub):
             fig = plt.figure()
-            fig.set_size_inches(12, 12)
-            axi = plt.subplot(221)
-            axi.set_figsize=(50, 50)
-            plt.scatter(tr_maxm[1, 0, :], tr_maxm[2, 0, :], c=colors, alpha=1)
-            plt.title('(a) Atm. vs ocean magnitude - SH', fontsize=13, y=1.02)
-            plt.xlabel('Atmos. trans. [W]', fontsize=11)
-            plt.ylabel('Oceanic trans. [W]', fontsize=11)
+            axi = plt.subplot(111)
+            axi.plot(timey, timeser[:, 0], 'k', label='Global')
+            axi.plot(timey, timeser[:, 1], 'r', label='SH')
+            axi.plot(timey, timeser[:, 2], 'b', label='NH')
+            plt.title('Annual mean {}'.format(ext_name[i_f]))
+            plt.xlabel('Years')
+            plt.ylabel('[W/m2]')
+            axi.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
+                       shadow=True, ncol=3)
+            plt.tight_layout()
+            plt.ylim(timesery[i_f, :])
             plt.grid()
-            axi = plt.subplot(222)
-            axi.set_figsize = (50, 50)
-            plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=colors, alpha=1)
-            plt.title('(b) Atm. vs ocean magnitude - NH', fontsize=13, y=1.02)
-            plt.xlabel('Atmos. trans. [W]', fontsize=11)
-            plt.ylabel('Oceanic trans. [W]', fontsize=11)
-            plt.grid()
-            axi = plt.subplot(223)
-            axi.set_figsize=(50, 50)
-            plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=colors,
-                        alpha=1)
-            plt.title('(c) Atm. vs ocean location - SH', fontsize=13, y=1.02)
-            plt.xlabel('Atmos. trans. position [degrees of latitude]',
-                       fontsize=11)
-            plt.ylabel('Oceanic trans. position [degrees of latitude]',
-                       fontsize=11)
-            plt.grid()
-            axi = plt.subplot(224)
-            axi.set_figsize = (50, 50)
-            plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=colors,
-                        alpha=1)
-            plt.title('(d) Atm. vs ocean location - NH', fontsize=13, y=1.02)
-            plt.xlabel('Atmos. trans. position [degrees of latitude]',
-                       fontsize=11)
-            plt.ylabel('Oceanic trans. position [degrees of latitude]',
-                       fontsize=11)
-            plt.grid()
-            plt.savefig(path + '/{}_scatpeak.png'.format(model))   
+            plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
             plt.close(fig)
-
+            
+    @classmethod
     def entropy(self, plotpath, filename, name, ext_name, model_name):
         """Method for plots of annual mean maps of mat. entr. prod.
 
@@ -493,7 +498,8 @@ class PlotScript():
         plt.grid()
         plt.savefig(path+'/{}_{}_climap.png'.format(model, name))
         plt.close(fig)
-    
+
+    @classmethod
     def plot_ellipse(self, semimaj, semimin, phi, x_cent, y_cent, theta_num,
                      axi, plot_kwargs, fill, fill_kwargs, data_out, cov,
                      mass_level):
@@ -518,7 +524,6 @@ class PlotScript():
 
         @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
         """
-        plotsmod = PlotScript()
         # Get Ellipse Properties from cov matrix
         if cov is not None:
             eig_vec, eig_val, u_u = np.linalg.svd(cov)
@@ -531,7 +536,7 @@ class PlotScript():
                 multiplier = np.sqrt(2.279)
             else:
                 distances = np.linspace(0, 20, 20001)
-                chi2_cdf = plotsmod.chi2.cdf(distances, df=2)
+                chi2_cdf = chi2.cdf(distances, df=2)
                 multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf -
                                                                mass_level)
                                                         == np.abs(chi2_cdf -
@@ -572,7 +577,10 @@ class PlotScript():
             axi.fill(data[0], data[1], **fill_kwargs)
         if return_fig is True:
             return fig
+        else:
+            return 'False'
 
+    @classmethod
     def pr_output(self, varout, filep, nc_f, nameout):
         """Print processed ta field to NetCDF file.
 
@@ -612,7 +620,8 @@ class PlotScript():
         w_nc_fid.variables[nameout][:] = varout
         w_nc_fid.close()
         nc_fid.close()
-    
+
+    @classmethod
     def varatts(self, w_nc_var, varname):
         """Add attibutes to the variables, depending on name and time res.
 
@@ -620,7 +629,7 @@ class PlotScript():
         - w_nc_var: a variable object;
         - varname: the name of the variable, among total, atmos, ocean, wmass,
         latent;
-        
+
         @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         if varname == 'total':
@@ -640,6 +649,7 @@ class PlotScript():
             w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
                                 'units': u"W", 'level_desc': 'sfc'})
 
+    @classmethod
     def removeif(self, filename):
         """Remove filename if it exists."""
         try:

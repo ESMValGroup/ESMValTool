@@ -34,6 +34,7 @@ class FourierCoeff():
     
     from fourier_coefficients import FourierCoeff
     
+    @classmethod
     def fourier_coeff(self, tadiagfile, outfile, ta_input, tas_input):
         """Main script for Fourier coefficients computation.
 
@@ -44,10 +45,8 @@ class FourierCoeff():
         - tas_input: the name of a file containing t2m field.
         """
         fourcoeff = FourierCoeff()
-        
         fileo = outfile
         fileta = tadiagfile
-        
         dataset = Dataset(ta_input)
         lon = dataset.variables['lon'][:]
         lat = dataset.variables['lat'][:]
@@ -135,11 +134,11 @@ class FourierCoeff():
         vafft[:, :, :, 1::2] = np.imag(vafft_p)
         wapfft[:, :, :, 0::2] = np.real(wapfft_p)
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
-        fourcoeff.pr_output(tafft, uafft, vafft, wapfft, ta_input, fileo,
-                            wave2, 'ta', 'ua', 'va', 'wap')
+        dict_v = {'ta': tafft, 'ua': uafft, 'va': vafft, 'wap': wapfft}
+        fourcoeff.pr_output(dict_v, ta_input, fileo, wave2)
 
-    def pr_output(self, var1, var2, var3, var4, nc_f, fileo, wave2, name1,
-                  name2, name3, name4):
+    @classmethod
+    def pr_output(self, dict_v, nc_f, fileo, wave2):
         """Print outputs to NetCDF.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -155,12 +154,11 @@ class FourierCoeff():
             - wave2: an array containing the zonal wavenumbers;
             - name1, name2, name3, name4: the name of the variables to be
               saved;
-     
+
         PROGRAMMER(S)
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         fourcoeff = FourierCoeff()
-    
         nc_fid = Dataset(nc_f, 'r')
         # Extract coordinates from NetCDF file
         time = nc_fid.variables['time'][:]
@@ -169,7 +167,6 @@ class FourierCoeff():
         # Writing NetCDF files
         var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
         var_nc_fid.description = "Fourier coefficients"
-        
         # Using our previous dimension info, we can create the new dimensions.
         var_nc_fid.createDimension('time', len(time))
         var_nc_dim = var_nc_fid.createVariable('time',
@@ -179,7 +176,7 @@ class FourierCoeff():
             var_nc_dim.setncattr(ncattr,
                                  nc_fid.variables['time'].getncattr(ncattr))
         var_nc_fid.variables['time'][:] = time
-        
+
         var_nc_fid.createDimension('plev', len(plev))
         var_nc_dim = var_nc_fid.createVariable('plev',
                                                nc_fid.variables['plev'].dtype,
@@ -202,28 +199,15 @@ class FourierCoeff():
                                  nc_fid.variables['lat'].getncattr(ncattr))
         var_nc_fid.variables['lat'][:] = lats
         nc_fid.close()
-        var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
-                                                ('time', 'plev',
-                                                 'lat', 'wave'))
-        fourcoeff.varatts(var1_nc_var, name1)
-        var_nc_fid.variables[name1][:, :, :, :] = var1
-        var2_nc_var = var_nc_fid.createVariable(name2, 'f8',
-                                                ('time', 'plev',
-                                                 'lat', 'wave'))
-        fourcoeff.varatts(var2_nc_var, name2)
-        var_nc_fid.variables[name2][:, :, :, :] = var2
-        var3_nc_var = var_nc_fid.createVariable(name3, 'f8',
-                                                ('time', 'plev',
-                                                 'lat', 'wave'))
-        fourcoeff.varatts(var3_nc_var, name3)
-        var_nc_fid.variables[name3][:, :, :, :] = var3
-        var4_nc_var = var_nc_fid.createVariable(name4, 'f8',
-                                                ('time', 'plev',
-                                                 'lat', 'wave'))
-        fourcoeff.varatts(var4_nc_var, name4)
-        var_nc_fid.variables[name4][:, :, :, :] = var4
+        for key, value in dict_v.iterkeys():
+            var1_nc_var = var_nc_fid.createVariable(key, 'f8',
+                                                    ('time', 'plev',
+                                                     'lat', 'wave'))
+            fourcoeff.varatts(var1_nc_var, key)
+            var_nc_fid.variables[key][:, :, :, :] = value
         var_nc_fid.close()  # close the new file
 
+    @classmethod
     def pr_output_diag(self, var1, nc_f, fileo, name1):
         """Print processed ta field to NetCDF file.
 
@@ -288,7 +272,8 @@ class FourierCoeff():
         fourcoeff.varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
         var_nc_fid.close()  # close the new file
-
+        
+    @classmethod
     def varatts(self, w_nc_var, varname):
         """Add attibutes to the variables, depending on their name.
 

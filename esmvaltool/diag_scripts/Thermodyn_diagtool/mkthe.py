@@ -1,4 +1,4 @@
-"""Module for computation of some auxiliary variables.
+"""Module for computation of the auxiliary variables needed by the tool.
 
 Module needed by the main thermodynamic diagnosticl tool script for
 computation of some auxiliary variables.
@@ -48,8 +48,8 @@ class Mkthe():
 
     from mkthe import Mkthe
 
-    def mkthe_main(self, wdir, ts_file, hus_file, ps_file, uas_file,
-                   vas_file, hfss_file, te_file, modelname):
+    @classmethod
+    def mkthe_main(self, wdir, file_list, modelname):
         """The main script in the module for computation of aux. variables.
 
         Arguments:
@@ -67,26 +67,27 @@ class Mkthe():
         mkthe = Mkthe()
         ts_miss_file = wdir + '/ts.nc'
         mkthe.removeif(ts_miss_file)
-        cdo.setctomiss('0', input=ts_file, output=ts_miss_file)
+        cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
         hus_miss_file = wdir + '/hus.nc'
         mkthe.removeif(hus_miss_file)
-        cdo.setctomiss('0', input=hus_file, output=hus_miss_file)
+        cdo.setctomiss('0', input=file_list[1], output=hus_miss_file)
         ps_miss_file = wdir + '/ps.nc'
         mkthe.removeif(ps_miss_file)
-        cdo.setctomiss('0', input=ps_file, output=ps_miss_file)
+        cdo.setctomiss('0', input=file_list[2], output=ps_miss_file)
         vv_missfile = wdir + '/V.nc'
         mkthe.removeif(vv_missfile)
         vv_file = wdir + '/{}_V.nc'.format(modelname)
         mkthe.removeif(vv_file)
-        cdo.sqrt(input='-add -sqr {} -sqr {}'.format(uas_file, vas_file),
+        cdo.sqrt(input='-add -sqr {} -sqr {}'.format(file_list[3],
+                                                     file_list[4]),
                  options='-b F32', output=vv_file)
         cdo.setctomiss('0', input=vv_file, output=vv_missfile)
         hfss_miss_file = wdir + '/hfss.nc'
         mkthe.removeif(hfss_miss_file)
-        cdo.setctomiss('0', input=hfss_file, output=hfss_miss_file)
+        cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
         te_miss_file = wdir + '/te.nc'
         mkthe.removeif(te_miss_file)
-        cdo.setctomiss('0', input=te_file, output=te_miss_file)
+        cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
         dataset0 = Dataset(ts_miss_file)
         t_s = dataset0.variables['ts'][:, :, :]
         lats = dataset0.variables['lat'][:]
@@ -235,8 +236,8 @@ class Mkthe():
         w_nc_fid.description = "Monthly mean height of the BL top for {} \
                                 model. Calculated by Thermodynamics model \
                                 diagnostics in ESMValTool. Author Valerio \
-                                Lembo, Meteorologisches Institut, Universitaet \
-                                Hamburg.".format(modelname)
+                                Lembo, Meteorologisches Institut, \
+                                Universitaet Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
                                            dataset0.variables['time'].dtype,
@@ -272,6 +273,7 @@ class Mkthe():
         w_nc_fid.variables['htop'][:] = htop
         w_nc_fid.close()  # close the new file
 
+    @classmethod
     def removeif(self, filename):
         """Remove filename if it exists."""
         try:
