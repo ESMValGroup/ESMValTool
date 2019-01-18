@@ -1,7 +1,8 @@
+# ESMValTool
 # namelist_landcover.yml
 ---
 documentation:
-  description:
+  description: |
     Recipe for plotting the accumulated area, average fraction
     and bias of landcover classes in comparison to ESA_CCI_LC data
     for the full globe and large scale regions.
@@ -11,6 +12,9 @@ documentation:
     - loew_al
     - muel_bn
     - stac_to
+
+  maintainer:
+    righ_ma
 
   references:
     - georgievski18tac
