@@ -126,8 +126,8 @@ begin
   ; get data from first model
   imod = 0  ; NCL array indices start from zero
   log_info("processing " + info_items[imod]@dataset + "_" \
-            + info_items[imod]@exp + "_" \
-            + info_items[imod]@ensemble)
+           + info_items[imod]@exp + "_" \
+           + info_items[imod]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
   A0 = read_data(info_items[imod])
@@ -372,7 +372,7 @@ begin
   ; # Output to netCDF                        #
   ; ###########################################
   to_plot@ncdf = variable_info[0]@diagnostic + ".nc"
-  ncdf_file = work_dir +  "/" +to_plot@ncdf
+  ncdf_file = work_dir + "/" + to_plot@ncdf
   ncdf_file@existing = "overwrite"
   ; Function in ~/interface_scripts/auxiliary.ncl
   ncdf_outfile = ncdf_write(to_plot, ncdf_file)
