@@ -47,6 +47,7 @@ and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
+
 """
 import logging
 import os
@@ -65,49 +66,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def match_model_to_key(
-        model_type,
-        cfg_dict,
-        input_files_dict,
-):
-    """
-    Match up the three models and observations dataset from the configs.
-
-    This function checks that the control_model, exper_model and
-    observational_dataset dictionairies from the recipe are matched with the
-    input file dictionairy in the cfg metadata.
-    """
-    for input_file, intput_dict in input_files_dict.items():
-        intersection = dict(intput_dict.items() & cfg_dict.items())
-        if intersection == cfg_dict:
-            return input_file
-    logger.warning("Unable to match model: %s", model_type)
-    return ''
-
-
-def get_cube_range(cubes):
-    """Determinue the minimum and maximum values of an array of cubes."""
-    mins = []
-    maxs = []
-    for cube in cubes:
-        mins.append(cube.data.min())
-        maxs.append(cube.data.max())
-    return [
-        np.min(mins),
-        np.max(maxs),
-    ]
-
-
-def get_cube_range_diff(cubes):
-    """Determinue the largest deviation from zero in an array of cubes."""
-    ranges = []
-    for cube in cubes:
-        ranges.append(np.abs(cube.data.min()))
-        ranges.append(np.abs(cube.data.max()))
-    return [-1. * np.max(ranges), np.max(ranges)]
-
-
-def add_map_subplot(subplot, cube, n_points=15, title='', cmap=''):
+def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     """
     Add a map subplot to the current pyplot figure.
 
@@ -117,8 +76,8 @@ def add_map_subplot(subplot, cube, n_points=15, title='', cmap=''):
         The matplotlib.pyplot subplot number. (ie 221)
     cube: iris.cube.Cube
         the iris cube to be plotted.
-    n_points: int
-        The number of the ticks of the colour part.
+    nspace: numpy.array
+        An array of the ticks of the colour part.
     title: str
         A string to set as the subplot title.
     cmap: str
@@ -126,7 +85,12 @@ def add_map_subplot(subplot, cube, n_points=15, title='', cmap=''):
 
     """
     plt.subplot(subplot)
-    qplt.contourf(cube, n_points, linewidth=0, cmap=plt.cm.get_cmap(cmap))
+    qplot = qplt.contourf(cube, nspace, linewidth=0,
+                          cmap=plt.cm.get_cmap(cmap))
+    qplot.colorbar.set_ticks([nspace.min(),
+                              (nspace.max() + nspace.min())/2.,
+                              nspace.max()])
+
     plt.gca().coastlines()
     plt.title(title)
 
@@ -153,8 +117,9 @@ def multi_model_maps(
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = match_model_to_key(model_type, cfg[model_type],
-                                                   input_files)
+        filenames[model_type] = diagtools.match_model_to_key(model_type,
+                                                             cfg[model_type],
+                                                             input_files)
 
     # ####
     # Load the data for each layer as a separate cube
@@ -169,14 +134,14 @@ def multi_model_maps(
             layers[layer] = True
 
     logger.debug('layers: %s', ', '.join(layers))
-    logger.debug('cubes: %s', ', '.join(cubes))
+    logger.debug('cubes: %s', ', '.join(cubes.keys()))
 
     # ####
     # load names:
     exper = input_files[filenames[exp_key]]['dataset']
     control = input_files[filenames[ctl_key]]['dataset']
     obs = input_files[filenames[obs_key]]['dataset']
-    long_name = cubes[exp_key][list(layers)[0]].long_name
+    long_name = cubes[exp_key][list(layers.keys())[0]].long_name
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -193,31 +158,20 @@ def multi_model_maps(
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange = get_cube_range_diff([cube222, cube223, cube224])
-        n_points = 15
-        linspace = np.linspace(zrange[0], zrange[1], n_points, endpoint=True)
+        zrange1 = diagtools.get_cube_range([cube221, ])
+        zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
+
+        linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+        linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(
-            221, cube221, n_points=n_points, cmap='viridis', title=exper)
-        add_map_subplot(
-            222,
-            cube222,
-            n_points=linspace,
-            cmap='bwr',
-            title=' '.join([exper, 'minus', control]))
-        add_map_subplot(
-            223,
-            cube223,
-            n_points=linspace,
-            cmap='bwr',
-            title=' '.join([control, 'minus', obs]))
-        add_map_subplot(
-            224,
-            cube224,
-            n_points=linspace,
-            cmap='bwr',
-            title=' '.join([exper, 'minus', obs]))
+        add_map_subplot(221, cube221, linspace1, cmap='viridis', title=exper)
+        add_map_subplot(222, cube222, linspace2, cmap='bwr',
+                        title=' '.join([exper, 'minus', control]))
+        add_map_subplot(223, cube223, linspace2, cmap='bwr',
+                        title=' '.join([control, 'minus', obs]))
+        add_map_subplot(224, cube224, linspace2, cmap='bwr',
+                        title=' '.join([exper, 'minus', obs]))
 
         # Add overall title
         fig.suptitle(long_name, fontsize=14)
