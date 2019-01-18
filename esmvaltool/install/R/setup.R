@@ -1,8 +1,8 @@
-#check for present library paths
 log <- function(..., level="INFO") {
     cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
 }
 
+#check for present library paths
 RLIBPATH <- .libPaths()
 
 #check if we can write in the present R libaries paths
