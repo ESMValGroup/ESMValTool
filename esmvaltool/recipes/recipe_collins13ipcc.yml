@@ -3,9 +3,15 @@
 ---
 documentation:
   description: |
-    Reproducing selected figures from IPCC AR5, chap. 12 (Collins et al., 2013)
+    Recipe reproducing selected figures from IPCC AR5, chap. 12 (Collins et al., 2013)
+    mainly difference maps between future and present (no observations included), timeseries,
+    changes scaled by mean global temperature change.
+    Only a subset of models are included for most examples!
 
   authors:
+    - lore_ru
+
+  maintainer:
     - lore_ru
 
   references:
@@ -698,6 +704,8 @@ diagnostics:
         ancestors: ['tas', 'IAV_calc_tas/ch12_calc_IAV_for_stippandhatch_tas']
         # List of scenarios to be included
         scenarios: [rcp45, rcp85]
+        # Name of reference run, default is historical
+        reference_run: historical
         # List with start years of periods to be included
         periods: [2081]
         # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
