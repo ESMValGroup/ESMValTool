@@ -68,4 +68,4 @@ for (package_name in package_list) {
     }
 }
 
-log("Succesfully installed all packages")
+log("Successfully installed all packages")
