@@ -41,11 +41,17 @@ if (length(package_list) == 0) {
     print(paste("Number of packages to be installed: ", length(package_list)))
 }
 
+Ncpus <- parallel::detectCores()
+if (is.na(Ncpus)) {
+  Ncpus <- 1
+}
+
 for (package_name in package_list) {
     print(paste("     Installing package --> ", package_name))
     install.packages(
         package_name,
         repos = pkg_mirror,
+        Ncpus = Ncpus,
         dependencies = c("Depends", "Imports")
     )
     success <- library(
