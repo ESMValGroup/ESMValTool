@@ -7,11 +7,12 @@ variables to be sure that all known errors are
 fixed.
 
 """
+from iris.cube import Cube, CubeList
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
 
 
-def fix_file(filename, short_name, project, dataset, output_dir):
+def fix_file(file, short_name, project, dataset, output_dir):
     """
     Fix files before ESMValTool can load them.
 
@@ -22,7 +23,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 
     Parameters
     ----------
-    filename: str
+    file: str
         Path to the original file
     short_name: str
         Variable's short name
@@ -39,11 +40,11 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
-        filename = fix.fix_file(filename, output_dir)
-    return filename
+        file = fix.fix_file(file, output_dir)
+    return file
 
 
-def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
+def fix_metadata(cube_list, short_name, project, dataset, cmor_table=None,
                  mip=None):
     """
     Fix cube metadata if fixes are required and check it anyway.
@@ -55,8 +56,8 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
 
     Parameters
     ----------
-    cube: iris.cube.Cube
-        Cube to fix
+    cube_list: iris.cube.CubeList
+        Cubes to fix
     short_name; str
         Variable's short name
     project: str
@@ -82,13 +83,13 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
     """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
-        cubes = fix.fix_metadata(cubes)
-    if len(cubes) != 1:
+        cube_list = fix.fix_metadata(cube_list)
+    if len(cube_list) != 1:
         raise ValueError(
-            'Cubes were not reduced to one after fixing: %s' % cubes
+            'Cubes were not reduced to one after fixing: %s' % cube_list
         )
 
-    cube = cubes[0]
+    cube = cube_list[0]
     if cmor_table and mip:
         checker = _get_cmor_checker(
             table=cmor_table,

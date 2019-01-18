@@ -5,7 +5,6 @@ import logging
 import os
 
 import iris
-import yaml
 
 from ._derived_variable_base import DerivedVariableBase
 
@@ -40,17 +39,23 @@ def get_required(short_name, field=None):
     return derived_var.get_required(frequency)
 
 
-def derive(cubes, variable, fx_files=None):
+def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
     """Derive variable.
 
     Parameters
     ----------
-    cubes : iris.cube.CubeList
+    cubes: iris.cube.CubeList
         Includes all the needed variables for derivation defined in
         :func:`get_required`.
-    variable : dict
-        All information of the derived variable.
-    fx_files : dict, optional
+    short_name: str
+        short_name
+    standard_name: str
+        standard_name
+    long_name: str
+        long_name
+    units: str
+        units
+    fx_files: dict, optional
         If required, dictionary containing fx files  with `short_name`
         (keys) and path (values) of the fx variable.
 
@@ -60,19 +65,21 @@ def derive(cubes, variable, fx_files=None):
         The new derived variable.
 
     """
-    short_name = variable['short_name']
-    cubes = iris.cube.CubeList(cubes)
-
+    short_name = short_name
     # Do nothing if variable is already available
-    try:
-        cube = cubes.extract_strict(
-            iris.Constraint(
-                cube_func=lambda cube: cube.var_name == short_name
-            )
-        )
-        return cubes
-    except iris.exceptions.ConstraintMismatchError:
-        pass
+    logger.info(cubes)
+
+    cube_list = iris.cube.CubeList()
+    for cube in cubes:
+        if isinstance(cube, iris.cube.CubeList):
+            cube_list.extend(cube)
+        else:
+            cube_list.append(cube)
+    cubes = cube_list
+
+    selected_cubes = [c for c in cubes if c.var_name == short_name]
+    if len(selected_cubes) > 0:
+        return iris.cube.CubeList(selected_cubes)
 
     # Preprare input cubes and add fx files if necessary
     if fx_files:
@@ -90,16 +97,11 @@ def derive(cubes, variable, fx_files=None):
 
     # Set standard attributes
     cube.var_name = short_name
-    if variable['standard_name'] not in iris.std_names.STD_NAMES:
-        iris.std_names.STD_NAMES[variable['standard_name']] = {
-            'canonical_units': variable['units']
-        }
-    for attribute in ('standard_name', 'long_name', 'units'):
-        setattr(cube, attribute, variable[attribute])
-
-    # Set attributes required by preprocessor
-    cube.attributes['_filename'] = variable['filename']
-    cube.attributes['metadata'] = yaml.safe_dump(variable)
+    if standard_name not in iris.std_names.STD_NAMES:
+        iris.std_names.STD_NAMES[standard_name] = {'canonical_units': units}
+    cube.standard_name = standard_name
+    cube.long_name = long_name
+    cube.units = units
 
     return iris.cube.CubeList((cube,))
 

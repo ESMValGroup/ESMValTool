@@ -3,6 +3,7 @@ import copy
 import logging
 import os
 import shutil
+from collections import OrderedDict
 from itertools import groupby
 
 import numpy as np
@@ -50,16 +51,13 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(datafile, filename, metadata, callback=None):
+def load_cubes(file, callback=None):
     """Load iris cubes from files."""
-    logger.debug("Loading:\n%s", datafile)
-    raw_cubes = iris.load_raw(datafile, callback=callback)
+    logger.debug("Loading:\n%s", file)
+    raw_cubes = iris.load_raw(file, callback=callback)
     if not raw_cubes:
-        raise Exception('Can not load cubes from {0}'.format(datafile))
+        raise Exception('Can not load cubes from {0}'.format(file))
     iris.util.unify_time_units(raw_cubes)
-    for cube in raw_cubes:
-        cube.attributes['_filename'] = filename
-        cube.attributes['metadata'] = yaml.safe_dump(metadata)
     return raw_cubes
 
 
@@ -87,62 +85,23 @@ def concatenate(cubes):
         return cube
     except iris.exceptions.ConcatenateError as ex:
         logger.error('Can not concatenate cubes: %s', ex)
-        logger.error('Differences: %s', ex.differences)
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
-        raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
+        raise ex
 
 
-def _save_cubes(cubes, **args):
-    """Save iris cube to file."""
-    filename = args['target']
-    optimize_accesss = args.pop('optimize_access')
-
-    dirname = os.path.dirname(filename)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    if (os.path.exists(filename)
-            and all(cube.has_lazy_data() for cube in cubes)):
-        logger.debug(
-            "Not saving cubes %s to %s to avoid data loss. "
-            "The cube is probably unchanged.", cubes, filename)
-    else:
-        logger.debug("Saving cubes %s to %s", cubes, filename)
-        if optimize_accesss:
-            cube = cubes[0]
-            if optimize_accesss == 'map':
-                dims = set(
-                    cube.coord_dims('latitude') + cube.coord_dims('longitude'))
-            elif optimize_accesss == 'timeseries':
-                dims = set(cube.coord_dims('time'))
-            else:
-                dims = tuple()
-                for coord_dims in (
-                        cube.coord_dims(dimension)
-                        for dimension in optimize_accesss.split(' ')):
-                    dims += coord_dims
-                dims = set(dims)
-
-            args['chunksizes'] = tuple(
-                length if index in dims else 1
-                for index, length in enumerate(cube.shape))
-        iris.save(cubes, **args)
-
-    return filename
-
-
-def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
+def save(cubes, filename, optimize_access='', compress=False, **kwargs):
     """
     Save iris cubes to file.
-
-    Path is taken from the _filename attribute in the code.
 
     Parameters
     ----------
     cubes: iterable of iris.cube.Cube
         Data cubes to be saved
+
+    filename: str
+        Name of target file
 
     optimize_access: str
         Set internal NetCDF chunking to favour a reading scheme
@@ -156,51 +115,63 @@ def save(cubes, optimize_access=None, compress=False, debug=False, step=None):
     compress: bool, optional
         Use NetCDF internal compression.
 
-    debug: bool, optional
-        Inform the function if this save is an intermediate save
-
-    step: int, optional
-        Number of the preprocessor step.
-
-        Only used if debug is True
-
     Returns
     -------
-    list
-        List of paths
+    str
+        filename
+
     """
-    paths = {}
-    for cube in cubes:
-        if '_filename' not in cube.attributes:
-            raise ValueError("No filename specified in cube {}".format(cube))
-        if debug:
-            dirname = os.path.splitext(cube.attributes.get('_filename'))[0]
-            if os.path.exists(dirname) and os.listdir(dirname):
-                num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
-            else:
-                num = 0
-            filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
-        else:
-            filename = cube.attributes.pop('_filename')
-        if filename not in paths:
-            paths[filename] = []
-        paths[filename].append(cube)
+    # Rename some arguments
+    kwargs['target'] = filename
+    kwargs['zlib'] = compress
 
-    for filename in paths:
-        if use_legacy_iris():
-            _save_cubes(
-                cubes=paths[filename],
-                target=filename,
-                zlib=compress,
-                optimize_access=optimize_access)
-        else:
-            _save_cubes(
-                cubes=paths[filename],
-                target=filename,
-                optimize_access=optimize_access,
-                fill_value=GLOBAL_FILL_VALUE)
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
-    return list(paths)
+    if (os.path.exists(filename)
+            and all(cube.has_lazy_data() for cube in cubes)):
+        logger.debug(
+            "Not saving cubes %s to %s to avoid data loss. "
+            "The cube is probably unchanged.", cubes, filename)
+        return filename
+
+    logger.debug("Saving cubes %s to %s", cubes, filename)
+    if optimize_access:
+        cube = cubes[0]
+        if optimize_access == 'map':
+            dims = set(
+                cube.coord_dims('latitude') + cube.coord_dims('longitude'))
+        elif optimize_access == 'timeseries':
+            dims = set(cube.coord_dims('time'))
+        else:
+            dims = tuple()
+            for coord_dims in (cube.coord_dims(dimension)
+                               for dimension in optimize_access.split(' ')):
+                dims += coord_dims
+            dims = set(dims)
+
+        kwargs['chunksizes'] = tuple(
+            length if index in dims else 1
+            for index, length in enumerate(cube.shape))
+
+    if not use_legacy_iris():
+        kwargs['fill_value'] = GLOBAL_FILL_VALUE
+
+    iris.save(cubes, **kwargs)
+
+    return filename
+
+
+def _get_debug_filename(filename, step):
+    """Get a filename for debugging the preprocessor."""
+    dirname = os.path.splitext(filename)[0]
+    if os.path.exists(dirname) and os.listdir(dirname):
+        num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
+    else:
+        num = 0
+    filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
+    return filename
 
 
 def cleanup(files, remove=None):
@@ -217,22 +188,40 @@ def cleanup(files, remove=None):
     return files
 
 
-def extract_metadata(files, write_ncl=False):
-    """Extract the metadata attribute from cubes and write to file."""
+def _ordered_safe_dump(data, stream):
+    """Write data containing OrderedDicts to yaml file."""
+
+    class _OrderedDumper(yaml.SafeDumper):
+        pass
+
+    def _dict_representer(dumper, data):
+        return dumper.represent_mapping(
+            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items())
+
+    _OrderedDumper.add_representer(OrderedDict, _dict_representer)
+    return yaml.dump(data, stream, _OrderedDumper)
+
+
+def write_metadata(products, write_ncl=False):
+    """Write product metadata to file."""
     output_files = []
-    for output_dir, filenames in groupby(files, os.path.dirname):
-        metadata = {}
-        for filename in filenames:
-            cube = iris.load_cube(filename)
-            raw_cube_metadata = cube.attributes.get('metadata')
-            if raw_cube_metadata:
-                cube_metadata = yaml.safe_load(raw_cube_metadata)
-                metadata[filename] = cube_metadata
+    for output_dir, prods in groupby(products,
+                                     lambda p: os.path.dirname(p.filename)):
+        sorted_products = sorted(
+            prods,
+            key=lambda p: (
+                p.attributes.get('recipe_dataset_index', 1e6),
+                p.attributes.get('dataset', ''),
+            ),
+        )
+        metadata = OrderedDict()
+        for product in sorted_products:
+            metadata[product.filename] = product.attributes
 
         output_filename = os.path.join(output_dir, 'metadata.yml')
         output_files.append(output_filename)
         with open(output_filename, 'w') as file:
-            yaml.safe_dump(metadata, file)
+            _ordered_safe_dump(metadata, file)
         if write_ncl:
             output_files.append(_write_ncl_metadata(output_dir, metadata))
 
@@ -241,7 +230,7 @@ def extract_metadata(files, write_ncl=False):
 
 def _write_ncl_metadata(output_dir, metadata):
     """Write NCL metadata files to output_dir."""
-    variables = copy.deepcopy(list(metadata.values()))
+    variables = [copy.deepcopy(v) for v in metadata.values()]
 
     for variable in variables:
         fx_files = variable.pop('fx_files', {})
@@ -273,7 +262,3 @@ def _write_ncl_metadata(output_dir, metadata):
     write_ncl_settings(info, filename)
 
     return filename
-
-
-class ConcatenationError(Exception):
-    """Exception class for concatenation errors."""
