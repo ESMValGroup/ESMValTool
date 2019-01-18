@@ -40,21 +40,20 @@ and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
-
 """
 import logging
 import os
 import sys
+import math
 import matplotlib
 matplotlib.use('Agg')  # noqa
+
 from matplotlib import pyplot
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
-
-import math
 import numpy as np
 from scipy.stats import linregress
 
@@ -89,20 +88,27 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
     plt.subplot(subplot)
     logger.info('add_map_subplot: %s', subplot)
     if log:
-        qplot = qplt.contourf(cube, nspace, linewidth=0,
-                              cmap=plt.cm.get_cmap(cmap),
-                              norm=LogNorm(),
-                              zmin=nspace.min(),
-                              zmax=nspace.max())
+        qplot = qplt.contourf(
+            cube,
+            nspace,
+            linewidth=0,
+            cmap=plt.cm.get_cmap(cmap),
+            norm=LogNorm(),
+            zmin=nspace.min(),
+            zmax=nspace.max())
         qplot.colorbar.set_ticks([0.1, 1., 10.])
     else:
-        qplot = iris.plot.contourf(cube, nspace, linewidth=0,
-                                   cmap=plt.cm.get_cmap(cmap),
-                                   zmin=nspace.min(),
-                                   zmax=nspace.max())
+        qplot = iris.plot.contourf(
+            cube,
+            nspace,
+            linewidth=0,
+            cmap=plt.cm.get_cmap(cmap),
+            zmin=nspace.min(),
+            zmax=nspace.max())
         cbar = pyplot.colorbar(orientation='horizontal')
-        cbar.set_ticks([nspace.min(), (nspace.max() + nspace.min()) / 2.,
-                        nspace.max()])
+        cbar.set_ticks(
+            [nspace.min(), (nspace.max() + nspace.min()) / 2.,
+             nspace.max()])
 
     plt.gca().coastlines()
     plt.title(title)
@@ -181,21 +187,31 @@ def make_model_vs_obs_plots(
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
 
         n_points = 12
-        linspace12 = np.linspace(zrange12[0], zrange12[1], n_points,
-                                 endpoint=True)
-        linspace3 = np.linspace(zrange3[0], zrange3[1], n_points,
-                                endpoint=True)
+        linspace12 = np.linspace(
+            zrange12[0], zrange12[1], n_points, endpoint=True)
+        linspace3 = np.linspace(
+            zrange3[0], zrange3[1], n_points, endpoint=True)
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace12, cmap='viridis',
-                        title=model)
-        add_map_subplot(222, cube222, linspace12, cmap='viridis',
-                        title=' '.join([obs, ]))
-        add_map_subplot(223, cube223, linspace3, cmap='bwr',
-                        title=' '.join([model, 'minus', obs]))
-        add_map_subplot(224, cube224, logspace4, cmap='bwr',
-                        title=' '.join([model, 'over', obs]), log=True)
+        add_map_subplot(221, cube221, linspace12, cmap='viridis', title=model)
+        add_map_subplot(
+            222, cube222, linspace12, cmap='viridis', title=' '.join([
+                obs,
+            ]))
+        add_map_subplot(
+            223,
+            cube223,
+            linspace3,
+            cmap='bwr',
+            title=' '.join([model, 'minus', obs]))
+        add_map_subplot(
+            224,
+            cube224,
+            logspace4,
+            cmap='bwr',
+            title=' '.join([model, 'over', obs]),
+            log=True)
 
         # Add overall title
         fig.suptitle(long_name, fontsize=14)
@@ -234,12 +250,16 @@ def rounds_sig(value, sig=3):
         return str(0.)
     if value < 0.:
         value = abs(value)
-        return str(-1. * round(value,
-                               sig - int(math.floor(math.log10(value))) - 1))
+        return str(
+            -1. * round(value, sig - int(math.floor(math.log10(value))) - 1))
     return str(round(value, sig - int(math.floor(math.log10(value))) - 1))
 
 
-def add_linear_regression(ax, arr_x, arr_y, showtext=True, add_diagonal=False,
+def add_linear_regression(ax,
+                          arr_x,
+                          arr_y,
+                          showtext=True,
+                          add_diagonal=False,
                           extent=None):
     """
     Add a straight line fit to an axis.
@@ -260,16 +280,23 @@ def add_linear_regression(ax, arr_x, arr_y, showtext=True, add_diagonal=False,
         The extent of the plot axes.
     """
     beta1, beta0, rValue, pValue, stderr = linregress(arr_x, arr_y)
-    texts = [r'$\^\beta_0$ = ' + rounds_sig(beta0),
-             r'$\^\beta_1$ = ' + rounds_sig(beta1),
-             r'R = ' + rounds_sig(rValue),
-             r'P = ' + rounds_sig(pValue),
-             r'N = ' + str(int(len(arr_x)))]
+    texts = [
+        r'$\^\beta_0$ = ' + rounds_sig(beta0),
+        r'$\^\beta_1$ = ' + rounds_sig(beta1),
+        r'R = ' + rounds_sig(rValue),
+        r'P = ' + rounds_sig(pValue),
+        r'N = ' + str(int(len(arr_x)))
+    ]
     thetext = '\n'.join(texts)
 
     if showtext:
-        pyplot.text(0.04, 0.96, thetext, horizontalalignment='left',
-                    verticalalignment='top', transform=ax.transAxes)
+        pyplot.text(
+            0.04,
+            0.96,
+            thetext,
+            horizontalalignment='left',
+            verticalalignment='top',
+            transform=ax.transAxes)
 
     if extent is None:
         x_values = np.arange(arr_x.min(), arr_x.max(),
@@ -365,34 +392,39 @@ def make_scatter(
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-        pyplot.hexbin(model_data,
-                      obs_data,
-                      xscale='log',
-                      # yscale='log',
-                      bins='log',
-                      # extent=np.log10(plotrange),
-                      gridsize=50,
-                      cmap=pyplot.get_cmap(colours),
-                      mincnt=0)
+        pyplot.hexbin(
+            model_data,
+            obs_data,
+            xscale='log',
+            # yscale='log',
+            bins='log',
+            # extent=np.log10(plotrange),
+            gridsize=50,
+            cmap=pyplot.get_cmap(colours),
+            mincnt=0)
         cbar = pyplot.colorbar()
         cbar.set_label('log10(N)')
 
         pyplot.gca().set_aspect("equal")
         pyplot.axis(plotrange)
 
-        add_linear_regression(pyplot.gca(),
-                              model_data, obs_data,
-                              showtext=True,
-                              add_diagonal=True,
-                              extent=plotrange)
+        add_linear_regression(
+            pyplot.gca(),
+            model_data,
+            obs_data,
+            showtext=True,
+            add_diagonal=True,
+            extent=plotrange)
 
         pyplot.title(long_name)
         pyplot.xlabel(model)
         pyplot.ylabel(obs)
 
         # Determine image filename:
-        fn_list = ['model_vs_obs', long_name, model, obs, str(layer),
-                   'scatter']
+        fn_list = [
+            'model_vs_obs', long_name, model, obs,
+            str(layer), 'scatter'
+        ]
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
         path = path.replace(' ', '') + image_extention
 
@@ -423,11 +455,18 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
 
         model_type = 'observational_dataset'
-        logger.debug('model_type: %s, %s', index, model_type,)
-        logger.debug('metadatas:  %s, %s', index, metadatas,)
+        logger.debug(
+            'model_type: %s, %s',
+            index,
+            model_type,
+        )
+        logger.debug(
+            'metadatas:  %s, %s',
+            index,
+            metadatas,
+        )
         obs_filename = diagtools.match_model_to_key('observational_dataset',
-                                                    cfg[model_type],
-                                                    metadatas)
+                                                    cfg[model_type], metadatas)
         for filename in sorted(metadatas.keys()):
 
             if filename == obs_filename:
@@ -442,19 +481,11 @@ def main(cfg):
 
             # #####
             # model vs obs scatter plots
-            make_scatter(
-                cfg,
-                metadatas,
-                filename,
-                obs_filename)
+            make_scatter(cfg, metadatas, filename, obs_filename)
 
             # #####
             # model vs obs map plots
-            make_model_vs_obs_plots(
-                cfg,
-                metadatas,
-                filename,
-                obs_filename)
+            make_model_vs_obs_plots(cfg, metadatas, filename, obs_filename)
     logger.info('Success')
 
 
