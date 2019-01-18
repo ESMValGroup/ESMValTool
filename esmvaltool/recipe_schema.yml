@@ -3,12 +3,19 @@
 
 ---
 # Recipe schema
+documentation: include('documentation')
 datasets: list(include('dataset'), required=False)
 preprocessors: map(map(), required=False)
 diagnostics: map(include('diagnostic'), required=False)
 
 ---
 # Recipe item definitions
+documentation:
+  description: str()
+  authors: list(str(), min=1)
+  projects: list(str(), required=False)
+  references: list(str(), required=False)
+
 dataset:
   dataset: str()
   project: str(required=False)
@@ -42,6 +49,8 @@ diagnostic:
   scripts: any(null(), map(include('script')))
   additional_datasets: list(include('dataset'), required=False)
   description: str(required=False)
+  themes: list(str(), required=False)
+  realms: list(str(), required=False)
   variables: map(include('variable'), required=False)
 
 script:
