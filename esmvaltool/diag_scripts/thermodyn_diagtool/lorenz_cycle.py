@@ -32,7 +32,7 @@ NW_3 = 21
 
 class LorenzCycle():
     """PROGRAM FOR LEC COMPUTATION.
-    
+
     The class consists of the following functions:
         - lorenz: it is the main program, controlling the file input,
                   separating the real from imaginary part of the Fourier

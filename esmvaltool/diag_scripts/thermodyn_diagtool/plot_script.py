@@ -78,7 +78,7 @@ class PlotScript():
         - hem: a parameter for the choice of the hemisphere (1 stands for SH);
         - lat: latitude (in degrees);
         - inp: input field;
-        
+
         @author: Valerio Lembo, 2018.
         """
         plotsmod = PlotScript()
