@@ -80,7 +80,7 @@ class Fluxogram():
         """Update all fluxes and storages."""
         self.update_all_fluxes(amounts_fluxes)
         self.update_all_storages(amounts_storages)
-    
+
     # flake8: noqa
     def draw(self, filen, listv):
         """Draw all fluxes and storages."""

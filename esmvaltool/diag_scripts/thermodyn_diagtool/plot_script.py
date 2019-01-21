@@ -102,7 +102,7 @@ class PlotScript():
     @classmethod
     def transport(cls, zmean, gmean, lat):
         """Integrate the energy/water mass budgets to obtain meridional transp.
-        
+
         Arguments:
         - zmean: zonal mean input fields;
         - gmean: the global mean of the input fields;

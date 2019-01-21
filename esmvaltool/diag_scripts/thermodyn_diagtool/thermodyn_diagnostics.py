@@ -1,4 +1,4 @@
-"""Diagnostic tool for climate system thermodynamics.
+"""Tool for computation of some aspects of climate system thermodynamics.
 
 Author
 Valerio Lembo
@@ -1506,7 +1506,7 @@ def main(cfg):
         axi.tick_params(axis='both', which='major', labelsize=12)
         plt.grid()
         axi = plt.subplot(312)
-        axi.set_figsize=(50, 50)
+        axi.set_figsize = (50, 50)
         for model_name in model_names:
             atm_transp_file = (diagworkdir_up +
                                '/atmos_transp_mean_{}.nc'.format(model_name))
@@ -1564,7 +1564,7 @@ def main(cfg):
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
-                                                  atmb_all[:, 0])
+                                              atmb_all[:, 0])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1589,7 +1589,7 @@ def main(cfg):
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
     s_l, interc, r_2, pval = stats.linregress(baroc_eff_all,
-                                                  lec_all[:, 0])
+                                              lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
                           phi=np.arctan(s_l), x_cent=np.nanmean(baroc_eff_all),
@@ -1614,7 +1614,7 @@ def main(cfg):
     plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(horzentr_all[:, 0],
-                                                   vertentr_all[:, 0])
+                                              vertentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1661,7 +1661,7 @@ def main(cfg):
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(indentr_all,
-                                                   matentr_all[:, 0])
+                                              matentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1755,7 +1755,7 @@ def main(cfg):
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
-                                                   toab_all[:, 1])
+                                              toab_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1782,7 +1782,7 @@ def main(cfg):
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(atmb_all[:, 0],
-                                                   atmb_all[:, 1])
+                                              atmb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1809,7 +1809,7 @@ def main(cfg):
     plt.scatter(np.nanmean(surb_all[:, 0]), np.nanmean(surb_all[:, 1]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
-                                                   surb_all[:, 1])
+                                              surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(surb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1838,7 +1838,7 @@ def main(cfg):
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
                 c='red')
     s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
-                                                   surb_all[:, 1])
+                                              surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 0]),
                           phi=np.arctan(s_l),

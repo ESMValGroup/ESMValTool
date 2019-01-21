@@ -66,7 +66,7 @@ class LorenzCycle():
         - table_conv: prints the global and hemispheric mean values of the
                       conversion terms;
         - varatts: prints the attributes of a variable in a Nc file;
-    
+
     Constants:
         G: gravitational acceleration;
         R: gas constant;
@@ -80,7 +80,7 @@ class LorenzCycle():
     References:
         Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
         and transient atmospheric waves: Results from ECMWF analyses, Met.
-     
+
     Authors:
         Frank Lunkeit, Meteorology Department, University of Hamburg
         Valerio Lembo, Meteorology Department, University of Hamburg
