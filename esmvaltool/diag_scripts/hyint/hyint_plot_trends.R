@@ -25,6 +25,12 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     title_unit_m <- title_unit_m[selfields, , drop = F]
   }
 
+  nyears <- models_end_year[ref_idx] - models_start_year[ref_idx]
+  if (nyears < 50) {
+    tlevels_m <- tlevels_m * 3
+    levels_m <- levels_m * 3
+  }
+
   # Update number of panels and columns if selfields has one element only
   if (length(selfields) == 1) {
     npancol <- 1

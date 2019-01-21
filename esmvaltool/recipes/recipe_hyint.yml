@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
-  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
-  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+#  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+#  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 
 preprocessors:
   preproc:
@@ -54,7 +54,8 @@ diagnostics:
         # 13) timeseries with multiple models
         # 14) summary trend coefficients multiple regions
         # 15) summary trend coefficients multiple models
-        plot_type: [2, 3, 12, 13, 14, 15]
+        # plot_type: [2, 3, 12, 13, 14, 15]
+        plot_type:[15]
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
