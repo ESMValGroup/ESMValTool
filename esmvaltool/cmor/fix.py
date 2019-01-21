@@ -11,7 +11,7 @@ from ._fixes.fix import Fix
 from .check import _get_cmor_checker
 
 
-def fix_file(filename, short_name, project, dataset, output_dir):
+def fix_file(file, short_name, project, dataset, output_dir):
     """
     Fix files before ESMValTool can load them
 
@@ -22,7 +22,7 @@ def fix_file(filename, short_name, project, dataset, output_dir):
 
     Parameters
     ----------
-    filename: str
+    file: str
         Path to the original file
     short_name: str
         Variable's short name
@@ -39,8 +39,8 @@ def fix_file(filename, short_name, project, dataset, output_dir):
     """
     for fix in Fix.get_fixes(
             project=project, dataset=dataset, variable=short_name):
-        filename = fix.fix_file(filename, output_dir)
-    return filename
+        file = fix.fix_file(file, output_dir)
+    return file
 
 
 def fix_metadata(cube, short_name, project, dataset, cmor_table=None,
