@@ -1,6 +1,6 @@
-yaml
 lintr
-Rcpp
+logging
+yaml
 dotCall64
 abind
 climdex.pcic
@@ -12,4 +12,3 @@ ncdf4
 RColorBrewer
 s2dverification
 plyr
-XML
