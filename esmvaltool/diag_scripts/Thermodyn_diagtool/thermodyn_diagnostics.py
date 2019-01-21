@@ -844,7 +844,7 @@ def main(cfg):
             os.remove(va_file_mask)
             os.remove(energy3_file)
         else:
-        	    pass
+            pass
         # Compute the material entropy production
         if entr in {'y', 'yes'}:
             if met in {'1', '3'}:
@@ -963,12 +963,12 @@ def main(cfg):
                 masksnow_file = (diagworkdir +
                                  '/{}_maskprecs.nc'.format(model_name))
                 removeif(masksnow_file)
-                cdo.gtc('1.0E-7', input=prsn_file, options=' -b F32', 
+                cdo.gtc('1.0E-7', input=prsn_file, options=' -b F32',
                         output=masksnow_file)
                 prrmask_file = (diagworkdir +
                                 '/{}_prr_masked.nc'.format(model_name))
                 removeif(prrmask_file)
-                cdo.mul(input='{} {}'.format(maskrain_file, prr_file), 
+                cdo.mul(input='{} {}'.format(maskrain_file, prr_file),
                         options='-b F32', output=prrmask_file)
                 prsnmask_file = (diagworkdir +
                                  '/{}_prsn_masked.nc'.format(model_name))
@@ -1005,7 +1005,7 @@ def main(cfg):
                               '/{}_t_icerain_file'.format(model_name))
                 removeif(ticer_file)
                 cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tliq_file,maskice_file),
+                               .format(tliq_file, maskice_file),
                                options='-b F32', output=ticer_file)
                 prrice_file = (diagworkdir +
                                '/{}_prr_ice_file.nc'.format(model_name))
@@ -1068,8 +1068,8 @@ def main(cfg):
                 removeif(snowentr_file)
                 removeif(aux_file)
                 cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
-                                  ' -div {} {}').format(latsnow_file,
-                                                        tcloud_file), 
+                                   '-div {} {}').format(latsnow_file,
+                                                        tcloud_file),
                             options='-b F32', output=aux_file)
                 cdo.chname('prsn,ssnow', input=aux_file, options='-b F32',
                            output=snowentr_file)
@@ -1103,7 +1103,7 @@ def main(cfg):
                            output=meltentr_file)
                 meltentr_mean_file = (diagworkdir +
                                       '/{}_snowmeltEntropy_gmean.nc'
-                                     .format(model_name))
+                                      .format(model_name))
                 removeif(meltentr_mean_file)
                 cdo.fldmean(input=meltentr_file,
                             options='-b F32', output=meltentr_mean_file)
@@ -1203,7 +1203,8 @@ def main(cfg):
 #            dataIDs = "rlut, rsdt, rsut (time res: monthly, vertical: 2D TOA)"
 #            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
-#            oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'atmb')
+#            oname = '{}/{}_{}_timeser.png'
+#                     .format(plotpath2, model_name, 'atmb')
 #            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt, rsus, rsut
 #                       (time res: monthly, vertical: 2D TOA/surf)"
 #            caption = "Atmospheric EB annual mean time series
@@ -1211,7 +1212,8 @@ def main(cfg):
 #            plot_id = "#AtmEBtimeser"
 #            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
-#            oname = '{}/{}_{}_timeser.png'.format(plotpath2, model_name, 'surb')
+#            oname = '{}/{}_{}_timeser.png'
+#                    .format(plotpath2, model_name, 'surb')
 #            dataIDs = "hfls, hfss, rlds, rlus, rsds, rsus (time res: monthly,
 #                       vertical: 2D TOA/surf)"
 #            caption = "Surface EB annual mean time series (global; NH; SH)"
@@ -1231,7 +1233,7 @@ def main(cfg):
 #                       (TOA,atmospheric,surface)"
 #            plot_id = "#enclimap"
 #            dataIDs = "hfls, hfss, rlds, rlus, rlut, rsds, rsdt,
-#                       rsus, rsut (time res: monthly, vertical: 2D TOA/surf)" 
+#                       rsus, rsut (time res: monthly, vertical: 2D TOA/surf)"
 #            #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #            #         diag_script, authors)
 #            oname = '{}/{}_scatpeak.png'.format(plotpath2,model_name)
@@ -1249,13 +1251,15 @@ def main(cfg):
                               [wmassbudget_file, latentenergy_file],
                               ['wmass', 'latent'],
                               model_name)
-#            oname = '{}/{}_{}_timeser.png'.format(plotpath2,model_name,'wmass')
+#            oname = '{}/{}_{}_timeser.png'
+#                     .format(plotpath2,model_name,'wmass')
 #            caption = "water mass annual mean time series (global; nh; sh)"
 #            plot_id = "#wmasstimeser"
-#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)" 
+#            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
 #            #esmvalmd("both",oname, plot_tags, caption, plot_id, dataids,
 #            #         diag_script, authors)
-#            oname = '{}/{}_{}_timeser.png'.format(plotpath2,model_name,'latent')
+#            oname = '{}/{}_{}_timeser.png'
+#                     .format(plotpath2,model_name,'latent')
 #            caption = "latent energy annual mean time series (global; nh; sh)"
 #            plot_id = "#latentimeser"
 #            dataids = "hfls, pr, prsn (time res: monthly, vertical: 2d surf)"
@@ -1393,15 +1397,15 @@ def main(cfg):
 #                           monthly, vertical: 2D TOA/surf)"
 #                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
 #                #         diag_script, authors)
-                plotsmod.entropy(plotpath2,horizentropy_file,'shor',
-                                 'Horizontal entropy production',model_name)
+                plotsmod.entropy(plotpath2, horizentropy_file, 'shor',
+                                 'Horizontal entropy production', model_name)
 #                oname = '{}/{}_sver_climap.png'.format(plotpath2, model_name)
 #                caption = "Climatological annual mean horizontal entropy
 #                           production"
 #                plot_id = "#hprclimap"
 #                dataIDs = "rlut, rsdt rsut (time res: monthly,
 #                           vertical: 2D TOA)"
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
                 logger.info('Done\n')
                 logger.info('Running the plotting module for the material '
@@ -1497,7 +1501,7 @@ def main(cfg):
         plt.xlim(-90, 90)
         axi.tick_params(axis='both', which='major', labelsize=12)
         plt.grid()
-        axi=plt.subplot(312)
+        axi = plt.subplot(312)
         axi.set_figsize=(50, 50)
         for model_name in model_names:
             atm_transp_file = (diagworkdir_up +
@@ -1516,7 +1520,7 @@ def main(cfg):
         plt.xlim(-90, 90)
         axi.tick_params(axis='both', which='major', labelsize=12)
         plt.grid()
-        axi=plt.subplot(313)
+        axi = plt.subplot(313)
         axi.set_figsize=(50, 50)
         for model_name in model_names:
             oce_transp_file = (diagworkdir_up +
@@ -1527,7 +1531,7 @@ def main(cfg):
             lats = dataset.variables['lat'][:]
             plt.plot(np.array(lats), np.array(surt), color='black',
                      linewidth=1.)
-        plt.title('(c) Oceanic heat transports',fontsize=18)
+        plt.title('(c) Oceanic heat transports', fontsize=18)
         plt.xlabel('Latitude [deg]', fontsize=14)
         plt.ylabel('[W]', fontsize=14)
         plt.tight_layout()
@@ -1535,7 +1539,7 @@ def main(cfg):
         plt.xlim(-90, 90)
         axi.tick_params(axis='both', which='major', labelsize=12)
         plt.grid()
-        oname=plotdir + '/meridional_transp.png'
+        oname = plotdir + '/meridional_transp.png'
         plt.savefig(oname)
         plt.show(fig)
         plt.close(fig)
@@ -1547,10 +1551,10 @@ def main(cfg):
     else:
         pass
     logger.info('Scatter plots')
-    fig=plt.figure()
+    fig = plt.figure()
     fig.set_size_inches(12, 22)
     colors = (0, 0, 0)
-    axi=plt.subplot(321)
+    axi = plt.subplot(321)
     axi.set_figsize=(50, 50)
     plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
@@ -1559,26 +1563,26 @@ def main(cfg):
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
                           phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]),
-                          y_cent=np.nanmean(atmb_all[:, 0]),ax=axi)
+                          y_cent=np.nanmean(atmb_all[:, 0]), ax=axi)
     plt.title('(a) TOA vs. atmospheric energy budget', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
-    plt.xlabel('R_t [W m-2]',fontsize=14)
-    plt.ylabel('F_a [W m-2]',fontsize=14)
+    plt.xlabel('R_t [W m-2]', fontsize=14)
+    plt.ylabel('F_a [W m-2]', fontsize=14)
     dx = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
     dy = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (toab_all[i_m, 0], atmb_all[i_m, 0]),
-                    xytext=(toab_all[i_m, 0] + dx, atmb_all[i_m, 0] + dy),
-                    fontsize=12)
+                     xytext=(toab_all[i_m, 0] + dx, atmb_all[i_m, 0] + dy),
+                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
     axi = plt.subplot(322)
     axi.set_figsize=(50, 50)
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:,0]), c='red')
-    sl, interc, r_2, p, std=stats.linregress(baroc_eff_all, lec_all[:, 0])
+    plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
+    sl, interc, r_2, p, std = stats.linregress(baroc_eff_all, lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
                           phi=np.arctan(sl), x_cent=np.nanmean(baroc_eff_all),
@@ -1592,8 +1596,8 @@ def main(cfg):
     dy = 0.01 * (max(lec_all[:, 0]) - min(lec_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (baroc_eff_all[i_m], lec_all[i_m, 0]),
-                    xytext=(baroc_eff_all[i_m] + dx, lec_all[i_m, 0] + dy),
-                    fontsize=12)
+                     xytext=(baroc_eff_all[i_m] + dx, lec_all[i_m, 0] + dy),
+                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
@@ -1602,57 +1606,58 @@ def main(cfg):
     plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(horzentr_all[:, 0],
-                                               vertentr_all[:, 0])
+    s_l, interc, r_2, pval, std = stats.linregress(horzentr_all[:, 0],
+                                                   vertentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
-                          phi=np.arctan(sl),
+                          phi=np.arctan(s_l),
                           x_cent=np.nanmean(horzentr_all[:, 0]),
                           y_cent=np.nanmean(vertentr_all[:, 0]),
                           ax=axi)
-    xrang=abs(max(horzentr_all[:, 0])-min(horzentr_all[:, 0]))
-    yrang=abs(max(vertentr_all[:, 0])-min(vertentr_all[:, 0]))
+    xrang = abs(max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
+    yrang = abs(max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
     plt.xlim(min(horzentr_all[:, 0]) - 0.1 * xrang,
              max(horzentr_all[:, 0]) + 0.1 * xrang)
     plt.ylim(min(vertentr_all[:, 0]) - 0.1 * yrang,
              max(vertentr_all[:, 0]) + 0.1 * yrang)
-    xx = np.linspace(min(horzentr_all[:, 0]) - 0.1 * xrang,
+    x_x = np.linspace(min(horzentr_all[:, 0]) - 0.1 * xrang,
                      max(horzentr_all[:, 0]) + 0.1 * xrang,
                      10)
-    yy = np.linspace(min(vertentr_all[:, 0]) - 0.1 * yrang,
+    y_y = np.linspace(min(vertentr_all[:, 0]) - 0.1 * yrang,
                      max(vertentr_all[:, 0]) + 0.1 * yrang,
                      10)
-    X, Y = np.meshgrid(xx, yy)
-    Z = X + Y
-    cp = plt.contour(X, Y, Z, colors='black', linestyles='dashed',
+    x_m, y_m = np.meshgrid(x_x, y_y)
+    z_m = x_m + y_m
+    c_p = plt.contour(x_m, y_m, z_m, colors='black', linestyles='dashed',
                      linewidths=1.)
-    plt.clabel(cp, inline=True, inline_spacing=-4, fontsize=8)
+    plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
     plt.title('(c) Vertical vs. horizontal component', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('S_hor [W m-2 K-1]', fontsize=14)
     plt.ylabel('S_ver [W m-2 K-1]', fontsize=14)
-    dx=0.01 * (max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
-    dy=0.01 * (max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
+    d_x = 0.01 * (max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
+    d_y = 0.01 * (max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (horzentr_all[i_m, 0],
                                     vertentr_all[i_m, 0]),
-                     xytext=(horzentr_all[i_m, 0] + dx,
-                             vertentr_all[i_m, 0] + dy),
-                    fontsize=12)
+                     xytext=(horzentr_all[i_m, 0] + d_x,
+                             vertentr_all[i_m, 0] + d_y),
+                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
-    indentr_all = horzentr_all[:,0] + vertentr_all[:,0]
+    indentr_all = horzentr_all[:, 0] + vertentr_all[:, 0]
     axi = plt.subplot(324)
     axi.set_figsize = (50, 50)
     plt.scatter(indentr_all, matentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(indentr_all, matentr_all[:, 0])
+    s_l, interc, r_2, pval, std = stats.linregress(indentr_all,
+                                                   matentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
-                          phi=np.arctan(sl),
+                          phi=np.arctan(s_l),
                           x_cent=np.nanmean(indentr_all),
                           y_cent=np.nanmean(matentr_all[:, 0]),
                           ax=axi)
@@ -1661,11 +1666,12 @@ def main(cfg):
     rcParams['axes.labelpad'] = 1
     plt.xlabel('S_ind [W m-2 K-1]', fontsize=14)
     plt.ylabel('S_dir [W m-2 K-1]', fontsize=14)
-    dx = 0.01 * (max(indentr_all) - min(indentr_all))
-    dy = 0.01 * (max(matentr_all[:, 0]) - min(matentr_all[:, 0]))
+    d_x = 0.01 * (max(indentr_all) - min(indentr_all))
+    d_y = 0.01 * (max(matentr_all[:, 0]) - min(matentr_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (indentr_all[i_m], matentr_all[i_m, 0]),
-                     xytext=(indentr_all[i_m] + dx, matentr_all[i_m, 0] + dy),
+                     xytext=(indentr_all[i_m] + d_x,
+                             matentr_all[i_m, 0] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1674,10 +1680,10 @@ def main(cfg):
     axi.set_figsize=(50, 50)
     plt.scatter(te_all, indentr_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(indentr_all), c='red')
-    sl, interc, r_2, p, std=stats.linregress(te_all, indentr_all)
+    s_l, interc, r_2, pval, std=stats.linregress(te_all, indentr_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(indentr_all),
-                          phi=np.arctan(sl),
+                          phi=np.arctan(s_l),
                           x_cent=np.nanmean(te_all),
                           y_cent=np.nanmean(indentr_all),
                           ax=axi)
@@ -1686,36 +1692,37 @@ def main(cfg):
     rcParams['axes.labelpad'] = 1
     plt.xlabel('T_E [K]', fontsize=14)
     plt.ylabel('S_mat [W m-2 K-1]', fontsize=14)
-    dx= 0.01 * (max(te_all) - min(te_all))
-    dy= 0.01 * (max(indentr_all) - min(indentr_all))
+    d_x = 0.01 * (max(te_all) - min(te_all))
+    d_y = 0.01 * (max(indentr_all) - min(indentr_all))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (te_all[i_m], indentr_all[i_m]),
-                     xytext=(te_all[i_m] + dx, (indentr_all[i_m]) + dy),
+                     xytext=(te_all[i_m] + d_x, (indentr_all[i_m]) + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
-    axi=plt.subplot(326)
+    axi = plt.subplot(326)
     axi.set_figsize=(50, 50)
     plt.scatter(te_all, baroc_eff_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(baroc_eff_all), c='red')
-    sl, interc, r_2, p, std = stats.linregress(te_all, baroc_eff_all)
+    s_l, interc, r_2, pval, std = stats.linregress(te_all, baroc_eff_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(baroc_eff_all),
-                          phi=np.arctan(sl),
+                          phi=np.arctan(s_l),
                           x_cent=np.nanmean(te_all),
                           y_cent=np.nanmean(baroc_eff_all),
                           ax=axi)
-    plt.title('(f) Baroclinic efficiency vs. emission temperature',fontsize=12)
+    plt.title('(f) Baroclinic efficiency vs. emission temperature',
+              fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('T_E [K]', fontsize=14)
     plt.ylabel('Eta', fontsize=14)
-    dx = 0.01 * (max(te_all) - min(te_all))
-    dy = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
+    d_x = 0.01 * (max(te_all) - min(te_all))
+    d_y = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (te_all[i_m], baroc_eff_all[i_m]),
-                     xytext=(te_all[i_m] + dx, baroc_eff_all[i_m] + dy),
+                     xytext=(te_all[i_m] + d_x, baroc_eff_all[i_m] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.grid()
@@ -1740,21 +1747,23 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], toab_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(toab_all[:, 0], toab_all[:,1])
+    s_l, interc, r_2, pval, std = stats.linregress(toab_all[:, 0],
+                                                   toab_all[:,1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]),
+                          phi=np.arctan(s_l),
+                          x_cent=np.nanmean(toab_all[:, 0]),
                           y_cent=np.nanmean(toab_all[:, 1]), ax=axi)
     plt.title('(a) TOA energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('R_t [W m-2]', fontsize=14)
     plt.ylabel('Sigma (R_t) [W m-2]', fontsize=14)
-    dx = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
-    dy = 0.01 * (max(toab_all[:, 1]) - min(toab_all[:, 1]))
+    d_x = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
+    d_y = 0.01 * (max(toab_all[:, 1]) - min(toab_all[:, 1]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (toab_all[i_m, 0], toab_all[i_m, 1]),
-                     xytext=(toab_all[i_m, 0] + dx, toab_all[i_m, 1] + dy),
+                     xytext=(toab_all[i_m, 0] + d_x, toab_all[i_m, 1] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1765,21 +1774,23 @@ def main(cfg):
     plt.scatter(atmb_all[:, 0], atmb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(atmb_all[:, 0], atmb_all[:,1]) 
+    s_l, interc, r_2, pval, std = stats.linregress(atmb_all[:, 0],
+                                                   atmb_all[:,1]) 
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(atmb_all[:, 0]),
+                          phi=np.arctan(s_l),
+                          x_cent=np.nanmean(atmb_all[:, 0]),
                           y_cent=np.nanmean(atmb_all[:, 1]), ax=axi)
     plt.title('(b) Atmospheric energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('F_a [W m-2]', fontsize=14)
     plt.ylabel('Sigma (F_a) [W m-2]', fontsize=14)
-    dx = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
-    dy = 0.01 * (max(atmb_all[:, 1]) - min(atmb_all[:, 1]))
+    d_x = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
+    d_y = 0.01 * (max(atmb_all[:, 1]) - min(atmb_all[:, 1]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (atmb_all[i_m, 0], atmb_all[i_m, 1]),
-                     xytext=(atmb_all[i_m, 0] + dx,atmb_all[i_m, 1] + dy),
+                     xytext=(atmb_all[i_m, 0] + d_x, atmb_all[i_m, 1] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1790,21 +1801,23 @@ def main(cfg):
     plt.scatter(surb_all[:, 0], surb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(surb_all[:, 0]), np.nanmean(surb_all[:, 1]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(surb_all[:, 0], surb_all[:, 1])
+    s_l, interc, r_2, pval, std = stats.linregress(surb_all[:, 0],
+                                                   surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(surb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 1]),
-                          phi=np.arctan(sl),x_cent=np.nanmean(surb_all[:, 0]),
+                          phi=np.arctan(s_l),
+                          x_cent=np.nanmean(surb_all[:, 0]),
                           y_cent=np.nanmean(surb_all[:, 1]), ax=axi)
     plt.title('(c) Surface energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('F_s [W m-2]',fontsize=14)
     plt.ylabel('Sigma (F_s) [W m-2]', fontsize=14)
-    dx = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
-    dy = 0.01 * (max(surb_all[:, 1]) - min(surb_all[:, 1]))
+    d_x = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
+    d_y = 0.01 * (max(surb_all[:, 1]) - min(surb_all[:, 1]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (surb_all[i_m, 0], surb_all[i_m, 1]),
-                    xytext=(surb_all[i_m, 0] + dx,surb_all[i_m, 1] + dy),
+                    xytext=(surb_all[i_m, 0] + d_x,surb_all[i_m, 1] + d_y),
                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.ylim(bottom=0)
@@ -1817,21 +1830,23 @@ def main(cfg):
                  fmt='none', ecolor=colors)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(surb_all[:, 0], surb_all[:, 1])
+    s_l, interc, r_2, pval, std = stats.linregress(surb_all[:, 0],
+                                                   surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 0]),
-                          phi=np.arctan(sl),x_cent=np.nanmean(atmb_all[:, 0]),
+                          phi=np.arctan(s_l),
+                          x_cent=np.nanmean(atmb_all[:, 0]),
                           y_cent=np.nanmean(surb_all[:, 0]), ax=axi)
     plt.title('(d) Atmospheric vs. Surface budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('F_a [W m-2]', fontsize=14)
     plt.ylabel('F_s [W m-2]', fontsize=14)
-    dx = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
-    dy = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
+    d_x = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
+    d_y = 0.01 * (max(surb_all[:, 0]) - min(surb_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (atmb_all[i_m, 0], surb_all[i_m, 0]),
-                     xytext=(atmb_all[i_m, 0] + dx,surb_all[i_m, 0] + dy),
+                     xytext=(atmb_all[i_m, 0] + d_x,surb_all[i_m, 0] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)

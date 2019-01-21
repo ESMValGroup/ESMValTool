@@ -33,7 +33,7 @@ class FourierCoeff():
     """
     
     from fourier_coefficients import FourierCoeff
-    
+
     @classmethod
     def fourier_coeff(cls, tadiagfile, outfile, ta_input, tas_input):
         """Main script for Fourier coefficients computation.
@@ -272,7 +272,7 @@ class FourierCoeff():
         fourcoeff.varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
         var_nc_fid.close()  # close the new file
-    
+
     @classmethod
     def varatts(cls, w_nc_var, varname):
         """Add attibutes to the variables, depending on their name.

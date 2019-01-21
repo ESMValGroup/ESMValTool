@@ -272,7 +272,7 @@ class LorenzCycle():
             # Compute conversion between stationary and transient eddy KE
             kt2ks[:, t_t, :, :] = lorenz.mkktks(ua_tan, va_tan, wap_tan,
                                                 ua_tmn, va_tmn, wap_tmn,
-                                                lev, y_l, nlat, ntp, nlev)
+                                                y_l, nlat, ntp, nlev)
         ek_tmn = np.nanmean(e_k, axis=1)
         ek_tgmn = lorenz.globall_cg(ek_tmn, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log)
@@ -373,7 +373,7 @@ class LorenzCycle():
 
     @classmethod
     def bsslzr(cls, kdim):
-        """Parameters for the Gaussian coefficients.
+        """Obtain parameters for the Gaussian coefficients.
 
         @author: Valerio Lembo
         """
@@ -482,7 +482,7 @@ class LorenzCycle():
     @classmethod
     def globall_cg(cls, d3v, g_w, d_s, nlat, ntp, nlev):
         """Compute the global and hemispheric averages.
-        
+
         @author: Valerio Lembo
         """
         gmn = np.zeros([3, ntp - 1])
@@ -529,7 +529,7 @@ class LorenzCycle():
         """Compute the kinetic energy reservoirs from t.
         
         @author: Valerio Lembo
-        """  
+        """
         ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
         ape[:, :, 0] = (gam[:, np.newaxis] * 0.5
                         * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) *
@@ -541,7 +541,7 @@ class LorenzCycle():
         """Compute the KE to APE energy conversions from t and w.
         
         @author: Valerio Lembo
-        """  
+        """
         a2k = - (R / p_l[:, np.newaxis, np.newaxis]
                  * (t_t * np.conj(wap) + np.conj(t_t) * wap))
         a2k[:, :, 0] = - (R / p_l[:, np.newaxis]
@@ -603,7 +603,7 @@ class LorenzCycle():
     @classmethod
     def mkkekz(cls, u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         """Compute the zonal mean - eddy KE conversions from u and v.
-        
+
         @author: Valerio Lembo
         """
         dudp = np.zeros([nlev, nlat])
@@ -762,7 +762,7 @@ class LorenzCycle():
         return at2as
 
     @classmethod
-    def mkktks(cls, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
+    def mkktks(cls, u_t, v_t, wap, utt, vtt, wtt, lat, nlat, ntp, nlev):    
         """Compute the stat.-trans. eddy KE conversions from u, v, wap and t.
 
         @author: Valerio Lembo
@@ -829,7 +829,6 @@ class LorenzCycle():
         nc_fid = Dataset(filep, 'r')
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract/copy the data
-        time = nc_fid.variables['time'][:]
         wave = nc_fid.variables['wave'][:]
         ntp = len(wave) / 2
         # Writing NetCDF files

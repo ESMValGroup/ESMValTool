@@ -48,7 +48,7 @@ class PlotScript():
     from plot_script import PlotScript
 
     @classmethod
-    def latwgt(self, lat, t_r):
+    def latwgt(cls, lat, t_r):
         """Compute weighted average over latitudes.
         
         Arguments:
@@ -71,7 +71,7 @@ class PlotScript():
         return tr2
 
     @classmethod
-    def hemean(self, hem, lat, inp):
+    def hemean(cls, hem, lat, inp):
         """Compute hemispheric averages.
         
         Arguments:
@@ -100,14 +100,14 @@ class PlotScript():
         return hmean
 
     @classmethod
-    def transport(self, zmean, gmean, lat):
+    def transport(cls, zmean, gmean, lat):
         """Integrate the energy/water mass budgets to obtain meridional transp.
         
         Arguments:
         - zmean: zonal mean input fields;
         - gmean: the global mean of the input fields;
         - lat: a latitudinal array (in degrees of latitude);
-        
+
         @author: Valerio Lembo, 2018.
         """
         plotsmod = PlotScript()
@@ -124,7 +124,7 @@ class PlotScript():
         cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         for j_l in range(len(lat) - 1):
-            cumb[:, j_l] = (-2 * 
+            cumb[:, j_l] = (-2 *
                             np.nansum(plotsmod.latwgt(lat[j_l:len(lat)],
                                                       zmn_ub[:, j_l:len(lat)]),
                                       axis=1))
@@ -133,7 +133,7 @@ class PlotScript():
         return [zmn_ub, transp]
 
     @classmethod    
-    def transp_max(self, lat, transp, lim):
+    def transp_max(cls, lat, transp, lim):
         """Obtain transport peak magnitude and location from interpolation.
         
         Arguments:
@@ -161,7 +161,7 @@ class PlotScript():
                 pass
         return [xc_cut, y_i]
 
-    @classmethod    
+    @classmethod
     def balances(workdir, plotpath, filena, name, model_name):
         """Method for various plots related to energy and water mass budgets.
         
@@ -414,7 +414,7 @@ class PlotScript():
             plt.savefig(path + '/{}_latent_transp.png'.format(model))
             plt.close(fig)
         else:
-            quit()            
+            quit() 
         for i_f in np.arange(nsub):
             fig = plt.figure()
             axi = plt.subplot(111)
@@ -431,9 +431,9 @@ class PlotScript():
             plt.grid()
             plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
             plt.close(fig)
-            
+
     @classmethod
-    def entropy(self, plotpath, filename, name, ext_name, model_name):
+    def entropy(cls, plotpath, filename, name, ext_name, model_name):
         """Method for plots of annual mean maps of mat. entr. prod.
 
         Arguments:
@@ -496,11 +496,11 @@ class PlotScript():
         plt.title('Climatological Mean {}'.format(ext_name))
         plt.tight_layout()
         plt.grid()
-        plt.savefig(path+'/{}_{}_climap.png'.format(model, name))
+        plt.savefig(path + '/{}_{}_climap.png'.format(model, name))
         plt.close(fig)
 
     @classmethod
-    def plot_ellipse(self, semimaj, semimin, phi, x_cent, y_cent, theta_num,
+    def plot_ellipse(cls, semimaj, semimin, phi, x_cent, y_cent, theta_num,
                      axi, plot_kwargs, fill, fill_kwargs, data_out, cov,
                      mass_level):
         """A simple method for plotting ellipses in Python.
@@ -577,11 +577,9 @@ class PlotScript():
             axi.fill(data[0], data[1], **fill_kwargs)
         if return_fig is True:
             return fig
-        else:
-            return 'False'
 
     @classmethod
-    def pr_output(self, varout, filep, nc_f, nameout):
+    def pr_output(cls, varout, filep, nc_f, nameout):
         """Print processed ta field to NetCDF file.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -622,7 +620,7 @@ class PlotScript():
         nc_fid.close()
 
     @classmethod
-    def varatts(self, w_nc_var, varname):
+    def varatts(cls, w_nc_var, varname):
         """Add attibutes to the variables, depending on name and time res.
 
         Arguments:
@@ -650,7 +648,7 @@ class PlotScript():
                                 'units': u"W", 'level_desc': 'sfc'})
 
     @classmethod
-    def removeif(self, filename):
+    def removeif(cls, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)

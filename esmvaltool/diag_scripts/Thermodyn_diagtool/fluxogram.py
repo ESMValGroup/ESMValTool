@@ -30,6 +30,7 @@ class Fluxogram():
     some similiar kind of thing to be drawn as a sequence of storages
     and fluxes.
     """
+    
     # pylint: disable=too-many-arguments
     # Twentythree is reasonable in this case.
 

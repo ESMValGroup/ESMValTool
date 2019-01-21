@@ -1,7 +1,7 @@
 """Module for computation of the auxiliary variables needed by the tool.
 
-Module needed by the main thermodynamic diagnosticl tool script for
-computation of some auxiliary variables.
+Here the thermodynamic diagnostic tool script computes
+some auxiliary variables.
 
 It computes equivalent potential temperatures and temperatures representative
 of the sensible and latent heat exchanges in the lower layers of the
@@ -49,7 +49,7 @@ class Mkthe():
     from mkthe import Mkthe
 
     @classmethod
-    def mkthe_main(self, wdir, file_list, modelname):
+    def mkthe_main(cls, wdir, file_list, modelname):
         """The main script in the module for computation of aux. variables.
 
         Arguments:
@@ -194,8 +194,8 @@ class Mkthe():
         w_nc_fid.description = "Monthly mean temperature at BL top for {} \
                                 model. Calculated by Thermodynamics model \
                                 diagnostics in ESMValTool. Author Valerio \
-                                Lembo, Meteorologisches Institut, Universitaet \
-                                Hamburg.".format(modelname)
+                                Lembo, Meteorologisches Institut, \
+                                Universitaet Hamburg.".format(modelname)
         w_nc_fid.createDimension('time', None)
         w_nc_dim = w_nc_fid.createVariable('time',
                                            dataset0.variables['time'].dtype,
@@ -274,7 +274,7 @@ class Mkthe():
         w_nc_fid.close()  # close the new file
 
     @classmethod
-    def removeif(self, filename):
+    def removeif(cls, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)
