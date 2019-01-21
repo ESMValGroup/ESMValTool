@@ -6,6 +6,7 @@ import calendar
 import math
 
 import numpy as np
+from numba import vectorize
 
 import matplotlib
 matplotlib.use('Agg')  # noqa
@@ -85,14 +86,16 @@ class Blocking(object):
 
         self.blocking_2D = {}
 
-        def _get_index(self, high, central, low,
-                       north_distance, south_distance):
-            if ((high - central) / north_distance) > self.north_threshold:
+        @vectorize()
+        def _get_index(high, central, low,
+                       north_distance, south_distance,
+                       north_threshold, south_threshold):
+            if ((high - central) / north_distance) > north_threshold:
                 return 0
-            if ((central - low) / south_distance) < self.south_threshold:
+            if ((central - low) / south_distance) < south_threshold:
                 return 0
             return 1
-        self._compute_index = np.vectorize(_get_index, [np.int8])
+        self._compute_index = _get_index
 
     def compute(self):
         """Compute blocking diagnostic"""
@@ -339,7 +342,7 @@ class Blocking(object):
             return cube
         logger.debug('Smoothing...')
         smoothed = iris.cube.CubeList()
-        for lon_slice in cube.slices_over('longitude'):
+        for lon_slice in cube.slices('longitude'):
             longitude = lon_slice.coord('longitude').points[0]
             lon_window = cube.intersection(
                 longitude=(longitude - self.smoothing_window / 2.,
@@ -370,8 +373,9 @@ class Blocking(object):
         south_distance = central_lat.point - low_lat.point
 
         blocking_index = self._compute_index(
-            self, zg_high, zg_central, zg_low,
-            north_distance, south_distance)
+            zg_high, zg_central, zg_low,
+            north_distance, south_distance,
+            self.north_threshold, self.south_threshold)
 
         del self.latitude_data[low_lat]
 
@@ -406,13 +410,13 @@ class Blocking(object):
         return lat_data
 
     def _apply_persistence(self, blocking_cube):
-        for lon_slice in blocking_cube.slices('longitude'):
+        for point_slice in blocking_cube.slices('time'):
             grouped = ((k, sum(1 for _ in g))
-                       for k, g in itertools.groupby(lon_slice.data))
+                       for k, g in itertools.groupby(point_slice.data))
             index = 0
             for value, length in grouped:
                 if value and length < self.persistence:
-                    lon_slice.data[index: index + length] = False
+                    point_slice.data[index: index + length] = False
                 index += length
         return blocking_cube
 
