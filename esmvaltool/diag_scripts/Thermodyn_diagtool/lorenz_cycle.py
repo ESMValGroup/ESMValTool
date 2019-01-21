@@ -16,7 +16,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-from fluxogram import Fluxogram
+# from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 

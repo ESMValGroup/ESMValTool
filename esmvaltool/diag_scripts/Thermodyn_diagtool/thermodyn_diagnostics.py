@@ -203,6 +203,7 @@ from matplotlib import rcParams
 # import srvfile_read as srv
 # import fluxogram as fluxogram
 from mkthe import Mkthe
+from fluxogram import Fluxogram
 from fourier_coefficients import FourierCoeff
 from lorenz_cycle import LorenzCycle
 from plot_script import PlotScript
