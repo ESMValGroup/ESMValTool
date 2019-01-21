@@ -100,24 +100,6 @@ MULTI_MODEL_FUNCTIONS = {
     'mask_fillvalues',
 }
 
-# Preprocessor functions that take a list instead of a file/Cube as input.
-_LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
-    'download',
-    'concatenate',
-    'derive',
-    'save',
-    'cleanup',
-}
-assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
-
-# Preprocessor functions that return a list instead of a file/Cube.
-_LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
-    'download',
-    'save',
-    'cleanup',
-}
-assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
-
 
 def _get_itype(step):
     """Get the input type of a preprocessor function."""
@@ -138,7 +120,7 @@ def check_preprocessor_settings(settings):
                     step, ', '.join(DEFAULT_ORDER)))
 
         function = function = globals()[step]
-        argspec = inspect.getargspec(function)
+        argspec = inspect.getfullargspec(function)
         args = argspec.args[1:]
         # Check for invalid arguments
         invalid_args = set(settings[step]) - set(args)
