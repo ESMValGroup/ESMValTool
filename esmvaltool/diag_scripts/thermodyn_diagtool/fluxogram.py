@@ -32,7 +32,7 @@ class Fluxogram():
     """
 
     # disable-msg=R0914
-    # pylint: disable-msg=R0914 
+    # pylint: disable-msg=R0914
     # pylint: disable=too-many-arguments
     # Twentythree is reasonable in this case.
     # pylint: disable=too-many-branches

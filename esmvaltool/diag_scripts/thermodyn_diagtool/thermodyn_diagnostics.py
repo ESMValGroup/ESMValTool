@@ -217,6 +217,7 @@ LC_SUB = 2835000 		    # latent heat of sublimation
 L_S = 334000		            # latent heat of solidification
 GRAV = 9.81		            # gravity acceleration
 
+
 # pylint: disable=C0302
 # pylint: disable-msg=C0302
 # pylint: disable-msg=R0914
@@ -302,7 +303,7 @@ def main(cfg):
                     file_path = os.path.join(diagworkdir, name)
                 for name in dirs:
                     file_path = os.path.join(diagworkdir, name)
-            for root, dirs, files in os.walk(plotpath2):
+            for dirs, files in os.walk(plotpath2):
                 for name in files:
                     file_path = os.path.join(plotpath2, name)
                     os.remove(file_path)
@@ -578,7 +579,7 @@ def main(cfg):
             logger.info('Latent energy budget: %s\n', latent_all[i_m, 0])
             logger.info('Done\n')
         else:
-        	    pass
+            pass
         # Compute budgets over oceans and land separately.
         if lsm in {'y', 'yes'}:
             if e_b in {'y', 'yes'}:
@@ -808,23 +809,23 @@ def main(cfg):
             yrs2 = yrs.split()
             y_i = 0
             lect = np.zeros(len(yrs2))
-            for yr in yrs2:
-                yr = int(filter(str.isdigit, yr))
+            for y_r in yrs2:
+                y_r = int(filter(str.isdigit, y_r))
                 enfile_yr = diagworkdir + '/inputen.nc'
                 tasfile_yr = diagworkdir + '/tas_yr.nc'
                 tadiag_file = diagworkdir + '/ta_filled.nc'
                 ncfile = diagworkdir + '/fourier_coeff.nc'
-                cdo.selyear(yr, input=energy3_file, options='-b F32',
+                cdo.selyear(y_r, input=energy3_file, options='-b F32',
                             output=enfile_yr)
-                cdo.selyear(yr, input=tas_file, options='-b F32',
+                cdo.selyear(y_r, input=tas_file, options='-b F32',
                             output=tasfile_yr)
                 fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
                 diagfile = (lecpath +
-                            '/{}_{}_lec_diagram.png'.format(model_name, yr))
+                            '/{}_{}_lec_diagram.png'.format(model_name, y_r))
                 logfile = (lecpath +
-                           '/{}_{}_lec_table.txt'.format(model_name, yr))
+                           '/{}_{}_lec_table.txt'.format(model_name, y_r))
                 lect[y_i] = lorenz.lorenz(diagworkdir, model_name,
-                                          yr, ncfile, diagfile, logfile)
+                                          y_r, ncfile, diagfile, logfile)
                 # caption = ("Lorenz Energy Cycle for {}, year {}"
                 #           .format(model_name, yr))
                 # plot_id = "#lecdiag"
@@ -1136,8 +1137,8 @@ def main(cfg):
                 removeif(potentr_mean_file)
                 cdo.fldmean(input=potentr_file,
                             options='-b F32', output=potentr_mean_file)
-                fi = Dataset(potentr_mean_file)
-                potentr_mean = fi.variables['spotp'][0, 0, 0]
+                f_i = Dataset(potentr_mean_file)
+                potentr_mean = f_i.variables['spotp'][0, 0, 0]
                 logger.info('Material entropy production associated with '
                             'potential energy of the droplet: %s\n',
                             potentr_mean)
@@ -1419,8 +1420,9 @@ def main(cfg):
 #                plot_id = "#ssensclimap"
 #                dataIDs = "hfss, hus, ps, rlut, tas, ts, uas, vas
 #                        (time res: monthly, vertical: 2D TOA/surf)"
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
-#                #         diag_script, authors)
+#                # ESMValMD("both", oname, plot_tags, caption, plot_id,
+#                  dataIDs,
+#                diag_script, authors)
                 plotsmod.entropy(plotpath2, evapentr_file, 'sevap',
                                  'Evaporation entropy production', model_name)
 #                oname = '{}/{}_sevap_climap.png'.format(plotpath2, model_name)
@@ -1556,25 +1558,26 @@ def main(cfg):
     fig.set_size_inches(12, 22)
     colors = (0, 0, 0)
     axi = plt.subplot(321)
-    axi.set_figsize=(50, 50)
+    axi.set_figsize = (50, 50)
     plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
                 c='red')
-    sl, interc, r_2, p, std = stats.linregress(toab_all[:, 0], atmb_all[:, 0])
+    sl, interc, r_2, pval, std = stats.linregress(toab_all[:, 0],
+                                                  atmb_all[:, 0])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
                           phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]),
-                          y_cent=np.nanmean(atmb_all[:, 0]), ax=axi)
+                          y_cent=np.nanmean(atmb_all[:, 0]), a_x=axi)
     plt.title('(a) TOA vs. atmospheric energy budget', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('R_t [W m-2]', fontsize=14)
     plt.ylabel('F_a [W m-2]', fontsize=14)
-    dx = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
-    dy = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
+    d_x = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
+    d_y = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (toab_all[i_m, 0], atmb_all[i_m, 0]),
-                     xytext=(toab_all[i_m, 0] + dx, atmb_all[i_m, 0] + dy),
+                     xytext=(toab_all[i_m, 0] + d_x, atmb_all[i_m, 0] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1583,21 +1586,22 @@ def main(cfg):
     axi.set_figsize=(50, 50)
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
-    sl, interc, r_2, p, std = stats.linregress(baroc_eff_all, lec_all[:, 0])
+    sl, interc, r_2, pval, std = stats.linregress(baroc_eff_all,
+                                                  lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
                           phi=np.arctan(sl), x_cent=np.nanmean(baroc_eff_all),
-                          y_cent=np.nanmean(lec_all[:, 0]), ax=axi)
+                          y_cent=np.nanmean(lec_all[:, 0]), a_x=axi)
     plt.title('(b) Baroclinic efficiency vs. Intensity of LEC', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
     plt.xlabel('Eta', fontsize=14)
     plt.ylabel('W [W/m2]', fontsize=14)
-    dx = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
-    dy = 0.01 * (max(lec_all[:, 0]) - min(lec_all[:, 0]))
+    d_x = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
+    d_y = 0.01 * (max(lec_all[:, 0]) - min(lec_all[:, 0]))
     for i_m in np.arange(modnum):
         axi.annotate(str(i_m + 1), (baroc_eff_all[i_m], lec_all[i_m, 0]),
-                     xytext=(baroc_eff_all[i_m] + dx, lec_all[i_m, 0] + dy),
+                     xytext=(baroc_eff_all[i_m] + d_x, lec_all[i_m, 0] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
@@ -1614,7 +1618,7 @@ def main(cfg):
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(horzentr_all[:, 0]),
                           y_cent=np.nanmean(vertentr_all[:, 0]),
-                          ax=axi)
+                          a_x=axi)
     xrang = abs(max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
     yrang = abs(max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
     plt.xlim(min(horzentr_all[:, 0]) - 0.1 * xrang,
@@ -1661,7 +1665,7 @@ def main(cfg):
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(indentr_all),
                           y_cent=np.nanmean(matentr_all[:, 0]),
-                          ax=axi)
+                          a_x=axi)
     plt.title('(d) Indirect vs. direct method', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -1687,7 +1691,7 @@ def main(cfg):
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(te_all),
                           y_cent=np.nanmean(indentr_all),
-                          ax=axi)
+                          a_x=axi)
     plt.title('(e) Indirect method vs. emission temperature', fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -1703,7 +1707,7 @@ def main(cfg):
     plt.subplots_adjust(hspace=.3)
     plt.grid()
     axi = plt.subplot(326)
-    axi.set_figsize=(50, 50)
+    axi.set_figsize = (50, 50)
     plt.scatter(te_all, baroc_eff_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(baroc_eff_all), c='red')
     s_l, interc, r_2, pval, std = stats.linregress(te_all, baroc_eff_all)
@@ -1712,7 +1716,7 @@ def main(cfg):
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(te_all),
                           y_cent=np.nanmean(baroc_eff_all),
-                          ax=axi)
+                          a_x=axi)
     plt.title('(f) Baroclinic efficiency vs. emission temperature',
               fontsize=12)
     rcParams['axes.titlepad'] = 1
@@ -1754,7 +1758,7 @@ def main(cfg):
                           semimin=np.nanstd(toab_all[:, 1]),
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(toab_all[:, 0]),
-                          y_cent=np.nanmean(toab_all[:, 1]), ax=axi)
+                          y_cent=np.nanmean(toab_all[:, 1]), a_x=axi)
     plt.title('(a) TOA energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -1781,7 +1785,7 @@ def main(cfg):
                           semimin=np.nanstd(atmb_all[:, 1]),
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(atmb_all[:, 0]),
-                          y_cent=np.nanmean(atmb_all[:, 1]), ax=axi)
+                          y_cent=np.nanmean(atmb_all[:, 1]), a_x=axi)
     plt.title('(b) Atmospheric energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -1808,7 +1812,7 @@ def main(cfg):
                           semimin=np.nanstd(surb_all[:, 1]),
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(surb_all[:, 0]),
-                          y_cent=np.nanmean(surb_all[:, 1]), ax=axi)
+                          y_cent=np.nanmean(surb_all[:, 1]), a_x=axi)
     plt.title('(c) Surface energy budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -1837,7 +1841,7 @@ def main(cfg):
                           semimin=np.nanstd(surb_all[:, 0]),
                           phi=np.arctan(s_l),
                           x_cent=np.nanmean(atmb_all[:, 0]),
-                          y_cent=np.nanmean(surb_all[:, 0]), ax=axi)
+                          y_cent=np.nanmean(surb_all[:, 0]), a_x=axi)
     plt.title('(d) Atmospheric vs. Surface budget', fontsize=14)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1

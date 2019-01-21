@@ -46,6 +46,8 @@ class Mkthe():
     - emission temperature (te).
     """
 
+    # pylint: disable-msg=R0914
+    # Fortynine is reasonable in this case.
     # pylint: disable-msg=R0915
     # One hundred and twentythree is reasonable in this case.
     # from mkthe import Mkthe

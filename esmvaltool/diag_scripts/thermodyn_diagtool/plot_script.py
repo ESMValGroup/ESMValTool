@@ -21,13 +21,13 @@ import numpy as np
 from scipy import interpolate
 from scipy.stats import chi2
 import cartopy.crs as ccrs
-# from PyAstronomy import pyaC
+from PyAstronomy import pyaC
 from cdo import Cdo
 
 
 class PlotScript():
     """Class with methods for plotting results for an individual model.
-   
+
     CONTENT
     - latwgt: compute weighted average over latitudes;
     - hemean: compute hemispheric averages;
@@ -142,7 +142,7 @@ class PlotScript():
         - transp: the meridional transport a 1D array (lat);
         - lim: limits to constrain the peak search in
         (necessary for ocean transp.)
-        
+
         @author: Valerio Lembo, 2018.
         """
         deriv = np.gradient(transp)
@@ -500,9 +500,7 @@ class PlotScript():
         plt.close(fig)
 
     @classmethod
-    def plot_ellipse(cls, semimaj, semimin, phi, x_cent, y_cent, theta_num,
-                     axi, plot_kwargs, fill, fill_kwargs, data_out, cov,
-                     mass_level):
+    def plot_ellipse(cls, semimaj, semimin, phi, x_cent, y_cent, a_x):
         """A simple method for plotting ellipses in Python.
 
         This method plots ellipses with matplotlib.
@@ -524,31 +522,8 @@ class PlotScript():
 
         @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
         """
-        # Get Ellipse Properties from cov matrix
-        if cov is not None:
-            eig_vec, eig_val, u_u = np.linalg.svd(cov)
-            # Make sure 0th eigenvector has positive x-coordinate
-            if eig_vec[0][0] < 0:
-                eig_vec[0] *= -1
-            semimaj = np.sqrt(eig_val[0])
-            semimin = np.sqrt(eig_val[1])
-            if mass_level is None:
-                multiplier = np.sqrt(2.279)
-            else:
-                distances = np.linspace(0, 20, 20001)
-                chi2_cdf = chi2.cdf(distances, df=2)
-                multiplier = np.sqrt(distances[np.where(np.abs(chi2_cdf -
-                                                               mass_level)
-                                                        == np.abs(chi2_cdf -
-                                                                  mass_level)
-                                                        .min())[0][0]])
-            semimaj *= multiplier
-            semimin *= multiplier
-            phi = np.arccos(np.dot(eig_vec[0], np.array([1, 0])))
-            if eig_vec[0][1] < 0 and phi > 0:
-                phi *= -1
         # Generate data for ellipse structure
-        theta = np.linspace(0, 2 * np.pi, theta_num)
+        theta = np.linspace(0, 2 * np.pi, 100)
         r_r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
         x_x = r_r * np.cos(theta)
         y_x = r_r * np.sin(theta)
@@ -560,25 +535,8 @@ class PlotScript():
         data = np.dot(t_t, data)
         data[0] += x_cent
         data[1] += y_cent
-        # Output data?
-        if data_out is True:
-            return data
         # Plot!
-        return_fig = False
-        if axi is None:
-            return_fig = True
-            fig, axi = plt.subplots()
-        if plot_kwargs is None:
-            axi.plot(data[0], data[1], color='b', linestyle='-')
-        else:
-            axi.plot(data[0], data[1], **plot_kwargs)
-        plot_kwargs = {'color': 'black'}
-        if fill is True:
-            axi.fill(data[0], data[1], **fill_kwargs)
-        if return_fig is True:
-            return fig
-        else:
-            pass
+        a_x.plot(data[0], data[1], color='b', linestyle='-')
 
     @classmethod
     def pr_output(cls, varout, filep, nc_f, nameout):

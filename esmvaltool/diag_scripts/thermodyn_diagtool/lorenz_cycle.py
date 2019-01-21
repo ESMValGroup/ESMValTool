@@ -16,7 +16,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-# from fluxogram import Fluxogram
+from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -87,7 +87,7 @@ class LorenzCycle():
         
         Contact author: valerio.lembo@uni-hamburg.de.
     """
-     
+
     # disable-msg=R0914
     # pylint: disable-msg=R0914
     # One hundred and fortyseven is reasonable in this case.
@@ -102,7 +102,7 @@ class LorenzCycle():
 
         Receive fields t,u,v,w as input fields in Fourier
         coefficients (time,level,wave,lon) and compute the LEC.
-        
+
         Arguments:
             - outpath: ath where otput fields are stored (as NetCDF fields);
             - model: name of the model that is analysed;
