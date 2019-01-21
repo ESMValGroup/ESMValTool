@@ -1,4 +1,15 @@
+# ESMValTool
+# recipe_python_object_oriented.yml
 ---
+documentation:
+  description: |
+    Example recipe that runs a Python example diagnostic with a more object oriented interface.
+
+  authors:
+    - schl_ma
+
+  maintainer:
+    - schl_ma
 
 datasets:
   - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
