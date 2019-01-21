@@ -10,4 +10,4 @@ for tool in "${tools[@]}"; do
 done
 
 Rscript $PREFIX/lib/python*/site-packages/esmvaltool/install/R/setup.R >> $PREFIX/.messages.txt
-julia $PREFIX/lib/python*/site-packages/esmvaltool/Julia/setup.jl >> $PREFIX/.messages.txt
+julia $PREFIX/lib/python*/site-packages/esmvaltool/install/Julia/setup.jl >> $PREFIX/.messages.txt
