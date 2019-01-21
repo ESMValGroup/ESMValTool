@@ -76,7 +76,7 @@ class LorenzCycle():
         NW_1: wavenumber limit for long waves;
         NW_2: wavenumber limit for synoptic waves;
         NW_3: wavenumber limit for short waves;
-        
+
     References:
         Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
         and transient atmospheric waves: Results from ECMWF analyses, Met.
@@ -84,7 +84,7 @@ class LorenzCycle():
     Authors:
         Frank Lunkeit, Meteorology Department, University of Hamburg
         Valerio Lembo, Meteorology Department, University of Hamburg
-        
+
         Contact author: valerio.lembo@uni-hamburg.de.
     """
 

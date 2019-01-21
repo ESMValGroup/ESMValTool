@@ -51,6 +51,7 @@ class Mkthe():
     # pylint: disable-msg=R0915
     # One hundred and twentythree is reasonable in this case.
     # from mkthe import Mkthe
+    # flake8: noqa
     @classmethod
     def mkthe_main(cls, wdir, file_list, modelname):
         """The main script in the module for computation of aux. variables.

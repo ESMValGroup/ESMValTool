@@ -1,4 +1,4 @@
-"""Diagnostic tool for several aspects of climate system thermodynamics.
+"""Diagnostic tool for climate system thermodynamics.
 
 Author
 Valerio Lembo
@@ -226,6 +226,7 @@ GRAV = 9.81		            # gravity acceleration
 # Nine hundreds and twentyone is reasonable in this case.
 # pylint: disable=too-many-branches
 # Sixtytwo is reasonable in this case.
+# flake8: noqa
 def main(cfg):
     """Execute the program.
 
@@ -1383,7 +1384,7 @@ def main(cfg):
 #                plot_id = "#spotpclimap"
 #                dataIDs = "hfss, hus, pr, prsn, ps, rlut, tas, ts, uas, vas
 #                           (time res: monthly, vertical: 2D TOA/surf)"
-#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs, 
+#                #ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
 #                #         diag_script, authors)
                 logger.info('Done\n')
             elif met in {'3'}:
@@ -1562,11 +1563,12 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
                 c='red')
-    sl, interc, r_2, pval, std = stats.linregress(toab_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
                                                   atmb_all[:, 0])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(toab_all[:, 0]),
+                          phi=np.arctan(s_l),
+                          x_cent=np.nanmean(toab_all[:, 0]),
                           y_cent=np.nanmean(atmb_all[:, 0]), a_x=axi)
     plt.title('(a) TOA vs. atmospheric energy budget', fontsize=12)
     rcParams['axes.titlepad'] = 1
@@ -1583,14 +1585,14 @@ def main(cfg):
     plt.subplots_adjust(hspace=.3)
     plt.grid()
     axi = plt.subplot(322)
-    axi.set_figsize=(50, 50)
+    axi.set_figsize = (50, 50)
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
-    sl, interc, r_2, pval, std = stats.linregress(baroc_eff_all,
+    s_l, interc, r_2, pval = stats.linregress(baroc_eff_all,
                                                   lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
-                          phi=np.arctan(sl), x_cent=np.nanmean(baroc_eff_all),
+                          phi=np.arctan(s_l), x_cent=np.nanmean(baroc_eff_all),
                           y_cent=np.nanmean(lec_all[:, 0]), a_x=axi)
     plt.title('(b) Baroclinic efficiency vs. Intensity of LEC', fontsize=12)
     rcParams['axes.titlepad'] = 1
@@ -1611,7 +1613,7 @@ def main(cfg):
     plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(horzentr_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(horzentr_all[:, 0],
                                                    vertentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
@@ -1658,7 +1660,7 @@ def main(cfg):
     plt.scatter(indentr_all, matentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(indentr_all,
+    s_l, interc, r_2, pval = stats.linregress(indentr_all,
                                                    matentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
@@ -1685,7 +1687,7 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(te_all, indentr_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(indentr_all), c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(te_all, indentr_all)
+    s_l, interc, r_2, pval = stats.linregress(te_all, indentr_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(indentr_all),
                           phi=np.arctan(s_l),
@@ -1710,7 +1712,7 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(te_all, baroc_eff_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(baroc_eff_all), c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(te_all, baroc_eff_all)
+    s_l, interc, r_2, pval = stats.linregress(te_all, baroc_eff_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(baroc_eff_all),
                           phi=np.arctan(s_l),
@@ -1752,7 +1754,7 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], toab_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(toab_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
                                                    toab_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
@@ -1779,7 +1781,7 @@ def main(cfg):
     plt.scatter(atmb_all[:, 0], atmb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(atmb_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(atmb_all[:, 0],
                                                    atmb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
@@ -1806,7 +1808,7 @@ def main(cfg):
     plt.scatter(surb_all[:, 0], surb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(surb_all[:, 0]), np.nanmean(surb_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(surb_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
                                                    surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(surb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 1]),
@@ -1835,7 +1837,7 @@ def main(cfg):
                  fmt='none', ecolor=colors)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval, std = stats.linregress(surb_all[:, 0],
+    s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
                                                    surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 0]),

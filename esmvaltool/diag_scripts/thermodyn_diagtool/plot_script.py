@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
-from scipy.stats import chi2
 import cartopy.crs as ccrs
 from PyAstronomy import pyaC
 from cdo import Cdo
@@ -55,7 +54,7 @@ class PlotScript():
         Arguments:
         - lat: latitude (in degrees);
         - tr: the field to be averaged (time,lat);
- 
+
         @author: Valerio Lembo, 2018.
         """
         p_i = math.pi
@@ -136,7 +135,7 @@ class PlotScript():
     @classmethod
     def transp_max(cls, lat, transp, lim):
         """Obtain transport peak magnitude and location from interpolation.
-        
+
         Arguments:
         - lat: a latitudinal array;
         - transp: the meridional transport a 1D array (lat);
@@ -432,6 +431,7 @@ class PlotScript():
             plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
             plt.close(fig)
 
+    # flake8: noqa
     @classmethod
     def entropy(cls, plotpath, filename, name, ext_name, model_name):
         """Method for plots of annual mean maps of mat. entr. prod.
