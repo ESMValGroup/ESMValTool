@@ -104,7 +104,7 @@ MULTI_MODEL_FUNCTIONS = {
 def _get_itype(step):
     """Get the input type of a preprocessor function."""
     function = globals()[step]
-    itype = inspect.getargspec(function).args[0]
+    itype = inspect.getfullargspec(function).args[0]
     return itype
 
 
