@@ -91,7 +91,7 @@ class LorenzCycle():
     from lorenz_cycle import LorenzCycle
 
     @classmethod
-    def lorenz(self, outpath, model, year, filenc, plotfile, logfile):
+    def lorenz(cls, outpath, model, year, filenc, plotfile, logfile):
         """Main script, managing input and output fields and calling functions.
 
         Receive fields t,u,v,w as input fields in Fourier
@@ -253,15 +253,14 @@ class LorenzCycle():
             # Compute kinetic energy
             e_k[:, t_t, :, :] = lorenz.makek(ua_tan, va_tan, nlat, ntp, nlev)
             # Compute available potential energy
-            ape[:, t_t, :, :] = lorenz.makea(ta_tan, ta_tgan, gam_tmn, nlat,
-                                             ntp, nlev)
+            ape[:, t_t, :, :] = lorenz.makea(ta_tan, ta_tgan, gam_tmn)
             # Compute conversion between kin.en. and pot.en.
             a2k[:, t_t, :, :] = lorenz.mka2k(wap_tan, ta_tan, wap_tgan,
-                                             ta_tgan, lev, nlat, ntp, nlev)
+                                             ta_tgan, lev)
             # Compute conversion between zonal and eddy APE
             ae2az[:, t_t, :, :] = lorenz.mkaeaz(va_tan, wap_tan, ta_tan,
                                                 ta_tmn, ta_gmn, lev, y_l,
-                                                gam_tmn, nlat, ntp, nlev)
+                                                gam_tmn, nlat, nlev)
             # Compute conversion between zonal and eddy KE
             ke2kz[:, t_t, :, :] = lorenz.mkkekz(ua_tan, va_tan, wap_tan,
                                                 ua_tmn, va_tmn, lev, y_l,
@@ -298,15 +297,14 @@ class LorenzCycle():
         ek_st = lorenz.makek(ua_tmn, va_tmn, nlat, ntp, nlev)
         ek_stgmn = lorenz.globall_cg(ek_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log)
-        ape_st = lorenz.makea(ta_tmn, ta_gmn, gam_tmn, nlat, ntp, nlev)
+        ape_st = lorenz.makea(ta_tmn, ta_gmn, gam_tmn)
         ape_stgmn = lorenz.globall_cg(ape_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log)
-        a2k_st = lorenz.mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev, nlat,
-                              ntp, nlev)
+        a2k_st = lorenz.mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev)
         a2k_stgmn = lorenz.globall_cg(a2k_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table_conv(a2k_stgmn, ntp, 'KE -> APE (stat)', log)
         ae2az_st = lorenz.mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev,
-                                 y_l, gam_tmn, nlat, ntp, nlev)
+                                 y_l, gam_tmn, nlat, nlev)
         ae2az_stgmn = lorenz.globall_cg(ae2az_st, g_w, d_s, nlat, ntp, nlev)
         lorenz.table_conv(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log)
         ke2kz_st = lorenz.mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev,
@@ -357,26 +355,26 @@ class LorenzCycle():
         ke2kz_vmn = np.nansum(ke2kz_aux, axis=0) / np.nansum(d_s)
         nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ek_vmn, 'ek', filep, nc_f, 1)
+        lorenz.pr_output(ek_vmn, 'ek', filep, nc_f)
         nc_f = outpath + '/ape_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ape_vmn, 'ape', filep, nc_f, 1)
+        lorenz.pr_output(ape_vmn, 'ape', filep, nc_f)
         nc_f = outpath + '/a2k_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f, 1)
+        lorenz.pr_output(a2k_vmn, 'a2k', filep, nc_f)
         nc_f = outpath + '/ae2az_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f, 1)
+        lorenz.pr_output(ae2az_vmn, 'ae2az', filep, nc_f)
         nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
         lorenz.removeif(nc_f)
-        lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f, 1)
+        lorenz.pr_output(ke2kz_vmn, 'ke2kz', filep, nc_f)
         log.close()
         return lec_strength
 
     @classmethod
-    def bsslzr(self, kdim):
+    def bsslzr(cls, kdim):
         """Parameters for the Gaussian coefficients.
-        
+
         @author: Valerio Lembo
         """
         ndim = 50
@@ -402,7 +400,7 @@ class LorenzCycle():
         return pbes
 
     @classmethod
-    def diagram(self, filen, list_lorenz):
+    def diagram(cls, filen, list_lorenz):
         """Diagram interface script.
 
         Call the class fluxogram, serving as
@@ -441,8 +439,8 @@ class LorenzCycle():
         flux.add_flux("KZ-", flux.storages[5], flux.storages[11], 60)
         flux.draw(filen, list_lorenz)
 
-    @classmethod         
-    def gauaw(self, n_y):
+    @classmethod
+    def gauaw(cls, n_y):
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
         
         @author: Valerio Lembo
@@ -482,7 +480,7 @@ class LorenzCycle():
         return psi, pgw
 
     @classmethod
-    def globall_cg(self, d3v, g_w, d_s, nlat, ntp, nlev):
+    def globall_cg(cls, d3v, g_w, d_s, nlat, ntp, nlev):
         """Compute the global and hemispheric averages.
         
         @author: Valerio Lembo
@@ -511,7 +509,7 @@ class LorenzCycle():
         return gmn
 
     @classmethod
-    def makek(self, u_t, v_t, nlat, ntp, nlev):
+    def makek(cls, u_t, v_t, nlat, ntp, nlev):
         """Compute the kinetic energy reservoirs from u and v.
 
         @author: Valerio Lembo
@@ -527,7 +525,7 @@ class LorenzCycle():
         return e_k
 
     @classmethod
-    def makea(self, t_t, t_g, gam):
+    def makea(cls, t_t, t_g, gam):
         """Compute the kinetic energy reservoirs from t.
         
         @author: Valerio Lembo
@@ -539,7 +537,7 @@ class LorenzCycle():
         return ape
 
     @classmethod
-    def mka2k(self, wap, t_t, w_g, t_g, p_l):
+    def mka2k(cls, wap, t_t, w_g, t_g, p_l):
         """Compute the KE to APE energy conversions from t and w.
         
         @author: Valerio Lembo
@@ -552,11 +550,11 @@ class LorenzCycle():
         return a2k
 
     @classmethod
-    def mkaeaz(self, v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
+    def mkaeaz(cls, v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
         """Compute the zonal mean - eddy APE conversions from t and v.
         
         @author: Valerio Lembo
-        """  
+        """
         dtdp = np.zeros([nlev, nlat])
         dtdy = np.zeros([nlev, nlat])
         for l_l in np.arange(nlev):
@@ -603,7 +601,7 @@ class LorenzCycle():
         return ae2az
 
     @classmethod
-    def mkkekz(self, u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
+    def mkkekz(cls, u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         """Compute the zonal mean - eddy KE conversions from u and v.
         
         @author: Valerio Lembo
@@ -686,9 +684,9 @@ class LorenzCycle():
         return ke2kz
 
     @classmethod
-    def mkatas(self, u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
+    def mkatas(cls, u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
         """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
-        
+
         @author: Valerio Lembo
         """
         t_r = np.fft.ifft(t_t, axis=2)
@@ -764,7 +762,7 @@ class LorenzCycle():
         return at2as
 
     @classmethod
-    def mkktks(self, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
+    def mkktks(cls, u_t, v_t, wap, utt, vtt, wtt, p_l, lat, nlat, ntp, nlev):    
         """Compute the stat.-trans. eddy KE conversions from u, v, wap and t.
 
         @author: Valerio Lembo
@@ -811,7 +809,7 @@ class LorenzCycle():
         return kt2ks
 
     @classmethod
-    def pr_output(self, varo, varname, filep, nc_f, opt):
+    def pr_output(cls, varo, varname, filep, nc_f):
         """Print outputs to NetCDF.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -837,116 +835,30 @@ class LorenzCycle():
         # Writing NetCDF files
         w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Outputs of LEC program"
-        if opt == 0:
-            w_nc_fid.createDimension('time', None)
-            w_nc_dim = w_nc_fid.createVariable('time',
-                                               nc_fid.variables['time'].dtype,
-                                               ('time',))
-            for ncattr in nc_fid.variables['time'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['time'].getncattr(ncattr))
-            w_nc_fid.variables['time'][:] = time
-            w_nc_fid.createDimension('lat', len(lats))
-            w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,
-                                               ('lat',))
-            for ncattr in nc_fid.variables['lat'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['lat'].getncattr(ncattr))
-            w_nc_fid.variables['lat'][:] = lats
-            w_nc_fid.createDimension('wave', ntp)
-            w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,
-                                               ('wave',))
-            w_nc_fid.variables['wave'][:] = wave[0:ntp]
-            w_nc_var = w_nc_fid.createVariable(varname, 'f8',
-                                               ('time', 'lat', 'wave'))
-            lorenz.varatts(w_nc_var, varname, 0, 0)
-            w_nc_fid.variables[varname][:] = varo
-            w_nc_fid.close()
-        elif opt == 1:
-            w_nc_fid.createDimension('lat', len(lats))
-            w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,
-                                               ('lat',))
-            for ncattr in nc_fid.variables['lat'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['lat'].getncattr(ncattr))
-            w_nc_fid.variables['lat'][:] = lats
-            w_nc_fid.createDimension('wave', ntp)
-            w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,
-                                               ('wave',))
-            for ncattr in nc_fid.variables['wave'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['wave'].getncattr(ncattr))
-            w_nc_fid.variables['wave'][:] = wave[0:ntp]
-            w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
-            lorenz.varatts(w_nc_var, varname, 1, 0)
-            w_nc_fid.variables[varname][:] = varo
-            w_nc_fid.close()
-        elif opt == 2:
-            w_nc_fid.createDimension('lat', len(lats))
-            w_nc_dim = w_nc_fid.createVariable('lat',
-                                               nc_fid.variables['lat'].dtype,
-                                               ('lat',))
-            for ncattr in nc_fid.variables['lat'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['lat'].getncattr(ncattr))
-            w_nc_fid.variables['lat'][:] = lats
-            w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat'))
-            lorenz.varatts(w_nc_var, varname, 1, 0)
-            w_nc_fid.variables[varname][:] = varo
-            w_nc_fid.close()
-        elif opt == 3:
-            w_nc_fid.createDimension('hem', 3)
-            w_nc_dim = w_nc_fid.createVariable('hem',
-                                               nc_fid.variables['hem'].dtype,
-                                               ('hem',))
-            w_nc_fid.variables['hem'][:] = [0, 1, 2]
-            w_nc_fid.createDimension('time', None)
-            w_nc_dim = w_nc_fid.createVariable('time',
-                                               nc_fid.variables['time'].dtype,
-                                               ('time',))
-            for ncattr in nc_fid.variables['time'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['time'].getncattr(ncattr))
-            w_nc_fid.variables['time'][:] = time
-            w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('hem', 'time'))
-            lorenz.varatts(w_nc_var, varname,0,0)
-            w_nc_fid.variables[varname][:] = varo
-            w_nc_fid.close()  # close the new file
-        elif opt == 4:
-            w_nc_fid.createDimension('hem', 3)
-            w_nc_dim = w_nc_fid.createVariable('hem',
-                                               nc_fid.variables['hem'].dtype,
-                                               ('hem',))
-            w_nc_fid.variables['hem'][:] = [0, 1, 2]
-            w_nc_fid.createDimension('time', None)
-            w_nc_dim = w_nc_fid.createVariable('time',
-                                               nc_fid.variables['time'].dtype,
-                                               ('time',))
-            for ncattr in nc_fid.variables['time'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['time'].getncattr(ncattr))
-            w_nc_fid.variables['time'][:] = time
-            w_nc_fid.createDimension('wave', ntp)
-            w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,
-                                               ('wave',))
-            for ncattr in nc_fid.variables['wave'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['wave'].getncattr(ncattr))
-            w_nc_fid.variables['wave'][:] = wave[0:ntp]
-            w_nc_var = w_nc_fid.createVariable(varname, 'f8',
-                                               ('hem', 'time', 'wave'))
-            lorenz.varatts(w_nc_var, varname, 0, 0)
-            w_nc_fid.variables[varname][:] = varo
-            w_nc_fid.close()
+        w_nc_fid.createDimension('lat', len(lats))
+        w_nc_dim = w_nc_fid.createVariable('lat',
+                                           nc_fid.variables['lat'].dtype,
+                                           ('lat',))
+        for ncattr in nc_fid.variables['lat'].ncattrs():
+            w_nc_dim.setncattr(ncattr,
+                               nc_fid.variables['lat'].getncattr(ncattr))
+        w_nc_fid.variables['lat'][:] = lats
+        w_nc_fid.createDimension('wave', ntp)
+        w_nc_dim = w_nc_fid.createVariable('wave',
+                                           nc_fid.variables['wave'].dtype,
+                                           ('wave',))
+        for ncattr in nc_fid.variables['wave'].ncattrs():
+            w_nc_dim.setncattr(ncattr,
+                               nc_fid.variables['wave'].getncattr(ncattr))
+        w_nc_fid.variables['wave'][:] = wave[0:ntp]
+        w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
+        lorenz.varatts(w_nc_var, varname, 1, 0)
+        w_nc_fid.variables[varname][:] = varo
+        w_nc_fid.close()
         nc_fid.close()
 
     @classmethod
-    def removeif(self, filename):
+    def removeif(cls, filename):
         """Remove filename if it exists."""
         try:
             os.remove(filename)
@@ -954,7 +866,7 @@ class LorenzCycle():
             pass
 
     @classmethod
-    def stabil(self, ta_gmn, p_l, nlev):
+    def stabil(cls, ta_gmn, p_l, nlev):
         """Compute the stability parameter from temp. and pressure levels.
 
         @author: Valerio Lembo
@@ -977,7 +889,7 @@ class LorenzCycle():
         return g_s
 
     @classmethod
-    def table(self, varin, ntp, name, log):
+    def table(cls, varin, ntp, name, log):
         """Write global and hem. storage terms to .txt table.
 
         @author: Valerio Lembo
@@ -988,27 +900,27 @@ class LorenzCycle():
         vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
         vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
         vartot = varzon + vared
-        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vartot[0], vartot[1], vartot[2]))
+        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  varzon[0], varzon[1], varzon[2]))
+        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, varzon[0], varzon[1], varzon[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared[0], vared[1], vared[2]))
+        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared[0], vared[1], vared[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared1[0], vared1[1], vared1[2]))
+        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared1[0], vared1[1], vared1[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared2[0], vared2[1], vared2[2]))
+        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared2[0], vared2[1], vared2[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared3[0], vared3[1], vared3[2]))
+        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')
 
     @classmethod
-    def table_conv(self, varin, ntp, name, log):
+    def table_conv(cls, varin, ntp, name, log):
         """Write global and hem. conversion terms to .txt table.
 
         @author: Valerio Lembo
@@ -1021,27 +933,27 @@ class LorenzCycle():
         vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
         vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
         vartot = varzon + vared
-        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vartot[0], vartot[1], vartot[2]))
+        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  varzon[0], varzon[1], varzon[2]))
+        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, varzon[0], varzon[1], varzon[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared[0], vared[1], vared[2]))
+        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared[0], vared[1], vared[2]))
         log.write('-------------------------------------\n')
-        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared1[0], vared1[1], vared1[2]))
+        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared1[0], vared1[1], vared1[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared2[0], vared2[1], vared2[2]))
+        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared2[0], vared2[1], vared2[2]))
         log.write('--------------------------------------\n')
-        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(name,
-                  vared3[0], vared3[1], vared3[2]))
+        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+                  .format(name, vared3[0], vared3[1], vared3[2]))
         log.write('--------------------------------------\n')
 
     @classmethod
-    def varatts(self, w_nc_var, varname, tres, vres):
+    def varatts(cls, w_nc_var, varname, tres, vres):
         """Add attibutes to the variables, depending on name and time res.
 
         Arguments:

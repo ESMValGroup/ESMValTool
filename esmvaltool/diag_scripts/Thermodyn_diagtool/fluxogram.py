@@ -32,7 +32,7 @@ class Fluxogram():
     """
     # pylint: disable=too-many-arguments
     # Twentythree is reasonable in this case.
-    
+
     def __init__(self, max_flux, max_storage, grid_size=20):
         """Initialize a fluxogram. must be called with.
 
@@ -94,7 +94,6 @@ class Fluxogram():
                 smallest_offset = storage.offset
             if storage.order > largest_order:
                 largest_order = storage.order
-
         # set y and x limits
         y_max = 0
         y_min = (largest_order + 1) * 2 * self.grid_size * -1
@@ -118,13 +117,13 @@ class Fluxogram():
             arrow = plt.Arrow(flux.x_start, flux.y_start, flux.d_x, flux.d_y,
                               width=scaled_amount_flux * 1.7, alpha=0.8)
             if flux.dire == 'r':
-                for key, value in dict_r.iterkeys():
+                for key, value in dict_r.keys():
                     if idb == key:
                         plt.text(flux.x_start + 0.25 * self.grid_size,
                                  flux.y_start + 0.05 * self.grid_size,
                                  value, size=self.grid_size * 0.7)
             else:
-                for key, value in dict_oth.iterkeys():
+                for key, value in dict_oth.keys():
                     if flux.dire == key:
                         plt.text(flux.x_start - 1.35 * self.grid_size,
                                  flux.y_start + 0.05 * self.grid_size,
@@ -150,11 +149,11 @@ class Fluxogram():
                      fontsize=0.7 * self.grid_size)
             dict_s = {'AZ': listv[1], 'ASE': listv[3], 'ATE': listv[5],
                       'KTE': listv[9], 'KSE': listv[11], 'KZ': listv[13]}
-            for key, value in dict_s.iterkeys():
-                    if storage.name == key:
-                        plt.text(storage.x_p + 0.6 * self.grid_size,
-                                 storage.y_p - 0.85 * self.grid_size, value,
-                                 fontsize=0.7 * self.grid_size)
+            for key, value in dict_s.keys():
+                if storage.name == key:
+                    plt.text(storage.x_p + 0.6 * self.grid_size,
+                             storage.y_p - 0.85 * self.grid_size, value,
+                             fontsize=0.7 * self.grid_size)
             # draw a date
             plt.gca().add_patch(rectangle)
             plt.savefig(filen)
@@ -186,6 +185,8 @@ class Flux:
 
     # pylint: disable=too-many-instance-attributes
     # Twelve is reasonable in this case.
+    # pylint: disable=too-many-arguments
+    # Six is reasonable in this case.
 
     def __init__(self, name, grid_size, from_storage, to_storage, amount=0):
         """Initialize a flux.
@@ -309,7 +310,7 @@ class Storage:
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, grid_size, number):
+    def __init__(self, name, grid_size, number, amount=0, order=0, offset=0):
         """Initialize a storage.
 
         Arguments are:
@@ -322,10 +323,10 @@ class Storage:
                     in relationship to the center.
         """
         self.name = name
-        self.amount = 0
+        self.amount = amount
         self.number = number
-        self.order = 0
-        self.offset = 0
+        self.order = order
+        self.offset = offset
         self.grid_size = grid_size
         self.x_p, self.y_p = self.calculate_xy()
 

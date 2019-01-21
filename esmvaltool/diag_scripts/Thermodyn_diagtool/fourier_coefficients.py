@@ -27,7 +27,7 @@ P_0 = 10000             # Reference tropospheric pressure
 
 class FourierCoeff():
     """Class with methods for Fourier coefficients computation and storage.
-    
+
     A class that allows for conversion of lonlat fields on pressure levels
     at each timestep into Fourier coefficients in the zonal direction.
     """
@@ -35,7 +35,7 @@ class FourierCoeff():
     from fourier_coefficients import FourierCoeff
     
     @classmethod
-    def fourier_coeff(self, tadiagfile, outfile, ta_input, tas_input):
+    def fourier_coeff(cls, tadiagfile, outfile, ta_input, tas_input):
         """Main script for Fourier coefficients computation.
 
         Receive as input:
@@ -138,7 +138,7 @@ class FourierCoeff():
         fourcoeff.pr_output(dict_v, ta_input, fileo, wave2)
 
     @classmethod
-    def pr_output(self, dict_v, nc_f, fileo, wave2):
+    def pr_output(cls, dict_v, nc_f, fileo, wave2):
         """Print outputs to NetCDF.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -208,7 +208,7 @@ class FourierCoeff():
         var_nc_fid.close()  # close the new file
 
     @classmethod
-    def pr_output_diag(self, var1, nc_f, fileo, name1):
+    def pr_output_diag(cls, var1, nc_f, fileo, name1):
         """Print processed ta field to NetCDF file.
 
         Save fields to NetCDF, retrieving information from an existing
@@ -272,9 +272,9 @@ class FourierCoeff():
         fourcoeff.varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
         var_nc_fid.close()  # close the new file
-        
+    
     @classmethod
-    def varatts(self, w_nc_var, varname):
+    def varatts(cls, w_nc_var, varname):
         """Add attibutes to the variables, depending on their name.
 
         Arguments:
