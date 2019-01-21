@@ -29,14 +29,14 @@ This namelist is part of the ESMValTool
     <write_plot_vars type="boolean">       True         </write_plot_vars>
     <max_data_filesize type="integer">      100         </max_data_filesize>
     <max_data_blocksize type="integer">     500         </max_data_blocksize>
-    <verbosity type="integer">               1         </verbosity>
+    <verbosity type="integer">               10000     </verbosity>
     <exit_on_warning type="boolean">      True         </exit_on_warning>
     <output_file_type>                      png         </output_file_type>
     <tags>                            P_embrace         </tags>
 </GLOBAL>
 
 <MODELS>
-    <model>ESGF_CMIP6 HadGEM3-GC31-LL ScenarioMIP MOHC HadGEM3-GC31-LL ssp245 mon atmos Amon r1i1p1f1 latest gn 1990 1992 CMIP6_template</model>
+    <model>ESGF_CMIP6 IPSL-CM6A-LR CMIP IPSL IPSL-CM6A-LR piControl mon atmos Amon r1i1p1f1 latest gr 1990 1992 CMIP6_template</model>
 </MODELS>
 
 
