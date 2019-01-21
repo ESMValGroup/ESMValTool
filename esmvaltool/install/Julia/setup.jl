@@ -5,8 +5,9 @@ scriptDir=@__DIR__
 #println("file: ", scriptFile)
 #println("directory: ", scriptDir)
 
-
-using Pkg
+if VERSION >= v"0.7.0-DEV.2005"
+    using Pkg
+end
 
 println("Installing the packages.")
 pkgName=in
