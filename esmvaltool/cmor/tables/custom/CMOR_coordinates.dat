@@ -86,3 +86,22 @@ type:             double
 must_have_bounds: yes
 !----------------------------------
 !
+
+!============
+axis_entry: tau
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    atmosphere_optical_thickness_due_to_cloud
+units:            1
+long_name:        cloud optical thickness
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         tau
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
