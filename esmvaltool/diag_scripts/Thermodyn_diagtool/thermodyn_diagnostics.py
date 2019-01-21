@@ -191,7 +191,7 @@ import commands
 import warnings
 # New packages for version 2.0 of ESMValTool
 import logging
-import esmvaltool.diag_scripts.shared as e
+# import esmvaltool.diag_scripts.shared as e
 from cdo import Cdo
 from netCDF4 import Dataset
 import numpy as np

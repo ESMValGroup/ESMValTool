@@ -32,8 +32,7 @@ class FourierCoeff():
     at each timestep into Fourier coefficients in the zonal direction.
     """
     
-    from fourier_coefficients import FourierCoeff
-
+    # from fourier_coefficients import FourierCoeff
     @classmethod
     def fourier_coeff(cls, tadiagfile, outfile, ta_input, tas_input):
         """Main script for Fourier coefficients computation.

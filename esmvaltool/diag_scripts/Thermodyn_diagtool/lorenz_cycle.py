@@ -88,8 +88,7 @@ class LorenzCycle():
         Contact author: valerio.lembo@uni-hamburg.de.
     """
         
-    from lorenz_cycle import LorenzCycle
-
+    # from lorenz_cycle import LorenzCycle
     @classmethod
     def lorenz(cls, outpath, model, year, filenc, plotfile, logfile):
         """Main script, managing input and output fields and calling functions.

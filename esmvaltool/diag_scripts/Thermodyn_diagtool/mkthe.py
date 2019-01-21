@@ -46,8 +46,7 @@ class Mkthe():
     - emission temperature (te).
     """
 
-    from mkthe import Mkthe
-
+    # from mkthe import Mkthe
     @classmethod
     def mkthe_main(cls, wdir, file_list, modelname):
         """The main script in the module for computation of aux. variables.

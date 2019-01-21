@@ -45,8 +45,7 @@ class PlotScript():
     - removeif: remove file if it exists;
     """
 
-    from plot_script import PlotScript
-
+    # from plot_script import PlotScript
     @classmethod
     def latwgt(cls, lat, t_r):
         """Compute weighted average over latitudes.
