@@ -7,7 +7,8 @@ import pytest
 import yaml
 
 import esmvaltool._config
-from esmvaltool._data_finder import get_input_filelist, get_input_fx_filelist
+from esmvaltool._data_finder import (get_input_filelist, get_input_fx_filelist,
+                                     get_output_file)
 from esmvaltool.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
@@ -58,6 +59,13 @@ def create_tree(path, filenames=None, symlinks=None):
     for symlink in symlinks or []:
         link_name = os.path.join(path, symlink['link_name'])
         os.symlink(symlink['target'], link_name)
+
+
+@pytest.mark.parametrize('cfg', CONFIG['get_output_file'])
+def test_get_output_file(cfg):
+    """Test getting output name for preprocessed files."""
+    output_file = get_output_file(cfg['variable'], cfg['preproc_dir'])
+    assert output_file == cfg['output_file']
 
 
 @pytest.fixture
