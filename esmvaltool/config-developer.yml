@@ -143,6 +143,7 @@ obs4mips:
   output_file: '[project]_[dataset]_[level]_[version]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   cmor_path: 'obs4mips'
+  cmor_strict: False
 
 ana4mips:
   input_dir:

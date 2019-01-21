@@ -27,39 +27,33 @@ diagnostics:
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
       clltkisccp: # Low-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
       clmmtisccp: # Middle-intermediate Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
       clmtkisccp: # Middle-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
       clhmtisccp: # High-intermediate Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
       clhtkisccp: # High-thick Cloud
         preprocessor: pp_rad_derive_var
         field: T4M
         derive: true
         force_derivation: false
-        frequency: mon
     additional_datasets:
-      - {dataset: ISCCP,  project: obs4mips,  level: L3,  version: V1.0,  start_year: 1985,  end_year: 1988, tier: 1}
+      - {dataset: ISCCP,  project: obs4mips, mip: cfMon, frequency: mon, level: L3,  version: V1.0,  start_year: 1985,  end_year: 1988, tier: 1}
     scripts:
       autoassess_Radiation_rms_cfMon_all:
         script: autoassess/autoassess_radiation_rms.py
