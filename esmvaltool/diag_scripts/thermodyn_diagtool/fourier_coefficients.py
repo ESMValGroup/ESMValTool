@@ -32,6 +32,10 @@ class FourierCoeff():
     at each timestep into Fourier coefficients in the zonal direction.
     """
 
+    # pylint: disable-msg=R0914
+    # Fortysix is reasonable in this case.
+    # pylint: disable-msg=R0915
+    # Seventyone is reasonable in this case.
     # from fourier_coefficients import FourierCoeff
     @classmethod
     def fourier_coeff(cls, tadiagfile, outfile, ta_input, tas_input):
@@ -44,8 +48,6 @@ class FourierCoeff():
         - tas_input: the name of a file containing t2m field.
         """
         fourcoeff = FourierCoeff()
-        fileo = outfile
-        fileta = tadiagfile
         dataset = Dataset(ta_input)
         lon = dataset.variables['lon'][:]
         lat = dataset.variables['lat'][:]
@@ -116,7 +118,7 @@ class FourierCoeff():
             dat[i, :, :, :] = (ta2_fx[:, i, :, :]
                                * (1 - 1 * np.array(mask[i, :, :, :])))
             t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
-        fourcoeff.pr_output_diag(t_a, ta_input, fileta, 'ta')
+        fourcoeff.pr_output_diag(t_a, ta_input, tadiagfile, 'ta')
         tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
         vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
@@ -134,7 +136,7 @@ class FourierCoeff():
         wapfft[:, :, :, 0::2] = np.real(wapfft_p)
         wapfft[:, :, :, 1::2] = np.imag(wapfft_p)
         dict_v = {'ta': tafft, 'ua': uafft, 'va': vafft, 'wap': wapfft}
-        fourcoeff.pr_output(dict_v, ta_input, fileo, wave2)
+        fourcoeff.pr_output(dict_v, ta_input, outfile, wave2)
 
     @classmethod
     def pr_output(cls, dict_v, nc_f, fileo, wave2):

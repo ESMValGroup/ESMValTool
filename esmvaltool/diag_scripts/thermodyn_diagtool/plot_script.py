@@ -16,16 +16,12 @@ import os
 from shutil import move
 import math
 import matplotlib.pyplot as plt
-# from mpl_toolkits.axes_grid1 import AxesGrid
-# from mpl_toolkits.axes_grid1 import make_axes_locatable
 from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
 from scipy.stats import chi2
 import cartopy.crs as ccrs
-# from cartopy.mpl.geoaxes import GeoAxes
-# from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-from PyAstronomy import pyaC
+# from PyAstronomy import pyaC
 from cdo import Cdo
 
 
@@ -45,6 +41,12 @@ class PlotScript():
     - removeif: remove file if it exists;
     """
 
+    # pylint: disable-msg=R0914
+    # Sixtyone is reasonable in this case.
+    # pylint: disable-msg=R0915
+    # Two hundreds and sixteen is reasonable in this case.
+    # pylint: disable=too-many-arguments
+    # Fourteen is reasonable in this case.
     # from plot_script import PlotScript
     @classmethod
     def latwgt(cls, lat, t_r):
@@ -53,7 +55,7 @@ class PlotScript():
         Arguments:
         - lat: latitude (in degrees);
         - tr: the field to be averaged (time,lat);
-        
+ 
         @author: Valerio Lembo, 2018.
         """
         p_i = math.pi
@@ -161,9 +163,9 @@ class PlotScript():
         return [xc_cut, y_i]
 
     @classmethod
-    def balances(workdir, plotpath, filena, name, model_name):
+    def balances(cls, workdir, plotpath, filena, name, model_name):
         """Method for various plots related to energy and water mass budgets.
-        
+
         This method provides climatological annal mean maps of TOA, atmospheric
         and surface energy budgets, time series of annual mean anomalies in the
         two hemispheres and meridional sections of meridional enthalpy

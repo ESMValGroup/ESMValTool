@@ -16,7 +16,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-from fluxogram import Fluxogram
+# from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -87,7 +87,14 @@ class LorenzCycle():
         
         Contact author: valerio.lembo@uni-hamburg.de.
     """
-        
+     
+    # disable-msg=R0914
+    # pylint: disable-msg=R0914
+    # One hundred and fortyseven is reasonable in this case.
+    # pylint: disable=too-many-arguments
+    # Seven is reasonable in this case.
+    # pylint: disable-msg=R0915
+    # Two hundreds and fortyeight is reasonable in this case.
     # from lorenz_cycle import LorenzCycle
     @classmethod
     def lorenz(cls, outpath, model, year, filenc, plotfile, logfile):
@@ -440,7 +447,7 @@ class LorenzCycle():
     @classmethod
     def gauaw(cls, n_y):
         """Compute the Gaussian coefficients for the Gaussian grid conversion.
-        
+
         @author: Valerio Lembo
         """
         lorenz = LorenzCycle()
@@ -525,7 +532,7 @@ class LorenzCycle():
     @classmethod
     def makea(cls, t_t, t_g, gam):
         """Compute the kinetic energy reservoirs from t.
-        
+
         @author: Valerio Lembo
         """
         ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))

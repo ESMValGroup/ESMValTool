@@ -1,3 +1,1 @@
-"""
-Module to mimic a python module
-"""
+"""Initialize the ESMValTool Thermodyn_diagtool package."""
