@@ -3817,6 +3817,16 @@ class ESGF_CMIP6(ESGF_CMIP5):
         # Define the 'basename'-variable explicitly
         # All project classes do this, but not sure if really necessary
         self.basename = self.__class__.__name__
+        info("Initializing " + str(self.basename), 1, 1)
+
+    def get_cf_areafile(self, project_info, model):
+        """
+        """
+        who = "get_cf_areafile from " + str(self.basename) + ": "
+        info(who + "No activity",
+                project_info["GLOBAL"]["verbosity"], 1)
+
+
 
 class ESGF_CMIP5_fx(ESGF_CMIP5):
     """
