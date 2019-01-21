@@ -1,5 +1,10 @@
 """Fixes for GFDL CM2p1 model"""
 from ..fix import Fix
+from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
+
+
+class allvars(base_allvars):
+    pass
 
 
 class sftof(Fix):

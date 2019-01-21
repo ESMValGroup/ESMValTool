@@ -2,6 +2,11 @@
 from cf_units import Unit
 
 from ..fix import Fix
+from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
+
+
+class allvars(base_allvars):
+    pass
 
 
 class sftof(Fix):
