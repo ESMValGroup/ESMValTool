@@ -91,7 +91,7 @@ diagnostics:
                                     #                           'PNA': Pacific North American
                                     #                           'NH': Northern Hemisphere)
                                     #                           'EU': Europe)
-        extreme: '75th_percentile'   #75th_percentile, mean, maximum, std, trend
+        extreme: '75th_percentile'  #XXth_percentile (XX arbitrary), mean, maximum, std, trend
         #---------------------about cluster analysis------------------------------------------
         numclus: 3             #number of clusters
         #Either set perc or numpcs:
