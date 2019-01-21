@@ -5,12 +5,11 @@ import os
 import subprocess
 from itertools import product
 from pathlib import Path
-from stat import S_IXUSR
 
 import yaml
 
 
-def linear_expand(filename):
+def linear_expand(filename, cwd):
     """Create recipes from filename using the recipe options provided.
 
     Uses one option at a time.
@@ -19,8 +18,7 @@ def linear_expand(filename):
     yield filename
 
     options_file = Path(__file__).parent / 'options.yml'
-    options_key = filename.name
-    options = yaml.safe_load(options_file.read_text())[options_key]
+    options = yaml.safe_load(options_file.read_text()).get(filename.name, {})
 
     recipe = yaml.safe_load(filename.read_text())
 
@@ -32,7 +30,7 @@ def linear_expand(filename):
                         outrecipe = copy.deepcopy(recipe)
                         outrecipe['diagnostics'][diag_name]['scripts'][
                             script_name][key] = value
-                        outfile = Path('{}_{}_{}.yml'.format(
+                        outfile = cwd / Path('{}_{}_{}.yml'.format(
                             filename.stem, key,
                             str(value).replace(os.sep, '-')))
                         print("Creating", outfile)
@@ -40,7 +38,7 @@ def linear_expand(filename):
                         yield outfile
 
 
-def matrix_expand(filename, max_recipes=100):
+def matrix_expand(filename, cwd, max_recipes=100):
     """Create recipes from filename using the recipe options provided.
 
     Tries all possible combinations of options, but stops at max_recipes.
@@ -71,49 +69,75 @@ def matrix_expand(filename, max_recipes=100):
                             script_name][key] = value
                         outfile += '_' + str(key) + '_' + str(value).replace(
                             os.sep, '-')
-                outfile = Path(outfile + '.yml')
+                outfile = cwd / Path(outfile + '.yml')
                 print("Creating", outfile)
                 outfile.write_text(yaml.safe_dump(outrecipe))
                 yield outfile
 
 
-def submit(recipe):
+def create_script(recipe, config_file, cwd):
     """Submit a job for recipe."""
     recipe = Path(recipe)
     job_template = Path(__file__).parent / 'job.bsub.template'
-    job = job_template.read_text().format(recipe)
+    job = job_template.read_text().format(
+        recipe=recipe,
+        config=config_file,
+    )
 
-    jobfile = Path(recipe.stem + '_' + job_template.stem)
+    jobfile = cwd / Path(recipe.stem + '_' + job_template.stem)
     jobfile.write_text(job)
+    return jobfile
 
-    print("Submitting", jobfile)
-    with jobfile.open() as stdin:
-        subprocess.run('bsub', stdin=stdin, check=True)
+
+def run(script, cwd, method=''):
+    """Run script in cwd using method."""
+    if method == 'bsub':
+        print("Submitting", script, 'in', cwd)
+        with open(script) as stdin:
+            subprocess.run('bsub', stdin=stdin, cwd=cwd, check=True)
+    elif method == 'dry-run':
+        print("Would run", script, 'in', cwd)
+    else:
+        print("Running", script, 'in', cwd)
+        subprocess.run(['bash', str(script)], cwd=cwd, check=True)
 
 
 def install(args):
     """Install ESMValTool from GitHub."""
-    branch = args.branch
+    Path(args.directory).mkdir(parents=True)
     script_template = Path(__file__).parent / 'install.sh.template'
-    script = script_template.read_text().format(branch=branch)
+    script = script_template.read_text().format(branch=args.branch)
 
-    script_file = Path(branch + '_' + script_template.stem)
+    script_file = args.directory / Path(args.branch + '_' +
+                                        script_template.stem)
     script_file.write_text(script)
-    script_file.chmod(script_file.stat().st_mode | S_IXUSR)
-    subprocess.run('./{}'.format(script_file), check=True)
+    run(script_file, cwd=args.directory, method=args.run_method)
 
 
 def schedule(args):
     """Create recipes with the options provided and schedule."""
     expand = matrix_expand if args.matrix else linear_expand
     for input_recipe in args.recipes:
-        for recipe in expand(input_recipe):
-            submit(recipe)
+        for recipe in expand(input_recipe, cwd=args.directory):
+            script_file = create_script(
+                recipe,
+                config_file=args.esmvaltool_config_file,
+                cwd=args.directory,
+            )
+            run(script_file, cwd=args.directory, method=args.run_method)
 
 
 def main():
     """Run the program."""
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '-d', '--directory', default='.', help='Use as a working directory.')
+    parser.add_argument(
+        '-r',
+        '--run-method',
+        default='immediate',
+        choices=['immediate', 'bsub', 'dry-run'],
+        help='Choose an execution method.')
     subparsers = parser.add_subparsers()
     parser.set_defaults(function=lambda _: parser.print_help())
 
@@ -125,6 +149,10 @@ def main():
     schedule_parser = subparsers.add_parser('schedule')
     schedule_parser.add_argument(
         'recipes', nargs='+', help='Path to the recipe files to run.')
+    schedule_parser.add_argument(
+        '-c',
+        '--esmvaltool-config-file',
+        help='Path to the ESMValTool configuration file.')
     schedule_parser.add_argument(
         '-m',
         '--matrix',

@@ -1,15 +1,21 @@
 #!/bin/bash
+#BSUB -q par-single
+#BSUB -o %J.stdout.txt
+#BSUB -e %J.stderr.txt
+#BSUB -W 0:30
+#BSUB -R "rusage[mem=20000]"
+#BSUB -M 30000
+#BSUB -n 16
+
 set -eo pipefail
-mkdir {branch}
-cd {branch}
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p conda
-. conda/etc/profile.d/conda.sh 
+. conda/etc/profile.d/conda.sh
 git clone --depth 1 https://github.com/ESMValGroup/ESMValTool
 cd ESMValTool
 git checkout {branch}
 # TODO: add option to merge with development branch
-conda env create --name {branch}
-conda activate {branch}
+conda env create --name esmvaltool
+conda activate esmvaltool
 pip install .
 Rscript esmvaltool/install/R/setup.R

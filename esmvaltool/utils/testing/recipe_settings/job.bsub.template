@@ -1,6 +1,4 @@
 #!/bin/bash
-# Run job: bsub < job_jasmin.bsub
-
 #BSUB -q par-single
 #BSUB -o %J.stdout.txt
 #BSUB -e %J.stderr.txt
@@ -9,11 +7,7 @@
 #BSUB -M 30000
 #BSUB -n 16
 
-# User configuration file
-root=/group_workspaces/jasmin2/cp4cds1/magic-test
-config=$root/config-user.yml
+. conda/etc/profile.d/conda.sh
+conda activate esmvaltool
 
-. $root/conda/etc/profile.d/conda.sh
-conda activate magic_demo
-
-esmvaltool -c $config {recipe}
+esmvaltool -c {config} {recipe}
