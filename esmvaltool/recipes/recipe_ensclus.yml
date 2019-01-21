@@ -87,10 +87,10 @@ diagnostics:
         ## Write only letters or numbers, no punctuation marks!
         ## If you want to leave the field empty write 'no' 
         season: 'JJA'               #seasonal average
-        area: 'Eu'                  #regional average (examples:'EAT':Euro-Atlantic
+        area: 'EU'                  #regional average (examples:'EAT':Euro-Atlantic
                                     #                           'PNA': Pacific North American
                                     #                           'NH': Northern Hemisphere)
-                                    #                           'Eu': Europe)
+                                    #                           'EU': Europe)
         extreme: '75th_percentile'   #75th_percentile, mean, maximum, std, trend
         #---------------------about cluster analysis------------------------------------------
         numclus: 3             #number of clusters

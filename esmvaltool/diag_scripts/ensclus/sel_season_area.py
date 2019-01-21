@@ -50,7 +50,7 @@ def sel_area(lat, lon, var, area):
     """Selecting the area of interest.
 
     USAGE: var_area, lat_area, lon_area =sel_area(lat,lon,var,area)
-    area can be 'EAT', 'PNA', 'NH'
+    area can be 'EAT', 'PNA', 'NH', 'EU'
     """
     if area == 'EAT':
         # printarea = 'Euro-Atlantic'
@@ -91,7 +91,7 @@ def sel_area(lat, lon, var, area):
         var_roll = var
         lon_new = lon
 
-    elif area == 'Eu':
+    elif area == 'EU':
         # printarea = 'Europe'
         lat_n = 72.0
         lat_s = 27.0
