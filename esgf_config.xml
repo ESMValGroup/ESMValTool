@@ -40,7 +40,7 @@
     </DKRZ_CMIP5>
 
     <DKRZ_CMIP6>
-        <cache_root> /work/kd0956/CMIP6/dc_test_data/ </cache_root>
+      <cache_root> /work/ik1017/CMIP6/data/ </cache_root>
         <cache_template id='CMIP6_template'>
           CMIP6/[product]/[institute]/[model]/[experiment]/[ensemble]/[mip]/[variable]/[grid]/[version]
           <!-- gr: [grid]-->
