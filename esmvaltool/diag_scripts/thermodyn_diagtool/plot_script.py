@@ -50,7 +50,7 @@ class PlotScript():
     @classmethod
     def latwgt(cls, lat, t_r):
         """Compute weighted average over latitudes.
-        
+
         Arguments:
         - lat: latitude (in degrees);
         - tr: the field to be averaged (time,lat);

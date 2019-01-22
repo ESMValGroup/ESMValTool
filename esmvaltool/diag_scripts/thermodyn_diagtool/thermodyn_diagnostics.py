@@ -1,4 +1,4 @@
-# pylint: disable=R0801
+# pylint: disable-msg=R0801
 """Tool for computation of some aspects of climate system thermodynamics.
 
 Author
@@ -202,7 +202,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used modules
 from mkthe import Mkthe
-from fluxogram import Fluxogram
+# from fluxogram import Fluxogram
 from fourier_coefficients import FourierCoeff
 from lorenz_cycle import LorenzCycle
 from plot_script import PlotScript
@@ -226,6 +226,7 @@ GRAV = 9.81		            # gravity acceleration
 # Nine hundreds and twentyone is reasonable in this case.
 # pylint: disable=too-many-branches
 # Sixtytwo is reasonable in this case.
+# pylint: disable-msg=unused-argument
 # flake8: noqa
 def main(cfg):
     """Execute the program.
@@ -1555,7 +1556,6 @@ def main(cfg):
     else:
         pass
     logger.info('Scatter plots')
-    # pylint: disable=unused-argument
     fig = plt.figure()
     fig.set_size_inches(12, 22)
     colors = (0, 0, 0)
