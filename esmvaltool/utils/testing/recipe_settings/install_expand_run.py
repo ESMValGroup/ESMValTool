@@ -5,12 +5,13 @@ import os
 import subprocess
 import sys
 from itertools import product
+
+import yaml
+
 if sys.version_info.major == 2:
     from pathlib2 import Path
 else:
     from pathlib import Path
-
-import yaml
 
 
 def linear_expand(filename, cwd):
