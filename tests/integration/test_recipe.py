@@ -6,6 +6,7 @@ import iris
 import pytest
 import yaml
 from mock import create_autospec
+from six import text_type
 
 import esmvaltool
 from esmvaltool._recipe import TASKSEP, read_recipe_file
@@ -133,13 +134,12 @@ DEFAULT_DOCUMENTATION = dedent("""
 
 def get_recipe(tempdir, content, cfg):
     """Save and load recipe content."""
-    filename = tempdir / 'recipe_test.yml'
+    recipe_file = tempdir / 'recipe_test.yml'
     # Add mandatory documentation section
-    content = DEFAULT_DOCUMENTATION + content
-    with filename.open('w') as file:
-        file.write(content)
+    content = text_type(DEFAULT_DOCUMENTATION + content)
+    recipe_file.write_text(content)
 
-    recipe = read_recipe_file(str(filename), cfg)
+    recipe = read_recipe_file(str(recipe_file), cfg)
 
     return recipe
 
