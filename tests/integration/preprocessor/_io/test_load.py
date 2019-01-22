@@ -7,11 +7,12 @@ import tempfile
 import unittest
 
 import iris
+import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
-import numpy as np
 
-from esmvaltool.preprocessor import _io
+from esmvaltool.preprocessor import load
+from esmvaltool.preprocessor._io import concatenate_callback
 
 
 def _create_sample_cube():
@@ -21,7 +22,7 @@ def _create_sample_cube():
 
 
 class TestLoad(unittest.TestCase):
-    """Tests for :func:`esmvaltool.preprocessor._io.load_cubes`."""
+    """Tests for :func:`esmvaltool.preprocessor.load`."""
 
     def setUp(self):
         """Start tests."""
@@ -45,12 +46,11 @@ class TestLoad(unittest.TestCase):
             cube = _create_sample_cube()
             self._save_cube(cube)
 
-        cubes = _io.load_cubes(self.temp_files, 'filename', None)
+        cubes = load(self.temp_files, None)
         cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())
-        self.assertEqual(cube.attributes['_filename'], 'filename')
 
     def test_callback_remove_attributes(self):
         """Test callback remove unwanted attributes."""
@@ -61,16 +61,11 @@ class TestLoad(unittest.TestCase):
                 cube.attributes[attr] = attr
             self._save_cube(cube)
 
-        cubes = _io.load_cubes(
-            self.temp_files,
-            'filename',
-            None,
-            callback=_io.concatenate_callback)
+        cubes = load(self.temp_files, None, callback=concatenate_callback)
         cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())
-        self.assertEqual(cube.attributes['_filename'], 'filename')
         for attr in attributes:
             self.assertTrue(attr not in cube.attributes)
 
@@ -79,14 +74,9 @@ class TestLoad(unittest.TestCase):
         cube = _create_sample_cube()
         self._save_cube(cube)
 
-        cubes = _io.load_cubes(
-            self.temp_files,
-            'filename',
-            None,
-            callback=_io.concatenate_callback)
+        cubes = load(self.temp_files, None, callback=concatenate_callback)
         cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())
-        self.assertEqual(cube.attributes['_filename'], 'filename')
-        self.assertEqual(cube.coord('latitude').units, 'degrees_north')
+        self.assertEquals(cube.coord('latitude').units, 'degrees_north')
