@@ -3,8 +3,12 @@ import argparse
 import copy
 import os
 import subprocess
+import sys
 from itertools import product
-from pathlib import Path
+if sys.version.major == 2:
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 
 import yaml
 
