@@ -104,7 +104,7 @@ MULTI_MODEL_FUNCTIONS = {
 def _get_itype(step):
     """Get the input type of a preprocessor function."""
     function = globals()[step]
-    itype = inspect.getfullargspec(function).args[0]
+    itype = inspect.getargspec(function).args[0]
     return itype
 
 
@@ -120,7 +120,7 @@ def check_preprocessor_settings(settings):
                     step, ', '.join(DEFAULT_ORDER)))
 
         function = function = globals()[step]
-        argspec = inspect.getfullargspec(function)
+        argspec = inspect.getargspec(function)
         args = argspec.args[1:]
         # Check for invalid arguments
         invalid_args = set(settings[step]) - set(args)
