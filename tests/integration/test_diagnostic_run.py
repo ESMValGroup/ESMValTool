@@ -36,8 +36,7 @@ def arguments(*args):
 
 def check(result_file):
     """Check the results."""
-    with open(result_file, 'r') as file:
-        result = yaml.safe_load(file)
+    result = yaml.safe_load(result_file.read_text())
 
     print(result)
 
