@@ -1,6 +1,5 @@
 """Test diagnostic script runs."""
 import contextlib
-import os
 import sys
 from textwrap import dedent
 
@@ -11,19 +10,18 @@ from esmvaltool._main import run
 
 
 def write_config_user_file(dirname):
-    config_file = os.path.join(dirname, 'config-user.yml')
+    config_file = dirname / 'config-user.yml'
     cfg = {
-        'output_dir': os.path.join(dirname, 'output_dir'),
+        'output_dir': str(dirname / 'output_dir'),
         'rootpath': {
-            'default': os.path.join(dirname, 'input_dir'),
+            'default': str(dirname / 'input_dir'),
         },
         'drs': {
             'CMIP5': 'BADC',
         },
         'log_level': 'debug',
     }
-    with open(config_file, 'w') as file:
-        yaml.safe_dump(cfg, file)
+    config_file.write_text(yaml.safe_dump(cfg))
     return config_file
 
 
@@ -99,15 +97,14 @@ SCRIPTS = {
 
 @pytest.mark.install
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tmpdir, script_file, script):
+def test_diagnostic_run(tmp_path, script_file, script):
 
-    recipe_file = os.path.join(tmpdir, 'recipe_test.yml')
-    script_file = os.path.join(tmpdir, script_file)
-    result_file = os.path.join(tmpdir, 'result.yml')
+    recipe_file = tmp_path / 'recipe_test.yml'
+    script_file = tmp_path / script_file
+    result_file = tmp_path / 'result.yml'
 
     # Write script to file
-    with open(script_file, 'w') as file:
-        file.write(script)
+    script_file.write_text(script)
 
     # Create recipe
     recipe = dedent("""
@@ -122,11 +119,15 @@ def test_diagnostic_run(tmpdir, script_file, script):
                 script: {}
                 setting_name: {}
         """.format(script_file, result_file))
-    with open(recipe_file, 'w') as file:
-        file.write(recipe)
+    recipe_file.write_text(recipe)
 
-    config_user_file = write_config_user_file(tmpdir)
-    with arguments('esmvaltool', '-c', config_user_file, recipe_file):
+    config_user_file = write_config_user_file(tmp_path)
+    with arguments(
+            'esmvaltool',
+            '-c',
+            str(config_user_file),
+            str(recipe_file),
+    ):
         run()
 
     check(result_file)
