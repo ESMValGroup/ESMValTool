@@ -18,5 +18,5 @@ git checkout {branch}
 # TODO: add option to merge with development branch
 conda env create --name esmvaltool
 conda activate esmvaltool
-python setup.py install
+pip install -e .
 Rscript esmvaltool/install/R/setup.R
