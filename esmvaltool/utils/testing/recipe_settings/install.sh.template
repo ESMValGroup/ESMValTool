@@ -3,8 +3,8 @@
 #BSUB -o %J.stdout.txt
 #BSUB -e %J.stderr.txt
 #BSUB -W 0:30
-#BSUB -R "rusage[mem=20000]"
-#BSUB -M 30000
+#BSUB -R "rusage[mem=10000]"
+#BSUB -M 15000
 #BSUB -n 16
 
 set -eo pipefail
