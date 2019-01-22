@@ -21,7 +21,7 @@ def write_config_user_file(dirname):
         },
         'log_level': 'debug',
     }
-    config_file.write_text(yaml.safe_dump(cfg))
+    config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return config_file
 
 
