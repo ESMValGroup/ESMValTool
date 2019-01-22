@@ -22,7 +22,7 @@ def write_config_user_file(dirname):
         'log_level': 'debug',
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
-    return config_file
+    return str(config_file)
 
 
 @contextlib.contextmanager
@@ -125,7 +125,7 @@ def test_diagnostic_run(tmp_path, script_file, script):
     with arguments(
             'esmvaltool',
             '-c',
-            str(config_user_file),
+            config_user_file,
             str(recipe_file),
     ):
         run()
