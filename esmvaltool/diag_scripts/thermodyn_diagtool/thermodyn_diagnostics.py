@@ -201,12 +201,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe as Mkthe
-# from mkthe import Mkthe
-# from fluxogram import Fluxogram
-from fourier_coefficients import FourierCoeff
-from lorenz_cycle import LorenzCycle
-from plot_script import PlotScript
+from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from esmvaltool.diag_scripts.thermodyn_diagtool import lorenz_cycle
+from esmvaltool.diag_scripts.thermodyn_diagtool import plot_script
 
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -243,10 +241,10 @@ def main(cfg):
     logger.info('Plot directory: %s \n', plotdir)
     diagworkdir_up = workdir
     cdo = Cdo()
-    fourc = FourierCoeff()
-    lorenz = LorenzCycle()
-    mkthe = Mkthe()
-    plotsmod = PlotScript()
+    fourc = fourier_coefficients.FourierCoeff()
+    lorenz = lorenz_cycle.LorenzCycle()
+    mkth = mkthe.Mkthe()
+    plotsmod = plot_script.PlotScript()
     data = e.Datasets(cfg)
     logger.debug(data)
     models = data.get_info_list('dataset')
@@ -400,7 +398,7 @@ def main(cfg):
             if met in {'2', '3'}:
                 file_list = [ts_file, hus_file, ps_file, uasmn_file,
                              vasmn_file, hfss_file, te_file]
-                mkthe.mkthe_main(diagworkdir, file_list, model_name)
+                mkth.mkthe_main(diagworkdir, file_list, model_name)
                 tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
                 cdo.setrtomiss('400,1e36', input='tlcl.nc ',
                                output=tlcl_file)

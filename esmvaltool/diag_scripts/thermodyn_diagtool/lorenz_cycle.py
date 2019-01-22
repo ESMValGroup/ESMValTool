@@ -17,7 +17,7 @@ import math
 import os
 import warnings
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram as Fluxogram
+from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram
 # from fluxogram import Fluxogram
 import numpy as np
 warnings.filterwarnings("ignore")
@@ -416,7 +416,7 @@ class LorenzCycle():
 
         @author: Valerio Lembo
         """
-        flux = Fluxogram(1000, 1000)
+        flux = fluxogram.Fluxogram(1000, 1000)
         flux.add_storage("AZ", 600, 0, 0)
         flux.add_storage("ASE", 600, 0.75, 0.25)
         flux.add_storage("ATE", 600, 1.5, 0)
