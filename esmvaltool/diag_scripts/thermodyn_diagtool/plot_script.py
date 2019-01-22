@@ -616,7 +616,6 @@ class PlotScript():
         except OSError:
             pass
 
-
     @classmethod
     def zerocross1d(cls, x_x, y_y):
         """Find the zero crossing points in 1d data.

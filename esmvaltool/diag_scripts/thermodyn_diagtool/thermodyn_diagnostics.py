@@ -201,7 +201,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used modules
-from mkthe import Mkthe
+from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe as Mkthe
+# from mkthe import Mkthe
 # from fluxogram import Fluxogram
 from fourier_coefficients import FourierCoeff
 from lorenz_cycle import LorenzCycle
