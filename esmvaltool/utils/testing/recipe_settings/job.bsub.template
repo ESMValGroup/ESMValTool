@@ -7,6 +7,9 @@
 #BSUB -M 30000
 #BSUB -n 16
 
+set -eo pipefail
+module load contrib/gnu/gcc/8.2.0
+
 . conda/etc/profile.d/conda.sh
 conda activate esmvaltool
 

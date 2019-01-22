@@ -8,6 +8,7 @@
 #BSUB -n 16
 
 set -eo pipefail
+module load contrib/gnu/gcc/8.2.0
 wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p conda
 . conda/etc/profile.d/conda.sh
@@ -17,5 +18,5 @@ git checkout {branch}
 # TODO: add option to merge with development branch
 conda env create --name esmvaltool
 conda activate esmvaltool
-pip install .
+python setup.py install
 Rscript esmvaltool/install/R/setup.R
