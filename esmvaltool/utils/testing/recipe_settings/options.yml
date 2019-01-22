@@ -50,3 +50,43 @@ recipe_shapeselect_py.yml:
   wgtmet:
     - mean_inside
     - representative  # only works with evalplot: false
+
+recipe_capacity_factor_wp7.yml:
+
+recipe_combined_indices_wp6.yml:
+  weights:
+    - equal
+    - null
+  running_mean:
+    - 3
+  #Or compute seasons? (NOTE: cant compute both running means and seasons):
+  moninf:
+    - NULL  # First month
+  monsup:
+    - NULL  # Last month
+  multi_year_average:
+    - FALSE
+    - TRUE
+
+recipe_diurnal_temperature_index_wp7.yml:
+
+recipe_heatwaves_coldwaves_wp7.yml:
+  # test result: works with bcc-csm1-1 from badc
+  quantile:
+    - 0.9    # quantile defining the exceedance/non-exceedance threshold
+  min_duration:
+    - 5  # Min duration of a heatwave/coldwave event
+  operator:
+    - '>' #or lessthan
+    - '<'
+  season:
+    - summer
+    - winter
+
+recipe_insurance_risk_index_wp7.yml:
+
+recipe_modes_of_variability_wp4.yml:
+
+recipe_multimodel_products_wp5.yml:
+
+recipe_toymodel_wp4.yml:
