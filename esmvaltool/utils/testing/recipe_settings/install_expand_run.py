@@ -83,7 +83,7 @@ def matrix_expand(filename, cwd, max_recipes=100):
 def create_script(recipe, config_file, cwd):
     """Submit a job for recipe."""
     recipe = Path(recipe)
-    job_template = Path(__file__).parent / 'job.bsub.template'
+    job_template = Path(__file__).parent / 'job.sh.template'
     job = job_template.read_text().format(
         recipe=recipe,
         config=config_file,
