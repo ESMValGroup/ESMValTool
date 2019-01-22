@@ -1,4 +1,5 @@
 # pylint: disable=C0302
+# pylint: disable=R0801
 """Module for LEC computation in climate models.
 
 This module contains all the instructions to compute the atmospheric

@@ -12,6 +12,7 @@ The module provides plots for a single model of:
 
 @author: Valerio Lembo, Meteorologisches Institut, University of Hamburg, 2018.
 """
+from __future__ import division
 import os
 from shutil import move
 import math
@@ -20,7 +21,6 @@ from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
 import cartopy.crs as ccrs
-from PyAstronomy import pyaC
 from cdo import Cdo
 
 
@@ -73,7 +73,7 @@ class PlotScript():
     @classmethod
     def hemean(cls, hem, lat, inp):
         """Compute hemispheric averages.
-        
+
         Arguments:
         - hem: a parameter for the choice of the hemisphere (1 stands for SH);
         - lat: latitude (in degrees);
@@ -144,8 +144,9 @@ class PlotScript():
 
         @author: Valerio Lembo, 2018.
         """
+        plotsmod = PlotScript()
         deriv = np.gradient(transp)
-        x_c, x_i = pyaC.zerocross1d(lat, deriv, getIndices=True)
+        x_c = plotsmod.zerocross1d(lat, deriv)
         y_i = np.zeros(2)
         xc_cut = np.zeros(2)
         j_p = 0
@@ -614,3 +615,74 @@ class PlotScript():
             os.remove(filename)
         except OSError:
             pass
+
+
+    @classmethod
+    def zerocross1d(cls, x_x, y_y):
+        """Find the zero crossing points in 1d data.
+
+        Find the zero crossing events in a discrete data set.
+        Linear interpolation is used to determine the actual
+        locations of the zero crossing between two data points
+        showing a change in sign. Data point which are zero
+        are counted in as zero crossings if a sign change occurs
+        across them. Note that the first and last data point will
+        not be considered whether or not they are zero.
+
+        Parameters
+        ----------
+        x_x, y_y : arrays. Ordinate and abscissa data values.
+
+        Returns
+        -------
+        xvals : array. The locations of the zero crossing events.
+
+        Credits
+        -------
+        The PyA group (https://github.com/sczesla/PyAstronomy).
+        Modified by Valerio Lembo (valerio.lembo@uni-hamburg.de).
+
+        License
+        -------
+        Copyright (c) 2011, PyA group
+
+        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of this software and associated documentation files
+        (the "Software"), to deal in the Software without restriction,
+        including without limitation the rights to use, copy, modify, merge,
+        publish, distribute, sublicense, and/or sell copies of the Software,
+        and to permit persons to whom the Software is furnished to do so,
+        subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included
+        in all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        """
+        # Indices of points *before* zero-crossing
+        indi = np.where(y_y[1:] * y_y[0:-1] < 0.0)[0]
+        # Find the zero crossing by linear interpolation
+        d_x = x_x[indi + 1] - x_x[indi]
+        d_y = y_y[indi + 1] - y_y[indi]
+        z_c = - y_y[indi] * (d_x / d_y) + x_x[indi]
+        # What about the points, which are actually zero
+        z_i = np.where(y_y == 0.0)[0]
+        # Do nothing about the first and last point should they be zero
+        z_i = z_i[np.where((z_i > 0) & (z_i < x_x.size - 1))]
+        # Select those point, where zero is crossed
+        # (sign change across the point)
+        z_i = z_i[np.where(y_y[z_i - 1] * y_y[z_i + 1] < 0.0)]
+        # Concatenate indices
+        zzindi = np.concatenate((indi, z_i))
+        # Concatenate zc and locations corresponding to zi
+        z_z = np.concatenate((z_c, x_x[z_i]))
+        # Sort by x-value
+        sind = np.argsort(z_z)
+        z_z, zzindi = z_z[sind], zzindi[sind]
+        return z_z

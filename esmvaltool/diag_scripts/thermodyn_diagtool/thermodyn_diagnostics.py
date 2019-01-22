@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 """Tool for computation of some aspects of climate system thermodynamics.
 
 Author
@@ -202,7 +203,6 @@ from matplotlib import rcParams
 # Locally used modules
 from mkthe import Mkthe
 from fluxogram import Fluxogram
-from PyAstronomy import pyaC
 from fourier_coefficients import FourierCoeff
 from lorenz_cycle import LorenzCycle
 from plot_script import PlotScript
@@ -1555,6 +1555,7 @@ def main(cfg):
     else:
         pass
     logger.info('Scatter plots')
+    # pylint: disable=unused-argument
     fig = plt.figure()
     fig.set_size_inches(12, 22)
     colors = (0, 0, 0)
