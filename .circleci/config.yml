@@ -310,10 +310,8 @@ workflows:
   commit:
     jobs:
       - python3_test
-      - python2_test
-      - python2_install      
+      - python2_test    
       - python3_install
-      - conda_build
   nightly:
     triggers:
       - schedule:
