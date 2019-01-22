@@ -80,8 +80,6 @@ for (model_idx in c(1:(length(models_name)))) {
   inregname <- paste0(exp, "_", model_exp, "_", model_ens, "_",
                       toString(year1), "-", toString(year2), "_", varname)
   outfile <- paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
-  outfile_landonly <- paste0(work_dir, "/", inregname, "_",
-                             perc_lev, "qb_landonly.nc")
   print(paste0(diag_base, ": pre-processing file: ", infile))
 
   print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
@@ -116,16 +114,8 @@ for (model_idx in c(1:(length(models_name)))) {
   print(cdo_command)
   system(cdo_command)
 
-  # Select land only using > 5 meter (Mehran et al. 2014)
-  system("cdo -f nc topo tmp_orog.nc")
-  system("cdo remapnn,tmp_model.nc -gtc,5 tmp_orog.nc tmp_mask_orog.nc")
-  system("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
-
   # Copy file to output destination and remove temporary files
   mv_command <- paste("mv tmp_qb.nc", outfile)
-  print(mv_command)
-  system(mv_command)
-  mv_command <- paste("mv tmp_qb_landonly.nc", outfile_landonly)
   print(mv_command)
   system(mv_command)
   rm_command <- paste("rm tmp_*")

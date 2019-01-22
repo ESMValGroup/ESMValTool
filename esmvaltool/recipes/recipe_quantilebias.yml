@@ -21,11 +21,17 @@ datasets:
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1997, end_year: 1997}
 
+preprocessors:
+  masking_preprocessor:
+    mask_landsea:
+      mask_out: sea
+
 diagnostics:
   quantilebias:
     description: Tool for calculation of precipitation quantile bias 
     variables:
       pr:
+        preprocessor: masking_preprocessor 
         reference_dataset: "GPCP-SG"
         mip: Amon
         field: T2Ds
