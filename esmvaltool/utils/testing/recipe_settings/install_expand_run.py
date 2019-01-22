@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 from itertools import product
-if sys.version.major == 2:
+if sys.version_info.major == 2:
     from pathlib2 import Path
 else:
     from pathlib import Path
