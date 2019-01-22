@@ -1,5 +1,6 @@
-lintr
-ncdf4
 RColorBrewer
 SPEI
+lintr
+logging
+ncdf4
 yaml

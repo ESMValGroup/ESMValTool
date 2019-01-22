@@ -34,24 +34,25 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
-    - r-base
-    - r-rcpp
-    - libgfortran-ng
   run:
     # esmvaltool
     - python
+    - graphviz    
     - iris=1.13
     - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf_units
     - cython
+    - esmpy
     - matplotlib<3
     - netCDF4
     - numba
     - numpy
     - pillow
+    - prov
     - psutil
+    - pydot
     - python-cdo
     - pyyaml
     - shapely
@@ -63,10 +64,8 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
-    - gcc
     - r-base
     - r-rcpp
-    - libgfortran-ng
     # TODO: add julia
 
 test:
