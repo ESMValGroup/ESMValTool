@@ -3,7 +3,7 @@
 
 documentation:
   description: |
-    Recipe for the HyInt  package by E. Arnone and J. von Hardenberg (ISAC-CNR)
+    Recipe for the HyInt package by E. Arnone and J. von Hardenberg (ISAC-CNR)
 
   authors:
     - arno_en
@@ -17,7 +17,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
 #  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 #  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 
@@ -43,7 +43,7 @@ diagnostics:
         # c) "REF" to use resolution of reference model
         rgrid: false   
         # Reference normalization period to be used for normalized indices 
-        norm_years: [2006,2009]
+        norm_years: [2004,2006]
         # Select type of plot:
         # 1) lon/lat maps per individual field/exp/multi-year mean
         # 2) lon/lat maps per individual field/exp-ref-diff/multi-year mean
@@ -55,7 +55,7 @@ diagnostics:
         # 14) summary trend coefficients multiple regions
         # 15) summary trend coefficients multiple models
         # plot_type: [2, 3, 12, 13, 14, 15]
-        plot_type:[15]
+        plot_type: [15]
         # User defined label to be added to trends and figures filename
         label: "test"
         # Select regions for timeseries and maps from the following list
