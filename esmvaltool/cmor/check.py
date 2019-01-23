@@ -406,7 +406,7 @@ class CMORCheck(object):
         else:
             coord.convert_units(
                 cf_units.Unit(
-                    'days since 1950-01-01 00:00:00',
+                    'days since 1950-1-1 00:00:00',
                     calendar=coord.units.calendar))
             simplified_cal = self._simplify_calendars(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
