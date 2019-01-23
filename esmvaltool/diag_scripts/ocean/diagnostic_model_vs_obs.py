@@ -169,7 +169,7 @@ def make_model_vs_obs_plots(
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
-    for layer in layers.keys():
+    for layer in layers:
 
         fig = plt.figure()
         fig.set_size_inches(9, 6)

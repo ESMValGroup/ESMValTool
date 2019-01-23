@@ -229,16 +229,15 @@ def make_map_contour(
 
         # Add title to plot
         title = ' '.join([metadata['dataset'], metadata['long_name']])
+        depth_units = str(cube_layer.coords('depth')[0].units)
         if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
+            title = '{} ({} {})'.format(title, layer, depth_units)
         plt.title(title)
 
         # Determine image filename:
         if multi_model:
-            path = diagtools.folder(cfg['plot_dir'])
-            path = path + os.path.basename(filename)
+            path = os.path.join(diagtools.folder(cfg['plot_dir']),
+                                os.path.basename(filename))
             path = path.replace('.nc', '_contour_map_' + str(layer_index))
             path = path + image_extention
         else:

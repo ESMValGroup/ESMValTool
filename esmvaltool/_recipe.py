@@ -399,8 +399,11 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landseaice']['fx_files'].append(
                 fx_files_dict['sftgif'])
 
-    for key in ['average_region', 'area_average', 'volume_average',
-                'average_volume'] and key in settings.keys():
+    fx_keys = set(['average_region', 'area_average', 'volume_average',
+                   'average_volume']) & set(settings.keys())
+    for key in fx_keys:
+        if 'use_fx_files' not in settings[key].keys():
+            continue
         if settings[key]['use_fx_files']:
             variable = dict(variable)
             fx_files_dict = get_input_fx_filelist(
