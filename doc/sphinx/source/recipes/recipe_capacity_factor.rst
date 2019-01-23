@@ -58,7 +58,7 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_permetrics1|
+.. centered:: |pic_capfactor1|
 
 .. |pic_capfactor1| image:: /esmvaltool/recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
    :width: 80%
