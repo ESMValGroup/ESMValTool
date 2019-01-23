@@ -303,10 +303,7 @@ def multi_model_statistics(products, span, output_products, statistics):
         logger.info("Single dataset in list: will not compute statistics.")
         return products
 
-    # unify units
     cubes = [cube for product in products for cube in product.cubes]
-    iris.util.unify_time_units(cubes)
-
     # check if we have any time overlap
     interval = _get_overlap(cubes)
     if interval is None:

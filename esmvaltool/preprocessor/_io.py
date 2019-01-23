@@ -57,7 +57,6 @@ def load_cubes(file, callback=None):
     raw_cubes = iris.load_raw(file, callback=callback)
     if not raw_cubes:
         raise Exception('Can not load cubes from {0}'.format(file))
-    iris.util.unify_time_units(raw_cubes)
     return raw_cubes
 
 
@@ -80,7 +79,6 @@ def concatenate(cubes):
     """Concatenate all cubes after fixing metadata."""
     _fix_cube_attributes(cubes)
     try:
-        iris.util.unify_time_units(cubes)
         cube = iris.cube.CubeList(cubes).concatenate_cube()
         return cube
     except iris.exceptions.ConcatenateError as ex:
