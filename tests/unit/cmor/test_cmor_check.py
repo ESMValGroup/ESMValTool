@@ -343,7 +343,7 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
         self._check_cube(automatic_fixes=True)
         self.assertEquals(
-            self.cube.coord.time.units.origin,
+            self.cube.coord('time').units.origin,
             'days since 1950-1-1 00:00:00'
         )
 
