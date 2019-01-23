@@ -1,6 +1,6 @@
 """
-Profile diagnostics
-===================
+Profile diagnostics.
+====================
 
 Diagnostic to produce figure of the profile over time from a cube.
 These plost show cube value (ie temperature) on the x-axis, and depth/height
@@ -197,6 +197,8 @@ def make_profiles_plots(
 
 def main(cfg):
     """
+    Run the diagnostics profile tool.
+
     Load the config file, find an observational dataset filename,
     pass loaded into the plot making tool.
 

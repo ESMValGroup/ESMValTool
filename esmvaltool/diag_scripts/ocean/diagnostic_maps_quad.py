@@ -1,6 +1,6 @@
 """
-Model 1 vs Model 2 vs Observations diagnostics
-==============================================
+Model 1 vs Model 2 vs Observations diagnostics.
+===============================================
 
 Diagnostic to produce an image showing four maps, based on a comparison of two
 differnt models results against an observational dataset. This process is
@@ -88,7 +88,7 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     qplot = qplt.contourf(cube, nspace, linewidth=0,
                           cmap=plt.cm.get_cmap(cmap))
     qplot.colorbar.set_ticks([nspace.min(),
-                              (nspace.max() + nspace.min())/2.,
+                              (nspace.max() + nspace.min()) / 2.,
                               nspace.max()])
 
     plt.gca().coastlines()
@@ -100,7 +100,7 @@ def multi_model_maps(
         input_files,
 ):
     """
-    Makes the four pane model vs model vs obs comparison plot.
+    Make the four pane model vs model vs obs comparison plot.
 
     Parameters
     ----------

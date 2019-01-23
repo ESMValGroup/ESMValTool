@@ -1,6 +1,6 @@
 """
-Sea Ice Diagnostics
-===================
+Sea Ice Diagnostics.
+====================
 
 Diagnostic to produce a series of images which are useful for evaluating
 the behaviour of the a sea ice model.
@@ -293,7 +293,7 @@ def make_polar_map(
 
 def get_pole(cube):
     """
-    Figures out the hemisphere and returns it as a string (North or South).
+    Figure out the hemisphere and returns it as a string (North or South).
 
     Parameters
     ----------
@@ -639,8 +639,7 @@ def make_map_extent_plots(
 
 def main(cfg):
     """
-    Load the config file and some metadata, then pass them the plot making
-    tools.
+    Load the config file and metadata, then pass them the plot making tools.
 
     Parameters
     ----------

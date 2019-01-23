@@ -353,7 +353,7 @@ def multi_model_contours(
         # Add title, threshold, legend to plots
         title = ' '.join([title, str(threshold), units])
         if layer:
-            title = ' '.join([title,  '(', str(layer), str(z_units), ')'])
+            title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
 

@@ -231,7 +231,7 @@ def make_model_vs_obs_plots(
 
 def rounds_sig(value, sig=3):
     """
-    Rounds a float to a specific number of sig. figs. & return it as a string.
+    Round a float to a specific number of sig. figs. & return it as a string.
 
     Parameters
     ----------
@@ -255,7 +255,7 @@ def rounds_sig(value, sig=3):
     return str(round(value, sig - int(math.floor(math.log10(value))) - 1))
 
 
-def add_linear_regression(ax,
+def add_linear_regression(plot_axes,
                           arr_x,
                           arr_y,
                           showtext=True,
@@ -266,7 +266,7 @@ def add_linear_regression(ax,
 
     Parameters
     ----------
-    ax: matplotlib.pyplot.axes
+    plot_axes: matplotlib.pyplot.axes
         The matplotlib axes on which to plot the linear regression.
     arr_x: numpy.array
         The data for the x coordinate.
@@ -279,12 +279,12 @@ def add_linear_regression(ax,
     extent: list of floats
         The extent of the plot axes.
     """
-    beta1, beta0, rValue, pValue, stderr = linregress(arr_x, arr_y)
+    beta1, beta0, r_value, p_value, std_err = linregress(arr_x, arr_y)
     texts = [
         r'$\^\beta_0$ = ' + rounds_sig(beta0),
         r'$\^\beta_1$ = ' + rounds_sig(beta1),
-        r'R = ' + rounds_sig(rValue),
-        r'P = ' + rounds_sig(pValue),
+        r'R = ' + rounds_sig(r_value),
+        r'P = ' + rounds_sig(p_value),
         r'N = ' + str(int(len(arr_x)))
     ]
     thetext = '\n'.join(texts)
@@ -296,7 +296,7 @@ def add_linear_regression(ax,
             thetext,
             horizontalalignment='left',
             verticalalignment='top',
-            transform=ax.transAxes)
+            transform=plot_axes.transAxes)
 
     if extent is None:
         x_values = np.arange(arr_x.min(), arr_x.max(),
@@ -375,7 +375,7 @@ def make_scatter(
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
-    for layer in layers.keys():
+    for layer in layers:
 
         fig = plt.figure()
         fig.set_size_inches(7, 6)

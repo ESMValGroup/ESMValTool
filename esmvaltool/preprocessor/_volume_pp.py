@@ -202,9 +202,7 @@ def volume_average(
 
     # ####
     # Load depth field and figure out which dim is which.
-    depth = cube.coord(coordz)
     t_dim = cube.coord_dims('time')[0]
-    z_dim = cube.coord_dims(coordz)[0]
 
     grid_volume_found = False
     grid_volume = None
