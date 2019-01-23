@@ -3,9 +3,11 @@ Call like:
 python util/nml-utils/generateNML/generateNML.py --project PROJECT --name NAME --product PRODUCT --institute INSTITUTE --model MODEL --experiment EXPERIMENT --mip MIP --ensemble ENSEMBLE --grid GRID --start_year START_YEAR --end_year END_YEAR --variable VARIABLE
 
 """
-import os
-from jinja2 import Template
 import argparse
+import os
+
+from jinja2 import Template
+
 import xmltodict
 
 t_nml = """
@@ -70,50 +72,45 @@ This namelist is part of the ESMValTool
 
 </namelist>
 """
-t_mline =" ".join([
-   '{{ project }}',
-   '{{ name }}',
-   '{{ product }}',
-   '{{ institute }}',
-   '{{ model }}',
-   '{{ experiment }}',
-   '{{ time_freq }}',
-   '{{ realm }}',
-   '{{ mip }}',
-   '{{ ensemble }}',
-   '{{ version }}',
-   '{{ grid }}',
-   '{{ start_year }}',
-   '{{ end_year }}',
-   '{{ ptid }}'])
+t_mline = " ".join([
+    '{{ project }}', '{{ name }}', '{{ product }}', '{{ institute }}',
+    '{{ model }}', '{{ experiment }}', '{{ time_freq }}', '{{ realm }}',
+    '{{ mip }}', '{{ ensemble }}', '{{ version }}', '{{ grid }}',
+    '{{ start_year }}', '{{ end_year }}', '{{ ptid }}'
+])
 
 
 def get_modelline(**kwargs):
     d = dict()
-    d['Amon'] = {'time_freq':'mon', 'realm':'atmos'}
-    d['Omon'] = {'time_freq':'mon', 'realm':'ocean'}
-    d['Lmon'] = {'time_freq':'mon', 'realm':'land'}
+    d['Amon'] = {'time_freq': 'mon', 'realm': 'atmos'}
+    d['Omon'] = {'time_freq': 'mon', 'realm': 'ocean'}
+    d['Lmon'] = {'time_freq': 'mon', 'realm': 'land'}
 
-    kwargs.update({'version': 'latest', 'ptid':'CMIP6_template'})
+    kwargs.update({'version': 'latest', 'ptid': 'CMIP6_template'})
     if 'mip' in kwargs.keys():
         if kwargs['mip'] in d.keys():
             kwargs.update(d[kwargs['mip']])
     tt_mline = Template(t_mline)
     return tt_mline.render(**kwargs)
 
+
 def get_namelist(**kwargs):
     d = dict()
-    d['tas'] = {'ft':'T2Ms'}
-    d['ta'] =  {'ft':'T3M'}
-    d['uas'] =  {'ft':'T2Ms'}
-    d['prw'] =  {'ft':'T2M'}
+    d['tas'] = {'ft': 'T2Ms'}
+    d['ta'] = {'ft': 'T3M'}
+    d['uas'] = {'ft': 'T2Ms'}
+    d['prw'] = {'ft': 'T2M'}
 
     tt_nml = Template(t_nml)
     if 'variable' in kwargs.keys():
         if kwargs['variable'] in d.keys():
             kwargs.update(d[kwargs['variable']])
-            return tt_nml.render(m=get_modelline(**kwargs), v=kwargs['variable'], ft=kwargs['ft'])
+            return tt_nml.render(
+                m=get_modelline(**kwargs),
+                v=kwargs['variable'],
+                ft=kwargs['ft'])
     return tt_nml.render(m=get_modelline(**kwargs), v=None, ft=None)
+
 
 def get_template_string(namelist):
     """Return a template string for a given namelist."""
@@ -129,12 +126,16 @@ def get_template_string(namelist):
 
     number_of_diagblocks = len(j['namelist']['DIAGNOSTICS']['diag'])
     for i in range(number_of_diagblocks):
-        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = ["{{ diag_modelline }}"]
+        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = [
+            "{{ diag_modelline }}"
+        ]
 
     return xmltodict.unparse(j, pretty=True)
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Generate routine evaluation namelist.')
+    parser = argparse.ArgumentParser(
+        description='Generate routine evaluation namelist.')
     parser.add_argument('--project', dest='project')
     parser.add_argument('--name', dest='name')
     parser.add_argument('--product', dest='product')
@@ -156,6 +157,7 @@ def main():
     #print(get_namelist(**kwa))
     namelist = kwa['namelist']
     print(get_template_string(namelist))
+
 
 if __name__ == "__main__":
     main()
