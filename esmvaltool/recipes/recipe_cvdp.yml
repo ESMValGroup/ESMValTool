@@ -1,3 +1,4 @@
+# ESMValTool
 # recipe_cvdp.yml
 ---
 documentation:
@@ -6,6 +7,9 @@ documentation:
 
   authors:
     - phil_ad
+    - broe_bj
+
+  maintainer:
     - broe_bj
 
   references:
