@@ -342,6 +342,10 @@ class TestCMORCheck(unittest.TestCase):
         """Test automatic fix for time units"""
         self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
         self._check_cube(automatic_fixes=True)
+        self.assertEquals(
+            self.cube.coord.time.units.origin,
+            'days since 1950-1-1 00:00:00'
+        )
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""
