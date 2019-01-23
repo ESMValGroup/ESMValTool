@@ -273,12 +273,15 @@ def make_polar_map(
     qplt.contourf(cube, linrange, cmap=cmap, linewidth=0, rasterized=True)
     plt.tight_layout()
 
-    ax1.add_feature(
-        cartopy.feature.LAND,
-        zorder=10,
-        facecolor=[0.8, 0.8, 0.8],
-    )
-
+    try:
+        ax1.add_feature(
+            cartopy.feature.LAND,
+            zorder=10,
+            facecolor=[0.8, 0.8, 0.8],
+        )
+    except ConnectionRefusedError:
+        logger.error('Cartopy was unable add coastlines due to  a '
+                     'connection error.')
     ax1.gridlines(
         linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
     try:
@@ -536,9 +539,12 @@ def make_map_extent_plots(
             projection = cartopy.crs.SouthPolarStereo()
             ax1 = plt.subplot(111, projection=projection)
             ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
-
-        ax1.add_feature(
-            cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8])
+        try:
+            ax1.add_feature(
+                cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8])
+        except ConnectionRefusedError:
+            logger.error('Cartopy was unable add coastlines due to  a '
+                         'connection error.')
 
         ax1.gridlines(
             linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
