@@ -3,8 +3,10 @@ Call like:
 python util/nml-utils/generateNML/generateNML.py --project PROJECT --name NAME --product PRODUCT --institute INSTITUTE --model MODEL --experiment EXPERIMENT --mip MIP --ensemble ENSEMBLE --grid GRID --start_year START_YEAR --end_year END_YEAR --variable VARIABLE
 
 """
+import os
 from jinja2 import Template
 import argparse
+import xmltodict
 
 t_nml = """
 <namelist>
@@ -113,6 +115,24 @@ def get_namelist(**kwargs):
             return tt_nml.render(m=get_modelline(**kwargs), v=kwargs['variable'], ft=kwargs['ft'])
     return tt_nml.render(m=get_modelline(**kwargs), v=None, ft=None)
 
+def get_template_string(namelist):
+    """Return a template string for a given namelist."""
+
+    if not os.path.isfile(namelist):
+        raise Exception
+
+    with open(namelist, 'r') as f:
+        j = xmltodict.parse(f.read())
+
+    if j['namelist']['MODELS'] is not None:
+        j['namelist']['MODELS'] = ["{{ global_modelline }}"]
+
+    number_of_diagblocks = len(j['namelist']['DIAGNOSTICS']['diag'])
+    for i in range(number_of_diagblocks):
+        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = ["{{ diag_modelline }}"]
+
+    return xmltodict.unparse(j, pretty=True)
+
 def main():
     parser = argparse.ArgumentParser(description='Generate routine evaluation namelist.')
     parser.add_argument('--project', dest='project')
@@ -127,12 +147,15 @@ def main():
     parser.add_argument('--start_year', dest='start_year')
     parser.add_argument('--end_year', dest='end_year')
     parser.add_argument('--variable', dest='variable')
+    parser.add_argument('--namelist', dest='namelist')
 
     args = parser.parse_args()
 
     kwa = dict(args._get_kwargs())
 
-    print(get_namelist(**kwa))
+    #print(get_namelist(**kwa))
+    namelist = kwa['namelist']
+    print(get_template_string(namelist))
 
 if __name__ == "__main__":
     main()
