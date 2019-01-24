@@ -1,22 +1,46 @@
 """
-Diagnostic Maps.
+Sea Ice Diagnostics.
+====================
 
-Diagnostic to produce images of a map with coastlines from a cube.
-These plost show latitude vs longitude and the cube value is used as the colour
-scale.
+Diagnostic to produce a series of images which are useful for evaluating
+the behaviour of the a sea ice model.
+
+There are three kinds of plots shown here.
+1. Sea ice Extent maps plots with a stereoscoic projection.
+2. Maps plots of individual models ice fracrtion.
+3. Time series plots for the total ice extent.
+
+All three kinds of plots are made for both Summer and Winter in both the
+North and Southern hemisphere.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be:
-preprocessors:
-  prep_map:
-    extract_levels:
-      levels:  [100., ]
-      scheme: linear_extrap
-    time_average:
+This diagnostic takes data from either North or South hemisphere, and
+from either December-January-February or June-July-August. This diagnostic
+requires the data to be 2D+time, and typically expects the data field to be
+the sea ice cover.
+An approproate preprocessor would be::
+
+  preprocessors:
+    timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
+      custom_order: true
+      extract_time:
+          start_year: 1960
+          start_month: 12
+          start_day: 1
+          end_year: 2005
+          end_month: 9
+          end_day: 31
+      extract_season:
+        season: DJF
+      extract_region:
+        start_longitude: -180.
+        end_longitude: 180.
+        start_latitude: 0.
+        end_latitude: 90.
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
@@ -43,8 +67,21 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def create_ice_cmap(threshold):
-    """Create colour map with ocean blue below 15% and white above 15%."""
+def create_ice_cmap(threshold=0.15):
+    """
+    Create colour map with ocean blue below a threshold and white above.
+
+    Parameters
+    ----------
+    threshold: float
+        The threshold for the line between blue and white.
+
+    Returns
+    -------
+    matplotlib.colors.LinearSegmentedColormap:
+        The resulting colour map.
+
+    """
     threshold = threshold / 100.
     ice_cmap_dict = {
         'red': ((0., 0.0313, 0.0313), (threshold, 0.0313, 1.), (1., 1., 1.)),
@@ -63,13 +100,20 @@ def calculate_area_time_series(cube, plot_type, threshold):
 
     Parameters
     ----------
-        cube: iris.cube.Cube
-            Original data
+    cube: iris.cube.Cube
+        Data Cube
+    plot_type: str
+        The type of plot: ice extent or ice area
+    threshold: float
+        The threshold for ice fraction (typically 15%)
 
     Returns
     -------
-        iris.cube.Cube
-            collapsed cube, in units of m^2
+    numpy array:
+        An numpy array containing the time points.
+    numpy.array:
+        An numpy array containing the total ice extent or total ice area.
+
     """
     data = []
     times = diagtools.cube_time_to_float(cube)
@@ -101,11 +145,17 @@ def make_ts_plots(
         filename,
 ):
     """
-    Make a ice extent time series plot for an individual model.
+    Make a ice extent and ice area time series plot for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -179,11 +229,28 @@ def make_polar_map(
         cmap='Blues_r',
 ):
     """
-    Make a polar map plot.
+    Make a polar stereoscopic map plot.
 
     The cube is the opened cube (two dimensional),
     pole is the polar region (North/South)
     cmap is the colourmap,
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+    pole: str
+        The hemisphere
+    cmap: str
+        The string describing the matplotlib colourmap.
+
+    Returns
+    ----------
+    matplotlib.pyplot.figure:
+        The matplotlib figure where the map was drawn.
+    matplotlib.pyplot.axes:
+        The matplotlib axes where the map was drawn.
+
     """
     fig = plt.figure()
     fig.set_size_inches(7, 7)
@@ -206,12 +273,15 @@ def make_polar_map(
     qplt.contourf(cube, linrange, cmap=cmap, linewidth=0, rasterized=True)
     plt.tight_layout()
 
-    ax1.add_feature(
-        cartopy.feature.LAND,
-        zorder=10,
-        facecolor=[0.8, 0.8, 0.8],
-    )
-
+    try:
+        ax1.add_feature(
+            cartopy.feature.LAND,
+            zorder=10,
+            facecolor=[0.8, 0.8, 0.8],
+        )
+    except ConnectionRefusedError:
+        logger.error('Cartopy was unable add coastlines due to  a '
+                     'connection error.')
     ax1.gridlines(
         linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
     try:
@@ -222,7 +292,20 @@ def make_polar_map(
 
 
 def get_pole(cube):
-    """Return a hemisphere name as a string (Either North or South)."""
+    """
+    Figure out the hemisphere and returns it as a string (North or South).
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+
+    Returns
+    ----------
+    str:
+        The hemisphere (North or South)
+
+    """
     margin = 5.
     if np.max(cube.coord('latitude').points) < 0. + margin:
         return 'South'
@@ -233,20 +316,59 @@ def get_pole(cube):
 
 
 def get_time_string(cube):
-    """Return a climatological season string in the format: "year season"."""
+    """
+    Return a climatological season string in the format: "year season".
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+
+    Returns
+    ----------
+    str:
+        The climatological season as a string
+
+    """
     season = cube.coord('clim_season').points
     year = cube.coord('year').points
     return str(int(year[0])) + ' ' + season[0].upper()
 
 
 def get_year(cube):
-    """Return the cube year as a string."""
+    """
+    Return the cube year as a string.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+
+    Returns
+    ----------
+    str:
+        The year as a string
+
+    """
     year = cube.coord('year').points
     return str(int(year))
 
 
 def get_season(cube):
-    """Return a climatological season time string."""
+    """
+    Return a climatological season time string.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+
+    Returns
+    ----------
+    str:
+        The climatological season as a string
+
+    """
     season = cube.coord('clim_season').points
     return season[0].upper()
 
@@ -259,9 +381,15 @@ def make_map_plots(
     """
     Make a simple map plot for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -338,6 +466,17 @@ def agregate_by_season(cube):
 
     Note that it is not currently possible to do this in the preprocessor,
     as the seasonal mean changes the cube units.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Data Cube
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        Data Cube with the seasonal means
+
     """
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
@@ -356,9 +495,15 @@ def make_map_extent_plots(
     """
     Make an extent map plot showing several times for an individual model.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -394,9 +539,12 @@ def make_map_extent_plots(
             projection = cartopy.crs.SouthPolarStereo()
             ax1 = plt.subplot(111, projection=projection)
             ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
-
-        ax1.add_feature(
-            cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8])
+        try:
+            ax1.add_feature(
+                cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8])
+        except ConnectionRefusedError:
+            logger.error('Cartopy was unable add coastlines due to  a '
+                         'connection error.')
 
         ax1.gridlines(
             linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
@@ -491,9 +639,13 @@ def make_map_extent_plots(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file and metadata, then pass them the plot making tools.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
