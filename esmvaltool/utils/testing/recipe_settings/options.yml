@@ -33,7 +33,7 @@ recipe_ensclus.yml:
     - 4
   # Cluster analysis is applied on a number of PCs such as they explain
   # Either set perc or numpcs:
-  perc:  #'perc' of total variance
+  perc:  # 'perc' of total variance
     - 70
     - 80
     - 90
@@ -59,14 +59,14 @@ recipe_combined_indices_wp6.yml:
     - null
   running_mean:
     - 3
-  #Or compute seasons? (NOTE: cant compute both running means and seasons):
+  # Or compute seasons? (NOTE: cant compute both running means and seasons):
   moninf:
-    - NULL  # First month
+    - null  # First month
   monsup:
-    - NULL  # Last month
+    - null  # Last month
   multi_year_average:
-    - FALSE
-    - TRUE
+    - false
+    - true
 
 recipe_diurnal_temperature_index_wp7.yml:
 
@@ -77,16 +77,73 @@ recipe_heatwaves_coldwaves_wp7.yml:
   min_duration:
     - 5  # Min duration of a heatwave/coldwave event
   operator:
-    - '>' #or lessthan
+    - '>'  # or lessthan
     - '<'
   season:
     - summer
     - winter
 
 recipe_insurance_risk_index_wp7.yml:
+  metric:
+    - t90p
+    - t10p
+    - cdd
+    - rx5day
+    - Wx
 
 recipe_modes_of_variability_wp4.yml:
+  region:
+    - Polar
+    - North-Atlantic
+  start_historical:
+    - "1961-01-01"
+  end_historical:
+    - "1990-12-31"
+  start_projection:
+    - "2006-01-01"
+  end_projection:
+    - "2026-12-31"
+  ncenters:
+    - 3
+  detrend_order:
+    - 2
+  cluster_method:
+    # If null it computes hcluster else specify kmeans
+    - kmeans
+    - null
+  EOFS:
+    - true
+    - false
+  frequency:
+    # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+    - JAN
+    - FEB
+    - JJA
+    - SON
+    - MAM
+    - DJF
 
 recipe_multimodel_products_wp5.yml:
+  # Parameters for Season() function
+  moninf:
+    - 6   # If this is null, then the monthly anomalies will be computed
+    - null
+  monsup:
+    - 6
+  agreement_threshold:
+    - 80
+  # Time series plot options
+  running_mean:
+    - 5  # Length of running mean to use for the time series plot
+  # Timeseries plot
+  time_series_plot:
+    # Either mean or maxmin (plot the mean with/without shading between the max and min.
+    - null
+    - mean
+    - maxmin
 
 recipe_toymodel_wp4.yml:
+  beta:
+    - 0.3
+  number_of_members:
+    - 5
