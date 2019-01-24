@@ -69,6 +69,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+# Note that this recipe may not function on machines with no access to
+# the internet, as cartopy may try to download geographic files.
+# TODO: This recipe needs to be fixed to manage cartopy's download. issue #795
+
+
 def create_ice_cmap(threshold=0.15):
     """
     Create colour map with ocean blue below a threshold and white above.
