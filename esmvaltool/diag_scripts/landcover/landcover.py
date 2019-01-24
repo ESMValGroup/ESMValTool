@@ -41,6 +41,7 @@ import numpy as np
 
 import iris
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import esmvaltool.diag_scripts.shared as diag
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -103,8 +104,6 @@ def init_plot(cfg, var):
     var : str
         variable short name
     """
-    from matplotlib.backends.backend_pdf import PdfPages
-
     if cfg.get('output_file_type', 'png') == 'pdf':
         filepath = os.path.join(cfg[diag.names.PLOT_DIR],
                                 '_'.join(['metrics', var]) + ".pdf")
