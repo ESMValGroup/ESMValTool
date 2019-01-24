@@ -52,10 +52,12 @@ import os
 import sys
 from itertools import product
 
+import matplotlib
+matplotlib.use('Agg')  # noqa
+
 import cartopy
 import iris
 import iris.quickplot as qplt
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -647,6 +649,8 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    cartopy.config['data_dir'] = cfg['download_path']
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',
