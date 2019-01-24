@@ -6,6 +6,7 @@ import iris
 import pytest
 import yaml
 from mock import create_autospec
+from six import text_type
 
 import esmvaltool
 from esmvaltool._recipe import TASKSEP, read_recipe_file
@@ -61,8 +62,8 @@ DEFAULT_PREPROCESSOR_STEPS = (
 
 
 @pytest.fixture
-def config_user(tmpdir):
-    filename = write_config_user_file(str(tmpdir))
+def config_user(tmp_path):
+    filename = write_config_user_file(tmp_path)
     cfg = esmvaltool._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
     return cfg
@@ -82,7 +83,7 @@ def create_test_file(filename, tracking_id=None):
 
 
 @pytest.fixture
-def patched_datafinder(tmpdir, monkeypatch):
+def patched_datafinder(tmp_path, monkeypatch):
     def tracking_ids(i=0):
         while True:
             yield i
@@ -97,7 +98,7 @@ def patched_datafinder(tmpdir, monkeypatch):
             assert '[' not in filename
 
         filename = filenames[0]
-        filename = str(tmpdir / 'input' / filename)
+        filename = str(tmp_path / 'input' / filename)
         filenames = []
         if filename.endswith('*.nc'):
             filename = filename[:-len('*.nc')]
@@ -133,18 +134,17 @@ DEFAULT_DOCUMENTATION = dedent("""
 
 def get_recipe(tempdir, content, cfg):
     """Save and load recipe content."""
-    filename = tempdir / 'recipe_test.yml'
+    recipe_file = tempdir / 'recipe_test.yml'
     # Add mandatory documentation section
-    content = DEFAULT_DOCUMENTATION + content
-    with filename.open('w') as file:
-        file.write(content)
+    content = text_type(DEFAULT_DOCUMENTATION + content)
+    recipe_file.write_text(content)
 
-    recipe = read_recipe_file(str(filename), cfg)
+    recipe = read_recipe_file(str(recipe_file), cfg)
 
     return recipe
 
 
-def test_simple_recipe(tmpdir, patched_datafinder, config_user):
+def test_simple_recipe(tmp_path, patched_datafinder, config_user):
 
     content = dedent("""
         datasets:
@@ -178,7 +178,7 @@ def test_simple_recipe(tmpdir, patched_datafinder, config_user):
                 custom_setting: 1
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
     raw = yaml.safe_load(content)
     # Perform some sanity checks on recipe expansion/normalization
     print("Expanded recipe:")
@@ -228,7 +228,7 @@ def test_simple_recipe(tmpdir, patched_datafinder, config_user):
         assert task.settings['custom_setting'] == 1
 
 
-def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
+def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
 
     content = dedent("""
         diagnostics:
@@ -247,14 +247,14 @@ def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
 
     assert len(recipe.tasks) == 1
     task = recipe.tasks.pop()
     assert len(task.products) == 1
     product = task.products.pop()
     preproc_dir = os.path.dirname(product.filename)
-    assert preproc_dir.startswith(str(tmpdir))
+    assert preproc_dir.startswith(str(tmp_path))
 
     fix_dir = os.path.join(
         preproc_dir,
@@ -316,7 +316,7 @@ def test_default_preprocessor(tmpdir, patched_datafinder, config_user):
     assert product.settings == defaults
 
 
-def test_reference_dataset(tmpdir, patched_datafinder, config_user,
+def test_reference_dataset(tmp_path, patched_datafinder, config_user,
                            monkeypatch):
 
     levels = [100]
@@ -366,7 +366,7 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user,
             scripts: null
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
 
     assert len(recipe.tasks) == 2
 
@@ -420,7 +420,7 @@ def test_reference_dataset(tmpdir, patched_datafinder, config_user,
     ]
 
 
-def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
+def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
 
     content = dedent("""
         preprocessors:
@@ -456,7 +456,7 @@ def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
 
     assert len(recipe.tasks) == 2
 
@@ -469,7 +469,7 @@ def test_custom_preproc_order(tmpdir, patched_datafinder, config_user):
         'multi_model_statistics')
 
 
-def test_derive(tmpdir, patched_datafinder, config_user):
+def test_derive(tmp_path, patched_datafinder, config_user):
 
     content = dedent("""
         diagnostics:
@@ -489,7 +489,7 @@ def test_derive(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
 
     # Check generated tasks
     assert len(recipe.tasks) == 1
@@ -519,7 +519,7 @@ def test_derive(tmpdir, patched_datafinder, config_user):
     assert tro3_product.filename in product.files
 
 
-def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
+def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
 
     content = dedent("""
         diagnostics:
@@ -539,7 +539,7 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
             scripts: null
         """)
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
 
     # Check generated tasks
     assert len(recipe.tasks) == 1
@@ -562,9 +562,9 @@ def test_derive_not_needed(tmpdir, patched_datafinder, config_user):
     assert ancestor_product.attributes['short_name'] == 'toz'
 
 
-def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
+def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
 
-    script = tmpdir / 'diagnostic.py'
+    script = tmp_path / 'diagnostic.py'
     with script.open('w'):
         pass
 
@@ -591,7 +591,7 @@ def test_diagnostic_task_provenance(tmpdir, patched_datafinder, config_user):
                 script: {script}
         """.format(script=script))
 
-    recipe = get_recipe(tmpdir, content, config_user)
+    recipe = get_recipe(tmp_path, content, config_user)
     diagnostic_task = recipe.tasks.pop()
 
     # Simulate Python diagnostic run
