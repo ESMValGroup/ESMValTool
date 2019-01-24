@@ -22,37 +22,17 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        start_time = self._get_and_remove(
-            cubes, 'Start time for average period'
-        )
-        end_time = self._get_and_remove(cubes, 'End time for average period')
-        length = self._get_and_remove(cubes, 'Length of average period')
-        for cube in cubes:
-            self._add_aux_coord(cube, start_time)
-            self._add_aux_coord(cube, end_time)
-            self._add_aux_coord(cube, length)
-
+        self._get_and_remove(cubes, 'Start time for average period')
+        self._get_and_remove(cubes, 'End time for average period')
+        self._get_and_remove(cubes, 'Length of average period')
         return cubes
 
     def _get_and_remove(self, cubes, long_name):
         try:
             cube = cubes.extract_strict(long_name)
             cubes.remove(cube)
-            return cube
         except iris.exceptions.ConstraintMismatchError:
-            return None
-
-    def _add_aux_coord(self, target, cube):
-        if cube is None:
-            return
-        coordinate = AuxCoord(
-            cube.data,
-            standard_name=cube.standard_name,
-            long_name=cube.long_name,
-            var_name=cube.var_name,
-            units=cube.units,
-        )
-        target.add_aux_coord(coordinate, target.coord_dims('time'))
+            pass
 
 
 class co2(Fix):
