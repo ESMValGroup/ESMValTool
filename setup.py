@@ -54,7 +54,7 @@ REQUIREMENTS = {
         'mock',
         'nose',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
         'pytest-html',
