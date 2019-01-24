@@ -82,7 +82,6 @@ def matrix_expand(filename, cwd, max_recipes=100):
 
 def create_script(recipe, config_file, cwd):
     """Submit a job for recipe."""
-    recipe = Path(recipe)
     job_template = Path(__file__).parent / 'job.sh.template'
     job = job_template.read_text().format(
         recipe=recipe,
@@ -109,27 +108,29 @@ def run(script, cwd, method=''):
 
 def install(args):
     """Install ESMValTool from GitHub."""
-    Path(args.directory).mkdir(parents=True)
+    cwd = Path(args.directory).absolute()
+    cwd.mkdir(parents=True)
     script_template = Path(__file__).parent / 'install.sh.template'
     script = script_template.read_text().format(branch=args.branch)
 
-    script_file = args.directory / Path(args.branch + '_' +
-                                        script_template.stem)
+    script_file = cwd / Path(args.branch + '_' + script_template.stem)
     script_file.write_text(script)
-    run(script_file, cwd=args.directory, method=args.run_method)
+    run(script_file, cwd=cwd, method=args.run_method)
 
 
 def schedule(args):
     """Create recipes with the options provided and schedule."""
+    cwd = Path(args.directory).absolute()
     expand = matrix_expand if args.matrix else linear_expand
     for input_recipe in args.recipes:
-        for recipe in expand(input_recipe, cwd=args.directory):
+        input_recipe = Path(input_recipe).absolute()
+        for recipe in expand(input_recipe, cwd=cwd):
             script_file = create_script(
                 recipe,
-                config_file=args.esmvaltool_config_file,
-                cwd=args.directory,
+                config_file=Path(args.esmvaltool_config_file).absolute(),
+                cwd=cwd,
             )
-            run(script_file, cwd=args.directory, method=args.run_method)
+            run(script_file, cwd=cwd, method=args.run_method)
 
 
 def main():
