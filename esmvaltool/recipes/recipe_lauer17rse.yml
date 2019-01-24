@@ -34,6 +34,20 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset, PATMOS, CLARA-A2, ERA-Interim, MODIS]
 
+  clim_1x1_01:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.1
+
+  clim_5x5:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.5
+
 
 diagnostics:
 
@@ -229,122 +243,173 @@ diagnostics:
   # AOD maps
   # ==========================================================================
 
-  fig14_a:
-    description: maps of total AOD
-    variables:
-      od550aer:
-        preprocessor: clim_1x1_05
-        mip: aero
-        field: T2Ms
-        start_year: 1997
-        end_year: 2011
-        exp: [historical, rcp45]
-        reference_dataset: ESACCI-AEROSOL
-        additional_datasets:
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
-    scripts:
-      latlon:
-        script: perfmetrics/main.ncl
-        plot_type: latlon
-        projection: Robinson
-        time_avg: annualclim
-        region: Global
-        legend_outside: false
-        plot_diff: true
-        latlon_cmap: WhiteBlueGreenYellowRed
-        t_test: true
-        stippling: false
-        conf_level: 0.95
-        abs_levs: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3,
-                   0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
-                   0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
-        diff_levs: [-0.5, -0.45, -0.4, -0.35, -0.3, -0.25,
-                    -0.2, -0.15, -0.1, -0.05, 0, 0.05,
-                    0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,
-                    0.45, 0.5]
+#  fig14_a:
+#    description: maps of total AOD
+#    variables:
+#      od550aer:
+#        preprocessor: clim_1x1_01
+#        mip: aero
+#        field: T2Ms
+#        start_year: 1997
+#        end_year: 2011
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-AEROSOL
+#        additional_datasets:
+#          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+#    scripts:
+#      latlon:
+#        script: perfmetrics/main.ncl
+#        plot_type: latlon
+#        projection: Robinson
+#        time_avg: annualclim
+#        region: Global
+#        legend_outside: false
+#        plot_diff: true
+#        latlon_cmap: WhiteBlueGreenYellowRed
+#        t_test: true
+#        stippling: false
+#        conf_level: 0.95
+#        abs_levs: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3,
+#                   0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
+#                   0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
+#        diff_levs: [-0.5, -0.45, -0.4, -0.35, -0.3, -0.25,
+#                    -0.2, -0.15, -0.1, -0.05, 0, 0.05,
+#                    0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,
+#                    0.45, 0.5]
+#
+#  fig14_b:
+#    description: maps of fine mode AOD
+#    variables:
+#      od550lt1aer:
+#        preprocessor: clim_1x1_01
+#        mip: aero
+#        field: T2Ms
+#        start_year: 1997
+#        end_year: 2011
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-AEROSOL
+#        additional_datasets:
+#          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+#    scripts:
+#      latlon:
+#        script: perfmetrics/main.ncl
+#        plot_type: latlon
+#        projection: Robinson
+#        time_avg: annualclim
+#        region: Global
+#        legend_outside: false
+#        plot_diff: true
+#        latlon_cmap: WhiteBlueGreenYellowRed
+#        t_test: true
+#        stippling: false
+#        conf_level: 0.95
+#        abs_levs: [0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15,
+#                   0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325,
+#                   0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5]
+#        diff_levs: [-0.25, -0.225, -0.2, -0.175, -0.15, -0.125,
+#                    -0.1, -0.075, -0.05, -0.025, 0, 0.025,
+#                    0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2,
+#                    0.225, 0.25]
+#
+#  fig14_c:
+#    description: maps of absorption AOD
+#    variables:
+#      abs550aer:
+#        preprocessor: clim_1x1_01
+#        mip: aero
+#        field: T2Ms
+#        start_year: 1997
+#        end_year: 2011
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-AEROSOL
+#        additional_datasets:
+#          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+#    scripts:
+#      latlon:
+#        script: perfmetrics/main.ncl
+#        plot_type: latlon
+#        projection: Robinson
+#        time_avg: annualclim
+#        region: Global
+#        legend_outside: false
+#        plot_diff: true
+#        latlon_cmap: WhiteBlueGreenYellowRed
+#        t_test: true
+#        stippling: false
+#        conf_level: 0.95
+#        abs_levs: [0, 0.0025, 0.005, 0.0075, 0.01, 0.0125, 0.015,
+#                   0.0175, 0.02, 0.0225, 0.025, 0.0275, 0.03, 0.0325,
+#                   0.035, 0.0375, 0.04, 0.0425, 0.045, 0.0475, 0.05]
+#        diff_levs: [-0.025, -0.0225, -0.02, -0.0175, -0.015, -0.0125,
+#                    -0.01, -0.0075, -0.005, -0.0025, 0, 0.0025,
+#                    0.005, 0.0075, 0.01, 0.0125, 0.015, 0.0175, 0.02,
+#                    0.0225, 0.025]
 
-  fig14_b:
-    description: maps of fine mode AOD
-    variables:
-      od550lt1aer:
-        preprocessor: clim_1x1_05
-        mip: aero
-        field: T2Ms
-        start_year: 1997
-        end_year: 2011
-        exp: [historical, rcp45]
-        reference_dataset: ESACCI-AEROSOL
-        additional_datasets:
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
-    scripts:
-      latlon:
-        script: perfmetrics/main.ncl
-        plot_type: latlon
-        projection: Robinson
-        time_avg: annualclim
-        region: Global
-        legend_outside: false
-        plot_diff: true
-        latlon_cmap: WhiteBlueGreenYellowRed
-        t_test: true
-        stippling: false
-        conf_level: 0.95
-        abs_levs: [0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15,
-                   0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325,
-                   0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5]
-        diff_levs: [-0.25, -0.225, -0.2, -0.175, -0.15, -0.125,
-                    -0.1, -0.075, -0.05, -0.025, 0, 0.025,
-                    0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2,
-                    0.225, 0.25]
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 19
+  # XCO2 time series
+  # ==========================================================================
 
-  fig14_c:
-    description: maps of absorption AOD
+  fig19_a:
+    description: time series of XCO2 (global)
     variables:
-      abs550aer:
-        preprocessor: clim_1x1_05
-        mip: aero
+      xco2:
+#        preprocessor: clim_5x5
+        derive: true
+        mip: Amon
         field: T2Ms
-        start_year: 1997
-        end_year: 2011
-        exp: [historical, rcp45]
-        reference_dataset: ESACCI-AEROSOL
+        start_year: 2003
+#        end_year: 2003
+        end_year: 2014
+        exp: [esmHistorical, esmrcp85]
+        reference_dataset: ESACCI-GHG
         additional_datasets:
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ESACCI-GHG, project: obs4mips, level: l3, version: v100, tier: 1}
     scripts:
-      latlon:
-        script: perfmetrics/main.ncl
-        plot_type: latlon
-        projection: Robinson
-        time_avg: annualclim
-        region: Global
-        legend_outside: false
-        plot_diff: true
-        latlon_cmap: WhiteBlueGreenYellowRed
-        t_test: true
-        stippling: false
-        conf_level: 0.95
-        abs_levs: [0, 0.0025, 0.005, 0.0075, 0.01, 0.0125, 0.015,
-                   0.0175, 0.02, 0.0225, 0.025, 0.0275, 0.03, 0.0325,
-                   0.035, 0.0375, 0.04, 0.0425, 0.045, 0.0475, 0.05]
-        diff_levs: [-0.025, -0.0225, -0.02, -0.0175, -0.015, -0.0125,
-                    -0.01, -0.0075, -0.005, -0.0025, 0, 0.0025,
-                    0.005, 0.0075, 0.01, 0.0125, 0.015, 0.0175, 0.02,
-                    0.0225, 0.025]
+      tsline:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: -90
+        ts_maxlat: 90    
+        ts_minlon: 0
+        ts_maxlon: 360
+        multi_model_mean: true
+        dont_add_per_year: true
+        ts_diff_ref: ESACCI-GHG
+        ts_lsmask: refmodel
+
+
+
+  # ==========================================================================
+  # ==========================================================================
+  # ==========================================================================
+  # ==========================================================================
+
 
 
   # ==========================================================================
