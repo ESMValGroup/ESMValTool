@@ -1,23 +1,26 @@
 """Recipe parser."""
 import copy
 import fnmatch
-import inspect
 import logging
 import os
-import subprocess
 from collections import OrderedDict
 
-import yamale
 import yaml
+from netCDF4 import Dataset
 
-from . import __version__, preprocessor
-from ._config import get_institutes
+from . import __version__
+from . import _recipe_checks as check
+from ._config import TAGS, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
-                           get_output_file, get_start_end_year,
-                           get_statistic_output_file)
-from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
+                           get_output_file, get_statistic_output_file)
+from ._provenance import TrackedFile, get_recipe_provenance
+from ._recipe_checks import RecipeError
+from ._task import (DiagnosticTask, get_flattened_tasks, get_independent_tasks,
+                    run_tasks)
 from .cmor.table import CMOR_TABLES
-from .preprocessor import DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS
+from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
+                           MULTI_MODEL_FUNCTIONS, PreprocessingTask,
+                           PreprocessorFile)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
@@ -26,10 +29,6 @@ from .preprocessor._regrid import get_cmor_levels, get_reference_levels
 logger = logging.getLogger(__name__)
 
 TASKSEP = os.sep
-
-
-class RecipeError(Exception):
-    """Recipe contains an error."""
 
 
 def ordered_safe_load(stream):
@@ -49,174 +48,26 @@ def ordered_safe_load(stream):
     return yaml.load(stream, OrderedSafeLoader)
 
 
-def read_recipe_file(filename, config_user, initialize_tasks=True):
-    """Read a recipe from file."""
-    raw_recipe = check_recipe(filename)
-    return Recipe(
-        raw_recipe, config_user, initialize_tasks, recipe_file=filename)
-
-
-def check_ncl_version():
-    """Check the NCL version."""
-    ncl = which('ncl')
-    if not ncl:
-        raise RecipeError("Recipe contains NCL scripts, but cannot find "
-                          "an NCL installation.")
-    try:
-        cmd = [ncl, '-V']
-        version = subprocess.check_output(cmd, universal_newlines=True)
-    except subprocess.CalledProcessError:
-        logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
-        raise RecipeError("Recipe contains NCL scripts, but your NCL "
-                          "installation appears to be broken.")
-
-    version = version.strip()
-    logger.info("Found NCL version %s", version)
-
-    major, minor = (int(i) for i in version.split('.')[:2])
-    if major < 6 or (major == 6 and minor < 4):
-        raise RecipeError("NCL version 6.4 or higher is required to run "
-                          "a recipe containing NCL scripts.")
-
-
-def check_recipe_with_schema(filename):
-    """Check if the recipe content matches schema."""
-    schema_file = os.path.join(os.path.dirname(__file__), 'recipe_schema.yml')
-    logger.debug("Checking recipe against schema %s", schema_file)
-    recipe = yamale.make_data(filename)
-    schema = yamale.make_schema(schema_file)
-    yamale.validate(schema, recipe)
-
-
-def check_recipe(filename):
+def load_raw_recipe(filename):
     """Check a recipe file and return it in raw form."""
     # Note that many checks can only be performed after the automatically
     # computed entries have been filled in by creating a Recipe object.
-    check_recipe_with_schema(filename)
+    check.recipe_with_schema(filename)
     with open(filename, 'r') as file:
         contents = file.read()
         raw_recipe = yaml.safe_load(contents)
         raw_recipe['preprocessors'] = ordered_safe_load(contents).get(
             'preprocessors', {})
 
-    check_preprocessors(raw_recipe['preprocessors'])
-    check_diagnostics(raw_recipe['diagnostics'])
+    check.diagnostics(raw_recipe['diagnostics'])
     return raw_recipe
 
 
-def check_preprocessors(preprocessors):
-    """Check preprocessors in recipe."""
-    valid_functions = set(preprocessor.DEFAULT_ORDER)
-    for name, profile in preprocessors.items():
-        invalid_functions = set(profile) - {'custom_order'} - valid_functions
-        if invalid_functions:
-            raise RecipeError(
-                "Unknown function(s) {} in preprocessor {}, choose from: "
-                "{}".format(', '.join(invalid_functions), name,
-                            ', '.join(preprocessor.DEFAULT_ORDER)))
-
-
-def check_diagnostics(diagnostics):
-    """Check diagnostics in recipe."""
-    for name, diagnostic in diagnostics.items():
-        if 'scripts' not in diagnostic:
-            raise RecipeError("Missing scripts section in diagnostic {}"
-                              .format(name))
-        variable_names = tuple(diagnostic.get('variables', {}))
-        scripts = diagnostic.get('scripts')
-        if scripts is None:
-            scripts = {}
-        for script_name, script in scripts.items():
-            if script_name in variable_names:
-                raise RecipeError(
-                    "Invalid script name {} encountered in diagnostic {}: "
-                    "scripts cannot have the same name as variables.".format(
-                        script_name, name))
-            if not script.get('script'):
-                raise RecipeError(
-                    "No script defined for script {} in diagnostic {}".format(
-                        script_name, name))
-
-
-def check_preprocessor_settings(settings):
-    """Check preprocessor settings."""
-    # The inspect functions getargspec and getcallargs are deprecated
-    # in Python 3, but their replacements are not available in Python 2.
-    # TODO: Use the new Python 3 inspect API
-    for step in settings:
-        if step not in preprocessor.DEFAULT_ORDER:
-            raise RecipeError(
-                "Unknown preprocessor function '{}', choose from: {}".format(
-                    step, ', '.join(preprocessor.DEFAULT_ORDER)))
-
-        function = getattr(preprocessor, step)
-        argspec = inspect.getargspec(function)
-        args = argspec.args[1:]
-        # Check for invalid arguments
-        invalid_args = set(settings[step]) - set(args)
-        if invalid_args:
-            raise RecipeError(
-                "Invalid argument(s): {} encountered for preprocessor "
-                "function {}. \nValid arguments are: [{}]".format(
-                    ', '.join(invalid_args), step, ', '.join(args)))
-
-        # Check for missing arguments
-        defaults = argspec.defaults
-        end = None if defaults is None else -len(defaults)
-        missing_args = set(args[:end]) - set(settings[step])
-        if missing_args:
-            raise RecipeError(
-                "Missing required argument(s) {} for preprocessor "
-                "function {}".format(missing_args, step))
-        # Final sanity check in case the above fails to catch a mistake
-        try:
-            inspect.getcallargs(function, None, **settings[step])
-        except TypeError:
-            logger.error(
-                "Wrong preprocessor function arguments in "
-                "function '%s'", step)
-            raise
-
-
-def check_duplicate_datasets(datasets):
-    """Check for duplicate datasets."""
-    checked_datasets_ = []
-    for dataset in datasets:
-        if dataset in checked_datasets_:
-            raise RecipeError(
-                "Duplicate dataset {} in datasets section".format(dataset))
-        checked_datasets_.append(dataset)
-
-
-def check_variable(variable, required_keys):
-    """Check variables as derived from recipe."""
-    required = set(required_keys)
-    missing = required - set(variable)
-    if missing:
-        raise RecipeError(
-            "Missing keys {} from variable {} in diagnostic {}".format(
-                missing, variable.get('short_name'),
-                variable.get('diagnostic')))
-
-
-def check_data_availability(input_files, variable):
-    """Check if the required input data is available."""
-    if not input_files:
-        raise RecipeError("No input files found for variable {}"
-                          .format(variable))
-
-    required_years = set(
-        range(variable['start_year'], variable['end_year'] + 1))
-    available_years = set()
-    for filename in input_files:
-        start, end = get_start_end_year(filename)
-        available_years.update(range(start, end + 1))
-
-    missing_years = required_years - available_years
-    if missing_years:
-        raise RecipeError(
-            "No input data available for years {} in files {}".format(
-                ", ".join(str(year) for year in missing_years), input_files))
+def read_recipe_file(filename, config_user, initialize_tasks=True):
+    """Read a recipe from file."""
+    raw_recipe = load_raw_recipe(filename)
+    return Recipe(
+        raw_recipe, config_user, initialize_tasks, recipe_file=filename)
 
 
 def _get_value(key, datasets):
@@ -259,9 +110,8 @@ def _update_cmor_table(table, mip, short_name):
 
     if var_info is None:
         raise RecipeError(
-            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'"
-            .format(table, short_name, mip))
-    return var_info
+            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
+            format(table, short_name, mip))
 
 
 def _add_cmor_info(variable, override=False):
@@ -297,7 +147,7 @@ def _add_cmor_info(variable, override=False):
                     variable)
 
     # Check that keys are available
-    check_variable(variable, required_keys=cmor_keys)
+    check.variable(variable, required_keys=cmor_keys)
 
 
 def _special_name_to_dataset(variable, special_name):
@@ -386,31 +236,26 @@ def _dataset_to_file(variable, config_user):
             variable=variable,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
-    check_data_availability(files, variable)
+    check.data_availability(files, variable)
     return files[0]
 
 
-def _limit_datasets(variables, profile, max_datasets=None):
+def _limit_datasets(variables, profile, max_datasets=0):
     """Try to limit the number of datasets to max_datasets."""
     if not max_datasets:
         return variables
 
     logger.info("Limiting the number of datasets to %s", max_datasets)
 
-    required_datasets = (
-        profile.get('extract_levels', {}).get('levels'),
-        profile.get('regrid', {}).get('target_grid'),
+    required_datasets = {
+        (profile.get('extract_levels') or {}).get('levels'),
+        (profile.get('regrid') or {}).get('target_grid'),
         variables[0].get('reference_dataset'),
         variables[0].get('alternative_dataset'),
-    )
+    }
 
-    limited = []
-
+    limited = [v for v in variables if v['dataset'] in required_datasets]
     for variable in variables:
-        if variable['dataset'] in required_datasets:
-            limited.append(variable)
-
-    for variable in variables[::-1]:
         if len(limited) >= max_datasets:
             break
         if variable not in limited:
@@ -435,16 +280,11 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure loading
-    settings['load_cubes'] = {
+    settings['load'] = {
         'callback': concatenate_callback,
-        'filename': variable['filename'],
-        'metadata': variable,
     }
     if not derive:
-        settings['load_cubes']['constraints'] = \
-            {'standard_name': variable['standard_name'],
-             'long_name': variable['long_name'],
-             'short_name': variable['short_name']}
+        settings['load']['constraints'] = variable['standard_name']
     # Configure merge
     settings['concatenate'] = {}
 
@@ -478,7 +318,12 @@ def _get_default_settings(variable, config_user, derive=False):
     }
 
     if derive:
-        settings['derive'] = {'variable': variable}
+        settings['derive'] = {
+            'short_name': variable['short_name'],
+            'standard_name': variable['standard_name'],
+            'long_name': variable['long_name'],
+            'units': variable['units'],
+        }
 
     # Configure CMOR metadata check
     if variable.get('cmor_table'):
@@ -510,29 +355,24 @@ def _get_default_settings(variable, config_user, derive=False):
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
-    if 'derive' in settings.keys():
+    if 'derive' in settings:
         fx_files = get_required(variable['short_name'],
                                 variable['field']).get('fx_files')
         if fx_files:
-            settings['derive']['fx_files'] = {}
             variable = dict(variable)
             variable['fx_files'] = fx_files
-            fx_files_dict = get_input_fx_filelist(
+            settings['derive']['fx_files'] = get_input_fx_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
-            settings['derive']['fx_files'] = fx_files_dict
 
     # update for landsea
-    if 'mask_landsea' in settings.keys():
+    if 'mask_landsea' in settings:
         # Configure ingestion of land/sea masks
         logger.debug('Getting fx mask settings now...')
 
-        # settings[mask_landsea][fx_file] is a list to store ALL
-        # available masks
         settings['mask_landsea']['fx_files'] = []
 
-        # fx_files already in variable
         variable = dict(variable)
         variable['fx_files'] = ['sftlf', 'sftof']
         fx_files_dict = get_input_fx_filelist(
@@ -545,16 +385,12 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
         if fx_files_dict['sftof']:
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
-    # update for landseaice
-    if 'mask_landseaice' in settings.keys():
-        # Configure ingestion of land/sea masks
+
+    if 'mask_landseaice' in settings:
         logger.debug('Getting fx mask settings now...')
 
-        # settings[mask_landseaice][fx_file] is a list to store ALL
-        # available masks
         settings['mask_landseaice']['fx_files'] = []
 
-        # fx_files already in variable
         variable = dict(variable)
         variable['fx_files'] = ['sftgif']
         fx_files_dict = get_input_fx_filelist(
@@ -566,6 +402,19 @@ def _update_fx_settings(settings, variable, config_user):
         if fx_files_dict['sftgif']:
             settings['mask_landseaice']['fx_files'].append(
                 fx_files_dict['sftgif'])
+
+
+def _read_attributes(filename):
+    """Read the attributes from a netcdf file."""
+    attributes = {}
+    if not (os.path.exists(filename)
+            and os.path.splitext(filename)[1].lower() == '.nc'):
+        return attributes
+
+    with Dataset(filename, 'r') as dataset:
+        for attr in dataset.ncattrs():
+            attributes[attr] = getattr(dataset, attr)
+    return attributes
 
 
 def _get_input_files(variable, config_user):
@@ -584,13 +433,21 @@ def _get_input_files(variable, config_user):
     logger.info("Using input files for variable %s of dataset %s:\n%s",
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
-    check_data_availability(input_files, variable)
+    if (not config_user.get('skip-nonexistent')
+            or variable['dataset'] == variable.get('reference_dataset')):
+        check.data_availability(input_files, variable)
+
+    # Set up provenance tracking
+    for i, filename in enumerate(input_files):
+        attributes = _read_attributes(filename)
+        input_files[i] = TrackedFile(filename, attributes)
 
     return input_files
 
 
-def _apply_preprocessor_settings(settings, profile_settings):
+def _apply_preprocessor_profile(settings, profile_settings):
     """Apply settings from preprocessor profile."""
+    profile_settings = copy.deepcopy(profile_settings)
     for step, args in profile_settings.items():
         # Remove disabled preprocessor functions
         if args is False:
@@ -604,48 +461,128 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_statistics(variables, settings, preproc_dir):
+def _get_statistic_attributes(products):
+    """Get attributes for the statistic output products."""
+    attributes = {}
+    some_product = next(iter(products))
+    for key, value in some_product.attributes.items():
+        if all(p.attributes.get(key, object()) == value for p in products):
+            attributes[key] = value
+
+    # Ensure start_year and end_year attributes are available
+    for product in products:
+        start = product.attributes['start_year']
+        if 'start_year' not in attributes or start < attributes['start_year']:
+            attributes['start_year'] = start
+        end = product.attributes['end_year']
+        if 'end_year' not in attributes or end > attributes['end_year']:
+            attributes['end_year'] = end
+
+    return attributes
+
+
+def _get_remaining_common_settings(step, order, products):
+    """Get preprocessor settings that are shared between products."""
+    settings = {}
+    remaining_steps = order[order.index(step) + 1:]
+    some_product = next(iter(products))
+    for key, value in some_product.settings.items():
+        if key in remaining_steps:
+            if all(p.settings.get(key, object()) == value for p in products):
+                settings[key] = value
+    return settings
+
+
+def _update_multi_dataset_settings(variable, settings):
     """Configure multi dataset statistics."""
-    if settings.get('multi_model_statistics', False):
-        if settings['multi_model_statistics'] is True:
-            settings['multi_model_statistics'] = {}
-        stat_settings = settings['multi_model_statistics']
-
-        variable = variables[0]
-
-        # Define output files
-        stat_settings['filenames'] = {}
-        for statistic in stat_settings['statistics']:
-            stat_settings['filenames'][statistic] = get_statistic_output_file(
-                variable, statistic, preproc_dir)
-
-        # Define datasets to exclude
-        exclude_datasets = set(stat_settings.get('exclude', {}))
-        for key in 'reference_dataset', 'alternative_dataset':
-            if key in exclude_datasets and key in variable:
-                exclude_datasets.remove(key)
-                exclude_datasets.add(variable[key])
-        exclude_files = {
-            v['filename']
-            for v in variables if v['dataset'] in exclude_datasets
+    for step in MULTI_MODEL_FUNCTIONS:
+        if not settings.get(step):
+            continue
+        # Exclude dataset if requested
+        exclude = {
+            _special_name_to_dataset(variable, dataset)
+            for dataset in settings[step].pop('exclude', [])
         }
-        logger.debug('Multidataset excludes files %s', exclude_files)
-        stat_settings['exclude'] = {'_filename': exclude_files}
+        if variable['dataset'] in exclude:
+            settings.pop(step)
 
 
-def _get_preprocessor_settings(variables, profile, config_user):
-    """Get preprocessor settings for a set of datasets."""
-    all_settings = {}
-    profile = copy.deepcopy(profile)
-    _update_multi_model_statistics(variables, profile,
-                                   config_user['preproc_dir'])
+def _update_statistic_settings(products, order, preproc_dir):
+    """Define statistic output products."""
+    # TODO: move this to multi model statistics function?
+    # But how to check, with a dry-run option?
+    step = 'multi_model_statistics'
+
+    products = {p for p in products if step in p.settings}
+    if not products:
+        return
+
+    some_product = next(iter(products))
+    for statistic in some_product.settings[step]['statistics']:
+        attributes = _get_statistic_attributes(products)
+        attributes['dataset'] = 'MultiModel{}'.format(statistic.title())
+        attributes['filename'] = get_statistic_output_file(
+            attributes, preproc_dir)
+        common_settings = _get_remaining_common_settings(step, order, products)
+        statistic_product = PreprocessorFile(attributes, common_settings)
+        for product in products:
+            settings = product.settings[step]
+            if 'output_products' not in settings:
+                settings['output_products'] = {}
+            settings['output_products'][statistic] = statistic_product
+
+
+def _match_products(products, variables):
+    """Match a list of input products to output product attributes."""
+    grouped_products = {}
+
+    def get_matching(attributes):
+        """Find the output filename which matches input attributes best."""
+        score = 0
+        filenames = []
+        for variable in variables:
+            filename = variable['filename']
+            tmp = sum(v == variable.get(k) for k, v in attributes.items())
+            if tmp > score:
+                score = tmp
+                filenames = [filename]
+            elif tmp == score:
+                filenames.append(filename)
+        if not filenames:
+            logger.warning(
+                "Unable to find matching output file for input file %s",
+                filename)
+        return filenames
+
+    # Group input files by output file
+    for product in products:
+        for filename in get_matching(product.attributes):
+            if filename not in grouped_products:
+                grouped_products[filename] = []
+            grouped_products[filename].append(product)
+
+    return grouped_products
+
+
+def _get_preprocessor_products(variables, profile, order, ancestor_products,
+                               config_user):
+    """Get preprocessor product definitions for a set of datasets."""
+    products = set()
 
     for variable in variables:
-        derive = 'derive' in profile
-        settings = _get_default_settings(variable, config_user, derive=derive)
-        _apply_preprocessor_settings(settings, profile)
-        # if the target grid is a dataset name, replace it with a file name
-        # TODO: call _update_target_grid only once per variable?
+        variable['filename'] = get_output_file(variable,
+                                               config_user['preproc_dir'])
+
+    if ancestor_products:
+        grouped_ancestors = _match_products(ancestor_products, variables)
+    else:
+        grouped_ancestors = {}
+
+    for variable in variables:
+        settings = _get_default_settings(
+            variable, config_user, derive='derive' in profile)
+        _apply_preprocessor_profile(settings, profile)
+        _update_multi_dataset_settings(variable, settings)
         _update_target_levels(
             variable=variable,
             variables=variables,
@@ -658,28 +595,59 @@ def _get_preprocessor_settings(variables, profile, config_user):
             variables=variables,
             settings=settings,
             config_user=config_user)
-        check_preprocessor_settings(settings)
-        all_settings[variable['filename']] = settings
+        ancestors = grouped_ancestors.get(variable['filename'])
+        if not ancestors:
+            ancestors = _get_input_files(variable, config_user)
+            if config_user.get('skip-nonexistent') and not ancestors:
+                logger.info("Skipping: no data found for %s", variable)
+                continue
+        product = PreprocessorFile(
+            attributes=variable, settings=settings, ancestors=ancestors)
+        products.add(product)
 
-    _check_multi_model_settings(all_settings)
-    return all_settings
+    _update_statistic_settings(products, order, config_user['preproc_dir'])
+
+    for product in products:
+        product.check()
+
+    return products
 
 
-def _check_multi_model_settings(all_settings):
-    """Check that multi dataset settings are identical for all datasets."""
-    multi_model_steps = (step for step in preprocessor.MULTI_MODEL_FUNCTIONS
-                         if any(step in settings
-                                for settings in all_settings.values()))
-    for step in multi_model_steps:
-        result = None
-        for filename, settings in all_settings.items():
-            if result is None:
-                result = settings[step]
-            elif result != settings[step]:
-                raise RecipeError(
-                    "Unable to combine differing multi-dataset settings "
-                    "{} and {} for output file {}".format(
-                        result, settings[step], filename))
+def _get_single_preprocessor_task(variables,
+                                  profile,
+                                  config_user,
+                                  name,
+                                  ancestor_tasks=None):
+    """Create preprocessor tasks for a set of datasets."""
+    if ancestor_tasks is None:
+        ancestor_tasks = []
+    order = _extract_preprocessor_order(profile)
+    ancestor_products = [p for task in ancestor_tasks for p in task.products]
+    products = _get_preprocessor_products(
+        variables=variables,
+        profile=profile,
+        order=order,
+        ancestor_products=ancestor_products,
+        config_user=config_user,
+    )
+
+    if not products:
+        raise RecipeError(
+            "Did not find any input data for task {}".format(name))
+
+    task = PreprocessingTask(
+        products=products,
+        ancestors=ancestor_tasks,
+        name=name,
+        order=order,
+        debug=config_user['save_intermediary_cubes'],
+        write_ncl_interface=config_user['write_ncl_interface'],
+    )
+
+    logger.info("PreprocessingTask %s created. It will create the files:\n%s",
+                task.name, '\n'.join(p.filename for p in task.products))
+
+    return task
 
 
 def _extract_preprocessor_order(profile):
@@ -691,10 +659,25 @@ def _extract_preprocessor_order(profile):
     return INITIAL_STEPS + order + FINAL_STEPS
 
 
+def _split_settings(settings, step, order=DEFAULT_ORDER):
+    """Split settings, using step as a separator."""
+    before = {}
+    for _step in order:
+        if _step == step:
+            break
+        if _step in settings:
+            before[_step] = settings[_step]
+    after = {
+        k: v
+        for k, v in settings.items() if not (k == step or k in before)
+    }
+    return before, after
+
+
 def _split_derive_profile(profile):
     """Split the derive preprocessor profile."""
     order = _extract_preprocessor_order(profile)
-    before, after = preprocessor.split_settings(profile, 'derive', order)
+    before, after = _split_settings(profile, 'derive', order)
     after['derive'] = {}
     if order != DEFAULT_ORDER:
         before['custom_order'] = True
@@ -702,41 +685,45 @@ def _split_derive_profile(profile):
     return before, after
 
 
-def _get_single_preprocessor_task(variables,
-                                  profile,
-                                  config_user,
-                                  ancestors=None):
-    """Create preprocessor tasks for a set of datasets."""
-    # Configure preprocessor
-    order = _extract_preprocessor_order(profile)
-    all_settings = _get_preprocessor_settings(
-        variables=variables, profile=profile, config_user=config_user)
+def _get_derive_input_variables(variables, config_user):
+    """Determine the input sets of `variables` needed for deriving."""
+    derive_input = {}
 
-    # Input files, used by tasks without ancestors
-    input_files = None
-    if not ancestors:
-        input_files = [
-            filename for variable in variables
-            for filename in _get_input_files(variable, config_user)
-        ]
+    def append(group_prefix, var):
+        """Append variable `var` to a derive input group."""
+        group = group_prefix + var['short_name']
+        var['variable_group'] = group
+        if group not in derive_input:
+            derive_input[group] = []
+        derive_input[group].append(var)
 
-    output_dir = os.path.dirname(variables[0]['filename'])
+    for variable in variables:
+        _update_cmor_table(
+            table=variable['cmor_table'],
+            mip=variable['mip'],
+            short_name=variable['short_name'])
+        _add_cmor_info(variable)
+        group_prefix = variable['variable_group'] + '_derive_input_'
+        if not variable.get('force_derivation') and get_input_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs']):
+            # No need to derive, just process normally up to derive step
+            var = copy.deepcopy(variable)
+            append(group_prefix, var)
+        else:
+            # Process input data needed to derive variable
+            for new_variable in get_required(variable['short_name'],
+                                             variable['field'])['vars']:
+                var = copy.deepcopy(variable)
+                var.update(new_variable)
+                _add_cmor_info(var, override=True)
+                append(group_prefix, var)
 
-    task = preprocessor.PreprocessingTask(
-        settings=all_settings,
-        output_dir=output_dir,
-        ancestors=ancestors,
-        input_files=input_files,
-        order=order,
-        debug=config_user['save_intermediary_cubes'])
-
-    return task
+    return derive_input
 
 
-def _get_preprocessor_task(variables,
-                           profiles,
-                           config_user,
-                           write_ncl_interface=False):
+def _get_preprocessor_task(variables, profiles, config_user, task_name):
     """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
     variable = variables[0]
@@ -757,39 +744,16 @@ def _get_preprocessor_task(variables,
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = _split_derive_profile(profile)
 
-        derive_input = {}
-        for variable in variables:
-            _update_cmor_table(
-                table=variable['cmor_table'],
-                mip=variable['mip'],
-                short_name=variable['short_name'])
-            _add_cmor_info(variable)
-            if not variable.get('force_derivation') and get_input_filelist(
-                    variable=variable,
-                    rootpath=config_user['rootpath'],
-                    drs=config_user['drs']):
-                # No need to derive, just process normally up to derive step
-                short_name = variable['short_name']
-                if short_name not in derive_input:
-                    derive_input[short_name] = []
-                derive_input[short_name].append(variable)
-            else:
-                # Process input data needed to derive variable
-                for new_variable in get_required(variable['short_name'],
-                                                 variable['field'])['vars']:
-                    short_name = new_variable['short_name']
-                    if short_name not in derive_input:
-                        derive_input[short_name] = []
-                    variable = copy.deepcopy(variable)
-                    variable.update(new_variable)
-                    variable['filename'] = get_output_file(
-                        variable, config_user['preproc_dir'])
-                    _add_cmor_info(variable, override=True)
-                    derive_input[short_name].append(variable)
+        derive_input = _get_derive_input_variables(variables, config_user)
 
         for derive_variables in derive_input.values():
-            task = _get_single_preprocessor_task(derive_variables,
-                                                 derive_profile, config_user)
+            derive_name = task_name.split(
+                TASKSEP)[0] + TASKSEP + derive_variables[0]['variable_group']
+            task = _get_single_preprocessor_task(
+                derive_variables,
+                derive_profile,
+                config_user,
+                name=derive_name)
             derive_tasks.append(task)
 
     # Add CMOR info
@@ -797,9 +761,12 @@ def _get_preprocessor_task(variables,
         _add_cmor_info(variable)
 
     # Create (final) preprocessor task
-    profile['extract_metadata'] = {'write_ncl': write_ncl_interface}
     task = _get_single_preprocessor_task(
-        variables, profile, config_user, ancestors=derive_tasks)
+        variables,
+        profile,
+        config_user,
+        ancestor_tasks=derive_tasks,
+        name=task_name)
 
     return task
 
@@ -813,14 +780,17 @@ class Recipe(object):
                  initialize_tasks=True,
                  recipe_file=None):
         """Parse a recipe file into an object."""
-        self._cfg = config_user
-        self._recipe_file = os.path.basename(recipe_file)
+        self._cfg = copy.deepcopy(config_user)
+        self._cfg['write_ncl_interface'] = self._need_ncl(
+            raw_recipe['diagnostics'])
+        self._filename = os.path.basename(recipe_file)
         self._preprocessors = raw_recipe.get('preprocessors', {})
         if 'default' not in self._preprocessors:
             self._preprocessors['default'] = {}
-        self._support_ncl = self._need_ncl(raw_recipe['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
             raw_recipe['diagnostics'], raw_recipe.get('datasets', []))
+        self.entity = self._initalize_provenance(
+            raw_recipe.get('documentation', {}))
         self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     @staticmethod
@@ -833,9 +803,18 @@ class Recipe(object):
             for script in diagnostic['scripts'].values():
                 if script.get('script', '').lower().endswith('.ncl'):
                     logger.info("NCL script detected, checking NCL version")
-                    check_ncl_version()
+                    check.ncl_version()
                     return True
         return False
+
+    def _initalize_provenance(self, raw_documentation):
+        """Initialize the recipe provenance."""
+        doc = dict(raw_documentation)
+        for key in doc:
+            if key in TAGS:
+                doc[key] = replace_tags(key, doc[key])
+
+        return get_recipe_provenance(doc, self._filename)
 
     def _initialize_diagnostics(self, raw_diagnostics, raw_datasets):
         """Define diagnostics in recipe."""
@@ -855,6 +834,10 @@ class Recipe(object):
             variable_names = tuple(raw_diagnostic.get('variables', {}))
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'), variable_names)
+            for key in ('themes', 'realms'):
+                if key in raw_diagnostic:
+                    for script in diagnostic['scripts'].values():
+                        script['settings'][key] = raw_diagnostic[key]
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -868,7 +851,7 @@ class Recipe(object):
             for key in dataset:
                 DATASET_KEYS.add(key)
 
-        check_duplicate_datasets(datasets)
+        check.duplicate_datasets(datasets)
         return datasets
 
     def _initialize_variables(self, raw_variable, raw_datasets):
@@ -878,9 +861,10 @@ class Recipe(object):
         datasets = self._initialize_datasets(
             raw_datasets + raw_variable.pop('additional_datasets', []))
 
-        for dataset in datasets:
+        for index, dataset in enumerate(datasets):
             variable = dict(raw_variable)
             variable.update(dataset)
+            variable['recipe_dataset_index'] = index
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
@@ -900,9 +884,7 @@ class Recipe(object):
             institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
-            check_variable(variable, required_keys)
-            variable['filename'] = get_output_file(variable,
-                                                   self._cfg['preproc_dir'])
+            check.variable(variable, required_keys)
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
@@ -925,13 +907,14 @@ class Recipe(object):
 
         preprocessor_output = {}
 
-        for variable_name, raw_variable in raw_variables.items():
+        for variable_group, raw_variable in raw_variables.items():
+            raw_variable['variable_group'] = variable_group
             if 'short_name' not in raw_variable:
-                raw_variable['short_name'] = variable_name
+                raw_variable['short_name'] = variable_group
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(
                 raw_variable.get('preprocessor', 'default'))
-            preprocessor_output[variable_name] = \
+            preprocessor_output[variable_group] = \
                 self._initialize_variables(raw_variable, raw_datasets)
 
         return preprocessor_output
@@ -953,8 +936,8 @@ class Recipe(object):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
-            settings = dict(copy.deepcopy(raw_settings))
-            settings['recipe'] = self._recipe_file
+            settings = copy.deepcopy(raw_settings)
+            settings['recipe'] = self._filename
             settings['version'] = __version__
             settings['script'] = script_name
             # Add output dirs to settings
@@ -962,7 +945,7 @@ class Recipe(object):
                 settings[dir_name] = os.path.join(self._cfg[dir_name],
                                                   diagnostic_name, script_name)
             # Copy other settings
-            if self._support_ncl:
+            if self._cfg['write_ncl_interface']:
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
                         'write_plots', 'write_netcdf', 'profile_diagnostic'):
@@ -979,6 +962,7 @@ class Recipe(object):
 
     def _resolve_diagnostic_ancestors(self, tasks):
         """Resolve diagnostic ancestors."""
+        tasks = {t.name: t for t in tasks}
         for diagnostic_name, diagnostic in self.diagnostics.items():
             for script_name, script_cfg in diagnostic['scripts'].items():
                 task_id = diagnostic_name + TASKSEP + script_name
@@ -990,8 +974,8 @@ class Recipe(object):
                         ancestor_ids = fnmatch.filter(tasks, id_glob)
                         if not ancestor_ids:
                             raise RecipeError(
-                                "Could not find any ancestors matching {}"
-                                .format(id_glob))
+                                "Could not find any ancestors matching {}".
+                                format(id_glob))
                         logger.debug("Pattern %s matches %s", id_glob,
                                      ancestor_ids)
                         ancestors.extend(tasks[a] for a in ancestor_ids)
@@ -1000,42 +984,62 @@ class Recipe(object):
     def initialize_tasks(self):
         """Define tasks in recipe."""
         logger.info("Creating tasks from recipe")
-        tasks = {}
+        tasks = set()
 
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            for variable_name in diagnostic['preprocessor_output']:
-                task_id = diagnostic_name + TASKSEP + variable_name
-                logger.info("Creating preprocessor task %s", task_id)
+            for variable_group in diagnostic['preprocessor_output']:
+                task_name = diagnostic_name + TASKSEP + variable_group
+                logger.info("Creating preprocessor task %s", task_name)
                 task = _get_preprocessor_task(
-                    variables=diagnostic['preprocessor_output'][variable_name],
+                    variables=diagnostic['preprocessor_output']
+                    [variable_group],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
-                    write_ncl_interface=self._support_ncl)
-                tasks[task_id] = task
-
-            if not self._cfg['run_diagnostic']:
-                continue
+                    task_name=task_name)
+                tasks.add(task)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
-                task_id = diagnostic_name + TASKSEP + script_name
-                logger.info("Creating diagnostic task %s", task_id)
+                task_name = diagnostic_name + TASKSEP + script_name
+                logger.info("Creating diagnostic task %s", task_name)
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],
-                    settings=script_cfg['settings'])
-                tasks[task_id] = task
+                    settings=script_cfg['settings'],
+                    name=task_name)
+                tasks.add(task)
+
+        check.tasks_valid(tasks)
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)
 
+        # Select only requested tasks
+        tasks = get_flattened_tasks(tasks)
+        if not self._cfg.get('run_diagnostic'):
+            tasks = {t for t in tasks if isinstance(t, PreprocessingTask)}
+        if self._cfg.get('diagnostics'):
+            names = {t.name for t in tasks}
+            selection = set()
+            for pattern in self._cfg.get('diagnostics'):
+                selection |= set(fnmatch.filter(names, pattern))
+            tasks = {t for t in tasks if t.name in selection}
+
+        tasks = get_flattened_tasks(tasks)
+        logger.info("These tasks will be executed: %s",
+                    ', '.join(t.name for t in tasks))
+
+        # Initialize task provenance
+        for task in tasks:
+            task.initialize_provenance(self.entity)
+
         # TODO: check that no loops are created (will throw RecursionError)
 
         # Return smallest possible set of tasks
-        return get_independent_tasks(tasks.values())
+        return get_independent_tasks(tasks)
 
     def __str__(self):
         """Get human readable summary."""

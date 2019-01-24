@@ -1372,7 +1372,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                        title=" ".join([self.__dataset_id__[indx] for 
                                        indx in [0,2,1,3]]) + " (" + 
                                      self.__time_period__ + ")",
-                       vminmax=vminmaxmean)
+                       vminmax=vminmaxmean,
+                       y_log=True)
                 fig.savefig(filename)
                 plt.close(fig.number)
             
@@ -1458,7 +1459,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                        color_type="Sequential",
                        title=" ".join([self.__dataset_id__[indx] for 
                                        indx in [0,2,1,3]]) + " (" + 
-                    self.__time_period__ + ")",vminmax=vminmaxstd)
+                                        self.__time_period__ + ")",
+                       vminmax=vminmaxstd,
+                       y_log=True)
                 fig.savefig(filename)
                 plt.close(fig.number)
             

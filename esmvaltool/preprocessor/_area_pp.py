@@ -137,3 +137,42 @@ def area_average(cube, coord1, coord2):
     grid_areas = iris.analysis.cartography.area_weights(cube)
     result = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
     return result
+
+
+def extract_named_regions(cube, regions):
+    """
+    Extract a specific named region.
+
+    The region coordinate exist in certain CMIP datasets.
+    This preprocessor allows a specific named regions to be extracted.
+
+    Arguments
+    ---------
+    cube: iris.cube.Cube
+       input cube.
+
+    regions: str, list
+        A region or list of regions to extract.
+
+    Returns
+    -------
+    iris.cube.Cube
+        collapsed cube.
+    """
+    # Make sure regions is a list of strings
+    if isinstance(regions, str):
+        regions = [regions, ]
+
+    if not isinstance(regions, (list, tuple, set)):
+        raise ValueError('Regions "{}" is not an acceptable format.'
+                         ''.format(regions))
+
+    available_regions = set(cube.coord('region').points)
+    invalid_regions = set(regions) - available_regions
+    if invalid_regions:
+        raise ValueError('Region(s) "{}" not in cube region(s): '
+                         '{}'.format(invalid_regions, available_regions))
+
+    constraints = iris.Constraint(region=lambda r: r in regions)
+    cube = cube.extract(constraint=constraints)
+    return cube

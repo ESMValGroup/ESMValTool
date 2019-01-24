@@ -26,14 +26,12 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -80,9 +78,10 @@ def make_map_plots(
         # Add title to plot
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
+            title = ' '.join([
+                title, '(', layer,
+                str(cube_layer.coords('depth')[0].units), ')'
+            ])
         plt.title(title)
 
         # Determine image filename:
@@ -119,7 +118,7 @@ def main(cfg):
         )
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(
