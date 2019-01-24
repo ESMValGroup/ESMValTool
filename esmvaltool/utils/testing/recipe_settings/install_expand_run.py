@@ -14,6 +14,11 @@ else:
     from pathlib import Path
 
 
+def absolute(path):
+    """Make path into an absolute Path object."""
+    return Path(os.path.abspath(path))
+
+
 def linear_expand(filename, cwd):
     """Create recipes from filename using the recipe options provided.
 
@@ -108,7 +113,7 @@ def run(script, cwd, method=''):
 
 def install(args):
     """Install ESMValTool from GitHub."""
-    cwd = Path(args.directory).absolute()
+    cwd = absolute(args.directory)
     cwd.mkdir(parents=True)
     script_template = Path(__file__).parent / 'install.sh.template'
     script = script_template.read_text().format(branch=args.branch)
@@ -120,14 +125,14 @@ def install(args):
 
 def schedule(args):
     """Create recipes with the options provided and schedule."""
-    cwd = Path(args.directory).absolute()
+    cwd = absolute(args.directory)
     expand = matrix_expand if args.matrix else linear_expand
     for input_recipe in args.recipes:
-        input_recipe = Path(input_recipe).absolute()
+        input_recipe = absolute(input_recipe)
         for recipe in expand(input_recipe, cwd=cwd):
             script_file = create_script(
                 recipe,
-                config_file=Path(args.esmvaltool_config_file).absolute(),
+                config_file=absolute(args.esmvaltool_config_file),
                 cwd=cwd,
             )
             run(script_file, cwd=cwd, method=args.run_method)
