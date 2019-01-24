@@ -346,3 +346,49 @@ If something is developed for a specific ECV that might be of interest for other
 If there are any questions or comments about the most recent release of the SPQB namelist, it is recommended to add these as a note or an issue to the card ‘Questions’. In doing so, the questions and comments are available for all service members to see, it is possible to trace back who had posted the question/comment, and it can be made sure that all comments/questions are answered and dealt with. Please do not send any questions/comments directly to DLR or LMU, but post them on GitHub to ensure that all comments and questions can be dealt with, and that we can trace our efforts/work!
 
 
+
+Documentation of SPQB/MPQB functionalities - A SPQB/MPQB Manual
+===============================================================
+
+This description focuses on ESMValTool V2 with the new functionalities. V2 currently does not work properly with observation (OBS) data. If you want to try the SPQB namelist/recipe with v2 of the ESMValTool, we suggest downloading a free-access CMIP5 data set.
+
+The following script describes an example of an ECV diagnostic and how it is implemented in the SPQB/MPQB general code. Specific lines in the code that are referred to in the text are color coded so that the respective explanations can be easily identified. You can find all the shown example code in the branch “C3S_511_v2” on GitHub. **Please note:** *if you want to work on your own ECV-specific diagnostic, you have to create your own branch from the branch “C3S_511_v2” to not accidentally break the whole SPQB recipe!*
+
+Diagnostic script called from the namelist (e.g. esmvaltool/diag_scripts/qualassess/ta_C3S_511_SPQB.py):
+--------------------------------------------------------------------------------------------------------
+::
+  # Basic Python packages
+  import logging
+  import os
+
+  from esmvaltool.diag_scripts.shared import run_diagnostic
+  from auxiliary.c3s_511_ta import ta_Diagnostic_SP
+
+  logger = logging.getLogger(os.path.basename(__file__))
+
+  def main(cfg):
+    logger.info('>>>>>>>> ta_C3S_511_SPQB.py is running! <<<<<<<<<<<<')
+
+    for filename, attributes in cfg['input_data'].items():
+        logger.info("Processing variable %s from data set %s",
+                    attributes['standard_name'], attributes['dataset'])
+        logger.info("Preparing diagnostic")
+        Diag = ta_Diagnostic_SP()
+        Diag.set_info(cfg=cfg)
+        logger.info("Loading %s", filename)
+        Diag.read_data()
+        logger.info("Running computation")
+        Diag.run_diagnostic()
+
+    logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
+
+  if __name__ == '__main__':
+
+    with run_diagnostic() as config:
+        main(config)
+
+
+
+
+
+
