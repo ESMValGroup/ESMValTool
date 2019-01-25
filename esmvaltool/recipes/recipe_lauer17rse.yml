@@ -370,25 +370,26 @@ diagnostics:
     variables:
       xco2:
 #        preprocessor: clim_5x5
-        derive: true
+#        derive: true
         mip: Amon
         field: T2Ms
         start_year: 2003
 #        end_year: 2003
         end_year: 2014
-        exp: [esmHistorical, esmrcp85]
+#        exp: [esmHistorical, esmrcp85]
+        frequency: mon
         reference_dataset: ESACCI-GHG
         additional_datasets:
-          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
 ##          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
 ##          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
           - {dataset: ESACCI-GHG, project: obs4mips, level: l3, version: v100, tier: 1}
     scripts:
       tsline:
