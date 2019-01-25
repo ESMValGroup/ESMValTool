@@ -186,12 +186,13 @@ considered as equal to the kinetic energy dissipated to heating.
 #############################################################################
 """
 
+# pylint: disable-msg=C0412
 import os
 from shutil import move
 import warnings
 # New packages for version 2.0 of ESMValTool
 import logging
-from esmvaltool.diag_scripts.shared import run_diagnostic
+# from esmvaltool.diag_scripts.shared import run_diagnostic
 import esmvaltool.diag_scripts.shared as e
 from cdo import Cdo
 from netCDF4 import Dataset
@@ -201,10 +202,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import (mkthe,
-                                                        fourier_coefficients,
-                                                        lorenz_cycle,
-                                                        plot_script)
+from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe,\
+                                                       fourier_coefficients,\
+                                                       lorenz_cycle,\
+                                                       plot_script
 # from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 # from esmvaltool.diag_scripts.thermodyn_diagtool import lorenz_cycle
 # from esmvaltool.diag_scripts.thermodyn_diagtool import plot_script
@@ -402,15 +403,15 @@ def main(cfg):
                 file_list = [ts_file, hus_file, ps_file, uasmn_file,
                              vasmn_file, hfss_file, te_file]
                 mkth.mkthe_main(diagworkdir, file_list, model_name)
-                tlcl_temp = diagworkdir + '/tlcl.nc'.format(model_name)
+                tlcl_temp = diagworkdir + '/tlcl.nc'
                 tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
                 cdo.setrtomiss('400,1e36', input=tlcl_temp,
                                output=tlcl_file)
-                tabl_temp = diagworkdir + '/tabl.nc'.format(model_name)
+                tabl_temp = diagworkdir + '/tabl.nc'
                 tabl_file = diagworkdir + '/{}_tabl.nc'.format(model_name)
                 cdo.setrtomiss('400,1e36', input=tabl_temp,
                                output=tabl_file)
-                htop_temp = diagworkdir + '/htop.nc'.format(model_name)
+                htop_temp = diagworkdir + '/htop.nc'
                 htop_file = diagworkdir + '/{}_htop.nc'.format(model_name)
                 cdo.setrtomiss('12000,1e36', input=htop_temp,
                                output=htop_file)
@@ -1051,7 +1052,7 @@ def main(cfg):
                 removeif(aux_file)
                 cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
                                    '-div {} {}').format(latrain_file,
-                                                         tcloud_file),
+                                                        tcloud_file),
                             options='-b F32', output=aux_file)
                 cdo.chname('prr,srain', input=aux_file, options='-b F32',
                            output=rainentr_file)
@@ -1892,5 +1893,5 @@ def masktonull(value):
 
 
 if __name__ == '__main__':
-    with run_diagnostic() as config:
+    with e.run_diagnostic() as config:
         main(config)

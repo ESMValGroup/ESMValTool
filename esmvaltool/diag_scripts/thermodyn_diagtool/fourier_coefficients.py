@@ -297,6 +297,6 @@ class FourierCoeff():
                                 'level_desc': 'pressure levels'})
         elif varname == 'wap':
             w_nc_var.setncatts({'long_name': u'Lagrangian tendency of '
-                                'air pressure',
+                                             'air pressure',
                                 'units': u"Pa s-1",
                                 'level_desc': 'pressure levels'})

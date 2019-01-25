@@ -168,64 +168,64 @@ class Fluxogram():
         plt.savefig(filen)
         plt.close(fig)
 
-    def dnarr_txt(self, value, flux, plt):
+    def dnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start - 0.2 * self.grid_size,
+        pltt.text(x_start - 0.2 * self.grid_size,
                  y_start - 0.45 * self.grid_size,
                  value, size=self.grid_size * 0.7,
                  rotation=-90)
 
-    def leftarr_txt(self, value, flux, plt):
+    def leftarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start - 1.35 * self.grid_size,
+        pltt.text(x_start - 1.35 * self.grid_size,
                  y_start + 0.05 * self.grid_size,
                  value, size=self.grid_size * 0.7)
 
-    def ldnarr_txt(self, value, flux, plt):
+    def ldnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start - 0.35 * self.grid_size,
+        pltt.text(x_start - 0.35 * self.grid_size,
                  y_start - 0.25 * self.grid_size,
                  value, size=self.grid_size * 0.5,
                  rotation=-110)
 
-    def luparr_txt(self, value, flux, plt):
+    def luparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start - 0.35 * self.grid_size,
+        pltt.text(x_start - 0.35 * self.grid_size,
                  y_start + 0.45 * self.grid_size,
                  value, size=self.grid_size * 0.5,
                  rotation=110)
 
-    def rdnarr_txt(self, value, flux, plt):
+    def rdnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-right."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start + 0.05 * self.grid_size,
+        pltt.text(x_start + 0.05 * self.grid_size,
                  y_start - 0.25 * self.grid_size,
                  value, size=self.grid_size * 0.5,
                  rotation=-75)
 
-    def ruparr_txt(self, value, flux, plt):
+    def ruparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-right."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start - 0.1 * self.grid_size,
+        pltt.text(x_start - 0.1 * self.grid_size,
                  y_start + 0.45 * self.grid_size,
                  value, size=self.grid_size * 0.5,
                  rotation=75)
 
-    def uparr_txt(self, value, flux, plt):
+    def uparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up."""
         x_start = flux.x_start
         y_start = flux.y_start
-        plt.text(x_start + 0.05 * self.grid_size,
+        pltt.text(x_start + 0.05 * self.grid_size,
                  y_start + 0.75 * self.grid_size,
                  value, size=self.grid_size * 0.7,
                  rotation=90)
@@ -375,6 +375,7 @@ class Flux:
         d_x = d_x * 0.75
         d_y = d_y * 0.75
         return x_start, y_start, x_end, y_end, d_x, d_y, dire
+
 
 class Storage:
     """Contain a storage of a fluxogram."""
