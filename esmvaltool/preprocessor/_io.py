@@ -214,6 +214,9 @@ def write_metadata(products, write_ncl=False):
         )
         metadata = OrderedDict()
         for product in sorted_products:
+            if isinstance(product.attributes.get('exp'), (list, tuple)):
+                product.attributes = dict(product.attributes)
+                product.attributes['exp'] = '-'.join(product.attributes['exp'])
             metadata[product.filename] = product.attributes
 
         output_filename = os.path.join(output_dir, 'metadata.yml')
