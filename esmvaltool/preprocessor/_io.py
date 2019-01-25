@@ -56,9 +56,6 @@ def _adjust_cube_attributes(cubes):
     Fixes attribute mismatch in cubes causing problems during
     `concatenate_cube` operations.
     """
-    from iris.experimental.equalise_cubes import equalise_attributes
-
-    equalise_attributes(cubes)
     for idx in range(len(cubes)):
         try:
             cubes[idx].coord('time').attributes = {}
