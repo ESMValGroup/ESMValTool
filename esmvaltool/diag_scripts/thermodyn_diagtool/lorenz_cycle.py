@@ -111,7 +111,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ntime = dims[1]
     nlat = dims[2]
     ntp = dims[3]
-    sig, d_s, y_l, g_w = weights(lev, nlev, lat, nlat)
+    d_s, y_l, g_w = weights(lev, nlev, lat)
     # Compute time mean
     ta_tmn = np.nanmean(ta_c, axis=1)
     ta_ztmn, ta_gmn = averages(ta_tmn, g_w)
@@ -182,21 +182,21 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     kt2ks_tgmn = averages_comp(kt2ks, g_w, d_s, dims)
     table_conv(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log)
     ek_st = makek(ua_tmn, va_tmn, nlat, ntp, nlev)
-    ek_stgmn = globall_cg(ek_st, g_w, d_s, nlat, ntp, nlev)
+    ek_stgmn = globall_cg(ek_st, g_w, d_s, dims)
     table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log)
     ape_st = makea(ta_tmn, ta_gmn, gam_tmn)
-    ape_stgmn = globall_cg(ape_st, g_w, d_s, nlat, ntp, nlev)
+    ape_stgmn = globall_cg(ape_st, g_w, d_s, dims)
     table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log)
     a2k_st = mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev)
-    a2k_stgmn = globall_cg(a2k_st, g_w, d_s, nlat, ntp, nlev)
+    a2k_stgmn = globall_cg(a2k_st, g_w, d_s, dims)
     table_conv(a2k_stgmn, ntp, 'KE -> APE (stat)', log)
     ae2az_st = mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l,
                       gam_tmn, nlat, nlev)
-    ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, nlat, ntp, nlev)
+    ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, dims)
     table_conv(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log)
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
-    ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, nlat, ntp, nlev)
+    ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
     table_conv(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log)
     list_conv = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
                  ae2az_stgmn, a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn,
@@ -840,7 +840,7 @@ def pr_output(varo, varname, filep, nc_f):
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
-    fourc = fourier_coefficients()
+    fourc = fourier_coefficients
     nc_fid = Dataset(filep, 'r')
     # Extract data from NetCDF file
     wave = nc_fid.variables['wave'][:]
@@ -906,24 +906,7 @@ def table(varin, ntp, name, log):
     vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
     vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
     vartot = varzon + vared
-    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vartot[0], vartot[1], vartot[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, varzon[0], varzon[1], varzon[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0], vared[1], vared[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared1[0], vared1[1], vared1[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared2[0], vared2[1], vared2[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared3[0], vared3[1], vared3[2]))
-    log.write('--------------------------------------\n')
+    write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon)
 
 
 def table_conv(varin, ntp, name, log):
@@ -939,24 +922,7 @@ def table_conv(varin, ntp, name, log):
     vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
     vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
     vartot = varzon + vared
-    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vartot[0], vartot[1], vartot[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, varzon[0], varzon[1], varzon[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0], vared[1], vared[2]))
-    log.write('-------------------------------------\n')
-    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared1[0], vared1[1], vared1[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared2[0], vared2[1], vared2[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared3[0], vared3[1], vared3[2]))
-    log.write('--------------------------------------\n')
+    write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon)
 
 
 def varatts(w_nc_var, varname, tres, vres):
@@ -1000,7 +966,7 @@ def varatts(w_nc_var, varname, tres, vres):
                             'statistic': tatt})
 
 
-def weights(lev, nlev, lat, nlat):
+def weights(lev, nlev, lat):
     """Compute weigths for vertical integration and meridional averages.
 
     Arguments:
@@ -1023,4 +989,25 @@ def weights(lev, nlev, lat, nlat):
     # Compute Gaussian weights
     y_l = np.deg2rad(lat)
     g_w = np.cos(y_l)
-    return sig, d_s, y_l, g_w
+    return d_s, y_l, g_w
+
+
+def write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon):    
+    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, vartot[0], vartot[1], vartot[2]))
+    log.write('--------------------------------------\n')
+    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, varzon[0], varzon[1], varzon[2]))
+    log.write('--------------------------------------\n')
+    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, vared[0], vared[1], vared[2]))
+    log.write('--------------------------------------\n')
+    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, vared1[0], vared1[1], vared1[2]))
+    log.write('--------------------------------------\n')
+    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, vared2[0], vared2[1], vared2[2]))
+    log.write('--------------------------------------\n')
+    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
+              .format(name, vared3[0], vared3[1], vared3[2]))
+    log.write('--------------------------------------\n')

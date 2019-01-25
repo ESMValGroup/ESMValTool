@@ -67,7 +67,7 @@ def latwgt(lat, t_r):
     return tr2
 
 
-def hemean(cls, hem, lat, inp):
+def hemean(hem, lat, inp):
     """Compute hemispheric averages.
 
     Arguments:
@@ -546,7 +546,7 @@ def pr_output(varout, filep, nc_f, nameout):
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
-    fourc = fourier_coefficients()
+    fourc = fourier_coefficients
     nc_fid = Dataset(filep, 'r')
     # Writing NetCDF files
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')

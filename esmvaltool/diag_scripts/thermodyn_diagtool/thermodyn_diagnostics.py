@@ -248,7 +248,7 @@ def main(cfg):
     fourc = fourier_coefficients
     lorenz = lorenz_cycle
     mkth = mkthe
-    plotsmod = plot_script.PlotScript()
+    plotsmod = plot_script
     data = e.Datasets(cfg)
     logger.debug(data)
     models = data.get_info_list('dataset')
@@ -1212,13 +1212,13 @@ def main(cfg):
         else:
             pass
         if entr in {'y', 'yes'}:
-            if met in {'1'}:
+            if met in {'1','3'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (indirect method)\n')
                 plotsmod.entropy(plotpath2, verticalentropy_file, 'sver',
                                  'Vertical entropy production', model_name)
                 logger.info('Done\n')
-            elif met in {'2'}:
+            elif met in {'2','3'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (direct method)\n')
                 plotsmod.entropy(plotpath2, sensentr_file, 'ssens',
@@ -1235,34 +1235,6 @@ def main(cfg):
                                  model_name)
                 plotsmod.entropy(plotpath2, meltentr_file, 'smelt',
                                  'Snow melting entropy production', model_name)
-                plotsmod.entropy(plotpath2, potentr_file, 'spotp',
-                                 'Potential energy entropy production',
-                                 model_name)
-                logger.info('Done\n')
-            elif met in {'3'}:
-                logger.info('Running the plotting module for the material '
-                            'entropy production (indirect method)\n')
-                plotsmod.entropy(plotpath2, verticalentropy_file, 'sver',
-                                 'Vertical entropy production', model_name)
-                plotsmod.entropy(plotpath2, horizentropy_file, 'shor',
-                                 'Horizontal entropy production', model_name)
-                logger.info('Done\n')
-                logger.info('Running the plotting module for the material '
-                            'entropy production (direct method)\n')
-                plotsmod.entropy(plotpath2, sensentr_file, 'ssens',
-                                 'Sensible Heat entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, evapentr_file, 'sevap',
-                                 'Evaporation entropy production', model_name)
-                plotsmod.entropy(plotpath2, rainentr_file, 'srain',
-                                 'Rainfall precipitation entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow',
-                                 'Snowfall precipitation entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, meltentr_file, 'smelt',
-                                 'Snow melting entropy production',
-                                 model_name)
                 plotsmod.entropy(plotpath2, potentr_file, 'spotp',
                                  'Potential energy entropy production',
                                  model_name)

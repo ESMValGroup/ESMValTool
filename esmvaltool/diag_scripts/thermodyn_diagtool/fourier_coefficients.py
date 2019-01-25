@@ -170,7 +170,7 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
                                                 ('time', 'plev',
                                                  'lat', 'wave'))
         varatts(var1_nc_var, key)
-    var_nc_fid.variables[key][:, :, :, :] = value
+        var_nc_fid.variables[key][:, :, :, :] = value
     var_nc_fid.close()  # close the new file
 
 

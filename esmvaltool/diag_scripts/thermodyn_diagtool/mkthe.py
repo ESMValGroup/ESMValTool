@@ -45,7 +45,7 @@ RIC_RU = 0.28     # Critical Richardson number for unstable layer
 # pylint: disable-msg=R0915
 # One hundred and twentythree is reasonable in this case.
 # flake8: noqa
-def mkthe_main(cls, wdir, file_list, modelname):
+def mkthe_main(wdir, file_list, modelname):
     """The main script in the module for computation of aux. variables.
 
     Arguments:
@@ -54,8 +54,8 @@ def mkthe_main(cls, wdir, file_list, modelname):
     ps, uas, vas, hfss, te;
     - modelname: the name of the model from which the fields are;
     """
-    fourc = fourier_coefficients()
-    hfss, huss, p_s, t_e, t_s, vv_hor, lev = input_data(wdir, file_list)
+    fourc = fourier_coefficients
+    hfss, huss, p_s, t_e, t_s, vv_hor = input_data(wdir, file_list)
     ricr = RIC_RU
     h_bl = H_U
     ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
@@ -144,7 +144,7 @@ def mkthe_main(cls, wdir, file_list, modelname):
     w_nc_fid.close()  # close the new file
 
 
-def input_data(cls, wdir, file_list):
+def input_data(wdir, file_list):
     """Manipulate input fields and read datasets.
 
     Arguments:
@@ -199,10 +199,10 @@ def input_data(cls, wdir, file_list):
         aux = hus[:, l_l, :, :]
         aux = np.where((p_s >= lev[l_l]), aux, 0.)
         huss = huss + aux
-    return hfss, huss, p_s, t_e, t_s, vv_hor, lev
+    return hfss, huss, p_s, t_e, t_s, vv_hor
 
 
-def removeif(cls, filename):
+def removeif(filename):
     """Remove filename if it exists."""
     try:
         os.remove(filename)
