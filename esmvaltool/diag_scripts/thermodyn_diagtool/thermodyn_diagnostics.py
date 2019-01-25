@@ -1212,13 +1212,13 @@ def main(cfg):
         else:
             pass
         if entr in {'y', 'yes'}:
-            if met in {'1','3'}:
+            if met in {'1', '3'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (indirect method)\n')
                 plotsmod.entropy(plotpath2, verticalentropy_file, 'sver',
                                  'Vertical entropy production', model_name)
                 logger.info('Done\n')
-            elif met in {'2','3'}:
+            elif met in {'2', '3'}:
                 logger.info('Running the plotting module for the material '
                             'entropy production (direct method)\n')
                 plotsmod.entropy(plotpath2, sensentr_file, 'ssens',

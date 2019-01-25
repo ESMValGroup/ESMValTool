@@ -992,7 +992,7 @@ def weights(lev, nlev, lat):
     return d_s, y_l, g_w
 
 
-def write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon):    
+def write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon):
     log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
               .format(name, vartot[0], vartot[1], vartot[2]))
     log.write('--------------------------------------\n')
