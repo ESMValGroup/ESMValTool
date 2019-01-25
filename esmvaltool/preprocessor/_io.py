@@ -56,7 +56,10 @@ def _adjust_cube_attributes(cubes):
 
     equalise_attributes(cubes)
     for idx in range(len(cubes)):
-        cubes[idx].coord('time').attributes={}
+        try:
+            cubes[idx].coord('time').attributes={}
+        except iris.exceptions.CoordinateNotFoundError as ex:
+            continue
     return cubes
 
 
