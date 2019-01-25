@@ -119,7 +119,7 @@ class PlotScript():
         zmn_ub = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         for index, value in enumerate(gmean):
             for j_l in range(np.shape(zmean)[1]):
-                zmn_ub[index, j_l] = zmean[index, j_l] - value[index]
+                zmn_ub[index, j_l] = zmean[index, j_l] - value
         zmn_ub[np.isnan(zmn_ub)] = 0
         cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
         transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
@@ -181,7 +181,6 @@ class PlotScript():
 
         @author: Valerio Lembo, 2018.
         """
-        netcdf_dataset = Dataset()
         plotsmod = PlotScript()
         cdo = Cdo()
         nsub = len(filena)
@@ -192,7 +191,7 @@ class PlotScript():
         # Import files
         filena[0] = filena[0].split(sep, 1)[0]
         filename = filena[0] + '.nc'
-        dataset = netcdf_dataset(filename)
+        dataset = Dataset(filename)
         lats = dataset.variables['lat'][:]
         lons = dataset.variables['lon'][:]
         time = dataset.variables['time'][:]
@@ -205,7 +204,7 @@ class PlotScript():
         for i in np.arange(nsub):
             filena[i] = filena[i].split(sep, 1)[0]
             filename = filena[i] + '.nc'
-            dataset = netcdf_dataset(filename)
+            dataset = Dataset(filename)
             var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
         # Compute annual mean values
         var_r = np.reshape(var, (nsub, np.shape(var)[1] / 12, 12,
@@ -446,7 +445,6 @@ class PlotScript():
 
         @author: Valerio Lembo, 2018.
         """
-        netcdf_dataset = Dataset()
         path = plotpath
         model = model_name
         if ext_name == 'Vertical entropy production':
@@ -481,7 +479,7 @@ class PlotScript():
             c_m = 'YlOrBr'
         else:
             quit()
-        dataset = netcdf_dataset(filename)
+        dataset = Dataset(filename)
         var = dataset.variables[name][:, :, :]
         lats = dataset.variables['lat'][:]
         lons = dataset.variables['lon'][:]
@@ -558,12 +556,11 @@ class PlotScript():
             Chris Slocum (2014), modified by Valerio Lembo (2018).
         """
         plotsmod = PlotScript()
-        netcdf_dataset = Dataset()
-        nc_fid = netcdf_dataset(filep, 'r')
+        nc_fid = Dataset(filep, 'r')
         # Extract data from NetCDF file
         lats = nc_fid.variables['lat'][:]  # extract the coordinate
         # Writing NetCDF files
-        w_nc_fid = netcdf_dataset(nc_f, 'w', format='NETCDF4')
+        w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
         w_nc_fid.description = "Total, atmospheric and oceanic annual \
                                 mean meridional heat transports"
         w_nc_fid.createDimension('lat', len(lats))

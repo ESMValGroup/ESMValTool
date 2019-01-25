@@ -201,10 +201,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
-from esmvaltool.diag_scripts.thermodyn_diagtool import lorenz_cycle
-from esmvaltool.diag_scripts.thermodyn_diagtool import plot_script
+from esmvaltool.diag_scripts.thermodyn_diagtool import (mkthe,
+                                                        fourier_coefficients,
+                                                        lorenz_cycle,
+                                                        plot_script)
+# from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+# from esmvaltool.diag_scripts.thermodyn_diagtool import lorenz_cycle
+# from esmvaltool.diag_scripts.thermodyn_diagtool import plot_script
 
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -399,14 +402,17 @@ def main(cfg):
                 file_list = [ts_file, hus_file, ps_file, uasmn_file,
                              vasmn_file, hfss_file, te_file]
                 mkth.mkthe_main(diagworkdir, file_list, model_name)
+                tlcl_temp = diagworkdir + '/tlcl.nc'.format(model_name)
                 tlcl_file = diagworkdir + '/{}_tlcl.nc'.format(model_name)
-                cdo.setrtomiss('400,1e36', input='tlcl.nc ',
+                cdo.setrtomiss('400,1e36', input=tlcl_temp,
                                output=tlcl_file)
+                tabl_temp = diagworkdir + '/tabl.nc'.format(model_name)
                 tabl_file = diagworkdir + '/{}_tabl.nc'.format(model_name)
-                cdo.setrtomiss('400,1e36', input='tabl.nc ',
+                cdo.setrtomiss('400,1e36', input=tabl_temp,
                                output=tabl_file)
+                htop_temp = diagworkdir + '/htop.nc'.format(model_name)
                 htop_file = diagworkdir + '/{}_htop.nc'.format(model_name)
-                cdo.setrtomiss('12000,1e36', input='htop.nc ',
+                cdo.setrtomiss('12000,1e36', input=htop_temp,
                                output=htop_file)
                 # Working temperatures for the hydrological cycle
                 tcloud_file = (diagworkdir
@@ -800,7 +806,7 @@ def main(cfg):
                     output=va_file_mask)
             energy3_file = diagworkdir + '/energy_short.nc'
             removeif(energy3_file)
-            cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000'
+            cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000 '
                                        '-merge {} {} {} {}')
                            .format(ta_file, ua_file_mask,
                                    va_file_mask, wap_file),
@@ -873,7 +879,7 @@ def main(cfg):
                 horzentr_mean = f_l.variables['shor'][:, :, :]
                 horzentr_all[i_m, 0] = np.nanmean(horzentr_mean)
                 horzentr_all[i_m, 1] = np.nanstd(horzentr_mean)
-                logger.info('Horizontal component of the material entropy'
+                logger.info('Horizontal component of the material entropy '
                             'production: %s\n', horzentr_all[i_m, 0])
                 # Vertical material entropy production
                 verticalentropy_file = (diagworkdir +
@@ -1043,8 +1049,8 @@ def main(cfg):
                                  '/{}_rain_entr.nc'.format(model_name))
                 removeif(rainentr_file)
                 removeif(aux_file)
-                cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0'
-                                   ' -div {} {}').format(latrain_file,
+                cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
+                                   '-div {} {}').format(latrain_file,
                                                          tcloud_file),
                             options='-b F32', output=aux_file)
                 cdo.chname('prr,srain', input=aux_file, options='-b F32',
@@ -1545,7 +1551,6 @@ def main(cfg):
         plt.grid()
         oname = plotdir + '/meridional_transp.png'
         plt.savefig(oname)
-        plt.show(fig)
         plt.close(fig)
 #        caption = "Annual mean meridional northward heat transports"
 #        plot_id = "#Mertransp"
@@ -1563,8 +1568,8 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
-                                              atmb_all[:, 0])
+    s_l, interc, r_2, pval, stderr = stats.linregress(toab_all[:, 0],
+                                                      atmb_all[:, 0])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1588,8 +1593,8 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
-    s_l, interc, r_2, pval = stats.linregress(baroc_eff_all,
-                                              lec_all[:, 0])
+    s_l, interc, r_2, pval, stderr = stats.linregress(baroc_eff_all,
+                                                      lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
                           phi=np.arctan(s_l), x_cent=np.nanmean(baroc_eff_all),
@@ -1613,8 +1618,8 @@ def main(cfg):
     plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(horzentr_all[:, 0],
-                                              vertentr_all[:, 0])
+    s_l, interc, r_2, pval, stderr = stats.linregress(horzentr_all[:, 0],
+                                                      vertentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1660,8 +1665,8 @@ def main(cfg):
     plt.scatter(indentr_all, matentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(indentr_all,
-                                              matentr_all[:, 0])
+    s_l, interc, r_2, pval, stderr = stats.linregress(indentr_all,
+                                                      matentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -1687,7 +1692,7 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(te_all, indentr_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(indentr_all), c='red')
-    s_l, interc, r_2, pval = stats.linregress(te_all, indentr_all)
+    s_l, interc, r_2, pval, stderr = stats.linregress(te_all, indentr_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(indentr_all),
                           phi=np.arctan(s_l),
@@ -1712,7 +1717,7 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(te_all, baroc_eff_all, c=colors, alpha=1)
     plt.scatter(np.nanmean(te_all), np.nanmean(baroc_eff_all), c='red')
-    s_l, interc, r_2, pval = stats.linregress(te_all, baroc_eff_all)
+    s_l, interc, r_2, pval, stderr = stats.linregress(te_all, baroc_eff_all)
     plotsmod.plot_ellipse(semimaj=np.nanstd(te_all),
                           semimin=np.nanstd(baroc_eff_all),
                           phi=np.arctan(s_l),
@@ -1754,8 +1759,8 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], toab_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(toab_all[:, 0],
-                                              toab_all[:, 1])
+    s_l, interc, r_2, pval, stderr = stats.linregress(toab_all[:, 0],
+                                                      toab_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1781,8 +1786,8 @@ def main(cfg):
     plt.scatter(atmb_all[:, 0], atmb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(atmb_all[:, 0],
-                                              atmb_all[:, 1])
+    s_l, interc, r_2, pval, stderr = stats.linregress(atmb_all[:, 0],
+                                                      atmb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1808,8 +1813,8 @@ def main(cfg):
     plt.scatter(surb_all[:, 0], surb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(surb_all[:, 0]), np.nanmean(surb_all[:, 1]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
-                                              surb_all[:, 1])
+    s_l, interc, r_2, pval, stderr = stats.linregress(surb_all[:, 0],
+                                                      surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(surb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1837,8 +1842,8 @@ def main(cfg):
                  fmt='none', ecolor=colors)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
                 c='red')
-    s_l, interc, r_2, pval = stats.linregress(surb_all[:, 0],
-                                              surb_all[:, 1])
+    s_l, interc, r_2, pval, stderr = stats.linregress(surb_all[:, 0],
+                                                      surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 0]),
                           phi=np.arctan(s_l),

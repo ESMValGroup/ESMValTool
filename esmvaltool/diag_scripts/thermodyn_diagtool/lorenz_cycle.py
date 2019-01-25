@@ -493,11 +493,11 @@ class LorenzCycle():
         @author: Valerio Lembo
         """
         gmn = np.zeros([3, ntp - 1])
-        aux1 = np.zeros([nlev, nlat / 2, ntp - 1])
-        aux2 = np.zeros([nlev, nlat / 2, ntp - 1])
+        aux1 = np.zeros([nlev, int(nlat / 2), ntp - 1])
+        aux2 = np.zeros([nlev, int(nlat / 2), ntp - 1])
         aux1v = np.zeros([nlev, ntp - 1])
         aux2v = np.zeros([nlev, ntp - 1])
-        nhem = nlat / 2
+        nhem = int(nlat / 2)
         fac = 1 / G * PS / 1e5
         for l_l in range(nlev):
             for i_h in range(nhem):

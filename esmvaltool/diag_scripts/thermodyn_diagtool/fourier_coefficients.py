@@ -200,7 +200,8 @@ class FourierCoeff():
                                  nc_fid.variables['lat'].getncattr(ncattr))
         var_nc_fid.variables['lat'][:] = lats
         nc_fid.close()
-        for key, value in dict_v.iterkeys():
+        for key in dict_v:
+            value = dict_v[key]
             var1_nc_var = var_nc_fid.createVariable(key, 'f8',
                                                     ('time', 'plev',
                                                      'lat', 'wave'))
@@ -295,7 +296,7 @@ class FourierCoeff():
                                 'units': u"m s-1",
                                 'level_desc': 'pressure levels'})
         elif varname == 'wap':
-            w_nc_var.setncatts({'long_name': u"Lagrangian tendency \
-                                of air pressure",
+            w_nc_var.setncatts({'long_name': u'Lagrangian tendency of '
+                                'air pressure',
                                 'units': u"Pa s-1",
                                 'level_desc': 'pressure levels'})

@@ -84,8 +84,8 @@ class Fluxogram():
     # flake8: noqa
     def draw(self, filen, listv):
         """Draw all fluxes and storages."""
-        frame1 = plt.axes()
         fig = plt.figure()
+        frame1 = plt.axes()
         fig.set_size_inches(18.5, 10.5)
         # find the smallest/largest offset_ so the fluxogram can be drawn big
         # enough
@@ -114,6 +114,10 @@ class Fluxogram():
         dict_oth = {'l': listv[14], 'dn': listv[15], 'rdn': listv[16],
                     'ldn': listv[17], 'up': listv[18], 'lup': listv[19],
                     'rup': listv[20]}
+        switcher = {'l': self.leftarr_txt, 'dn': self.dnarr_txt,
+                    'rdn': self.rdnarr_txt, 'ldn': self.ldnarr_txt,
+                    'up': self.uparr_txt, 'lup': self.luparr_txt,
+                    'rup': self.ruparr_txt}
         for flux in self.fluxes:
             idb = flux.name
             # scale the amount
@@ -129,12 +133,9 @@ class Fluxogram():
                                  flux.y_start + 0.05 * self.grid_size,
                                  value, size=self.grid_size * 0.7)
             else:
-                for key, value in dict_oth:
+                for key in dict_oth:
                     value = dict_oth[key]
-                    if flux.dire == key:
-                        plt.text(flux.x_start - 1.35 * self.grid_size,
-                                 flux.y_start + 0.05 * self.grid_size,
-                                 value, size=self.grid_size * 0.7)
+                    switcher[flux.dire](value, flux, plt)
             plt.gca().add_patch(arrow)
         # draw all storages
         for storage in self.storages:
@@ -164,7 +165,70 @@ class Fluxogram():
                              fontsize=0.7 * self.grid_size)
             # draw a date
             plt.gca().add_patch(rectangle)
-            plt.savefig(filen)
+        plt.savefig(filen)
+        plt.close(fig)
+
+    def dnarr_txt(self, value, flux, plt):
+        """Write text on arrow pointing down."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start - 0.2 * self.grid_size,
+                 y_start - 0.45 * self.grid_size,
+                 value, size=self.grid_size * 0.7,
+                 rotation=-90)
+
+    def leftarr_txt(self, value, flux, plt):
+        """Write text on arrow pointing left."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start - 1.35 * self.grid_size,
+                 y_start + 0.05 * self.grid_size,
+                 value, size=self.grid_size * 0.7)
+
+    def ldnarr_txt(self, value, flux, plt):
+        """Write text on arrow pointing down-left."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start - 0.35 * self.grid_size,
+                 y_start - 0.25 * self.grid_size,
+                 value, size=self.grid_size * 0.5,
+                 rotation=-110)
+
+    def luparr_txt(self, value, flux, plt):
+        """Write text on arrow pointing up-left."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start - 0.35 * self.grid_size,
+                 y_start + 0.45 * self.grid_size,
+                 value, size=self.grid_size * 0.5,
+                 rotation=110)
+
+    def rdnarr_txt(self, value, flux, plt):
+        """Write text on arrow pointing down-right."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start + 0.05 * self.grid_size,
+                 y_start - 0.25 * self.grid_size,
+                 value, size=self.grid_size * 0.5,
+                 rotation=-75)
+
+    def ruparr_txt(self, value, flux, plt):
+        """Write text on arrow pointing up-right."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start - 0.1 * self.grid_size,
+                 y_start + 0.45 * self.grid_size,
+                 value, size=self.grid_size * 0.5,
+                 rotation=75)
+
+    def uparr_txt(self, value, flux, plt):
+        """Write text on arrow pointing up."""
+        x_start = flux.x_start
+        y_start = flux.y_start
+        plt.text(x_start + 0.05 * self.grid_size,
+                 y_start + 0.75 * self.grid_size,
+                 value, size=self.grid_size * 0.7,
+                 rotation=90)
 
     def scaler(self, value_in, base_max):
         """Scale the values in the blocks of the diagram.
@@ -222,7 +286,6 @@ class Flux:
 
     def calc_start_end_dx_dy(self):
         """A scaler for the arrows.
-
         Calculate the starting and ending point of an arrow depending on the
         order and offset of the starting and ending storages. This helps
         determine the direction of the arrow
@@ -312,7 +375,6 @@ class Flux:
         d_x = d_x * 0.75
         d_y = d_y * 0.75
         return x_start, y_start, x_end, y_end, d_x, d_y, dire
-
 
 class Storage:
     """Contain a storage of a fluxogram."""
