@@ -559,6 +559,7 @@ def pr_output(varout, filep, nc_f, nameout):
     w_nc_fid.close()
     nc_fid.close()
 
+
 def varatts(w_nc_var, varname):
     """Add attibutes to the variables, depending on name and time res.
 
@@ -586,7 +587,7 @@ def varatts(w_nc_var, varname):
         w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
                             'units': u"W", 'level_desc': 'sfc'})
 
-    
+
 def removeif(filename):
     """Remove filename if it exists."""
     try:

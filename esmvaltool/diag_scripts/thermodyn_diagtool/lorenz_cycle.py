@@ -438,7 +438,7 @@ def init(logfile, filep):
     Arguments:
         - filenc: name of the file containing the input fields;
         - logfile: name of the file containing the table as a .txt file.
-    
+
     Author:
     Valerio Lembo, University of Hamburg, 2019
     """
@@ -817,7 +817,7 @@ def output(fld, d_s, filenc, name, nc_f):
 
     Author:
     Valerio Lembo, University of Hamburg (2018).
-    """  
+    """
     fld_tmn = np.nanmean(fld, axis=1)
     fld_aux = fld_tmn * d_s[:, np.newaxis, np.newaxis]
     fld_vmn = np.nansum(fld_aux, axis=0) / np.nansum(d_s)

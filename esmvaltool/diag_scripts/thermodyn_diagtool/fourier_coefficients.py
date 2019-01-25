@@ -286,7 +286,7 @@ def extr_time(nc_fid, var_nc_fid):
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created; 
+        - var_nc_fid: the id of the new NC dataset previously created;
 
     PROGRAMMER(S)
         Valerio Lembo (2018).
