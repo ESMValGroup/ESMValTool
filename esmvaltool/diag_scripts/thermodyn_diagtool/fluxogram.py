@@ -173,62 +173,62 @@ class Fluxogram():
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start - 0.2 * self.grid_size,
-                 y_start - 0.45 * self.grid_size,
-                 value, size=self.grid_size * 0.7,
-                 rotation=-90)
+                  y_start - 0.45 * self.grid_size,
+                  value, size=self.grid_size * 0.7,
+                  rotation=-90)
 
     def leftarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing left."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start - 1.35 * self.grid_size,
-                 y_start + 0.05 * self.grid_size,
-                 value, size=self.grid_size * 0.7)
+                  y_start + 0.05 * self.grid_size,
+                  value, size=self.grid_size * 0.7)
 
     def ldnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-left."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start - 0.35 * self.grid_size,
-                 y_start - 0.25 * self.grid_size,
-                 value, size=self.grid_size * 0.5,
-                 rotation=-110)
+                  y_start - 0.25 * self.grid_size,
+                  value, size=self.grid_size * 0.5,
+                  rotation=-110)
 
     def luparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-left."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start - 0.35 * self.grid_size,
-                 y_start + 0.45 * self.grid_size,
-                 value, size=self.grid_size * 0.5,
-                 rotation=110)
+                  y_start + 0.45 * self.grid_size,
+                  value, size=self.grid_size * 0.5,
+                  rotation=110)
 
     def rdnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-right."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start + 0.05 * self.grid_size,
-                 y_start - 0.25 * self.grid_size,
-                 value, size=self.grid_size * 0.5,
-                 rotation=-75)
+                  y_start - 0.25 * self.grid_size,
+                  value, size=self.grid_size * 0.5,
+                  rotation=-75)
 
     def ruparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-right."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start - 0.1 * self.grid_size,
-                 y_start + 0.45 * self.grid_size,
-                 value, size=self.grid_size * 0.5,
-                 rotation=75)
+                  y_start + 0.45 * self.grid_size,
+                  value, size=self.grid_size * 0.5,
+                  rotation=75)
 
     def uparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up."""
         x_start = flux.x_start
         y_start = flux.y_start
         pltt.text(x_start + 0.05 * self.grid_size,
-                 y_start + 0.75 * self.grid_size,
-                 value, size=self.grid_size * 0.7,
-                 rotation=90)
+                  y_start + 0.75 * self.grid_size,
+                  value, size=self.grid_size * 0.7,
+                  rotation=90)
 
     def scaler(self, value_in, base_max):
         """Scale the values in the blocks of the diagram.
