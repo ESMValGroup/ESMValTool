@@ -5,7 +5,7 @@ documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
     Climatological files are stored externally to avoid overloading the
-    ESMValTool source. See /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
+    ESMValTool source. See /group_workspaces/jasmin4/esmeval/autoassess_specific_files
     (on JASMIN).
 
   authors:
