@@ -66,6 +66,7 @@ def latwgt(lat, t_r):
         tr2[:, j] = t_r[:, j] * np.cos(latr[j]) * dlatr[j] / 2
     return tr2
 
+
 def hemean(cls, hem, lat, inp):
     """Compute hemispheric averages.
 
@@ -93,6 +94,7 @@ def hemean(cls, hem, lat, inp):
                      + 0.5 * zmn[:, (j_end - 1) / 2 + 1])
     return hmean
 
+
 def transport(zmean, gmean, lat):
     """Integrate the energy/water mass budgets to obtain meridional transp.
 
@@ -118,11 +120,12 @@ def transport(zmean, gmean, lat):
     for j_l in range(len(lat) - 1):
         cumb[:, j_l] = (-2 *
                         np.nansum(latwgt(lat[j_l:len(lat)],
-                                             zmn_ub[:, j_l:len(lat)]),
+                                         zmn_ub[:, j_l:len(lat)]),
                                   axis=1))
     r_earth = 6.371 * 10 ** 6
     transp = 2 * p_i * cumb * r_earth * r_earth
     return [zmn_ub, transp]
+
 
 def transp_max(lat, transp, lim):
     """Obtain transport peak magnitude and location from interpolation.
@@ -151,6 +154,7 @@ def transp_max(lat, transp, lim):
         else:
             pass
     return [xc_cut, y_i]
+
 
 def balances(workdir, plotpath, filena, name, model_name):
     """Method for various plots related to energy and water mass budgets.
@@ -418,6 +422,7 @@ def balances(workdir, plotpath, filena, name, model_name):
         plt.savefig(path + '/{}_{}_timeser.png'.format(model, name[i_f]))
         plt.close(fig)
 
+
 # flake8: noqa
 def entropy(plotpath, filename, name, ext_name, model_name):
     """Method for plots of annual mean maps of mat. entr. prod.
@@ -484,6 +489,7 @@ def entropy(plotpath, filename, name, ext_name, model_name):
     plt.savefig(path + '/{}_{}_climap.png'.format(model, name))
     plt.close(fig)
 
+
 def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     """A simple method for plotting ellipses in Python.
 
@@ -521,6 +527,7 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     data[1] += y_cent
     # Plot!
     a_x.plot(data[0], data[1], color='b', linestyle='-')
+
 
 def pr_output(varout, filep, nc_f, nameout):
     """Print processed ta field to NetCDF file.
@@ -579,12 +586,14 @@ def varatts(w_nc_var, varname):
         w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
                             'units': u"W", 'level_desc': 'sfc'})
 
+    
 def removeif(filename):
     """Remove filename if it exists."""
     try:
         os.remove(filename)
     except OSError:
         pass
+
 
 def zerocross1d(x_x, y_y):
     """Find the zero crossing points in 1d data.

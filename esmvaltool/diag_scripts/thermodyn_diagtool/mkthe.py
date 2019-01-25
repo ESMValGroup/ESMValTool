@@ -45,63 +45,6 @@ RIC_RU = 0.28     # Critical Richardson number for unstable layer
 # pylint: disable-msg=R0915
 # One hundred and twentythree is reasonable in this case.
 # flake8: noqa
-def input_data(cls, wdir, file_list):
-    """Manipulate input fields and read datasets.
-
-    Arguments:
-    - wdir: the working directory path;
-    - file_list: the list of file containing ts, hus,
-    ps, uas, vas, hfss, te;
-
-    Author:
-    Valerio Lembo, University of Hamburg, 2019
-    """
-    cdo = Cdo()
-    ts_miss_file = wdir + '/ts.nc'
-    removeif(ts_miss_file)
-    cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
-    hus_miss_file = wdir + '/hus.nc'
-    removeif(hus_miss_file)
-    cdo.setctomiss('0', input=file_list[1], output=hus_miss_file)
-    ps_miss_file = wdir + '/ps.nc'
-    removeif(ps_miss_file)
-    cdo.setctomiss('0', input=file_list[2], output=ps_miss_file)
-    vv_missfile = wdir + '/V.nc'
-    removeif(vv_missfile)
-    vv_file = wdir + '/V_miss.nc'
-    removeif(vv_file)
-    cdo.sqrt(input='-add -sqr {} -sqr {}'.format(file_list[3],
-                                                 file_list[4]),
-             options='-b F32', output=vv_file)
-    cdo.setctomiss('0', input=vv_file, output=vv_missfile)
-    hfss_miss_file = wdir + '/hfss.nc'
-    removeif(hfss_miss_file)
-    cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
-    te_miss_file = wdir + '/te.nc'
-    removeif(te_miss_file)
-    cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
-    dataset = Dataset(ts_miss_file)
-    t_s = dataset.variables['ts'][:, :, :]
-    dataset = Dataset(hus_miss_file)
-    hus = dataset.variables['hus'][:, :, :, :]
-    lev = dataset.variables['plev'][:]
-    dataset = Dataset(ps_miss_file)
-    p_s = dataset.variables['ps'][:, :, :]
-    dataset = Dataset(vv_missfile)
-    vv_hor = dataset.variables['uas'][:, :, :]
-    dataset = Dataset(hfss_miss_file)
-    hfss = dataset.variables['hfss'][:, :, :]
-    dataset = Dataset(te_miss_file)
-    t_e = dataset.variables['rlut'][:, :, :]
-    huss = hus[:, 0, :, :]
-    huss = np.where(lev[0] >= p_s, huss, 0.)
-    nlev = len(lev)
-    for l_l in range(nlev):
-        aux = hus[:, l_l, :, :]
-        aux = np.where((p_s >= lev[l_l]), aux, 0.)
-        huss = huss + aux
-    return hfss, huss, p_s, t_e, t_s, vv_hor, lev
-
 def mkthe_main(cls, wdir, file_list, modelname):
     """The main script in the module for computation of aux. variables.
 
@@ -199,6 +142,65 @@ def mkthe_main(cls, wdir, file_list, modelname):
                         equation", 'statistic': u'monthly mean'})
     w_nc_fid.variables['htop'][:] = htop
     w_nc_fid.close()  # close the new file
+
+
+def input_data(cls, wdir, file_list):
+    """Manipulate input fields and read datasets.
+
+    Arguments:
+    - wdir: the working directory path;
+    - file_list: the list of file containing ts, hus,
+    ps, uas, vas, hfss, te;
+
+    Author:
+    Valerio Lembo, University of Hamburg, 2019
+    """
+    cdo = Cdo()
+    ts_miss_file = wdir + '/ts.nc'
+    removeif(ts_miss_file)
+    cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
+    hus_miss_file = wdir + '/hus.nc'
+    removeif(hus_miss_file)
+    cdo.setctomiss('0', input=file_list[1], output=hus_miss_file)
+    ps_miss_file = wdir + '/ps.nc'
+    removeif(ps_miss_file)
+    cdo.setctomiss('0', input=file_list[2], output=ps_miss_file)
+    vv_missfile = wdir + '/V.nc'
+    removeif(vv_missfile)
+    vv_file = wdir + '/V_miss.nc'
+    removeif(vv_file)
+    cdo.sqrt(input='-add -sqr {} -sqr {}'.format(file_list[3],
+                                                 file_list[4]),
+             options='-b F32', output=vv_file)
+    cdo.setctomiss('0', input=vv_file, output=vv_missfile)
+    hfss_miss_file = wdir + '/hfss.nc'
+    removeif(hfss_miss_file)
+    cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
+    te_miss_file = wdir + '/te.nc'
+    removeif(te_miss_file)
+    cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
+    dataset = Dataset(ts_miss_file)
+    t_s = dataset.variables['ts'][:, :, :]
+    dataset = Dataset(hus_miss_file)
+    hus = dataset.variables['hus'][:, :, :, :]
+    lev = dataset.variables['plev'][:]
+    dataset = Dataset(ps_miss_file)
+    p_s = dataset.variables['ps'][:, :, :]
+    dataset = Dataset(vv_missfile)
+    vv_hor = dataset.variables['uas'][:, :, :]
+    dataset = Dataset(hfss_miss_file)
+    hfss = dataset.variables['hfss'][:, :, :]
+    dataset = Dataset(te_miss_file)
+    t_e = dataset.variables['rlut'][:, :, :]
+    huss = hus[:, 0, :, :]
+    huss = np.where(lev[0] >= p_s, huss, 0.)
+    nlev = len(lev)
+    for l_l in range(nlev):
+        aux = hus[:, l_l, :, :]
+        aux = np.where((p_s >= lev[l_l]), aux, 0.)
+        huss = huss + aux
+    return hfss, huss, p_s, t_e, t_s, vv_hor, lev
+
 
 def removeif(cls, filename):
     """Remove filename if it exists."""

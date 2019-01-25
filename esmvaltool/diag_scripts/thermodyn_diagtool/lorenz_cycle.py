@@ -197,7 +197,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, nlat, ntp, nlev)
-    table_conv(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log)    
+    table_conv(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log)
     list_conv = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
                  ae2az_stgmn, a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn,
                  ke2kz_tgmn, ke2kz_stgmn]
@@ -215,9 +215,10 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     log.close()
     return lec_strength
 
+
 def averages(x_c, g_w):
     """Compute time, zonal and global mean averages.
-    
+
     Arguments:
     - x_c: the input field as (lev, lat, wave);
     - g_w: the Gaussian weights for meridional averaging;
@@ -231,9 +232,10 @@ def averages(x_c, g_w):
     xc_gmn = (np.nansum(xc_ztmn * g_w[np.newaxis, :])) / (np.nansum(g_w))
     return xc_ztmn, xc_gmn
 
+
 def averages_comp(fld, g_w, d_s, dims):
     """Compute the global mean averages of reservoirs and conversion terms.
-    
+
     Arguments:
     - fld: the component of the LEC (time, lev, lat, wave);
     - g_w: the Gaussian weights for meridional averaging;
@@ -274,6 +276,7 @@ def bsslzr(kdim):
     for j in range(idim, kdim - 1, 1):
         pbes[j] = pbes[j - 1] + p_i
     return pbes
+
 
 def diagram(filen, listf, dims):
     """Diagram interface script.
@@ -320,7 +323,7 @@ def diagram(filen, listf, dims):
     kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
     list_lorenz = [azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout,
                    kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as, as2at,
-                   kt2kz, kt2ks, ks2kz]    
+                   kt2kz, kt2ks, ks2kz]
     flux = fluxogram.Fluxogram(1000, 1000)
     flux.add_storage("AZ", 600, 0, 0)
     flux.add_storage("ASE", 600, 0.75, 0.25)
@@ -352,6 +355,7 @@ def diagram(filen, listf, dims):
     flux.draw(filen, list_lorenz)
     lec = float(kteout) + float(kseout) + float(kzout)
     return lec
+
 
 def gauaw(n_y):
     """Compute the Gaussian coefficients for the Gaussian grid conversion.
@@ -391,6 +395,7 @@ def gauaw(n_y):
     pgw = p_w
     return psi, pgw
 
+
 def globall_cg(d3v, g_w, d_s, dims):
     """Compute the global and hemispheric averages.
 
@@ -422,18 +427,18 @@ def globall_cg(d3v, g_w, d_s, dims):
     gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
     return gmn
 
-    
+
 def init(logfile, filep):
     """Ingest input fields as complex fields and initialise tables.
 
     Receive fields t,u,v,w as input fields in Fourier
     coefficients  (time,level,wave,lon), with real as even and imaginary parts
     as odd. Convert them to complex fields for Python.
-    
+
     Arguments:
         - filenc: name of the file containing the input fields;
         - logfile: name of the file containing the table as a .txt file.
-        
+    
     Author:
     Valerio Lembo, University of Hamburg, 2019
     """
@@ -497,7 +502,8 @@ def init(logfile, filep):
     log.write('  \n')
     log.write('                            I GLOBAL I NORTH I SOUTH I\n')
     log.write('------------------------------------------------------\n')
-    return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log    
+    return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
+
 
 def makek(u_t, v_t, nlat, ntp, nlev):
     """Compute the kinetic energy reservoirs from u and v.
@@ -514,6 +520,7 @@ def makek(u_t, v_t, nlat, ntp, nlev):
                                  v_t[:, :, 0] * v_t[:, :, 0])
     return e_k
 
+
 def makea(t_t, t_g, gam):
     """Compute the kinetic energy reservoirs from t.
 
@@ -524,6 +531,7 @@ def makea(t_t, t_g, gam):
                     * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) *
                               (t_t[:, :, 0] - t_g[:, np.newaxis])))
     return ape
+
 
 def mka2k(wap, t_t, w_g, t_g, p_l):
     """Compute the KE to APE energy conversions from t and w.
@@ -536,6 +544,7 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
                       * (t_t[:, :, 0] - t_g[:, np.newaxis])
                       * (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
+
 
 def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     """Compute the zonal mean - eddy APE conversions from t and v.
@@ -586,6 +595,7 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
                 dtdp[:, :, np.newaxis] * c_2))
     ae2az[:, :, 0] = 0.
     return ae2az
+
 
 def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     """Compute the zonal mean - eddy KE conversions from u and v.
@@ -669,6 +679,7 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     ke2kz[:, :, 0] = 0.
     return ke2kz
 
+
 def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
 
@@ -746,6 +757,7 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     at2as[:, :, 0] = 0.
     return at2as
 
+
 def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy KE conversions from u, v and t.
 
@@ -792,9 +804,10 @@ def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     kt2ks[:, :, 0] = 0
     return kt2ks
 
+
 def output(fld, d_s, filenc, name, nc_f):
     """Compute vertical integrals and print (time,lat,ntp) to NC output.
-    
+
     Arguments:
     - fld: the annual mean fields (lev, lat, wave);
     - d_s: Delta sigma;
@@ -802,14 +815,15 @@ def output(fld, d_s, filenc, name, nc_f):
     - name: the variable name;
     - nc_f: the name of the output file (with path)
 
-    Author: 
+    Author:
     Valerio Lembo, University of Hamburg (2018).
-    """       
+    """  
     fld_tmn = np.nanmean(fld, axis=1)
     fld_aux = fld_tmn * d_s[:, np.newaxis, np.newaxis]
     fld_vmn = np.nansum(fld_aux, axis=0) / np.nansum(d_s)
     removeif(nc_f)
     pr_output(fld_vmn, name, filenc, nc_f)
+
 
 def pr_output(varo, varname, filep, nc_f):
     """Print outputs to NetCDF.
@@ -849,12 +863,14 @@ def pr_output(varo, varname, filep, nc_f):
     w_nc_fid.variables[varname][:] = varo
     w_nc_fid.close()
 
+
 def removeif(filename):
     """Remove filename if it exists."""
     try:
         os.remove(filename)
     except OSError:
         pass
+
 
 def stabil(ta_gmn, p_l, nlev):
     """Compute the stability parameter from temp. and pressure levels.
@@ -877,6 +893,7 @@ def stabil(ta_gmn, p_l, nlev):
                     / (p_l[i_l + 1] - p_l[i_l - 1]))
         g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
     return g_s
+
 
 def table(varin, ntp, name, log):
     """Write global and hem. storage terms to .txt table.
@@ -908,7 +925,7 @@ def table(varin, ntp, name, log):
               .format(name, vared3[0], vared3[1], vared3[2]))
     log.write('--------------------------------------\n')
 
-@classmethod
+
 def table_conv(varin, ntp, name, log):
     """Write global and hem. conversion terms to .txt table.
 
@@ -940,6 +957,7 @@ def table_conv(varin, ntp, name, log):
     log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
               .format(name, vared3[0], vared3[1], vared3[2]))
     log.write('--------------------------------------\n')
+
 
 def varatts(w_nc_var, varname, tres, vres):
     """Add attibutes to the variables, depending on name and time res.
@@ -981,15 +999,16 @@ def varatts(w_nc_var, varname, tres, vres):
                             'var_desc': u"APE -> KE",
                             'statistic': tatt})
 
+
 def weights(lev, nlev, lat, nlat):
     """Compute weigths for vertical integration and meridional averages.
-    
+
     Arguments:
     - lev: the pressure levels;
     - nlev: the number of pressure levels;
     - lat: the latitudes in degrees;
     - nlat: the number of latitudinal gridsteps;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """

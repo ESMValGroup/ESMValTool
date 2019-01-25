@@ -1340,11 +1340,6 @@ def main(cfg):
         oname = plotdir + '/meridional_transp.png'
         plt.savefig(oname)
         plt.close(fig)
-#        caption = "Annual mean meridional northward heat transports"
-#        plot_id = "#Mertransp"
-#        dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut"
-#        ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
-#                 diag_script, authors)
     else:
         pass
     logger.info('Scatter plots')
@@ -1529,12 +1524,6 @@ def main(cfg):
     oname = plotdir + '/scatters_summary.png'
     plt.savefig(oname)
     plt.subplots_adjust(hspace=.3)
-#    caption = "Summary scatters from thermodynamics"
-#    plot_id = "#scatsum"
-#    dataIDs = "hfss, hfls, hus, pr, prsn, ps, rlds, rlus, rlut, rsds,
-#               rsdt, rsus, rsut, ta, tas, ts, ua, uas, va, vas, wap"
-#    ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
-#                diag_script, authors)
     # Scatter plot of climatological mean values vs. interannual
     # variability for each model
     logger.info('Scatter plots for inter-annual variability of '
@@ -1653,12 +1642,6 @@ def main(cfg):
     plt.grid()
     plt.savefig(plotdir + '/scatters_variability.png')
     plt.close(fig)
-    # caption = "Inter-annual variability vs. annual mean EBs and entropy"
-    # plot_id = "#scatsum"
-    # dataIDs = "hfss, hfls, rlds, rlus, rlut, rsds, rsdt, rsus, rsut,
-    # ta, tas, va, wap"
-    # ESMValMD("both", oname, plot_tags, caption, plot_id, dataIDs,
-    # diag_script, authors)
     logger.info("The diagnostic has finished. Now closing...\n")
 
 

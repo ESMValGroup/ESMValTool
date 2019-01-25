@@ -130,6 +130,7 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     file_desc = 'Fourier coefficients'
     pr_output(dict_v, ta_input, outfile, file_desc, wave2)
 
+
 def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
     """Print outputs to NetCDF.
 
@@ -172,6 +173,7 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
     var_nc_fid.variables[key][:, :, :, :] = value
     var_nc_fid.close()  # close the new file
 
+
 def pr_output_diag(var1, nc_f, fileo, name1):
     """Print processed ta field to NetCDF file.
 
@@ -196,7 +198,7 @@ def pr_output_diag(var1, nc_f, fileo, name1):
     # Extract data from NetCDF file nad write them to the new file
     extr_time(nc_fid, var_nc_fid)
     extr_lat(nc_fid, var_nc_fid)
-    extr_lon(nc_fid, var_nc_fid)        
+    extr_lon(nc_fid, var_nc_fid)
     extr_plev(nc_fid, var_nc_fid)
     nc_fid.close()
     var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
@@ -205,6 +207,7 @@ def pr_output_diag(var1, nc_f, fileo, name1):
     var_nc_fid.variables[name1][:, :, :, :] = var1
     var_nc_fid.close()  # close the new file
 
+
 def extr_lat(nc_fid, var_nc_fid):
     """Extract lat coord. from NC files and save them to a new NC file.
 
@@ -212,7 +215,7 @@ def extr_lat(nc_fid, var_nc_fid):
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created; 
+        - var_nc_fid: the id of the new NC dataset previously created;
 
     PROGRAMMER(S)
         Valerio Lembo (2018).
@@ -228,6 +231,7 @@ def extr_lat(nc_fid, var_nc_fid):
                              nc_fid.variables['lat'].getncattr(ncattr))
     var_nc_fid.variables['lat'][:] = lats
 
+
 def extr_lon(nc_fid, var_nc_fid):
     """Extract lat coord. from NC files and save them to a new NC file.
 
@@ -235,7 +239,7 @@ def extr_lon(nc_fid, var_nc_fid):
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created; 
+        - var_nc_fid: the id of the new NC dataset previously created;
 
     PROGRAMMER(S)
         Valerio Lembo (2018).
@@ -251,6 +255,7 @@ def extr_lon(nc_fid, var_nc_fid):
                              nc_fid.variables['lon'].getncattr(ncattr))
     var_nc_fid.variables['lon'][:] = lons
 
+
 def extr_plev(nc_fid, var_nc_fid):
     """Extract plev coord. from NC files and save them to a new NC file.
 
@@ -258,7 +263,7 @@ def extr_plev(nc_fid, var_nc_fid):
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created; 
+        - var_nc_fid: the id of the new NC dataset previously created;
 
     PROGRAMMER(S)
         Valerio Lembo (2018).
@@ -272,6 +277,7 @@ def extr_plev(nc_fid, var_nc_fid):
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['plev'].getncattr(ncattr))
     var_nc_fid.variables['plev'][:] = plev
+
 
 def extr_time(nc_fid, var_nc_fid):
     """Extract time coord. from NC files and save them to a new NC file.
@@ -296,6 +302,7 @@ def extr_time(nc_fid, var_nc_fid):
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['time'].getncattr(ncattr))
     var_nc_fid.variables['time'][:] = time
+
 
 def varatts(w_nc_var, varname):
     """Add attibutes to the variables, depending on their name.
