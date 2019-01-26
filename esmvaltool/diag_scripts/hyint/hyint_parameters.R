@@ -52,17 +52,15 @@ external_r95=external_norm # a) F=use internal data to evaluate r95 threshold
 
 # Plotting options
 # Plot_type set in namelist
-npancol <- 2 # number of columns for trend/tseries multi-panel figures
-npanrow <- 3 # number of rows for trend/tseries multi-panel figures
-ryearplot <- 2006 # years to be plotted for experiments 
+ryearplot <- 2006 # years to be plotted for experiments
                   # (maps over individual years): 
                   # a) actual years, b) "FIRST" = first year in dataset or 
                   # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
 rmultiyear_mean <- T # T to plot multiyear mean (this override ryearplot)
-ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options 
+ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
                           # a) "EXP" == same as experiments, 
                           # b) one year only, e.g. c(1998)    
-force_ref <- F # set TRUE to force plotting of reference data 
+force_ref <- F # set TRUE to force plotting of reference data
                # as any other experiment
 
 # user defined extra label for figure file name
@@ -204,7 +202,6 @@ title_unit_m[9, ] <- c(
 
 # define levels for contour/yrange for abs. values: 
 # (minlev,maxlev,minlev_diff,maxlev_diff) and nlev
-autolevels <- F # T to override fixed range set below
 nlev <- 24
 levels_m <- matrix(nrow = length(field_names), ncol = 4)
 
@@ -299,19 +296,21 @@ tlevels_m[40, ] <- c(-100, 300) * 0.01
 # Figure aspect ratio (width:height) 
 # (depending on plot_type)
 figure_aspect_ratio <- c(1.6, 0.6, 3, 1.3, 1, 1, 1, 1, 1, 1,
-                         1.6, 1.1, 1.1, 1.1, 1.3, 1, 1, 1, 1, 1)
+                         1.6, 1.8, 1.8, 1.8, 1.8, 1, 1, 1, 1, 1)
 
 figure_rel_width <- c(0.7, 0.7, 0.8, 1, 1, 1, 1, 1, 1, 1,
                       0.7, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
-# Figure size
+# Figure width
 png_width <- 960
-png_units <- "px"
-png_pointsize <- 12
-png_bg <- "white"
-
 pdf_width <- 24
 x11_width <- 7
+
+# Panel width when adopting multi-panel
+# (this overrides figure width)
+png_width_multi <- 480
+pdf_width_multi <- 12
+x11_width_multi <- 4
 
 # color palette to be used
 palette1 <- colorRampPalette(c("white", "orange", "darkred"))

@@ -1128,24 +1128,35 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # Figure functions
-scale_figure <- function(plot_type, diag_script_cfg, nfields) {
+scale_figure <- function(plot_type, diag_script_cfg,
+                         nfields, npancol, npanrow) {
   source(diag_script_cfg)
+  npanels <- npancol * npanrow
   if (plot_type == 3) {
     figure_aspect_ratio[3] <- figure_aspect_ratio[3] / nfields
+  }
+  if (npanels > 1) {
+    png_width <- png_width_multi * npancol
+    pdf_width <- pdf_width_multi * npancol
+    x11_width <- x11_width_multi * npancol
   }
   png_width <- png_width * figure_rel_width[plot_type]
   pdf_width <- pdf_width * figure_rel_width[plot_type]
   x11_width <- x11_width * figure_rel_width[plot_type]
-  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
+  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type]
+                                      / npancol * npanrow)
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
-    plot_size[2] <- pdf_height
+    plot_size[2] <- (pdf_width / figure_aspect_ratio[plot_type]
+                               / npancol * npanrow)
   } else if (tolower(output_file_type) == "eps") {
     plot_size[1] <- pdf_width
-    plot_size[2] <- pdf_height
+    plot_size[2] <- (pdf_height / figure_aspect_ratio[plot_type]
+                               / npancol * npanrow)
   } else if (tolower(output_file_type) == "x11") {
     plot_size[1] <- x11_width
-    plot_size[2] <- x11_height
+    plot_size[2] <- (x11_width / figure_aspect_ratio[plot_type]
+                               / npancol * npanrow)
   }
   return(plot_size)
 }

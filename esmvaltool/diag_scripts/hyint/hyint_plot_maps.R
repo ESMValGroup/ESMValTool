@@ -163,7 +163,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     print(paste0(diag_base, ": starting figures"))
 
     # Set figure dimensions
-    plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields))
+    plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields),
+                              npancol, npanrow)
 
     if (boxregion != 0) {
       # boxregion will plot region boxes over a global map of selected field

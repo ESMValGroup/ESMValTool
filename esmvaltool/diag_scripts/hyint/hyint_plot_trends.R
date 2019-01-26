@@ -3,8 +3,13 @@
 #-------------E. Arnone (September 2017)-------------#
 ######################################################
 
-hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
+hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
+
+  # Define subscripts for variable names
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
+
+  # Set main paths
+  dir.create(plot_dir, recursive = T)
 
   # Number of models
   nmodels <- length(models_name)
@@ -16,6 +21,19 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     nregions <- 1
   }
 
+  # Check whether enough panels are allocated for plotting the
+  # indices requested. In not, drop extra indices
+  npanels <- npancol * npanrow
+  if (npanels < length(selfields)) {
+    selfields <- selfields[1:npanels]
+  }
+
+  # Update number of panels and columns if selfields has one element only
+  if (length(selfields) == 1) {
+    npancol <- 1
+    npanrow <- 1
+  }
+
   # Define fields to be used (note that the routine is
   # optimized for 6 fields in 3x2 panels per multi-panel figures)
   if (selfields[1] != F) {
@@ -25,16 +43,17 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     title_unit_m <- title_unit_m[selfields, , drop = F]
   }
 
+  # Define field label for filenames
+  field_label <- "multiindex"
+  if (length(selfields) == 1) {
+    field_label <- field_names
+  }
+
+  # Rescale or remove preset range of values for plotting if needed
   nyears <- models_end_year[ref_idx] - models_start_year[ref_idx]
   if (nyears < 50) {
     tlevels_m <- tlevels_m * 3
     levels_m <- levels_m * 3
-  }
-
-  # Update number of panels and columns if selfields has one element only
-  if (length(selfields) == 1) {
-    npancol <- 1
-    npanrow <- 1
   }
 
   if (autolevels) {
@@ -48,8 +67,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   # Load parameters for reference dataset
   year1_ref <- models_start_year[ref_idx]
   year2_ref <- models_end_year[ref_idx]
-  plot_dir_ref <- plot_dir
-  dir.create(plot_dir_ref, recursive = T)
 
   # Handle label tag when overplotting data from tseries
   # files with different labels in plot_type 14,15,16
@@ -59,17 +76,17 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   }
 
   # Set figure dimensions
-  plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields))
+  plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields),
+                            npancol, npanrow)
 
-  # Startup graphics for multi-model timeseries
+  # Startup graphics for multi-model timeseries or trends
   plot_type_now <- (plot_type == 13) | (plot_type == 15)
   if (plot_type_now == T) {
-    field_label <- paste(field_names, collapse = "-")
     tseries_trend_tag <- "timeseries"
     if (plot_type == 15) {
       tseries_trend_tag <- "trend_summary"
     }
-    figname <- getfilename_figure(plot_dir_ref, field_label, year1_ref,
+    figname <- getfilename_figure(plot_dir, field_label, year1_ref,
       year2_ref, ref_idx, season, "", region_codes[selregions[1]],
       label_figname, tseries_trend_tag, output_file_type,
       multimodel = T
@@ -86,19 +103,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     # setting up path and parameters
     year1 <- models_start_year[model_idx]
     year2 <- models_end_year[model_idx]
-
-    # set main paths
-    work_dir_exp <- work_dir
-    plot_dir_exp <- plot_dir
-    dir.create(plot_dir_exp, recursive = T)
-
-    #  # check path to reference dataset
-    if (!exists("ref_dir")) {
-      ref_dir <- work_dir
-    }
-    if (file.exists(ref_dir) == F) {
-      stop(paste(diag_base, ": reference file path not found"))
-    }
 
     # Years to be considered based on namelist and cfg_file
     years <- year1:year2
@@ -117,10 +121,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
     # Startup graphics for multi-region timeseries
     if (plot_type == 12) {
-      field_label <- paste(field_names, collapse = "-")
       figname <- getfilename_figure(
-        plot_dir_exp, field_label, year1, year2,
-        model_idx, season, "", "regions", label_figname, "timeseries",
+        plot_dir, field_label, year1, year2,
+        model_idx, season, "", "multiregion", label_figname, "timeseries",
         output_file_type
       )
       graphics_startup(figname, output_file_type, plot_size)
@@ -131,10 +134,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     }
     #  Startup graphics for bar plot of trend coefficients
     if (plot_type == 14) {
-      field_label <- paste(field_names, collapse = "-")
       figname <- getfilename_figure(
-        plot_dir_exp, field_label, year1, year2,
-        model_idx, season, "", "regions", label_figname,
+        plot_dir, field_label, year1, year2,
+        model_idx, season, "", "multiregion", label_figname,
         "trend_summary", output_file_type
       )
       graphics_startup(figname, output_file_type, plot_size)
@@ -153,7 +155,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       #-----------------Loading data-----------------------#
 
       # open timeseries and trends for exp and ref
-      infile <- getfilename_trends(work_dir_exp, label, model_idx, season)
+      infile <- getfilename_trends(work_dir, label, model_idx, season)
       print(paste("HyInt_trends: reading file ", infile))
       field_long_names <- array(NaN, length(field_names))
       field_units <- array(NaN, length(field_names))
@@ -188,6 +190,23 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       regions <- ncdf_opener(infile, "regions", "region", "boundaries",
         rotate = "no"
       )
+      # setup time selection for trends
+      rettimes <- which(!is.na(time))
+      if (trend_years[1] != F) {
+        # apply trend to limited time interval if required
+        rettimes_tmp <- (time >= trend_years[1]) & time <= trend_years[2]
+        rettimes <- which(rettimes_tmp)
+        if (length(trend_years) == 4) {
+          # apply trend also to second time interval if required
+          rettime2_tmp <- (time >= trend_years[3]) & time <= trend_years[4]
+          rettimes2 <- which(rettime2_tmp)
+        }
+      }
+      xlim <- c(min(time), max(time))
+      if (trend_years_only & (trend_years[1] != F)) {
+        xlim <- trend_years[1:2]
+      }
+
 
       #-----------------Producing figures------------------------#
 
@@ -225,27 +244,11 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             len = nlev
           )
         }
-        # setup time array
-        rettimes <- which(!is.na(time))
-        if (trend_years[1] != F) {
-          # apply trend to limited time interval if required
-          rettimes_tmp <- (time >= trend_years[1]) & time <= trend_years[2]
-          rettimes <- which(rettimes_tmp)
-          if (length(trend_years) == 4) {
-            # apply trend also to second time interval if required
-            rettime2_tmp <- (time >= trend_years[3]) & time <= trend_years[4]
-            rettimes2 <- which(rettime2_tmp)
-          }
-        }
-        xlim <- c(min(time), max(time))
-        if (trend_years_only & (trend_years[1] != F)) {
-          xlim <- trend_years[1:2]
-        }
 
         #  Startup graphics for one timeseries in one figure
         if (plot_type == 11) {
           figname <- getfilename_figure(
-            plot_dir_exp, field, year1, year2, model_idx, season,
+            plot_dir, field, year1, year2, model_idx, season,
             "", region_codes[selregions[1]], label_figname, "timeseries_single",
             output_file_type
           )
@@ -421,8 +424,10 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           # Update plot limits in case panel has changed
           par(usr = plot_limits[, ifield])
           for (ireg in 1:nregions) {
-            iregion <- selregions[ireg]
-            ixregion <- iregion
+            #iregion <- selregions[ireg]
+            #ixregion <- iregion
+            iregion <- ireg
+            ixregion <- ireg
             if (plot_type == 15) {
               ixregion <- model_idx
             }
