@@ -175,6 +175,10 @@ authors:
     name: Martin, Gill
     institute: MetOffice, UK
     email: gill.martin 'at' metoffice.gov.uk
+  mavi_ir:
+    name: Mavilia, Irene
+    institute: ISAC-CNR, Bologna, Italy
+    email: i.mavilia 'at' isac.cnr.it
   mell_fe:
     name: Mello, Felipe
     institute: INPE, Brazil
