@@ -54,7 +54,7 @@ preprocessors:
         scheme: nearest
       regrid:
         target_grid: 2.5x2.5
-        scheme: linear
+        scheme: area_weighted
       extract_region:
         start_longitude: 0.
         end_longitude: 360.
