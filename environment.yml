@@ -19,6 +19,8 @@ dependencies:
   - cdo=1.9.3
   - r-base
   - r-rcpp
+  - r-curl
+  - r-igraph
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py

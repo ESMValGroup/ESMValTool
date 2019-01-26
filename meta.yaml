@@ -67,6 +67,8 @@ requirements:
     - cdo=1.9.3
     - r-base
     - r-rcpp
+    - r-curl
+    - r-igraph
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
