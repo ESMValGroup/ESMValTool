@@ -1,7 +1,6 @@
 lintr
 logging
 yaml
-lintr
 maps
 ncdf4
 PCICt
