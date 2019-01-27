@@ -17,7 +17,7 @@ from cartopy.util import add_cyclic_point
 
 def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     """Plotting of timeseries and maps for zmnam diagnostics."""
-    plot_files=[]
+    plot_files = []
     # Open daily and monthly PCs
     file_name = '_'.join(src_props) + '_pc_da.nc'
     # print(datafolder + file_name)

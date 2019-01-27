@@ -110,6 +110,7 @@ def main(cfg):
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)
 
+
 # Run the diagnostics
 if __name__ == '__main__':
     with run_diagnostic() as config:
