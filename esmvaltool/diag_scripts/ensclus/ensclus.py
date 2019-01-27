@@ -82,11 +82,11 @@ def main(cfg):
 
     # ###################### PRECOMPUTATION #######################
     outfiles = ens_anom(filenames_cat, out_dir, name_outputs, variable_name,
-             numens, cfg['season'], cfg['area'], cfg['extreme'])
+                        numens, cfg['season'], cfg['area'], cfg['extreme'])
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
     outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, cfg['numpcs'],
-                   cfg['perc'], cfg['numclus'])
+                               cfg['perc'], cfg['numclus'])
 
     outfiles = outfiles + outfiles2
     provenance_record = get_provenance_record(
