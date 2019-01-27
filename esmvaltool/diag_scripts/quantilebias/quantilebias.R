@@ -52,13 +52,6 @@ run_dir <- paste0(unlist(strsplit(regridding_dir, "run"))[1], "run")
 recipe <- read_yaml(paste0(run_dir, "/", "recipe_", diag_base, ".yml"))
 recipe_docs <- recipe$documentation
 
-print("---------- recipe_docs ----------")
-print(recipe_docs$authors)
-print(is.vector(recipe_docs$authors))
-print(recipe_docs$projects)
-print(is.vector(recipe_docs$projects))
-print("---------- recipe_docs ----------")
-
 # create working dirs if they do not exist
 work_dir <- settings$work_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
