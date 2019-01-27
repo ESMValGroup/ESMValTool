@@ -9,7 +9,6 @@ diagnostics:
       description: Calculating number of dry days.
       variables:
          pr:
-            preprocessor: preprocessor1
             field: T2Ms
       scripts:
          script1:  #conseq dry days
