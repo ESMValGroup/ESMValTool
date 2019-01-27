@@ -35,6 +35,7 @@ def zmnam_calc(indir, outdir, src_props):
     """Function to do EOF/PC decomposition of zg field."""
     deg_to_r = np.pi / 180.
     lat_weighting = True
+    outfiles = []
 
     # Note: daily/monthly means have been
     # already subtracted from daily/monthly files
@@ -189,10 +190,9 @@ def zmnam_calc(indir, outdir, src_props):
     # Save output files
 
     # (1) daily PCs
-    file_out = nc4.Dataset(
-        outdir + '_'.join(src_props) + '_pc_da.nc',
-        mode='w',
-        format='NETCDF3_CLASSIC')
+    fname = outdir + '_'.join(src_props) + '_pc_da.nc'
+    outfiles.append(fname)
+    file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
     file_out.title = 'Zonal mean annular mode (1)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
                         C. Cagnazzo (c.cagnazzo@isac.cnr.it)'
@@ -228,9 +228,9 @@ def zmnam_calc(indir, outdir, src_props):
     file_out.close()
 
     # (2) monthly PCs
-    file_out = nc4.Dataset(outdir + '_'.join(src_props) + '_pc_mo.nc',
-                           mode='w',
-                           format='NETCDF3_CLASSIC')
+    fname = outdir + '_'.join(src_props) + '_pc_mo.nc'
+    file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
+    outfiles.append(fname)
     file_out.title = 'Zonal mean annular mode (2)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
     C. Cagnazzo (c.cagnazzo@isac.cnr.it)'
@@ -263,11 +263,10 @@ def zmnam_calc(indir, outdir, src_props):
 
     file_out.close()
 
-    # (3) EOFs and explained variance
-    file_out = nc4.Dataset(
-        outdir + '_'.join(src_props) + '_eofs.nc',
-        mode='w',
-        format='NETCDF3_CLASSIC')
+    # (3) EOFs and explained varianceo
+    fname = outdir + '_'.join(src_props) + '_eofs.nc'
+    file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
+    outfiles.append(fname)
 
     file_out.title = 'Zonal mean annular mode (3)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
@@ -318,4 +317,4 @@ def zmnam_calc(indir, outdir, src_props):
     #
     file_out.close()
 
-    return
+    return outfiles

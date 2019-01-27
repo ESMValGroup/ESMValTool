@@ -17,6 +17,7 @@ from cartopy.util import add_cyclic_point
 
 def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     """Plotting of timeseries and maps for zmnam diagnostics."""
+    plot_files=[]
     # Open daily and monthly PCs
     file_name = '_'.join(src_props) + '_pc_da.nc'
     # print(datafolder + file_name)
@@ -107,9 +108,10 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         plt.ylabel('Zonal mean NAM')
 
         if write_plots:
-            plt.savefig(figfolder + '_'.join(src_props) + '_' +
-                        str(int(lev[i_lev])) + 'Pa_mo_ts.' +
-                        fig_fmt, format=fig_fmt)
+            fname = (figfolder + '_'.join(src_props) + '_' +
+                     str(int(lev[i_lev])) + 'Pa_mo_ts.' + fig_fmt)
+            plt.savefig(fname, format=fig_fmt)
+            plot_files.append(fname)
 
         plt.figure()
 
@@ -138,9 +140,10 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         plt.tight_layout()
 
         if write_plots:
-            plt.savefig(figfolder + '_'.join(src_props) + '_' +
-                        str(int(lev[i_lev])) + 'Pa_da_pdf.' +
-                        fig_fmt, format=fig_fmt)
+            fname = (figfolder + '_'.join(src_props) + '_' +
+                     str(int(lev[i_lev])) + 'Pa_da_pdf.' + fig_fmt)
+            plt.savefig(fname, format=fig_fmt)
+            plot_files.append(fname)
 
         plt.close('all')
 
@@ -210,9 +213,10 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
                  fontsize=12, transform=plt.gcf().transFigure)
 
         if write_plots:
-            plt.savefig(figfolder + '_'.join(src_props) + '_' +
-                        str(int(lev[i_lev])) + 'Pa_mo_reg.' + fig_fmt,
-                        format=fig_fmt)
+            fname = (figfolder + '_'.join(src_props) + '_' +
+                     str(int(lev[i_lev])) + 'Pa_mo_reg.' + fig_fmt)
+            plt.savefig(fname, format=fig_fmt)
+            plot_files.append(fname)
 
         plt.close('all')
 
@@ -265,4 +269,4 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     #
     file_out.close()
 
-    return
+    return plot_files

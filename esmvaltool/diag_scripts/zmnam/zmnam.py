@@ -19,6 +19,7 @@ import os
 import logging
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # Import zmnam diagnostic routines
 from zmnam_calc import zmnam_calc
@@ -27,6 +28,23 @@ from zmnam_preproc import zmnam_preproc
 from zmnam_clean import zmnam_clean
 
 logger = logging.getLogger(__name__)
+
+
+def get_provenance_record(gatt, vatt, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    caption = ("Compute Zonal-mean Northern Annular Modes between "
+               "{start_year} and {end_year} ".format(**vatt))
+    record = {
+        'caption': caption,
+        'authors': ['serv_fe', 'hard_jo', 'arno_en', 'cagn_ch'],
+        'projects': ['c3s-magic'],
+        'references': ['baldwin09qjrms'],
+        'plot_types': ['polar', 'zonal'],
+        'realms': ['atmos'],
+        'domains': ['polar'],
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def main(cfg):
@@ -75,11 +93,22 @@ def main(cfg):
 
         # Call diagnostics functions
         zmnam_preproc(ifile)
-        zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-        zmnam_plot(out_dir + '/', plot_dir + '/', ifile_props, fig_fmt,
-                   write_plots)
+        outfiles = zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
+        plot_files = zmnam_plot(out_dir + '/', plot_dir +
+                                '/', ifile_props, fig_fmt,
+                                write_plots)
+        provenance_record = get_provenance_record(
+            cfg, list(input_files.values())[0], ancestor_files=ifile)
+        if write_plots:
+            provenance_record['plot_file'] = plot_files
         zmnam_clean()
-
+        print('-------------------------')
+        print(provenance_record)
+        print('-------------------------')
+        print(outfiles)
+        for file in outfiles:
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(file, provenance_record)
 
 # Run the diagnostics
 if __name__ == '__main__':
