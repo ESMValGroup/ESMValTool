@@ -16,8 +16,6 @@ import logging
 import numpy as np
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 
 # Import user diagnostic routines
 from ens_anom import ens_anom
