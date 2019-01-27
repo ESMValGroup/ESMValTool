@@ -39,19 +39,27 @@ for (myname in names(settings)) {
 climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
 
-# get variable name
-varname <- climolist$short_name
-
 # say hi
 diag_base <- climolist$diagnostic
 print(paste0(diag_base, ": starting routine"))
 
+# get variable name
+varname <- climolist$short_name
+
+# read recipe and extract provenance information 
+regridding_dir <- settings$run_dir
+run_dir <- paste0(unlist(strsplit(regridding_dir, "run"))[1], "run")
+recipe <- read_yaml(paste0(run_dir, "/", "recipe_", diag_base, ".yml"))
+recipe_docs <- recipe$documentation
+
 # create working dirs if they do not exist
 work_dir <- settings$work_dir
-regridding_dir <- settings$run_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
-dir.create(regridding_dir, recursive = T, showWarnings = F)
 setwd(work_dir)
+
+# setup provenance file and list
+provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance <- list()
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
@@ -121,6 +129,27 @@ for (model_idx in c(1:(length(models_name)))) {
   rm_command <- paste("rm tmp_*")
   print(rm_command)
   system(rm_command)
+
+  # Set provenance for this output file
+  caption <- paste0("Quantile bias ", perc_lev, "% for years ",
+                    year1, " to ", year2, " according to ", exp)
+#  xbase <- list(list(infile), recipe_docs$authors, caption,
+#                recipe_docs$references, recipe_docs$projects,
+#                ref_data_file, "quantile bias")
+#  names(xbase) <- c("ancestors", "authors", "caption",
+#                    "references", "projects",
+#                    "referece dataset", "statistics")
+  xbase <- list(list(infile), recipe_docs$authors, recipe_docs$projects,
+                caption, "perc")
+  names(xbase) <- c("ancestors", "authors", "projects",
+                    "caption", "statistics")
+
+  # Store provenance in main provenance list
+  provenance[[outfile]] <- xbase
 }
 
+# Write provenance to file
+write_yaml(provenance, provenance_file)
+
+# End of diagnostic
 print(paste0(diag_base, ": done."))

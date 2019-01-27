@@ -17,8 +17,8 @@ documentation:
 
 datasets:
   - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
-  - {dataset: HadCM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+ # - {dataset: HadCM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+ # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1997, end_year: 1997}
 
 preprocessors:
@@ -42,7 +42,7 @@ diagnostics:
         end_year: 1997
     additional_datasets:
       - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
+#      - {dataset: ACCESS1-3}
       #- {dataset: bcc-csm1-1}
       #- {dataset: bcc-csm1-1-m}
       #- {dataset: CanESM2}
