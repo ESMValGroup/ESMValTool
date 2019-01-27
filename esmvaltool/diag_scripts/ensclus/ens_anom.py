@@ -23,6 +23,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
           .format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))
 
+    outfiles = []
     # Reading the netCDF file of 3Dfield, for all the ensemble members
     var_ens = []
     for ens in range(numens):
@@ -97,6 +98,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
           .format(ens_anomalies.shape))
     save_n_2d_fields(lat_area, lon_area, ens_anomalies, varsave,
                      varunits, ofile)
+    outfiles.append(ofile)
 
     # Compute and save the climatology
     vartimemean_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
@@ -106,10 +108,12 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
                          .format(name_outputs))
     save_n_2d_fields(lat_area, lon_area, ens_climatologies, varsave,
                      varunits, ofile)
+    outfiles.append(ofile)
     ens_extreme = varextreme_ens_np
     varsave = 'ens_extreme'
     ofile = os.path.join(dir_output, 'ens_extreme_{0}.nc'.format(name_outputs))
     save_n_2d_fields(lat_area, lon_area, ens_extreme, varsave,
                      varunits, ofile)
+    outfiles.append(ofile)
 
-    return
+    return outfiles

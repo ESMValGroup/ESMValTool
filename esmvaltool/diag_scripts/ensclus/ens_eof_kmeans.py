@@ -28,6 +28,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
           .format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))
 
+    outfiles = []
     model = name_outputs.split("_")[1]
     print('Model: {0}'.format(model))
     # Either perc (cluster analysis is applied on a number of PCs
@@ -102,6 +103,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     # ____________Save labels
     namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
     np.savetxt(namef, labels, fmt='%d')
+    outfiles.append(namef)
 
     # ____________Compute cluster frequencies
     clusters = []
@@ -157,6 +159,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     # ____________Save the most representative ensemble members
     namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
     np.savetxt(namef, repres, fmt='%i')
+    outfiles.append(namef)
 
     print('_________________________________________________________')
     print('In order to study the spread of each cluster,')
@@ -197,7 +200,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     # ____________Save statistics of cluster analysis
     namef = os.path.join(dir_output, 'statistics_clustering_{0}.txt'
                          .format(name_outputs))
+    outfiles.append(namef)
     with open(namef, 'w') as text_file:
         text_file.write(stat_output.__repr__())
 
-    return
+    return outfiles
