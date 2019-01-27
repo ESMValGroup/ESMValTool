@@ -114,6 +114,10 @@ authors:
     name: von Hardenberg, Jost
     institute: ISAC-CNR, Torino, Italy
     email: j.vonhardenberg 'at' isac.cnr.it
+  hass_bg:
+    name: Hassler, Birgit
+    institute: DLR, Germany
+    email: birgit.hassler 'at' dlr.de
   hemp_ni:
     name: Hempelmann, Nils
     institute: IPSL, France
