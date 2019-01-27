@@ -52,6 +52,13 @@ run_dir <- paste0(unlist(strsplit(regridding_dir, "run"))[1], "run")
 recipe <- read_yaml(paste0(run_dir, "/", "recipe_", diag_base, ".yml"))
 recipe_docs <- recipe$documentation
 
+print("---------- recipe_docs ----------")
+print(recipe_docs$authors)
+print(is.vector(recipe_docs$authors))
+print(recipe_docs$projects)
+print(is.vector(recipe_docs$projects))
+print("---------- recipe_docs ----------")
+
 # create working dirs if they do not exist
 work_dir <- settings$work_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
@@ -133,16 +140,12 @@ for (model_idx in c(1:(length(models_name)))) {
   # Set provenance for this output file
   caption <- paste0("Quantile bias ", perc_lev, "% for years ",
                     year1, " to ", year2, " according to ", exp)
-#  xbase <- list(list(infile), recipe_docs$authors, caption,
-#                recipe_docs$references, recipe_docs$projects,
-#                ref_data_file, "quantile bias")
-#  names(xbase) <- c("ancestors", "authors", "caption",
-#                    "references", "projects",
-#                    "referece dataset", "statistics")
   xbase <- list(list(infile), recipe_docs$authors, recipe_docs$projects,
-                caption, "perc")
-  names(xbase) <- c("ancestors", "authors", "projects",
-                    "caption", "statistics")
+                recipe_docs$references, caption, "perc", "atmos",
+                "phys", "global", ref_data_file)
+  names(xbase) <- c("ancestors", "authors", "projects", "references",
+                    "caption", "statistics", "realms",
+                    "themes", "domains", "reference_dataset")
 
   # Store provenance in main provenance list
   provenance[[outfile]] <- xbase
