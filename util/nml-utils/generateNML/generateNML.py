@@ -112,11 +112,17 @@ def get_namelist(**kwargs):
     return tt_nml.render(m=get_modelline(**kwargs), v=None, ft=None)
 
 
+def _check_namelist(namelist):
+    """Return True id namelist exist, else throw exception."""
+    if not os.path.isfile(namelist):
+        raise Exception
+    return True
+
+
 def get_template_string(namelist):
     """Return a template string for a given namelist."""
 
-    if not os.path.isfile(namelist):
-        raise Exception
+    _check_namelist(namelist)
 
     with open(namelist, 'r') as f:
         j = xmltodict.parse(f.read())
@@ -131,6 +137,88 @@ def get_template_string(namelist):
         ]
 
     return xmltodict.unparse(j, pretty=True)
+
+
+def _get_variable_str(variable):
+    if isinstance(variable, str):
+        out = variable
+    elif isinstance(variable, list):
+        out = ";".join(variable)
+    else:
+        try:
+            out = variable['#text']
+        except:
+            out = None
+    return out
+
+
+def _get_experiments(modellines):
+    """Get Experiments used in modellines."""
+    valid_experiments = set([
+        'historical', 'piControl', "1pctCO2", "esmFixClim1", "esmHistorical",
+        "amip"
+    ])
+    black_list = [
+        "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
+    ]
+    match = list()
+    out = list()
+
+    if not isinstance(modellines, list):
+        modellines = [modellines]
+    for modelline in modellines:
+        if not isinstance(modelline, str):
+            try:
+                model_line_parts = modelline['#text'].split()
+            except:
+                print("Modelline is of type: {0}".format(type(modelline)))
+                model_line_parts = []
+        else:
+            model_line_parts = modelline.split()
+
+        if len(model_line_parts) == 0:
+            msg = "Empty modelline"
+            print(msg)
+
+        if any([item in black_list for item in model_line_parts]):
+            continue
+
+        match += list(
+            set.intersection(set(model_line_parts), valid_experiments))
+
+        if len(match) == 0:
+            msg = "Unknown experiment for modelline : {}".format(modelline)
+            print(msg)
+        out.append(match)
+    return list(set(match))
+
+
+def get_namelist_diag_requirements(namelist):
+    """Return requirements of each diagblock."""
+
+    _check_namelist(namelist)
+
+    out = dict()
+
+    with open(namelist, 'r') as f:
+        j = xmltodict.parse(f.read())
+
+    diagblocks = j['namelist']['DIAGNOSTICS']['diag']
+    if not isinstance(diagblocks, list):
+        diagblocks = [diagblocks]
+    cnt = 0
+    for diagblock in diagblocks:
+        variable = _get_variable_str(diagblock['variable'])
+        if 'model' in diagblock.keys():
+            experiment = _get_experiments(diagblock['model'])
+        else:
+            experiment = []
+        time_span = None
+        print(
+            "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
+            .format(cnt, namelist, variable, experiment, time_span))
+        cnt += 1
+        #return True
 
 
 def main():
@@ -156,7 +244,8 @@ def main():
 
     #print(get_namelist(**kwa))
     namelist = kwa['namelist']
-    print(get_template_string(namelist))
+    #print(get_template_string(namelist))
+    get_namelist_diag_requirements(namelist)
 
 
 if __name__ == "__main__":
