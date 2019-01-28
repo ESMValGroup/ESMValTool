@@ -8,6 +8,7 @@ from itertools import groupby
 
 import iris
 import iris.exceptions
+import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -53,24 +54,7 @@ def concatenate_callback(raw_cube, field, _):
 def load(files, constraints=None, callback=None):
     """Load iris cubes from files."""
     logger.debug("Loading:\n%s", "\n".join(files))
-    if constraints is not None:
-        cubes = iris.load_raw(files, constraints=constraints['standard_name'],
-                              callback=callback)
-        # test for long name
-        if not cubes:
-            iris_constraint = iris.Constraint(
-                cube_func=(lambda c: c.long_name == constraints['long_name']))
-            cubes = iris.load(files, constraints=iris_constraint,
-                              callback=callback)
-        # last resort - test for short name
-        if not cubes:
-            iris_constraint = iris.Constraint(
-                cube_func=(lambda c: c.var_name == constraints['short_name']))
-            cubes = iris.load(files, constraints=iris_constraint,
-                              callback=callback)
-    else:
-        cubes = iris.load_raw(files, constraints=constraints,
-                              callback=callback)
+    cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
@@ -110,32 +94,25 @@ def concatenate(cubes):
 def save(cubes, filename, optimize_access='', compress=False, **kwargs):
     """
     Save iris cubes to file.
-
     Parameters
     ----------
     cubes: iterable of iris.cube.Cube
         Data cubes to be saved
-
     filename: str
         Name of target file
-
     optimize_access: str
         Set internal NetCDF chunking to favour a reading scheme
-
         Values can be map or timeseries, which improve performance when
         reading the file one map or time series at a time.
         Users can also provide a coordinate or a list of coordinates. In that
         case the better performance will be avhieved by loading all the values
         in that coordinate at a time
-
     compress: bool, optional
         Use NetCDF internal compression.
-
     Returns
     -------
     str
         filename
-
     """
     # Rename some arguments
     kwargs['target'] = filename
