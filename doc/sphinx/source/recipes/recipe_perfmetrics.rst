@@ -17,7 +17,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
-* main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields. The calculated fields can be also plotted as difference w.r.t. a given reference dataset. It also calculates RMSD, bias and taylor metrics. Input data have to be regridded to a common grid in the preprocessor. Each plot type is created by a separated routine, as detailed below.
+* main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields. The calculated fields can also be plotted as difference w.r.t. a given reference dataset. main.ncl also calculates RMSD, bias and taylor metrics. Input data have to be regridded to a common grid in the preprocessor. Each plot type is created by a separated routine, as detailed below.
 * cycle.ncl: creates an annual/seasonal cycle plot.
 * zonal.ncl: creates a zonal (lat-pressure) plot.
 * latlon.ncl: creates a lat-lon plot.
