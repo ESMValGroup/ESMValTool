@@ -69,6 +69,28 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
 These settings are passed to the other scripts by main.ncl, depending on the selected plot_type.
 
+#. collect.ncl
+
+   *Required diag_script_info attributes*
+
+   * metric: selected metric (RMSD, BIAS or taylor)
+   * label_bounds: for RMSD and BIAS metrics, min and max of the labelbar
+   * label_scale: for RMSD and BIAS metrics, bin width of the labelbar
+   * colormap: for RMSD and BIAS metrics, color table of the labelbar
+   
+   *Optional diag_script_info attributes*
+   
+   * label_lo: adds lower triange for values outside range
+   * label_hi: adds upper triange for values outside range
+   * cm_interval: min and max color of the color table
+   * cm_reverse: reverses the color table
+   * sort: sorts datasets in alphabetic order (excluding MMM)
+   * title: plots title
+   * scale_font: scaling factor applied to the default font size
+   * disp_values: switches on/off the grading values on the plot
+   * disp_rankings: switches on/off the rankings on the plot
+   * rank_order: displays rankings in increasing (1) or decreasing (-1) order
+
 Variables
 ---------
 
