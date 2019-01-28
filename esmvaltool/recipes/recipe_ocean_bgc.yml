@@ -57,7 +57,6 @@ preprocessors:
       coord1: longitude
       coord2: latitude
       coordz: depth
-      use_fx_files: true
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -68,7 +67,6 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-      use_fx_files: true
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -82,7 +80,6 @@ preprocessors:
     average_region:
       coord1: longitude
       coord2: latitude
-      use_fx_files: true
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -112,12 +109,10 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
-
   prep_global_profile:
     average_region:
       coord1: longitude
       coord2: latitude
-      use_fx_files: true
 
   prep_transect_AMT: # Atlantic Meridional Transect (28W)
     custom_order: true
