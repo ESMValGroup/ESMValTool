@@ -355,10 +355,10 @@ def _update_fx_settings(settings, variable, config_user):
         fx_files = get_required(variable['short_name'],
                                 variable['field']).get('fx_files')
         if fx_files:
-            variable = dict(variable)
-            variable['fx_files'] = fx_files
+            var = dict(variable)
+            var['fx_files'] = fx_files
             settings['derive']['fx_files'] = get_input_fx_filelist(
-                variable=variable,
+                variable=var,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
 
@@ -369,10 +369,10 @@ def _update_fx_settings(settings, variable, config_user):
 
         settings['mask_landsea']['fx_files'] = []
 
-        variable = dict(variable)
-        variable['fx_files'] = ['sftlf', 'sftof']
+        var = dict(variable)
+        var['fx_files'] = ['sftlf', 'sftof']
         fx_files_dict = get_input_fx_filelist(
-            variable=variable,
+            variable=var,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
 
@@ -387,10 +387,10 @@ def _update_fx_settings(settings, variable, config_user):
 
         settings['mask_landseaice']['fx_files'] = []
 
-        variable = dict(variable)
-        variable['fx_files'] = ['sftgif']
+        var = dict(variable)
+        var['fx_files'] = ['sftgif']
         fx_files_dict = get_input_fx_filelist(
-            variable=variable,
+            variable=var,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
 
@@ -405,9 +405,9 @@ def _update_fx_settings(settings, variable, config_user):
         if 'use_fx_files' not in settings[key].keys():
             continue
         if settings[key]['use_fx_files']:
-            variable = dict(variable)
+            var = dict(variable)
             fx_files_dict = get_input_fx_filelist(
-                variable=variable,
+                variable=var,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
             settings[key]['fx_files'] = fx_files_dict
