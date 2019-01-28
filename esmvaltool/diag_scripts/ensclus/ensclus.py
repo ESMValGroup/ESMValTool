@@ -99,9 +99,6 @@ def main(cfg):
                               cfg['output_file_type'])
         provenance_record['plot_file'] = plot_file
 
-    print("-----------")
-    print(provenance_record)
-    print("-----------")
     for file in outfiles:
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(file, provenance_record)
