@@ -49,7 +49,7 @@ varname <- climolist$short_name
 # read recipe and extract provenance information 
 regridding_dir <- settings$run_dir
 run_dir <- paste0(unlist(strsplit(regridding_dir, "run"))[1], "run")
-recipe <- read_yaml(paste0(run_dir, "/", "recipe_", diag_base, ".yml"))
+recipe <- read_yaml(paste0(run_dir, "/", settings$recipe))
 recipe_docs <- recipe$documentation
 
 # create working dirs if they do not exist
