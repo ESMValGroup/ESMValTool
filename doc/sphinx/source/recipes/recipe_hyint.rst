@@ -82,16 +82,12 @@ Example plots
 -------------
  
 .. figure:: figures/hyint/hyint_maps.png
-   :width: 8cm
 .. figure:: figures/hyint/hyint_maps2.png
-   :width: 8cm
  
 Annual mean precipitation intensity with boundaries of pre-defined regions (left, figure type 1) and difference in dry spell length between two datasets over Africa (right, figure type 2)
  
 .. figure:: figures/hyint/hyint_trends.png
-   :width: 8cm
 .. figure:: figures/hyint/hyint_trends2.png
-   :width: 8cm
  
 HY-INT timeseries (left, figure type 12) and trend coefficients (right, figure type 14) over selected regions for EC-Earth rcp85 2006-2100 future projection normalized to the historical 1976-2005 period.
 
