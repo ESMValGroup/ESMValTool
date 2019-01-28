@@ -5,8 +5,6 @@ library(climdex.pcic)
 library(ClimProjDiags) #nolint
 library(parallel)
 library(ncdf4)
-source("/home/Earth/nperez/git/ClimProjDiags/R/DTRRef.R") #nolint
-source("/home/Earth/nperez/git/ClimProjDiags/R/DTRIndicator.R") #nolint
 
 ## Insurance products
 args <- commandArgs(trailingOnly = TRUE)
