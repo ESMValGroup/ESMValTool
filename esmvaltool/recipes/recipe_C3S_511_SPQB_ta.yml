@@ -16,6 +16,18 @@
 #
 # This namelist is part of the ESMValTool
 ###############################################################################
+documentation:
+  description: |
+    Independent assessment of single products for the C3S_511 quality brief
+
+  authors:
+    - muel_bn
+    - hass_bg
+
+  maintainer:
+    - muel_bn
+    - hass_bg
+
 
 datasets:
   - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
