@@ -27,8 +27,6 @@ Diagnostics are stored in diag_scripts/perfmetrics/
 User settings
 -------------
 
-User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
-
 #. main.ncl
 
    *Required diag_script_info attributes*
