@@ -118,7 +118,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ua_tmn = np.nanmean(ta_c, axis=1)
     va_tmn = np.nanmean(va_c, axis=1)
     wap_tmn = np.nanmean(wap_c, axis=1)
-    wap_ztmn, wap_gmn = averages(wap_tmn, g_w)
+    _, wap_gmn = averages(wap_tmn, g_w)
     # Compute stability parameter
     gam_ztmn = np.zeros([nlev, nlat])
     for l_l in range(nlat):
@@ -141,14 +141,14 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         ua_t = ua_c[:, t_t, :, :]
         va_t = va_c[:, t_t, :, :]
         wap_t = wap_c[:, t_t, :, :]
-        ta_tzmn, ta_tgmn = averages(ta_t, g_w)
-        ta_tzan, ta_tgan = averages(ta_tan, g_w)
-        ua_tzmn, ua_tgmn = averages(ua_t, g_w)
-        ua_tzan, ua_tgan = averages(ua_tan, g_w)
-        va_tzmn, va_tgmn = averages(va_t, g_w)
-        va_tzan, va_tgan = averages(va_tan, g_w)
-        wap_tzmn, wap_tgmn = averages(wap_t, g_w)
-        wap_tzan, wap_tgan = averages(wap_tan, g_w)
+        ta_tzmn, _ = averages(ta_t, g_w)
+        _, ta_tgan = averages(ta_tan, g_w)
+        ua_tzmn, _ = averages(ua_t, g_w)
+        ua_tzan, _ = averages(ua_tan, g_w)
+        va_tzmn, _ = averages(va_t, g_w)
+        va_tzan, _ = averages(va_tan, g_w)
+        wap_tzmn, _ = averages(wap_t, g_w)
+        _, wap_tgan = averages(wap_tan, g_w)
         # Compute kinetic energy
         e_k[:, t_t, :, :] = makek(ua_tan, va_tan, nlat, ntp, nlev)
         # Compute available potential energy
@@ -168,36 +168,36 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         kt2ks[:, t_t, :, :] = mkktks(ua_tan, va_tan, ua_tmn, va_tmn, y_l, nlat,
                                      ntp, nlev)
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
-    table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log)
-    ape_tgmn = averages_comp(e_k, g_w, d_s, dims)
-    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log)
+    table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log, flag=0)
+    ape_tgmn = averages_comp(e_k, g_w, d_s, dims, flag=0)
+    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log, flag=0)
     a2k_tgmn = averages_comp(e_k, g_w, d_s, dims)
-    table_conv(a2k_tgmn, ntp, 'KE -> APE (trans) ', log)
+    table(a2k_tgmn, ntp, 'KE -> APE (trans) ', log, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
-    table_conv(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log)
+    table(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log, flag=1)
     ke2kz_tgmn = averages_comp(ke2kz, g_w, d_s, dims)
-    table_conv(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', log)
+    table(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', log, flag=1)
     at2as_tgmn = averages_comp(at2as, g_w, d_s, dims)
-    table_conv(at2as_tgmn, ntp, 'ASE  <->  ATE   ', log)
+    table(at2as_tgmn, ntp, 'ASE  <->  ATE   ', log, flag=1)
     kt2ks_tgmn = averages_comp(kt2ks, g_w, d_s, dims)
-    table_conv(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log)
+    table(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log, flag=1)
     ek_st = makek(ua_tmn, va_tmn, nlat, ntp, nlev)
     ek_stgmn = globall_cg(ek_st, g_w, d_s, dims)
-    table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log)
+    table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log, flag=0)
     ape_st = makea(ta_tmn, ta_gmn, gam_tmn)
     ape_stgmn = globall_cg(ape_st, g_w, d_s, dims)
-    table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log)
+    table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log, flag=0)
     a2k_st = mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev)
     a2k_stgmn = globall_cg(a2k_st, g_w, d_s, dims)
-    table_conv(a2k_stgmn, ntp, 'KE -> APE (stat)', log)
+    table(a2k_stgmn, ntp, 'KE -> APE (stat)', log, flag=1)
     ae2az_st = mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l,
                       gam_tmn, nlat, nlev)
     ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, dims)
-    table_conv(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log)
+    table(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log, flag=1)
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
-    table_conv(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log)
+    table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log, flag=1)
     list_conv = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
                  ae2az_stgmn, a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn,
                  ke2kz_tgmn, ke2kz_stgmn]
@@ -895,34 +895,21 @@ def stabil(ta_gmn, p_l, nlev):
     return g_s
 
 
-def table(varin, ntp, name, log):
+def table(varin, ntp, name, log, conv_flag):
     """Write global and hem. storage terms to .txt table.
 
     @author: Valerio Lembo
     """
+    if conv_flag is True:
+        fac = 1e5
+        varin = fac * varin
     varzon = varin[:, 0]
     vared = np.nansum(varin[:, 1:ntp - 1], axis=1)
     vared1 = np.nansum(varin[:, 1:NW_1 - 1], axis=1)
     vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
     vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
-    vartot = varzon + vared
-    write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon)
-
-
-def table_conv(varin, ntp, name, log):
-    """Write global and hem. conversion terms to .txt table.
-
-    @author: Valerio Lembo
-    """
-    fac = 1e5
-    varin = fac * varin
-    varzon = varin[:, 0]
-    vared = np.nansum(varin[:, 1:ntp - 1], axis=1)
-    vared1 = np.nansum(varin[:, 1:NW_1 - 1], axis=1)
-    vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
-    vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
-    vartot = varzon + vared
-    write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon)
+    vared_tog = [vared, vared1, vared2, vared3]
+    write_to_tab(log, name, vared_tog, varzon)
 
 
 def varatts(w_nc_var, varname, tres, vres):
@@ -992,7 +979,20 @@ def weights(lev, nlev, lat):
     return d_s, y_l, g_w
 
 
-def write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon):
+def write_to_tab(log, name, vared, varzon):
+    """Specify the formats for table entries.
+
+    Arguments:
+    - log: the logfile where the entries must be written;
+    - name: the name of the variable;
+    - vared: a list of arrays containing the overall eddy components, the LW,
+      the SW and the KW components;
+    - varzon: an array containing the zonal mean component;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    vartot = varzon + vared[0]
     log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
               .format(name, vartot[0], vartot[1], vartot[2]))
     log.write('--------------------------------------\n')
@@ -1000,14 +1000,14 @@ def write_to_tab(log, name, vartot, vared, vared1, vared2, vared3, varzon):
               .format(name, varzon[0], varzon[1], varzon[2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0], vared[1], vared[2]))
+              .format(name, vared[1][0], vared[2][0], vared[3][0]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared1[0], vared1[1], vared1[2]))
+              .format(name, vared[1][1], vared[2][1], vared[3][1]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared2[0], vared2[1], vared2[2]))
+              .format(name, vared[1][2], vared[2][2], vared[3][2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared3[0], vared3[1], vared3[2]))
+              .format(name, vared[1][3], vared[2][3], vared[3][3]))
     log.write('--------------------------------------\n')
