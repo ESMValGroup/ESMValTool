@@ -85,7 +85,8 @@ def zonal_means(cube, coordinate, mean_type):
     Get zonal means.
 
     Function that returns zonal means along a coordinate `coordinate`;
-    the type of mean is controlled by mean_type variable (string):
+    the type of mean is controlled by mean_type variable (string)::
+    
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
