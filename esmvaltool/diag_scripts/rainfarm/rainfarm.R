@@ -59,6 +59,10 @@ dir.create(regridding_dir, recursive = T, showWarnings = F)
 # switch to working directory
 setwd(work_dir)
 
+# setup provenance file and list
+provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance <- list()
+
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
 reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
@@ -124,5 +128,23 @@ for (model_idx in c(1:(length(models_name)))) {
                               verbose = T, need_return = "R")
       fname <- sprintf("%s_%04d.nc", outfilename, iens)
       julia_call("write_netcdf2d", fname, rd, lon_f, lat_f, varname, infile )
+
+      # Set provenance for this output file
+      caption <- paste0("RainFARM precipitation downscaling")
+      xbase <- list(ancestors = list(infile),
+                    authors = list("arno_en", "hard_jo"),
+                    references = list("donofrio14jh", "rebora06jhm",
+                                      "terzago18nhess"),
+                    projects = list("c3s-magic"),
+                    caption = caption,
+                    statistics = list("other"),
+                    realms = list("atmos"),
+                    themes = list("phys"),
+                    domains = list("reg"))
+
+      # Store provenance in main provenance list
+      provenance[[fname]] <- xbase
   }
+  # Write provenance to file
+  write_yaml(provenance, provenance_file)
 }
