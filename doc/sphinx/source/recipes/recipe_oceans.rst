@@ -6,9 +6,9 @@ Recipes for evaluating models of the ocean
 Overview
 ........
 
-These recipes are used for evaluating the marine component of models of the 
+These recipes are used for evaluating the marine component of models of the
 earth system. Using these recipes, it should be possible to evaluate both the
-physical models and biogeochemistry models. All these recipes use the 
+physical models and biogeochemistry models. All these recipes use the
 ocean diagnostics package.
 
 The ocean diagnostics package contains several diagnostics which produce
@@ -22,8 +22,8 @@ ESMValTool, and one or more pre-processed dataset. These are passed to the
 diagnostic by ESMValTool in the settings.yml and metadata.yml files.
 
 The ocean diagnostics toolkit can not figure out how to plot data by itself.
-The current version requires the recipe to produce the correct pre-processed 
-data for each diagnostic script. ie: to produce a time series plot, 
+The current version requires the recipe to produce the correct pre-processed
+data for each diagnostic script. ie: to produce a time series plot,
 the preprocessor must produce a time-dimensional dataset.
 
 While these tools were built to evaluate the ocean component models, they also
@@ -31,10 +31,10 @@ can be used to produce figures for other domains. However, there are some ocean
 specific elements, such as the z-direction being positive and reversed, and
 some of the map plots have the continents coloured in by default.
 
-As elsewhere, both the model and observational datasets need to be 
+As elsewhere, both the model and observational datasets need to be
 compliant with the CMOR data.
 
-Available recipes 
+Available recipes
 .................
 
 * recipe_ocean_amoc.yml_
@@ -48,48 +48,48 @@ recipe_ocean_amoc.yml
 ---------------------
 
 The recipe_ocean_amoc.yml_ is an recipe that produces figures describing the
-Atlantic Meridional Overturning Circulation (AMOC) and the drake passage 
+Atlantic Meridional Overturning Circulation (AMOC) and the drake passage
 current.
 
-The recipes produces time series of the AMOC at 26 north and the 
-drake passage current. 
+The recipes produces time series of the AMOC at 26 north and the
+drake passage current.
 
 .. centered:: |pic_amoc|
 
 .. |pic_amoc| image:: /recipes/figures/ocean/amoc_fig_1.png
 
 
-This figure shows the multi model comparison of the AMOC from several CMIP5 
-historical simulations, with a 6 year moving average (3 years either side of the 
+This figure shows the multi model comparison of the AMOC from several CMIP5
+historical simulations, with a 6 year moving average (3 years either side of the
 central value). A similar figure is produced for each individual model, and
 for the Drake Passage current.
 
 This recipe also produces a contour transect and a coloured transect plot
-showing the Atlantic stream function for each individual model, and a 
+showing the Atlantic stream function for each individual model, and a
 multi-model contour is also produced:
 
-.. centered:: |pic_ocean_sf1| |pic_ocean_sf2|
+.. centered:: |pic_ocean_sf3| |pic_ocean_sf4|
 
-.. |pic_ocean_sf1| image:: /recipes/figures/ocean/stream_function1.png
-.. |pic_ocean_sf2| image:: /recipes/figures/ocean/stream_function2.png
+.. |pic_ocean_sf3| image:: /recipes/figures/ocean/stream_function1.png
+.. |pic_ocean_sf4| image:: /recipes/figures/ocean/stream_function2.png
 
 
 recipe_ocean_example.yml
 ------------------------
 
-The recipe_ocean_example.yml_ is an example recipe which shows several examples 
+The recipe_ocean_example.yml_ is an example recipe which shows several examples
 of how to manipulate marine model data using the ocean diagnostics tools.
 
 While several of the diagnostics here have specific uses in evaluating models,
-it is meant to be a catch-all recipe demonstrating many different ways to 
+it is meant to be a catch-all recipe demonstrating many different ways to
 evaluate models.
 
-All example calculations are performed using the ocean temperature in a three 
-dimensional field (thetao), or at the surface (tos). This recipe demonstrates 
-the use of a range of preprocessors in a marine context, and also shows many 
+All example calculations are performed using the ocean temperature in a three
+dimensional field (thetao), or at the surface (tos). This recipe demonstrates
+the use of a range of preprocessors in a marine context, and also shows many
 of the standard model-only diagnostics (no observational component is included.)
 
-This recipe includes examples of how to manipulate both 2D and 3D fields to 
+This recipe includes examples of how to manipulate both 2D and 3D fields to
 produce:
 
 * Time series:
@@ -100,7 +100,7 @@ produce:
   * Area weighted average time series at a specific depth in a specific region.
   * Global volume weighted average time series
   * Regional volume weighted average time series
-  
+
 * Maps:
 
   * Global surface map (from 2D ad 3D initial fields)
@@ -117,7 +117,7 @@ produce:
   * Produce a Global area-weighted depth profile figure
   * Produce a regional area-weighted depth profile figure
 
-All the these fields can be expanded using a 
+All the these fields can be expanded using a
 
 recipe_ocean_bgc.yml
 --------------------
@@ -135,7 +135,7 @@ This recipe includes the following fields:
 * Surface area-weighted average time series:
 
   * temperature, salinity, nitrate, oxygen, silicate (vs WOA data) `*`
-  * fgco2 (global total), integrated primary production, chlorophyll, 
+  * fgco2 (global total), integrated primary production, chlorophyll,
     iron, total alkalinity (no observations)
 
 * Scalar fields time series:
@@ -147,24 +147,24 @@ This recipe includes the following fields:
   * temperature, salinity, nitrate, oxygen, silicate (vs WOA data) `*`
   * chlorophyll, iron, total alkalinity (no observations)
 
-* Maps + contours: 
+* Maps + contours:
 
   * temperature, salinity, nitrate, oxygen, silicate (vs WOA data) `*`
   * chlorophyll, iron, total alkalinity (no observations)
 
-* Transects + contours: 
+* Transects + contours:
 
   * temperature, salinity, nitrate, oxygen, silicate (vs WOA data) `*`
   * chlorophyll, iron, no observations)
 
-`*` Note that Phosphate is also available as a WOA diagnostic, but I haven't 
+`*` Note that Phosphate is also available as a WOA diagnostic, but I haven't
 included it as HadGEM2-ES doesn't include a phosphate field.
 
 This recipe uses the World Ocean Atlas data, which can be downloaded from:
 https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
 (last access 10/25/2018)
 
-Instructions: Select the "All fields data links (1° grid)" netCDF file, 
+Instructions: Select the "All fields data links (1° grid)" netCDF file,
 which contain all fields.
 
 
@@ -183,7 +183,7 @@ which contain all fields.
 recipe_ocean_quadmap.yml
 ------------------------
 
-The recipe_ocean_quadmap.yml_ is an example recipe showing the 
+The recipe_ocean_quadmap.yml_ is an example recipe showing the
 diagnostic_maps_quad.py_ diagnostic.
 This diagnostic produces an image showing four maps. Each of these four maps
 show latitude vs longitude and the cube value is used as the colour scale.
@@ -193,7 +193,7 @@ The four plots are:
 model1              model 1 minus model2
 -----------------   --------------------
 model2 minus obs    model1 minus obs
-=================   ====================       
+=================   ====================
 
 These figures are also known as Model vs Model vs Obs plots.
 
@@ -201,11 +201,11 @@ These figures are also known as Model vs Model vs Obs plots.
 The figure produced by this recipe compares two versions of the HadGEM2 model
 against ATSR sea surface temperature:
 
-.. centered:: |pic_quad_plot| 
+.. centered:: |pic_quad_plot|
 
 .. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot1.png
 
-This kind of figure can be very useful when developing a model, as it 
+This kind of figure can be very useful when developing a model, as it
 allows model developers to quickly see the impact of recent changes
 to the model.
 
@@ -213,7 +213,7 @@ to the model.
 recipe_ocean_ice_extent.yml
 ---------------------------
 
-The recipe_ocean_ice_extent.yml_ recipe produces several metrics describing 
+The recipe_ocean_ice_extent.yml_ recipe produces several metrics describing
 the behaviour of sea ice in a model, or in multiple models.
 
 This recipe has four preprocessors, a combinatorial combination of
@@ -222,30 +222,30 @@ This recipe has four preprocessors, a combinatorial combination of
 * Seasons: December-January-February or June-July-August
 
 Once these seasonal hemispherical fractional ice cover is processed,
-the resulting cube is passed 'as is' to the diagnostic_seaice.py_ 
-diagnostic. 
+the resulting cube is passed 'as is' to the diagnostic_seaice.py_
+diagnostic.
 
 This diagnostic produces the plots:
 
 * Polar Stereographic projection Extent plots of individual models years.
-* Polar Stereographic projection maps of the ice cover and ice extent for 
+* Polar Stereographic projection maps of the ice cover and ice extent for
   individual models.
 * A time series of Polar Stereographic projection Extent plots - see below.
 * Time series plots of the total ice area and the total ice extent.
 
 
-The following image shows an example of the sea ice extent plot, showing the 
-Summer Northern hemisphere ice extent for the HadGEM2-CC model, in the 
+The following image shows an example of the sea ice extent plot, showing the
+Summer Northern hemisphere ice extent for the HadGEM2-CC model, in the
 historical scenario.
 
-.. centered:: |pic_sea_ice1| 
+.. centered:: |pic_sea_ice1|
 
 .. |pic_sea_ice1| image:: /recipes/figures/ocean/ocean_sea_ice1.png
 
 
-The sea ice diagnostic is unlike the other diagnostics in the ocean diagnostics 
+The sea ice diagnostic is unlike the other diagnostics in the ocean diagnostics
 toolkit. The other tools are build to be generic plotting tools which
-work with any field (ie ``diagnostic_timeseries.py`` works fine for Temperature, 
+work with any field (ie ``diagnostic_timeseries.py`` works fine for Temperature,
 Chlorophyll, or any other field. On the other hand, the
 sea ice diagnostic is the only tool that performs a field specific evaluation.
 
@@ -274,7 +274,7 @@ Each module is described in more detail both below and inside the module.
 diagnostic_maps.py
 ------------------
 
-The diagnostic_maps.py_ produces a spatial map from a NetCDF. It requires the 
+The diagnostic_maps.py_ produces a spatial map from a NetCDF. It requires the
 input netCDF to have the following dimensions. Either:
 
 - A two dimensional file: latitude, longitude.
@@ -308,7 +308,7 @@ Some appropriate preprocessors for this diagnostic would be:
 For a  Global 2D field:
 
   .. code-block:: yaml
-    
+
       prep_map_1:
 	time_average:
 
@@ -351,7 +351,7 @@ For a multi-model comparison mean of 2D global fields including contour threshol
 And this also requires the threshold key in the diagnostic:
 
   .. code-block:: yaml
-  
+
 	diagnostic_map:
 	  variables:
 	    tos: # Temperature ocean surface
@@ -366,8 +366,8 @@ And this also requires the threshold key in the diagnostic:
 diagnostic_maps_quad.py
 --------------------------------
 
-The diagnostic_maps_quad.py_ diagnostic produces an image showing four maps. 
-Each of these four maps show latitude vs longitude and the cube value is used 
+The diagnostic_maps_quad.py_ diagnostic produces an image showing four maps.
+Each of these four maps show latitude vs longitude and the cube value is used
 as the colour scale. The four plots are:
 
 =================   ====================
@@ -387,7 +387,7 @@ and a latitude and longitude coordinates.
 An appropriate preprocessor for a 2D field would be:
 
   .. code-block:: yaml
-  
+
 	prep_quad_map:
 	    time_average:
 
@@ -406,7 +406,7 @@ and an example of an appropriate diagnostic section of the recipe would be:
 	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
 	    - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
 	  scripts:
-	    Global_Ocean_map: 
+	    Global_Ocean_map:
 	      script: ocean/diagnostic_maps_quad.py
 	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
 	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
@@ -421,7 +421,7 @@ recipe.
 diagnostic_model_vs_obs.py
 --------------------------------
 
-The diagnostic_model_vs_obs.py_ diagnostic makes model vs observations maps 
+The diagnostic_model_vs_obs.py_ diagnostic makes model vs observations maps
 and scatter plots. The map plots shows four latitude vs longitude maps:
 
 =================            =======================
@@ -443,7 +443,7 @@ The parameters of the fit are also shown on the figure.
 An appropriate preprocessor for a 3D+time field would be:
 
   .. code-block:: yaml
-  
+
 	preprocessors:
 	  prep_map:
 	    extract_levels:
@@ -490,7 +490,7 @@ diagnostic_timeseries.py
 --------------------------------
 
 The diagnostic_timeseries.py_ diagnostic produces images of the time development
-of a metric from a cube. These plots show time on the x-axis and cube value 
+of a metric from a cube. These plots show time on the x-axis and cube value
 (ie temperature) on the y-axis.
 
 Two types of plots are produced: individual model timeseries plots and
@@ -523,7 +523,7 @@ For a global area-weighted average 2D field:
 For a global volume-weighted average 3D field:
 
   .. code-block:: yaml
-  
+
 	average_volume:
 	  coord1: longitude
 	  coord2: latitude
@@ -543,9 +543,9 @@ For a global area-weighted surface of a 3D field:
 
 An example of the multi-model time series plots can seen here:
 
-.. centered:: |pic_amoc| 
+.. centered:: |pic_amoc2|
 
-.. |pic_amoc| image:: /recipes/figures/ocean/amoc_fig_1.png
+.. |pic_amoc2| image:: /recipes/figures/ocean/amoc_fig_1.png
 
 
 
@@ -554,7 +554,7 @@ diagnostic_transects.py
 
 
 
-The diagnostic_transects.py_ diagnostic produces images of a transect, 
+The diagnostic_transects.py_ diagnostic produces images of a transect,
 typically along a constant latitude or longitude.
 
 These plots show 2D plots with either latitude or longitude along the x-axis,
@@ -593,9 +593,9 @@ diagnostic_seaice.py
 
 
 
-The diagnostic_seaice.py_ diagnostic is unique in this module, as it produces 
-several different kinds of images, including time series, maps, and contours. 
-It is a good example of a diagnostic where the preprocessor does very little 
+The diagnostic_seaice.py_ diagnostic is unique in this module, as it produces
+several different kinds of images, including time series, maps, and contours.
+It is a good example of a diagnostic where the preprocessor does very little
 work, and the diagnostic does a lot of the hard work.
 
 This was done purposely, firstly to demonstrate the flexibility of ESMValTool,
@@ -675,7 +675,7 @@ diagnostic_tools.py
 
 
 
-The diagnostic_tools.py_ is a module that contains several python tools used 
+The diagnostic_tools.py_ is a module that contains several python tools used
 by the ocean diagnostics tools.
 
 These tools are:
@@ -713,9 +713,9 @@ The following WOA datasets are used by the ocean diagnostics:
  - Phosphate
  - Silicate
  - Dissolved Oxygen
- 
+
 These files need to be reformatted using the `reformat_obs_woa_o2.py` script
-in the `reformat_scripts/obs/` directory. 
+in the `reformat_scripts/obs/` directory.
 
 
 .. Links:
@@ -728,7 +728,7 @@ in the `reformat_scripts/obs/` directory.
 .. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_quadmap.yml
 
 .. Diagnostics:
-.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/: 
+.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/:
 .. _diagnostic_maps.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps.py
 .. _diagnostic_maps_quad.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps_quad.py
 .. _diagnostic_model_vs_obs.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_model_vs_obs.py
@@ -737,4 +737,3 @@ in the `reformat_scripts/obs/` directory.
 .. _diagnostic_transects.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_transects.py
 .. _diagnostic_seaice.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_seaice.py
 .. _diagnostic_tools.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_tools.py
-
