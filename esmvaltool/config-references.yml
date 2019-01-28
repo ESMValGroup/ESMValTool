@@ -19,6 +19,10 @@ authors:
     name: Broetz, Bjoern
     institute: DLR, Germany
     email: bjoern.broetz 'at' dlr.de
+  demo_le:
+    name: de Mora, Lee
+    institute: PML, UK
+    email: ledm 'at' pml.ac.uK
   dros_ni:
     name: Drost, Niels
     institute: NLeSC, Netherlands
@@ -146,10 +150,6 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
-  demo_le:
-    name: de Mora, Lee
-    institute: PML, UK
-    email: ledm 'at' pml.ac.uK
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
