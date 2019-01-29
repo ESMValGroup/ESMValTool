@@ -108,11 +108,13 @@ class OceanHeatContent(object):
     def compute(self):
         """Compute diagnostic"""
         logger.info('Computing ocean heat content')
-
+        ohc1d_compare_timeseries = CubeList()
+        ohc1d_compare_monthly = CubeList()
         for filename in self.datasets:
-            dataset_info = self.datasets.get_data(filename)
+            dataset_info = self.datasets.get_dataset_info(filename)
             thetao = iris.load_cube(filename,
                                     'sea_water_potential_temperature')
+            area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
 
             self._compute_depth_weights(thetao)
 
@@ -121,6 +123,7 @@ class OceanHeatContent(object):
             depth_weight = thetao.coord('depth_weight').points
 
             ohc2d = CubeList()
+            ohc1d = CubeList()
             final_weight = None
             logger.debug('Starting computation...')
             for time_slice in thetao.slices_over('time'):
@@ -144,6 +147,13 @@ class OceanHeatContent(object):
                     self._plot(ohc, filename)
 
                 ohc2d.append(ohc)
+                ohc = ohc.collapsed(['latitude', 'longitude'], SUM,
+                                    weights=area_cello.data)
+
+                ohc.long_name = 'Ocean Heat Content 1D'
+                ohc1d.append(ohc)
+
+            del thetao
 
             logger.debug('Merging results...')
             ohc2d = ohc2d.merge_cube()
@@ -152,6 +162,19 @@ class OceanHeatContent(object):
             iris.coord_categorisation.add_month_number(ohc2d, 'time')
             iris.coord_categorisation.add_year(ohc2d, 'time')
             self._monthly_2d_clim(filename, ohc2d)
+
+            ohc1d = ohc1d.merge_cube()
+            iris.coord_categorisation.add_month_number(ohc1d, 'time')
+            iris.coord_categorisation.add_year(ohc1d, 'time')
+            self._timeseries_1d(filename, ohc1d, ohc1d_compare_timeseries)
+            self._monthly_1d_clim(filename, ohc1d, ohc1d_compare_monthly)
+        del ohc1d
+        del ohc2d
+        self._comparison_plot(ohc1d_compare_timeseries, 'timeseries')
+        self._comparison_plot(ohc1d_compare_monthly, 'monthly_clim')
+
+
+
 
     def _monthly_2d_clim(self, filename, ohc2d):
         if not self.compute_2d_monthly_clim:
@@ -162,7 +185,7 @@ class OceanHeatContent(object):
             new_filename = os.path.basename(filename).replace(
                 'thetao', 'ohc2D_monclim'
             )
-            netcdf_path = os.path.join(self.cfg[n.WORK_DIR], new_filename)
+            netcdf_path = os.path.join(self.cfg[n.WORK_DIR],new_filename)
             iris.save(ohc_clim, netcdf_path, zlib=True)
         if self.cfg[n.WRITE_PLOTS]:
             for month_slice in ohc_clim.slices_over('month_number'):
@@ -181,6 +204,83 @@ class OceanHeatContent(object):
                 )
                 plt.savefig(plot_path, dpi=self.plot_dpi)
                 plt.close()
+
+    def _monthly_1d_clim(self, filename, ohc1d, ohc1d_compare):
+        if not self.compute_1d_monthly_clim:
+            return
+
+        ohc_clim = ohc1d.aggregated_by(('month_number'), iris.analysis.MEAN)
+        if self.cfg[n.WRITE_NETCDF]:
+            new_filename = os.path.basename(filename).replace(
+                'thetao', 'ohc1D_monclim'
+            )
+            netcdf_path = os.path.join(self.cfg[n.WORK_DIR], new_filename)
+            iris.save(ohc_clim, netcdf_path, zlib=True)
+        if self.cfg[n.WRITE_PLOTS]:
+            plt.plot(
+                ohc_clim.data
+            )
+            plt.xlabel('Month')
+            plt.ylabel('OHC (%s)' %ohc1d.units)
+            plt.title(ohc_clim.long_name)
+            plt.grid()
+            plot_path = self._get_1D_plot_filename(filename, 'monthly_clim')
+            plt.savefig(plot_path, dpi=self.plot_dpi)
+            plt.close()
+        ohc1d_compare.append(ohc_clim)
+
+    def _timeseries_1d(self, filename, ohc1d, ohc1d_compare):
+        if self.cfg[n.WRITE_PLOTS]:
+            plt.plot(
+                ohc1d.data
+            )
+            plt.xlabel('Month')
+            plt.ylabel('OHC (%s)' %ohc1d.units)
+            plt.title(ohc1d.long_name)
+            plt.grid()
+            plot_path = self._get_1D_plot_filename(filename, 'timeseries')
+            plt.savefig(plot_path, dpi=self.plot_dpi)
+            plt.close()
+        ohc1d_compare.append(ohc1d)
+
+    def _comparison_plot(self, ohc_compare, type_of_plot):
+
+        for dataset in range(len(ohc_compare)):
+            ohc_mean = ohc_compare[dataset].collapsed('time', iris.analysis.MEAN)
+            ohc_standard = ohc_compare[dataset] - ohc_mean
+            plt.figure(1)
+            plt.plot(ohc_compare[dataset].data,
+                     label=self.datasets.get_info_list(n.DATASET)[dataset]+'_'+
+                     str(self.datasets.get_info_list(n.START_YEAR)[dataset])+'_'+
+                     str(self.datasets.get_info_list(n.END_YEAR)[dataset]))
+            plt.figure(2)
+            plt.plot(ohc_standard.data,
+                          label=self.datasets.get_info_list(n.DATASET)[dataset]+'_'+
+                          str(self.datasets.get_info_list(n.START_YEAR)[dataset])+'_'+
+                          str(self.datasets.get_info_list(n.END_YEAR)[dataset]))
+
+        plt.title(self.cfg[n.SCRIPT].replace('_', ' '))
+        plt.xlabel('Month')
+        plt.ylabel('OHC (%s)' %ohc_compare[0].units)
+        plt.legend()
+        plt.grid()
+        plt.tight_layout()
+        script = self.cfg[n.SCRIPT]
+        datasets = '_'.join(self.datasets.get_info_list(n.DATASET))
+        out_type = self.cfg[n.OUTPUT_FILE_TYPE]
+        plt_name = '{script}_{type_of_plot}_comparison_{datasets}.{out_type}'.format(script=script,
+                                                        type_of_plot=type_of_plot,
+                                                        datasets=datasets,
+                                                        out_type=out_type)
+        plt.figure(1).savefig(os.path.join(self.cfg[n.PLOT_DIR], plt_name))
+        plt.close(1)
+
+        stan_plt_name = '{script}_{type_of_plot}_comparison_standarized_{datasets}.{out_type}'.format(script=script,
+                                                        type_of_plot=type_of_plot,
+                                                        datasets=datasets,
+                                                        out_type=out_type)
+        plt.figure(2).savefig(os.path.join(self.cfg[n.PLOT_DIR], stan_plt_name))
+        plt.close(2)
 
     def _get_clim_plot_filename(self, filename, month, dimensions):
         dataset = self.datasets.get_info(n.DATASET, filename)
@@ -202,6 +302,27 @@ class OceanHeatContent(object):
                                              dimensions=dimensions)
         plot_path = os.path.join(
             self._get_plot_folder(filename, 'monthly_clim'),
+            plot_filename
+        )
+        return plot_path
+
+    def _get_1D_plot_filename(self, filename, type_of_plot):
+        dataset = self.datasets.get_info(n.DATASET, filename)
+        project = self.datasets.get_info(n.PROJECT, filename)
+        ensemble = self.datasets.get_info(n.ENSEMBLE, filename)
+        start = self.datasets.get_info(n.START_YEAR, filename)
+        end = self.datasets.get_info(n.END_YEAR, filename)
+        out_type = self.cfg[n.OUTPUT_FILE_TYPE]
+        plot_filename = 'ohc1D_{project}_{dataset}_' \
+                        '{ensemble}_{start}-{end}' \
+                        '.{out_type}'.format(dataset=dataset,
+                                             project=project,
+                                             ensemble=ensemble,
+                                             start=start,
+                                             end=end,
+                                             out_type=out_type)
+        plot_path = os.path.join(
+            self._get_plot_folder(filename, '{type_of_plot}'.format(type_of_plot=type_of_plot)),
             plot_filename
         )
         return plot_path
