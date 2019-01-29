@@ -172,4 +172,5 @@ miles_regimes_fast <- function(dataset, expid, ens, year1, year2, season,
             start = c(1), count = c(-1))
   ncvar_put(ncfile1, "Names", names)
   nc_close(ncfile1)
+  return(savefile1)
 }

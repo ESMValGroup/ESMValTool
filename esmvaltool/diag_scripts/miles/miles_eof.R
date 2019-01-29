@@ -97,7 +97,7 @@ for (model_idx in c(1:(length(models_dataset)))) {
         doforce = TRUE
       )
       # Set provenance for output files
-      caption <- paste0("MiLES blocking statistics")
+      caption <- paste0("MiLES eof statistics")
       xprov <- list(ancestors = list(infile),
                     authors = list("hard_jo", "davi_pa", "arno_en"),
                     references = list("davini18", "davini12jclim",
