@@ -1,37 +1,29 @@
-###############################################################################
-# namelist_toymodel.yml
-#
-# Description
-# Namelist for generating synthetic observations based on the model presented
-# in Weigel et al. (2008) QJRS with an extension to consider non-stationary
-# (2008) QJRS with an extension to consider non-stationary distributions
-# distributions prescribing a linear trend. The toymodel allows to
-#     generate an aritifical forecast based on obsevations provided as input.
-#
-# Authors
-# Omar Bellprat
-#
-# Project
-# C3S Magic
-#
-# Reference
-# Weigel, Andreas P., M. A. Liniger, and C. Appenzeller. "Can multi‐model
-# combination really enhance the prediction skill of probabilistic ensemble
-# forecasts?." Quarterly Journal of the Royal Meteorological Society 134,
-# no. 630 (2008): 241-260.
-#
-#
-# This namelist is part of the ESMValTool
-###############################################################################
+# ESMValTool
+# recipe_toymodel_wp4.yml
 ---
+documentation:
+  description: |
+    Tool for generating synthetic observations based on the model presented
+    in Weigel et al. (2008) QJRS with an extension to consider non-stationary
+    (2008) QJRS with an extension to consider non-stationary distributions
+    distributions prescribing a linear trend. The toymodel allows to
+    generate an aritifical forecast based on obsevations provided as input.
 
-# /esarchive/exp/CMIP5/historical/bcc-csm1-1/cmip5-historical_i0p1/original_files/tas/tas_Amon_bcc-csm1-1_historical_r1i1p1_185001-201212.nc
+
+  authors:
+    - bell_om
+
+  projects:
+    - c3s-magic
+
+  references:
+    - weigel
+
 
 datasets:
-  #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
-  #- {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  #- {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+
     - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+
 latlon_roi: (/latmin,latmax,lonmin,lonmax/)
 preprocessors:
   preproc:
