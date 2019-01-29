@@ -1,42 +1,31 @@
-###############################################################################
-# recipe_modes_of_variability.yml
-#
-# Description
-# Tool to compute the RMSE between the observed and modelled patterns of
-# variability obtained through classification and their relative relative bias
-#(percentage) in the frequency of occurrence and the persistence of each mode.
-#
-#
-# Authors
-# Verónica Torralba
-# Neven Fuckar
-# Nicola Cortesi
-# Virginie Guemas
-# Alasdair Hunter
-# Nicolau Manubens
-# Núria Pérez-Zanón
-#
-# Project
-# KNMI Magic
-#
-# Reference
-# Fučkar, Neven S., Virginie Guemas, Nathaniel C. Johnson, François Massonnet,
-# and Francisco J. Doblas-Reyes. "Clusters of interannual sea ice variability in
-# the northern hemisphere." Climate Dynamics 47, no. 5-6 (2016): 1527-1543.
-#
-#
-# This namelist is part of the ESMValTool
-###############################################################################
+# ESMValTool
+# recipe_modes_of_variability_wp4.yml
 ---
+documentation:
+  description: |
+    Tool to compute the RMSE between the observed and modelled patterns of
+    variability obtained through classification and their relative relative
+    bias (percentage) in the frequency of occurrence and the persistence of
+    each mode.
+
+  authors:
+    - torr_ve
+    - fuck_ne
+    - cort_ni
+    - guem_vi
+    - hunt_al
+    - manu_ni
+
+  projects:
+    - c3s-magic
+
+  references:
+    - fuckar
 
 datasets:
-  - {dataset: MIROC5, type: exp,  project: CMIP5,  exp: historical,  ensemble: i0p1,  start_year: 1981,  end_year: 1990}
-  - {dataset: MIROC5, type: exp,  project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
-  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  #- {dataset: bcc-csm1-1, type: exp,  project: CMIP5,  mip: day,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
-  #- {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  #- {dataset: MPI-ESM-LR, type: exp, project: CMIP5,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2026}
+  - {dataset: MIROC5, project: CMIP5,  start_year: 1981,  end_year: 1990, ensemble: i0p1, exp: historical, type: exp}
+  - {dataset: MIROC5, project: CMIP5,  start_year: 2006,  end_year: 2026, ensemble: r1i1p1, exp: rcp85, type: exp}
+
 preprocessors:
   preproc:
     regrid:
@@ -49,6 +38,7 @@ preprocessors:
       end_longitude: 40
       start_latitude: 30
       end_latitude: 70
+
 diagnostics:
   weather_regime:
     description: Compute modes of variability.
@@ -59,19 +49,14 @@ diagnostics:
         field: T2M
     scripts:
       main:
-        script: magic_bsc/weather_regime.r #(in diag_scripts)
-
-        #Region considered
+        script: magic_bsc/weather_regime.r
         region: Polar # North-Atlantic or Polar
 
-
-        #Start and end periods for the historical and projection periods
         start_historical: "1961-01-01"
         end_historical: "1990-12-31"
         start_projection: "2006-01-01"
         end_projection: "2026-12-31"
 
-        #Regime parameters
         ncenters: 3
         detrend_order: 2
         cluster_method: "kmeans" # If NULL it computes hcluster else specify kmeans
