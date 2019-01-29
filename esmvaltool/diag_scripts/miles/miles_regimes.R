@@ -89,7 +89,7 @@ for (model_idx in c(1:(length(models_dataset)))) {
   year2 <- models_end_year[model_idx]
   infile <- climofiles[model_idx]
   for (seas in seasons) {
-    filenames = miles_regimes_fast(
+    filenames <- miles_regimes_fast(
       dataset = dataset, expid = exp, ens = ensemble,
       year1 = year1, year2 = year2, season = seas,
       z500filename = infile, FILESDIR = work_dir, nclusters = nclusters,
