@@ -7,7 +7,6 @@
 # nolint end
 Sys.setenv(TAR = "/bin/tar") # nolint
 library(s2dverification)
-library(startR) # nolint
 library(multiApply) # nolint
 library(ggplot2)
 library(yaml)
