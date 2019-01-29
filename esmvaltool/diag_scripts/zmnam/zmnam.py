@@ -98,7 +98,8 @@ def main(cfg):
         provenance_record = get_provenance_record(
             list(input_files.values())[0], ancestor_files=ifile)
         if write_plots:
-            provenance_record['plot_file'] = plot_files
+        # plot_file cannot be an array, so only the first plot is provided
+            provenance_record['plot_file'] = plot_files[0]
         zmnam_clean()
         for file in outfiles:
             with ProvenanceLogger(cfg) as provenance_logger:
