@@ -1,39 +1,31 @@
-###############################################################################
-# nameslist_multimodel_products.yml
-#
-# Description
-# Namelist to compute the ensemble mean anomaly and the ensemble
-# variance and agreement and plot the results as maps and time series.
-#
-# Authors
-# Nicolaur Manubens (BSC)
-# Alasdair Hunter (BSC)
-#
-#
-# Project
-# KNMI Magic
-#
-# Reference
-# Manubens, Nicolau, Louis-Philippe Caron, Alasdair Hunter, Omar Bellprat,
-# Eleftheria Exarchou, Neven S. Fučkar, Javier Garcia-Serrano et al.
-# "An R package for climate forecast verification." Environmental
-# Modelling & Software 103 (2018): 29-42.
-#
-#
-# This namelist is part of the ESMValTool
-###############################################################################
+# ESMValTool
+# recipe_multimodel_products_wp5.yml
 ---
+documentation:
+  description: |
+    Tool to  compute the ensemble mean anomaly and the ensemble
+    variance and agreement and plot the results as maps and time series.
+
+  authors:
+    - manu_ni
+    - hunt_al
+
+
+  projects:
+    - c3s-magic
+
+  references:
+    - manubens
 
 datasets:
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-#  - {dataset: GFDL-ESM2G, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
   - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
 
-#latlon_roi: (/latmin,latmax,lonmin,lonmax/)
+
 preprocessors:
   preproc:
     regrid:
