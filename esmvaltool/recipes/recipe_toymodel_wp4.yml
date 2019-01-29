@@ -24,7 +24,7 @@ datasets:
 
     - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
 
-latlon_roi: (/latmin,latmax,lonmin,lonmax/)
+
 preprocessors:
   preproc:
     regrid:
