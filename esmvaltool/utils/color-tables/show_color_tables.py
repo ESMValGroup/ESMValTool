@@ -37,4 +37,4 @@ for path in glob.glob(PATH_TO_COLORTABLES + "/ipcc-ar6*rgb"):
 filename = os.path.join(TEMPDIR, "show_color_tables.ncl")
 with open(filename, "w") as f:
     f.write(t.render(list_of_snippets=sorted(list_of_snippets)))
-os.system("ncl " + filename )
+os.system("ncl " + filename)
