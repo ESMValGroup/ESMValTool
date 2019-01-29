@@ -25,8 +25,6 @@ from netCDF4 import Dataset
 import numpy as np
 from cdo import Cdo
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
-cdo = Cdo()
-fourc = fourier_coefficients
 
 ALV = 2.5008e6    # Latent heat of vaporization
 G_0 = 9.81        # Gravity acceleration
@@ -82,8 +80,9 @@ def mkthe_main(wdir, file_list, modelname):
     thz = ths + 0.03 * ricr * (vv_hor) ** 2 / h_bl
     p_z = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
     t_z = thz * (P_0 / p_z) ** (-AKAP)
-    htop_file, tabl_file, tlcl_file = write_output(wdir, file_list, ztlcl,
-                                                   t_z, htop)
+    outlist = [ztlcl, t_z, htop]
+    htop_file, tabl_file, tlcl_file = write_output(wdir, modelname, file_list,
+                                                   outlist)
     return htop_file, tabl_file, tlcl_file
 
 
@@ -98,6 +97,7 @@ def input_data(wdir, file_list):
     Author:
     Valerio Lembo, University of Hamburg, 2019
     """
+    cdo = Cdo()
     ts_miss_file = wdir + '/ts.nc'
     removeif(ts_miss_file)
     cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
@@ -152,21 +152,27 @@ def removeif(filename):
         pass
 
 
-def write_output(wdir, model, file_list, ztlcl, t_z, htop):
+def write_output(wdir, model, file_list, varlist):
     """Write auxiliary variables to new NC files, write new attributes.
 
     Arguments:
     - wdir: the work directory where the outputs are stored;
     - model: the name of the model;
     - file_list: the list containing the input fields;
-    - ztlcl: the temperature at the LCL (time, lat, lon);
-    - t_z: the temperature at the boundary layer top (time, lat, lon);
-    - htop: the height of the boundary layer top (time, lat, lon);
-    
+    - varlist: a list containing the variables to be written to NC files, i.e.
+      tlcl (the temperature at the LCL), t_z (the temperature at the boundary
+      layer top), htop (the height of the boundary layer top); their dimensions
+      are as (time, lat, lon);
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
+    cdo = Cdo()
+    fourc = fourier_coefficients
     dataset = Dataset(file_list[0])
+    ztlcl = varlist[0]
+    t_z = varlist[1]
+    htop = varlist [2]
     tlcl_temp = wdir + '/tlcl.nc'
     removeif(tlcl_temp)
     w_nc_fid = Dataset(tlcl_temp, 'w', format='NETCDF4')
@@ -226,7 +232,7 @@ def write_output(wdir, model, file_list, ztlcl, t_z, htop):
                         from boundary layer thickness and barometric \
                         equation", 'statistic': u'monthly mean'})
     w_nc_fid.variables['htop'][:] = htop
-    w_nc_fid.close()  # close the new file    
+    w_nc_fid.close()  # close the new file
     tlcl_file = wdir + '/{}_tlcl.nc'.format(model)
     cdo.setrtomiss('400,1e36', input=tlcl_temp, output=tlcl_file)
     tabl_temp = wdir + '/tabl.nc'

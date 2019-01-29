@@ -70,7 +70,7 @@ import os
 import warnings
 from netCDF4 import Dataset
 from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram,\
-                                                       fourier_coefficients
+    fourier_coefficients
 import numpy as np
 warnings.filterwarnings("ignore")
 
@@ -137,17 +137,8 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         va_tan = va_c[:, t_t, :, :] - va_tmn
         wap_tan = wap_c[:, t_t, :, :] - wap_tmn
         # Compute zonal means
-        ta_t = ta_c[:, t_t, :, :]
-        ua_t = ua_c[:, t_t, :, :]
-        va_t = va_c[:, t_t, :, :]
-        wap_t = wap_c[:, t_t, :, :]
-        ta_tzmn, _ = averages(ta_t, g_w)
         _, ta_tgan = averages(ta_tan, g_w)
-        ua_tzmn, _ = averages(ua_t, g_w)
-        ua_tzan, _ = averages(ua_tan, g_w)
-        va_tzmn, _ = averages(va_t, g_w)
         va_tzan, _ = averages(va_tan, g_w)
-        wap_tzmn, _ = averages(wap_t, g_w)
         _, wap_tgan = averages(wap_tan, g_w)
         # Compute kinetic energy
         e_k[:, t_t, :, :] = makek(ua_tan, va_tan, nlat, ntp, nlev)
@@ -895,12 +886,12 @@ def stabil(ta_gmn, p_l, nlev):
     return g_s
 
 
-def table(varin, ntp, name, log, conv_flag):
+def table(varin, ntp, name, log, flag):
     """Write global and hem. storage terms to .txt table.
 
     @author: Valerio Lembo
     """
-    if conv_flag is True:
+    if flag is True:
         fac = 1e5
         varin = fac * varin
     varzon = varin[:, 0]

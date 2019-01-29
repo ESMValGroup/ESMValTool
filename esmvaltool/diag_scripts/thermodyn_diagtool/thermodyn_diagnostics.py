@@ -208,8 +208,6 @@ from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe,\
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
-cdo = Cdo()
-mkth = mkthe
 
 SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 L_C = 2501000 		        # latent heat of condensation
@@ -234,6 +232,8 @@ def main(cfg):
     Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
+    cdo = Cdo
+    mkth = mkthe
     logger.info('Entering the diagnostic tool')
     # Load paths
     workdir = cfg['work_dir']
@@ -260,7 +260,7 @@ def main(cfg):
     lec = str(cfg['lec'])
     entr = str(cfg['entr'])
     met = str(cfg['met'])
-    logger.info(e_b)
+    flags = [wat, entr, met]
     # Initialize multi-model arrays
     modnum = len(model_names)
     te_all = np.zeros(modnum)
@@ -321,8 +321,8 @@ def main(cfg):
         sftlf_fx = sftlf_fx.replace("}", "")
         aux_file = diagworkdir + '/aux.nc'
         te_ymm_file, te_gmean_constant, _, _ = auxiliary(
-                model_name, diagworkdir, filenames,
-                wat, met, entr)
+            model_name, diagworkdir, filenames,
+            flags)
         te_all[i_m] = te_gmean_constant
         # Compute energy budgets
         logger.info('Computing energy budgets\n')
@@ -346,10 +346,10 @@ def main(cfg):
             logger.info('Computing water mass and latent energy budgets\n')
             wmass_gmean, latent_gmean = comp_wmbudg(model_name, diagworkdir,
                                                     aux_file, filenames,
-                                                    wat, met, entr)
+                                                    flags)
             wmass_all[i_m, 0] = np.nanmean(wmass_gmean)
             wmass_all[i_m, 1] = np.nanstd(wmass_gmean)
-            logger.info('Water mass budget: %s\n', wmass_all[i_m, 0])            
+            logger.info('Water mass budget: %s\n', wmass_all[i_m, 0])
             latent_all[i_m, 0] = np.nanmean(latent_gmean)
             latent_all[i_m, 1] = np.nanstd(latent_gmean)
             logger.info('Latent energy budget: %s\n', latent_all[i_m, 0])
@@ -678,7 +678,7 @@ def main(cfg):
                 logger.info('Done\n')
             if met in {'2', '3'}:
                 _, _, _, aux_files = auxiliary(model_name, diagworkdir,
-                                               filenames, wat, met, entr)
+                                               filenames, flags)
                 evspsbl_file = aux_files[0]
                 htop_file = aux_files[1]
                 prr_file = aux_files[2]
@@ -1397,7 +1397,7 @@ def main(cfg):
     logger.info("The diagnostic has finished. Now closing...\n")
 
 
-def auxiliary(model, wdir, filelist, wat, entr, met):
+def auxiliary(model, wdir, filelist, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
     
     Arguments:
@@ -1412,6 +1412,11 @@ def auxiliary(model, wdir, filelist, wat, entr, met):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
+    cdo = Cdo
+    mkth = mkthe
+    wat = flags[0]
+    entr = flags[1]
+    met = flags[2]
     hfss_file = filelist[1]
     hus_file = filelist[2]
     ps_file = filelist[5]
@@ -1458,7 +1463,7 @@ def auxiliary(model, wdir, filelist, wat, entr, met):
                 output=tasvert_file)
     # evaporation from latent heat fluxes at the surface
     if wat in {'y', 'yes'} and entr in {'n', 'no'}:
-        evspsbl_file, prr_file = comp_wfluxes(wdir, filelist)
+        evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
     elif entr in {'y', 'yes'}:
         if met in {'2', '3'}:
@@ -1504,7 +1509,7 @@ def comp_baroceff(model, wdir, aux_file, toab_file, te_file):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
-    - toab_file: a file containing the annual mean TOA energy budgets 
+    - toab_file: a file containing the annual mean TOA energy budgets
       (time,lon,lat);
     - te_file: a file containing the annual mean emission temperature
       (time,lon,lat);
@@ -1512,6 +1517,7 @@ def comp_baroceff(model, wdir, aux_file, toab_file, te_file):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
+    cdo = Cdo
     removeif(aux_file)
     gain_file = wdir + '/{}_maskGain.nc'.format(model)
     cdo.gtc('0', input=toab_file, output=gain_file)
@@ -1570,7 +1576,8 @@ def comp_budgets(model, wdir, aux_file, filelist):
     
     Author:
     Valerio Lembo, University of Hamburg (2019).
-    """   
+    """  
+    cdo = Cdo
     hfls_file = filelist[0]
     hfss_file = filelist[1]
     rlds_file = filelist[6]
@@ -1621,7 +1628,8 @@ def comp_wfluxes(model, wdir, filelist):
     
     Author:
     Valerio Lembo, University of Hamburg (2019).
-    """   
+    """
+    cdo = Cdo
     hfls_file = filelist[0]
     pr_file = filelist[3]
     prsn_file = filelist[4]
@@ -1638,7 +1646,7 @@ def comp_wfluxes(model, wdir, filelist):
     return evspsbl_file, prr_file
 
 
-def comp_wmbudg(model, wdir, aux_file, filelist, wat, met, entr):
+def comp_wmbudg(model, wdir, aux_file, filelist, flags):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -1656,15 +1664,15 @@ def comp_wmbudg(model, wdir, aux_file, filelist, wat, met, entr):
     - entr: a flag for the material entropy production (y or n);
     - met: a flag for the material entropy production method (1: indirect,
         2, direct, 3: both);
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
-    """   
-
+    """
+    cdo = Cdo
     hfls_file = filelist[0]
     pr_file = filelist[3]
-    prsn_file = filelist[4] 
-    _, _, _, aux_list = auxiliary(model, wdir, filelist, wat, met, entr)
+    prsn_file = filelist[4]
+    _, _, _, aux_list = auxiliary(model, wdir, filelist, flags)
     evspsbl_file = aux_list[0]
     prr_file = aux_list[1]
     wmbudg_file = wdir + '/{}_wmassBudget.nc'.format(model)
@@ -1673,7 +1681,7 @@ def comp_wmbudg(model, wdir, aux_file, filelist, wat, met, entr):
     latene_gmean_file = wdir + '/{}_latenergy_gmean.nc'.format(model)
     removeif(aux_file)
     cdo.sub(input="{} {}".format(evspsbl_file, pr_file), output=aux_file)
-    wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)     
+    wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     # Latent energy budget
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
@@ -1716,7 +1724,8 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    ch_name='{},{}'.format(namein, nameout)
+    cdo = Cdo
+    ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
     f_l = Dataset(gmean_file)
