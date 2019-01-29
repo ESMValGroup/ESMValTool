@@ -74,6 +74,7 @@ def get_args():
 
     return parser.parse_args()
 
+
 def run():
     main(get_args())
 
