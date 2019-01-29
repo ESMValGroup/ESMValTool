@@ -46,7 +46,6 @@ import os
 import sys
 import math
 import matplotlib
-matplotlib.use('Agg')  # noqa
 
 from matplotlib import pyplot
 from matplotlib.colors import LogNorm
