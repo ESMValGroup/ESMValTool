@@ -25,7 +25,7 @@ def butter_filter(data, fs, lowcut=None, order=2):
         freqs = low
 
     b, a = signal.butter(order, freqs, btype=filttype)
-    _, h = signal.freqs(b, a)
+    #    _, h = signal.freqs(b, a)
     y = signal.filtfilt(b, a, data, axis=0)
 
     return y
