@@ -36,7 +36,11 @@ User settings
 
 * season: season over which to perform seasonal averaging (DJF, DJFM, NDJFM, JJA)
 * area: region of interest (EAT=Euro-Atlantic, PNA=Pacific North American, NH=Northern Hemisphere, EU=Europe)
-* extreme: extreme to consider (XXth_percentile (XX can be set arbitrarily, e.g. 75th_percentile), mean, maximum, standard deviation, trend)
+* extreme: extreme to consider: XXth_percentile (XX can be set arbitrarily, e.g. 75th_percentile),
+                                mean (mean value over the period), 
+                                maximum (maximum value over the period),
+                                std (standard deviation),
+                                trend (linear trend over the period)
 * numclus: number of clusters to be computed
 * perc: percentage of variance to be explained by PCs (select either this or numpcs)
 * numpcs: number of PCs to retain (select either this or perc)
