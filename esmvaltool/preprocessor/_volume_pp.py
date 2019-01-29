@@ -164,7 +164,6 @@ def volume_average(
         coordz,
         coord1,
         coord2,
-        use_fx_files=False,
         fx_files=None):
     """
     Determine the volume average.
@@ -187,9 +186,6 @@ def volume_average(
         coord2: str
             name of second coordinate
 
-        use_fx_files: bool
-            boolean to switch in fx files.
-
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
@@ -206,7 +202,7 @@ def volume_average(
 
     grid_volume_found = False
     grid_volume = None
-    if use_fx_files:
+    if fx_files:
         for key, fx_file in fx_files.items():
             if fx_file is None:
                 continue
