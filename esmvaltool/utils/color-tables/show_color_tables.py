@@ -1,9 +1,14 @@
+"""
+Utility script for inspecting ncl color tables
+
+"""
 import glob
 import os
 
 from jinja2 import Template
 
 PATH_TO_COLORTABLES = "../../../esmvaltool/diag_scripts/shared/plot/rgb"
+TEMPDIR = "/tmp"
 
 ncl_script = """
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
@@ -26,8 +31,10 @@ t_color_snippet = Template(color_snippet)
 t = Template(ncl_script)
 
 list_of_snippets = []
-for path in glob.glob(PATH_TO_COLORTABLES + "/*rgb"):
+for path in glob.glob(PATH_TO_COLORTABLES + "/ipcc-ar6*rgb"):
     head, tail = os.path.split(path)
     list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
-with open("show_color_tables_new.ncl", "w") as f:
-    f.write(t.render(list_of_snippets=list_of_snippets))
+filename = os.path.join(TEMPDIR, "show_color_tables.ncl")
+with open(filename, "w") as f:
+    f.write(t.render(list_of_snippets=sorted(list_of_snippets)))
+os.system("ncl " + filename )
