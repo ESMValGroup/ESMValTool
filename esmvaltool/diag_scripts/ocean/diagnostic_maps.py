@@ -31,14 +31,12 @@ import os
 import sys
 from itertools import product
 import matplotlib
-matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
 import cartopy
 
-from esmvaltool.preprocessor._regrid import _stock_cube
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
