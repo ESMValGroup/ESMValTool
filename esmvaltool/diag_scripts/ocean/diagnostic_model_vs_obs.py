@@ -45,7 +45,6 @@ import logging
 import os
 import sys
 import math
-import matplotlib
 
 from matplotlib import pyplot
 from matplotlib.colors import LogNorm

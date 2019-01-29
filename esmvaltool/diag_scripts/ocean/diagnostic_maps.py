@@ -30,7 +30,6 @@ import logging
 import os
 import sys
 from itertools import product
-import matplotlib
 import matplotlib.pyplot as plt
 
 import iris
