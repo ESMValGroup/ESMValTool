@@ -121,7 +121,7 @@ begin
     do i = 0, numvars - 1
       if (isStrSubset(variables(i), "err")) then
         errvarind = i
-        exit
+        break
       end if
     end do
     ; now find the main variable:

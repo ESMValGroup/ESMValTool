@@ -1,8 +1,8 @@
 ---
 
-get_input_filelist:
-  - drs: default
-    variable: &variable
+get_output_file:
+  - variable: &variable
+      variable_group: test
       short_name: ta
       dataset: HadGEM2-ES
       project: CMIP5
@@ -11,16 +11,60 @@ get_input_filelist:
       frequency: mon
       modeling_realm: [atmos]
       mip: Amon
+      field: T3M
       exp: historical
       ensemble: r1i1p1
       start_year: 1960
       end_year: 1980
+      diagnostic: test_diag
+      preprocessor: test_preproc
+    preproc_dir: this/is/a/path
+    output_file: this/is/a/path/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical_r1i1p1_T3M_ta_1960-1980.nc
+
+  - variable:
+      <<: *variable
+      exp: [historical, rcp85]
+    preproc_dir: /test
+    output_file: /test/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical-rcp85_r1i1p1_T3M_ta_1960-1980.nc
+
+
+get_input_filelist:
+  - drs: default
+    variable:
+      <<: *variable
     available_files:
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
     found_files:
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+
+  - drs: default
+    variable:
+      <<: *variable
+      end_year: 2060
+      exp: [historical, rcp85]
+    available_files:
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
+      - ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+    found_files:
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
+      - ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+
+  - drs: default
+    variable:
+      <<: *variable
+      start_year: 2010
+      end_year: 2100
+    available_files:
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
+      - ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+    found_files: []
 
   - drs: default
     variable: *variable
@@ -61,6 +105,27 @@ get_input_filelist:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
 
+  - drs: DKRZ
+    variable:
+      <<: *variable
+      exp: [historical, rcp45, rcp85]
+      start_year: 1980
+      end_year: 2100
+    available_files:
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_185912-188411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_188412-190911.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_190912-193411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+      - MOHC/HadGEM2-ES/rcp45/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_rcp45_r1i1p1_200601-210012.nc
+      - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+    found_files:
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+      - MOHC/HadGEM2-ES/rcp45/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_rcp45_r1i1p1_200601-210012.nc
+      - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110330/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+
   - drs: ETHZ
     variable:
       <<: *variable
@@ -75,7 +140,24 @@ get_input_filelist:
       - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
     found_files:
       - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
-      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc      
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+
+  - drs: ETHZ
+    variable:
+      <<: *variable
+      start_year: 2000
+      end_year: 2100
+    available_files:
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_185912-188411.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_188412-190911.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_190912-193411.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+      - rcp85/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+    found_files:
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+
 
 get_input_fx_filelist:
   - drs: default
