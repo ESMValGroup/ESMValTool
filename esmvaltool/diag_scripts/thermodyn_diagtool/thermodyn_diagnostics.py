@@ -233,16 +233,13 @@ def main(cfg):
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
     cdo = Cdo
-    mkth = mkthe
     logger.info('Entering the diagnostic tool')
     # Load paths
     workdir = cfg['work_dir']
     plotdir = cfg['plot_dir']
     logger.info('Work directory: %s \n', workdir)
     logger.info('Plot directory: %s \n', plotdir)
-    diagworkdir_up = workdir
-    fourc = fourier_coefficients
-    lorenz = lorenz_cycle
+    wdir_up = workdir
     plotsmod = plot_script
     data = e.Datasets(cfg)
     logger.debug(data)
@@ -273,9 +270,9 @@ def main(cfg):
     surb_all = np.zeros([modnum, 2])
     surb_oc_all = np.zeros(modnum)
     surb_la_all = np.zeros(modnum)
-    wmass_all = np.zeros([modnum, 2])
-    wmass_oc_all = np.zeros(modnum)
-    wmass_la_all = np.zeros(modnum)
+    wmb_all = np.zeros([modnum, 2])
+    wmb_oc_all = np.zeros(modnum)
+    wmb_la_all = np.zeros(modnum)
     latent_all = np.zeros([modnum, 2])
     latent_oc_all = np.zeros(modnum)
     latent_la_all = np.zeros(modnum)
@@ -288,15 +285,15 @@ def main(cfg):
     diffentr_all = np.zeros([modnum, 2])
     logger.info("Entering main loop\n")
     i_m = 0
-    for model_name in model_names:
+    for model in model_names:
         # Load paths to individual models output and plotting directories
-        diagworkdir = os.path.join(diagworkdir_up, model_name)
-        plotpath2 = os.path.join(plotdir, model_name)
-        if not os.path.exists(diagworkdir):
-            os.makedirs(diagworkdir)
+        wdir = os.path.join(wdir_up, model)
+        pdir = os.path.join(plotdir, model)
+        if not os.path.exists(wdir):
+            os.makedirs(wdir)
         # Reading file names for the specific model
-        filenames = data.get_info_list('filename', dataset=model_name)
-        logger.info('Processing model: %s \n', model_name)
+        filenames = data.get_info_list('filename', dataset=model)
+        logger.info('Processing model: %s \n', model)
         hfls_file = filenames[0]
         hfss_file = filenames[1]
         prsn_file = filenames[4]
@@ -305,13 +302,7 @@ def main(cfg):
         rsds_file = filenames[9]
         rsus_file = filenames[11]
         ta_file = filenames[13]
-        tas_file = filenames[14]
         ts_file = filenames[15]
-        ua_file = filenames[16]
-        uas_file = filenames[17]
-        va_file = filenames[18]
-        vas_file = filenames[19]
-        wap_file = filenames[20]
         # Read path to land-sea mask
         head = Dataset(ta_file)
         info = getattr(head, 'metadata')
@@ -319,16 +310,14 @@ def main(cfg):
         diction = {attr[i_m]: attr[i_m + 1] for i_m in range(len(attr) - 1)}
         sftlf_fx = str(diction['{sftlf:'])
         sftlf_fx = sftlf_fx.replace("}", "")
-        aux_file = diagworkdir + '/aux.nc'
-        te_ymm_file, te_gmean_constant, _, _ = auxiliary(
-            model_name, diagworkdir, filenames,
-            flags)
+        aux_file = wdir + '/aux.nc'
+        te_ymm_file, te_gmean_constant, _, _ = auxiliary(model, wdir,
+                                                         filenames, flags)
         te_all[i_m] = te_gmean_constant
         # Compute energy budgets
         logger.info('Computing energy budgets\n')
         # Compute energy budgets
-        eb_gmean, eb_file, toab_ymm_file = comp_budgets(model_name,
-                                                        diagworkdir, aux_file,
+        eb_gmean, eb_file, toab_ymm_file = comp_budgets(model, wdir, aux_file,
                                                         filenames)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
@@ -339,212 +328,77 @@ def main(cfg):
         logger.info('Atmospheric energy budget: %s\n', atmb_all[i_m, 0])
         logger.info('Done\n')
         # Baroclinic efficiency
-        baroc_eff_all[i_m] = comp_baroceff(model_name, diagworkdir, aux_file,
+        baroc_eff_all[i_m] = comp_baroceff(model, wdir, aux_file,
                                            toab_ymm_file, te_ymm_file)
+        logger.info('Running the plotting module for the budgets\n')
+        plotsmod.balances(wdir_up, pdir, [eb_file[0], eb_file[1], eb_file[2]],
+            ['toab', 'atmb', 'surb'], model)
+        oname = '{}/{}_{}_timeser.png'.format(pdir, model, 'toab')
+        logger.info('Done\n')
         # Water mass budget
         if wat in {'y', 'yes'}:
             logger.info('Computing water mass and latent energy budgets\n')
-            wmass_gmean, latent_gmean = comp_wmbudg(model_name, diagworkdir,
-                                                    aux_file, filenames,
-                                                    flags)
-            wmass_all[i_m, 0] = np.nanmean(wmass_gmean)
-            wmass_all[i_m, 1] = np.nanstd(wmass_gmean)
-            logger.info('Water mass budget: %s\n', wmass_all[i_m, 0])
-            latent_all[i_m, 0] = np.nanmean(latent_gmean)
-            latent_all[i_m, 1] = np.nanstd(latent_gmean)
+            wm_gmean, wm_file = comp_wmbudg(model, wdir, aux_file, filenames,
+                                            flags)
+            wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
+            wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
+            logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
+            latent_all[i_m, 0] = np.nanmean(wm_gmean[1])
+            latent_all[i_m, 1] = np.nanstd(wm_gmean[1])
             logger.info('Latent energy budget: %s\n', latent_all[i_m, 0])
             logger.info('Done\n')
         else:
             pass
         # Compute budgets over oceans and land separately.
         if lsm in {'y', 'yes'}:
-            if e_b in {'y', 'yes'}:
-                logger.info('Computing energy budgets over land and oceans\n')
-                toab_ocean_file = (diagworkdir +
-                                   '/{}_toab_ocean.nc'.format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'.format(toab_file, sftlf_fx),
-                        output=toab_ocean_file)
-                toab_oc_gmean_file = (diagworkdir +
-                                      '/{}_toab_oc_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(toab_ocean_file),
-                            output=toab_oc_gmean_file)
-                f_l = Dataset(toab_oc_gmean_file)
-                toab_oc_gmean_constant = f_l.variables['toab'][0, 0, 0]
-                logger.info('TOA energy budget over oceans: %s\n',
-                            toab_oc_gmean_constant)
-                toab_oc_all[i_m] = toab_oc_gmean_constant
-                toab_land_file = (diagworkdir +
-                                  '/{}_toab_land.nc'.format(model_name))
-                cdo.sub(input='{} {}'.format(toab_file, toab_ocean_file),
-                        output=toab_land_file)
-                cdo.setctomiss('0', input=toab_ocean_file, output=aux_file)
-                move(aux_file, toab_ocean_file)
-                cdo.setctomiss('0', input=toab_land_file, output=aux_file)
-                move(aux_file, toab_land_file)
-                toab_la_gmean_file = (diagworkdir +
-                                      '/{}_toab_la_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(toab_land_file),
-                            output=toab_la_gmean_file)
-                f_l = Dataset(toab_la_gmean_file)
-                toab_la_gmean_constant = f_l.variables['toab'][0, 0, 0]
-                logger.info('TOA energy budget over land: %s\n',
-                            toab_la_gmean_constant)
-                toab_la_all[i_m] = toab_la_gmean_constant
-                atmb_ocean_file = (diagworkdir +
-                                   '/{}_atmb_ocean.nc'.format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'.format(atmb_file, sftlf_fx),
-                        output=atmb_ocean_file)
-                atmb_oc_gmean_file = (diagworkdir +
-                                      '/{}_atmb_oc_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(atmb_ocean_file),
-                            output=atmb_oc_gmean_file)
-                f_l = Dataset(atmb_oc_gmean_file)
-                atmb_oc_gmean_constant = f_l.variables['atmb'][0, 0, 0]
-                logger.info('Atmospheric energy budget over oceans: %s\n',
-                            atmb_oc_gmean_constant)
-                atmb_oc_all[i_m] = atmb_oc_gmean_constant
-                atmb_land_file = (diagworkdir +
-                                  '/{}_atmb_land.nc'.format(model_name))
-                cdo.sub(input='{} {}'.format(atmb_file, atmb_ocean_file),
-                        output=atmb_land_file)
-                aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
-                cdo.setctomiss('0', input=atmb_ocean_file, output=aux_file)
-                move(aux_file, atmb_ocean_file)
-                cdo.setctomiss('0', input=atmb_land_file, output=aux_file)
-                move(aux_file, atmb_land_file)
-                atmb_la_gmean_file = (diagworkdir +
-                                      '/{}_atmb_la_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(atmb_land_file),
-                            output=atmb_la_gmean_file)
-                f_l = Dataset(atmb_la_gmean_file)
-                atmb_la_gmean_constant = f_l.variables['atmb'][0, 0, 0]
-                logger.info('Atmospheric energy budget over land: %s\n',
-                            atmb_la_gmean_constant)
-                atmb_la_all[i_m] = atmb_la_gmean_constant
-                surb_ocean_file = (diagworkdir +
-                                   '/{}_surb_ocean.nc'.format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'.format(surb_file, sftlf_fx),
-                        output=surb_ocean_file)
-                surb_oc_gmean_file = (diagworkdir +
-                                      '/{}_surb_oc_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(surb_ocean_file),
-                            output=surb_oc_gmean_file)
-                f_l = Dataset(surb_oc_gmean_file)
-                surb_oc_gmean_constant = f_l.variables['surb'][0, 0, 0]
-                logger.info('Surface energy budget over oceans: %s\n',
-                            surb_oc_gmean_constant)
-                surb_oc_all[i_m] = surb_oc_gmean_constant
-                surb_land_file = (diagworkdir +
-                                  '/{}_surb_land.nc'.format(model_name))
-                cdo.sub(input='{} {}'.format(surb_file, surb_ocean_file),
-                        output=surb_land_file)
-                aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
-                cdo.setctomiss('0', input=surb_ocean_file, output=aux_file)
-                move(aux_file, surb_ocean_file)
-                cdo.setctomiss('0', input=surb_land_file, output=aux_file)
-                move(aux_file, surb_land_file)
-                surb_la_gmean_file = (diagworkdir +
-                                      '/{}_surb_la_gmean.nc'
-                                      .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(surb_land_file),
-                            output=surb_la_gmean_file)
-                f_l = Dataset(surb_la_gmean_file)
-                surb_la_gmean_constant = f_l.variables['surb'][0, 0, 0]
-                logger.info('Surface energy budget over land: %s\n',
-                            surb_la_gmean_constant)
-                surb_la_all[i_m] = surb_la_gmean_constant
-                logger.info('Done\n')
-            else:
-                pass
+            logger.info('Computing energy budgets over land and oceans\n')
+            toab_oc_gmean, toab_la_gmean = comp_landoc_budg(model, wdir,
+                                                            eb_file[0],
+                                                            sftlf_fx, 'toab')
+            toab_oc_all[i_m] = toab_oc_gmean
+            toab_la_all[i_m] = toab_la_gmean
+            logger.info('TOA energy budget over oceans: %s\n',
+                        toab_oc_gmean)
+            logger.info('TOA energy budget over land: %s\n', toab_la_gmean)
+            atmb_oc_gmean, atmb_la_gmean = comp_landoc_budg(model, wdir,
+                                                            eb_file[1],
+                                                            sftlf_fx, 'atmb')
+            atmb_oc_all[i_m] = atmb_oc_gmean
+            atmb_la_all[i_m] = atmb_la_gmean
+            logger.info('Atmospheric energy budget over oceans: %s\n',
+                        atmb_oc_gmean)
+            logger.info('Atmospheric energy budget over land: %s\n',
+                        atmb_la_gmean)
+            surb_oc_gmean, surb_la_gmean = comp_landoc_budg(model, wdir,
+                                                            eb_file[2],
+                                                            sftlf_fx, 'surb')
+            surb_oc_all[i_m] = surb_oc_gmean
+            surb_la_all[i_m] = surb_la_gmean
+            logger.info('Surface energy budget over oceans: %s\n',
+                        surb_oc_gmean)
+            logger.info('Surface energy budget over land: %s\n',
+                        surb_la_gmean)
+            logger.info('Done\n')
             if wat in {'y', 'yes'}:
                 logger.info('Computing water mass and latent energy'
                             ' budgets over land and oceans\n')
-                toab_ocean_file = (diagworkdir +
-                                   '/{}_toab_ocean.nc'.format(model_name))
-                wmassbudget_ocean_file = (diagworkdir +
-                                          '/{}_wmassBudget_ocean.nc'
-                                          .format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'
-                        .format(wmassbudget_file, sftlf_fx),
-                        output=wmassbudget_ocean_file)
-                wmassbudget_land_file = (diagworkdir +
-                                         '/{}_wmassBudget_land.nc'
-                                         .format(model_name))
-                cdo.sub(input='{} {}'
-                        .format(wmassbudget_file, wmassbudget_ocean_file),
-                        output=wmassbudget_land_file)
-                cdo.setctomiss('0', input=wmassbudget_ocean_file,
-                               output=aux_file)
-                move(aux_file, wmassbudget_ocean_file)
-                cdo.setctomiss('0', input=wmassbudget_land_file,
-                               output=aux_file)
-                move(aux_file, wmassbudget_land_file)
-                wmass_oc_gmean_file = (diagworkdir +
-                                       '/{}_wmass_oc_gmean.nc'
-                                       .format(model_name))
-                cdo.timmean(input='-fldmean {}'
-                            .format(wmassbudget_ocean_file),
-                            output=wmass_oc_gmean_file)
-                f_l = Dataset(wmass_oc_gmean_file)
-                wmass_oc_gmean_constant = f_l.variables['wmass'][0, 0, 0]
+                wmb_oc_gmean, wmb_la_gmean = comp_landoc_budg(model, wdir,
+                                                              wm_file[0],
+                                                              sftlf_fx, 'wmb')
+                wmb_oc_all[i_m] = wmb_oc_gmean
+                wmb_la_all[i_m] = wmb_la_gmean
                 logger.info('Water mass budget over oceans: %s\n',
-                            wmass_oc_gmean_constant)
-                wmass_oc_all[i_m] = wmass_oc_gmean_constant
-                wmass_la_gmean_file = (diagworkdir +
-                                       '/{}_wmass_la_gmean.nc'
-                                       .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(wmassbudget_land_file),
-                            output=wmass_la_gmean_file)
-                f_l = Dataset(wmass_la_gmean_file)
-                wmass_la_gmean_constant = f_l.variables['wmass'][0, 0, 0]
+                            wmb_oc_gmean)
                 logger.info('Water mass budget over land: %s\n',
-                            wmass_la_gmean_constant)
-                wmass_la_all[i_m] = wmass_la_gmean_constant
-                latentenergy_ocean_file = (diagworkdir +
-                                           '/{}_latentEnergy_ocean.nc'
-                                           .format(model_name))
-                cdo.mul(input='{} -eqc,0 {}'
-                        .format(latentenergy_file, sftlf_fx),
-                        output=latentenergy_ocean_file)
-                latentenergy_land_file = (diagworkdir +
-                                          '/{}_latentEnergy_land.nc'
-                                          .format(model_name))
-                cdo.sub(input='{} {}'
-                        .format(latentenergy_file, latentenergy_ocean_file),
-                        output=latentenergy_land_file)
-                aux_file = diagworkdir + '/{}_aux.nc'.format(model_name)
-                cdo.setctomiss('0', input=latentenergy_ocean_file,
-                               output=aux_file)
-                move(aux_file, latentenergy_ocean_file)
-                cdo.setctomiss('0', input=latentenergy_land_file,
-                               output=aux_file)
-                move(aux_file, latentenergy_land_file)
-                latent_oc_gmean_file = (diagworkdir +
-                                        '/{}_latent_oc_gmean.nc'
-                                        .format(model_name))
-                cdo.timmean(input='-fldmean {}'
-                            .format(latentenergy_ocean_file),
-                            output=latent_oc_gmean_file)
-                f_l = Dataset(latent_oc_gmean_file)
-                latent_oc_gmean_constant = f_l.variables['latent'][0, 0, 0]
-                logger.info('Latent energy budget over oceans: %s\n',
-                            latent_oc_gmean_constant)
-                latent_oc_all[i_m] = latent_oc_gmean_constant
-                latent_la_gmean_file = (diagworkdir +
-                                        '/{}_latent_la_gmean.nc'
-                                        .format(model_name))
-                cdo.timmean(input='-fldmean {}'.format(latentenergy_land_file),
-                            output=latent_la_gmean_file)
-                f_l = Dataset(latent_la_gmean_file)
-                latent_la_gmean_constant = f_l.variables['latent'][0, 0, 0]
-                logger.info('Latent energy budget over land: %s\n',
-                            latent_la_gmean_constant)
-                latent_la_all[i_m] = latent_la_gmean_constant
+                            wmb_la_gmean)
+                latent_oc_gmean, latent_la_gmean = comp_landoc_budg(
+                    model, wdir, wm_file[0], sftlf_fx, 'latent')
+                latent_oc_all[i_m] = latent_oc_gmean
+                latent_la_all[i_m] = latent_la_gmean
+                logger.info('Water mass budget over oceans: %s\n',
+                            latent_oc_gmean)
+                logger.info('Water mass budget over land: %s\n',
+                            latent_la_gmean)
                 logger.info('Done\n')
             else:
                 pass
@@ -554,132 +408,41 @@ def main(cfg):
         if lec in {'y', 'yes'}:
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
-            lecpath = os.path.join(plotpath2, 'LEC_results')
-            if not os.path.exists(lecpath):
-                os.makedirs(lecpath)
-            maskorog = diagworkdir + '/orog.nc'
-            cdo.setmisstoc('0', input='-setmisstoc,1 -sub {} {}'
-                           .format(ua_file, ua_file), options='-b F32',
-                           output=maskorog)
-            ua_file_mask = diagworkdir + '/ua_fill.nc'
-            removeif(ua_file_mask)
-            cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
-                           '-setmisstoc,0 -mul {} -selvar,ua {}')
-                    .format(ua_file, uas_file, maskorog), options='-b F32',
-                    output=ua_file_mask)
-            va_file_mask = diagworkdir + '/va_fill.nc'
-            removeif(va_file_mask)
-            cdo.add(input=('-setmisstoc,0 -selvar,va {} '
-                           '-setmisstoc,0 -mul {} -selvar,ua {}')
-                    .format(va_file, vas_file, maskorog), options='-b F32',
-                    output=va_file_mask)
-            energy3_file = diagworkdir + '/energy_short.nc'
-            removeif(energy3_file)
-            cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000 '
-                                       '-merge {} {} {} {}')
-                           .format(ta_file, ua_file_mask,
-                                   va_file_mask, wap_file),
-                           options='-b F32', output=energy3_file)
-            yrs = cdo.showyear(input=energy3_file)
-            yrs = str(yrs)
-            yrs2 = yrs.split()
-            y_i = 0
-            lect = np.zeros(len(yrs2))
-            for y_r in yrs2:
-                y_r = int(filter(str.isdigit, y_r))
-                enfile_yr = diagworkdir + '/inputen.nc'
-                tasfile_yr = diagworkdir + '/tas_yr.nc'
-                tadiag_file = diagworkdir + '/ta_filled.nc'
-                ncfile = diagworkdir + '/fourier_coeff.nc'
-                cdo.selyear(y_r, input=energy3_file, options='-b F32',
-                            output=enfile_yr)
-                cdo.selyear(y_r, input=tas_file, options='-b F32',
-                            output=tasfile_yr)
-                fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
-                diagfile = (lecpath +
-                            '/{}_{}_lec_diagram.png'.format(model_name, y_r))
-                logfile = (lecpath +
-                           '/{}_{}_lec_table.txt'.format(model_name, y_r))
-                lect[y_i] = lorenz.lorenz(diagworkdir, model_name,
-                                          y_r, ncfile, diagfile, logfile)
-                y_i = y_i + 1
-                removeif(ncfile)
-                removeif(enfile_yr)
-                removeif(tasfile_yr)
+            lect = lec_preproc(model, wdir, pdir, filenames)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
             logger.info('Intensity of the annual mean Lorenz Energy '
                         'Cycle: %s\n', lec_all[i_m, 0])
             logger.info('Done\n')
-            os.remove(ua_file_mask)
-            os.remove(va_file_mask)
-            os.remove(energy3_file)
         else:
             pass
         # Compute the material entropy production
         if entr in {'y', 'yes'}:
             if met in {'1', '3'}:
-                _, _, te_file, _ = auxiliary(model_name, diagworkdir,
-                                             filenames, wat, met, entr)
+                _, _, te_file, _ = auxiliary(model, wdir, filenames, flags)
                 logger.info('Computation of the material entropy production '
                             'with the indirect method\n')
-                # Horizonzal material entropy production
-                horizentropy_file = (diagworkdir +
-                                     '/{}_horizEntropy.nc'.format(model_name))
-                removeif(horizentropy_file)
-                removeif(aux_file)
-                cdo.yearmonmean(input='-mulc,-1 -div -subc,{}  {}  {}'
-                                .format(np.nanmean(toab_gmean_constant),
-                                        toab_file, te_file), output=aux_file)
-                cdo.chname('toab,shor', input=aux_file, options='-b F32',
-                           output=horizentropy_file)
-                horizentropy_mean_file = (diagworkdir +
-                                          '/{}_horizEntropy_gmean.nc'
-                                          .format(model_name))
-                removeif(horizentropy_mean_file)
-                cdo.fldmean(input=horizentropy_file,
-                            options='-b F32', output=horizentropy_mean_file)
-                f_l = Dataset(horizentropy_mean_file)
-                horzentr_mean = f_l.variables['shor'][:, :, :]
+                indentr_list = [rlds_file, rlus_file, rsds_file, rsus_file,
+                                te_file, eb_file[0], ts_file]
+                horzentr_mean, vertentr_mean, vertentr_file = comp_indentr(
+                    model, wdir, indentr_list,
+                    aux_file, eb_gmean[0])
                 horzentr_all[i_m, 0] = np.nanmean(horzentr_mean)
                 horzentr_all[i_m, 1] = np.nanstd(horzentr_mean)
-                logger.info('Horizontal component of the material entropy '
-                            'production: %s\n', horzentr_all[i_m, 0])
-                # Vertical material entropy production
-                verticalentropy_file = (diagworkdir +
-                                        '/{}_verticalEntropy.nc'
-                                        .format(model_name))
-                cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'
-                                .format(rlds_file, rsds_file,
-                                        rlus_file, rsus_file),
-                                output=aux_file)
-                cdo.mulc('-1', input='-mul  -sub -yearmonmean -reci {} \
-                         -yearmonmean -reci {} {}'
-                         .format(ts_file, te_file, aux_file),
-                         output=verticalentropy_file)
-                cdo.chname('ts,sver', input=verticalentropy_file,
-                           options='-b F32', output=aux_file)
-                move(aux_file, verticalentropy_file)
-                verticalentropy_mean_file = (diagworkdir +
-                                             '/{}_vertEntropy_gmean.nc'
-                                             .format(model_name))
-                removeif(verticalentropy_mean_file)
-                cdo.fldmean(input=verticalentropy_file,
-                            options='-b F32', output=verticalentropy_mean_file)
-                cdo.chname('ts,sver', input=verticalentropy_mean_file,
-                           options='-b F32', output=aux_file)
-                move(aux_file, verticalentropy_mean_file)
-                f_l = Dataset(verticalentropy_mean_file)
-                vertentr_mean = f_l.variables['sver'][:, :, :]
                 vertentr_all[i_m, 0] = np.nanmean(vertentr_mean)
                 vertentr_all[i_m, 1] = np.nanstd(vertentr_mean)
+                logger.info('Horizontal component of the material entropy '
+                            'production: %s\n', horzentr_all[i_m, 0])
                 logger.info('Vertical component of the material entropy '
                             'production: %s\n', vertentr_all[i_m, 0])
                 logger.info('Done\n')
+                logger.info('Running the plotting module for the material '
+                            'entropy production (indirect method)\n')
+                plotsmod.entropy(pdir, vertentr_file, 'sver',
+                                 'Vertical entropy production', model)
+                logger.info('Done\n')
             if met in {'2', '3'}:
-                _, _, _, aux_files = auxiliary(model_name, diagworkdir,
-                                               filenames, flags)
-                evspsbl_file = aux_files[0]
+                _, _, _, aux_files = auxiliary(model, wdir, filenames, flags)
                 htop_file = aux_files[1]
                 prr_file = aux_files[2]
                 tabl_file = aux_files[3]
@@ -690,274 +453,67 @@ def main(cfg):
                 logger.info('Computation of the material entropy '
                             'production with the direct method\n')
                 logger.info('1. Sensible heat fluxes\n')
-                difftemp_file = (diagworkdir +
-                                 '/{}_difftemp_bl.nc'.format(model_name))
-                removeif(difftemp_file)
-                cdo.sub(input='-reci {}  -reci {}'.format(tabl_file, ts_file),
-                        options='-b F32', output=difftemp_file)
-                sensentr_file = (diagworkdir +
-                                 '/{}_sens_entr.nc'.format(model_name))
-                removeif(sensentr_file)
-                removeif(aux_file)
-                cdo.timmean(input='-yearmonmean -monmean -mul {} {}'
-                            .format(difftemp_file, hfss_file),
-                            options='-b F32', output=aux_file)
-                cdo.chname('tabl,ssens', input=aux_file, options='-b F32',
-                           output=sensentr_file)
-                sensentr_mean_file = (diagworkdir +
-                                      '/{}_sensEntropy_gmean.nc'
-                                      .format(model_name))
-                removeif(sensentr_mean_file)
-                cdo.fldmean(input=sensentr_file,
-                            options='-b F32', output=sensentr_mean_file)
-                f_l = Dataset(sensentr_mean_file)
-                sensentr_mean = f_l.variables['ssens'][0, 0, 0]
+                infile_list = [hfss_file, tabl_file, ts_file]
+                sensentr_mean, sensentr_file = comp_sensentr(
+                    model, wdir, infile_list, aux_file)
                 logger.info('Material entropy production associated with '
                             'sens. heat fluxes: %s\n', sensentr_mean)
                 logger.info('Done\n')
                 logger.info('2. Hydrological cycle\n')
                 logger.info('2.1 Evaporation fluxes\n')
-                evapentr_file = (diagworkdir +
-                                 '/{}_evap_entr.nc'.format(model_name))
-                removeif(evapentr_file)
-                removeif(aux_file)
-                cdo.timmean(input='-yearmonmean -monmean -div {} {}'
-                            .format(hfls_file, ts_file), options='-b F32',
-                            output=aux_file)
-                cdo.chname('hfls,sevap', input=aux_file, options='-b F32',
-                           output=evapentr_file)
-                evapentr_mean_file = (diagworkdir +
-                                      '/{}_evapEntropy_gmean.nc'
-                                      .format(model_name))
-                removeif(evapentr_mean_file)
-                cdo.fldmean(input=evapentr_file, options='-b F32',
-                            output=evapentr_mean_file)
-                f_l = Dataset(evapentr_mean_file)
-                evapentr_mean = f_l.variables['sevap'][0, 0, 0]
+                infile_list = [hfls_file, ts_file]
+                evapentr_mean, evapentr_file = comp_evapentr(model, wdir,
+                                                             infile_list,
+                                                             aux_file)
                 logger.info('Material entropy production associated with '
                             'evaporation fluxes: %s\n', evapentr_mean)
                 logger.info('Done\n')
-                # Prepare masks for snowfall and rainfall
-                maskrain_file = (diagworkdir +
-                                 '/{}_maskprecr.nc'.format(model_name))
-                removeif(maskrain_file)
-                cdo.gtc('1.0E-7', input=prr_file, options=' -b F32',
-                        output=maskrain_file)
-                masksnow_file = (diagworkdir +
-                                 '/{}_maskprecs.nc'.format(model_name))
-                removeif(masksnow_file)
-                cdo.gtc('1.0E-7', input=prsn_file, options=' -b F32',
-                        output=masksnow_file)
-                prrmask_file = (diagworkdir +
-                                '/{}_prr_masked.nc'.format(model_name))
-                removeif(prrmask_file)
-                cdo.mul(input='{} {}'.format(maskrain_file, prr_file),
-                        options='-b F32', output=prrmask_file)
-                prsnmask_file = (diagworkdir +
-                                 '/{}_prsn_masked.nc'.format(model_name))
-                removeif(prsnmask_file)
-                cdo.mul(input='{} {}'.format(masksnow_file, prsn_file),
-                        options='-b F32', output=prsnmask_file)
-                # Temperatures of the rainfall and snowfall clouds
-                tliq_file = diagworkdir + '/{}_tliq.nc'.format(model_name)
-                removeif(tliq_file)
-                cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tlcl_file, maskrain_file),
-                               options='-b F32', output=tliq_file)
-                tsol_file = diagworkdir + '/{}_tsol.nc'.format(model_name)
-                removeif(tsol_file)
-                cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tlcl_file, masksnow_file),
-                               options='-b F32', output=tsol_file)
-                tdegl_file = diagworkdir + '/{}_tliqdeg.nc'.format(model_name)
-                removeif(tdegl_file)
-                cdo.subc('273.15', input=tliq_file, options='-b F32',
-                         output=tdegl_file)
-                tdegs_file = diagworkdir + '/{}_tsoldeg.nc'.format(model_name)
-                removeif(tdegs_file)
-                cdo.subc('273.15', input=tsol_file, options='-b F32',
-                         output=tdegs_file)
-                # Mask for ice cloud and original temperature
-                # for phase changes from ice to rain
-                maskice_file = (diagworkdir +
-                                '/{}_maskice.nc'.format(model_name))
-                removeif(maskice_file)
-                cdo.ltc('0.0', input=tdegl_file, options='-b F32',
-                        output=maskice_file)
-                ticer_file = (diagworkdir +
-                              '/{}_t_icerain_file'.format(model_name))
-                removeif(ticer_file)
-                cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tliq_file, maskice_file),
-                               options='-b F32', output=ticer_file)
-                prrice_file = (diagworkdir +
-                               '/{}_prr_ice_file.nc'.format(model_name))
-                removeif(prrice_file)
-                cdo.mul(input='{} {}'.format(maskice_file, prr_file),
-                        options='-b F32', output=prrice_file)
-                # Mask for water vapor cloud and original temperature
-                # for phase changes from vapor to snow
-                maskvap_file = (diagworkdir +
-                                '/{}_maskvap.nc'.format(model_name))
-                removeif(maskvap_file)
-                cdo.gtc('0.0', input=tdegs_file, options='-b F32',
-                        output=maskvap_file)
-                tvaps_file = (diagworkdir +
-                              '/{}_t_vapsnow.nc'.format(model_name))
-                removeif(tvaps_file)
-                cdo.setrtomiss('-1000,0', input='-mul {} {}'
-                               .format(tsol_file, maskvap_file),
-                               options='-b F32', output=tvaps_file)
-                prsnvap_file = (diagworkdir +
-                                '/{}_prsn_vap.nc'.format(model_name))
-                removeif(prsnvap_file)
-                cdo.mul(input='{} {}'.format(maskvap_file, prsn_file),
-                        options='-b F32', output=prsnvap_file)
+                infile_mask = [prr_file, prsn_file, tlcl_file]
+                prrmask_file, prsnmask_file = mask_precip(model, wdir,
+                                                          infile_mask)
                 logger.info('2.2 Rainfall precipitation\n')
-                latrain_file = (diagworkdir +
-                                '/{}_latentEnergy_rain.nc'.format(model_name))
-                removeif(latrain_file)
-                cdo.mulc(str(L_C), input=prrmask_file, options='-b F32',
-                         output=latrain_file)
-                rainentr_file = (diagworkdir +
-                                 '/{}_rain_entr.nc'.format(model_name))
-                removeif(rainentr_file)
-                removeif(aux_file)
-                cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
-                                   '-div {} {}').format(latrain_file,
-                                                        tcloud_file),
-                            options='-b F32', output=aux_file)
-                cdo.chname('prr,srain', input=aux_file, options='-b F32',
-                           output=rainentr_file)
-                rainentr_mean_file = (diagworkdir +
-                                      '/{}_rainEntropy_gmean.nc'
-                                      .format(model_name))
-                removeif(rainentr_mean_file)
-                cdo.fldmean(input=rainentr_file,
-                            options='-b F32', output=rainentr_mean_file)
-                f_l = Dataset(rainentr_mean_file)
-                rainentr_mean = f_l.variables['srain'][0, 0, 0]
+                infile_rain = [prrmask_file, tcloud_file]
+                rainentr_mean, rainentr_file = comp_rainentr(model, wdir,
+                                                             infile_rain,
+                                                             aux_file)
                 logger.info('Material entropy production associated with '
                             'rainfall: %s\n', rainentr_mean)
                 logger.info('Done\n')
                 logger.info('2.3 Snowfall precipitation\n')
-                latsnow_file = (diagworkdir +
-                                '/{}_latentEnergy_snow.nc'.format(model_name))
-                removeif(latsnow_file)
-                cdo.mulc(str(LC_SUB), input=prsnmask_file, options='-b F32',
-                         output=latsnow_file)
-                snowentr_file = (diagworkdir +
-                                 '/{}_snow_entr.nc'.format(model_name))
-                removeif(snowentr_file)
-                removeif(aux_file)
-                cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
-                                   '-div {} {}').format(latsnow_file,
-                                                        tcloud_file),
-                            options='-b F32', output=aux_file)
-                cdo.chname('prsn,ssnow', input=aux_file, options='-b F32',
-                           output=snowentr_file)
-                snowentr_mean_file = (diagworkdir +
-                                      '/{}_snowEntropy_gmean.nc'
-                                      .format(model_name))
-                removeif(snowentr_mean_file)
-                cdo.fldmean(input=snowentr_file,
-                            options='-b F32', output=snowentr_mean_file)
-                f_l = Dataset(snowentr_mean_file)
-                snowentr_mean = f_l.variables['ssnow'][0, 0, 0]
+                infile_rain = [prsnmask_file, tcloud_file]
+                snowentr_mean, latsnow_file, snowentr_file = comp_rainentr(
+                    model, wdir, infile_rain, aux_file)
                 logger.info('Material entropy production associated with '
                             'snowfall: %s\n', snowentr_mean)
                 logger.info('Done\n')
                 logger.info('2.4 Melting of snow at the surface \n')
-                latmelt_file = (diagworkdir +
-                                '/{}_latentEnergy_snowmelt.nc'
-                                .format(model_name))
-                removeif(latmelt_file)
-                cdo.mulc(str(L_S),
-                         input='-divc,{} {}'.format(str(LC_SUB), latsnow_file),
-                         options='-b F32', output=latmelt_file)
-                meltentr_file = (diagworkdir +
-                                 '/{}_snowmelt_entr.nc'.format(model_name))
-                removeif(meltentr_file)
-                removeif(aux_file)
-                cdo.timmean(input=('-yearmonmean -monmean -setmisstoc,0 '
-                                   '-divc,273.15 {}').format(latmelt_file),
-                            options='-b F32', output=aux_file)
-                cdo.chname('prsn,smelt', input=aux_file, options='-b F32',
-                           output=meltentr_file)
-                meltentr_mean_file = (diagworkdir +
-                                      '/{}_snowmeltEntropy_gmean.nc'
-                                      .format(model_name))
-                removeif(meltentr_mean_file)
-                cdo.fldmean(input=meltentr_file,
-                            options='-b F32', output=meltentr_mean_file)
-                f_l = Dataset(meltentr_mean_file)
-                meltentr_mean = f_l.variables['smelt'][0, 0, 0]
+                meltentr_mean, meltentr_file = comp_meltentr(
+                        model, wdir, latsnow_file, aux_file)
                 logger.info('Material entropy production associated with snow '
                             'melting: %s\n', meltentr_mean)
                 logger.info('Done\n')
                 logger.info('2.5 Potential energy of the droplet\n')
-                poten_file = (diagworkdir +
-                              '/{}_potentialEnergy_droplet.nc'
-                              .format(model_name))
-                removeif(poten_file)
-                cdo.mulc(GRAV, input='-mul {} -add {} {}'
-                         .format(htop_file, prrmask_file, prsnmask_file),
-                         options='-b F32', output=poten_file)
-                potentr_file = (diagworkdir +
-                                '/{}_pot_drop_entr.nc'.format(model_name))
-                removeif(potentr_file)
-                removeif(aux_file)
-                cdo.timmean(input='-yearmonmean -monmean -div {} {}'
-                            .format(poten_file, tcolumn_file),
-                            options='-b F32', output=aux_file)
-                cdo.chname('htop,spotp', input=aux_file, options='-b F32',
-                           output=potentr_file)
-                potentr_mean_file = (diagworkdir +
-                                     '/{}_potentialdropEnergy_gmean.nc'
-                                     .format(model_name))
-                removeif(potentr_mean_file)
-                cdo.fldmean(input=potentr_file,
-                            options='-b F32', output=potentr_mean_file)
-                f_i = Dataset(potentr_mean_file)
-                potentr_mean = f_i.variables['spotp'][0, 0, 0]
+                infile_pot = [htop_file, prrmask_file, prsnmask_file,
+                              tcolumn_file]
+                potentr_mean, potentr_file = comp_potentr(
+                        model, wdir, infile_pot, aux_file)
                 logger.info('Material entropy production associated with '
                             'potential energy of the droplet: %s\n',
                             potentr_mean)
                 logger.info('Done\n')
                 logger.info('3. Kinetic energy dissipation\n')
-                if lec in {'y', 'yes'}:
-                    cdo.yearmonmean(input=tasvert_file, output=aux_file)
-                    f_l = Dataset(aux_file)
-                    tabl_mean = f_l.variables['ts'][:, 0, 0]
-                    minentr_mean = np.nanmean(lect / tabl_mean)
-                    logger.info('Material entropy production associated with '
-                                'kinetic energy dissipation: %s\n',
-                                minentr_mean)
-                else:
-                    minentr_mean = 0.010
-                    logger.info('I cannot compute the material entropy '
-                                'production without the LEC...\n')
-                    logger.info('I will assign a given value for the material '
-                                'entropy production attributed to LEC '
-                                '(0.01 W/m2*K)\n')
-                sensentr_mean = masktonull(sensentr_mean)
-                evapentr_mean = masktonull(evapentr_mean)
-                rainentr_mean = masktonull(rainentr_mean)
-                snowentr_mean = masktonull(snowentr_mean)
-                meltentr_mean = masktonull(meltentr_mean)
-                potentr_mean = masktonull(potentr_mean)
-                minentr_mean = masktonull(minentr_mean)
-                matentr = (float(sensentr_mean) - float(evapentr_mean) +
-                           float(rainentr_mean) + float(snowentr_mean) +
-                           float(potentr_mean) + float(minentr_mean) -
-                           float(meltentr_mean))
+                minentr_mean = comp_kinentr(aux_file, tasvert_file, lect, lec)
+                matentr = (float(sensentr_mean) - float(evapentr_mean)
+                           + float(rainentr_mean) + float(snowentr_mean)
+                           + float(potentr_mean) + float(minentr_mean)
+                           - float(meltentr_mean))
                 logger.info('Material entropy production with '
                             'the direct method: %s\n', matentr)
                 matentr_all[i_m, 0] = matentr
                 if met in {'3'}:
-                    diffentr = (float(np.nanmean(vertentr_mean)) +
-                                float(np.nanmean(horzentr_mean)) -
-                                matentr)
+                    diffentr = (float(np.nanmean(vertentr_mean))
+                                + float(np.nanmean(horzentr_mean))
+                                - matentr)
                     logger.info('Difference between the two '
                                 'methods: %s\n', diffentr)
                     diffentr_all[i_m, 0] = diffentr
@@ -968,62 +524,26 @@ def main(cfg):
                 logger.info('Degree of irreversibility of the '
                             'system: %s\n', irrevers)
                 irrevers_all[i_m] = irrevers
+                logger.info('Running the plotting module for the material '
+                            'entropy production (direct method)\n')
+                entr_list = [sensentr_file, evapentr_file, rainentr_file,
+                             snowentr_file, meltentr_file, potentr_file]
+                plotsmod.init_plotentr(model, pdir, entr_list)
+                logger.info('Done\n')
             else:
                 pass
         else:
             pass
         # Produce plots for the specific model
-        logger.info('Running the plotting module for the budgets\n')
-        if e_b in {'y', 'yes'}:
-            plotsmod.balances(diagworkdir_up, plotpath2,
-                              [toab_file, atmb_file, surb_file],
-                              ['toab', 'atmb', 'surb'],
-                              model_name)
-            oname = '{}/{}_{}_timeser.png'.format(plotpath2,
-                                                  model_name, 'toab')
-            logger.info('Done\n')
         if wat in {'y', 'yes'}:
             logger.info('Running the plotting module for the water budgets\n')
-            plotsmod.balances(diagworkdir_up, plotpath2,
-                              [wmassbudget_file, latentenergy_file],
-                              ['wmass', 'latent'],
-                              model_name)
+            plotsmod.balances(wdir_up, pdir,
+                              [wm_file[0], wm_file[1]], ['wmass', 'latent'],
+                              model)
             logger.info('Done\n')
         else:
             pass
-        if entr in {'y', 'yes'}:
-            if met in {'1', '3'}:
-                logger.info('Running the plotting module for the material '
-                            'entropy production (indirect method)\n')
-                plotsmod.entropy(plotpath2, verticalentropy_file, 'sver',
-                                 'Vertical entropy production', model_name)
-                logger.info('Done\n')
-            elif met in {'2', '3'}:
-                logger.info('Running the plotting module for the material '
-                            'entropy production (direct method)\n')
-                plotsmod.entropy(plotpath2, sensentr_file, 'ssens',
-                                 'Sensible Heat entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, evapentr_file, 'sevap',
-                                 'Evaporation entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, rainentr_file, 'srain',
-                                 'Rainfall precipitation entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, snowentr_file, 'ssnow',
-                                 'Snowfall precipitation entropy production',
-                                 model_name)
-                plotsmod.entropy(plotpath2, meltentr_file, 'smelt',
-                                 'Snow melting entropy production', model_name)
-                plotsmod.entropy(plotpath2, potentr_file, 'spotp',
-                                 'Potential energy entropy production',
-                                 model_name)
-                logger.info('Done\n')
-            else:
-                pass
-        else:
-            pass
-        logger.info('Done for model: %s \n', model_name)
+        logger.info('Done for model: %s \n', model)
         i_m = i_m + 1
     # Produce multi-model ensemble plots (if more than one model are taken
     # into account).
@@ -1034,11 +554,11 @@ def main(cfg):
         fig.set_size_inches(12, 22)
         axi = plt.subplot(311)
         axi.set_figsize = (50, 50)
-        for model_name in model_names:
-            tot_transp_file = (diagworkdir_up +
-                               '/total_transp_mean_{}.nc'.format(model_name))
+        for model in model_names:
+            tot_transp_file = (wdir_up +
+                               '/total_transp_mean_{}.nc'.format(model))
             dataset = Dataset(tot_transp_file)
-            name = 'total_{}'.format(model_name)
+            name = 'total_{}'.format(model)
             toat = dataset.variables[name][:]
             lats = dataset.variables['lat'][:]
             plt.plot(np.array(lats), np.array(toat), color='black',
@@ -1053,11 +573,11 @@ def main(cfg):
         plt.grid()
         axi = plt.subplot(312)
         axi.set_figsize = (50, 50)
-        for model_name in model_names:
-            atm_transp_file = (diagworkdir_up +
-                               '/atmos_transp_mean_{}.nc'.format(model_name))
+        for model in model_names:
+            atm_transp_file = (wdir_up +
+                               '/atmos_transp_mean_{}.nc'.format(model))
             dataset = Dataset(atm_transp_file)
-            name = 'atmos_{}'.format(model_name)
+            name = 'atmos_{}'.format(model)
             atmt = dataset.variables[name][:]
             lats = dataset.variables['lat'][:]
             plt.plot(np.array(lats), np.array(atmt), color='black',
@@ -1072,11 +592,11 @@ def main(cfg):
         plt.grid()
         axi = plt.subplot(313)
         axi.set_figsize = (50, 50)
-        for model_name in model_names:
-            oce_transp_file = (diagworkdir_up +
-                               '/ocean_transp_mean_{}.nc'.format(model_name))
+        for model in model_names:
+            oce_transp_file = (wdir_up +
+                               '/ocean_transp_mean_{}.nc'.format(model))
             dataset = Dataset(oce_transp_file)
-            name = 'ocean_{}'.format(model_name)
+            name = 'ocean_{}'.format(model)
             surt = dataset.variables[name][:]
             lats = dataset.variables['lat'][:]
             plt.plot(np.array(lats), np.array(surt), color='black',
@@ -1288,8 +808,7 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], toab_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(toab_all[:, 1]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(toab_all[:, 0],
-                                                      toab_all[:, 1])
+    s_l, _, _, _, _ = stats.linregress(toab_all[:, 0], toab_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(toab_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -1404,10 +923,10 @@ def auxiliary(model, wdir, filelist, flags):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - filelist: a list of file names containing the input fields;
-    - wat: a flag for the water mass budget module (y or n);
-    - entr: a flag for the material entropy production (y or n);
-    - met: a flag for the material entropy production method (1: indirect,
-        2, direct, 3: both);
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method 
+              (1: indirect, 2, direct, 3: both));
     
     Author:
     Valerio Lembo, University of Hamburg (2019).
@@ -1513,7 +1032,7 @@ def comp_baroceff(model, wdir, aux_file, toab_file, te_file):
       (time,lon,lat);
     - te_file: a file containing the annual mean emission temperature
       (time,lon,lat);
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -1573,7 +1092,7 @@ def comp_budgets(model, wdir, aux_file, filelist):
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filelist: a list of file names containing the input fields;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """  
@@ -1618,14 +1137,342 @@ def comp_budgets(model, wdir, aux_file, filelist):
     return eb_gmean, eb_file, toab_ymm_file
 
 
+def comp_entr(filelist, nin, nout, entr_file, entr_mean_file):
+    """Obtain the entropy dividing some energy by some working temperature.
+    
+    This function ingests an energy and a related temperature, then writes 
+    (time,lat,lon) entropy fluxes and entropy flux annual mean values to NC
+    files.
+    
+    Arguments:
+    - filelist: a list of file containing the name of the energy file, of the
+      temperature file and of an auxiliary file needed for computation;
+    - nin: the variable name of the input energy fields;
+    - nout: the variable name to attribute to the entropy flux in the NC file;
+    - entr_file: the name of the file containing the 3D entropy fluxes;
+    - entr_mean_file: the name of the file containing the global annual mean
+      entropy value;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    ch_name = '{},{}'.format(nin, nout)
+    en_file = filelist[0]
+    tem_file = filelist[1]
+    aux_file = filelist[2]
+    aux2_file = 'aux.nc'
+    removeif(aux_file)
+    removeif(aux2_file)
+    cdo.timmean(input='-yearmonmean -monmean -div {} {}'
+                .format(en_file, tem_file), options='-b F32', output=aux_file)
+    entr_gmean = write_eb(nin, nout, aux2_file, entr_file, entr_mean_file)
+    cdo.chname(ch_name, input=aux_file, options='-b F32', output=entr_file)
+    os.remove(aux2_file)
+    return entr_gmean
+
+
+def comp_evapentr(model, wdir, infile, aux_file):
+    """Compute entropy production related to evaporation fluxes.
+    
+    The function computes the material entropy production related to 
+    evaporation fluxes, as part of the material entropy production
+    obtained with the direct method (after Lucarini et al., 2011).
+    
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of file containing hfls and ts, respectively
+      (with dimensions (time,lat,lon);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    evapentr_file = wdir + '/{}_evap_entr.nc'.format(model)
+    evapentr_mean_file = wdir + '/{}_evapEntropy_gmean.nc'.format(model)
+    flist = [infile[0], infile[1], aux_file]
+    evapentr_gmean = comp_entr(flist, 'tabl', 'sevap', evapentr_file,
+                               evapentr_mean_file)
+    evapentr_gmean = masktonull(evapentr_gmean)
+    return evapentr_gmean, evapentr_file
+
+
+def comp_indentr(model, wdir, infile, aux_file, toab_gmean):
+    """Compute the material entropy production with the indirect method.
+
+    The function computes the material entropy production with the indirect
+    method, isolating a vertical and a horizontal component 
+    (after Lucarini et al., 2011). The outputs are stored in terms of global
+    mean time series, and in terms of (lat,lon) fields for each year to a NC
+    file.
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of files, containing each the fields rlds, rlus, rsds,
+      rsus, emission temperature (te), TOA energy budget (toab) and ts;
+    - toab_file: a file containing the annual mean TOA energy budgets
+      (time,lon,lat);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+    - toab_gmean: the climatological annaul mean TOA energy budget;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    horzentropy_file = wdir + '/{}_horizEntropy.nc'.format(model)
+    vertentropy_file = wdir + '/{}_verticalEntropy.nc'.format(model)
+    vertentropy_mean_file = wdir + '/{}_vertEntropy_gmean.nc'.format(model)
+    horzentropy_mean_file = wdir + '/{}_horizEntropy_gmean.nc'.format(model)
+    removeif(aux_file)
+    cdo.yearmonmean(input='-mulc,-1 -div -subc,{}  {}  {}'
+                    .format(np.nanmean(toab_gmean), infile[5], infile[4]),
+                    output=aux_file)
+    horzentr_mean=write_eb('toab', 'shor', aux_file, horzentropy_file,
+                           horzentropy_mean_file)
+    cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'
+                    .format(infile[0], infile[2], infile[1], infile[3]),
+                    output=aux_file)
+    cdo.mulc('-1', input='-mul  -sub -yearmonmean -reci {} \
+             -yearmonmean -reci {} {}'
+             .format(infile[6], infile[4], aux_file),
+             output=vertentropy_file)
+    vertentr_mean = write_eb('ts', 'sver', aux_file, vertentropy_file,
+                             vertentropy_mean_file)
+    return horzentr_mean, vertentr_mean, vertentropy_file
+
+
+def comp_kinentr(aux_file, tasvert_file, lect, lec):
+    """Compute the material entropy production from kin. energy dissipation
+
+    The function computes the material entropy production associated with the
+    kinetic energy dissipation, through the intensity of the LEC.
+
+    Arguments:
+    - aux_file: the name of a dummy aux. file to be used for computations;
+    - tasvert_file: a file containing the vertically integrated boundary layer
+      temperature;
+    - lect: an array containing the annual mean LEC intensity;
+    - lec: a flag marking whether the LEC has been previously computed or not
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    removeif(aux_file)
+    if lec in {'y', 'yes'}:
+        cdo.yearmonmean(input=tasvert_file, output=aux_file)
+        f_l = Dataset(aux_file)
+        tabl_mean = f_l.variables['ts'][:, 0, 0]
+        minentr_mean = np.nanmean(lect / tabl_mean)
+        logger.info('Material entropy production associated with '
+                    'kinetic energy dissipation: %s\n',
+                    minentr_mean)
+        minentr_mean = masktonull(minentr_mean)
+    else:
+        minentr_mean = 0.010
+        logger.info('I cannot compute the material entropy '
+                    'production without the LEC...\n')
+        logger.info('I will assign a given value for the material '
+                    'entropy production attributed to LEC '
+                    '(0.01 W/m2*K)\n')
+    return minentr_mean
+
+def comp_landoc_budg(model, wdir, infile, mask, name):
+    """Compute budgets separately on land and oceans.
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: the file containing the original budget field as (time,lat,lon);
+    - mask: the file containing the land-sea mask;
+    - name: the variable name as in the input file;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    ocean_file = wdir + '/{}_{}_ocean.nc'.format(model, name)
+    oc_gmean_file = wdir + '/{}_{}_oc_gmean.nc'.format(model, name)
+    land_file = wdir + '/{}_{}_land.nc'.format(model, name)
+    la_gmean_file = wdir + '/{}_{}_la_gmean.nc'.format(model, name)
+    aux_file = wdir + 'aux.nc'
+    removeif(aux_file)
+    cdo.mul(input='{} -eqc,0 {}'.format(infile, mask), output=ocean_file)
+    cdo.timmean(input='-fldmean {}'.format(ocean_file),
+                output=oc_gmean_file)
+    f_l = Dataset(oc_gmean_file)
+    oc_gmean = f_l.variables[name][0, 0, 0]
+    cdo.sub(input='{} {}'.format(infile, ocean_file), output=land_file)
+    cdo.setctomiss('0', input=ocean_file, output=aux_file)
+    move(aux_file, ocean_file)
+    cdo.setctomiss('0', input=land_file, output=aux_file)
+    move(aux_file, land_file)
+    cdo.timmean(input='-fldmean {}'.format(land_file),
+                output=la_gmean_file)
+    f_l = Dataset(la_gmean_file)
+    la_gmean = f_l.variables[name][0, 0, 0]
+    return oc_gmean, la_gmean
+
+
+def comp_meltentr(model, wdir, latsnow_file, aux_file):
+    """Compute entropy production related to snow melting at the ground.
+
+    The function computes the material entropy production related to snow
+    melting at the ground, as part of the material entropy production
+    obtained with the direct method (after Lucarini et al., 2011).
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: the latent energy associated with snowfall precipitation;
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    removeif(aux_file)
+    latmelt_file = (wdir + '/{}_latentEnergy_snowmelt.nc'.format(model))
+    meltentr_file = (wdir + '/{}_snowmelt_entr.nc'.format(model))
+    meltentr_mean_file = wdir + '/{}_snowmeltEntropy_gmean.nc'.format(model)
+    cdo.mulc(str(L_S), input='-divc,{} {}'.format(str(LC_SUB), latsnow_file),
+             options='-b F32', output=latmelt_file)
+    cdo.timmean(input='-yearmonmean -monmean -setmisstoc,0 -divc,273.15 {}'
+                .format(latmelt_file), options='-b F32', output=aux_file)
+    cdo.chname('prsn,smelt', input=aux_file, options='-b F32',
+               output=meltentr_file)
+    cdo.fldmean(input=meltentr_file, options='-b F32',
+                output=meltentr_mean_file)
+    f_l = Dataset(meltentr_mean_file)
+    meltentr_gmean = f_l.variables['smelt'][0, 0, 0]
+    meltentr_gmean = masktonull(meltentr_gmean)
+    return meltentr_gmean, meltentr_file
+
+
+def comp_potentr(model, wdir, infile, aux_file):
+    cdo = Cdo()
+    removeif(aux_file)
+    htop_file = infile[0]
+    prrmask_file = infile[1]
+    prsnmask_file = infile[2]
+    tcolumn_file = infile[3]
+    poten_file = wdir + '/{}_potentialEnergy_droplet.nc'.format(model)
+    potentr_file = wdir + '/{}_pot_drop_entr.nc'.format(model)
+    potentr_mean_file = wdir + '/{}_potentialdropEnergy_gmean.nc'.format(model)
+    cdo.mulc(GRAV, input='-mul {} -add {} {}'
+             .format(htop_file, prrmask_file, prsnmask_file),
+             options='-b F32', output=poten_file)
+    flist = [poten_file, tcolumn_file, aux_file]
+    potentr_gmean = comp_entr(flist, 'htop', 'spotp', potentr_file,
+                              potentr_mean_file)
+    potentr_gmean = masktonull(potentr_gmean)
+    return potentr_gmean, potentr_file
+
+
+def comp_rainentr(model, wdir, infile, aux_file):
+    """Compute entropy production related to rainfall precipitation.
+
+    The function computes the material entropy production related to rainfall
+    precipitation, as part of the material entropy production obtained with the
+    direct method (after Lucarini et al., 2011).
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of file containing the masked rainfall precipitation
+      (prrmask) and the temperature of the cloud (tcloud);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    prrmask_file = infile[0]
+    removeif(aux_file)
+    latrain_file = wdir + '/{}_latentEnergy_rain.nc'.format(model)
+    rainentr_file = wdir + '/{}_rain_entr.nc'.format(model)
+    rainentr_mean_file = wdir + '/{}_rainEntropy_gmean.nc'.format(model)
+    cdo.mulc(str(L_C), input='-setmisstoc,0 {}'.format(prrmask_file),
+             options='-b F32', output=latrain_file)
+    flist = [latrain_file, infile[1], aux_file]
+    rainentr_gmean = comp_entr(flist, 'prr', 'srain', rainentr_file,
+                               rainentr_mean_file)
+    rainentr_gmean = masktonull(rainentr_gmean)
+    return rainentr_gmean, rainentr_file
+
+
+def comp_sensentr(model, wdir, infile, aux_file):
+    """Compute entropy production related to sensible heat fluxes.
+
+    The function computes the material entropy production related to sensible
+    heat fluxes, as part of the material entropy production obtained with the
+    direct method (after Lucarini et al., 2011).
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of file containing hfss, the temperature at the boundary
+    layer top (tabl), ts, respectively (with dimensions (time,lat,lon);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    difftemp_file = wdir + '/{}_difftemp_bl.nc'.format(model)
+    sensentr_file = (wdir + '/{}_sens_entr.nc'.format(model))
+    sensentr_mean_file = wdir + '/{}_sensEntropy_gmean.nc'.format(model)
+    cdo.reci(input='-sub -reci {}  -reci {}'.format(infile[1], infile[2]),
+             options='-b F32', output=difftemp_file)
+    flist = [infile[0], difftemp_file, aux_file]
+    sensentr_gmean = comp_entr(flist, 'tabl', 'ssens', sensentr_file,
+                               sensentr_mean_file)
+    sensentr_gmean = masktonull(sensentr_gmean)
+    return sensentr_gmean, sensentr_file
+
+
+def comp_snowentr(model, wdir, infile, aux_file):
+    """Compute entropy production related to snowfall precipitation.
+
+    The function computes the material entropy production related to snowfall
+    precipitation, as part of the material entropy production obtained with the
+    direct method (after Lucarini et al., 2011).
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of file containing the masked snowfall precipitation
+      (prsnmask) and the temperature of the cloud (tcloud);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    prsnmask_file = infile[0]
+    removeif(aux_file)
+    latsnow_file = wdir + '/{}_latentEnergy_snow.nc'.format(model)
+    snowentr_file = wdir + '/{}_snow_entr.nc'.format(model)
+    snowentr_mean_file = wdir + '/{}_snowEntropy_gmean.nc'.format(model)
+    cdo.mulc(str(LC_SUB), input='-setmisstoc,0 {}'.format(prsnmask_file),
+             options='-b F32', output=latsnow_file)
+    flist = [latsnow_file, infile[1], aux_file]
+    snowentr_gmean = comp_entr(flist, 'prsn', 'srain', snowentr_file,
+                               snowentr_mean_file)
+    snowentr_gmean = masktonull(snowentr_gmean)
+    return snowentr_gmean, latsnow_file, snowentr_file
+
+
 def comp_wfluxes(model, wdir, filelist):
-    """Compute auxiliary fields or perform time averaging of existing fields.
+    """Compute auxiliary fields and perform time averaging of existing fields.
 
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - filelist: a list of file names containing the input fields;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -1654,7 +1501,7 @@ def comp_wmbudg(model, wdir, aux_file, filelist, flags):
     them to a NetCDF file.
     The globally averaged annual mean budgets are also provided and saved to
     a NetCDF file.
-    
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
@@ -1675,10 +1522,10 @@ def comp_wmbudg(model, wdir, aux_file, filelist, flags):
     _, _, _, aux_list = auxiliary(model, wdir, filelist, flags)
     evspsbl_file = aux_list[0]
     prr_file = aux_list[1]
-    wmbudg_file = wdir + '/{}_wmassBudget.nc'.format(model)
-    wm_gmean_file = wdir + '/{}_wmass_gmean.nc'.format(model)
-    latene_file = wdir + '/{}_latentEnergy.nc'.format(model)
-    latene_gmean_file = wdir + '/{}_latenergy_gmean.nc'.format(model)
+    wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
+    wm_gmean_file = wdir + '/{}_wmb_gmean.nc'.format(model)
+    latene_file = wdir + '/{}_latent.nc'.format(model)
+    latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
     cdo.sub(input="{} {}".format(evspsbl_file, pr_file), output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
@@ -1690,7 +1537,91 @@ def comp_wmbudg(model, wdir, aux_file, filelist, flags):
             output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
-    return wmass_gmean, latent_gmean
+    varlist = [wmass_gmean, latent_gmean]
+    filelist = [wmbudg_file, latene_file]
+    return varlist, filelist
+
+
+def lec_preproc(model, wdir, pdir, filelist):
+    """Preprocess fields for LEC computations and send it to lorenz program.
+
+    This function computes the interpolation of ta, ua, va, wap daily fields to
+    fill gaps using near-surface data, then computes the Fourier coefficients 
+    and performs the LEC computations. For every year, (lev,lat,wave) fields,
+    global and hemispheric time series of each conversion and reservoir term
+    of the LEC is provided.
+ 
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - pdir: a new directory is created as a sub-directory of the plot directory
+      to store tables of conversion/reservoir terms and the flux diagram for 
+      year;
+    - filelist: a list of file names containing the input fields;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    fourc = fourier_coefficients
+    lorenz = lorenz_cycle
+    ta_file = filelist[13]
+    tas_file = filelist[14]
+    ua_file = filelist[16]
+    uas_file = filelist[17]
+    va_file = filelist[18]
+    vas_file = filelist[19]
+    wap_file = filelist[20]
+    ldir = os.path.join(pdir, 'LEC_results')
+    os.makedirs(ldir)
+    maskorog = wdir + '/orog.nc'
+    ua_file_mask = wdir + '/ua_fill.nc'
+    va_file_mask = wdir + '/va_fill.nc'
+    energy3_file = wdir + '/energy_short.nc'
+    cdo.setmisstoc('0', input='-setmisstoc,1 -sub {} {}'
+                   .format(ua_file, ua_file), options='-b F32',
+                   output=maskorog)
+    cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}')
+            .format(ua_file, uas_file, maskorog), options='-b F32',
+            output=ua_file_mask)
+    cdo.add(input=('-setmisstoc,0 -selvar,va {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}')
+            .format(va_file, vas_file, maskorog), options='-b F32',
+            output=va_file_mask)
+    cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000 '
+                               '-merge {} {} {} {}')
+                   .format(ta_file, ua_file_mask,
+                           va_file_mask, wap_file),
+                   options='-b F32', output=energy3_file)
+    yrs = cdo.showyear(input=energy3_file)
+    yrs = str(yrs)
+    yrs2 = yrs.split()
+    y_i = 0
+    lect = np.zeros(len(yrs2))
+    for y_r in yrs2:
+        y_r = int(filter(str.isdigit, y_r))
+        enfile_yr = wdir + '/inputen.nc'
+        tasfile_yr = wdir + '/tas_yr.nc'
+        tadiag_file = wdir + '/ta_filled.nc'
+        ncfile = wdir + '/fourier_coeff.nc'
+        cdo.selyear(y_r, input=energy3_file, options='-b F32',
+                    output=enfile_yr)
+        cdo.selyear(y_r, input=tas_file, options='-b F32',
+                    output=tasfile_yr)
+        fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
+        diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_r))
+        logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_r))
+        lect[y_i] = lorenz.lorenz(wdir, model, y_r, ncfile, diagfile, logfile)
+        y_i = y_i + 1
+        os.remove(enfile_yr)
+        os.remove(tasfile_yr)
+        os.remove(tadiag_file)
+        os.remove(ncfile)
+    os.remove(ua_file_mask)
+    os.remove(va_file_mask)
+    os.remove(energy3_file)
+    return lect
 
 
 def removeif(filename):
@@ -1699,6 +1630,74 @@ def removeif(filename):
         os.remove(filename)
     except OSError:
         pass
+
+
+def mask_precip(model, wdir, infile):
+    """Mask precipitation according to the phase of the droplet.
+    
+    This function mask the rainfall and snowfall precipitation fields, as well
+    as in dependency of the temperature of the cloud at the droplet formation.
+    This allows to isolate some intermediate phase changes of the droplet life
+    cycle in the atmosphere.
+    
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of input file, containing rainfall precipitation (prr) and
+      prsn, respectively (dimensions (time,lat,lon));
+    
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    prr_file = infile[0]
+    prsn_file = infile[1]
+    tlcl_file = infile[2]
+    # Prepare masks for snowfall and rainfall
+    maskrain_file = wdir + '/{}_maskprecr.nc'.format(model)
+    cdo.gtc('1.0E-7', input=prr_file, options=' -b F32', output=maskrain_file)
+    masksnow_file = wdir + '/{}_maskprecs.nc'.format(model)
+    cdo.gtc('1.0E-7', input=prsn_file, options=' -b F32', output=masksnow_file)
+    prrmask_file = wdir + '/{}_prr_masked.nc'.format(model)
+    cdo.mul(input='{} {}'.format(maskrain_file, prr_file), options='-b F32',
+            output=prrmask_file)
+    prsnmask_file = wdir + '/{}_prsn_masked.nc'.format(model)
+    cdo.mul(input='{} {}'.format(masksnow_file, prsn_file), options='-b F32',
+            output=prsnmask_file)
+    # Temperatures of the rainfall and snowfall clouds
+    tliq_file = wdir + '/{}_tliq.nc'.format(model)
+    cdo.setrtomiss('-1000,0', input='-mul {} {}'
+                   .format(tlcl_file, maskrain_file),
+                   options='-b F32', output=tliq_file)
+    tsol_file = wdir + '/{}_tsol.nc'.format(model)
+    cdo.setrtomiss('-1000,0', input='-mul {} {}'
+                   .format(tlcl_file, masksnow_file),
+                   options='-b F32', output=tsol_file)
+    tdegl_file = wdir + '/{}_tliqdeg.nc'.format(model)
+    cdo.subc('273.15', input=tliq_file, options='-b F32', output=tdegl_file)
+    tdegs_file = wdir + '/{}_tsoldeg.nc'.format(model)
+    cdo.subc('273.15', input=tsol_file, options='-b F32', output=tdegs_file)
+    # Mask for ice cloud and temperature for phase changes from ice to rain
+    maskice_file = wdir + '/{}_maskice.nc'.format(model)
+    cdo.ltc('0.0', input=tdegl_file, options='-b F32', output=maskice_file)
+    ticer_file = wdir + '/{}_t_icerain_file'.format(model)
+    cdo.setrtomiss('-1000,0', input='-mul {} {}'
+                   .format(tliq_file, maskice_file),
+                   options='-b F32', output=ticer_file)
+    prrice_file = wdir + '/{}_prr_ice_file.nc'.format(model)
+    cdo.mul(input='{} {}'.format(maskice_file, prr_file), options='-b F32',
+            output=prrice_file)
+    # Mask for vapor cloud and temperature for phase changes from vapor to snow
+    maskvap_file = wdir + '/{}_maskvap.nc'.format(model)
+    cdo.gtc('0.0', input=tdegs_file, options='-b F32', output=maskvap_file)
+    tvaps_file = wdir + '/{}_t_vapsnow.nc'.format(model)
+    cdo.setrtomiss('-1000,0', input='-mul {} {}'
+                   .format(tsol_file, maskvap_file),
+                   options='-b F32', output=tvaps_file)
+    prsnvap_file = wdir + '/{}_prsn_vap.nc'.format(model)
+    cdo.mul(input='{} {}'.format(maskvap_file, prsn_file), options='-b F32',
+            output=prsnvap_file)
+    return prrmask_file, prsnmask_file
 
 
 def masktonull(value):

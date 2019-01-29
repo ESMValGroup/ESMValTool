@@ -44,6 +44,32 @@ from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 # pylint: disable=too-many-arguments
 # Fourteen is reasonable in this case.
 # from plot_script import PlotScript
+def init_plotentr(model, path, filelist):
+    """Define options for plotting maps of entropy production components.
+    
+    Attributes:
+    - model: the name of the model;
+    - path: the path to the plots directory;
+    - filelist: a list of files containing the components of the entropy
+      production with the direct method;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    entropy(path, filelist[0], 'ssens', 'Sensible Heat entropy production',
+            model)
+    entropy(path, filelist[1], 'sevap', 'Evaporation entropy production',
+            model)
+    entropy(path, filelist[2], 'srain',
+            'Rainfall precipitation entropy production', model)
+    entropy(path, filelist[3], 'ssnow',
+            'Snowfall precipitation entropy production', model)
+    entropy(path, filelist[4], 'smelt', 'Snow melting entropy production',
+            model)
+    entropy(path, filelist[5], 'spotp', 'Potential energy entropy production',
+            model)
+
+
 def latwgt(lat, t_r):
     """Compute weighted average over latitudes.
 
