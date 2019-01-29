@@ -10,3 +10,4 @@ Recipes
    recipe_flato13ipcc
    recipe_perfmetrics
    recipe_runoff_et
+   recipe_ensclus
