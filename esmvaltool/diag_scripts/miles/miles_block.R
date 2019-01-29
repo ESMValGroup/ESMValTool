@@ -65,6 +65,10 @@ dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir, recursive = T, showWarnings = F)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
+# setup provenance file and list
+provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance <- list()
+
 # extract metadata
 models_dataset <- unname(sapply(list0, "[[", "dataset"))
 models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
@@ -87,13 +91,31 @@ for (model_idx in c(1:(length(models_dataset)))) {
   year2 <- models_end_year[model_idx]
   infile <- climofiles[model_idx]
   for (seas in seasons) {
-    miles_block_fast(
+    filenames <- miles_block_fast(
       year1 = year1, year2 = year2, expid = exp, ens = ensemble,
       dataset = dataset, season = seas, z500filename = infile,
       FILESDIR = work_dir, doforce = TRUE
     )
+    # Set provenance for output files
+    caption <- paste0("MiLES blocking statistics")
+    xprov <- list(ancestors = list(infile),
+                  authors = list("hard_jo", "davi_pa", "arno_en"),
+                  references = list("davini18", "davini12jclim",
+                                    "tibaldi90tel"),
+                  projects = list("c3s-magic"),
+                  caption = caption,
+                  statistics = list("other"),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  domains = list("nh"))
+    for (fname in filenames) {
+      provenance[[fname]] <- xprov
+    }
   }
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)
 
 ##
 ## Make the plots

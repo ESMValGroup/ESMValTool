@@ -416,4 +416,5 @@ miles_block_fast <- function(dataset, expid, ens, year1, year2, season,
     )
   }
   nc_close(ncfile2)
+  return(c(savefile1, savefile2))
 }

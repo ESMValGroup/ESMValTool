@@ -233,4 +233,5 @@ miles_eofs_fast <- function(dataset, expid, ens, year1, year2, season,
   ncvar_put(ncfile1, "PCs", EOFS$coeff, start = c(1, 1), count = c(-1, -1))
   ncvar_put(ncfile1, "Variances", EOFS$variance, start = c(1), count = c(-1))
   nc_close(ncfile1)
+  return(savefile1)
 }
