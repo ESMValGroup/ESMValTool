@@ -25,7 +25,7 @@ User settings
  
 *Required settings for script*
 
-* prec_lev: quantile (in %), e.g. 50
+* perc_lev: quantile (in %), e.g. 50
  
  
 Variables
