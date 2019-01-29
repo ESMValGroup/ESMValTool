@@ -1,4 +1,20 @@
 ---
+documentation:
+  description: |
+    Computes ocean heat content in a set of given layers and outputs both the
+    time series and the full variable
+
+  authors:
+    - vega_ja
+
+  maintainer:
+    - vega_ja
+
+  references:
+    - contact_authors
+
+  projects:
+    - primavera
 
 datasets:
 #   # - {dataset: EC-Earth3-HR, expid: a0xi, institute: EC-Earth-Consortium, grid: gn,
