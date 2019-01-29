@@ -332,7 +332,7 @@ def main(cfg):
                                            toab_ymm_file, te_ymm_file)
         logger.info('Running the plotting module for the budgets\n')
         plotsmod.balances(wdir_up, pdir, [eb_file[0], eb_file[1], eb_file[2]],
-            ['toab', 'atmb', 'surb'], model)
+                          ['toab', 'atmb', 'surb'], model)
         oname = '{}/{}_{}_timeser.png'.format(pdir, model, 'toab')
         logger.info('Done\n')
         # Water mass budget
@@ -623,8 +623,7 @@ def main(cfg):
     plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(toab_all[:, 0],
-                                                      atmb_all[:, 0])
+    s_l, _, _, _, _ = stats.linregress(toab_all[:, 0], atmb_all[:, 0])
     plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -648,8 +647,7 @@ def main(cfg):
     axi.set_figsize = (50, 50)
     plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
-    s_l, _, _, _, _ = stats.linregress(baroc_eff_all,
-                                                      lec_all[:, 0])
+    s_l, _, _, _, _ = stats.linregress(baroc_eff_all, lec_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
                           semimaj=np.nanstd(lec_all[:, 0]),
                           phi=np.arctan(s_l), x_cent=np.nanmean(baroc_eff_all),
@@ -673,8 +671,7 @@ def main(cfg):
     plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(horzentr_all[:, 0],
-                                                      vertentr_all[:, 0])
+    s_l, _, _, _, _ = stats.linregress(horzentr_all[:, 0], vertentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
                           semimaj=np.nanstd(vertentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -720,8 +717,7 @@ def main(cfg):
     plt.scatter(indentr_all, matentr_all[:, 0], c=colors, alpha=1)
     plt.scatter(np.nanmean(indentr_all), np.nanmean(matentr_all[:, 0]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(indentr_all,
-                                                      matentr_all[:, 0])
+    s_l, _, _, _, _ = stats.linregress(indentr_all, matentr_all[:, 0])
     plotsmod.plot_ellipse(semimin=np.nanstd(indentr_all),
                           semimaj=np.nanstd(matentr_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -834,8 +830,7 @@ def main(cfg):
     plt.scatter(atmb_all[:, 0], atmb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(atmb_all[:, 1]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(atmb_all[:, 0],
-                                                      atmb_all[:, 1])
+    s_l, _, _, _, _ = stats.linregress(atmb_all[:, 0], atmb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(atmb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -861,8 +856,7 @@ def main(cfg):
     plt.scatter(surb_all[:, 0], surb_all[:, 1], c=colors, alpha=1)
     plt.scatter(np.nanmean(surb_all[:, 0]), np.nanmean(surb_all[:, 1]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(surb_all[:, 0],
-                                                      surb_all[:, 1])
+    s_l, _, _, _, _ = stats.linregress(surb_all[:, 0], surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(surb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 1]),
                           phi=np.arctan(s_l),
@@ -890,8 +884,7 @@ def main(cfg):
                  fmt='none', ecolor=colors)
     plt.scatter(np.nanmean(atmb_all[:, 0]), np.nanmean(surb_all[:, 0]),
                 c='red')
-    s_l, _, _, _, _ = stats.linregress(surb_all[:, 0],
-                                                      surb_all[:, 1])
+    s_l, _, _, _, _ = stats.linregress(surb_all[:, 0], surb_all[:, 1])
     plotsmod.plot_ellipse(semimaj=np.nanstd(atmb_all[:, 0]),
                           semimin=np.nanstd(surb_all[:, 0]),
                           phi=np.arctan(s_l),
@@ -918,16 +911,16 @@ def main(cfg):
 
 def auxiliary(model, wdir, filelist, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
-    
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - filelist: a list of file names containing the input fields;
     - flags: (wat: a flag for the water mass budget module (y or n),
               entr: a flag for the material entropy production (y or n);
-              met: a flag for the material entropy production method 
+              met: a flag for the material entropy production method
               (1: indirect, 2, direct, 3: both));
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -1077,16 +1070,16 @@ def comp_baroceff(model, wdir, aux_file, toab_file, te_file):
 
 def comp_budgets(model, wdir, aux_file, filelist):
     """Compute radiative budgets from radiative and heat fluxes.
-    
+
     The function computes TOA and surface energy budgets from radiative and
     heat fluxes, then writes the annual mean to the log info file and write
     the (lat,lon) annual mean fields to a NetCDF file, as well as the time
     series of the annual mean globally averaged fields.
-    
+
     toab = rsdt - rsut - rlut
     surb = rsds + rlds - rsus - rlus - hfls - hfss
     atmb = toab - atmb
-    
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
@@ -1095,7 +1088,7 @@ def comp_budgets(model, wdir, aux_file, filelist):
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
-    """  
+    """
     cdo = Cdo
     hfls_file = filelist[0]
     hfss_file = filelist[1]
@@ -1139,11 +1132,11 @@ def comp_budgets(model, wdir, aux_file, filelist):
 
 def comp_entr(filelist, nin, nout, entr_file, entr_mean_file):
     """Obtain the entropy dividing some energy by some working temperature.
-    
+
     This function ingests an energy and a related temperature, then writes 
     (time,lat,lon) entropy fluxes and entropy flux annual mean values to NC
     files.
-    
+
     Arguments:
     - filelist: a list of file containing the name of the energy file, of the
       temperature file and of an auxiliary file needed for computation;
@@ -1174,11 +1167,11 @@ def comp_entr(filelist, nin, nout, entr_file, entr_mean_file):
 
 def comp_evapentr(model, wdir, infile, aux_file):
     """Compute entropy production related to evaporation fluxes.
-    
-    The function computes the material entropy production related to 
+
+    The function computes the material entropy production related to
     evaporation fluxes, as part of the material entropy production
     obtained with the direct method (after Lucarini et al., 2011).
-    
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
@@ -1202,7 +1195,7 @@ def comp_indentr(model, wdir, infile, aux_file, toab_gmean):
     """Compute the material entropy production with the indirect method.
 
     The function computes the material entropy production with the indirect
-    method, isolating a vertical and a horizontal component 
+    method, isolating a vertical and a horizontal component
     (after Lucarini et al., 2011). The outputs are stored in terms of global
     mean time series, and in terms of (lat,lon) fields for each year to a NC
     file.
@@ -1229,8 +1222,8 @@ def comp_indentr(model, wdir, infile, aux_file, toab_gmean):
     cdo.yearmonmean(input='-mulc,-1 -div -subc,{}  {}  {}'
                     .format(np.nanmean(toab_gmean), infile[5], infile[4]),
                     output=aux_file)
-    horzentr_mean=write_eb('toab', 'shor', aux_file, horzentropy_file,
-                           horzentropy_mean_file)
+    horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
+                             horzentropy_mean_file)
     cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'
                     .format(infile[0], infile[2], infile[1], infile[3]),
                     output=aux_file)
@@ -1278,6 +1271,7 @@ def comp_kinentr(aux_file, tasvert_file, lect, lec):
                     'entropy production attributed to LEC '
                     '(0.01 W/m2*K)\n')
     return minentr_mean
+
 
 def comp_landoc_budg(model, wdir, infile, mask, name):
     """Compute budgets separately on land and oceans.
@@ -1546,16 +1540,16 @@ def lec_preproc(model, wdir, pdir, filelist):
     """Preprocess fields for LEC computations and send it to lorenz program.
 
     This function computes the interpolation of ta, ua, va, wap daily fields to
-    fill gaps using near-surface data, then computes the Fourier coefficients 
+    fill gaps using near-surface data, then computes the Fourier coefficients
     and performs the LEC computations. For every year, (lev,lat,wave) fields,
     global and hemispheric time series of each conversion and reservoir term
     of the LEC is provided.
- 
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - pdir: a new directory is created as a sub-directory of the plot directory
-      to store tables of conversion/reservoir terms and the flux diagram for 
+      to store tables of conversion/reservoir terms and the flux diagram for
       year;
     - filelist: a list of file names containing the input fields;
 
@@ -1634,18 +1628,18 @@ def removeif(filename):
 
 def mask_precip(model, wdir, infile):
     """Mask precipitation according to the phase of the droplet.
-    
+
     This function mask the rainfall and snowfall precipitation fields, as well
     as in dependency of the temperature of the cloud at the droplet formation.
     This allows to isolate some intermediate phase changes of the droplet life
     cycle in the atmosphere.
-    
+
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - infile: a list of input file, containing rainfall precipitation (prr) and
       prsn, respectively (dimensions (time,lat,lon));
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -1719,7 +1713,7 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     - d3_file: the file containing (time,lat,lon) fields;
     - gmean_file: the name of a file where to put the annual and globally
       averaged fields;
-  
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """

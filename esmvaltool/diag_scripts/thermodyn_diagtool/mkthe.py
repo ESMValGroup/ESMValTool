@@ -172,7 +172,7 @@ def write_output(wdir, model, file_list, varlist):
     dataset = Dataset(file_list[0])
     ztlcl = varlist[0]
     t_z = varlist[1]
-    htop = varlist [2]
+    htop = varlist[2]
     tlcl_temp = wdir + '/tlcl.nc'
     removeif(tlcl_temp)
     w_nc_fid = Dataset(tlcl_temp, 'w', format='NETCDF4')

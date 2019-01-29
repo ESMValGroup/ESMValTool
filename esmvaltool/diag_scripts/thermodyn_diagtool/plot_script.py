@@ -46,7 +46,7 @@ from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 # from plot_script import PlotScript
 def init_plotentr(model, path, filelist):
     """Define options for plotting maps of entropy production components.
-    
+
     Attributes:
     - model: the name of the model;
     - path: the path to the plots directory;
