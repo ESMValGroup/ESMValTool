@@ -98,4 +98,4 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     print('A ', plot_type, ' figure for the selected fields saved in {0}'
           .format(dir_plot))
 
-    return
+    return namef
