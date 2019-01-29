@@ -102,10 +102,6 @@ def main(cfg):
         if write_plots:
             provenance_record['plot_file'] = plot_files
         zmnam_clean()
-        print('-------------------------')
-        print(provenance_record)
-        print('-------------------------')
-        print(outfiles)
         for file in outfiles:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)
