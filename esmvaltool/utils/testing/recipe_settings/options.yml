@@ -147,3 +147,30 @@ recipe_toymodel_wp4.yml:
     - 0.3
   number_of_members:
     - 5
+
+recipe_miles_block.yml:
+  seasons:
+    - DJF
+    - MAM
+    - JJA
+    - SON
+    - ALL
+    - Jan_Feb_Mar
+
+recipe_miles_eof.yml:
+  seasons:
+    - DJF
+    - MAM
+    - JJA
+    - SON
+    - ALL
+    - Jan_Feb_Mar
+  teles:
+    - NAO
+    - AO
+    - PNA
+    - "0_10_80_100"  #  custom area as "lon1_lon2_lat1_lat2"
+    - "0_20_150_180"
+    - "-10_10_40_50"
+
+recipe_miles_regimes.yml:
