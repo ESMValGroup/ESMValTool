@@ -12,9 +12,8 @@ module load contrib/gnu/gcc/8.2.0
 wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p conda
 . conda/etc/profile.d/conda.sh
-git clone --depth 1 https://github.com/ESMValGroup/ESMValTool
+git clone --depth 1 --branch {branch} https://github.com/ESMValGroup/ESMValTool
 cd ESMValTool
-git checkout {branch}
 # TODO: add option to merge with development branch
 conda env create --name esmvaltool
 conda activate esmvaltool
