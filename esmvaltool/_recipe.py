@@ -402,7 +402,10 @@ def _update_fx_settings(settings, variable, config_user):
     for step in ('average_region', 'average_volume'):
         if step in settings and settings[step].get('fx_files') is not False:
             var = dict(variable)
-            var['fx_files'] = []  # ['areacello', 'volcello']
+            if step == 'average_region':
+                var['fx_files'] = ['areacello', ]
+            if step == 'average_volume':
+                var['fx_files'] = ['volcello', ]
             settings[step]['fx_files'] = get_input_fx_filelist(
                 variable=var,
                 rootpath=config_user['rootpath'],
