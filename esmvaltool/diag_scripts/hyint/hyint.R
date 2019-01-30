@@ -154,7 +154,7 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        hyint_diagnostic(work_dir, regfile, model_idx, seas,
+        provenance <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
                          provenance, rewrite = force_diagnostic)
       }
     }
@@ -174,7 +174,7 @@ if (write_netcdf & etccdi_preproc) {
 if (write_netcdf & run_timeseries) {
   for (model_idx in c(1:(length(models_name)))) {
     for (seas in seasons) {
-      hyint_trends(work_dir, model_idx, seas, provenance)
+      provenance <- hyint_trends(work_dir, model_idx, seas, provenance)
     }
   }
 }

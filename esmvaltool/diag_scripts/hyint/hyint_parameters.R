@@ -14,7 +14,7 @@
 run_regridding <- T
 force_regridding <- F
 run_diagnostic <- T
-force_diagnostic <- F
+force_diagnostic <- T
 etccdi_preproc <- F
 run_timeseries <- T
 
