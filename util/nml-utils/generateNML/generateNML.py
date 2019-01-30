@@ -101,6 +101,9 @@ def get_namelist(**kwargs):
     d['uas'] = {'ft': 'T2Ms'}
     d['prw'] = {'ft': 'T2M'}
 
+    t_nml = get_template_string(namelist)
+    requirements = get_namelist_diag_requirements(namelist)
+
     tt_nml = Template(t_nml)
     if 'variable' in kwargs.keys():
         if kwargs['variable'] in d.keys():
@@ -132,8 +135,9 @@ def get_template_string(namelist):
 
     number_of_diagblocks = len(j['namelist']['DIAGNOSTICS']['diag'])
     for i in range(number_of_diagblocks):
+        diag_block_specific = "for diag_modelline in diag_modellines_{0}".format(str(i).zfill(3))
         j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = [
-            "{{ diag_modelline }}"
+            "{% " + diag_block_specific + "  %}"
         ]
 
     return xmltodict.unparse(j, pretty=True)
@@ -251,10 +255,10 @@ def main():
 
     #print(get_namelist(**kwa))
     namelist = kwa['namelist']
-    #print(get_template_string(namelist))
-    requirements = get_namelist_diag_requirements(namelist)
-    import json
-    print(json.dumps(requirements))
+    print(get_template_string(namelist))
+    #requirements = get_namelist_diag_requirements(namelist)
+    #import json
+    #print(json.dumps(requirements))
 
 if __name__ == "__main__":
     main()
