@@ -93,10 +93,27 @@ def get_modelline(**kwargs):
     tt_mline = Template(t_mline)
     return tt_mline.render(**kwargs)
 
+def get_info_from_freva(**kwargs):
+    facets = []
+    for key, value in kwargs.items():
+        facets.append("{0}={1}".format(key,value))
+    cmd = "freva --databrowser project=cmip6 {0} --all-facets".format(" ".join(facets))
+    print(cmd)
+
 def get_available_dataset_info(requirements):
     # TODO: tbi
     out = list()
+
     for item in requirements:
+        for experiment in item['experiment']:
+            for variable in item['variables']:
+                if isinstance(variable, str):
+                    get_info_from_freva(experiment=experiment, variable=variable)
+                elif isinstance(variable, dict):
+                    get_info_from_freva(experiment=experiment, variable=variable['#text'])
+                else:
+                    raise Exception
+
         out.append([
             {'model': 'MODEL1', 'institute': 'InstituteXY', 'experiment': 'experiment', 'start_year': "1850",
             'end_year':"2010", 'mip': 'TESTMIP', 'grid':'grid'},
@@ -216,7 +233,7 @@ def get_namelist_diag_requirements(namelist):
         else:
             experiment = []
         time_span = None
-        out.append({'variables': diagblock['variable'], 'experiment': experiment})
+        out.append({'variables': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment})
         #print(
         #    "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
         #    .format(cnt, namelist, variable, experiment, time_span))
@@ -248,9 +265,9 @@ def main():
     namelist = kwa['namelist']
     print(get_namelist(namelist))
     #print(get_template_string(namelist))
-    #requirements = get_namelist_diag_requirements(namelist)
-    #import json
-    #print(json.dumps(requirements))
+    requirements = get_namelist_diag_requirements(namelist)
+    import json
+    print(json.dumps(requirements, indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
     main()
