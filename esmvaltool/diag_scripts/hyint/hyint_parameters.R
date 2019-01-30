@@ -15,8 +15,11 @@ run_regridding <- T
 force_regridding <- F
 run_diagnostic <- T
 force_diagnostic <- T
-etccdi_preproc <- F
 run_timeseries <- T
+if (length(etccdi_preproc) != 1) {
+  ettcdi_preproc <- F
+}
+
 
 
 # basic settings
@@ -31,8 +34,6 @@ rotlongitude <- "full" # a) "full" to convert input arrays from 0/360 to
 grid_file <- "grid_file"  # suffix for grid file
 topography_file <- "topo" # suffix for topography file (needed for filtering
                           # ocean/land or land elevation)
-
-etccdi_dir <- ""
 
 # Diagnostic options
 # norm_years set in recipe

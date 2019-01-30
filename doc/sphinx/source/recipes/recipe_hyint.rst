@@ -64,8 +64,21 @@ User settings
 
 #. Maps
 * oplot_grid (false): plot grid points over maps
+* removedesert (false) remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (deserts, Giorgi2014)
+* masksealand (false): mask depending on seaLandElevation threshold
+* sealandelevation (0): (a) 0 land; (b) positive value: land above given
+elevation; (c) negative value: sea below given depth. The topography/bathymetry file is generated with cdo from ETOPO data. 
+* reverse_masksealand (false): T to reject what selected, F to keep what selected
+* map_continents (-2): thickness of continents: positive values in white, negative values in gray
+* map_continents_regions (false): plot also regional boundaries
+* ryearplot: years to be plotted for experiments (for maps over individual years):(a) actual years, (b) "FIRST" = first year in dataset or (c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
+* rmultiyear_mean (true): plot multiyear mean (this overrides ryearplot)
+
+
 
 #. Timeseries and trends
+* weight_tseries (true): adopt area weights in timeseries
+* trend_years (false): (a) F=all; (b) c(year1,year2) to apply trend calculation and plotting only to a limited time interval (year1<=years<=year2); (c) c(year1,year2,year3,year4) to apply trend to two separate time intervals (year1<=y's<=year2) and (year3<=y's<=year4)
 * lm_trend (true): calculate linear trend
 * add_trend (true): add linear trend to plot
 * add_trend_sd (false): add dashed lines of stdev range to timeseries

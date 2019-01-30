@@ -68,12 +68,32 @@ diagnostics:
         # 5=Africa,6=Northi,7=America,8=India,9=Europe,10=East-Asia,
         # 11=Australia
         selregions: [2,4,5,6,7]
+
+     
+        # Call preprocessing for ETCCDI indices calculated with climdex
+        etccdi_preproc: true
+
+        # Specify external path to repository of ETCCDI indices 
+        # (unless these are calculated in the same directory)
+        etccdi_dir <- ""
+
+     
         # Select one or more fields for timeseries and maps from the following 
         # list (order-sensitive): 
-        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
+        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95, 
+        # "altcddETCCDI", "altcsdiETCCDI", "altcwdETCCDI",
+        # "altwsdiETCCDI", "cddETCCDI", "csdiETCCDI", "cwdETCCDI",
+        # "dtrETCCDI", "fdETCCDI", "gslETCCDI", "idETCCDI",
+        # "prcptotETCCDI", "r10mmETCCDI", "r1mmETCCDI", "r20mmETCCDI",
+        # "r95pETCCDI", "r99pETCCDI", "rx1dayETCCDI", "rx5dayETCCDI",
+        # "sdiiETCCDI", "suETCCDI", "tn10pETCCDI", "tn90pETCCDI",
+        # "tnnETCCDI", "tnxETCCDI", "trETCCDI", "tx10pETCCDI",
+        # "tx90pETCCDI", "txnETCCDI", "txxETCCDI", "wsdiETCCDI"
         selfields: [8, 4, 1, 9, 3, 2]
+
        # Select automated or pre-set range of values in plots
         autolevels: true       
+       
 
         ## ------- Advanced settings ----------
         # data
@@ -97,10 +117,7 @@ diagnostics:
                          # a) actual years, b) "FIRST" = first year in dataset or 
                          # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
         rmultiyear_mean: true # plot multiyear mean (this override ryearplot)
-        topography_highres: "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
-        boxregion: false # !=0 plot region boxes over global maps with 
-                         # thickness = abs(boxregion); white (>0) or grey (<0).  
-
+ 
 
         # timeseries and trends
         weight_tseries: true  # adopt area weights in timeseries
@@ -121,5 +138,9 @@ diagnostics:
                                     # time interval
         scale100years: true         # plot trends as 1/100 years
         scalepercent: false         # plot trends as % change (excluding hyint) 
+        oplot_grid: false           # plot grid points over maps
         
+        topography_highres: "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
+        boxregion: false # !=0 plot region boxes over global maps with 
+                         # thickness = abs(boxregion); white (>0) or grey (<0).  
 
