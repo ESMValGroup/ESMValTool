@@ -46,19 +46,12 @@ print(paste0(diag_base, ": starting routine"))
 # get variable name
 varname <- climolist$short_name
 
-# read recipe and extract provenance information 
-regridding_dir <- settings$run_dir
-run_dir <- paste0(unlist(strsplit(regridding_dir, "run"))[1], "run")
-recipe <- read_yaml(paste0(run_dir, "/", settings$recipe))
-recipe_docs <- recipe$documentation
-
 # create working dirs if they do not exist
-work_dir <- settings$work_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 setwd(work_dir)
 
 # setup provenance file and list
-provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 # extract metadata
@@ -133,9 +126,6 @@ for (model_idx in c(1:(length(models_name)))) {
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
                     year1, " to ", year2, " according to ", exp)
-  #xbase <- list(list(infile), recipe_docs$authors, recipe_docs$projects,
-  #              recipe_docs$references, caption, "perc", "atmos",
-  #              "phys", "global", ref_data_file)
   xbase <- list(list(infile), list("arno_en", "hard_jo"), list("c3s-magic"),
                 list("mehran14jgr"), caption, list("perc"), list("atmos"),
                 list("phys"), list("global"), ref_data_file)
