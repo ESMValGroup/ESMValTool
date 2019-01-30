@@ -204,7 +204,7 @@ def get_namelist_diag_requirements(namelist):
 
     _check_namelist(namelist)
 
-    out = dict()
+    out = list()
 
     with open(namelist, 'r') as f:
         j = xmltodict.parse(f.read())
@@ -220,11 +220,12 @@ def get_namelist_diag_requirements(namelist):
         else:
             experiment = []
         time_span = None
-        print(
-            "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
-            .format(cnt, namelist, variable, experiment, time_span))
+        out.append({'variables': diagblock['variable'], 'experiment': experiment})
+        #print(
+        #    "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
+        #    .format(cnt, namelist, variable, experiment, time_span))
         cnt += 1
-        #return True
+    return out
 
 
 def main():
@@ -251,8 +252,9 @@ def main():
     #print(get_namelist(**kwa))
     namelist = kwa['namelist']
     #print(get_template_string(namelist))
-    get_namelist_diag_requirements(namelist)
-
+    requirements = get_namelist_diag_requirements(namelist)
+    import json
+    print(json.dumps(requirements))
 
 if __name__ == "__main__":
     main()
