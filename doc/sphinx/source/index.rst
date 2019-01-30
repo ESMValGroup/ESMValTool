@@ -14,6 +14,9 @@ Welcome to ESMValTool's documentation!
 
    recipes/index
 
+   diag_scripts/index
+   plot_scripts/index
+
    user_guide2/index
    developer_guide2/index
 
