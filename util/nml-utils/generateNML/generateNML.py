@@ -93,39 +93,25 @@ def get_modelline(**kwargs):
     tt_mline = Template(t_mline)
     return tt_mline.render(**kwargs)
 
+def get_available_dataset_info(requirements):
+    # TODO: tbi
+    out = list()
+    for item in requirements:
+        out.append([
+            {'model': 'MODEL1', 'institute': 'InstituteXY', 'experiment': 'experiment', 'start_year': "1850",
+            'end_year':"2010", 'mip': 'TESTMIP', 'grid':'grid'},
+            {'model': 'MODEL1', 'institute': 'InstituteXY', 'experiment': 'experiment', 'start_year': "1850",
+            'end_year':"2010", 'mip': 'TESTMIP', 'grid':'grid'}
+            ])
+    return out
 
-def get_namelist(**kwargs):
-    d = dict()
-    d['tas'] = {'ft': 'T2Ms'}
-    d['ta'] = {'ft': 'T3M'}
-    d['uas'] = {'ft': 'T2Ms'}
-    d['prw'] = {'ft': 'T2M'}
+def get_namelist(namelist):
 
-    t_nml = get_template_string(namelist)
-    requirements = get_namelist_diag_requirements(namelist)
-
-    tt_nml = Template(t_nml)
-    if 'variable' in kwargs.keys():
-        if kwargs['variable'] in d.keys():
-            kwargs.update(d[kwargs['variable']])
-            return tt_nml.render(
-                m=get_modelline(**kwargs),
-                v=kwargs['variable'],
-                ft=kwargs['ft'])
-    return tt_nml.render(m=get_modelline(**kwargs), v=None, ft=None)
-
-
-def _check_namelist(namelist):
-    """Return True id namelist exist, else throw exception."""
-    if not os.path.isfile(namelist):
-        raise Exception
-    return True
-
-
-def get_template_string(namelist):
-    """Return a template string for a given namelist."""
 
     _check_namelist(namelist)
+
+    requirements_per_diagblock = get_namelist_diag_requirements(namelist)
+    available_datasets_per_diagblock = get_available_dataset_info(requirements_per_diagblock)
 
     with open(namelist, 'r') as f:
         j = xmltodict.parse(f.read())
@@ -133,14 +119,20 @@ def get_template_string(namelist):
     if j['namelist']['MODELS'] is not None:
         j['namelist']['MODELS'] = ["{{ global_modelline }}"]
 
-    number_of_diagblocks = len(j['namelist']['DIAGNOSTICS']['diag'])
-    for i in range(number_of_diagblocks):
-        diag_block_specific = "for diag_modelline in diag_modellines_{0}".format(str(i).zfill(3))
+    for i in range(len(available_datasets_per_diagblock)):
         j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = [
-            "{% " + diag_block_specific + "  %}"
+                get_modelline(**item) for item in available_datasets_per_diagblock[i]
         ]
 
+
     return xmltodict.unparse(j, pretty=True)
+
+
+def _check_namelist(namelist):
+    """Return True id namelist exist, else throw exception."""
+    if not os.path.isfile(namelist):
+        raise Exception
+    return True
 
 
 def _get_variable_str(variable):
@@ -253,9 +245,9 @@ def main():
 
     kwa = dict(args._get_kwargs())
 
-    #print(get_namelist(**kwa))
     namelist = kwa['namelist']
-    print(get_template_string(namelist))
+    print(get_namelist(namelist))
+    #print(get_template_string(namelist))
     #requirements = get_namelist_diag_requirements(namelist)
     #import json
     #print(json.dumps(requirements))
