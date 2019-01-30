@@ -4,22 +4,15 @@ Hydroclimatic intensity and extremes (HyInt)
 
 Overview
 --------
-This module computes a set of 6 indices that allow to evaluate the response of the hydrological cycle to global warming with a joint view of both wet and dry extremes. The indices were selected following Giorgi et al. (2014): the simple precipitation intensity index (SDII), the maximum dry spell length (DSL) and wet spell length (WSL), the hydroclimatic intensity index (HY-INT), a measure of the overall behaviour of the hydroclimatic cycle (Giorgi et al., 2011), and the precipitation area (PA), i.e. the area over which at any given day precipitation occurs, (Giorgi et al., 2014). Additionally also a selection of the 27 ETCCDI indices produced by the extremeEvents recipe can be ingested to produce timeseries plots (calling the extremeEvents diagnostics). Trends are calculated using the R `lm` function and significance testing performed with a Student T test on non-null coefficients hypothesis. Trend coefficients are stored together with their statistics which include standard error, t value and Pr(>|t|). The tool produces a variety of types of plots including timeseries with their spread, trend lines and summary plots of trend coefficients.
+The Earth’s hydrological cycle is of key importance both for the climate system and society. For example, the intensity and distribution of precipitation determines the availability or scarcity of fresh water in a certain region, and it is also related to the severity of hazardous events such as flooding or droughts. The simple investigation of average precipitation quantities can clearly hide some of the most relevant aspects of the hydrological cycle and its extremes (e.g., Giorgi et al., 2014). More in general, temperature and precipitation extremes have been the focus of recent climate studies attempting to capture the most relevant component of climate variability and impact on society in a changing climate (e.g., Alexander, 2016. A particular effort has been dedicated to developing and standardising indices that can be adopted for investigation studies with observations and climate models. This tool was developed to calculate a number of hydroclimatic and climate extremes indices and allow a multi-index evaluation of climate models. The tool firstly computes a set of 6 indices that allow to evaluate the response of the hydrological cycle to global warming with a joint view of both wet and dry extremes. The indices were selected following Giorgi et al. (2014) and include the simple precipitation intensity index (SDII), the maximum dry spell length (DSL) and wet spell length (WSL), the hydroclimatic intensity index (HY-INT), which is a measure of the overall behaviour of the hydroclimatic cycle (Giorgi et al., 2011), and the precipitation area (PA), i.e. the area over which at any given day precipitation occurs, (Giorgi et al., 2014). Secondly, also a selection of the 27 temperature and precipitation -based indices of extremes from the Expert Team on Climate Change Detection and Indices (ETCCDI) produced by the climdex (https://www.climdex.org) library can be ingested to produce a multi-index analysis. The tool allows then to perform a subsequent analysis of the selected indices calculating timeseries and trends over predefined continental areas, normalized to a reference period. Trends are calculated using the R `lm` function and significance testing performed with a Student T test on non-null coefficients hypothesis. Trend coefficients are stored together with their statistics which include standard error, t value and Pr(>|t|). The tool can then produce a variety of types of plots including global and regional maps, maps of comparison between models and a reference dataset, timeseries with their spread, trend lines and summary plots of trend coefficients.
 
 The hydroclimatic indices calculated by the diagnostic and included in the output are defined as follows:
-
 * PRY = mean annual precipitation
-
 * INT = mean annual precipitation intensity (intensity during wet days, or simple precipitation intensity index SDII)
-
 * WSL = mean annual wet spell length (number of consecutive days during each wet spell)
-
 * DSL = mean annual dry spell lenght (number of consecutive days during each dry spell)
-
 * PA  = precipitation area (area over which of any given day precipitation occurs)
-
 * R95 = heavy precipitation index (percent of total precipitation above the 95% percentile of the reference distribution)
-
 * HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
  
  
@@ -29,7 +22,8 @@ Available recipes and diagnostics
  
 Recipes are stored in recipes/
  
-* recipe_hyint.yml
+* recipe_hyint.yml (evaluating the 6 hydroclimatic indices) 
+* recipe_hyintex.yml (also including a selection of ETCCDI indices)
  
 Diagnostics are stored in diag_scripts/hyint/
  
@@ -53,12 +47,40 @@ User settings
  
 *Required settings for script*
 
+
 * norm_years: first and last year of reference normalization period to be used for normalized indices
-* selfields: indices to be plotted. Select one or more fields from the following list (order-sensitive) as a numerical index: 1=SDII, 2=DSL, 3=WSL, 4=HY-INT, 5=ABS_INT, 6=ABS_DSL, 7=ABS_WSL, 8=PA, 9=R95
+
+* selfields: indices to be analysed and plotted. Select one or more fields from the following list (order-sensitive) as a numerical index: 1=SDII, 2=DSL, 3=WSL, 4=HY-INT, 5=ABS_INT, 6=ABS_DSL, 7=ABS_WSL, 8=PA, 9=R95
 * selregions: Select regions for timeseries and maps from the following list as a numerical index: 1=World, 2=World60 (60S/60N), 3=Tropics (30S/30N), 4=South 5=America, 6=Africa, 7=North America, 8=India, 9=Europe, 10=East-Asia, 11=Australia
+
 * plot_type: type of figures to be plotted. Select one or more from: 1=lon/lat maps per individual field/exp/multi-year mean, 2=lon/lat maps per individual field exp-ref-diff/multi-year mean, 3=lon/lat maps multi-field/exp-ref-diff/multi-year mean, 11=timeseries over required individual region/exp, 12=timeseries over multiple regions/exp, 13=timeseries with multiple models, 14=summary trend coefficients multiple regions, 15=summary trend coefficients multiple models
 
+*Optional settings for script (with default setting)*
+#. Data
+* rgrid (false): Define whether model data should be regridded. (a) false to keep original resolution; (b) set desired regridding resolution in cdo format e.g., "r320x160"; (c) "REF" to use resolution of reference model
+
+#. Plotting
+* autolevels (true): select automated (T) or pre-set (F) range of values in plots
+
+#. Maps
+* oplot_grid (false): plot grid points over maps
+
+#. Timeseries and trends
+* lm_trend (true): calculate linear trend
+* add_trend (true): add linear trend to plot
+* add_trend_sd (false): add dashed lines of stdev range to timeseries
+* add_trend_sd_shade (false): add shade of stdev range to timeseries
+* add_tseries_lines (true): plot lines connecting timeseries points
+* add_zeroline (true): plot a dashed line at y=0
+* trend_years_only (false): limit timeseries plotting to the time interval adopted for trend calculation (excluding the normalization period)
+* scale100years (true): plot trends scaled as 1/100 years
+* scalepercent (false): plot trends as percent change 
+
+
+        
+
  
+
 Variables
 ---------
  
@@ -83,11 +105,13 @@ Example plots
  
 .. figure:: figures/hyint/hyint_maps.png
 .. figure:: figures/hyint/hyint_maps2.png
+   :width: 10cm
  
 Annual mean precipitation intensity with boundaries of pre-defined regions (left, figure type 1) and difference in dry spell length between two datasets over Africa (right, figure type 2)
  
 .. figure:: figures/hyint/hyint_trends.png
 .. figure:: figures/hyint/hyint_trends2.png
+   :width: 10cm
  
 HY-INT timeseries (left, figure type 12) and trend coefficients (right, figure type 14) over selected regions for EC-Earth rcp85 2006-2100 future projection normalized to the historical 1976-2005 period.
 
