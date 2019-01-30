@@ -143,7 +143,13 @@ def _get_variable_str(variable):
     if isinstance(variable, str):
         out = variable
     elif isinstance(variable, list):
-        out = ";".join(variable)
+        if len(variable) != 0:
+            try:
+                out = ";".join(variable)
+            except:
+                out = ";".join([item.__repr__() for item in variable])
+        else:
+            out = None
     else:
         try:
             out = variable['#text']
