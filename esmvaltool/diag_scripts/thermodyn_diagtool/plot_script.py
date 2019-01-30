@@ -28,10 +28,12 @@ from __future__ import division
 import os
 from shutil import move
 import math
+from matplotlib import rcParams
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 from scipy import interpolate
+from scipy import stats
 import cartopy.crs as ccrs
 from cdo import Cdo
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
@@ -119,67 +121,6 @@ def hemean(hem, lat, inp):
             hmean = (np.nansum(zmn[:, 1:(j_end - 1) / 2], axis=1)
                      + 0.5 * zmn[:, (j_end - 1) / 2 + 1])
     return hmean
-
-
-def transport(zmean, gmean, lat):
-    """Integrate the energy/water mass budgets to obtain meridional transp.
-
-    Arguments:
-    - zmean: zonal mean input fields;
-    - gmean: the global mean of the input fields;
-    - lat: a latitudinal array (in degrees of latitude);
-
-    @author: Valerio Lembo, 2018.
-    """
-    p_i = math.pi
-    dlat = np.zeros(len(lat))
-    for i in range(len(lat) - 1):
-        dlat[i] = abs(lat[i + 1] - lat[i])
-    dlat[len(lat) - 1] = dlat[len(lat) - 2]
-    zmn_ub = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
-    for index, value in enumerate(gmean):
-        for j_l in range(np.shape(zmean)[1]):
-            zmn_ub[index, j_l] = zmean[index, j_l] - value
-    zmn_ub[np.isnan(zmn_ub)] = 0
-    cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
-    transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
-    for j_l in range(len(lat) - 1):
-        cumb[:, j_l] = (-2 *
-                        np.nansum(latwgt(lat[j_l:len(lat)],
-                                         zmn_ub[:, j_l:len(lat)]),
-                                  axis=1))
-    r_earth = 6.371 * 10 ** 6
-    transp = 2 * p_i * cumb * r_earth * r_earth
-    return [zmn_ub, transp]
-
-
-def transp_max(lat, transp, lim):
-    """Obtain transport peak magnitude and location from interpolation.
-
-    Arguments:
-    - lat: a latitudinal array;
-    - transp: the meridional transport a 1D array (lat);
-    - lim: limits to constrain the peak search in
-    (necessary for ocean transp.)
-
-    @author: Valerio Lembo, 2018.
-    """
-    deriv = np.gradient(transp)
-    x_c = zerocross1d(lat, deriv)
-    y_i = np.zeros(2)
-    xc_cut = np.zeros(2)
-    j_p = 0
-    for value in x_c:
-        if abs(value) <= lim:
-            xc_cut[j_p] = value
-            y_i[j_p] = interpolate.interp1d(lat, transp,
-                                            kind='cubic')(value)
-            j_p = j_p + 1
-            if j_p == 2:
-                break
-        else:
-            pass
-    return [xc_cut, y_i]
 
 
 def balances(workdir, plotpath, filena, name, model_name):
@@ -374,7 +315,6 @@ def balances(workdir, plotpath, filena, name, model_name):
         timesery[1, :] = (-20, 20)
         rangecl = [-150, 150]
         transply = (-6E15, 6E15)
-
         fig = plt.figure()
         axi = plt.subplot(111, projection=ccrs.PlateCarree())
         axi.coastlines()
@@ -555,6 +495,134 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     a_x.plot(data[0], data[1], color='b', linestyle='-')
 
 
+def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
+    
+    xval = varlist[0]
+    yval = varlist[1]
+    modnum = len(xval)
+    axi.set_figsize = (50, 50)
+    plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
+    plt.scatter(np.nanmean(xval), np.nanmean(yval), c='red')
+    s_l, _, _, _, _ = stats.linregress(xval, yval)
+    plot_ellipse(
+        semimaj=np.nanstd(xval), semimin=np.nanstd(yval), phi=np.arctan(s_l),
+        x_cent=np.nanmean(xval), y_cent=np.nanmean(yval), a_x=axi)
+    plt.title(title, fontsize=12)
+    rcParams['axes.titlepad'] = 1
+    rcParams['axes.labelpad'] = 1
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
+    d_x = 0.01 * (max(xval) - min(xval))
+    d_y = 0.01 * (max(yval) - min(yval))
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
+                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
+                     fontsize=12)
+    axi.tick_params(axis='both', which='major', labelsize=12)
+    plt.subplots_adjust(hspace=.3)
+    plt.grid()
+
+
+def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
+    
+    xval = varlist[0]
+    yval = varlist[1]
+    modnum = len(xval)
+    axi.set_figsize = (50, 50)
+    plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
+    plt.scatter(np.nanmean(xval), np.nanmean(yval),
+                c='red')
+    s_l, _, _, _, _ = stats.linregress(xval, yval)
+    plot_ellipse(
+        semimin=np.nanstd(xval), semimaj=np.nanstd(yval), phi=np.arctan(s_l),
+        x_cent=np.nanmean(xval), y_cent=np.nanmean(yval), a_x=axi)
+    xrang = abs(max(xval) - min(xval))
+    yrang = abs(max(yval) - min(yval))
+    plt.xlim(min(xval) - 0.1 * xrang, max(xval) + 0.1 * xrang)
+    plt.ylim(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang)
+    x_x = np.linspace(min(xval) - 0.1 * xrang, max(xval) + 0.1 * xrang, 10)
+    y_y = np.linspace(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang, 10)
+    x_m, y_m = np.meshgrid(x_x, y_y)
+    z_m = x_m + y_m
+    c_p = plt.contour(x_m, y_m, z_m, colors='black', linestyles='dashed',
+                      linewidths=1.)
+    plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
+    plt.title(title, fontsize=12)
+    rcParams['axes.titlepad'] = 1
+    rcParams['axes.labelpad'] = 1
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
+    d_x = 0.01 * (max(xval) - min(xval))
+    d_y = 0.01 * (max(yval) - min(yval))
+    for i_m in np.arange(modnum):
+        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
+                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
+                     fontsize=12)
+    axi.tick_params(axis='both', which='major', labelsize=12)
+    plt.subplots_adjust(hspace=.3)
+    plt.grid()
+
+
+def plot_mm_transp(model_names, wdir, pdir):
+    """Plot multi-model meridional enthalpy transports.
+
+    The function plots in three panels the total, atmospheric and oceanic
+    enthalpy transports, respectively. 
+
+    Arguments:
+    - model_names: a list of model names contained in the ensemble;
+    - wdir: a working directory;
+    - pdir: a plots directory;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    fig = plt.figure()
+    fig.set_size_inches(12, 22)
+    axi = plt.subplot(311)
+    yrange = [-6.25E15, 6.25E15]
+    plot_mm_trasnp_panel(model_names, wdir, axi, 'total', yrange)
+    axi = plt.subplot(312)
+    plot_mm_trasnp_panel(model_names, wdir, axi, 'atmos', yrange)
+    axi = plt.subplot(313)
+    yrange = [-3E15, 3E15]
+    plot_mm_trasnp_panel(model_names, wdir, axi, 'ocean', yrange)   
+    oname = pdir + '/meridional_transp.png'
+    plt.savefig(oname)
+    plt.close(fig)
+
+
+def plot_mm_trasnp_panel(model_names, wdir, axi, domn, yrange):
+    """Plot a meridional section of enthalpy transport from a model ensemble.
+
+    Arguments:
+    - model_names: a list of model names contained in the ensemble;
+    - wdir: a working directory;
+    - axis: the axis of the pllot;
+    - domn: the domain (total, atmospheric or oceanic);
+    - yrange: a range for the y-axis;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    axi.set_figsize = (50, 50)
+    for model in model_names:
+        tot_transp_file = (wdir + '/{}_transp_mean_{}.nc'.format(domn, model))
+        dataset = Dataset(tot_transp_file)
+        name = '{}_{}'.format(domn, model)
+        toat = dataset.variables[name][:]
+        lats = dataset.variables['lat'][:]
+        plt.plot(np.array(lats), np.array(toat), color='black', linewidth=1.)
+    plt.title('(a) {} heat transports'.format(domn), fontsize=18)
+    plt.xlabel('Latitude [deg]', fontsize=14)
+    plt.ylabel('[W]', fontsize=14)
+    plt.tight_layout()
+    plt.ylim(yrange)
+    plt.xlim(-90, 90)
+    axi.tick_params(axis='both', which='major', labelsize=12)
+    plt.grid()
+
+
 def pr_output(varout, filep, nc_f, nameout):
     """Print processed ta field to NetCDF file.
 
@@ -584,6 +652,67 @@ def pr_output(varout, filep, nc_f, nameout):
     w_nc_fid.variables[nameout][:] = varout
     w_nc_fid.close()
     nc_fid.close()
+
+
+def transport(zmean, gmean, lat):
+    """Integrate the energy/water mass budgets to obtain meridional transp.
+
+    Arguments:
+    - zmean: zonal mean input fields;
+    - gmean: the global mean of the input fields;
+    - lat: a latitudinal array (in degrees of latitude);
+
+    @author: Valerio Lembo, 2018.
+    """
+    p_i = math.pi
+    dlat = np.zeros(len(lat))
+    for i in range(len(lat) - 1):
+        dlat[i] = abs(lat[i + 1] - lat[i])
+    dlat[len(lat) - 1] = dlat[len(lat) - 2]
+    zmn_ub = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
+    for index, value in enumerate(gmean):
+        for j_l in range(np.shape(zmean)[1]):
+            zmn_ub[index, j_l] = zmean[index, j_l] - value
+    zmn_ub[np.isnan(zmn_ub)] = 0
+    cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
+    transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
+    for j_l in range(len(lat) - 1):
+        cumb[:, j_l] = (-2 *
+                        np.nansum(latwgt(lat[j_l:len(lat)],
+                                         zmn_ub[:, j_l:len(lat)]),
+                                  axis=1))
+    r_earth = 6.371 * 10 ** 6
+    transp = 2 * p_i * cumb * r_earth * r_earth
+    return [zmn_ub, transp]
+
+
+def transp_max(lat, transp, lim):
+    """Obtain transport peak magnitude and location from interpolation.
+
+    Arguments:
+    - lat: a latitudinal array;
+    - transp: the meridional transport a 1D array (lat);
+    - lim: limits to constrain the peak search in
+    (necessary for ocean transp.)
+
+    @author: Valerio Lembo, 2018.
+    """
+    deriv = np.gradient(transp)
+    x_c = zerocross1d(lat, deriv)
+    y_i = np.zeros(2)
+    xc_cut = np.zeros(2)
+    j_p = 0
+    for value in x_c:
+        if abs(value) <= lim:
+            xc_cut[j_p] = value
+            y_i[j_p] = interpolate.interp1d(lat, transp,
+                                            kind='cubic')(value)
+            j_p = j_p + 1
+            if j_p == 2:
+                break
+        else:
+            pass
+    return [xc_cut, y_i]
 
 
 def varatts(w_nc_var, varname):

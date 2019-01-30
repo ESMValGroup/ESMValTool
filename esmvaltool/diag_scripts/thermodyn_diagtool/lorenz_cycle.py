@@ -138,7 +138,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         wap_tan = wap_c[:, t_t, :, :] - wap_tmn
         # Compute zonal means
         _, ta_tgan = averages(ta_tan, g_w)
-        va_tzan, _ = averages(va_tan, g_w)
         _, wap_tgan = averages(wap_tan, g_w)
         # Compute kinetic energy
         e_k[:, t_t, :, :] = makek(ua_tan, va_tan, nlat, ntp, nlev)
@@ -160,7 +159,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
                                      ntp, nlev)
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log, flag=0)
-    ape_tgmn = averages_comp(e_k, g_w, d_s, dims, flag=0)
+    ape_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log, flag=0)
     a2k_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(a2k_tgmn, ntp, 'KE -> APE (trans) ', log, flag=1)

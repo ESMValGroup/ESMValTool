@@ -232,14 +232,12 @@ def main(cfg):
     Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
-    cdo = Cdo
     logger.info('Entering the diagnostic tool')
     # Load paths
-    workdir = cfg['work_dir']
-    plotdir = cfg['plot_dir']
-    logger.info('Work directory: %s \n', workdir)
-    logger.info('Plot directory: %s \n', plotdir)
-    wdir_up = workdir
+    wdir_up = cfg['work_dir']
+    pdir_up = cfg['plot_dir']
+    logger.info('Work directory: %s \n', wdir_up)
+    logger.info('Plot directory: %s \n', pdir_up)
     plotsmod = plot_script
     data = e.Datasets(cfg)
     logger.debug(data)
@@ -251,7 +249,6 @@ def main(cfg):
     curr_vars = list(set(varnames))
     logger.debug(curr_vars)
     # load user-defined options
-    e_b = str(cfg['eb'])
     lsm = str(cfg['lsm'])
     wat = str(cfg['wat'])
     lec = str(cfg['lec'])
@@ -288,7 +285,7 @@ def main(cfg):
     for model in model_names:
         # Load paths to individual models output and plotting directories
         wdir = os.path.join(wdir_up, model)
-        pdir = os.path.join(plotdir, model)
+        pdir = os.path.join(pdir_up, model)
         if not os.path.exists(wdir):
             os.makedirs(wdir)
         # Reading file names for the specific model
@@ -346,6 +343,10 @@ def main(cfg):
             latent_all[i_m, 0] = np.nanmean(wm_gmean[1])
             latent_all[i_m, 1] = np.nanstd(wm_gmean[1])
             logger.info('Latent energy budget: %s\n', latent_all[i_m, 0])
+            logger.info('Done\n')
+            logger.info('Plotting the water mass and latent energy budgets\n')
+            plotsmod.balances(wdir_up, pdir, [wm_file[0], wm_file[1]],
+                              ['wmass', 'latent'], model)
             logger.info('Done\n')
         else:
             pass
@@ -481,14 +482,14 @@ def main(cfg):
                 logger.info('Done\n')
                 logger.info('2.3 Snowfall precipitation\n')
                 infile_rain = [prsnmask_file, tcloud_file]
-                snowentr_mean, latsnow_file, snowentr_file = comp_rainentr(
+                snowentr_mean, latsnow_file, snowentr_file = comp_snowentr(
                     model, wdir, infile_rain, aux_file)
                 logger.info('Material entropy production associated with '
                             'snowfall: %s\n', snowentr_mean)
                 logger.info('Done\n')
                 logger.info('2.4 Melting of snow at the surface \n')
                 meltentr_mean, meltentr_file = comp_meltentr(
-                        model, wdir, latsnow_file, aux_file)
+                    model, wdir, latsnow_file, aux_file)
                 logger.info('Material entropy production associated with snow '
                             'melting: %s\n', meltentr_mean)
                 logger.info('Done\n')
@@ -496,7 +497,7 @@ def main(cfg):
                 infile_pot = [htop_file, prrmask_file, prsnmask_file,
                               tcolumn_file]
                 potentr_mean, potentr_file = comp_potentr(
-                        model, wdir, infile_pot, aux_file)
+                    model, wdir, infile_pot, aux_file)
                 logger.info('Material entropy production associated with '
                             'potential energy of the droplet: %s\n',
                             potentr_mean)
@@ -534,183 +535,38 @@ def main(cfg):
                 pass
         else:
             pass
-        # Produce plots for the specific model
-        if wat in {'y', 'yes'}:
-            logger.info('Running the plotting module for the water budgets\n')
-            plotsmod.balances(wdir_up, pdir,
-                              [wm_file[0], wm_file[1]], ['wmass', 'latent'],
-                              model)
-            logger.info('Done\n')
-        else:
-            pass
         logger.info('Done for model: %s \n', model)
         i_m = i_m + 1
     # Produce multi-model ensemble plots (if more than one model are taken
     # into account).
     logger.info('I will now start multi-model plots')
-    if e_b in {'y', 'yes'}:
-        logger.info('Meridional heat transports\n')
-        fig = plt.figure()
-        fig.set_size_inches(12, 22)
-        axi = plt.subplot(311)
-        axi.set_figsize = (50, 50)
-        for model in model_names:
-            tot_transp_file = (wdir_up +
-                               '/total_transp_mean_{}.nc'.format(model))
-            dataset = Dataset(tot_transp_file)
-            name = 'total_{}'.format(model)
-            toat = dataset.variables[name][:]
-            lats = dataset.variables['lat'][:]
-            plt.plot(np.array(lats), np.array(toat), color='black',
-                     linewidth=1.)
-        plt.title('(a) Total heat transports', fontsize=18)
-        plt.xlabel('Latitude [deg]', fontsize=14)
-        plt.ylabel('[W]', fontsize=14)
-        plt.tight_layout()
-        plt.ylim([-6.25E15, 6.25E15])
-        plt.xlim(-90, 90)
-        axi.tick_params(axis='both', which='major', labelsize=12)
-        plt.grid()
-        axi = plt.subplot(312)
-        axi.set_figsize = (50, 50)
-        for model in model_names:
-            atm_transp_file = (wdir_up +
-                               '/atmos_transp_mean_{}.nc'.format(model))
-            dataset = Dataset(atm_transp_file)
-            name = 'atmos_{}'.format(model)
-            atmt = dataset.variables[name][:]
-            lats = dataset.variables['lat'][:]
-            plt.plot(np.array(lats), np.array(atmt), color='black',
-                     linewidth=1.)
-        plt.title('(b) Atmospheric heat transports', fontsize=18)
-        plt.xlabel('Latitude [deg]', fontsize=14)
-        plt.ylabel('[W]', fontsize=14)
-        plt.tight_layout()
-        plt.ylim([-6.25E15, 6.25E15])
-        plt.xlim(-90, 90)
-        axi.tick_params(axis='both', which='major', labelsize=12)
-        plt.grid()
-        axi = plt.subplot(313)
-        axi.set_figsize = (50, 50)
-        for model in model_names:
-            oce_transp_file = (wdir_up +
-                               '/ocean_transp_mean_{}.nc'.format(model))
-            dataset = Dataset(oce_transp_file)
-            name = 'ocean_{}'.format(model)
-            surt = dataset.variables[name][:]
-            lats = dataset.variables['lat'][:]
-            plt.plot(np.array(lats), np.array(surt), color='black',
-                     linewidth=1.)
-        plt.title('(c) Oceanic heat transports', fontsize=18)
-        plt.xlabel('Latitude [deg]', fontsize=14)
-        plt.ylabel('[W]', fontsize=14)
-        plt.tight_layout()
-        plt.ylim([-3E15, 3E15])
-        plt.xlim(-90, 90)
-        axi.tick_params(axis='both', which='major', labelsize=12)
-        plt.grid()
-        oname = plotdir + '/meridional_transp.png'
-        plt.savefig(oname)
-        plt.close(fig)
-    else:
-        pass
+    logger.info('Meridional heat transports\n')
+    plotsmod.plot_mm_transp(model_names, wdir_up, pdir_up)
+
     logger.info('Scatter plots')
     fig = plt.figure()
     fig.set_size_inches(12, 22)
-    colors = (0, 0, 0)
     axi = plt.subplot(321)
-    axi.set_figsize = (50, 50)
-    plt.scatter(toab_all[:, 0], atmb_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(toab_all[:, 0]), np.nanmean(atmb_all[:, 0]),
-                c='red')
-    s_l, _, _, _, _ = stats.linregress(toab_all[:, 0], atmb_all[:, 0])
-    plotsmod.plot_ellipse(semimaj=np.nanstd(toab_all[:, 0]),
-                          semimin=np.nanstd(atmb_all[:, 0]),
-                          phi=np.arctan(s_l),
-                          x_cent=np.nanmean(toab_all[:, 0]),
-                          y_cent=np.nanmean(atmb_all[:, 0]), a_x=axi)
-    plt.title('(a) TOA vs. atmospheric energy budget', fontsize=12)
-    rcParams['axes.titlepad'] = 1
-    rcParams['axes.labelpad'] = 1
-    plt.xlabel('R_t [W m-2]', fontsize=14)
-    plt.ylabel('F_a [W m-2]', fontsize=14)
-    d_x = 0.01 * (max(toab_all[:, 0]) - min(toab_all[:, 0]))
-    d_y = 0.01 * (max(atmb_all[:, 0]) - min(atmb_all[:, 0]))
-    for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (toab_all[i_m, 0], atmb_all[i_m, 0]),
-                     xytext=(toab_all[i_m, 0] + d_x, atmb_all[i_m, 0] + d_y),
-                     fontsize=12)
-    axi.tick_params(axis='both', which='major', labelsize=12)
-    plt.subplots_adjust(hspace=.3)
-    plt.grid()
+    title = '(a) TOA vs. atmospheric energy budget'
+    xlabel = 'R_t [W m-2]'
+    ylabel = 'F_a [W m-2]'
+    varlist = [toab_all[:, 0], atmb_all[:, 0]]
+    plotsmod.plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
+    
     axi = plt.subplot(322)
-    axi.set_figsize = (50, 50)
-    plt.scatter(baroc_eff_all, lec_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(baroc_eff_all), np.nanmean(lec_all[:, 0]), c='red')
-    s_l, _, _, _, _ = stats.linregress(baroc_eff_all, lec_all[:, 0])
-    plotsmod.plot_ellipse(semimin=np.nanstd(baroc_eff_all),
-                          semimaj=np.nanstd(lec_all[:, 0]),
-                          phi=np.arctan(s_l), x_cent=np.nanmean(baroc_eff_all),
-                          y_cent=np.nanmean(lec_all[:, 0]), a_x=axi)
-    plt.title('(b) Baroclinic efficiency vs. Intensity of LEC', fontsize=12)
-    rcParams['axes.titlepad'] = 1
-    rcParams['axes.labelpad'] = 1
-    plt.xlabel('Eta', fontsize=14)
-    plt.ylabel('W [W/m2]', fontsize=14)
-    d_x = 0.01 * (max(baroc_eff_all) - min(baroc_eff_all))
-    d_y = 0.01 * (max(lec_all[:, 0]) - min(lec_all[:, 0]))
-    for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (baroc_eff_all[i_m], lec_all[i_m, 0]),
-                     xytext=(baroc_eff_all[i_m] + d_x, lec_all[i_m, 0] + d_y),
-                     fontsize=12)
-    axi.tick_params(axis='both', which='major', labelsize=12)
-    plt.subplots_adjust(hspace=.3)
-    plt.grid()
+    title = '(b) Baroclinic efficiency vs. Intensity of LEC'
+    xlabel = 'Eta'
+    ylabel = 'W [W/m2]'
+    varlist = [baroc_eff_all, lec_all[:, 0]]
+    plotsmod.plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
+
     axi = plt.subplot(323)
-    axi.set_figsize = (50, 50)
-    plt.scatter(horzentr_all[:, 0], vertentr_all[:, 0], c=colors, alpha=1)
-    plt.scatter(np.nanmean(horzentr_all[:, 0]), np.nanmean(vertentr_all[:, 0]),
-                c='red')
-    s_l, _, _, _, _ = stats.linregress(horzentr_all[:, 0], vertentr_all[:, 0])
-    plotsmod.plot_ellipse(semimin=np.nanstd(horzentr_all[:, 0]),
-                          semimaj=np.nanstd(vertentr_all[:, 0]),
-                          phi=np.arctan(s_l),
-                          x_cent=np.nanmean(horzentr_all[:, 0]),
-                          y_cent=np.nanmean(vertentr_all[:, 0]),
-                          a_x=axi)
-    xrang = abs(max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
-    yrang = abs(max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
-    plt.xlim(min(horzentr_all[:, 0]) - 0.1 * xrang,
-             max(horzentr_all[:, 0]) + 0.1 * xrang)
-    plt.ylim(min(vertentr_all[:, 0]) - 0.1 * yrang,
-             max(vertentr_all[:, 0]) + 0.1 * yrang)
-    x_x = np.linspace(min(horzentr_all[:, 0]) - 0.1 * xrang,
-                      max(horzentr_all[:, 0]) + 0.1 * xrang,
-                      10)
-    y_y = np.linspace(min(vertentr_all[:, 0]) - 0.1 * yrang,
-                      max(vertentr_all[:, 0]) + 0.1 * yrang,
-                      10)
-    x_m, y_m = np.meshgrid(x_x, y_y)
-    z_m = x_m + y_m
-    c_p = plt.contour(x_m, y_m, z_m, colors='black', linestyles='dashed',
-                      linewidths=1.)
-    plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
-    plt.title('(c) Vertical vs. horizontal component', fontsize=12)
-    rcParams['axes.titlepad'] = 1
-    rcParams['axes.labelpad'] = 1
-    plt.xlabel('S_hor [W m-2 K-1]', fontsize=14)
-    plt.ylabel('S_ver [W m-2 K-1]', fontsize=14)
-    d_x = 0.01 * (max(horzentr_all[:, 0]) - min(horzentr_all[:, 0]))
-    d_y = 0.01 * (max(vertentr_all[:, 0]) - min(vertentr_all[:, 0]))
-    for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (horzentr_all[i_m, 0],
-                                    vertentr_all[i_m, 0]),
-                     xytext=(horzentr_all[i_m, 0] + d_x,
-                             vertentr_all[i_m, 0] + d_y),
-                     fontsize=12)
-    axi.tick_params(axis='both', which='major', labelsize=12)
-    plt.subplots_adjust(hspace=.3)
-    plt.grid()
+    title = '(c) Vertical vs. horizontal component'
+    xlabel = 'S_hor [W m-2 K-1]'
+    ylabel = 'S_ver [W m-2 K-1]'
+    varlist = [horzentr_all[:, 0], vertentr_all[:, 0]]
+    plotsmod.plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel)
+
     indentr_all = horzentr_all[:, 0] + vertentr_all[:, 0]
     axi = plt.subplot(324)
     axi.set_figsize = (50, 50)
@@ -789,7 +645,7 @@ def main(cfg):
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.grid()
-    oname = plotdir + '/scatters_summary.png'
+    oname = pdir_up + '/scatters_summary.png'
     plt.savefig(oname)
     plt.subplots_adjust(hspace=.3)
     # Scatter plot of climatological mean values vs. interannual
@@ -904,7 +760,7 @@ def main(cfg):
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
-    plt.savefig(plotdir + '/scatters_variability.png')
+    plt.savefig(pdir_up + '/scatters_variability.png')
     plt.close(fig)
     logger.info("The diagnostic has finished. Now closing...\n")
 
@@ -979,7 +835,7 @@ def auxiliary(model, wdir, filelist, flags):
         aux_files = [evspsbl_file, prr_file]
     elif entr in {'y', 'yes'}:
         if met in {'2', '3'}:
-            evspsbl_file, prr_file = comp_wfluxes(wdir, filelist)
+            evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
             mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
                        hfss_file, te_file]
             tabl_file, tlcl_file, htop_file = mkth.mkthe_main(wdir, mk_list,
@@ -1133,7 +989,7 @@ def comp_budgets(model, wdir, aux_file, filelist):
 def comp_entr(filelist, nin, nout, entr_file, entr_mean_file):
     """Obtain the entropy dividing some energy by some working temperature.
 
-    This function ingests an energy and a related temperature, then writes 
+    This function ingests an energy and a related temperature, then writes
     (time,lat,lon) entropy fluxes and entropy flux annual mean values to NC
     files.
 
@@ -1346,6 +1202,25 @@ def comp_meltentr(model, wdir, latsnow_file, aux_file):
 
 
 def comp_potentr(model, wdir, infile, aux_file):
+    """Compute entropy production related to potential energy of the droplet.
+
+    The function computes the material entropy production related to the
+    potential energy of the snowfall or rainfall droplet. This term must be
+    part of a material entropy production budget, even though it does take part
+    to the energy exchanges of a model "normally".
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - infile: a list of files containing the height of the bondary layer top
+      (htop), the masked rainfall precipitation (prrmask), the masked snowfall
+      precipitation (prsnmask), the temperature of the vertical column between
+      the cloud top and the ground (tcolumn);
+    - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
     cdo = Cdo()
     removeif(aux_file)
     htop_file = infile[0]
