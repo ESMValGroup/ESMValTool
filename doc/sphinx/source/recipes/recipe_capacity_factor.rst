@@ -56,9 +56,10 @@ References
 * Lledó, L. (2017). Computing capacity factor. Technical note BSC-ESS-2017-001, Barcelona Supercomputing Center. Available online at https://earth.bsc.es/wiki/lib/exe/fetch.php?media=library:external:bsc-ess-2017-001-c4e_capacity_factor.pdf [last accessed 11 October 2018]
 
 Example plots
--------------
+----------
 
-.. centered:: |pic_capfactor1|
+.. _fig_capfactor1:
+.. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
+   :align:   center
+   :width:   14cm
 
-.. |pic_capfactor1| image:: /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
-   :width: 80%
