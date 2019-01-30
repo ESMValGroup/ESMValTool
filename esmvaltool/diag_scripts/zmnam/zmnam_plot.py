@@ -8,9 +8,9 @@ Copernicus C3S 34a lot 2 (MAGIC)
 """
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import netCDF4 as nc4
-import matplotlib as mpl
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 
@@ -121,9 +121,9 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         max_var = 5
         n_bars = 50
 
-        n, bins, patches = plt.hist(pc_da[:, i_lev], n_bars, density=True,
-                                    range=(min_var, max_var), facecolor='b',
-                                    alpha=0.75)
+        _, bins, _ = plt.hist(pc_da[:, i_lev], n_bars, density=True,
+                              range=(min_var, max_var), facecolor='b',
+                              alpha=0.75)
 
         # Reference normal Gaussian
         mu = 0.
@@ -158,7 +158,7 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
                 slope[j_lat, k_lon] = np.dot(zg_mo[:, i_lev, j_lat, k_lon],
                                              (pc_mo[:, i_lev]) /
                                              np.dot(pc_mo[:, i_lev],
-                                             pc_mo[:, i_lev]))
+                                                    pc_mo[:, i_lev]))
 
         # Plots of regression maps
         plt.figure()
@@ -168,7 +168,7 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
         # Create the projections
         ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
-        geo = ccrs.Geodetic()
+        ccrs.Geodetic()
 
         # Create the geoaxes for an orthographic projection
         ax = plt.axes(projection=ortho)

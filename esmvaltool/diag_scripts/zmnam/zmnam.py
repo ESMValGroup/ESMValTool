@@ -30,7 +30,7 @@ from zmnam_clean import zmnam_clean
 logger = logging.getLogger(__name__)
 
 
-def get_provenance_record(gatt, vatt, ancestor_files):
+def get_provenance_record(vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     caption = ("Compute Zonal-mean Northern Annular Modes between "
                "{start_year} and {end_year} ".format(**vatt))
@@ -55,7 +55,6 @@ def main(cfg):
     - preprocessing
     - index calculation
     - regression and plot
-
     """
     logger.setLevel(cfg['log_level'].upper())
 
@@ -86,9 +85,8 @@ def main(cfg):
     os.chdir(out_dir)
 
     # Process list of input files
-    for indfile in range(len(filenames_cat)):
+    for indfile, ifile in enumerate(filenames_cat):
 
-        ifile = filenames_cat[indfile]
         ifile_props = fileprops_cat[indfile]
 
         # Call diagnostics functions
@@ -98,14 +96,11 @@ def main(cfg):
                                 '/', ifile_props, fig_fmt,
                                 write_plots)
         provenance_record = get_provenance_record(
-            cfg, list(input_files.values())[0], ancestor_files=ifile)
+            list(input_files.values())[0], ancestor_files=ifile)
         if write_plots:
-            provenance_record['plot_file'] = plot_files
+            # plot_file cannot be an array, so only the first plot is provided
+            provenance_record['plot_file'] = plot_files[0]
         zmnam_clean()
-        print('-------------------------')
-        print(provenance_record)
-        print('-------------------------')
-        print(outfiles)
         for file in outfiles:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)
