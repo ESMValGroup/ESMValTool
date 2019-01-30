@@ -229,7 +229,7 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
     file_out.title = 'Zonal mean annular mode (4)'
     file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
-    C. Cagnazzo (c.cagnazzo@isac.cnr.it)'
+    C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     #
     file_out.createDimension('time', None)
