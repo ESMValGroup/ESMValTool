@@ -52,11 +52,6 @@ external_r95=external_norm # a) F=use internal data to evaluate r95 threshold
 
 # Plotting options
 # Plot_type set in namelist
-ryearplot <- 2006 # years to be plotted for experiments
-                  # (maps over individual years): 
-                  # a) actual years, b) "FIRST" = first year in dataset or 
-                  # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
-rmultiyear_mean <- T # T to plot multiyear mean (this override ryearplot)
 ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
                           # a) "EXP" == same as experiments, 
                           # b) one year only, e.g. c(1998)    
@@ -64,57 +59,23 @@ force_ref <- F # set TRUE to force plotting of reference data
                # as any other experiment
 
 # user defined extra label for figure file name
-#label= "test" set in namelist 
-
-map_continents <- -2 # thickness of continents:
-                     # positive values in white, negative values in gray
-map_continents_regions <- F # T to plot also regional boundaries
+label= "" 
 
 # colorbar
 add_colorbar <- F # T to add colorbar
 legend_distance <- 3
 
 # timeseries options
-weight_tseries <- T  # T to calculate area weighted time averages
-trend_years <- F # a) F=all;
-                 # b) c(year1,year2) to apply trend calculation and plotting
-                 #    only to a limited time interval (year1<=years<=year2) 
-                 # c) c(year1,year2,year3,year4) to apply trend to two separate
-                 #   time intervals (year1<=y's<=year2) and (year3<=y's<=year4)
-removedesert <- F # T to remove (flag as NA) grid points with mean annual
-                  # pr < 0.5 mm/day (desertic areas, Giorgi et al. 2014)
-masksealand <- F # T to mask depending on seaLandElevation threshold
-sealandelevation <- 0 # a) 0 land; b) positive value: land above given
-                      # elevation; c) negative value: sea below given depth.
-                      # The topography/bathymetry file is generated with cdo 
-                      # from ETOPO data. 
-reverse_masksealand <- F # T to reject what selected, F to keep what selected
 highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation
                       #  to be overplotted with contour lines of elevation
 highreselevation_only <- F # T to plot only high resolution elevation contours
-oplot_grid <- F # T to plot grid points over maps
 
 # timeseries and trend plotting options
-lm_trend <- T         # T to calculate linear trend
-add_trend <- T        # T to add linear trend to plot
-add_trend_sd <- F     # T to add stdev range to timeseries
-add_trend_sd_shade <- F   # T to add shade of stdev range to timeseries
-add_tseries_lines <- T    # T to plot lines of timeseries over points
-add_zeroline <- T         # T to plot a dashed line at y=0
-trend_years_only <- F # T to limit timeseries plotting to trend_years[1:2]
-                      # time interval
-scale100years <- T    # T to plot trends as 1/100 years
-scalepercent <- F     # T to plot trends as percent change 
-                      # (this is not applied to HY-INT)
-add_legend <- 5       # a) F=no legend; b) n>0 list disposed in n column; 
+add_legend <- 5       # a) F=no legend; b) n>0 list disposed in n column;
                       # c) <0 horizontal legend 
-xy_legend <- c(0.03,0.4) # position of legend in fraction of plotting panel 
-tag_legend <- c(T,F,F) # 1=model name, 2=model experiment, 3=model ensemble 
+xy_legend <- c(0.03, 0.4) # position of legend in fraction of plotting panel
+tag_legend <- c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
                        # (select one or more)
-
-
-
-
 
 # define fields for timeseries calculation and plotting
 hyint_list <- c(

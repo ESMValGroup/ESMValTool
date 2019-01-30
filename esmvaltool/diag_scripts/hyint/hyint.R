@@ -84,6 +84,10 @@ for (myname in names(settings)) {
 
 metadata <- yaml::read_yaml(settings$input_files)
 
+# setup provenance file and list
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
+provenance <- list()
+
 # get name of climofile for selected variable and 
 # list associated to first climofile
 climofiles <- names(metadata)
@@ -102,10 +106,8 @@ print(paste0(diag_base, ": starting routine"))
 if (length(etccdi_dir) != 1) {
   etcddi_dir <- work_dir
 }
-regridding_dir <- run_dir
 dir.create(plot_dir, recursive = T, showWarnings = F)
 dir.create(work_dir, recursive = T, showWarnings = F)
-dir.create(regridding_dir, recursive = T, showWarnings = F)
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
@@ -133,7 +135,7 @@ if (write_netcdf) {
     if (rgrid != F) {
       sgrid <- rgrid
     }
-    regfile <- getfilename_regridded(regridding_dir, sgrid, var0, model_idx)
+    regfile <- getfilename_regridded(run_dir, sgrid, var0, model_idx)
 
     # If needed, pre-process file and add absolute time axis
     if (run_regridding) {
@@ -153,7 +155,7 @@ if (write_netcdf) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
         hyint_diagnostic(work_dir, regfile, model_idx, seas,
-                         rewrite = force_diagnostic)
+                         provenance, rewrite = force_diagnostic)
       }
     }
   }
@@ -172,7 +174,7 @@ if (write_netcdf & etccdi_preproc) {
 if (write_netcdf & run_timeseries) {
   for (model_idx in c(1:(length(models_name)))) {
     for (seas in seasons) {
-      hyint_trends(work_dir, model_idx, seas)
+      hyint_trends(work_dir, model_idx, seas, provenance)
     }
   }
 }
@@ -194,4 +196,8 @@ if (write_plots) {
   }
 }
 
+# Write provenance to file
+write_yaml(provenance, provenance_file)
+
+# Closing message
 print(paste0(diag_base, ": done."))
