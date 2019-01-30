@@ -1,4 +1,6 @@
 """
+Ensemble Clustering Diagnostics.
+
 Author: Irene Mavilia (ISAC-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
 
