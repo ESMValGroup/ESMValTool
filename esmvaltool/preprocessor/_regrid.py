@@ -26,11 +26,13 @@ from ..cmor.table import CMOR_TABLES
 from ..cmor.fix import fix_file, fix_metadata
 
 # Regular expression to parse a "MxN" cell-specification.
+# or a "MxNc" (latitudes centered on 0) cell-specification.
 _CELL_SPEC = re.compile(
     r'''\A
         \s*(?P<dx>\d+(\.\d+)?)\s*
         x
         \s*(?P<dy>\d+(\.\d+)?)\s*
+        (?P<center>c?)
         \Z
      ''', re.IGNORECASE | re.VERBOSE)
 
@@ -73,7 +75,7 @@ def _stock_cube(spec):
     -90 to 90 degrees. Each cell grid point is calculated as the mid-point of
     the associated MxN cell.
 
-    Paramaters
+    Parameters
     ----------
     spec : str
         Specifies the 'MxN' degree cell-specification for the global grid.
@@ -92,6 +94,7 @@ def _stock_cube(spec):
     cell_group = cell_match.groupdict()
     dx = float(cell_group['dx'])
     dy = float(cell_group['dy'])
+    center = cell_group['center']
 
     if (np.trunc(_LON_RANGE / dx) * dx) != _LON_RANGE:
         emsg = ('Invalid longitude delta in MxN cell specification '
@@ -106,7 +109,11 @@ def _stock_cube(spec):
     mid_dx, mid_dy = dx / 2, dy / 2
 
     # Construct the latitude coordinate, with bounds.
-    ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
+    if len(center) == 0:
+        ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
+                            _LAT_RANGE / dy)
+    else: 
+        ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
     lats = iris.coords.DimCoord(
         ydata, standard_name='latitude', units='degrees_north', var_name='lat')
     lats.guess_bounds()
