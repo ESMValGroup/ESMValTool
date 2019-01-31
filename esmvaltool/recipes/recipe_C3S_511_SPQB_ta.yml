@@ -48,10 +48,35 @@ diagnostics:
         derive: False
         mip: Amon
     scripts:
-      SPQB_basic_report:
+      diag_mean:
         script: qualassess/ta_C3S_511_SPQB.py
-#        levels: None
+        requests: [mean]
         levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_std_dev:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [std_dev]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_perc:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [percentiles]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_clim:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [climatology]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_anom:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [anomalies]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_custom:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [custom]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      report:
+        script: qualassess/ta_C3S_511_SPQB.py
+        ancestors: ['*/diag_*']
+#        levels: None
+        requests: [report]
         show_latex: False #options are: True/False/no_latex
         
 #  diagnostic1:

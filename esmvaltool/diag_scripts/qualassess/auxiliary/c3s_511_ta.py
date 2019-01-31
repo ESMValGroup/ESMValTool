@@ -274,4 +274,9 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
         
 
         return list_of_plots
+    
+    def run_diagnostic(self):
+        self.__do_mean_var__()
+        
+#        self.__do_full_report__()
         

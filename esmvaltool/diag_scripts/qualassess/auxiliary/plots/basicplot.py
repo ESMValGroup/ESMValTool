@@ -1032,10 +1032,10 @@ def plot_setup(d="time", m="module", numfigs=1, fig=plt.figure(), caption=''):
         ax = np.array([plt.subplot(gs[:-5, 0]),
                        plt.subplot(gs[-5:-2, 0]), plt.subplot(gs[-2:, 0])])
         fig.set_figheight(1.7 * fig.get_figheight())
-    if "CLIMATOLOGY" == m:
+    if "climatology" == m:
         fig.set_figheight(1.7 * fig.get_figheight())
         caption = caption + ' Subplots a) - l) show months January - December.'
-    if "PERCENTILE" == m:
+    if "percentiles" == m:
         fig.set_figheight(1.3 * fig.get_figheight())
         caption = caption + ' Subplots a) - g) show percentiles ' + \
             '1%, 5%, 10%, 50%, 90%, 95%, and 99%.'
