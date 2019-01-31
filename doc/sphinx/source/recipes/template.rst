@@ -32,7 +32,7 @@ User settings in recipe
 
    *Required settings (variables)*
 
-   * Optional settings (variables)
+   *Optional settings (variables)*
 
    *Color tables*
 
