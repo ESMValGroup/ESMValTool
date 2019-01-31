@@ -1,3 +1,4 @@
+---
 recipe_consecdrydays.yml:
   frlim:  # days?
     - 2.5
@@ -10,14 +11,14 @@ recipe_consecdrydays.yml:
 
 recipe_ensclus.yml:
   season:
-#    - DJF  # broken
-#    - DJFM  # broken
-#    - NDJFM  # broken
+    - DJF
+    - DJFM
+    - NDJFM
     - JJA
   area:
     - EAT  # Euro-Atlantic
     - PNA  # Pacific North American
-#    - NH   # Northern Hemisphere  # broken
+    - NH   # Northern Hemisphere
     - Eu   # Europe
   extreme:
     - 60th_percentile
@@ -174,3 +175,85 @@ recipe_miles_eof.yml:
     - "-10_10_40_50"
 
 recipe_miles_regimes.yml:
+
+recipe_rainfarm.yml:
+  slope:  # spatial spectral slope (set to 0 to compute from large scales)
+    - 1.7
+    - 0
+  nens:  # number of ensemble members to be calculated
+    - 2
+  nf:  # subdivisions for downscaling
+    - 8
+  conserv_glob:  # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+    - false
+    - true
+  conserv_smooth:  # conserve precipitation using convolution (if neither is chosen box conservation is used)
+    - false
+    - true
+  weights_climo:   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
+    - false
+
+recipe_zmnam.yml:
+
+recipe_quantilebias.yml:
+  perc_lev:
+    - 50
+    - 75
+
+recipe_hyint.yml:
+  norm_years:  # first and last year of reference normalization period to be used for normalized indices
+
+  selfields:  # indices to be plotted. Select one or more fields from the following list (order-sensitive) as a numerical index:
+    - [1]  # SDII
+    - [2]  # DSL
+    - [3]  # WSL
+    - [4]  # HY-INT
+    - [5]  # ABS_INT
+    - [6]  # ABS_DSL
+    - [7]  # ABS_WSL
+    - [8]  # PA
+    - [9]  # R95
+    - [8, 4, 1, 9, 3, 2]
+    - [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  selregions:  # Select regions for timeseries and maps from the following list as a numerical index:
+    - [1]  # World
+    - [2]  # World60 (60S/60N)
+    - [3]  # Tropics (30S/30N)
+    - [4]  # South
+    - [5]  # America
+    - [6]  # Africa
+    - [7]  # North America
+    - [8]  # India
+    - [9]  # Europe
+    - [10]  # East-Asia
+    - [11]  # Australia
+    - [2, 4, 5, 6, 7]
+  plot_type:  # type of figures to be plotted. Select one or more from:
+    - [1]  # lon/lat maps per individual field/exp/multi-year mean
+    - [2]  # lon/lat maps per individual field exp-ref-diff/multi-year mean
+    - [3]  # lon/lat maps multi-field/exp-ref-diff/multi-year mean
+    - [11]  # timeseries over required individual region/exp
+    - [12]  # timeseries over multiple regions/exp
+    - [13]  # timeseries with multiple models
+    - [14]  # summary trend coefficients multiple regions
+    - [15]  # summary trend coefficients multiple models
+  # Undocumented options
+  # Select single plot or multi-panel figure
+  multipanel:
+    - true
+    - false
+  # Select number of columns and rows in multi-panel figure
+  npancol:  # number of columns for trend/tseries multi-panel figures
+    - 2
+  npanrow:  # number of rows for trend/tseries multi-panel figures
+    - 3
+  # Select automated or pre-set range of values in plots
+  autolevels:
+    - true
+    - false
+  # ------- Advanced settings ----------
+  topography_highres:
+    - "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
+  boxregion:
+    - false  #-2 # !=0 plot region boxes over maps with thickness = abs(boxregion) and
+                 # white (>0) or grey (<0).  This automatically works on global maps only.
