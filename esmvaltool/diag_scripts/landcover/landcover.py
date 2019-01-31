@@ -43,6 +43,7 @@ import iris
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import esmvaltool.diag_scripts.shared as diag
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -256,29 +257,27 @@ def sel_lats(latlist, bounds):
     return subset
 
 
-def get_timmeans(cfg, datapath, cubes, refset):
+def get_timmeans(attr, cubes, refset, prov_rec):
     """Return time averaged data cubes.
 
     Parameters
     ----------
-    cfg : dict
-        Configuration dictionary of the recipe.
-    datapath : str
-        Path and filename of netCDF data file.
+    attr : dict
+        contains metadata for dataset.
     cubes : dict
         collection of iris data cubes.
     refset : dict
         reference dataset names for all variables.
+    prov_rec : dict
+        contains information for provenance tracking.
     """
     # Get dataset information
-    datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
-    dset = datainfo['dataset']
-    var = datainfo['short_name']
+    var = attr['short_name']
     # Store name of reference data for given variable
     if var not in refset.keys():
-        refset[var] = datainfo.get('reference_dataset', None)
+        refset[var] = attr.get('reference_dataset', None)
     # Load data into iris cube
-    new_cube = iris.load(datapath, diag.Variables(cfg).standard_names())[0]
+    new_cube = iris.load_cube(attr['filename'])
     # Check for expected unit
     if new_cube.units != '%':
         raise ValueError('Unit % is expected for ' +
@@ -287,22 +286,38 @@ def get_timmeans(cfg, datapath, cubes, refset):
     mean_cube = new_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
     # Rename variable in cube
     mean_cube.var_name = "_".join([
-        datainfo.get('cmor_table', ''),
-        datainfo.get('dataset', ''),
-        datainfo.get('exp', ''),
-        datainfo.get('ensemble', '')
+        attr.get('cmor_table', ''),
+        attr.get('dataset', ''),
+        attr.get('exp', ''),
+        attr.get('ensemble', '')
     ]).replace('__', '_').strip("_")
-    mean_cube.long_name = " ".join([var, 'for dataset', dset])
-    # Update data for dataset
-    diag.Datasets(cfg).set_data(mean_cube.data, datapath)
+    mean_cube.long_name = " ".join([var, 'for dataset', attr['dataset']])
     # Append to cubelist for temporary output
-    if dset == refset[var]:
+    if attr['dataset'] == refset[var]:
         cubes['ref'][var].append(mean_cube)
     else:
         cubes['exp'][var].append(mean_cube)
+    # Add information to provenance record
+    if prov_rec[var] == {}:
+        caption = ("Mean land cover fraction for {long_name} between "
+                   "{start_year} and {end_year} for different datasets".format(
+                       **attr))
+        prov_rec[var] = {
+            'caption': caption,
+            'statistics': ['mean'],
+            'domains': ['global'],
+            'plot_type': 'regional averages',
+            'authors': ['hage_st', 'loew_al', 'muel_bn', 'stac_to'],
+            'references': [
+                'acknow_project',
+            ],
+            'ancestors': [attr['filename']]
+        }
+    else:
+        prov_rec[var]['ancestors'].append(attr['filename'])
 
 
-def write_data(cfg, cubes, var):
+def write_data(cfg, cubes, var, prov_rec):
     """Write intermediate datafield for one variable.
 
     Parameters
@@ -313,6 +328,8 @@ def write_data(cfg, cubes, var):
         collection of iris data cubes.
     var : str
         variable short name
+    prov_rec : dict
+        contains information for provenance tracking.
     """
     # Compile output path
     filepath = os.path.join(cfg[diag.names.WORK_DIR],
@@ -323,6 +340,10 @@ def write_data(cfg, cubes, var):
     if cfg[diag.names.WRITE_NETCDF]:
         iris.save(outcubes, filepath)
         logger.info("Writing %s", filepath)
+
+    # provenance tracking
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filepath, prov_rec[var])
 
 
 def compute_landcover(var, lcdata, cubes):
@@ -459,6 +480,10 @@ def main(cfg):
     logging.debug("Found datasets in recipe:\n%s", diag.Datasets(cfg))
     logging.debug("Found variables in recipe:\n%s", diag.Variables(cfg))
 
+    # Get metadata information
+    grouped_input_data = diag.group_metadata(
+        cfg['input_data'].values(), 'standard_name', sort='dataset')
+
     # Prepare dictionaries
     timcubes = {
         'exp': {key: []
@@ -468,20 +493,19 @@ def main(cfg):
     }
     lcdata = {key: {} for key in diag.Variables(cfg).short_names()}
     refset = {}
+    prov_rec = {key: {} for key in diag.Variables(cfg).short_names()}
 
     # Read data and compute long term means
-    for dataset_path in sorted(diag.Datasets(cfg)):
-        get_timmeans(cfg, dataset_path, timcubes, refset)
+    for standard_name in grouped_input_data:
+        for attributes in grouped_input_data[standard_name]:
+            get_timmeans(attributes, timcubes, refset, prov_rec)
 
     for var in diag.Variables(cfg).short_names():
         # Write regridded and temporal aggregated netCDF data files
-        write_data(cfg, timcubes, var)
+        write_data(cfg, timcubes, var, prov_rec)
         # Compute aggregated and fraction average land cover
         regnam = compute_landcover(var, lcdata,
                                    timcubes['exp'][var] + timcubes['ref'][var])
-
-    # Compute aggregated area and average fractional coverage for
-    # different regions
 
     # Reshuffle data if models are the comparison target
     if cfg.get('comparison', 'variable') == 'model':
