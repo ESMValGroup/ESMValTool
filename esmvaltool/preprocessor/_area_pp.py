@@ -85,7 +85,8 @@ def zonal_means(cube, coordinate, mean_type):
     Get zonal means.
 
     Function that returns zonal means along a coordinate `coordinate`;
-    the type of mean is controlled by mean_type variable (string):
+    the type of mean is controlled by mean_type variable (string)::
+
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
@@ -122,7 +123,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
+def area_average(cube, coord1, coord2, fx_files=None):
     """
     Determine the area average.
 
@@ -137,9 +138,6 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
         coord1, coord2: str, str
             coords to use
 
-        use_fx_files: bool
-            boolean to switch in fx files.
-
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
@@ -150,7 +148,7 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
     """
     grid_areas_found = False
     grid_areas = None
-    if use_fx_files:
+    if fx_files:
         for key, fx_file in fx_files.items():
             if fx_file is None:
                 continue
@@ -170,7 +168,7 @@ def area_average(cube, coord1, coord2, use_fx_files=False, fx_files=None):
                 grid_areas = np.tile(grid_areas,
                                      [cube_shape[0], 1, 1])
 
-    if not use_fx_files and cube.coord('latitude').points.ndim == 2:
+    if not fx_files and cube.coord('latitude').points.ndim == 2:
         logger.error('area_average ERROR: fx_file needed to calculate grid'
                      + ' cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))

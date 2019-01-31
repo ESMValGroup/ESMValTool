@@ -30,52 +30,18 @@ import logging
 import os
 import sys
 from itertools import product
-import matplotlib
-matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
 import cartopy
 
-from esmvaltool.preprocessor._regrid import _stock_cube
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-
-
-def regrid_irregulars(cube, scheme='nearest'):
-    """Regrid irregular grids.
-
-    This function uses the regridding preprocessor.
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        the opened dataset as a cube.
-    scheme: str
-        The string describing the regirdding scheme.
-
-    Returns
-    -------
-    iris.cube.Cube
-        the cube with the new grid.
-
-    """
-    lats = cube.coord('latitude')
-    if lats.ndim == 1:
-        return cube
-    logger.debug('regrid_irregulars: %s', cube)
-    horizontal_schemes = dict(
-        linear=iris.analysis.Linear(extrapolation_mode='mask'),
-        nearest=iris.analysis.Nearest(extrapolation_mode='mask'),
-        area_weighted=iris.analysis.AreaWeighted(),
-        unstructured_nearest=iris.analysis.UnstructuredNearest())
-    target_grid = _stock_cube('1x1')
-    return cube.regrid(target_grid, horizontal_schemes[scheme])
 
 
 def make_map_plots(
@@ -203,7 +169,6 @@ def make_map_contour(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
-        # cube_layer = regrid_irregulars(cube_layer)
         qplt.contour(cube_layer,
                      thresholds,
                      colors=colours,
