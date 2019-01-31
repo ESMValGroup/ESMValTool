@@ -43,19 +43,9 @@ reference_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
 
 
-#Region considered
+#Region considered to select the plot
 region <- params$region
-if (region == "North-Atlantic") {
-    lon.min <- -80
-    lon.max <- 50
-    lat.min <- 20
-    lat.max <- 80
-} else if (region == "Polar")  {
-    lat.max <- 90
-    lat.min <- 61
-    lon.max <- 359
-    lon.min <- 0
-}
+
 
 #Start and end periods for the historical and projection periods
 start_historical <- as.POSIXct(params$start_historical)
@@ -143,10 +133,6 @@ if (!is.na(mes)) {
   )
 } else if (!is.na(sea)) {
   print("Seasonal")
-  print(dim(reference_data))
-  print(length(dates_historical))
-    print(frequency)
-    print(str(dates_historical))
   reference_data <- SeasonSelect( #nolint
     reference_data,
     season = frequency,
@@ -159,13 +145,7 @@ if (!is.na(mes)) {
   reference_data <- InsertDim(reference_data, posdim = 1, lendim = 1) #nolint
   reference_data <- InsertDim(reference_data, posdim = 1, lendim = 1) #nolint
   names(dim(reference_data))[c(1, 2)] <- c("model", "var")
-print(time[1:30])
-print(dim(reference_data))
   dims <- dim(reference_data)
-print(length(time))
-print(length(years))
-print(length(time)/length(years))
-
 dims <- append(
     dims, c(length(time) / length(years), length(years)), after = time_dim
   )
@@ -201,8 +181,7 @@ clim_obs <- aperm(
 )
 
 anom_obs <- Ano(reference_data, clim_obs)
-print(length(lon))
-print(length(lat))
+
 WR_obs <- WeatherRegime( #nolint
   data = anom_obs,
   EOFS = EOFS,
@@ -302,7 +281,7 @@ variable_list <- list(
 
 names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
-print(dim(variable_list[[5]]))
+
 ArrayToNetCDF( #nolint
   variable_list,
   paste0(
@@ -368,13 +347,11 @@ if (!is.na(mes)) {
     c(length(ind) / length(years), length(years)),
     after = time_dim)
 } else if (!is.na(sea)) {
-print("asf")
-print(dim(projection_data))
   projection_data <- SeasonSelect( #nolint
-    projection_data,
-    season = frequency,
-    dates = dates_projection,
-    calendar = calendario
+  projection_data,
+  season = frequency,
+  dates = dates_projection,
+  calendar = calendario
   )
   time <- projection_data$dates
   years <- unique(as.numeric(substr(time, 1, 4)))
@@ -407,59 +384,27 @@ clim_ref <- aperm(
     loess_span = 1),
     c(2, 3, 1, 4, 5))
 
-print(dim(clim_ref))
-print(dim(projection_data))
+
 anom_exp <- Ano(projection_data, clim_ref)
-print("asfasdadg")
+
 reference <- drop(WR_obs$composite)
 names(dim(reference)) <- c("lat", "lon", "nclust")
 
-png(paste0(plot_dir ,"/plot0.png"))
-PlotEquiMap(anom_exp[1,1,1,1,,], lon = lon, lat = lat,
-            toptitle = "anom_exp[1,1,1,1,,]")
-dev.off()
-
 reference <- aperm(reference, c(3, 2, 1))
 names(dim(reference)) <- c("nclust", "lon", "lat")
-#reference <- aperm(reference, c(2, 1, 3))
-#names(dim(reference)) <- c("lon", "lat", "nclust")
-png(paste0(plot_dir ,"/plot00.png"))
-PlotEquiMap(reference[1,,], lon = lon, lat = lat,
-            toptitle = "reference[,,1]")
-dev.off()
-
-#save(reference, reference,
-#     file = paste0(plot_dir, "/ref.RData"))
-#save(anom_exp, anom_exp,
-#     file = paste0(plot_dir, "/anom_exp.RData"))
-#save(lat, lat,
-#     file = paste0(plot_dir, "/lat.RData"))
-#save(lon, lon,
-     #file = paste0(plot_dir, "/lon.RData"))
-print(dim(reference))
-print(dim(anom_exp))
-#dim(anom_exp) <- c(model = 1,  var = 1, sdate = 92,
-#                ftime = 21, lat = 44, lon = 94)
-
 
 WR_exp <- RegimesAssign( #nolint
   var_ano = anom_exp, ref_maps = reference, lats = lat, method = "distance"
 )
 print(str(WR_exp))
 
-#WR_exp$composite <- as.vector(WR_exp$composite)
-#dim(WR_exp$composite) <- c(lon = 94, cluster = 3,  lat = 44 )
-png(paste0(plot_dir ,"/plot1.png"))
-PlotEquiMap(WR_exp$composite[,,1    ], lon = lon, lat = lat,
-            toptitle = "WR_exp$composite[,,1]")
-dev.off()
+
 # ---------------------------
 # Plotting WR projection:
 # ---------------------------
 cosa <- aperm(WR_exp$composite, c(3, 2, 1))
 names(dim(WR_exp$composite))[3] <- "nclust"
-#print("78958u925")
-#print(dim(WR_exp$composite))
+
 
 lim <- max(abs(cosa / 100))
 if (lim < 1) {
@@ -534,7 +479,7 @@ metadata <- list(variable = list(dim = list(list(name = "time",
 dim(WR_exp$frequency) <- c(frequency = length(WR_exp$frequency))
 dim(WR_exp$pvalue) <- c(pvalue = length(WR_exp$pvalue))
 dim(WR_exp$cluster) <- c(cluster = length(WR_exp$cluster))
-#names(dim(WR_exp$composite)) <- c("lat", "lon", "nclust")
+
 variable_list <- list(
   variable = WR_exp$composite,
   pvalue = WR_exp$pvalue,
@@ -545,13 +490,9 @@ variable_list <- list(
   time = time
 )
 names(variable_list)[1] <- var0
-print(var0)
+
 attributes(variable_list) <- NULL
-print(dim(variable_list[[1]]))
-print(dim(variable_list[[2]]))
-print(dim(variable_list[[3]]))
-print(dim(variable_list[[4]]))
-print(dim(variable_list[[5]]))
+
 ArrayToNetCDF( #nolint
   variable_list,
   paste0(
@@ -564,9 +505,7 @@ ArrayToNetCDF( #nolint
 # Computing the RMSE:
 # ---------------------------
 cosa <- aperm(WR_exp$composite, c(2, 1, 3))
-#cosa <- WR_exp$composite
-print(dim(cosa))
-print(dim(reference))
+
 rmse <- NULL
 for (i in 1 : ncenters) {
   for (j in 1 : ncenters) {
