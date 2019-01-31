@@ -50,7 +50,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -72,7 +72,7 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_diurnal_temp1|
-
-.. |pic_diurnal_temp1| image:: /esmvaltool/recipes/figures/diurnalt_temp/diurnal_temp1.png
-   :width: 80%
+.. _fig_diurnal:
+.. figure::  /recipes/figures/diurnal_temp_index/rcp85_diurnal.png
+   :align:   center
+   :width:   14cm

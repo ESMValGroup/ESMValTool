@@ -71,7 +71,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -98,11 +98,10 @@ American Academy of Actuaries, Canadian Institute of Actuaries, Casualty Actuari
 Example plots
 -------------
 
-.. centered:: |pic_heatwaves1|
-
-.. |pic_heatwaves1| image:: /esmvaltool/recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
-   :width: 80%
-
+.. _fig_combinedindices1:
+.. figure::  /recipes/figures/combined_climate_extreme_index/t90p_IPSL-CM5A-LR_rcp85_2020_2040.png
+   :align:   center
+   :width:   14cm
 
 
 
