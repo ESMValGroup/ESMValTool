@@ -65,7 +65,7 @@ class DerivedVariableBase(object):
 
         return required_variables
 
-    def calculate(self, cubes, fx_files={None}):
+    def calculate(self, cubes):
         """Compute desired derived variable.
 
         This method needs to be overridden in the child class belonging to the
@@ -77,9 +77,6 @@ class DerivedVariableBase(object):
             Includes all the needed variables (incl. fx variables) for
             derivation defined in the static class variable
             `_required_variables`.
-
-        fx_files: dict
-            A dictionary of the fx_files, if required.
 
         Returns
         -------
