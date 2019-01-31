@@ -17,13 +17,13 @@ def calculate_total_flux(fgco2_cube, cube_area):
     ----------
     cube: iris.cube.Cube
         Data Cube
+    cube_area: iris.cube.Cube
+        Cell area Cube
 
     Returns
     -------
-    numpy array:
-        An numpy array containing the time points.
     numpy.array:
-        An numpy array containing the total ice extent or total ice area.
+        An numpy array containing the total flux of CO2.
 
     """
     data = []
@@ -54,7 +54,7 @@ class DerivedVariable(DerivedVariableBase):
             'field': 'TO2M', }],
         'fx_files': ['areacello', ]}
 
-    def calculate(self, cubes, fx_files={None}):
+    def calculate(self, cubes):
         """Compute longwave cloud radiative effect."""
         fgco2_cube = cubes.extract_strict(
             Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'
@@ -68,6 +68,7 @@ class DerivedVariable(DerivedVariableBase):
 
         total_flux = calculate_total_flux(fgco2_cube, cube_area)
 
+        # Dummy result cube
         result = fgco2_cube.collapsed(['latitude', 'longitude'],
                                       iris.analysis.MEAN,)
         result.units = fgco2_cube.units * cube_area.units
