@@ -248,13 +248,12 @@ def _assemble_overlap_data(cubes, interval, statistic):
     # keep this outside the following loop
     # this speeds up the code by a factor of 15
     indices = [_slice_cube(cube, start, stop) for cube in cubes]
-    cubes = [
-        cube[indx[0]:indx[1] + 1]
-        for cube, indx in zip(cubes, indices)
-    ]
 
     for i in range(stats_dats.shape[0]):
-        time_data = [cube.data[i] for cube in cubes]
+        time_data = [
+            cube.data[indx[0]:indx[1] + 1][i]
+            for cube, indx in zip(cubes, indices)
+        ]
         stats_dats[i] = _compute_statistic(time_data, statistic)
     stats_cube = _put_in_cube(
         cubes[0][sl_1:sl_2 + 1], stats_dats, statistic, t_axis=None)
