@@ -53,6 +53,7 @@ _CACHE = dict()
 # Supported horizontal regridding schemes.
 HORIZONTAL_SCHEMES = {
     'linear': Linear(extrapolation_mode='mask'),
+    'linear_extrapolate': Linear(extrapolation_mode='extrapolate'),
     'nearest': Nearest(extrapolation_mode='mask'),
     'area_weighted': AreaWeighted(),
     'unstructured_nearest': UnstructuredNearest(),
