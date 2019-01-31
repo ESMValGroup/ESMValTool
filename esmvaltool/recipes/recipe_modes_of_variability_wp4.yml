@@ -23,7 +23,7 @@ documentation:
     - fuckar
 
 datasets:
-  - {dataset: MIROC5, project: CMIP5,  start_year: 1981,  end_year: 1990, ensemble: i0p1, exp: historical, type: exp}
+  - {dataset: MIROC5, project: CMIP5,  start_year: 1961,  end_year: 1990, ensemble: i0p1, exp: historical, type: exp}
   - {dataset: MIROC5, project: CMIP5,  start_year: 2006,  end_year: 2026, ensemble: r1i1p1, exp: rcp85, type: exp}
 
 preprocessors:
@@ -34,10 +34,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      start_longitude: -60
-      end_longitude: 40
-      start_latitude: 30
-      end_latitude: 70
+      start_longitude: -80
+      end_longitude: 50
+      start_latitude: 20
+      end_latitude: 80
 
 diagnostics:
   weather_regime:
@@ -50,7 +50,7 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/weather_regime.r
-        region: Polar # North-Atlantic or Polar
+        region: North-Atlantic # North-Atlantic or Polar
 
         start_historical: "1961-01-01"
         end_historical: "1990-12-31"
@@ -61,4 +61,4 @@ diagnostics:
         detrend_order: 2
         cluster_method: "kmeans" # If NULL it computes hcluster else specify kmeans
         EOFS: TRUE
-        frequency: 'JJA' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+        frequency: 'DEC' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF

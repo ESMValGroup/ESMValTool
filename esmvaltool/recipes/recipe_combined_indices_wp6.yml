@@ -11,7 +11,7 @@ documentation:
     - c3s-magic
 
 datasets:
-#  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2060}
+  #- {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historicla,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2006}
   #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
@@ -29,7 +29,7 @@ preprocessors:
         start_longitude: 5
 
 diagnostics:
-  anomaly_agreement:
+  combine_indices:
     description: Combine indices and/or compute area weighted averages.
     variables:
       pr:

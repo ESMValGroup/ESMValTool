@@ -2,14 +2,14 @@ anom2regime <- function(ref, target, method = "distance", lat) {
   posdim <- which(names(dim(ref)) == "nclust")
   poslat <- which(names(dim(ref)) == "lat")
   poslon <- which(names(dim(ref)) == "lon")
-
+print(dim(ref))
+    print(dim(target))
   nclust <- dim(ref)[posdim]
 
   if (all(dim(ref)[-posdim] != dim(target))) {
     stop("The target should have the same dimensions [lat,lon] that
          the reference ")
   }
-
   if (is.null(names(dim(ref))) | is.null(names(dim(target)))) {
     stop(
       "The arrays should include dimensions names ref[nclust,lat,lon]
@@ -98,7 +98,9 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
   if (length(lats) != dim(ref_maps)[poslat]) {
     stop("latitudes do not match with the maps")
   }
-
+    print("HERE")
+print(dim(var_ano))
+    print(dim(ref_maps))
   assign <-
     Apply(
       data = list(target = var_ano),
@@ -109,9 +111,18 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
       method = method
     )
 
+   if (poslat_ano < poslon_ano) {
+    dim_order = c(nlat, nlon)
+  } else {
+    dim_order = c(nlon, nlat)
+  }
+
   anom_array <-
     array(var_ano, dim = c(prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
-            nlat, nlon))
+                           dim_order))
+    #anom_array <-
+    #array(var_ano, dim = c(prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
+    #        nlat, nlon))
   rm(var_ano)
   index <- as.vector(assign$output1)
   recon <- Composite(var = aperm(anom_array, c(3, 2, 1)), occ = index)

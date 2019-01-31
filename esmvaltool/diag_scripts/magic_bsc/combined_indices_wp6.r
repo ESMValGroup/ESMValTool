@@ -65,7 +65,9 @@ units <- ncatt_get(data_nc, var0, "units")$value
 calendar <- ncatt_get(data_nc, "time", "calendar")$value
 long_names <-  ncatt_get(data_nc, var0, "long_name")$value
 time <-  ncvar_get(data_nc, "time")
+print(dim(data_nc))
 data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
+print(dim(data))
 start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
                                           "units")$value, 11, 29))
 time <- as.Date(time, origin = start_date, calendar = calendar)
@@ -83,7 +85,7 @@ if (length(params$input_files) >= 2) {
     var0 <- unlist(var0)
     data_nc <- nc_open(fullpath_filenames)
     data <- abind(data,
-                            InsertDim(ncvar_get(data_nc, var0), 1, 1), along = 1) # nolint
+    InsertDim(ncvar_get(data_nc, var0), 1, 1), along = 1) # nolint
     nc_close(data_nc)
   }
 }
@@ -172,7 +174,7 @@ if (!is.null(weights)) {
 }
 print(region)
 if (!is.null(region)) {
-  data <- data[1, 1, ]
+  data <- data[1,  ]
   attributes(data) <- NULL
   dim(data) <-  c(time = length(data))
   metadata <- list(
