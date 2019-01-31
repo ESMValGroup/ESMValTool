@@ -48,7 +48,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -65,7 +65,8 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_heatwaves1|
+.. _fig_heatwaves:
+.. figure::  /recipes/figures/heatwaves/tasmax_extreme_spell_durationsummer_IPSL-CM5A-LR_rcp85_2020_2040.png
+   :align:   center
+   :width:   14cm
 
-.. |pic_heatwaves1| image:: /esmvaltool/recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
-   :width: 80%

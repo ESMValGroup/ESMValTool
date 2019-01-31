@@ -57,7 +57,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -82,10 +82,10 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_modes_of_variability|
-
-.. |pic_modes_of_variability| image:: /esmvaltool/recipes/figures/modes_of_variability/modes_of_variaibility.png
-   :width: 80%
+.. _fig_modesofvar:
+.. figure::  /recipes/figures/modes_of_variability/DJF-psl_observed_regimes.png
+   :align:   center
+   :width:   14cm
 
 
 

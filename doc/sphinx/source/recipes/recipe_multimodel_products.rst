@@ -60,7 +60,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -77,11 +77,8 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_multi_model_agreement|
-
-.. |pic_heatwaves1| image:: /esmvaltool/recipes/figures/multi_model_agreement/multi_model_agreement.png
-   :width: 80%
-
+.. _fig_multimodprod:
+.. figure::  /recipes/figures/multimodel_products/tas_JUN_multimodel-anomaly_2006_2099_1961_1990.png
 
 
 

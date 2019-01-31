@@ -50,7 +50,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None
+*None*
 
 References
 ----------
@@ -75,10 +75,8 @@ Example plots
 Example plots
 -------------
 
-.. centered:: |pic_multi_model_agreement|
-
-.. |pic_heatwaves1| image:: /esmvaltool/recipes/figures/multi_model_agreement/multi_model_agreement.png
-   :width: 80%
+.. _fig_toymodel:
+.. figure::  /recipes/figures/toymodel/synthetic_CMIP5_IPSL-CM5A-LR_day_historical_r1i1p1_T2M_tasmax_1999-2000.jpg
 
 
 
