@@ -113,7 +113,7 @@ def _stock_cube(spec):
     if len(center) == 0:
         ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
                             _LAT_RANGE / dy)
-    else: 
+    else:
         ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
     lats = iris.coords.DimCoord(
         ydata, standard_name='latitude', units='degrees_north', var_name='lat')
