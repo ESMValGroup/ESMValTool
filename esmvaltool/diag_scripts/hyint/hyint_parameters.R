@@ -1,26 +1,19 @@
 #####################################################################
 #
-#  HyInt configuration file
+#  HyInt parameters file
 #
-# About: configuration file for ESMValTool HyInt namelist.
-#        General configuration for running the HyInt diagnostic
-#        (models and time period are defined in the HyInt namelist).
-#        In order to optimize recursive analysis, users can spearately select:
-#        a) grid and region of HyInt pre-processing and dignostic calculation
-#        b) region and years to be plotted
+#  About: fixed parameters for ESMValTool HyInt tool.
+#         Please refer to hyint_recipe for user-friendly settings.
+#         Only advanced users should change the settings here below.
 #
 #####################################################################
 
 run_regridding <- T
 force_regridding <- F
-run_diagnostic <- T
 force_diagnostic <- T
-run_timeseries <- T
 if (length(etccdi_preproc) != 1) {
   ettcdi_preproc <- F
 }
-
-
 
 # basic settings
 seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
@@ -51,8 +44,28 @@ external_r95=external_norm # a) F=use internal data to evaluate r95 threshold
                            #    the historical experiment associated with the 
                            #    model name
 
+masksealand <- T        # T to mask depending on seaLandElevation threshold
+sealandelevation <- 0   # a) 0 land; b) positive value: land above given
+                        # elevation; c) negative value: sea below given depth.
+                        # The topography/bathymetry file is generated with cdo 
+                        # from ETOPO data. 
+reverse_masksealand <- F # T to reject what selected,
+                         #  F to keep what selected
+topography_highres <- ""
+
 # Plotting options
 # Plot_type set in namelist
+map_continents <- -2           # thickness of continents:
+                             # positive values in white, negative values in gray
+map_continents_regions <- false # plot also regional boundaries
+ryearplot <- 2006  # years to be plotted for experiments
+                         # (maps over individual years): 
+                         # a) actual years, b) "FIRST" = first year in dataset or 
+                         # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
+rmultiyear_mean <- T # plot multiyear mean (this override ryearplot)
+
+
+
 ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
                           # a) "EXP" == same as experiments, 
                           # b) one year only, e.g. c(1998)    
