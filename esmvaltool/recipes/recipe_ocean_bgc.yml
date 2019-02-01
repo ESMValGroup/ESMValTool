@@ -174,12 +174,12 @@ diagnostics:
     variables:
       thetao: # Temperature 3D
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3M
+        field: TO3Y
         mip: Omon
         fx_files: [volcello,]
       so: # Salinity 3D
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3M
+        field: TO3Y
         mip: Omon
         fx_files: [volcello,]
       no3: # nitrate
@@ -203,7 +203,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -260,7 +260,7 @@ diagnostics:
         fx_files: [areacello, ]
       intpp:
         preprocessor: prep_global_Surface_average_timeseries_2D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       chl:
@@ -291,12 +291,12 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       so: # Salinity ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       no3: # Nitrate ocean surface
@@ -320,7 +320,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -350,12 +350,12 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [volcello,]
       so: # Salinity ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [volcello,]
       no3: # Nitrate ocean surface
@@ -379,7 +379,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
@@ -424,12 +424,12 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       so:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       no3:
@@ -453,7 +453,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
@@ -469,12 +469,12 @@ diagnostics:
     variables:
       intpp:
         preprocessor: prep_surface_map_2D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       fgco2:
         preprocessor: prep_surface_map_2D
-        field: TO2M
+        field: TO3Y
         mip: Omon
         fx_files: [areacello, ]
       chl:
@@ -509,12 +509,12 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_transect_AMT
-        field: TO2M
+        field: TO3Y
         mip: Omon
         thresholds: [0., 5., 10., 15., 20., 25., 30.]
       so:
         preprocessor: prep_transect_AMT
-        field: TO2M
+        field: TO3Y
         mip: Omon
       no3:
         preprocessor: prep_transect_AMT
@@ -535,7 +535,7 @@ diagnostics:
     #     field: TO3Y
     #     mip: Oyr
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
     scripts:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
