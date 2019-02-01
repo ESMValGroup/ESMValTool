@@ -85,7 +85,7 @@ begin
     end if
 
     if (any(VARS(vv).eq.(/"no3", "po4", "si"/))) then
-      output = output * 1000.  ; [ml L-1] --> [mol m-3]
+      output = output / 1000.  ; [ml L-1] --> [mol m-3]
     end if
 
     ; Set variable attributes
