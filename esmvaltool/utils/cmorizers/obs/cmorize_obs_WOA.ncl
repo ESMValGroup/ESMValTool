@@ -42,7 +42,7 @@ begin
   YEAR = 2000
 
   ; Field
-  FIELD = "T3OY"
+  FIELD = "TO3Y"
 
   ; CMOR table
   CMOR_TABLE = \
@@ -151,7 +151,7 @@ begin
       YEAR + "01-" + YEAR + "12.nc"
 
     ; Write variable
-    write_nc(fout, "tro3", output, gAtt)
+    write_nc(fout, VARS(vv), output, gAtt)
     delete(gAtt)
     delete(output)
 

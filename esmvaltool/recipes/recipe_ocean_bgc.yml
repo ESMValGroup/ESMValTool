@@ -203,8 +203,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-        - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -321,12 +320,11 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
 
   # --------------------------------------------------
@@ -381,12 +379,11 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Profile diagnostics - no data
@@ -456,14 +453,13 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Map diagnostics - no data
@@ -539,12 +535,11 @@ diagnostics:
     #     field: TO3Y
     #     mip: Oyr
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  tier: 2,  start_year: 2000,  end_year: 2000}      
     scripts:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
-        # observational_dataset: {dataset: WOA, project: obs4mips,}
+        # observational_dataset: {dataset: WOA, project: OBS}
 
   # # --------------------------------------------------
   # # Map diagnostics - no data
