@@ -420,7 +420,7 @@ for (i in 1 : length(levels(data_frame$Model))) {
     levels(data_frame$Model)[i] <- model_names[i]
 }
 
-if (!is.null(time_series_plot)) {
+if (time_series_plot == "single") {
   g <- ggplot(
     data_frame,
     aes(x = Year, y = Freq, color = Model)) + theme_bw() +
