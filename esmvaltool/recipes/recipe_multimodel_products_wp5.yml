@@ -69,4 +69,5 @@ diagnostics:
         running_mean: 5 #Length of running mean to use for the time series plot
 
         # Timeseries plot
-        time_series_plot: NULL # Either mean or maxmin (plot the mean with/without shading between the max and min.
+        time_series_plot: single # Either single or maxmin (plot the mean with/without shading between the max and min.
+
