@@ -2,7 +2,7 @@
 # pylint: disable=R0801
 """PROGRAM FOR LEC COMPUTATION.
 
-The class consists of the following functions:
+The module contains the following functions:
     - lorenz: it is the main program, controlling the file input,
               separating the real from imaginary part of the Fourier
               coefficients, reordering the latitudinal dimension
@@ -68,6 +68,7 @@ import sys
 import math
 import os
 import warnings
+from cdo import Cdo
 from netCDF4 import Dataset
 from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram,\
     fourier_coefficients
@@ -860,6 +861,87 @@ def removeif(filename):
         os.remove(filename)
     except OSError:
         pass
+
+
+def preproc_lec(model, wdir, pdir, filelist):
+    """Preprocess fields for LEC computations and send it to lorenz program.
+
+    This function computes the interpolation of ta, ua, va, wap daily fields to
+    fill gaps using near-surface data, then computes the Fourier coefficients
+    and performs the LEC computations. For every year, (lev,lat,wave) fields,
+    global and hemispheric time series of each conversion and reservoir term
+    of the LEC is provided.
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - pdir: a new directory is created as a sub-directory of the plot directory
+      to store tables of conversion/reservoir terms and the flux diagram for
+      year;
+    - filelist: a list of file names containing the input fields;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo()
+    fourc = fourier_coefficients
+    ta_file = filelist[13]
+    tas_file = filelist[14]
+    ua_file = filelist[16]
+    uas_file = filelist[17]
+    va_file = filelist[18]
+    vas_file = filelist[19]
+    wap_file = filelist[20]
+    ldir = os.path.join(pdir, 'LEC_results')
+    os.makedirs(ldir)
+    maskorog = wdir + '/orog.nc'
+    ua_file_mask = wdir + '/ua_fill.nc'
+    va_file_mask = wdir + '/va_fill.nc'
+    energy3_file = wdir + '/energy_short.nc'
+    cdo.setmisstoc('0', input='-setmisstoc,1 -sub {} {}'
+                   .format(ua_file, ua_file), options='-b F32',
+                   output=maskorog)
+    cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}')
+            .format(ua_file, uas_file, maskorog), options='-b F32',
+            output=ua_file_mask)
+    cdo.add(input=('-setmisstoc,0 -selvar,va {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}')
+            .format(va_file, vas_file, maskorog), options='-b F32',
+            output=va_file_mask)
+    cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000 '
+                               '-merge {} {} {} {}')
+                   .format(ta_file, ua_file_mask,
+                           va_file_mask, wap_file),
+                   options='-b F32', output=energy3_file)
+    yrs = cdo.showyear(input=energy3_file)
+    yrs = str(yrs)
+    yrs2 = yrs.split()
+    y_i = 0
+    lect = np.zeros(len(yrs2))
+    for y_r in yrs2:
+        y_r = int(filter(str.isdigit, y_r))
+        enfile_yr = wdir + '/inputen.nc'
+        tasfile_yr = wdir + '/tas_yr.nc'
+        tadiag_file = wdir + '/ta_filled.nc'
+        ncfile = wdir + '/fourier_coeff.nc'
+        cdo.selyear(y_r, input=energy3_file, options='-b F32',
+                    output=enfile_yr)
+        cdo.selyear(y_r, input=tas_file, options='-b F32',
+                    output=tasfile_yr)
+        fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
+        diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_r))
+        logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_r))
+        lect[y_i] = lorenz(wdir, model, y_r, ncfile, diagfile, logfile)
+        y_i = y_i + 1
+        os.remove(enfile_yr)
+        os.remove(tasfile_yr)
+        os.remove(tadiag_file)
+        os.remove(ncfile)
+    os.remove(ua_file_mask)
+    os.remove(va_file_mask)
+    os.remove(energy3_file)
+    return lect
 
 
 def stabil(ta_gmn, p_l, nlev):

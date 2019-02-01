@@ -21,6 +21,7 @@ Authors: Frank Lunkeit and Valerio Lembo (University of Hamburg)
 Created on Fri Jun 15 10:06:30 2018
 """
 import os
+from shutil import move
 from netCDF4 import Dataset
 import numpy as np
 from cdo import Cdo
@@ -38,6 +39,7 @@ H_S = 300.        # stable boundary layer height (m)
 H_U = 1000.       # unstable boundary layer height (m)
 RIC_RS = 0.39     # Critical Richardson number for stable layer
 RIC_RU = 0.28     # Critical Richardson number for unstable layer
+SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 
 
 # pylint: disable-msg=R0914
@@ -45,6 +47,104 @@ RIC_RU = 0.28     # Critical Richardson number for unstable layer
 # pylint: disable-msg=R0915
 # One hundred and twentythree is reasonable in this case.
 # flake8: noqa
+def init_mkthe(logger, model, wdir, filelist, flags):
+    """Compute auxiliary fields or perform time averaging of existing fields.
+
+    Arguments:
+    - logger: the log file where the info are printe
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - filelist: a list of file names containing the input fields;
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method
+              (1: indirect, 2, direct, 3: both));
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo
+    wat = flags[0]
+    entr = flags[1]
+    met = flags[2]
+    hfss_file = filelist[1]
+    hus_file = filelist[2]
+    ps_file = filelist[5]
+    rlut_file = filelist[8]
+    tas_file = filelist[14]
+    ts_file = filelist[15]
+    uas_file = filelist[17]
+    vas_file = filelist[19]
+    # Compute monthly mean fields from 2D surface daily fields
+    aux_file = wdir + '/aux.nc'
+    cdo.selvar('tas', input=tas_file, output=aux_file)
+    move(aux_file, tas_file)
+    tasmn_file = wdir + '/{}_tas_mm.nc'.format(model)
+    cdo.selvar('tas', input='-monmean {}'.format(tas_file),
+               option='-b F32', output=tasmn_file)
+    cdo.selvar('uas', input=uas_file, output=aux_file)
+    move(aux_file, uas_file)
+    uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
+    cdo.selvar('uas', input='-monmean {}'.format(uas_file),
+               option='-b F32', output=uasmn_file)
+    cdo.selvar('vas', input=vas_file, output=aux_file)
+    move(aux_file, vas_file)
+    vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
+    cdo.selvar('vas', input='-monmean {}'.format(vas_file),
+               option='-b F32', output=vasmn_file)
+    logger.info('Computing auxiliary variables\n')
+    # emission temperature
+    te_file = wdir + '/{}_te.nc'.format(model)
+    cdo.sqrt(input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file),
+             output=te_file)
+    te_ymm_file = wdir + '/{}_te_ymm.nc'.format(model)
+    cdo.yearmonmean(input=te_file, output=te_ymm_file)
+    te_gmean_file = wdir + '/{}_te_gmean.nc'.format(model)
+    cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
+    f_l = Dataset(te_gmean_file)
+    te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
+    logger.info('Global mean emission temperature: %s\n', te_gmean_constant)
+    # temperature of the atmosphere-surface interface
+    tasvert_file = wdir + '/{}_tvertavg.nc'.format(model)
+    removeif(tasvert_file)
+    cdo.fldmean(input='-mulc,0.5 -add {} -selvar,tas {}'
+                .format(ts_file, tasmn_file), options='-b F32',
+                output=tasvert_file)
+    # evaporation from latent heat fluxes at the surface
+    if wat in {'y', 'yes'} and entr in {'n', 'no'}:
+        evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
+        aux_files = [evspsbl_file, prr_file]
+    elif entr in {'y', 'yes'}:
+        if met in {'2', '3'}:
+            evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
+            mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
+                       hfss_file, te_file]
+            tabl_file, tlcl_file, htop_file = mkthe_main(wdir, mk_list, model)
+            # Working temperatures for the hydrological cycle
+            tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
+            removeif(tcloud_file)
+            cdo.mulc('0.5', input='-add {} {}'.format(tlcl_file, te_file),
+                     options='-b F32', output=tcloud_file)
+            tcolumn_file = (wdir + '/{}_t_vertav_pot.nc'.format(model))
+            removeif(tcolumn_file)
+            cdo.mulc('0.5', input='-add {} {}'.format(ts_file, tcloud_file),
+                     options='-b F32', output=tcolumn_file)
+            # Working temperatures for the kin. en. diss. (updated)
+            tasvert_file = (wdir + '/{}_tboundlay.nc'.format(model))
+            removeif(tasvert_file)
+            cdo.fldmean(input='-mulc,0.5 -add {} {}'
+                        .format(ts_file, tabl_file), options='-b F32',
+                        output=tasvert_file)
+            aux_files = [evspsbl_file, htop_file, prr_file, tabl_file,
+                         tasvert_file, tcloud_file, tcolumn_file,
+                         tlcl_file]
+        else:
+            pass
+    else:
+        pass
+    return te_ymm_file, te_gmean_constant, te_file, aux_files
+
+
 def mkthe_main(wdir, file_list, modelname):
     """The main script in the module for computation of aux. variables.
 
