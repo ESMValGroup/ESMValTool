@@ -65,7 +65,6 @@ def init_mkthe(logger, model, wdir, filelist, flags):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo
-    comp = computations
     wat = flags[0]
     entr = flags[1]
     met = flags[2]

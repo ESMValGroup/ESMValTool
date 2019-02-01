@@ -1,4 +1,4 @@
-"""Module for Fourier coefficients computation from lonlat grid.
+"""Module retrieving Fourier coefficients computation from lonlat grid.
 
 Computation of the Fourier coefficients from lonlat grids
 on pressure levels at every timestep.

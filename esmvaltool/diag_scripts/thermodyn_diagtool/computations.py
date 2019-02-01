@@ -43,6 +43,13 @@ L_S = 334000		            # latent heat of solidification
 GRAV = 9.81		            # gravity acceleration
 
 
+# pylint: disable-msg=R0914
+# Sixtyone is reasonable in this case.
+# pylint: disable-msg=R0915
+# Two hundreds and sixteen is reasonable in this case.
+# pylint: disable=too-many-arguments
+# Fourteen is reasonable in this case.
+# from plot_script import PlotScript
 def baroceff(model, wdir, aux_file, toab_file, te_file):
     """Compute the baroclinic efficiency of the atmosphere.
 
@@ -684,7 +691,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(logger, model, wdir, aux_file, filelist, flags):
+def wmbudg(model, wdir, aux_file, filelist, auxlist):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -698,28 +705,24 @@ def wmbudg(logger, model, wdir, aux_file, filelist, flags):
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filelist: a list of file names containing the input fields;
-    - wat: a flag for the water mass budget module (y or n);
-    - entr: a flag for the material entropy production (y or n);
-    - met: a flag for the material entropy production method (1: indirect,
-        2, direct, 3: both);
+    - auxlist: a list of auxiliary files;
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo
-    _, _, _, aux_list = mkthe.init_mkthe(logger, model, wdir, filelist, flags)
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
     wm_gmean_file = wdir + '/{}_wmb_gmean.nc'.format(model)
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(aux_list[0], filelist[3]), output=aux_file)
+    cdo.sub(input="{} {}".format(auxlist[0], filelist[3]), output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     # Latent energy budget
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
             .format(filelist[0], str(LC_SUB), filelist[3],
-                    str(L_C), aux_list[1]),
+                    str(L_C), auxlist[1]),
             output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)

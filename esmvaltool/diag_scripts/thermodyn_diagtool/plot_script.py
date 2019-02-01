@@ -1,4 +1,4 @@
-"""Module for plot scripts in Thermodyn_diagtool.
+"""Plotting module for Thermodyn_diagtool.
 
 The module provides plots for a single model of:
 - climatological mean maps of TOA, atmospheric and surface energy budgets;
@@ -10,7 +10,7 @@ The module provides plots for a single model of:
 - scatter plots of atmospheric vs. oceani peak magnitudes in the two hem.;
 - climatological mean maps of every component of the entropy budget.
 
-@author: Valerio Lembo, Meteorologisches Institut, University of Hamburg, 2018.
+@author: Valerio Lembo, University of Hamburg, 2018.
 """
 from __future__ import division
 import os
@@ -27,13 +27,6 @@ from cdo import Cdo
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 
 
-# pylint: disable-msg=R0914
-# Sixtyone is reasonable in this case.
-# pylint: disable-msg=R0915
-# Two hundreds and sixteen is reasonable in this case.
-# pylint: disable=too-many-arguments
-# Fourteen is reasonable in this case.
-# from plot_script import PlotScript
 def balances(wdir, plotpath, filena, name, model):
     """Method for various plots related to energy and water mass budgets.
 
@@ -57,7 +50,6 @@ def balances(wdir, plotpath, filena, name, model):
     nsub = len(filena)
     pdir = plotpath
     timesery = np.zeros([nsub, 2])
-    # Import files
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
     transp_mean = np.zeros([nsub, ndims[1]])
     lat_maxm = np.zeros([nsub, 2, len(dims[3])])
@@ -144,7 +136,6 @@ def balances(wdir, plotpath, filena, name, model):
         plt.close(fig)
 
 
-# flake8: noqa
 def entropy(plotpath, filename, name, ext_name, model):
     """Method for plots of annual mean maps of mat. entr. prod.
 
@@ -211,7 +202,7 @@ def global_averages(nsub, filena, name):
     - nsub: the number of variables for which averages must be computed;
     - filena: the name of the file containing the variable (without extension);
     - name: the names of the variables;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -235,15 +226,10 @@ def global_averages(nsub, filena, name):
         filename = filena[i] + '.nc'
         dataset = Dataset(filename)
         var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
-    # Compute annual mean values
-    var_r = np.reshape(var, (nsub, np.shape(var)[1] / 12, 12,
-                             nlats, nlons))
+    var_r = np.reshape(var, (nsub, np.shape(var)[1] / 12, 12, nlats, nlons))
     vary = np.nanmean(var_r, axis=2)
-    # Compute the zonal mean
     zmean = np.nanmean(vary, axis=3)
-    # Compute the climatological mean map
     tmean = np.nanmean(vary, axis=1)
-    # Compute global and hemispheric means as function of years
     for i_f in np.arange(nsub):
         zmean_w = latwgt(lats, zmean[i_f, :, :])
         gmean = np.nansum(zmean_w, axis=1)
@@ -311,7 +297,7 @@ def latwgt(lat, t_r):
     - lat: latitude (in degrees);
     - tr: the field to be averaged (time,lat);
 
-    Aauthor:
+    Author:
     Valerio Lembo, University of Hamburg (2018).
     """
     p_i = math.pi
@@ -400,11 +386,9 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    lons = coords[0]
-    lats = coords[1]
     axi.coastlines()
-    plt.contourf(lons, lats, fld, 60, transform=ccrs.PlateCarree())
-    plt.pcolor(lons, lats, fld, vmin=rrange, vmax=range, cmap=c_m,
+    plt.contourf(coords[0], coords[1], fld, 60, transform=ccrs.PlateCarree())
+    plt.pcolor(coords[0], coords[1], fld, vmin=rrange, vmax=range, cmap=c_m,
                antialiaseds='True')
     plt.colorbar()
     plt.title(title)
@@ -433,7 +417,6 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
 
     @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
     """
-    # Generate data for ellipse structure
     theta = np.linspace(0, 2 * np.pi, 100)
     r_r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
     x_x = r_r * np.cos(theta)
@@ -446,47 +429,44 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     data = np.dot(t_t, data)
     data[0] += x_cent
     data[1] += y_cent
-    # Plot!
     a_x.plot(data[0], data[1], color='b', linestyle='-')
 
 
 def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     """Plot the scatter plots of atmospheric vs. oceanic peaks and locations.
-    
+
     The function produces scatter plots for the atmospheric vs. oceanic peak
     magnitudes in the NH (a) and SH (b), atmospheric vs. ocean peak locations
     in the NH (c) and SH (d).
-    
+
     Arguments:
     - model: the name of the model;
     - pdir: a plots directory;
     - lat_maxm: the positions of the peaks;
     - tr_maxm: the magnitudes of the peaks;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    colors = (0, 0, 0)
     fig = plt.figure()
     fig.set_size_inches(12, 12)
     axi = plt.subplot(221)
     axi.set_figsize = (50, 50)
-    plt.scatter(tr_maxm[1, 0, :], tr_maxm[2, 0, :], c=colors, alpha=1)
+    plt.scatter(tr_maxm[1, 0, :], tr_maxm[2, 0, :], c=(0, 0, 0), alpha=1)
     plt.title('(a) Atm. vs ocean magnitude - SH', fontsize=13, y=1.02)
     plt.xlabel('Atmos. trans. [W]', fontsize=11)
     plt.ylabel('Oceanic trans. [W]', fontsize=11)
     plt.grid()
     axi = plt.subplot(222)
     axi.set_figsize = (50, 50)
-    plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=colors, alpha=1)
+    plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=(0, 0, 0), alpha=1)
     plt.title('(b) Atm. vs ocean magnitude - NH', fontsize=13, y=1.02)
     plt.xlabel('Atmos. trans. [W]', fontsize=11)
     plt.ylabel('Oceanic trans. [W]', fontsize=11)
     plt.grid()
     axi = plt.subplot(223)
     axi.set_figsize = (50, 50)
-    plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=colors,
-                alpha=1)
+    plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=(0, 0, 0), alpha=1)
     plt.title('(c) Atm. vs ocean location - SH', fontsize=13, y=1.02)
     plt.xlabel('Atmos. trans. position [degrees of latitude]',
                fontsize=11)
@@ -495,7 +475,7 @@ def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     plt.grid()
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
-    plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=colors, alpha=1)
+    plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=(0, 0, 0), alpha=1)
     plt.title('(d) Atm. vs ocean location - NH', fontsize=13, y=1.02)
     plt.xlabel('Atmos. trans. position [degrees of latitude]',
                fontsize=11)
@@ -511,7 +491,7 @@ def plot_1m_transp(lats, yval, ylim, strings):
 
     This function plots total, atmospheric and oceanic meridional enthalpy
     transports on the same panel.
-    
+
     Arguments:
     - lats: the latitudinal dimension as a 1D array;
     - yval: the meridional enthalpy transports as a 2D array (3,lat), where
@@ -539,7 +519,7 @@ def plot_1m_transp(lats, yval, ylim, strings):
 
 def plot_mm_ebscatter(pdir, eb_list):
     """Plot multi-model scatter plots of EB mean values vs. their variability.
-    
+
     The function produces a plot containing 4 scatter plots:
     - (a) TOA mean energy budget vs. its interannual variability;
     - (b) Atmospheric mean energy budget vs. its interannual variability;
@@ -595,7 +575,7 @@ def plot_mm_ebscatter(pdir, eb_list):
 
 def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     """Plot a multi-model scatter plot.
-    
+
     The function produces a scatter plot of a multi-model ensemble, with an
     ellipse encompassing the 1sigma uncertainty around the multi-model mean.
 
@@ -638,7 +618,7 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
 
 def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     """Plot a multi-model scatter plot ("special version").
-    
+
     The function produces a scatter plot of a multi-model ensemble, with dashed
     diagonal lines containing the sum of the x and y values, an ellipse
     encompassing the 1sigma uncertainty around the multi-model mean.
@@ -843,7 +823,6 @@ def pr_output(varout, filep, nc_f, nameout):
     """
     fourc = fourier_coefficients
     nc_fid = Dataset(filep, 'r')
-    # Writing NetCDF files
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
     w_nc_fid.description = "Total, atmospheric and oceanic annual \
                             mean meridional heat transports"
@@ -926,7 +905,7 @@ def transp_max(lat, transp, lim):
 
 def transports_preproc(lats, yrs, lim, transp):
     """Compute the peaks magnitude and locations of a meridional transport.
-    
+
     This function computes the peaks magnitudes and locations recursively at
     each time through the function transp_max and stores them in a list.
 
@@ -936,7 +915,7 @@ def transports_preproc(lats, yrs, lim, transp):
     - lim: the range (-lim,lim) in which the function transp_max has to search
     for the peaks;
     - transp: the array containing the transport;
-    
+
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
@@ -954,7 +933,9 @@ def transports_preproc(lats, yrs, lim, transp):
     for t_t in range(yrs):
         lat_maxm[:, t_t] = lat_max[t_t]
         tr_maxm[:, t_t] = tr_max[t_t]
-    return transp_mean, lat_maxm, tr_maxm
+    list_peak = [lat_maxm, tr_maxm]
+    return transp_mean, list_peak
+
 
 def varatts(w_nc_var, varname):
     """Add attibutes to the variables, depending on name and time res.
@@ -987,64 +968,32 @@ def varatts(w_nc_var, varname):
 def zerocross1d(x_x, y_y):
     """Find the zero crossing points in 1d data.
 
-    Find the zero crossing events in a discrete data set.
-    Linear interpolation is used to determine the actual
-    locations of the zero crossing between two data points
-    showing a change in sign. Data point which are zero
-    are counted in as zero crossings if a sign change occurs
-    across them. Note that the first and last data point will
-    not be considered whether or not they are zero.
+    Find the zero crossing events in a discrete data set. Linear interpolation
+    is used to determine the actual locations of the zero crossing between
+    two data points showing a change in sign. Data point which are zero
+    are counted in as zero crossings if a sign change occurs across them.
+    Note that the first and last data point will not be considered whether
+    or not they are zero.
 
-    Parameters
-    ----------
+    Arguments:
     x_x, y_y : arrays. Ordinate and abscissa data values.
 
-    Credits
-    -------
+    Credits:
     The PyA group (https://github.com/sczesla/PyAstronomy).
     Modified by Valerio Lembo (valerio.lembo@uni-hamburg.de).
 
-    License
-    -------
-    Copyright (c) 2011, PyA group
-
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files
-    (the "Software"), to deal in the Software without restriction,
-    including without limitation the rights to use, copy, modify, merge,
-    publish, distribute, sublicense, and/or sell copies of the Software,
-    and to permit persons to whom the Software is furnished to do so,
-    subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    License:
+    Copyright (c) 2011, PyA group.
     """
-    # Indices of points *before* zero-crossing
     indi = np.where(y_y[1:] * y_y[0:-1] < 0.0)[0]
-    # Find the zero crossing by linear interpolation
     d_x = x_x[indi + 1] - x_x[indi]
     d_y = y_y[indi + 1] - y_y[indi]
     z_c = - y_y[indi] * (d_x / d_y) + x_x[indi]
-    # What about the points, which are actually zero
     z_i = np.where(y_y == 0.0)[0]
-    # Do nothing about the first and last point should they be zero
     z_i = z_i[np.where((z_i > 0) & (z_i < x_x.size - 1))]
-    # Select those point, where zero is crossed
-    # (sign change across the point)
     z_i = z_i[np.where(y_y[z_i - 1] * y_y[z_i + 1] < 0.0)]
-    # Concatenate indices
     zzindi = np.concatenate((indi, z_i))
-    # Concatenate zc and locations corresponding to zi
     z_z = np.concatenate((z_c, x_x[z_i]))
-    # Sort by x-value
     sind = np.argsort(z_z)
     z_z, zzindi = z_z[sind], zzindi[sind]
     return z_z

@@ -1,4 +1,4 @@
-"""Tool for computation of some aspects of climate system thermodynamics.
+"""The diagnostic tool for climate system thermodynamics.
 
 Author
 Valerio Lembo
@@ -321,8 +321,10 @@ def main(cfg):
         # Water mass budget
         if wat in {'y', 'yes'}:
             logger.info('Computing water mass and latent energy budgets\n')
-            wm_gmean, wm_file = comp.wmbudg(logger,model, wdir, aux_file,
-                                            filenames, flags)
+            _, _, _, aux_list = mkthe.init_mkthe(logger, model, wdir,
+                                                 filenames, flags)
+            wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file,
+                                            filenames, aux_list)
             wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
             wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
             logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
