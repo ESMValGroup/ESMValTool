@@ -147,11 +147,12 @@ class OceanHeatContent(object):
                     self._plot(ohc, filename)
 
                 ohc2d.append(ohc)
-                ohc = ohc.collapsed(['latitude', 'longitude'], SUM,
-                                    weights=area_cello.data)
+                if self.compute_1d:
+                    ohc = ohc.collapsed(['latitude', 'longitude'], SUM,
+                                        weights=area_cello.data)
 
-                ohc.long_name = 'Ocean Heat Content 1D'
-                ohc1d.append(ohc)
+                    ohc.long_name = 'Ocean Heat Content 1D'
+                    ohc1d.append(ohc)
 
             del thetao
 
@@ -163,18 +164,16 @@ class OceanHeatContent(object):
             iris.coord_categorisation.add_year(ohc2d, 'time')
             self._monthly_2d_clim(filename, ohc2d)
 
-            ohc1d = ohc1d.merge_cube()
-            iris.coord_categorisation.add_month_number(ohc1d, 'time')
-            iris.coord_categorisation.add_year(ohc1d, 'time')
-            self._timeseries_1d(filename, ohc1d, ohc1d_compare_timeseries)
-            self._monthly_1d_clim(filename, ohc1d, ohc1d_compare_monthly)
+            if self.compute_1d:
+                ohc1d = ohc1d.merge_cube()
+                iris.coord_categorisation.add_month_number(ohc1d, 'time')
+                iris.coord_categorisation.add_year(ohc1d, 'time')
+                self._timeseries_1d(filename, ohc1d, ohc1d_compare_timeseries)
+                self._monthly_1d_clim(filename, ohc1d, ohc1d_compare_monthly)
         del ohc1d
         del ohc2d
         self._comparison_plot(ohc1d_compare_timeseries, 'timeseries')
         self._comparison_plot(ohc1d_compare_monthly, 'monthly_clim')
-
-
-
 
     def _monthly_2d_clim(self, filename, ohc2d):
         if not self.compute_2d_monthly_clim:
@@ -185,7 +184,7 @@ class OceanHeatContent(object):
             new_filename = os.path.basename(filename).replace(
                 'thetao', 'ohc2D_monclim'
             )
-            netcdf_path = os.path.join(self.cfg[n.WORK_DIR],new_filename)
+            netcdf_path = os.path.join(self.cfg[n.WORK_DIR], new_filename)
             iris.save(ohc_clim, netcdf_path, zlib=True)
         if self.cfg[n.WRITE_PLOTS]:
             for month_slice in ohc_clim.slices_over('month_number'):
@@ -221,7 +220,7 @@ class OceanHeatContent(object):
                 ohc_clim.data
             )
             plt.xlabel('Month')
-            plt.ylabel('OHC (%s)' %ohc1d.units)
+            plt.ylabel('OHC (%s)' % ohc1d.units)
             plt.title(ohc_clim.long_name)
             plt.grid()
             plot_path = self._get_1D_plot_filename(filename, 'monthly_clim')
@@ -235,7 +234,7 @@ class OceanHeatContent(object):
                 ohc1d.data
             )
             plt.xlabel('Month')
-            plt.ylabel('OHC (%s)' %ohc1d.units)
+            plt.ylabel('OHC (%s)' % ohc1d.units)
             plt.title(ohc1d.long_name)
             plt.grid()
             plot_path = self._get_1D_plot_filename(filename, 'timeseries')
@@ -246,40 +245,59 @@ class OceanHeatContent(object):
     def _comparison_plot(self, ohc_compare, type_of_plot):
 
         for dataset in range(len(ohc_compare)):
-            ohc_mean = ohc_compare[dataset].collapsed('time', iris.analysis.MEAN)
+            ohc_mean = ohc_compare[dataset].collapsed(
+                'time', iris.analysis.MEAN
+            )
             ohc_standard = ohc_compare[dataset] - ohc_mean
             plt.figure(1)
-            plt.plot(ohc_compare[dataset].data,
-                     label=self.datasets.get_info_list(n.DATASET)[dataset]+'_'+
-                     str(self.datasets.get_info_list(n.START_YEAR)[dataset])+'_'+
-                     str(self.datasets.get_info_list(n.END_YEAR)[dataset]))
+            plt.plot(
+                ohc_compare[dataset].data,
+                label='_'.join([
+                    self.datasets.get_info_list(n.DATASET)[dataset],
+                    str(self.datasets.get_info_list(n.START_YEAR)[dataset]),
+                    str(self.datasets.get_info_list(n.END_YEAR)[dataset])
+                ])
+            )
             plt.figure(2)
-            plt.plot(ohc_standard.data,
-                          label=self.datasets.get_info_list(n.DATASET)[dataset]+'_'+
-                          str(self.datasets.get_info_list(n.START_YEAR)[dataset])+'_'+
-                          str(self.datasets.get_info_list(n.END_YEAR)[dataset]))
+            plt.plot(
+                ohc_standard.data,
+                label='_'.join([
+                    self.datasets.get_info_list(n.DATASET)[dataset],
+                    str(self.datasets.get_info_list(n.START_YEAR)[dataset]),
+                    str(self.datasets.get_info_list(n.END_YEAR)[dataset])
+                ])
+            )
 
         plt.title(self.cfg[n.SCRIPT].replace('_', ' '))
         plt.xlabel('Month')
-        plt.ylabel('OHC (%s)' %ohc_compare[0].units)
+        plt.ylabel('OHC (%s)' % ohc_compare[0].units)
         plt.legend()
         plt.grid()
         plt.tight_layout()
         script = self.cfg[n.SCRIPT]
         datasets = '_'.join(self.datasets.get_info_list(n.DATASET))
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
-        plt_name = '{script}_{type_of_plot}_comparison_{datasets}.{out_type}'.format(script=script,
-                                                        type_of_plot=type_of_plot,
-                                                        datasets=datasets,
-                                                        out_type=out_type)
+        plt_name = \
+            '{script}_{type_of_plot}_comparison_{datasets}.{out_type}'.format(
+                script=script,
+                type_of_plot=type_of_plot,
+                datasets=datasets,
+                out_type=out_type
+            )
         plt.figure(1).savefig(os.path.join(self.cfg[n.PLOT_DIR], plt_name))
         plt.close(1)
 
-        stan_plt_name = '{script}_{type_of_plot}_comparison_standarized_{datasets}.{out_type}'.format(script=script,
-                                                        type_of_plot=type_of_plot,
-                                                        datasets=datasets,
-                                                        out_type=out_type)
-        plt.figure(2).savefig(os.path.join(self.cfg[n.PLOT_DIR], stan_plt_name))
+        stan_plt_name = \
+            '{script}_{type_of_plot}_comparison_standarized_{datasets}' \
+            '.{out_type}'.format(
+                script=script,
+                type_of_plot=type_of_plot,
+                datasets=datasets,
+                out_type=out_type
+            )
+        plt.figure(2).savefig(
+            os.path.join(self.cfg[n.PLOT_DIR], stan_plt_name)
+        )
         plt.close(2)
 
     def _get_clim_plot_filename(self, filename, month, dimensions):
@@ -322,7 +340,10 @@ class OceanHeatContent(object):
                                              end=end,
                                              out_type=out_type)
         plot_path = os.path.join(
-            self._get_plot_folder(filename, '{type_of_plot}'.format(type_of_plot=type_of_plot)),
+            self._get_plot_folder(
+                filename,
+                '{type_of_plot}'.format(type_of_plot=type_of_plot)
+            ),
             plot_filename
         )
         return plot_path

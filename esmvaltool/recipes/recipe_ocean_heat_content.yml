@@ -17,14 +17,14 @@ documentation:
     - primavera
 
 datasets:
-#   # - {dataset: EC-Earth3-HR, expid: a0xi, institute: EC-Earth-Consortium, grid: gn,
-#   #    project: PRIMAVERA, exp: piControl,  ensemble: r1i1p1f1, version: v20180308,
-#   #    start_year: 1950,  end_year: 1954}
-# - {dataset: EC-Earth3-LR, expid: a13c, institute: EC-Earth-Consortium, grid: gn,
-#     project: PRIMAVERA, exp: historical,  ensemble: r1i1p1f1, version: v20180501,
-#     start_year: 1950,  end_year: 1951}
- - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
- - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
+  - {dataset: EC-Earth3-HR, expid: a0qp, institute: EC-Earth-Consortium, grid: gn,
+     project: PRIMAVERA_HR, exp: historical,  ensemble: r1i1p1f1,
+     start_year: 2000,  end_year: 2001}
+  - {dataset: EC-Earth3-LR, expid: a13c, institute: EC-Earth-Consortium, grid: gn,
+    project: PRIMAVERA, exp: historical,  ensemble: r1i1p1f1, version: v20180501,
+    start_year: 1950,  end_year: 1960}
+#  - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
+#  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
 #  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
@@ -41,7 +41,7 @@ diagnostics:
         field: T3MO
         fx_files: [areacello, thkcello]
     scripts:
-      ocean_heat_content:
+      ocean_heat_content_0_300:
         script: ocean_heat_content/ocean_heat_content.py
         title: "Python example diagnostic"
         min_depth: 0
