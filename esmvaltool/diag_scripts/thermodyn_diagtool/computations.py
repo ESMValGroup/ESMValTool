@@ -684,33 +684,6 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wfluxes(model, wdir, filelist):
-    """Compute auxiliary fields and perform time averaging of existing fields.
-
-    Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
-    """
-    cdo = Cdo
-    hfls_file = filelist[0]
-    pr_file = filelist[3]
-    prsn_file = filelist[4]
-    aux_file = wdir + '/aux.nc'
-    evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
-    cdo.divc(str(L_C), input="{}".format(hfls_file),
-             output=evspsbl_file)
-    # Rainfall precipitation
-    prr_file = wdir + '/{}_prr.nc'.format(model)
-    cdo.sub(input="{} {}".format(pr_file, prsn_file),
-            output=aux_file)
-    cdo.chname('pr,prr', input=aux_file, output=prr_file)
-    return evspsbl_file, prr_file
-
-
 def wmbudg(logger, model, wdir, aux_file, filelist, flags):
     """Compute the water mass and latent energy budgets.
 

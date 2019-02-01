@@ -25,8 +25,7 @@ from shutil import move
 from netCDF4 import Dataset
 import numpy as np
 from cdo import Cdo
-from esmvaltool.diag_scripts.thermodyn_diagtool import computations,\
-                                                       fourier_coefficients
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 
 ALV = 2.5008e6    # Latent heat of vaporization
 G_0 = 9.81        # Gravity acceleration
@@ -40,6 +39,7 @@ H_S = 300.        # stable boundary layer height (m)
 H_U = 1000.       # unstable boundary layer height (m)
 RIC_RS = 0.39     # Critical Richardson number for stable layer
 RIC_RU = 0.28     # Critical Richardson number for unstable layer
+L_C = 2501000 		        # latent heat of condensation
 SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 
 
@@ -114,11 +114,11 @@ def init_mkthe(logger, model, wdir, filelist, flags):
                 output=tasvert_file)
     # evaporation from latent heat fluxes at the surface
     if wat in {'y', 'yes'} and entr in {'n', 'no'}:
-        evspsbl_file, prr_file = comp.wfluxes(model, wdir, filelist)
+        evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
     elif entr in {'y', 'yes'}:
         if met in {'2', '3'}:
-            evspsbl_file, prr_file = comp.wfluxes(model, wdir, filelist)
+            evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
             mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
                        hfss_file, te_file]
             tabl_file, tlcl_file, htop_file = mkthe_main(wdir, mk_list, model)
@@ -252,6 +252,33 @@ def removeif(filename):
         os.remove(filename)
     except OSError:
         pass
+
+
+def wfluxes(model, wdir, filelist):
+    """Compute auxiliary fields and perform time averaging of existing fields.
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - filelist: a list of file names containing the input fields;
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    cdo = Cdo
+    hfls_file = filelist[0]
+    pr_file = filelist[3]
+    prsn_file = filelist[4]
+    aux_file = wdir + '/aux.nc'
+    evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
+    cdo.divc(str(L_C), input="{}".format(hfls_file),
+             output=evspsbl_file)
+    # Rainfall precipitation
+    prr_file = wdir + '/{}_prr.nc'.format(model)
+    cdo.sub(input="{} {}".format(pr_file, prsn_file),
+            output=aux_file)
+    cdo.chname('pr,prr', input=aux_file, output=prr_file)
+    return evspsbl_file, prr_file
 
 
 def write_output(wdir, model, file_list, varlist):
