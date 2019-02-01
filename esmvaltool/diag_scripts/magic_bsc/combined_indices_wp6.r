@@ -298,3 +298,6 @@ if (!is.null(region)) {
   ncvar_put(file, defdata, data)
   nc_close(file)
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

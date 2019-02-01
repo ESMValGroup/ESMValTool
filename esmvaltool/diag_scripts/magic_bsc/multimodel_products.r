@@ -540,3 +540,6 @@ file <- nc_create(
 ncvar_put(file, defdata, data)
 ncvar_put(file, defagreement, agreement)
 nc_close(file)
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

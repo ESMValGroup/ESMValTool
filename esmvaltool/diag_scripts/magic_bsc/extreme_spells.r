@@ -213,3 +213,6 @@ for (i in 1 : length(projection_filenames)) {
     title_scale = 0.5
   )
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

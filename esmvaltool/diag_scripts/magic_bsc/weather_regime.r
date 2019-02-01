@@ -576,3 +576,6 @@ png(paste0(file.path(plot_dir, "Table_"), var0, "_", frequency, "_rmse_",
     height = 6, width = 18, units = "cm", res = 100)
 grid.table(round(rmse, 2))
 dev.off()
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

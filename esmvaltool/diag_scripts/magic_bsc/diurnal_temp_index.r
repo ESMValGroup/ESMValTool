@@ -204,3 +204,6 @@ file <- nc_create(
 ncvar_put(file, defdata, dtr_rcp)
 nc_close(file)
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

@@ -318,3 +318,6 @@ PlotLayout( # nolint
         "_", start_year, "-", end_year, ".png"
     )
 )
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)
