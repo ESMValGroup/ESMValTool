@@ -177,7 +177,7 @@ begin
   gAtt@source        = "https://search.earthdata.nasa.gov/"
   gAtt@reference     = "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
     "44, 1102-1105, doi:10.1109/TGRS.2005.863716, 2006."
-  gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool v2.0"
+  gAtt@title = OBSNAME + " data CMORized for the ESMValTool v2.0"
   gAtt@conventions = "CF/CMOR"
 
   ; Outfile

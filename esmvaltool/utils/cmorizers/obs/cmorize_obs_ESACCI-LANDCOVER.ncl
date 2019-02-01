@@ -192,9 +192,9 @@ begin
       gAtt@tier          = TIER
       gAtt@source        = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/" + \
         "land_cover/data/land_cover_maps/"
-      gAtt@reference     = "Defourny, P., et al., 2015. ESA Land Cover " + \
-        "Climate Change Initiative (ESA LC_cci) data"
-      gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool v2.0"
+      gAtt@reference     = "Defourny, P., et al., ESA Land Cover " + \
+        "Climate Change Initiative (ESA LC_cci) data, 2015"
+      gAtt@title = OBSNAME + " data CMORized for the ESMValTool v2.0"
       gAtt@conventions = "CF/CMOR"
 
       ; Outfile
