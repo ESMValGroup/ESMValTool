@@ -60,7 +60,7 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     removeif(aux_file)
     gain_file = wdir + '/{}_maskGain.nc'.format(model)
     cdo.gtc('0', input=toab_file, output=gain_file)
@@ -119,7 +119,7 @@ def budgets(model, wdir, aux_file, filelist):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     hfls_file = filelist[0]
     hfss_file = filelist[1]
     rlds_file = filelist[6]
@@ -700,7 +700,7 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
     wm_gmean_file = wdir + '/{}_wmb_gmean.nc'.format(model)
     latene_file = wdir + '/{}_latent.nc'.format(model)
@@ -734,7 +734,7 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
