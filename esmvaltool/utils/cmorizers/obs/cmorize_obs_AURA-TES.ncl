@@ -15,7 +15,7 @@
 ;    Select the V004 and V005 projects.
 ;    Download the script file for both projects.
 ;    To download the data use: wget -i <scriptfile>.
-;    From the downloaded data, pick only the *.he5 files and save them in the
+;    From the downloaded data, pick only the *.he5 files and put them in
 ;    input_dir_path.
 ;    Data is freely available, but a registration is required.
 ;

@@ -3,24 +3,24 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;   Tier 2: other freely-available dataset.
 ;
 ; Source
-;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
+;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
 ;
 ; Last access
-;    20190110
+;   20190110
 ;
 ; Download and processing instructions
-;    Download the 3 NetCDF files for 2000, 2005 and 2010.
-;    Download the CCI-LC Tools from:
-;      http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-;    Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
+;   Download the 3 NetCDF files for 2000, 2005 and 2010.
+;   Download the CCI-LC Tools from:
+;     http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
+;   Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
 ;      bash lc-user-tools-3.14/bin/aggregate-map.sh \
-;      -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-;      -PoutputAccuracy=false -PoutputPFTClasses=true \
-;      -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-;    Put the resulting processed data in the input_dir_path.
+;        -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
+;        -PoutputAccuracy=false -PoutputPFTClasses=true \
+;        -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
+;   Put the resulting processed data in input_dir_path.
 ;
 ; Caveat
 ;   The CCI-LC Tools must be applied before running this script.
@@ -29,8 +29,8 @@
 ;   generate a time series over their time range of validity.
 ;
 ; Modification history
-;    20190110-A_righ_ma: rewritten in NCL for v2.
-;    20160714-A_muel_bn: written.
+;   20190110-A_righ_ma: rewritten in NCL for v2.
+;   20160714-A_muel_bn: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")

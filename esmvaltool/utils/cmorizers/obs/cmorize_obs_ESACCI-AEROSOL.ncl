@@ -3,29 +3,28 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;   Tier 2: other freely-available dataset.
 ;
 ; Source
-;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
+;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
 ;
 ; Last access
-;    20190124
+;   20190124
 ;
 ; Download and processing instructions
-;    Download the data from:
-;       ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-;       AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-;    Other years are not considered since they are not complete.
-;
-; Caveats
+;   Download the data from:
+;     ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
+;     AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
+;   Other years are not considered since they are not complete.
+;   Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;    20190124-A_righ_ma: adapted for v2.
-;    20160718-A_laue_ax: added AOD550 + AOD870 uncertainties.
-;    20160525-A_righ_ma: updated to v4.21 and adding more variables.
-;    20150126-A_righ_ma: adding AOD at other wavelengths.
-;    20151124-A_righ_ma: switched to monthly raw data (now available).
-;    20150424-A_righ_ma: written.
+;   20190124-A_righ_ma: adapted to v2.
+;   20160718-A_laue_ax: added AOD550 + AOD870 uncertainties.
+;   20160525-A_righ_ma: updated to v4.21 and adding more variables.
+;   20150126-A_righ_ma: adding AOD at other wavelengths.
+;   20151124-A_righ_ma: switched to monthly raw data (now available).
+;   20150424-A_righ_ma: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -48,6 +47,14 @@ begin
   ; Field
   FIELD = "T2Ms"
 
+  ; Selected variable (standard name)
+  VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \
+           "od550aerStderr", "od870aerStderr"/)
+
+  ; Name in the raw data
+  NAME = (/"AOD550_mean", "AOD870_mean", "FM_AOD550_mean", "AAOD550_mean", \
+           "AOD550_uncertainty", "AOD870_uncertainty"/)
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
     (/"cmip5/Tables/CMIP5_aero", \
@@ -56,14 +63,6 @@ begin
       "cmip5/Tables/CMIP5_aero", \
       "custom/CMOR_od550aerStderr.dat", \
       "custom/CMOR_od870aerStderr.dat"/)
-
-  ; Selected variable (standard name)
-  VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \
-           "od550aerStderr", "od870aerStderr"/)
-
-  ; Name in the raw data
-  NAME = (/"AOD550_mean", "AOD870_mean", "FM_AOD550_mean", "AAOD550_mean", \
-           "AOD550_uncertainty", "AOD870_uncertainty"/)
 
 end
 
