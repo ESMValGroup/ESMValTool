@@ -154,7 +154,7 @@ begin
     ; Format latitude coordinate
     output!1 = "lat"
     if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
+      error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
     end if
     if (isMonotonic(output&lat) .eq. -1) then
       output = output(:, ::-1, :)
@@ -167,7 +167,7 @@ begin
     ; Format longitude coordinate
     output!2 = "lon"
     if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
+      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
     end if
     if (any(output&lon.lt.0.)) then
       output = lonFlip(output)
@@ -186,7 +186,7 @@ begin
     ; Set global attributes
     gAtt = True
     gAtt@comment = "ESA Cloud CCI Retrieval Products, " + \
-      "AVHRR-PM (monthly mean L3 data v2.0), gaps gap 199409-199501 " + \
+      "AVHRR-PM (monthly mean L3 data v3.0), gap 199409-199501 " + \
       "filled using AVHRR-AM data."
     gAtt@history = "Created on " + systemfunc("date")
     gAtt@host    = systemfunc("echo $HOST")
