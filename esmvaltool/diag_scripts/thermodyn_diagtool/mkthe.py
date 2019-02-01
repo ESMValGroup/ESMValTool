@@ -44,9 +44,7 @@ SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 
 
 # pylint: disable-msg=R0914
-# Fortynine is reasonable in this case.
 # pylint: disable-msg=R0915
-# One hundred and twentythree is reasonable in this case.
 # flake8: noqa
 def init_mkthe(logger, model, wdir, filelist, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
@@ -64,7 +62,7 @@ def init_mkthe(logger, model, wdir, filelist, flags):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     wat = flags[0]
     entr = flags[1]
     met = flags[2]
@@ -264,7 +262,7 @@ def wfluxes(model, wdir, filelist):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    cdo = Cdo
+    cdo = Cdo()
     hfls_file = filelist[0]
     pr_file = filelist[3]
     prsn_file = filelist[4]

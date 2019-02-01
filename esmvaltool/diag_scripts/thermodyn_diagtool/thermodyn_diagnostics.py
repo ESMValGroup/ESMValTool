@@ -206,11 +206,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 # pylint: disable=C0302
 # pylint: disable-msg=C0302
 # pylint: disable-msg=R0914
-# Two hundreds and fiftyfour is reasonable in this case.
 # pylint: disable-msg=R0915
-# Nine hundreds and twentyone is reasonable in this case.
 # pylint: disable=too-many-branches
-# Sixtytwo is reasonable in this case.
 # pylint: disable-msg=unused-argument
 # flake8: noqa
 def main(cfg):

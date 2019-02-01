@@ -33,9 +33,7 @@ class Fluxogram():
     # disable-msg=R0914
     # pylint: disable-msg=R0914
     # pylint: disable=too-many-arguments
-    # Twentythree is reasonable in this case.
     # pylint: disable=too-many-branches
-    # Fifteen is reasonable in this case.
     def __init__(self, max_flux, max_storage, grid_size=20):
         """Initialize a fluxogram. must be called with.
 

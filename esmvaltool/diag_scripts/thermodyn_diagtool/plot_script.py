@@ -636,15 +636,7 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     """
     xval = varlist[0]
     yval = varlist[1]
-    modnum = len(xval)
     axi.set_figsize = (50, 50)
-    plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
-    plt.scatter(np.nanmean(xval), np.nanmean(yval),
-                c='red')
-    s_l, _, _, _, _ = stats.linregress(xval, yval)
-    plot_ellipse(
-        semimin=np.nanstd(xval), semimaj=np.nanstd(yval), phi=np.arctan(s_l),
-        x_cent=np.nanmean(xval), y_cent=np.nanmean(yval), a_x=axi)
     xrang = abs(max(xval) - min(xval))
     yrang = abs(max(yval) - min(yval))
     plt.xlim(min(xval) - 0.1 * xrang, max(xval) + 0.1 * xrang)
@@ -656,20 +648,7 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     c_p = plt.contour(x_m, y_m, z_m, colors='black', linestyles='dashed',
                       linewidths=1.)
     plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
-    plt.title(title, fontsize=12)
-    rcParams['axes.titlepad'] = 1
-    rcParams['axes.labelpad'] = 1
-    plt.xlabel(xlabel, fontsize=14)
-    plt.ylabel(ylabel, fontsize=14)
-    d_x = 0.01 * (max(xval) - min(xval))
-    d_y = 0.01 * (max(yval) - min(yval))
-    for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
-                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
-                     fontsize=12)
-    axi.tick_params(axis='both', which='major', labelsize=12)
-    plt.subplots_adjust(hspace=.3)
-    plt.grid()
+    plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
 
 
 def plot_mm_summaryscat(pdir, summary_varlist):

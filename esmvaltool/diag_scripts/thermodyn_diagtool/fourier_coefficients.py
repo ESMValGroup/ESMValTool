@@ -26,10 +26,7 @@ P_0 = 10000             # Reference tropospheric pressure
 
 
 # pylint: disable-msg=R0914
-# Fortysix is reasonable in this case.
 # pylint: disable-msg=R0915
-# Seventyone is reasonable in this case.
-# from fourier_coefficients import FourierCoeff
 def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     """Main script for Fourier coefficients computation.
 

@@ -20,7 +20,6 @@ The functions that are here contained are:
 - removeif: function for conditional file deleting;
 - sensentr: function for the entropy production from sensible heat fluxes;
 - snowentr: function for the entropy production from snowfall precipitation;
-- wfluxes: function for evaporation and rainfall precipitation fluxes;
 - wmbudg: function for water mass and latent energy budgets;
 - write_eb: function for writing global mean energy budgets to file;
 
@@ -30,11 +29,9 @@ Valerio Lembo, University of Hamburg (2019).
 
 import os
 from shutil import move
-# New packages for version 2.0 of ESMValTool
 from cdo import Cdo
 from netCDF4 import Dataset
 import numpy as np
-# Locally used modules
 from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
 
 L_C = 2501000 		        # latent heat of condensation
@@ -43,13 +40,6 @@ L_S = 334000		            # latent heat of solidification
 GRAV = 9.81		            # gravity acceleration
 
 
-# pylint: disable-msg=R0914
-# Sixtyone is reasonable in this case.
-# pylint: disable-msg=R0915
-# Two hundreds and sixteen is reasonable in this case.
-# pylint: disable=too-many-arguments
-# Fourteen is reasonable in this case.
-# from plot_script import PlotScript
 def baroceff(model, wdir, aux_file, toab_file, te_file):
     """Compute the baroclinic efficiency of the atmosphere.
 
@@ -718,7 +708,6 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     removeif(aux_file)
     cdo.sub(input="{} {}".format(auxlist[0], filelist[3]), output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
-    # Latent energy budget
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
             .format(filelist[0], str(LC_SUB), filelist[3],
