@@ -41,6 +41,10 @@ plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
 
+# setup provenance file and list
+provenance_file <- paste0(plot_dir, "/", "capcityfactor_provenance.yml")
+provenance <- list()
+
 ## Create working dirs if they do not exist
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)

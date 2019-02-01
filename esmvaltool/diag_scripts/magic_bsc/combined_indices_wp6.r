@@ -21,10 +21,17 @@ print(params)
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir
+
 ## Create working dirs if they do not exist
 dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
+
+
+# setup provenance file and list
+provenance_file <- paste0(plot_dir, "/", "combined_provenance.yml")
+provenance <- list()
+
 input_files_per_var <- yaml::read_yaml(params$input_files[1])
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)

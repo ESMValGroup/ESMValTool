@@ -17,6 +17,10 @@ dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
+# setup provenance file and list
+provenance_file <- paste0(plot_dir, "/", "heatcoldwaves_provenance.yml")
+provenance <- list()
+
 input_files_per_var <- yaml::read_yaml(params$input_files)
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)

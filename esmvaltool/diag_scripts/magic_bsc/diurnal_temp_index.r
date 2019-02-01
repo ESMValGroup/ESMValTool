@@ -18,6 +18,10 @@ dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
+# setup provenance file and list
+provenance_file <- paste0(plot_dir, "/", "dtr_provenance.yml")
+provenance <- list()
+
 #FOR THE FIRST METADATA.yml
 input_files_tasmax <- yaml::read_yaml(params$input_files[1])
 model_names <- input_files_tasmax[[1]]$dataset
