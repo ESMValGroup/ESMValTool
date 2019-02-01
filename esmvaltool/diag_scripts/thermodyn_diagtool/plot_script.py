@@ -10,18 +10,6 @@ The module provides plots for a single model of:
 - scatter plots of atmospheric vs. oceani peak magnitudes in the two hem.;
 - climatological mean maps of every component of the entropy budget.
 
-CONTENT
-    - latwgt: compute weighted average over latitudes;
-    - hemean: compute hemispheric averages;
-    - transport: compute meridional transports computation;
-    - transp_max: compute meridional transport peak magnitudes and locations;
-    - balances: produce plots/maps/scatter of energy and water mass budgets;
-    - entropy: produce maps of material entropy production budget components;
-    - plot_ellipse: plot an ellipse in a scatter plot;
-    - pr_output: print fields to NetCDF file;
-    - varatts: retrieve attributes from a NetCDF file;
-    - removeif: remove file if it exists;
-
 @author: Valerio Lembo, Meteorologisches Institut, University of Hamburg, 2018.
 """
 from __future__ import division
@@ -113,8 +101,7 @@ def balances(wdir, plotpath, filena, name, model):
         fnam = pdir + '/{}_transp.png'.format(model)
         strings = ['Meridional heat transports', 'Latitude [deg]', '[W]', fnam]
         lats = dims[1]
-        plot_1m_transp(model, lats[np.newaxis, :], transp_mean, transpty,
-                       strings)
+        plot_1m_transp(lats[np.newaxis, :], transp_mean, transpty, strings)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
@@ -135,10 +122,10 @@ def balances(wdir, plotpath, filena, name, model):
         pr_output(transp_mean[1, :], filename, nc_f, 'latent')
         fnam = pdir + '/{}_wmass_transp.png'.format(model)
         strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
-        plot_1m_transp(model, ndims[1], transp_mean[0, :], transpwy, strings)
+        plot_1m_transp(ndims[1], transp_mean[0, :], transpwy, strings)
         fnam = pdir + '/{}_latent_transp.png'.format(model)
         strings = ['Latent heat transports', 'Latitude [deg]', '[W]', fnam]
-        plot_1m_transp(model, ndims[1], transp_mean[1, :], transply, strings)
+        plot_1m_transp(ndims[1], transp_mean[1, :], transply, strings)
     for i_f in np.arange(nsub):
         fig = plt.figure()
         axi = plt.subplot(111)
@@ -207,13 +194,12 @@ def entropy(plotpath, filename, name, ext_name, model):
     var = dataset.variables[name][:, :, :]
     lats = dataset.variables['lat'][:]
     lons = dataset.variables['lon'][:]
-    # Compute the climatological mean map
     tmean = np.nanmean(var, axis=0)
     fig = plt.figure()
     axi = plt.axes(projection=ccrs.PlateCarree())
     coords = [lons, lats]
     title = 'Climatological Mean {}'.format(ext_name)
-    plot_climap(axi, coords, tmean, title, rangec, c_m)   
+    plot_climap(axi, coords, tmean, title, rangec, c_m)
     plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name))
     plt.close(fig)
 
@@ -520,14 +506,13 @@ def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     plt.close(fig)
 
 
-def plot_1m_transp(model, lats, yval, ylim, strings):
+def plot_1m_transp(lats, yval, ylim, strings):
     """Plot a meridional section of enthalpy transport for one model.
 
     This function plots total, atmospheric and oceanic meridional enthalpy
     transports on the same panel.
     
     Arguments:
-    - model: the name of the model;
     - lats: the latitudinal dimension as a 1D array;
     - yval: the meridional enthalpy transports as a 2D array (3,lat), where
     row 1 is the total, row 2 the atmospheric, row 3 the oceanic transport;
@@ -595,7 +580,7 @@ def plot_mm_ebscatter(pdir, eb_list):
     xlabel = 'F_s [W m-2]'
     ylabel = 'Sigma (F_s) [W m-2]'
     varlist = [surb_all[:, 0], surb_all[:, 1]]
-    axi = plt.subplot(224)    
+    axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
     plt.errorbar(x=atmb_all[:, 0], y=surb_all[:, 0],
                  xerr=atmb_all[:, 1], yerr=surb_all[:, 1],
@@ -709,7 +694,7 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
 
 def plot_mm_summaryscat(pdir, summary_varlist):
     """Plot multi-model scatter plots of some key quantities.
-    
+
     The function produces a plot containing 6 scatter plots:
     - (a) TOA vs. atmospheric energy budget;
     - (b) Baroclinic efficiency vs. Intensity of LEC;
@@ -721,7 +706,7 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     Arguments:
     - pdir: a plots directory;
     - summary_varlist: a list containing the quantities to be plotted as a 1D
-    (model) array, or a 2D array (model, 2), with the first column being the 
+    (model) array, or a 2D array (model, 2), with the first column being the
     mean value and the second column being the inter-annual variance;
 
     Author:
@@ -783,7 +768,7 @@ def plot_mm_transp(model_names, wdir, pdir):
     """Plot multi-model meridional enthalpy transports.
 
     The function plots in three panels the total, atmospheric and oceanic
-    enthalpy transports, respectively. 
+    enthalpy transports, respectively.
 
     Arguments:
     - model_names: a list of model names contained in the ensemble;
@@ -802,7 +787,7 @@ def plot_mm_transp(model_names, wdir, pdir):
     plot_mm_transp_panel(model_names, wdir, axi, 'atmos', yrange)
     axi = plt.subplot(313)
     yrange = [-3E15, 3E15]
-    plot_mm_transp_panel(model_names, wdir, axi, 'ocean', yrange)   
+    plot_mm_transp_panel(model_names, wdir, axi, 'ocean', yrange)
     oname = pdir + '/meridional_transp.png'
     plt.savefig(oname)
     plt.close(fig)
@@ -940,6 +925,21 @@ def transp_max(lat, transp, lim):
 
 
 def transports_preproc(lats, yrs, lim, transp):
+    """Compute the peaks magnitude and locations of a meridional transport.
+    
+    This function computes the peaks magnitudes and locations recursively at
+    each time through the function transp_max and stores them in a list.
+
+    Arguments:
+    - lats: a latitudinal array;
+    - yrs: the number of years through which iterating;
+    - lim: the range (-lim,lim) in which the function transp_max has to search
+    for the peaks;
+    - transp: the array containing the transport;
+    
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
     transpp = transp[1]
     transp_mean = np.nanmean(transpp, axis=0)
     yr_ext = []
@@ -998,10 +998,6 @@ def zerocross1d(x_x, y_y):
     Parameters
     ----------
     x_x, y_y : arrays. Ordinate and abscissa data values.
-
-    Returns
-    -------
-    xvals : array. The locations of the zero crossing events.
 
     Credits
     -------

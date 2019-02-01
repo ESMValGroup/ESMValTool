@@ -25,7 +25,8 @@ from shutil import move
 from netCDF4 import Dataset
 import numpy as np
 from cdo import Cdo
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from esmvaltool.diag_scripts.thermodyn_diagtool import computations,\
+                                                       fourier_coefficients
 
 ALV = 2.5008e6    # Latent heat of vaporization
 G_0 = 9.81        # Gravity acceleration
@@ -64,6 +65,7 @@ def init_mkthe(logger, model, wdir, filelist, flags):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo
+    comp = computations
     wat = flags[0]
     entr = flags[1]
     met = flags[2]
@@ -112,11 +114,11 @@ def init_mkthe(logger, model, wdir, filelist, flags):
                 output=tasvert_file)
     # evaporation from latent heat fluxes at the surface
     if wat in {'y', 'yes'} and entr in {'n', 'no'}:
-        evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
+        evspsbl_file, prr_file = comp.wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
     elif entr in {'y', 'yes'}:
         if met in {'2', '3'}:
-            evspsbl_file, prr_file = comp_wfluxes(model, wdir, filelist)
+            evspsbl_file, prr_file = comp.wfluxes(model, wdir, filelist)
             mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
                        hfss_file, te_file]
             tabl_file, tlcl_file, htop_file = mkthe_main(wdir, mk_list, model)

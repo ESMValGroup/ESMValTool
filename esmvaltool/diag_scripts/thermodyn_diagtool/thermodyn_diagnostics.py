@@ -1,4 +1,3 @@
-# pylint: disable-msg=R0801
 """Tool for computation of some aspects of climate system thermodynamics.
 
 Author
@@ -196,8 +195,7 @@ from netCDF4 import Dataset
 import numpy as np
 import matplotlib
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe,\
-                                                       fourier_coefficients,\
+from esmvaltool.diag_scripts.thermodyn_diagtool import computations, mkthe,\
                                                        lorenz_cycle,\
                                                        plot_script
 matplotlib.use('Agg')
@@ -304,14 +302,13 @@ def main(cfg):
                                                         filenames)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
-        atmb_all[i_m, 0] = np.nanmean(eb_gmean[2])
-        atmb_all[i_m, 1] = np.nanstd(eb_gmean[2])
-        surb_all[i_m, 0] = np.nanmean(eb_gmean[1])
-        surb_all[i_m, 1] = np.nanstd(eb_gmean[1])
+        atmb_all[i_m, 0] = np.nanmean(eb_gmean[1])
+        atmb_all[i_m, 1] = np.nanstd(eb_gmean[1])
+        surb_all[i_m, 0] = np.nanmean(eb_gmean[2])
+        surb_all[i_m, 1] = np.nanstd(eb_gmean[2])
         logger.info('TOA energy budget: %s\n', toab_all[i_m, 0])
         logger.info('Atmospheric energy budget: %s\n', atmb_all[i_m, 0])
         logger.info('Surface energy budget: %s\n', surb_all[i_m, 0])
-        atmb_all[i_m, 0]
         logger.info('Done\n')
         baroc_eff_all[i_m] = comp.baroceff(model, wdir, aux_file,
                                            toab_ymm_file, te_ymm_file)
@@ -324,8 +321,8 @@ def main(cfg):
         # Water mass budget
         if wat in {'y', 'yes'}:
             logger.info('Computing water mass and latent energy budgets\n')
-            wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, filenames,
-                                            flags)
+            wm_gmean, wm_file = comp.wmbudg(logger,model, wdir, aux_file,
+                                            filenames, flags)
             wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
             wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
             logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
@@ -397,7 +394,7 @@ def main(cfg):
         if lec in {'y', 'yes'}:
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
-            lect = lorenz.lec_preproc(model, wdir, pdir, filenames)
+            lect = lorenz.preproc_lec(model, wdir, pdir, filenames)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
             logger.info('Intensity of the annual mean Lorenz Energy '
@@ -408,7 +405,7 @@ def main(cfg):
         # Compute the material entropy production
         if entr in {'y', 'yes'}:
             if met in {'1', '3'}:
-                _, _, te_file, _ = mkthe.init_mkthe(model, wdir,
+                _, _, te_file, _ = mkthe.init_mkthe(logger, model, wdir,
                                                     filenames, flags)
                 logger.info('Computation of the material entropy production '
                             'with the indirect method\n')
@@ -461,7 +458,7 @@ def main(cfg):
     logger.info('Meridional heat transports\n')
     plotsmod.plot_mm_transp(model_names, wdir_up, pdir_up)
     logger.info('Scatter plots')
-    summary_varlist = [atmb_all , baroc_eff_all, horzentr_all, lec_all,
+    summary_varlist = [atmb_all, baroc_eff_all, horzentr_all, lec_all,
                        matentr_all, te_all, toab_all, vertentr_all]
     plotsmod.plot_mm_summaryscat(pdir, summary_varlist)
     logger.info('Scatter plots for inter-annual variability of'

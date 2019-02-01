@@ -1,7 +1,7 @@
 """Module containing all the core computations.
 
 This module contains all the basic computations needed by the thermodynamics
-diagnostic tool. 
+diagnostic tool.
 
 The functions that are here contained are:
 - baroceff: function for the baroclinic efficiency;
@@ -168,9 +168,9 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     method, explicitly retrieving the components related to evaporation,
     rainfall and snowfall precipitation, snow melting at the ground, potential
     energy of the droplet, sensible heat fluxes and kinetic energy dissipation
-    (from Lorenz Energy Cycle, LEC). The outputs are stored as NC files in terms
-    of global mean time series, and in terms of annual mean (time,lat,lon)
-    fields.
+    (from Lorenz Energy Cycle, LEC). The outputs are stored as NC files in
+    terms of global mean time series, and in terms of annual mean
+    (time,lat,lon) fields.
 
     Arguments:
     - logger: the log file where the global mean values are printed out;
@@ -188,8 +188,8 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
-    """    
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
+    """
+    _, _, _, aux_files = mkthe.init_mkthe(logger, model, wdir, filelist, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
@@ -209,14 +209,12 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
         model, wdir, infile_list, aux_file)
     logger.info('Material entropy production associated with '
                 'sens. heat fluxes: %s\n', ssens)
-    logger.info('Done\n')
     logger.info('2. Hydrological cycle\n')
     logger.info('2.1 Evaporation fluxes\n')
     infile_list = [hfls_file, ts_file]
     sevap, evapentr_file = evapentr(model, wdir, infile_list, aux_file)
     logger.info('Material entropy production associated with '
                 'evaporation fluxes: %s\n', sevap)
-    logger.info('Done\n')
     infile_mask = [prr_file, prsn_file, tlcl_file]
     prrmask_file, prsnmask_file = mask_precip(model, wdir, infile_mask)
     logger.info('2.2 Rainfall precipitation\n')
@@ -224,25 +222,21 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     srain, rainentr_file = rainentr(model, wdir, infile_rain, aux_file)
     logger.info('Material entropy production associated with '
                 'rainfall: %s\n', srain)
-    logger.info('Done\n')
     logger.info('2.3 Snowfall precipitation\n')
     infile_rain = [prsnmask_file, tcloud_file]
     ssnow, latsnow_file, snowentr_file = snowentr(model, wdir, infile_rain,
                                                   aux_file)
     logger.info('Material entropy production associated with '
                 'snowfall: %s\n', ssnow)
-    logger.info('Done\n')
     logger.info('2.4 Melting of snow at the surface \n')
     smelt, meltentr_file = meltentr(model, wdir, latsnow_file, aux_file)
     logger.info('Material entropy production associated with snow '
                 'melting: %s\n', smelt)
-    logger.info('Done\n')
     logger.info('2.5 Potential energy of the droplet\n')
     infile_pot = [htop_file, prrmask_file, prsnmask_file, tcolumn_file]
     spot, potentr_file = potentr(model, wdir, infile_pot, aux_file)
     logger.info('Material entropy production associated with '
                 'potential energy of the droplet: %s\n', spot)
-    logger.info('Done\n')
     logger.info('3. Kinetic energy dissipation\n')
     minentr = kinentr(logger, aux_file, tasvert_file, lect, lec)
     matentr = (float(sensentr) - float(evapentr)
@@ -313,7 +307,7 @@ def evapentr(model, wdir, infile, aux_file):
     evapentr_mean_file = wdir + '/{}_evapEntropy_gmean.nc'.format(model)
     flist = [infile[0], infile[1], aux_file]
     evapentr_gmean = entr(flist, 'tabl', 'sevap', evapentr_file,
-                               evapentr_mean_file)
+                          evapentr_mean_file)
     evapentr_gmean = masktonull(evapentr_gmean)
     return evapentr_gmean, evapentr_file
 
@@ -364,7 +358,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
 
 
 def kinentr(logger, aux_file, tasvert_file, lect, lec):
-    """Compute the material entropy production from kin. energy dissipation
+    """Compute the material entropy production from kin. energy dissipation.
 
     The function computes the material entropy production associated with the
     kinetic energy dissipation, through the intensity of the LEC.
@@ -583,7 +577,7 @@ def potentr(model, wdir, infile, aux_file):
              options='-b F32', output=poten_file)
     flist = [poten_file, tcolumn_file, aux_file]
     potentr_gmean = entr(flist, 'htop', 'spotp', potentr_file,
-                              potentr_mean_file)
+                         potentr_mean_file)
     potentr_gmean = masktonull(potentr_gmean)
     return potentr_gmean, potentr_file
 
@@ -615,7 +609,7 @@ def rainentr(model, wdir, infile, aux_file):
              options='-b F32', output=latrain_file)
     flist = [latrain_file, infile[1], aux_file]
     rainentr_gmean = entr(flist, 'prr', 'srain', rainentr_file,
-                               rainentr_mean_file)
+                          rainentr_mean_file)
     rainentr_gmean = masktonull(rainentr_gmean)
     return rainentr_gmean, rainentr_file
 
@@ -653,7 +647,7 @@ def sensentr(model, wdir, infile, aux_file):
              options='-b F32', output=difftemp_file)
     flist = [infile[0], difftemp_file, aux_file]
     sensentr_gmean = entr(flist, 'tabl', 'ssens', sensentr_file,
-                               sensentr_mean_file)
+                          sensentr_mean_file)
     sensentr_gmean = masktonull(sensentr_gmean)
     return sensentr_gmean, sensentr_file
 
@@ -685,7 +679,7 @@ def snowentr(model, wdir, infile, aux_file):
              options='-b F32', output=latsnow_file)
     flist = [latsnow_file, infile[1], aux_file]
     snowentr_gmean = entr(flist, 'prsn', 'srain', snowentr_file,
-                               snowentr_mean_file)
+                          snowentr_mean_file)
     snowentr_gmean = masktonull(snowentr_gmean)
     return snowentr_gmean, latsnow_file, snowentr_file
 
@@ -717,7 +711,7 @@ def wfluxes(model, wdir, filelist):
     return evspsbl_file, prr_file
 
 
-def wmbudg(model, wdir, aux_file, filelist, flags):
+def wmbudg(logger, model, wdir, aux_file, filelist, flags):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -740,24 +734,19 @@ def wmbudg(model, wdir, aux_file, filelist, flags):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo
-    hfls_file = filelist[0]
-    pr_file = filelist[3]
-    prsn_file = filelist[4]
-    _, _, _, aux_list = mkthe.init_mkthe(model, wdir, filelist, flags)
-    evspsbl_file = aux_list[0]
-    prr_file = aux_list[1]
+    _, _, _, aux_list = mkthe.init_mkthe(logger, model, wdir, filelist, flags)
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
     wm_gmean_file = wdir + '/{}_wmb_gmean.nc'.format(model)
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(evspsbl_file, pr_file), output=aux_file)
+    cdo.sub(input="{} {}".format(aux_list[0], filelist[3]), output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     # Latent energy budget
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
-            .format(hfls_file, str(LC_SUB), prsn_file,
-                    str(L_C), prr_file),
+            .format(filelist[0], str(LC_SUB), filelist[3],
+                    str(L_C), aux_list[1]),
             output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
