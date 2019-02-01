@@ -190,6 +190,27 @@ for (i in 1 : length(projection_filenames)) {
   )
   ncvar_put(file, defdata, data)
   nc_close(file)
+
+    # Set provenance for output files
+    caption <- paste0("Heat or cold wave duration")
+    print(caption)
+    print(list(projection_filenames, reference_filenames))
+    xprov <- list(ancestors = list(projection_filenames, reference_filenames),
+                  authors = list("hunt_al", "manu_ni", "caro_lo"),
+                  projects = list("c3s-magic"),
+                  caption = caption,
+                  statistics = list("spells"),
+                  op = as.character(params$operator),
+                  qtile = params$quantile,
+                  spell_length = params$min_duration,
+                  season = params$season,
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  domains = list("nh"))
+
+      provenance[[i]] <- xprov
+
+
   brks <- seq(0, 40, 4)
   title <- paste0(
     "Days ", season, " ", var0, " ", substr(start_projection, 1, 4), "-",
