@@ -7,7 +7,7 @@
 ;    function check_time_range
 ;    function time_attrib
 ;    function plev_attrib
-;    function lev_attrib
+;    function depth_attrib
 ;    function lat_attrib
 ;    function lon_attrib
 ;    function read_cmor
@@ -276,17 +276,17 @@ begin
 end
 
 ; #############################################################################
-undef("lev_attrib")
-function lev_attrib(coord:numeric)
+undef("depth_attrib")
+function depth_attrib(coord:numeric)
 ;
 ; Arguments
-;    coord: input ocean level coordinate.
+;    coord: input ocean depth coordinate.
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
 ;
 ; Description
-;    Assigns attributes to the ocean level coordinate.
+;    Assigns attributes to the ocean depth coordinate.
 ;
 ; Caveats
 ;
