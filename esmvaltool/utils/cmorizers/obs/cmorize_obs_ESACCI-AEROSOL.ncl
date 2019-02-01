@@ -122,7 +122,7 @@ begin
     ; Format latitude coordinate
     output!1 = "lat"
     if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
+      error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
     end if
     if (isMonotonic(output&lat) .eq. -1) then
       output = output(:, ::-1, :)
@@ -135,7 +135,7 @@ begin
     ; Format longitude coordinate
     output!2 = "lon"
     if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
+      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
     end if
     if (any(output&lon.lt.0.)) then
       output = lonFlip(output)
@@ -162,11 +162,11 @@ begin
     gAtt@period  = YEAR1 + "-" + YEAR2
     gAtt@field   = FIELD
     gAtt@tier    = TIER
-    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/"
-    gAtt@reference = "Popp, T. et al. (2015): ESA Aerosol Climate " + \
+    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/"
+    gAtt@reference = "Popp, T. et al. ESA Aerosol Climate " + \
       "Change Initiative (ESA Aerosol_cci) data: AOD v4.21 " + \
-      "via Centre for Environmental Data Analysis, May 2016"
-    gAtt@title = OBSNAME + " satellite data reformatted for the ESMValTool"
+      "via Centre for Environmental Data Analysis, 2016"
+    gAtt@title = OBSNAME + " data reformatted for the ESMValTool"
     gAtt@conventions = "CF/CMOR"
 
     ; Outfile
