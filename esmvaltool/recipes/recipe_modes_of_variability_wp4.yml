@@ -57,8 +57,8 @@ diagnostics:
         start_projection: "2006-01-01"
         end_projection: "2026-12-31"
 
-        ncenters: 3
+        ncenters: 4
         detrend_order: 2
-        cluster_method: "kmeans" # If NULL it computes hcluster else specify kmeans
+        cluster_method: "hclust" # select hclust or kmeans
         EOFS: TRUE
-        frequency: 'DEC' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+        frequency: 'DJF' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF

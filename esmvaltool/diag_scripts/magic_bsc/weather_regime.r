@@ -56,6 +56,9 @@ end_projection <- as.POSIXct(params$end_projection)
 #Regime parameters
 ncenters <- params$ncenters
 cluster_method <- params$cluster_method
+if (cluster_method != "kmeans") {
+    cluster_method <- "complete"
+}
 EOFS <- params$EOFS
 frequency <- params$frequency
 detrend_order <- params$detrend_order
@@ -128,9 +131,11 @@ if (!is.na(mes)) {
   ind <- which(as.numeric(substr(dates_historical, 6, 7)) == mes)
   years <- unique(as.numeric(substr(dates_historical, 1, 4)))
   reference_data <- reference_data[ , , ind , , ] #nolint
+    print(dims)
   dims <- append(
     dims, c(length(ind) / length(years), length(years)), after = time_dim
   )
+    print(dims)
 } else if (!is.na(sea)) {
   print("Seasonal")
   reference_data <- SeasonSelect( #nolint
@@ -149,11 +154,12 @@ if (!is.na(mes)) {
 dims <- append(
     dims, c(length(time) / length(years), length(years)), after = time_dim
   )
-}
-print(dims)
-dims <- dims[-time_dim]
+ }
 
+
+dims <- dims[-time_dim]
 dim(reference_data) <- dims
+
 names(dim(reference_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 
 Loess <- function(clim, loess_span) {
@@ -190,16 +196,32 @@ WR_obs <- WeatherRegime( #nolint
   ncenters = ncenters,
   method = cluster_method
 )
+
+if (cluster_method != "kmeans") {
+    WR_obs$composite <- aperm(WR_obs$composite, c(2, 1, 3, 4, 5))
+}
 names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
 names(dim(WR_obs$cluster))[1] <- "Evolution"
+
 # -------------------------------
 ## Plotting the WR_obs output
 # -------------------------------
 
-clim_frequencies <- paste0(
+if (cluster_method == "kmeans") {
+    clim_frequencies <- paste0(
     "freq = ",
-    round(Mean1Dim(WR_obs$frequency, 1), 1), "%"
-)
+    round(Mean1Dim(WR_obs$frequency, 1), 1), "%")
+} else {
+    freq_clus <- NULL
+    for (i in 1 : ncenters) {
+        freq_clus <- c(freq_clus, round(sum(WR_obs$cluster[, 1, 1] == i) /
+            length(WR_obs$cluster[ , 1, 1]) * 100, 1))
+    }
+    clim_frequencies <- paste0(
+    "freq = ", freq_clus, "%")
+    WR_obs$frequency <- freq_clus
+}
+
 cosa <- aperm(drop(WR_obs$composite), c(3, 1, 2))
 
 
@@ -246,6 +268,7 @@ if (region == "Polar") {
     )
   )
 }
+
 # -------------------------------
 ## Save the WR_obs output to ncdf
 # -------------------------------
@@ -265,7 +288,6 @@ dim(lon) <-  c(lon = length(lon))
 dim(lat) <- c(lat = length(lat))
 metadata <- list(variable = list(dim = list(list(name = "time",
                                                  unlim = FALSE))))
-
 dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
 dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
 dim(WR_obs$cluster) <- c(cluster = length(WR_obs$cluster))
