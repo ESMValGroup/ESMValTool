@@ -62,7 +62,8 @@ class Test(tests.Test):
         self.tgt_grid = mock.Mock(
             spec=iris.cube.Cube, coord=self.tgt_grid_coord)
         self.regrid_schemes = [
-            'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
+            'linear', 'linear_extrapolate', 'nearest', 'area_weighted',
+            'unstructured_nearest'
         ]
         self.mock_stock = self.patch(
             'esmvaltool.preprocessor._regrid._stock_cube',
