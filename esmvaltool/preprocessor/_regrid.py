@@ -110,11 +110,11 @@ def _stock_cube(spec):
     mid_dx, mid_dy = dx / 2, dy / 2
 
     # Construct the latitude coordinate, with bounds.
-    if len(center) == 0:
+    if center:
+        ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
+    else:
         ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
                             _LAT_RANGE / dy)
-    else:
-        ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
     lats = iris.coords.DimCoord(
         ydata, standard_name='latitude', units='degrees_north', var_name='lat')
     lats.guess_bounds()
