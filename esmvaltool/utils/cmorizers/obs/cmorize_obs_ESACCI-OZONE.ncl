@@ -17,13 +17,16 @@
 ;   Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;   20190201-A_righ_ma: adapted to v2.
+;   20190201-A_righ_ma: adapted to v2 and replace NaN/inf with FillValue.
 ;   20160224-A_wenz_sa: written based on reformat_obs_ESACCI-AEROSOL.ncl.
 ;
-;#############################################################################
+; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 
 begin
+
+  ; Script name (for logger)
+  DIAG_SCRIPT = "cmorize_obs_ESACCI-OZONE.ncl"
 
   ; Source name
   OBSNAME = "ESACCI-OZONE"
@@ -32,18 +35,26 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1997
-  YEAR2 = 2010
+  YEAR1 = (/1997, 1997, 2007, 2007/)
+  YEAR2 = (/2010, 2010, 2008, 2008/)
 
   ; Field
-  FIELD = "T2Ms"
+  FIELD = (/"T2Ms", "T2Ms", "T2Mz", "T2Mz"/)
 
   ; Selected variable (standard name)
-  VARS = (/"toz", "tozStderr"/)
+  VARS = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
 
   ; Name in the raw data
   NAME = (/"atmosphere_mole_content_of_ozone", \
-           "atmosphere_mole_content_of_ozone_standard_error"/)
+           "atmosphere_mole_content_of_ozone_standard_error", \
+           "merged_ozone_vmr", \
+           "uncertainty_of_merged_ozone"/)
+
+  ; File name
+  FNAME = (/"ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \
+            "ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \
+            "ESACCI-OZONE-L3-LP-MERGED-MZM-_DATE_-fv0002.nc", \
+            "ESACCI-OZONE-L3-LP-MERGED-MZM-_DATE_-fv0002.nc"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
@@ -57,22 +68,22 @@ begin
 
     log_info("Processing " + VARS(vID))
 
-    time = create_timec(YEAR1, YEAR2)
+    time = create_timec(YEAR1(vID), YEAR2(vID))
     date = cd_calendar(time, 1)
 
     ; Create timeseries
-    do yy = YEAR1, YEAR2
+    do yy = YEAR1(vID), YEAR2(vID)
       do mm = 1, 12
 
         ldate = yy + sprinti("%0.2i", mm)
 
         ; File name
-        fname = systemfunc("ls " + input_dir_path + "ESACCI-OZONE-L3S-TC-" + \
-                           "MERGED-DLR_1M-" + ldate + "??-fv0100.nc")
+        fname = systemfunc("ls " + input_dir_path + \
+                           str_sub_str(FNAME(vID), "_DATE_", ldate))
 
         ; Check
         if (all(ismissing(fname))) then
-          error_msg("f", diag_script, "", "no file found for date " + ldate)
+          error_msg("f", DIAG_SCRIPT, "", "no file found for date " + ldate)
         end if
 
         ; Extract data
@@ -81,17 +92,26 @@ begin
         xx@_FillValue = FILL
         xx@missing_value = xx@_FillValue
         xx = where(xx.lt.0., xx@_FillValue, xx)
+        xx = where(xx.gt.1e35, xx@_FillValue, xx)  ; get rid of infinity values
+        replace_ieeenan(xx, xx@_FillValue, 0)
 
         ; Assign to global array
+        dimnames = getvardimnames(xx)
         if (.not.isdefined("output")) then
           dims = array_append_record(dimsizes(time), dimsizes(xx), 0)
           output = new(dims, typeof(xx))
           output!0 = "time"
           output&time = time
-          output!1 = "lat"
-          output&lat = f->latitude
+          if (dimnames(0).eq."latitude") then
+            output!1 = "lat"
+            output&lat = f->latitude
+          end if
+          if (dimnames(0).eq."air_pressure") then
+            output!1 = "plev"
+            output&plev = f->air_pressure
+          end if
           output!2 = "lon"
-          output&lon = f->longitude
+          output&lon = f->$dimnames(1)$
         end if
         output(ind(toint(ldate).eq.date), :, :) = (/xx/)
         delete(fname)
@@ -101,23 +121,35 @@ begin
     end do
 
     ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
+    ctime = time_attrib(output&time, YEAR1(vID), YEAR2(vID), "M")
     delete(output&time)
     output&time = ctime
     delete(ctime)
 
+    ; Format pressure level coordinate
+    if (output!1.eq."plev") then
+      if (isMonotonic(output&plev) .eq. 0) then
+        error_msg("f", diag_script, "", "non-monotonic level coordinate")
+      end if
+      cplev = plev_attrib(output&plev)
+      delete(output&plev)
+      output&plev = cplev
+      delete(cplev)
+    end if
+
     ; Format latitude coordinate
-    output!1 = "lat"
-    if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
+    if (output!1.eq."lat") then
+      if (isMonotonic(output&lat) .eq. 0) then
+        error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
+      end if
+      if (isMonotonic(output&lat) .eq. -1) then
+        output = output(:, ::-1, :)
+      end if
+      clat = lat_attrib(output&lat)
+      delete(output&lat)
+      output&lat = clat
+      delete(clat)
     end if
-    if (isMonotonic(output&lat) .eq. -1) then
-      output = output(:, ::-1, :)
-    end if
-    clat = lat_attrib(output&lat)
-    delete(output&lat)
-    output&lat = clat
-    delete(clat)
 
     ; Format longitude coordinate
     output!2 = "lon"
@@ -140,13 +172,15 @@ begin
 
     ; Set global attributes
     gAtt = True
-    gAtt@comment = "L3 total ozone columns merged using the " + \
-      "algorithm GTO-ECV as part of the ESA Ozone CCI"
+    if (isStrSubset(VARS(vID), "toz")) then
+      gAtt@comment = "L3 total ozone columns merged using the " + \
+        "algorithm GTO-ECV as part of the ESA Ozone CCI"
+    end if
     gAtt@history = "Created on " + systemfunc("date")
     gAtt@host    = systemfunc("echo $HOST")
     gAtt@user    = systemfunc("echo $USER")
-    gAtt@period  = YEAR1 + "-" + YEAR2
-    gAtt@field   = FIELD
+    gAtt@period  = YEAR1(vID) + "-" + YEAR2(vID)
+    gAtt@field   = FIELD(vID)
     gAtt@tier    = TIER
     gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/"
     gAtt@reference = "Loyola et al., International " + \
@@ -155,13 +189,15 @@ begin
     gAtt@conventions = "CF/CMOR"
 
     ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + FIELD + \
-      "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + FIELD(vID) + \
+      "_" + VARS(vID) + "_" + YEAR1(vID) + "01-" + YEAR2(vID) + "12.nc"
 
     ; Write variable
     write_nc(fout, VARS(vID), output, gAtt)
     delete(gAtt)
     delete(output)
+    delete(time)
+    delete(date)
 
   end do
 
