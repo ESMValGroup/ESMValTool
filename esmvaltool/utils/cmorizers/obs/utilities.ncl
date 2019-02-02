@@ -15,6 +15,7 @@
 ;    function set_size_array
 ;    function yyyyfrac_to_ut --> FIX-ME: only used by GLOBALVIEW (remove?)
 ;    function create_timec
+;    function set_global_atts
 ;    procedure write_nc
 ;    procedure write_nc_profile
 ;    function process_EBAS_data
@@ -727,6 +728,63 @@ begin
   return(out)
 
 end
+
+; #############################################################################
+undef("set_global_atts")
+function set_global_atts(obsname:string,
+                         tier:integer,
+                         source:string,
+                         reference:string,
+                         comment:string)
+;
+; Argument
+;    obsname: name of the observational dataset.
+;    reference: reference for the dataset, or leave empty if not available.
+;    source: link to the data source.
+;    tier: tier number (2 or 3).
+;    comment: additional information if required, or leave empty.
+;
+; Return value
+;    A logical containing the arguments as attributes.
+;
+; Description
+;    Generate the global attribute for the output file by combining user
+;    provided information with default ones (author, host, date, etc.).
+;
+; Modification history
+;    20190202-A_righ_ma: written.
+;
+local funcname, scriptname, 
+    dim_unlim, ii
+begin
+
+  funcname = "write_nc"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+  enter_msg(scriptname, funcname)
+
+  global = True
+  global@title = obsname + " data reformatted for the ESMValTool v2.0"
+  global@tier = tier
+  global@source = source
+  if (strlen(str_squeeze(reference)).ne.0) then
+    global@reference = reference
+  else
+    global@reference = "not available"
+  end if
+  if (strlen(str_squeeze(comment)).ne.0) then
+    global@comment = comment
+  end if
+  global@user = systemfunc("echo $USER")
+  global@host = systemfunc("hostname -f")
+  global@history = "Created on " + systemfunc("date")
+  global@conventions = "CF/CMOR"
+
+  return(global)
+
+  leave_msg(scriptname, funcname)
+
+end
+
 
 ; #############################################################################
 undef("write_nc")
