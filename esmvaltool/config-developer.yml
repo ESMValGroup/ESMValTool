@@ -46,6 +46,7 @@ CMIP5:
   input_fx_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
+    CP4CDS: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[fx_var]/latest/'
     DKRZ: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
     ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
   input_fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
