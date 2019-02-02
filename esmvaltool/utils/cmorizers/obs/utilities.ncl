@@ -754,7 +754,7 @@ function set_global_atts(obsname:string,
 ; Modification history
 ;    20190202-A_righ_ma: written.
 ;
-local funcname, scriptname, 
+local funcname, scriptname,
     dim_unlim, ii
 begin
 
