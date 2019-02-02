@@ -7,10 +7,9 @@ Copernicus C3S 34a lot 2 (MAGIC)
 
 """
 
-import os
-
+import subprocess
 
 def zmnam_clean():
     """Dispose of temporary files."""
-    os.system('rm tmp_gh_da_an_zm_hem.nc')
-    os.system('rm tmp_gh_mo_an_hem.nc')
+    subprocess.check_call('rm tmp_gh_da_an_zm_hem.nc',shell=True)
+    subprocess.check_call('rm tmp_gh_mo_an_hem.nc',shell=True)
