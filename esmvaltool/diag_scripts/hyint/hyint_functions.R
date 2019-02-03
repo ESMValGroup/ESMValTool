@@ -1167,7 +1167,7 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
   if (tolower(output_file_type) == "png") {
     png(filename = figname, width = plot_size[1], height = plot_size[2])
   } else if (tolower(output_file_type) == "pdf") {
-    pdf(file = figname, width = plot_size[1], 
+    pdf(file = figname, width = plot_size[1],
                height = plot_size[2], onefile = T)
   } else if (tolower(output_file_type) == "eps") {
     setEPS(

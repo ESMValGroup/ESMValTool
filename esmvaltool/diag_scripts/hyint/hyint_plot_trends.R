@@ -424,8 +424,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           # Update plot limits in case panel has changed
           par(usr = plot_limits[, ifield])
           for (ireg in 1:nregions) {
-            #iregion <- selregions[ireg]
-            #ixregion <- iregion
             iregion <- ireg
             ixregion <- ireg
             if (plot_type == 15) {
