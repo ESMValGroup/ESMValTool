@@ -8,38 +8,45 @@
 # and additional hydroclimatic indices (Giorgi et al. 2014)
 # which allow an estimate of the overall behaviour of the hydroclimatic cycle.
 # The tool calculates also timeseries and trends over selected regions and
-# produces a variety of types of plots including maps and timeseries. The timeseries/trend
-# and plotting modules handle also ETCCDI indices data calculated with the climdex library through
-# an ad hoc pre-processing.
+# produces a variety of types of plots including maps and timeseries. The 
+# timeseries/trend and plotting modules handle also ETCCDI indices data
+#  calculated with the climdex library through an ad hoc pre-processing.
 #
 # Details
 # The following indices are calculated based on input daily precipitation data:
 # PRY = mean annual precipitation
-# INT = mean annual precipitation intensity (intensity during wet days, or simple precipitation intensity index SDII)
-# WSL = mean annual wet spell length (number of consecutive days during each wet spell)
-# DSL = mean annual dry spell lenght (number of consecutive days during each dry spell)
-# PA  = precipitation area (area over which of any given day precipitation occurs)
-# R95 = heavy precipitation index (percent of total precipitation above the 95% percentile of the reference distribution)
+# INT = mean annual precipitation intensity (intensity during wet days, or 
+#       simple precipitation intensity index SDII)
+# WSL = mean annual wet spell length (number of consecutive days 
+#       during each wet spell)
+# DSL = mean annual dry spell lenght (number of consecutive days
+#       during each dry spell)
+# PA  = precipitation area (area over which of any given day i
+#       precipitation occurs)
+# R95 = heavy precipitation index (percent of total precipitation above the 95% 
+#       percentile of the reference distribution)
 # HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
 #
-# For EC-Earth data and then extended to any model and observational data, producing plots
-# of data vs. a reference dataset (e.g. ERA-INTERIM). Indices are normalized over a reference
-# period. Both absolute and normalized values are made available: users can select the indices
-# to be stored and plotted. The tool makes extensives use of the cfg_hyint configuration file
-# for user selectable options and ease feeding needed inputs (e.g. region boundaries for timeseries
-# or value ranges and labels for figures).
+# For EC-Earth data and then extended to any model and observational data,
+# producing plots of data vs. a reference dataset (e.g. ERA-INTERIM). Indices 
+# are normalized over a reference period. Both absolute and normalized values
+# are made available: users can select the indices to be stored and plotted.
+# The tool makes extensives use of the cfg_hyint configuration file for user
+# selectable options and ease feeding needed inputs (e.g. region boundaries for
+# timeseries or value ranges and labels for figures).
 #
 # Required
-# It reads daily precipitation data through ESMValTool. If requested, input precipitation data are pre-processed
-# interpolating on a common grid set by the user in the hyint_parameters file.
+# It reads daily precipitation data through ESMValTool. If requested, input 
+# precipitation data are pre-processed interpolating on a common grid set by
+# the user in the hyint_parameters file. 
 # R libraries:"tools","PCICt","ncdf4","maps"
 #
 # Optional
-# Several options can be selected via the configuration file, e.g. the provision of an
-# external normalization functions for the indices; a reference climatology for the R95 index; type of plots; etc.
+# Several options can be selected via the configuration file, e.g. provision
+# of an external normalization functions for the indices; a reference 
+# climatology for the R95 index; type of plots; etc.
 #
 # Caveats
-# Spatial data selection based on elevation works only with regridding at 320x160 (or by producing by hand grid files at needed resolution)
 #
 # Modification history
 #    20181001-A_arno_en: converted to latest v2.0
@@ -53,6 +60,8 @@
 library(tools)
 library(yaml)
 library(ncdf4)
+
+
 
 # get path to script and source subroutines (if needed)
 args <- commandArgs(trailingOnly = FALSE)

@@ -22,7 +22,7 @@ datasets:
 #  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
 
 preprocessors:
-  masking_preprocessor:
+  preproc:
     mask_landsea:
       mask_out: sea
 
@@ -31,7 +31,7 @@ diagnostics:
     description: HyInt hydroclimatic indices calculation and plotting
     variables:
        pr:
-        preprocessor: preproc
+ #       preprocessor: preproc
         reference_dataset: "ACCESS1-0"
         mip: day
         field: T2Ds

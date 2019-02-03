@@ -8,12 +8,15 @@
 #
 #####################################################################
 
+
 run_regridding <- T
-force_regridding <- F
+force_regridding <- T
 force_diagnostic <- T
-if (length(etccdi_preproc) != 1) {
-  ettcdi_preproc <- F
+
+if (!exists("etccdi_preproc")) {
+  etccdi_preproc <- F
 }
+etccdi_dir <- ""
 
 # basic settings
 seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
@@ -30,13 +33,13 @@ topography_file <- "topo" # suffix for topography file (needed for filtering
 
 # Diagnostic options
 # norm_years set in recipe
-external_norm=F  # a) F=use internal data to normalize
+external_norm <- F  # a) F=use internal data to normalize
                  # b) list of names of normalization files 
                  #    (one per input data file or one for all)
                  # c) "HIST" to automatically generate the name of the 
                  #    historical run associated with the model name 
 
-external_r95=external_norm # a) F=use internal data to evaluate r95 threshold
+external_r95 <- external_norm # a) F=use internal data for r95 threshold
                            #    over the norm_years period  
                            # b) list of names of files (one per input 
                            #    data file or one for all) 
@@ -55,13 +58,13 @@ topography_highres <- ""
 
 # Plotting options
 # Plot_type set in namelist
-map_continents <- -2           # thickness of continents:
-                             # positive values in white, negative values in gray
-map_continents_regions <- false # plot also regional boundaries
+map_continents <- -2     # thickness of continents:
+                         # positive values in white, negative values in gray
+map_continents_regions <- F # plot also regional boundaries
 ryearplot <- 2006  # years to be plotted for experiments
                          # (maps over individual years): 
-                         # a) actual years, b) "FIRST" = first year in dataset or 
-                         # c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
+                         # a) actual years, b) "FIRST" = first year in dataset 
+                         # c) "ALL"  = all years in dataset. E.g. c(1998,2000)   
 rmultiyear_mean <- T # plot multiyear mean (this override ryearplot)
 
 
@@ -73,7 +76,7 @@ force_ref <- F # set TRUE to force plotting of reference data
                # as any other experiment
 
 # user defined extra label for figure file name
-label= "" 
+label <- ""
 
 # colorbar
 add_colorbar <- F # T to add colorbar

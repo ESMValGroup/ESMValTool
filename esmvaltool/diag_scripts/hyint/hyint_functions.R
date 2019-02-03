@@ -482,7 +482,7 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   system(cmd)
 
   ## Regridding the topographic map to chosen grid
-  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/","topo.nc"),
+  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc"),
     loc, regridded_topo, sep = ""
   )
   print(cmd)
@@ -499,7 +499,7 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
 
     # Set above sea-level gridpoints to 1
     cmd <- paste("cdo setmisstoc,1 ", loc,
-      paste0("/","regridded_topo_miss1.nc"),
+      paste0("/", "regridded_topo_miss1.nc"),
       loc, paste0("/", "regridded_topo_1pos.nc"), sep = ""
     )
     print(cmd)

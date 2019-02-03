@@ -92,9 +92,10 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   # Loop over models
   for (model_idx in c(1:(length(models_name)))) {
     # Do not compare reference with itself
-    if ((model_idx == ref_idx) && ((plot_type == 2) || (plot_type == 3))) {
+    if ( (model_idx == ref_idx) && ( (plot_type == 2) || (plot_type == 3))) {
       if (length(models_name) == 1) {
-        print("skipping comparison plots because only one dataset was requested")
+        print("skipping comparison plots because
+                only one dataset was requested")
       }
       next
     }
@@ -302,9 +303,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 "map", output_file_type
               )
               graphics_startup(figname, output_file_type, plot_size)
-              oma_now <- c(1, 1, 1, 1)
-              lonlat_aratio <- (max(ics)-min(ics)) /
-                               (max(ipsilon) - min(ipsilon)) 
+              lonlat_aratio <- (max(ics) - min(ics)) /
+                               (max(ipsilon) - min(ipsilon))
               par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
                   mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
             }

@@ -249,8 +249,8 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
         if (plot_type == 11) {
           figname <- getfilename_figure(
             plot_dir, field, year1, year2, model_idx, season,
-            "", region_codes[selregions[1]], label_figname, "timeseries_single",
-            output_file_type
+            "", region_codes[selregions[1]], label_figname,
+            "timeseries_single", output_file_type
           )
           graphics_startup(figname, output_file_type, plot_size)
           par(cex.main = 1.3, cex.axis = 1.2, cex.lab = 1.2,
