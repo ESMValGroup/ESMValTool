@@ -3,22 +3,22 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/
 ;
 ; Last access
-;   20190201
+;    20190201
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     total_columns/l3/merged/v0100/
-;   Put all files under a single directory (no subdirectories with years).
+;    Download the data from:
+;      total_columns/l3/merged/v0100/
+;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;   20190201-A_righ_ma: adapted to v2 and replace NaN/inf with FillValue.
-;   20160224-A_wenz_sa: written based on reformat_obs_ESACCI-AEROSOL.ncl.
+;    20190201-A_righ_ma: adapted to v2 and replace NaN/inf with FillValue.
+;    20160224-A_wenz_sa: written based on reformat_obs_ESACCI-AEROSOL.ncl.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -171,22 +171,11 @@ begin
     delete(tmp)
 
     ; Set global attributes
-    gAtt = True
-    if (isStrSubset(VARS(vID), "toz")) then
-      gAtt@comment = "L3 total ozone columns merged using the " + \
-        "algorithm GTO-ECV as part of the ESA Ozone CCI"
-    end if
-    gAtt@history = "Created on " + systemfunc("date")
-    gAtt@host    = systemfunc("echo $HOST")
-    gAtt@user    = systemfunc("echo $USER")
-    gAtt@period  = YEAR1(vID) + "-" + YEAR2(vID)
-    gAtt@field   = FIELD(vID)
-    gAtt@tier    = TIER
-    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/"
-    gAtt@reference = "Loyola et al., International " + \
-      "Journal of Remote Sensing, vol. 30, no. 15, pp. 4295-4318, 2009."
-    gAtt@title = OBSNAME + " data reformatted for the ESMValTool v2"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/", \
+      "Loyola et al., Int. J. Remote Sens. " + \
+      "doi:10.1080/01431160902825016, 2009.", "")
 
     ; Outfile
     fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + FIELD(vID) + \

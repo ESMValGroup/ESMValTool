@@ -3,36 +3,36 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
+;    https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
 ;
 ; Last access
-;   20190201
+;    20190201
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     L3C/AVHRR-PM/
-;   To fill the gap 199409-199501, also download:
-;     L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;       199409-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;     L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;       199410-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;     L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;       199411-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;     L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;       199412-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;     L3C/AVHRR-AM/AVHRR_NOAA-12/1995/ \
-;       199501-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;   Put all files under a single directory (no subdirectories with years).
+;    Download the data from:
+;      L3C/AVHRR-PM/
+;    To fill the gap 199409-199501, also download:
+;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+;        199409-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+;        199410-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+;        199411-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+;        199412-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+;      L3C/AVHRR-AM/AVHRR_NOAA-12/1995/ \
+;        199501-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;   20190201-A_righ_ma: adapted to v2.
-;   20181116-A_laue_ax: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
-;                       (1994/09 - 1995/01) are filled with AVHRR-AM data
-;   20180522-A_righ_ma: changed to use AVHRR-PM data.
-;   20160519-A_laue_ax: written (reformat_obs_ESACCI-AEROSOL.ncl).
+;    20190201-A_righ_ma: adapted to v2.
+;    20181116-A_laue_ax: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
+;                        (1994/09 - 1995/01) are filled with AVHRR-AM data
+;    20180522-A_righ_ma: changed to use AVHRR-PM data.
+;    20160519-A_laue_ax: written (reformat_obs_ESACCI-AEROSOL.ncl).
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -91,7 +91,7 @@ begin
         smonth = sprinti("%0.2i", mm)
 
         ; Read file
-        fname = systemfunc("ls " + input_dir_path + "/" + syear + smonth + \
+        fname = systemfunc("ls " + input_dir_path + syear + smonth + \
                            "-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-" + \
                            "fv3.0.nc")
 
@@ -184,25 +184,15 @@ begin
     delete(tmp)
 
     ; Set global attributes
-    gAtt = True
-    gAtt@comment = "ESA Cloud CCI Retrieval Products, " + \
-      "AVHRR-PM (monthly mean L3 data v3.0), gap 199409-199501 " + \
-      "filled using AVHRR-AM data."
-    gAtt@history = "Created on " + systemfunc("date")
-    gAtt@host    = systemfunc("echo $HOST")
-    gAtt@user    = systemfunc("echo $USER")
-    gAtt@period  = YEAR1 + "-" + YEAR2
-    gAtt@field   = FIELD
-    gAtt@tier    = TIER
-    gAtt@source  = "https://public.satproj.klima.dwd.de/data/" + \
-      "ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/"
-    gAtt@reference  = "Stengel, M., et al., Earth Syst. Sci. Data, " + \
-      "9, 881-904, https://doi.org/10.5194/essd-9-881-2017, 2017."
-    gAtt@title = OBSNAME + " data reformatted for the ESMValTool"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/" + \
+      "CLD_PRODUCTS/v3.0/", \
+      "Stengel et al., Earth Syst. Sci. Data, " + \
+      "doi:10.5194/essd-9-881-2017, 2017", "")
 
     ; Outfile
-    fout = output_dir_path + "/OBS_" + OBSNAME + "_sat_AVHRR-fv3.0_" + \
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_AVHRR-fv3.0_" + \
       FIELD + "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable

@@ -3,26 +3,26 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
 ;
 ; Last access
-;   20190201
+;    20190201
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     daily_files/COMBINED/v04.2/
-;     ancillary/v04.2/
-;   Put all files under a single directory (no subdirectories with years).
+;    Download the data from:
+;      daily_files/COMBINED/v04.2/
+;      ancillary/v04.2/
+;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;   20190201-A_righ_ma: adapted to v2, use new input data version 4.2.
-;   20160824-A_laue_ax: added processing of volumetric soil moisture
-;                       content (sm, smStderr).
-;   20160721-A_laue_ax: use daily files, added processing of uncertainty.
-;   20150523-A_righ_ma: written.
+;    20190201-A_righ_ma: adapted to v2, use new input data version 4.2.
+;    20160824-A_laue_ax: added processing of volumetric soil moisture
+;                        content (sm, smStderr).
+;    20160721-A_laue_ax: use daily files, added processing of uncertainty.
+;    20150523-A_righ_ma: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -67,7 +67,7 @@ begin
 
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
-                         "/ESACCI-SOILMOISTURE-L3S-SSMV-" + \
+                         "ESACCI-SOILMOISTURE-L3S-SSMV-" + \
                          "COMBINED-" + yy + "????000000-fv04.2.nc")
       f = addfiles(files, "r")
       delete(files)
@@ -87,7 +87,7 @@ begin
       ; Derive dos using porosity
       if (any(VARS(vv).eq.(/"dos", "dosStderr"/))) then
         g = addfile(input_dir_path + \
-                    "/ESACCI-SOILMOISTURE-POROSITY_V01.1.nc","r")
+                    "/ESACCI-SOILMOISTURE-POROSITY_V01.1.nc", "r")
         zz = g->porosity
         xx = xx * 100. / conform(xx, zz, (/1, 2/))
         delete(zz)
@@ -163,22 +163,12 @@ begin
     delete(tmp)
 
     ; Set global attributes
-    gAtt = True
-    gAtt@comment = "ESACCI satellite data for soil moisture"
-    gAtt@history = "Created on " + systemfunc("date")
-    gAtt@host    = systemfunc("echo $HOST")
-    gAtt@user    = systemfunc("echo $USER")
-    gAtt@field   = FIELD
-    gAtt@tier    = TIER
-    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/"
-    gAtt@reference = "Not available"
-    gAtt@title = OBSNAME + " satellite data reformatted for the ESMValTool"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/", "", "")
 
     ; Outfile
-    date = cd_calendar(output&time, 0)
-
-    fout = output_dir_path + "/OBS_" + OBSNAME + \
+    fout = output_dir_path + "OBS_" + OBSNAME + \
       "_sat_L3S-SSMV-COMBINED-v4.2_" + FIELD + "_" + VARS(vv) + "_" + \
       YEAR1 + "01-" + YEAR2 + "12.nc"
 

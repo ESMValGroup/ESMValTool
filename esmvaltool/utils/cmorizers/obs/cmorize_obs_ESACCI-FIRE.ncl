@@ -1,23 +1,23 @@
 ; #############################################################################
-; ESMValTool CMORizer for ESACCI-AEROSOL data
+; ESMValTool CMORizer for ESACCI-FIRE data
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/
 ;
 ; Last access
-;   20190124
+;    20190124
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     burned_area/MERIS/grid/v4.1/
-;   Put all files in input_dir_path (no subdirectories with years).
+;    Download the data from:
+;      burned_area/MERIS/grid/v4.1/
+;    Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;   20190124-A_righ_ma: written based on a python script by muel_bn.
+;    20190124-A_righ_ma: written based on a python script by muel_bn.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -62,8 +62,8 @@ begin
 
       ldate = yy + sprinti("%0.2i", mm)
 
-      files = systemfunc("ls " + input_dir_path + "/" + \
-                         ldate + "??-ESACCI-L4_FIRE-BA-MERIS-fv4.1.nc")
+      files = systemfunc("ls " + input_dir_path + ldate + \
+                         "??-ESACCI-L4_FIRE-BA-MERIS-fv4.1.nc")
       f = addfiles(files, "r")
 
       xx = f[:]->$NAME$
@@ -154,20 +154,12 @@ begin
   delete(tmp)
 
     ; Set global attributes
-    gAtt = True
-    gAtt@history = "Created on " + systemfunc("date")
-    gAtt@host    = systemfunc("echo $HOST")
-    gAtt@user    = systemfunc("echo $USER")
-    gAtt@period  = YEAR1 + "-" + YEAR2
-    gAtt@field   = FIELD
-    gAtt@tier    = TIER
-    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/"
-    gAtt@reference = ""
-    gAtt@title = OBSNAME + " data reformatted for the ESMValTool"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/", "", "")
 
     ; Outfile
-    fout = output_dir_path + "/OBS_" + OBSNAME + "_sat_L4-BA-MERIS-fv4.1_" + \
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L4-BA-MERIS-fv4.1_" + \
       FIELD + "_" + VARS + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable

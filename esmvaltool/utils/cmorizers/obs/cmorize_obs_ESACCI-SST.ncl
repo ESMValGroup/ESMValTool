@@ -3,26 +3,26 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
 ;
 ; Last access
-;   20190201
+;    20190201
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     lt/Analysis/L4/v01.1/
-;   Put all files under a single directory (no subdirectories with years).
+;    Download the data from:
+;      lt/Analysis/L4/v01.1/
+;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;   20190201-A_righ_ma: adapted to v2.
-;   20180529-A_righ_ma: modified to have consistent metadata across multiple
-;                       files and to speed up processing time
-;   20160818-A_laue_ax: written
+;    20190201-A_righ_ma: adapted to v2.
+;    20180529-A_righ_ma: modified to have consistent metadata across multiple
+;                        files and to speed up processing time
+;    20160818-A_laue_ax: written
 ;
-;#############################################################################
+; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 
 begin
@@ -61,7 +61,7 @@ begin
 
       ; Select files for this year/month
       files = \
-        systemfunc("ls " + input_dir_path + "/" + yy + mo + "??120000-" + \
+        systemfunc("ls " + input_dir_path + yy + mo + "??120000-" + \
                    "ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_LT-v02.0-fv01.1.nc")
       nfiles = dimsizes(files)
 
@@ -77,7 +77,7 @@ begin
 
       ; Read mask
       lsmask = f[:]->mask
-        
+
       ; Read SST
       tmp = f[:]->analysed_sst
       sst = tmp * tmp@scale_factor + tmp@add_offset
@@ -163,27 +163,19 @@ begin
       delete(tmp)
 
       ; Set global attributes
-      gAtt = True
-      gAtt@history = "Created on " + systemfunc("date")
-      gAtt@host    = systemfunc("echo $HOST")
-      gAtt@user    = systemfunc("echo $USER")
-      gAtt@period  = YEAR1 + "-" + YEAR2
-      gAtt@field   = FIELD
-      gAtt@tier    = TIER
-      gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/"
-      gAtt@reference = "Merchant et al. " + \
-         "Geoscience Data Journal, doi:10.1002/gdj3.20, 2014."
-      gAtt@title = OBSNAME +  " data reformatted for the ESMValTool"
-      gAtt@conventions = "CF/CMOR"
+      gAtt = set_global_atts( \
+        OBSNAME, TIER, \
+        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/", \
+        "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014", "")
 
       ; Write output
-      fout = output_dir_path + "/OBS_" + OBSNAME + \
+      fout = output_dir_path + "OBS_" + OBSNAME + \
         "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
         FIELD + "_ts_" + yy + mo + "-" + yy + mo + ".nc"
       write_nc(fout, "ts", sstavg, gAtt)
       delete(sstavg)
 
-      fout = output_dir_path + "/OBS_" + OBSNAME + \
+      fout = output_dir_path + "OBS_" + OBSNAME + \
         "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
         FIELD + "_tsStderr_" + yy + mo + "-" + yy + mo + ".nc"
       write_nc(fout, "tsStderr", erravg, gAtt)

@@ -3,34 +3,34 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
 ;
 ; Last access
-;   20190110
+;    20190110
 ;
 ; Download and processing instructions
-;   Download the 3 NetCDF files for 2000, 2005 and 2010.
-;   Download the CCI-LC Tools from:
-;     http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-;   Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
+;    Download the 3 NetCDF files for 2000, 2005 and 2010.
+;    Download the CCI-LC Tools from:
+;      http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
+;    Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
 ;      bash lc-user-tools-3.14/bin/aggregate-map.sh \
 ;        -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
 ;        -PoutputAccuracy=false -PoutputPFTClasses=true \
 ;        -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-;   Put the resulting processed data in input_dir_path.
+;    Put the resulting processed data in input_dir_path.
 ;
 ; Caveat
-;   The CCI-LC Tools must be applied before running this script.
-;   The CCI-LC Tools require Java Version 7 or higher.
-;   The input data are available for a single year and are copied over to
-;   generate a time series over their time range of validity.
+;    The CCI-LC Tools must be applied before running this script.
+;    The CCI-LC Tools require Java Version 7 or higher.
+;    The input data are available for a single year and are copied over to
+;    generate a time series over their time range of validity.
 ;
 ; Modification history
-;   20190110-A_righ_ma: rewritten in NCL for v2.
-;   20160714-A_muel_bn: written.
+;    20190110-A_righ_ma: rewritten in NCL for v2.
+;    20160714-A_muel_bn: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -82,7 +82,7 @@ begin
   do yy = 0, dimsizes(YEARS) - 1
 
     fname = \
-      input_dir_path + "/ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
+      input_dir_path + "ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
 
     f = addfile(fname, "r")
 
@@ -183,22 +183,14 @@ begin
       end if
 
       ; Set global attributes
-      gAtt = True
-      gAtt@history = "Created on " + systemfunc("date")
-      gAtt@host    = systemfunc("echo $HOST")
-      gAtt@user    = systemfunc("echo $USER")
-      gAtt@period  = YEAR1 + "-" + YEAR2
-      gAtt@field   = FIELD
-      gAtt@tier    = TIER
-      gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/" + \
-        "land_cover/data/land_cover_maps/"
-      gAtt@reference = "Defourny, P., et al.. ESA Land Cover " + \
-        "Climate Change Initiative (ESA LC_cci) data, 2015"
-      gAtt@title = OBSNAME + " data CMORized for the ESMValTool v2.0"
-      gAtt@conventions = "CF/CMOR"
+      gAtt = set_global_atts( \
+        OBSNAME, TIER, \
+        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/", \
+        "Defourny et al.. ESA Land Cover " + \
+        "Climate Change Initiative (ESA LC_cci) data, 2015", "")
 
       ; Outfile
-      fout = output_dir_path + "/" + \
+      fout = output_dir_path + \
         "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + FIELD + "_" + \
         VARIABLES(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 

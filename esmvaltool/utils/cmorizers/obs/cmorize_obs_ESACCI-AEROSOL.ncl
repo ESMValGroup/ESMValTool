@@ -3,28 +3,28 @@
 ; #############################################################################
 ;
 ; Tier
-;   Tier 2: other freely-available dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
+;    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
 ;
 ; Last access
-;   20190124
+;    20190124
 ;
 ; Download and processing instructions
-;   Download the data from:
-;     ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-;     AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-;   Other years are not considered since they are not complete.
-;   Put all files in input_dir_path (no subdirectories with years).
+;    Download the data from:
+;      ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
+;      AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
+;    Other years are not considered since they are not complete.
+;    Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;   20190124-A_righ_ma: adapted to v2.
-;   20160718-A_laue_ax: added AOD550 + AOD870 uncertainties.
-;   20160525-A_righ_ma: updated to v4.21 and adding more variables.
-;   20150126-A_righ_ma: adding AOD at other wavelengths.
-;   20151124-A_righ_ma: switched to monthly raw data (now available).
-;   20150424-A_righ_ma: written.
+;    20190124-A_righ_ma: adapted to v2.
+;    20160718-A_laue_ax: added AOD550 + AOD870 uncertainties.
+;    20160525-A_righ_ma: updated to v4.21 and adding more variables.
+;    20150126-A_righ_ma: adding AOD at other wavelengths.
+;    20151124-A_righ_ma: switched to monthly raw data (now available).
+;    20150424-A_righ_ma: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -82,7 +82,7 @@ begin
         ldate = yy + sprinti("%0.2i", mm)
 
         ; Read file
-        fname = systemfunc("ls " + input_dir_path + "/" + ldate + "*.nc")
+        fname = systemfunc("ls " + input_dir_path + ldate + "*.nc")
 
         ; No files found
         if (all(ismissing(fname))) then
@@ -152,25 +152,18 @@ begin
     delete(tmp)
 
     ; Set global attributes
-    gAtt = True
-    gAtt@comment = "Combined dataset ERS2-ATSR2 (1997-2002) and " + \
-      "ENVISAT-AATSR (2003-2011), based on the University of Swansea " +\
-      "algorithm (monthly mean L3 data)"
-    gAtt@history = "Created on " + systemfunc("date")
-    gAtt@host    = systemfunc("echo $HOST")
-    gAtt@user    = systemfunc("echo $USER")
-    gAtt@period  = YEAR1 + "-" + YEAR2
-    gAtt@field   = FIELD
-    gAtt@tier    = TIER
-    gAtt@source  = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/"
-    gAtt@reference = "Popp, T. et al. ESA Aerosol Climate " + \
-      "Change Initiative (ESA Aerosol_cci) data: AOD v4.21 " + \
-      "via Centre for Environmental Data Analysis, 2016"
-    gAtt@title = OBSNAME + " data reformatted for the ESMValTool"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/", \
+      "Popp et al., ESA Aerosol Climate Change Initiative " + \
+      "(ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental " + \
+      "Data Analysis, 2016", \
+      "Combined dataset ERS2-ATSR2 (1997-2002) and ENVISAT-AATSR " + \
+      "(2003-2011), based on the University of Swansea algorithm " + \
+      "(monthly mean L3 data)")
 
     ; Outfile
-    fout = output_dir_path + "/OBS_" + OBSNAME + "_sat_SU-v4.21_" + FIELD + \
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_SU-v4.21_" + FIELD + \
       "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable
