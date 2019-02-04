@@ -52,8 +52,8 @@ begin
   YEAR1 = 1982
   YEAR2 = 2016
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Amon"
 
   ; Selected variable (standard name)
   VARS = (/"clt", "cltStderr", "clivi", "clwvi"/)
@@ -193,7 +193,7 @@ begin
 
     ; Outfile
     fout = output_dir_path + "OBS_" + OBSNAME + "_sat_AVHRR-fv3.0_" + \
-      FIELD + "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+      MIP + "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable
     write_nc(fout, VARS(vID), output, gAtt)

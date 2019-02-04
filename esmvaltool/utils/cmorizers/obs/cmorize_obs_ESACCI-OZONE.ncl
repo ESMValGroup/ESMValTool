@@ -38,8 +38,8 @@ begin
   YEAR1 = (/1997, 1997, 2007, 2007/)
   YEAR2 = (/2010, 2010, 2008, 2008/)
 
-  ; Field
-  FIELD = (/"T2Ms", "T2Ms", "T2Mz", "T2Mz"/)
+  ; MIP
+  MIP = "Amon"
 
   ; Selected variable (standard name)
   VARS = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
@@ -178,7 +178,7 @@ begin
       "doi:10.1080/01431160902825016, 2009.", "")
 
     ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + FIELD(vID) + \
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + MIP + \
       "_" + VARS(vID) + "_" + YEAR1(vID) + "01-" + YEAR2(vID) + "12.nc"
 
     ; Write variable

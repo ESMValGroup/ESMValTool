@@ -42,8 +42,8 @@ begin
   YEAR1 = 1979
   YEAR2 = 2016
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Lmon"
 
   ; Selected variable (standard name)
   VARS = (/"sm", "smStderr", "dos", "dosStderr"/)
@@ -169,7 +169,7 @@ begin
 
     ; Outfile
     fout = output_dir_path + "OBS_" + OBSNAME + \
-      "_sat_L3S-SSMV-COMBINED-v4.2_" + FIELD + "_" + VARS(vv) + "_" + \
+      "_sat_L3S-SSMV-COMBINED-v4.2_" + "Lmon" + "_" + VARS(vv) + "_" + \
       YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write output

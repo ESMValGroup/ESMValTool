@@ -40,8 +40,8 @@ begin
   YEAR1 = 1992
   YEAR2 = 2010
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Amon"
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/"
@@ -171,13 +171,13 @@ begin
       ; Write output
       fout = output_dir_path + "OBS_" + OBSNAME + \
         "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
-        FIELD + "_ts_" + yy + mo + "-" + yy + mo + ".nc"
+        MIP + "_ts_" + yy + mo + "-" + yy + mo + ".nc"
       write_nc(fout, "ts", sstavg, gAtt)
       delete(sstavg)
 
       fout = output_dir_path + "OBS_" + OBSNAME + \
         "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
-        FIELD + "_tsStderr_" + yy + mo + "-" + yy + mo + ".nc"
+        MIP + "_tsStderr_" + yy + mo + "-" + yy + mo + ".nc"
       write_nc(fout, "tsStderr", erravg, gAtt)
       delete(erravg)
 

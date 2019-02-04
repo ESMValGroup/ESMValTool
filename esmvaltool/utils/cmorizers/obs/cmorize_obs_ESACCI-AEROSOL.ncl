@@ -44,8 +44,8 @@ begin
   YEAR1 = 1997
   YEAR2 = 2011
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "aero"
 
   ; Selected variable (standard name)
   VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \
@@ -163,7 +163,7 @@ begin
       "(monthly mean L3 data)")
 
     ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_SU-v4.21_" + FIELD + \
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_SU-v4.21_" + MIP + \
       "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable

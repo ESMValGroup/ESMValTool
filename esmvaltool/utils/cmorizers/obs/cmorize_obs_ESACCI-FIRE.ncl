@@ -37,8 +37,8 @@ begin
   YEAR1 = 2005
   YEAR2 = 2011
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Lmon"
 
   ; Selected variable (standard name)
   VARS = "burntArea"
@@ -160,7 +160,7 @@ begin
 
     ; Outfile
     fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L4-BA-MERIS-fv4.1_" + \
-      FIELD + "_" + VARS + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+      MIP + "_" + VARS + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable
     write_nc(fout, VARS, output, gAtt)
