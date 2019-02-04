@@ -51,6 +51,7 @@ def balances(wdir, plotpath, filena, name, model):
     pdir = plotpath
     timesery = np.zeros([nsub, 2])
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
+    print(ndims[1])
     transp_mean = np.zeros([nsub, ndims[1]])
     lat_maxm = np.zeros([nsub, 2, len(dims[3])])
     tr_maxm = np.zeros([nsub, 2, len(dims[3])])
