@@ -103,7 +103,6 @@ dtr_base <- DTRRef( # nolint
     calendar = calendario
 )
 
-
 for (i in 1 : length(projection_files)) {
     fullpath_projection_tasmax <- filename_tasmax[[projection_files[i]]]
     file <- nc_open(fullpath_projection_tasmax)
@@ -148,6 +147,9 @@ for (j in 1 : 4){
     dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , ], 1)#nolint
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
+title <- paste(
+    "Number of days exceeding the DTR in 5 degrees during the period",
+    start_projection, "-", end_projection)
 PlotLayout( # nolint
   PlotEquiMap, # nolint
   plot_dims = c("lon", "lat"),
@@ -155,10 +157,7 @@ PlotLayout( # nolint
   lon = lon,
   lat = lat,
   titles = c("DJF", "MAM", "JJA", "SON"),
-  toptitle = paste(
-    "Number of days exceeding the DTR in 5 degrees during the period",
-    start_projection, "-", end_projection
-  ),
+  toptitle = title,
   filled.continents = FALSE, units = "Days",
   axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
   brks = seq(0, max(dtr_rcp), 2), color_fun = clim.palette("yellowred"),
@@ -193,16 +192,29 @@ defdata <- ncvar_def(
     "Temeprature Range for the reference period")
 )
 
-file <- nc_create(
-  paste0(
+filencdf <- paste0(
     plot_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
     start_projection, "_", end_projection, "_",
-    start_historical, "_", end_historical, ".nc"
-  ),
-  list(defdata)
-)
+    start_historical, "_", end_historical, ".nc")
+file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, dtr_rcp)
 nc_close(file)
+
+
+    # Set provenance for output files
+    xprov <- list(ancestors = list(filename_tasmin[[reference_files]],
+                                   filename_tasmax[[reference_files]],
+                                   filename_tasmin[[projection_files[i]]],
+                                   filename_tasmax[[projection_files[i]]]),
+                  authors = list("hunt_al", "manu_ni", "caro_lo"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("DTR"),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = file.path(plot_dir, "rcp85.png"))
+
+      provenance[[filencdf]] <- xprov
 }
 
 # Write provenance to file
