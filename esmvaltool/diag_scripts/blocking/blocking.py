@@ -342,7 +342,7 @@ class Blocking(object):
             return cube
         logger.debug('Smoothing...')
         smoothed = iris.cube.CubeList()
-        for lon_slice in cube.slices('longitude'):
+        for lon_slice in cube.slices_over('longitude'):
             longitude = lon_slice.coord('longitude').points[0]
             lon_window = cube.intersection(
                 longitude=(longitude - self.smoothing_window / 2.,
