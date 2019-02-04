@@ -1072,14 +1072,14 @@ def write_to_tab(log, name, vared, varzon):
               .format(name, varzon[0], varzon[1], varzon[2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0][0], vared[1][0], vared[2][0]))
+              .format(name, vared[0][0], vared[0][1], vared[0][2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0][1], vared[1][1], vared[2][1]))
+              .format(name, vared[1][0], vared[1][1], vared[1][2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0][2], vared[1][2], vared[2][2]))
+              .format(name, vared[2][0], vared[2][1], vared[2][2]))
     log.write('--------------------------------------\n')
     log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0][3], vared[1][3], vared[2][3]))
+              .format(name, vared[3][0], vared[3][1], vared[3][2]))
     log.write('--------------------------------------\n')
