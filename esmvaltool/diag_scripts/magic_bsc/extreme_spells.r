@@ -180,35 +180,15 @@ for (i in 1 : length(projection_filenames)) {
       "quantile obtained from", start_reference, "-", end_reference
     )
   )
-  file <- nc_create(
-    paste0(
-      plot_dir, "/", var0, "_extreme_spell_duration", season,
+  filencdf <- paste0(plot_dir, "/", var0, "_extreme_spell_duration", season,
       "_", model_names, "_", rcp_scenario[i], "_", start_projection, "_",
-      end_projection, ".nc"
-    ),
-    list(defdata)
-  )
+      end_projection, ".nc")
+
+  file <- nc_create(filencdf, list(defdata))
   ncvar_put(file, defdata, data)
   nc_close(file)
 
-    # Set provenance for output files
-    caption <- paste0("Heat or cold wave duration")
-    print(caption)
-    print(list(projection_filenames, reference_filenames))
-    xprov <- list(ancestors = list(projection_filenames, reference_filenames),
-                  authors = list("hunt_al", "manu_ni", "caro_lo"),
-                  projects = list("c3s-magic"),
-                  caption = caption,
-                  statistics = list("spells"),
-                  op = as.character(params$operator),
-                  qtile = params$quantile,
-                  spell_length = params$min_duration,
-                  season = params$season,
-                  realms = list("atmos"),
-                  themes = list("phys"),
-                  domains = list("nh"))
 
-      provenance[[i]] <- xprov
 
 
   brks <- seq(0, 40, 4)
@@ -218,6 +198,10 @@ for (i in 1 : length(projection_filenames)) {
     "th quantile for ", substr(start_reference, 1, 4), "-",
     substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"
   )
+  filepng <- paste0(
+      plot_dir, "/", var0, "_extreme_spell_duration", season, "_",
+      model_names, "_", rcp_scenario[i], "_", start_projection, "_",
+      end_projection, ".png")
   PlotEquiMap( Mean1Dim(data, 1), # nolint
     lat = lat,
     lon = lon,
@@ -226,13 +210,26 @@ for (i in 1 : length(projection_filenames)) {
     color_fun = clim.palette("yellowred"),
     units = "Days",
     toptitle = title,
-    fileout = paste0(
-      plot_dir, "/", var0, "_extreme_spell_duration", season, "_",
-      model_names, "_", rcp_scenario[i], "_", start_projection, "_",
-      end_projection, ".png"
-    ),
+    fileout = filepng,
     title_scale = 0.5
   )
+
+        # Set provenance for output files
+
+    xprov <- list(ancestors = list(projection_filenames, reference_filenames),
+                  authors = list("hunt_al", "manu_ni", "caro_lo"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("spells"),
+                  op = as.character(params$operator),
+                  qtile = params$quantile,
+                  spell_length = params$min_duration,
+                  season = params$season,
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plot_file = list(filepng))
+
+      provenance[[filencdf]] <- xprov
 }
 
 # Write provenance to file
