@@ -147,21 +147,16 @@ forecast <- ToyModel(#nolint
   nstartd = 1,
   nleadt = dim(data)[time_dim]
 )
-print(  min(c(forecast$obs, forecast$mod)))
-print( max(c(forecast$obs, forecast$mod)))
+
 
 print(brewer.pal(n = nm, name = "Reds"))
-jpeg(
-  paste0(
-    plot_dir, "/", "synthetic_", gsub(".nc", "",
-    basename(fullpath_filenames)), ".jpg"
-  ),
-  height = 460,
-  width = 600
-)
+filepng <- paste0(plot_dir, "/", "synthetic_", gsub(".nc", "",
+    basename(fullpath_filenames)), ".jpg")
+jpeg(filepng, height = 460, width = 600)
+title <- paste(nm, "synthetic members generated")
 plot(time, forecast$obs, type = "l",
   ylab = paste(var0, "(", units, ")"),
-  main = paste(nm, "synthetic members generated"),
+  main = title,
   bty = "n"
 )
 matlines(
@@ -190,6 +185,21 @@ attr(data, "variables") <- metadata
 variable_list <- list(variable = data, time = time)
 names(variable_list)[1] <- var0
 print(str(data))
-ArrayToNetCDF(variable_list, #nolint
-              paste0(plot_dir, "/", "synthetic_",
-              basename(fullpath_filenames)))
+filencdf <- paste0(plot_dir, "/", "synthetic_",
+              basename(fullpath_filenames))
+ArrayToNetCDF(variable_list, filencdf) #nolint
+
+    # Set provenance for output files
+    xprov <- list(ancestors = list(fullpath_filenames),
+                  authors = list("bell_om"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("Toy Model"),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = filepng)
+
+      provenance[[filencdf]] <- xprov
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)
