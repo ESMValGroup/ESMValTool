@@ -392,14 +392,14 @@ for (mod in 1 : length(model_names)) {
   variable_list <- list(variable = data, lat = lat, lon = lon, time = time)
   names(variable_list)[1] <- var0
 
-  ArrayToNetCDF( # nolint
-    variable_list,
-    paste0(
-      plot_dir,  "/", var0, "_", months, "_anomaly_", model_names[mod],
-      "_", start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
-      end_climatology, ".nc"
-    )
-  )
+  #ArrayToNetCDF( # nolint
+  #  variable_list,
+  #  paste0(
+  #    plot_dir,  "/", var0, "_", months, "_anomaly_", model_names[mod],
+  #    "_", start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
+  #    end_climatology, ".nc"
+  #  )
+  #)
 }
 
 model_anomalies <- WeightedMean( # nolint
@@ -457,11 +457,12 @@ if (time_series_plot == "single") {
          end_anomaly, ") - ", "(", start_climatology, "-", end_climatology,
          ")"))
 }
-ggsave(
-  filename = paste0(
+filepng1 <-  paste0(
     plot_dir, "/", "Area-averaged ", var0, "_", months, "_multimodel-anomaly_",
     start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
-    end_climatology, ".png"),
+    end_climatology, ".png")
+ggsave(
+  filename = filepng1,
   g,
   device = NULL
 )
@@ -481,10 +482,12 @@ colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)), abs(min(data))))
 brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
 title <- paste0(
   months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly,
-  ") - (", start_climatology, "-", end_climatology, ")"
-)
+  ") - (", start_climatology, "-", end_climatology, ")")
 data <- drop(Mean1Dim(multi_year_anomaly, model_dim))
 
+filepng2 <- paste0(plot_dir, "/", var0, "_", months, "_multimodel-anomaly_",
+                    start_anomaly,
+    "_", end_anomaly, "_", start_climatology, "_", end_climatology, ".png")
 PlotEquiMap( # nolint
   data,
   lat = lat,
@@ -494,11 +497,7 @@ PlotEquiMap( # nolint
   toptitle = title,
   filled.continents = FALSE,
   dots = drop(agreement) >= agreement_threshold,
-  fileout = paste0(
-    plot_dir, "/", var0, "_", months, "_multimodel-anomaly_", start_anomaly,
-    "_", end_anomaly, "_", start_climatology, "_", end_climatology, ".png"
-  )
-)
+  fileout = filepng2)
 model_names_filename <- paste(model_names, collapse = "_")
 print(paste(
   "Attribute projection from climatological data is saved and,",
@@ -529,17 +528,33 @@ defagreement <- ncvar_def(
   units = "%",
   dim = list(lat = dimlat, lon = dimlon),
   longname = "Agremeent between models")
-
-file <- nc_create(
-  paste0(
+filencdf <- paste0(
     plot_dir, "/", var0, "_", months, "_multimodel-anomaly_",
     model_names_filename, "_", start_anomaly, "_", end_anomaly, "_",
-    start_climatology, "_", end_climatology, ".nc"),
-  list(defdata, defagreement)
-)
+    start_climatology, "_", end_climatology, ".nc")
+file <- nc_create(filencdf, list(defdata, defagreement))
 ncvar_put(file, defdata, data)
 ncvar_put(file, defagreement, agreement)
 nc_close(file)
+
+
+    # Set provenance for output files
+    xprov <- list(ancestors = list(fullpath_filenames),
+                  authors = list("hunt_al", "manu_ni"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("Anomaly agreement"),
+                  agreement_threshold = params$agreement_threshold,
+                  moninf = params$moninf,
+                  monsup = params$monsup,
+                  runmena = params$running_mean,
+                  time_series_plot = params$time_series_plot,
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = list(filepng1, filepng2))
+
+      provenance[[filencdf]] <- xprov
+
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)
