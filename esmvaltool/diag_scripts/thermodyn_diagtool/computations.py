@@ -277,8 +277,9 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     removeif(aux2_file)
     cdo.timmean(input='-yearmonmean -monmean -div {} {}'
                 .format(en_file, tem_file), options='-b F32', output=aux_file)
-    entr_gmean = write_eb(nin, nout, aux2_file, entr_file, entr_mean_file)
-    cdo.chname(ch_name, input=aux_file, options='-b F32', output=entr_file)
+    entr_gmean = write_eb(nin, nout, aux_file, entr_file, aux2_file)
+    cdo.chname(ch_name, input=aux2_file, options='-b F32',
+               output=entr_mean_file)
     os.remove(aux2_file)
     return entr_gmean
 
