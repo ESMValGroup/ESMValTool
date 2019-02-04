@@ -382,9 +382,9 @@ def main(cfg):
                     model, wdir, wm_file[1], sftlf_fx, 'latent')
                 latent_oc_all[i_m] = latent_oc_gmean
                 latent_la_all[i_m] = latent_la_gmean
-                logger.info('Water mass budget over oceans: %s\n',
+                logger.info('Latent energy budget over oceans: %s\n',
                             latent_oc_gmean)
-                logger.info('Water mass budget over land: %s\n',
+                logger.info('Latent energy budget over land: %s\n',
                             latent_la_gmean)
                 logger.info('Done\n')
             else:

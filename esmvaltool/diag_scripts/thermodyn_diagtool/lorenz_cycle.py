@@ -220,7 +220,7 @@ def averages(x_c, g_w):
     # Compute zonal mean of time means
     xc_ztmn = np.squeeze(np.real(x_c[:, :, 0]))
     # Compute global mean of time means
-    xc_gmn = (np.nansum(xc_ztmn * g_w[np.newaxis, :])) / (np.nansum(g_w))
+    xc_gmn = np.nansum(xc_ztmn * g_w[np.newaxis, :], axis=1) / np.nansum(g_w)
     return xc_ztmn, xc_gmn
 
 
