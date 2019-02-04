@@ -124,6 +124,7 @@ pc3 <- read_xml_pc(file.path(power_curves_folder, "Gamesa_G87_2.0MW.wtp"))
 pc4 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V100_2.0MW.wtp"))
 pc5 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V110_2.0MW.wtp"))
 
+
 data_cf1 <- wind2CF(data, pc1)
 dim(data_cf1) <- dim(data)
 data_cf2 <- wind2CF(data, pc2)

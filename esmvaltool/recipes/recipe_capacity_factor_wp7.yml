@@ -49,11 +49,10 @@ diagnostics:
       main:
         script: magic_bsc/capacity_factor.r #(in diag_scripts)
         power_curves:
-          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Enercon_E70_2.3MW.wtp
-          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G80_2.0MW.wtp
-          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Gamesa_G87_2.0MW.wtp
-          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V100_2.0MW.wtp
-          - /home/Earth/llledo/Documents/Power_Curves/Windographer_library/Vestas_V110_2.0MW.wtp
-        power_curves_folder: /home/Earth/llledo/Documents/Power_Curves/Windographer_library
-
+          - /home/Earth/nperez/git/ESMValTool/PowerCurves/Enercon_E70_2.3MW.txt
+          - /home/Earth/nperez/git/ESMValTool/PowerCurves/Gamesa_G80_2.0MW.txt
+          - /home/Earth/nperez/git/ESMValTool/PowerCurves/Gamesa_G87_2.0MW.txt
+          - /home/Earth/nperez/git/ESMValTool/PowerCurves/Vestas_V100_2.0MW.txt
+          - /home/Earth/nperez/git/ESMValTool/PowerCurves/Vestas_V110_2.0MW.txt
+       power_curves_folder: /home/Earth/llledo/Documents/Power_Curves/Windographer_library
 
