@@ -292,7 +292,7 @@ def main(cfg):
         sftlf_fx = sftlf_fx.replace("}", "")
         aux_file = wdir + '/aux.nc'
         te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
-            logger, model, wdir, filenames, flags)
+            model, wdir, filenames, flags)
         te_all[i_m] = te_gmean_constant
         logger.info('Computing energy budgets\n')
         eb_gmean, eb_file, toab_ymm_file = comp.budgets(model, wdir, aux_file,
@@ -303,6 +303,8 @@ def main(cfg):
         atmb_all[i_m, 1] = np.nanstd(eb_gmean[1])
         surb_all[i_m, 0] = np.nanmean(eb_gmean[2])
         surb_all[i_m, 1] = np.nanstd(eb_gmean[2])
+        logger.info('Global mean emission temperature: %s\n',
+                    te_gmean_constant)
         logger.info('TOA energy budget: %s\n', toab_all[i_m, 0])
         logger.info('Atmospheric energy budget: %s\n', atmb_all[i_m, 0])
         logger.info('Surface energy budget: %s\n', surb_all[i_m, 0])
@@ -318,8 +320,8 @@ def main(cfg):
         # Water mass budget
         if wat in {'y', 'yes'}:
             logger.info('Computing water mass and latent energy budgets\n')
-            _, _, _, aux_list = mkthe.init_mkthe(logger, model, wdir,
-                                                 filenames, flags)
+            _, _, _, aux_list = mkthe.init_mkthe(
+                model, wdir, filenames, flags)
             wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file,
                                             filenames, aux_list)
             wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
@@ -404,8 +406,8 @@ def main(cfg):
         # Compute the material entropy production
         if entr in {'y', 'yes'}:
             if met in {'1', '3'}:
-                _, _, te_file, _ = mkthe.init_mkthe(logger, model, wdir,
-                                                    filenames, flags)
+                _, _, te_file, _ = mkthe.init_mkthe(
+                    model, wdir, filenames, flags)
                 logger.info('Computation of the material entropy production '
                             'with the indirect method\n')
                 indentr_list = [rlds_file, rlus_file, rsds_file, rsus_file,

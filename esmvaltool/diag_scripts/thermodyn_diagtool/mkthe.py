@@ -46,11 +46,10 @@ SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
 # pylint: disable-msg=R0914
 # pylint: disable-msg=R0915
 # flake8: noqa
-def init_mkthe(logger, model, wdir, filelist, flags):
+def init_mkthe(model, wdir, filelist, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
-    - logger: the log file where the info are printe
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - filelist: a list of file names containing the input fields;
@@ -91,7 +90,6 @@ def init_mkthe(logger, model, wdir, filelist, flags):
     vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
     cdo.selvar('vas', input='-monmean {}'.format(vas_file),
                option='-b F32', output=vasmn_file)
-    logger.info('Computing auxiliary variables\n')
     # emission temperature
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file),
@@ -102,7 +100,6 @@ def init_mkthe(logger, model, wdir, filelist, flags):
     cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
     f_l = Dataset(te_gmean_file)
     te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
-    logger.info('Global mean emission temperature: %s\n', te_gmean_constant)
     # temperature of the atmosphere-surface interface
     tasvert_file = wdir + '/{}_tvertavg.nc'.format(model)
     removeif(tasvert_file)

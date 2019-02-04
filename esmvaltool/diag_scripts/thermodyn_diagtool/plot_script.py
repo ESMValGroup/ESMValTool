@@ -101,6 +101,7 @@ def balances(wdir, plotpath, filena, name, model):
         timesery[1, :] = (-20, 20)
         transpwy = (-2E9, 2E9)
         transply = (-6E15, 6E15)
+        coords = [dims[0], dims[1]]
         plot_climap_wm(model, pdir, coords, tmean, ext_name, name)
         nc_f = wdir + '/{}_transp_mean_{}.nc'.format('wmb', model)
         removeif(nc_f)
