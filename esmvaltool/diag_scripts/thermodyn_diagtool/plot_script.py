@@ -93,7 +93,7 @@ def balances(wdir, plotpath, filena, name, model):
         fnam = pdir + '/{}_transp.png'.format(model)
         strings = ['Meridional heat transports', 'Latitude [deg]', '[W]', fnam]
         lats = dims[1]
-        plot_1m_transp(np.tile(lats,(3,1)), transp_mean, transpty, strings)
+        plot_1m_transp(np.tile(lats, (3, 1)), transp_mean, transpty, strings)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
@@ -102,17 +102,17 @@ def balances(wdir, plotpath, filena, name, model):
         transpwy = (-2E9, 2E9)
         transply = (-6E15, 6E15)
         plot_climap_wm(model, pdir, coords, tmean, ext_name, name)
-        nc_f = wdir + '/{}_transp_mean_{}.nc'.format('wmass', model)
+        nc_f = wdir + '/{}_transp_mean_{}.nc'.format('wmb', model)
         removeif(nc_f)
         filena[0] = filena[0].split('.nc', 1)[0]
         filename = filena[0] + '.nc'
-        pr_output(transp_mean[0, :], filename, nc_f, 'wmass')
+        pr_output(transp_mean[0, :], filename, nc_f, 'wmb')
         nc_f = wdir + '/{}_transp_mean_{}.nc'.format('latent', model)
         removeif(nc_f)
         filena[1] = filena[1].split('.nc', 1)[0]
         filename = filena[1] + '.nc'
         pr_output(transp_mean[1, :], filename, nc_f, 'latent')
-        fnam = pdir + '/{}_wmass_transp.png'.format(model)
+        fnam = pdir + '/{}_wmb_transp.png'.format(model)
         strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
         plot_1m_transp(ndims[1], transp_mean[0, :], transpwy, strings)
         fnam = pdir + '/{}_latent_transp.png'.format(model)
@@ -921,7 +921,7 @@ def varatts(w_nc_var, varname):
 
     Arguments:
     - w_nc_var: a variable object;
-    - varname: the name of the variable, among total, atmos, ocean, wmass,
+    - varname: the name of the variable, among total, atmos, ocean, wmb,
     latent;
 
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
@@ -936,7 +936,7 @@ def varatts(w_nc_var, varname):
     elif varname == 'ocean':
         w_nc_var.setncatts({'long_name': u"Ocean. merid. heat transport",
                             'units': u"W", 'level_desc': 'sfc'})
-    elif varname == 'wmass':
+    elif varname == 'wmb':
         w_nc_var.setncatts({'long_name': u"Merid. water mass transport",
                             'units': u"W", 'level_desc': 'sfc'})
     elif varname == 'latent':
