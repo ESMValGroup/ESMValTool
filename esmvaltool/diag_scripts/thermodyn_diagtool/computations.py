@@ -268,19 +268,13 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    ch_name = '{},{}'.format(nin, nout)
     en_file = filelist[0]
     tem_file = filelist[1]
     aux_file = filelist[2]
-    aux2_file = 'aux.nc'
     removeif(aux_file)
-    removeif(aux2_file)
     cdo.timmean(input='-yearmonmean -monmean -div {} {}'
                 .format(en_file, tem_file), options='-b F32', output=aux_file)
-    entr_gmean = write_eb(nin, nout, aux_file, entr_file, aux2_file)
-    cdo.chname(ch_name, input=aux2_file, options='-b F32',
-               output=entr_mean_file)
-    os.remove(aux2_file)
+    entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
     return entr_gmean
 
 
@@ -304,7 +298,7 @@ def evapentr(model, wdir, infile, aux_file):
     evapentr_file = wdir + '/{}_evap_entr.nc'.format(model)
     evapentr_mean_file = wdir + '/{}_evapEntropy_gmean.nc'.format(model)
     flist = [infile[0], infile[1], aux_file]
-    evapentr_gmean = entr(flist, 'tabl', 'sevap', evapentr_file,
+    evapentr_gmean = entr(flist, 'hfls', 'sevap', evapentr_file,
                           evapentr_mean_file)
     evapentr_gmean = masktonull(evapentr_gmean)
     return evapentr_gmean, evapentr_file
@@ -644,7 +638,7 @@ def sensentr(model, wdir, infile, aux_file):
     cdo.reci(input='-sub -reci {}  -reci {}'.format(infile[1], infile[2]),
              options='-b F32', output=difftemp_file)
     flist = [infile[0], difftemp_file, aux_file]
-    sensentr_gmean = entr(flist, 'tabl', 'ssens', sensentr_file,
+    sensentr_gmean = entr(flist, 'hfss', 'ssens', sensentr_file,
                           sensentr_mean_file)
     sensentr_gmean = masktonull(sensentr_gmean)
     return sensentr_gmean, sensentr_file
@@ -740,5 +734,5 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
     f_l = Dataset(gmean_file)
-    constant = f_l.variables[nameout][:, :, :]
+    constant = f_l.variables[nameout][0, 0, 0]
     return constant

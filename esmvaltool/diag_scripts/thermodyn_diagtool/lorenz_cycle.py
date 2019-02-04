@@ -160,9 +160,9 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
                                      ntp, nlev)
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log, flag=0)
-    ape_tgmn = averages_comp(e_k, g_w, d_s, dims)
+    ape_tgmn = averages_comp(ape, g_w, d_s, dims)
     table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log, flag=0)
-    a2k_tgmn = averages_comp(e_k, g_w, d_s, dims)
+    a2k_tgmn = averages_comp(a2k, g_w, d_s, dims)
     table(a2k_tgmn, ntp, 'KE -> APE (trans) ', log, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
     table(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log, flag=1)
@@ -189,10 +189,10 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
     table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log, flag=1)
-    list_conv = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
+    list_diag = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
                  ae2az_stgmn, a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn,
                  ke2kz_tgmn, ke2kz_stgmn]
-    lec_strength = diagram(plotfile, list_conv, dims)
+    lec_strength = diagram(plotfile, list_diag, dims)
     nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
     output(e_k, d_s, filenc, 'ek', nc_f)
     nc_f = outpath + '/ape_tmap_{}_{}.nc'.format(model, year)
