@@ -1,22 +1,3 @@
-### To do: extrapolate surface wind to 100m wind (different for land and sea)
-
-# nolint start
-####REQUIRED SYSTEM LIBS
-####ŀibssl-dev
-####libnecdf-dev
-####cdo
-
-# conda install -c conda-forge r-ncdf4
-
-#R package dependencies installation script
-#install.packages('yaml')
-#install.packages('devtools')
-#library(devtools)
-#Sys.setenv(TAR = '/bin/tar')
-#install_git('https://earth.bsc.es/gitlab/es/startR', branch = 'develop-hotfixes-0.0.2')
-#install_git('https://earth.bsc.es/gitlab/es/easyNCDF', branch = 'master')
-
-# nolint end
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 
@@ -36,6 +17,7 @@ script_name <- sub(
     file_arg_name, "", initial.options[grep(file_arg_name, initial.options)]
 )
 script_dirname <- dirname(script_name)
+
 source(file.path(script_dirname, "PC.r"))
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
@@ -64,7 +46,7 @@ end_year <- lapply(input_files_per_var, function(x) x$end_year)
 end_year <- c(unlist(unname(end_year)))[1]
 seasons <- params$seasons
 power_curves <- params$power_curves
-power_curves_folder <- params$power_curves_folder
+
 
 no_of_years <- length(start_year : end_year)
 var0 <- unlist(var0)
@@ -86,18 +68,6 @@ time <- as.Date(time, origin = start_date, calendar = calendar)
 
 time_dim <- which(names(dim(data)) == "time")
 
-# nolint start
-## TODO extrapolate from surface wind to 100m height
-#---------------------------
-# We assume power law and s sheaering exponents:
-# land: 0.143
-# sea: 0.11
-# spd100 = spd10*(100/10)^0.11 = spd10*1.29
-# spd100 = spd10*(100/10)^0.143 = spd10*1.39
-
-# ratio <- ifelse(landmask > 50,1.39,1.29)
-# nolint end
-
 days <- time
 dims <- dim(data)
 dims <- append(
@@ -118,11 +88,11 @@ names(dim(data)) <- c("year", "day", "lat", "lon")
 #---------------------------
 seas_data <- Mean1Dim(data, 2)
 
-pc1 <- read_xml_pc(file.path(power_curves_folder, "Enercon_E70_2.3MW.wtp"))
-pc2 <- read_xml_pc(file.path(power_curves_folder, "Gamesa_G80_2.0MW.wtp"))
-pc3 <- read_xml_pc(file.path(power_curves_folder, "Gamesa_G87_2.0MW.wtp"))
-pc4 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V100_2.0MW.wtp"))
-pc5 <- read_xml_pc(file.path(power_curves_folder, "Vestas_V110_2.0MW.wtp"))
+pc1 <- read_pc(file.path(script_dirname, power_curves[1]))
+pc2 <- read_pc(file.path(script_dirname, power_curves[2]))
+pc3 <- read_pc(file.path(script_dirname, power_curves[3]))
+pc4 <- read_pc(file.path(script_dirname, power_curves[4]))
+pc5 <- read_pc(file.path(script_dirname, power_curves[5]))
 
 
 data_cf1 <- wind2CF(data, pc1)
