@@ -513,7 +513,7 @@ def plot_1m_transp(lats, yval, ylim, strings):
     plt.ylim(ylim)
     plt.xlim(-90, 90)
     plt.grid()
-    plt.savefig(strings[4])
+    plt.savefig(strings[3])
     plt.close(fig)
 
 
