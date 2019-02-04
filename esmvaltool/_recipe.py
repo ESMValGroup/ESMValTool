@@ -607,6 +607,8 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)
+            for a in ancestors:
+                logger.debug('Ancestor: %s', a.filename)
             if config_user.get('skip-nonexistent') and not ancestors:
                 logger.info("Skipping: no data found for %s", variable)
                 continue
