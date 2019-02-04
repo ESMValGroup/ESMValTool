@@ -388,8 +388,8 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     """
     axi.coastlines()
     plt.contourf(coords[0], coords[1], fld, 60, transform=ccrs.PlateCarree())
-    plt.pcolor(coords[0], coords[1], fld, vmin=rrange, vmax=range, cmap=c_m,
-               antialiaseds='True')
+    plt.pcolor(coords[0], coords[1], fld, vmin=rrange[0], vmax=rrange[1],
+               cmap=c_m, antialiaseds='True')
     plt.colorbar()
     plt.title(title)
     plt.grid()
