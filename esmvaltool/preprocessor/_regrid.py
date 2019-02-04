@@ -32,7 +32,6 @@ _CELL_SPEC = re.compile(
         \s*(?P<dx>\d+(\.\d+)?)\s*
         x
         \s*(?P<dy>\d+(\.\d+)?)\s*
-        (?P<center>c?)
         \Z
      ''', re.IGNORECASE | re.VERBOSE)
 
@@ -65,7 +64,7 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
                     'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec):
+def _stock_cube(spec, grid_center=False):
     """
     Create a stock cube
 
@@ -95,7 +94,6 @@ def _stock_cube(spec):
     cell_group = cell_match.groupdict()
     dx = float(cell_group['dx'])
     dy = float(cell_group['dy'])
-    center = cell_group['center']
 
     if (np.trunc(_LON_RANGE / dx) * dx) != _LON_RANGE:
         emsg = ('Invalid longitude delta in MxN cell specification '
@@ -110,7 +108,7 @@ def _stock_cube(spec):
     mid_dx, mid_dy = dx / 2, dy / 2
 
     # Construct the latitude coordinate, with bounds.
-    if center:
+    if grid_center:
         ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
     else:
         ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
@@ -134,7 +132,7 @@ def _stock_cube(spec):
     return cube
 
 
-def regrid(cube, target_grid, scheme):
+def regrid(cube, target_grid, scheme, grid_center=False):
     """
     Perform horizontal regridding.
 
@@ -181,8 +179,13 @@ def regrid(cube, target_grid, scheme):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            target_grid = _CACHE.setdefault(target_grid,
-                                            _stock_cube(target_grid))
+            if grid_center:
+                target_grid = _CACHE.setdefault(target_grid,
+                                                _stock_cube(target_grid,
+                                                            grid_center))
+            else:
+                target_grid = _CACHE.setdefault(target_grid,
+                                                _stock_cube(target_grid))
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = cube.coord_system()
