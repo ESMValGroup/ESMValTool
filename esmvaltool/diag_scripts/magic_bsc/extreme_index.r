@@ -276,16 +276,14 @@ for (i in 1 : length(projection_filenames)) {
         dim = list(lat = dimlat, lon = dimlon),
         longname = paste("Mean", metric[m], long_names)
       )
-      file <- nc_create(
-        paste0(
+      filencdf <- paste0(
           plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
           model_names, "_", start_projection, "_", end_projection, "_",
-          start_reference, "_", end_reference, ".nc"
-        ),
-        list(defdata)
-      )
+          start_reference, "_", end_reference, ".nc")
+      file <- nc_create(filencdf, list(defdata))
       ncvar_put(file, defdata, data)
       nc_close(file)
+
 
       title <- paste0(
         "Index for  ", metric[m], " ", substr(start_projection, 1, 4), "-",
@@ -294,6 +292,10 @@ for (i in 1 : length(projection_filenames)) {
 
       breaks <- seq(-1 * ceiling(max(abs(data))), ceiling(max(abs(data))),
                     2 * ceiling(max(abs(data))) / 16)
+      filepng <- paste0(
+            plot_dir, "/", metric[m], "_", model_names[mod], "_",
+            rcp_scenario[i],
+            "_", start_projection, "_", end_projection, ".png")
       PlotEquiMap( #nolint
         data,
         lon = lon,
@@ -301,12 +303,23 @@ for (i in 1 : length(projection_filenames)) {
         filled.continents = FALSE,
         toptitle = title,
         brks = breaks,
-        fileout = paste0(
-            plot_dir, "/", metric[m], "_", model_names[mod], "_",
-            rcp_scenario[i],
-            "_", start_projection, "_", end_projection, ".png"
-        )
-      )
+        fileout = filepng)
+
+   # Set provenance for output files
+    xprov <- list(ancestors = list(projection_filenames, reference_filenames),
+                  authors = list("hunt_al", "manu_ni", "caro_lo"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("spells"),
+                  op = as.character(params$operator),
+                  qtile = params$quantile,
+                  spell_length = params$min_duration,
+                  season = params$season,
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = filepng)
+
+      provenance[[filencdf]] <- xprov
     }
   }
 

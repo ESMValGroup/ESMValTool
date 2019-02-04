@@ -38,7 +38,7 @@ preprocessors:
 
 
 diagnostics:
-  risk_index:
+  extreme_index:
     description: Calculate insurance extreme indices.
     variables:
       tasmax:
