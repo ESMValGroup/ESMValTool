@@ -201,7 +201,12 @@ ncvar_put(file, defdata, seas_data_cf_all)
 nc_close(file)
 
     # Set provenance for output files
-    xprov <- list(ancestors = list(fullpath_filenames),
+    xprov <- list(ancestors = list(fullpath_filenames,
+                            file.path(script_dirname, power_curves[1]),
+                            file.path(script_dirname, power_curves[2]),
+                            file.path(script_dirname, power_curves[3]),
+                            file.path(script_dirname, power_curves[4]),
+                            file.path(script_dirname, power_curves[5])),
                   authors = list("hunt_al", "manu_ni", "lled_ll", "caro_lo",
                                  "bojo_dr", "gonz_nu"),
                   projects = list("c3s-magic"),
