@@ -349,7 +349,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
              -yearmonmean -reci {} {}'
              .format(infile[6], infile[4], aux_file),
              output=vertentropy_file)
-    vertentr_mean = write_eb('ts', 'sver', aux_file, vertentropy_file,
+    vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     return horzentr_mean, vertentr_mean, vertentropy_file
 
