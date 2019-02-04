@@ -505,7 +505,7 @@ def plot_1m_transp(lats, yval, ylim, strings):
     """
     fig = plt.figure()
     plt.subplot(111)
-    plt.plot(lats, yval)
+    plt.plot(lats[np.newaxis, :], yval)
     plt.title(strings[0], fontsize=10)
     plt.xlabel(strings[1], fontsize=10)
     plt.ylabel(strings[2])
