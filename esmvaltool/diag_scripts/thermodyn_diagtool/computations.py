@@ -186,7 +186,7 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    _, _, _, aux_files = mkthe.init_mkthe(logger, model, wdir, filelist, flags)
+    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
