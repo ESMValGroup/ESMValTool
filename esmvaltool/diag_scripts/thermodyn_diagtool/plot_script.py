@@ -51,7 +51,6 @@ def balances(wdir, plotpath, filena, name, model):
     pdir = plotpath
     timesery = np.zeros([nsub, 2])
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
-    print(ndims[1])
     transp_mean = np.zeros([nsub, ndims[1]])
     lat_maxm = np.zeros([nsub, 2, len(dims[3])])
     tr_maxm = np.zeros([nsub, 2, len(dims[3])])
@@ -237,7 +236,7 @@ def global_averages(nsub, filena, name):
         shmean = hemean(0, lats, zmean[i_f, :, :])
         nhmean = hemean(1, lats, zmean[i_f, :, :])
         timeser = np.column_stack((gmean, shmean, nhmean))
-    return ndims, dims, tmean, zmean, timeser
+    return dims, ndims, tmean, zmean, timeser
 
 
 def hemean(hem, lat, inp):
