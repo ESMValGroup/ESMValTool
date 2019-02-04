@@ -93,7 +93,7 @@ def balances(wdir, plotpath, filena, name, model):
         fnam = pdir + '/{}_transp.png'.format(model)
         strings = ['Meridional heat transports', 'Latitude [deg]', '[W]', fnam]
         lats = dims[1]
-        plot_1m_transp(lats[np.newaxis, :], transp_mean, transpty, strings)
+        plot_1m_transp(np.tile(lats,(3,1)), transp_mean, transpty, strings)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
@@ -505,7 +505,7 @@ def plot_1m_transp(lats, yval, ylim, strings):
     """
     fig = plt.figure()
     plt.subplot(111)
-    plt.plot(lats[np.newaxis, :], yval)
+    plt.plot(lats, yval)
     plt.title(strings[0], fontsize=10)
     plt.xlabel(strings[1], fontsize=10)
     plt.ylabel(strings[2])
