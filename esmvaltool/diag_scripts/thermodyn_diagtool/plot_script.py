@@ -114,7 +114,7 @@ def balances(wdir, plotpath, filena, name, model):
         filename = filena[1] + '.nc'
         pr_output(transp_mean[1, :], filename, nc_f, 'latent')
         fnam = pdir + '/{}_wmb_transp.png'.format(model)
-        strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
+        strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]', fnam]
         plot_1m_transp(dims[1], transp_mean[0, :], transpwy, strings)
         fnam = pdir + '/{}_latent_transp.png'.format(model)
         strings = ['Latent heat transports', 'Latitude [deg]', '[W]', fnam]
