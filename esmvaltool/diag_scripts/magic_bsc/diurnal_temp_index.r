@@ -208,7 +208,7 @@ nc_close(file)
                                    filename_tasmax[[projection_files[i]]]),
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
                   projects = list("c3s-magic"),
-                  caption = title,
+                  caption = list(title),
                   statistics = list("DTR"),
                   realms = list("atmos"),
                   themes = list("phys"),

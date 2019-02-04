@@ -1,10 +1,3 @@
-# nolint start
-####REQUIRED SYSTEM LIBS
-####ŀibssl-dev
-####libnecdf-dev
-####cdo
-
-# nolint end
 Sys.setenv(TAR = "/bin/tar") # nolint
 library(s2dverification)
 library(multiApply) # nolint
@@ -193,57 +186,41 @@ if (!is.null(region)) {
   attr(data, "variables") <- metadata
   variable_list <- list(variable = data, time = time)
   names(variable_list)[1] <- var0
-  # nolint start
-  # ArrayToNetCDF(
-  #   variable_list,
-  #   paste0(
-  #     plot_dir, "/", var0, "_", paste(model_names, sep="", collapse="_"),
-  #     "_", timestamp, "_", rcp_scenario, "_", start_year, "_", end_year,
-  #     "_", ".nc"
-  #   )
-  # )
-  # nolint end
+
  model_names_filename <- paste(model_names, collapse = "_")
 
   print(
     paste(
       "Attribute projection from climatological data is saved and,",
       "if it's correct, it can be added to the final output:",
-      projection
-    )
-  )
+      projection))
   dimlon <- ncdim_def(
     name = "lon",
     units = "degrees_east",
     vals = as.vector(lon),
-    longname = "longitude"
-  )
+    longname = "longitude")
   dimlat <- ncdim_def(
     name = "lat",
     units = "degrees_north",
     vals = as.vector(lat),
-    longname = "latitude"
-  )
+    longname = "latitude")
   dimtime <- ncdim_def(
     name = "time",
     units = "days since 1970-01-01 00:00:00",
     vals = as.vector(time),
-    longname = "time"
-  )
+    longname = "time")
   defdata <- ncvar_def(
     name = "data",
     units = units,
     dim = list(time = dimtime),
     longname = paste("Combination", long_names)
   )
-
-  file <- nc_create(
-    paste0(
+  filencdf <- paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
       "_", timestamp, "_", model_names_filename, "_", start_year,
-      "_", end_year, "_", ".nc"),
-    list(defdata)
-  )
+      "_", end_year, "_", ".nc")
+
+  file <- nc_create(filencdf, list(defdata))
   ncvar_put(file, defdata, data)
   nc_close(file)
 } else {
@@ -274,30 +251,43 @@ if (!is.null(region)) {
     name = "lat",
     units = "degrees_north",
     vals = as.vector(lat),
-    longname = "latitude"
-  )
+    longname = "latitude")
   dimtime <- ncdim_def(
     name = "time",
     units = "days since 1970-01-01 00:00:00",
     vals = as.vector(time),
-    longname = "time"
-  )
+    longname = "time")
   defdata <- ncvar_def(
     name = "data",
     units = units,
     dim = list(time = dimtime),
-    longname = paste("Combination", long_names)
-  )
-  file <- nc_create(
-    paste0(
+    longname = paste("Combination", long_names))
+    filencdf <- paste0(
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
       "_", timestamp, "_", model_names_filename, "_", start_year, "_",
-      end_year, "_", ".nc"),
-    list(defdata)
-  )
+      end_year, "_", ".nc")
+  file <- nc_create(filencdf, list(defdata))
+
   ncvar_put(file, defdata, data)
   nc_close(file)
-}
 
+}
+    # Set provenance for output files
+    xprov <- list(ancestors = list(fullpath_filenames),
+                  authors = list("hunt_al", "manu_ni"),
+                  projects = list("c3s-magic"),
+                  caption = list("Combined selection"),
+                  statistics = list("Combination"),
+                  moninf = list(params$moninf),
+                  monsup = list(params$monsup),
+                  region = list(params$region),
+                  running_mean = list(params$running_mean),
+                  multi_year_average = list(params$multi_year_average),
+                  weights = params$weights,
+                  realms = list("atmos"),
+                  themes = list("phys"))
+print("OJ")
+      provenance[[filencdf]] <- xprov
+print("Aag")
 # Write provenance to file
 write_yaml(provenance, provenance_file)

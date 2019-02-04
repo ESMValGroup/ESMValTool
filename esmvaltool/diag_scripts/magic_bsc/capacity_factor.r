@@ -210,11 +210,11 @@ nc_close(file)
                   authors = list("hunt_al", "manu_ni", "lled_ll", "caro_lo",
                                  "bojo_dr", "gonz_nu"),
                   projects = list("c3s-magic"),
-                  caption = title,
+                  caption = list(title),
                   statistics = list("Capacity Factor"),
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = filepng)
+                  plotfile = list(filepng))
 
       provenance[[filencdf]] <- xprov
 
