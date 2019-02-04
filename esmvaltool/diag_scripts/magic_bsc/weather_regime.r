@@ -4,6 +4,7 @@ library(multiApply) #nolint
 library(ncdf4)
 library(gridExtra) #nolint
 library(ClimProjDiags) #nolint
+library(yaml)
 
 initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
@@ -238,39 +239,39 @@ if (lim < 1) {
 }
 
 if (region == "Polar") {
+    filepng1 <- paste0(
+        plot_dir, "/", frequency, "-", var0, "_observed_regimes.png")
+    title <- paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )")
   PlotLayout( #nolint
     PlotStereoMap, #nolint
     c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
-    titles = paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )"),
+    titles = title,
     filled.continents = FALSE,
     axelab = FALSE,
     draw_separators = TRUE,
     subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
-    fileout = paste0(
-        plot_dir, "/", frequency, "-", var0, "_observed_regimes.png"
-    )
-  )
+    fileout = filepng1)
 } else {
+    filepng1 <- paste0(
+      plot_dir, "/", frequency, "-", var0, "_observed_regimes.png")
+    title <- paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )")
   PlotLayout( #nolint
     PlotEquiMap, #nolint
     c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
-    titles = paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )"),
+    titles = title,
     filled.continents = FALSE,
     axelab = FALSE,
     draw_separators = TRUE,
     subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
-    fileout = paste0(
-      plot_dir, "/", frequency, "-", var0, "_observed_regimes.png"
-    )
-  )
+    fileout = filepng1)
 }
 
 # -------------------------------
@@ -302,21 +303,35 @@ variable_list <- list(
   frequency = WR_obs$frequency,
   lat = lat,
   lon = lon,
-  time = time
-)
+  time = time)
 
 names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
-
-ArrayToNetCDF( #nolint
-  variable_list,
-  paste0(
+filencdf1 <-   paste0(
     plot_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
     start_projection, "_", end_projection, "_", start_historical, "_",
-    end_historical, ".nc"
-  )
-)
+    end_historical, ".nc")
 
+ArrayToNetCDF( #nolint
+  variable_list, filencdf1)
+   # Set provenance for output files
+    xprov <- list(ancestors = list(fullpath_filenames[reference_files]),
+                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
+                                 "hunt_al", "manu_ni"),
+                  projects = list("c3s-magic"),
+                  caption = list("Observed modes of variability"),
+                  statistics = list("EOF"),
+                  ncenters = list(params$ncenters),
+                  cluster_method = list(cluster_method),
+                  EOFS = list(params$EOFS),
+                  frequency = list(params$frequency),
+                  detrend_order = list(params$detrend_order),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = list(filepng1))
+
+      provenance[[filencdf1]] <- xprov
+# ---------------------------
 # ---------------------------
 # Reading and formating
 # ---------------------------
@@ -440,47 +455,37 @@ if (lim < 1) {
     lim <- ceiling(lim)
 }
 if (region == "Polar") {
+    filepng2 <- paste0(
+      plot_dir, "/", frequency, "-", var0, "_predicted_regimes.png")
+    title <- paste0(paste0("Cluster ", 1 : dim(cosa)[1], " (",
+        paste0("freq = ", round(WR_exp$frequency, 1), "%"), " )"))
   PlotLayout( #nolint
     PlotStereoMap, #nolint
     c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
-    titles = paste0(
-      paste0(
-        "Cluster ", 1 : dim(cosa)[1], " (",
-        paste0("freq = ", round(WR_exp$frequency, 1), "%"),
-        " )"
-      )
-    ),
+    titles = title,
     filled.continents = FALSE,
     draw_separators = TRUE, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
-    fileout = paste0(
-      plot_dir, "/", frequency, "-", var0, "_predicted_regimes.png"
-    )
-  )
+    fileout = filepng2)
 } else {
+    filepng2 <- paste0(
+      plot_dir, "/", frequency, "-", var0, "_predicted_regimes.png")
+    title <- paste0(paste0("Cluster ", 1 : dim(cosa)[1], " (",
+        paste0("freq = ", round(WR_exp$frequency, 1), "%"), " )"))
   PlotLayout( #nolint
     PlotEquiMap, #nolint
     c(2, 3),
     lon = lon,
     lat = lat,
     var = cosa / 100,
-    titles = paste0(
-      paste0(
-        "Cluster ", 1 : dim(cosa)[1], " (",
-        paste0("freq = ", round(WR_exp$frequency, 1), "%"),
-        " )"
-      )
-    ),
+    titles = title,
     filled.continents = FALSE,
     axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
     brks = seq(-1 * lim, lim, by = lim / 10),
-    fileout = paste0(
-      plot_dir, "/", frequency, "-", var0, "_predicted_regimes.png"
-    )
-  )
+    fileout = filepng2)
 }
 
 # -------------------------------
@@ -513,20 +518,34 @@ variable_list <- list(
   frequency = WR_exp$frequency,
   lat = lat,
   lon = lon,
-  time = time
-)
+  time = time)
 names(variable_list)[1] <- var0
 
 attributes(variable_list) <- NULL
-
-ArrayToNetCDF( #nolint
-  variable_list,
-  paste0(
+filencdf2 <-   paste0(
     plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
     start_projection, "_", end_projection, "_", start_historical, "_",
-    end_historical, ".nc"
-  )
-)
+    end_historical, ".nc")
+ArrayToNetCDF(variable_list, filencdf2) #nolint
+
+   # Set provenance for output files
+    xprov <- list(ancestors = list(filencdf1,
+                              fullpath_filenames[projection_files]),
+                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
+                                 "hunt_al", "manu_ni"),
+                  projects = list("c3s-magic"),
+                  caption = list("Predicted modes of variability"),
+                  statistics = list("distance"),
+                  ncenters = list(params$ncenters),
+                  cluster_method = list(cluster_method),
+                  EOFS = list(params$EOFS),
+                  frequency = list(params$frequency),
+                  detrend_order = list(params$detrend_order),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = list(filepng2))
+
+      provenance[[filencdf2]] <- xprov
 # ---------------------------
 # Computing the RMSE:
 # ---------------------------
@@ -548,34 +567,50 @@ dimpattern <- ncdim_def(
   vals = 1 : ncenters,
   longname = "Pattern"
 )
+title <- paste0(
+    "Root Mean Squared Error between observed and ",
+    "future projected patterns")
 defrmse <- ncvar_def(
   name = "rmse",
   units = "undim",
   dim = list(observed = dimpattern, experiment = dimpattern),
-  longname = paste0(
-    "Root Mean Squared Error between observed and ",
-    "future projected patterns"
-  )
-)
-
-file <- nc_create(paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
+  longname = title)
+filencdf3 <- paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
                          model_names, "_", start_projection, "_",
                          end_projection, "_", start_historical, "_",
-                         end_historical, ".nc"), list(defrmse))
+                         end_historical, ".nc")
+file <- nc_create(filencdf3, list(defrmse))
 ncvar_put(file, defrmse, rmse)
 
 nc_close(file)
 
 colnames(rmse) <- paste("Obs", 1 : ncenters)
 rownames(rmse) <- paste("Pre", 1 : ncenters)
-
-png(paste0(file.path(plot_dir, "Table_"), var0, "_", frequency, "_rmse_",
+filepng3 <- paste0(file.path(plot_dir, "Table_"), var0, "_", frequency, "_rmse_",
             model_names,
            "_", start_projection, "_", end_projection, "_", start_historical,
-           "_", end_historical, ".png"),
-    height = 6, width = 18, units = "cm", res = 100)
+           "_", end_historical, ".png")
+png(filepng3, height = 6, width = 18, units = "cm", res = 100)
 grid.table(round(rmse, 2))
 dev.off()
+
+    # Set provenance for output files
+    xprov <- list(ancestors = list(filencdf1, filencdf2),
+                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
+                                 "hunt_al", "manu_ni"),
+                  projects = list("c3s-magic"),
+                  caption = list(title),
+                  statistics = list("RMSE"),
+                  ncenters = list(params$ncenters),
+                  cluster_method = list(cluster_method),
+                  EOFS = list(params$EOFS),
+                  frequency = list(params$frequency),
+                  detrend_order = list(params$detrend_order),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = list(filepng3))
+
+      provenance[[filencdf3]] <- xprov
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)
