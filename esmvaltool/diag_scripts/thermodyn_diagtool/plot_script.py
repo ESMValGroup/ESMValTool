@@ -905,11 +905,11 @@ def transports_preproc(lats, yrs, lim, transp):
     tr_maxm = np.zeros([2, yrs])
     lat_max = list()
     tr_max = list()
-    for t_t in np.arange(yrs):
+    for t_t in np.arange(int(yrs)):
         yr_ext = transp_max(lats, transpp[t_t, :], lim)
         lat_max.append(yr_ext[0])
         tr_max.append(yr_ext[1])
-    for t_t in np.arange(yrs):
+    for t_t in np.arange(int(yrs)):
         lat_maxm[:, t_t] = lat_max[t_t]
         tr_maxm[:, t_t] = tr_max[t_t]
     list_peak = [lat_maxm, tr_maxm]
