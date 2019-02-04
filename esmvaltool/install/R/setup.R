@@ -1,3 +1,7 @@
+log <- function(..., level="INFO") {
+    cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
+}
+
 #check for present library paths
 RLIBPATH <- .libPaths()
 
@@ -12,11 +16,11 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
                recursive = TRUE)
 }
 
-cat("\nINFO: Installing packages to --> ", RLIBLOC, "\n\n")
+log("Installing packages to --> ", RLIBLOC)
 
 # define the R mirror to download packages
 pkg_mirror <- "https://cloud.r-project.org"
-print(paste("Using mirror: ", pkg_mirror))
+log("Using mirror: ", pkg_mirror)
 
 # get the script path
 initial_options <- commandArgs(trailingOnly = FALSE)
@@ -24,7 +28,6 @@ file_arg_name <- "--file="
 script_name <- sub(file_arg_name, "",
                    initial_options[grep(file_arg_name, initial_options)])
 script_dirname <- dirname(script_name)
-print(script_dirname)
 
 # read the dependencies
 dependencies <- scan(
@@ -36,17 +39,23 @@ inst_packages <- installed.packages()
 package_list <- dependencies[!(dependencies %in% inst_packages[, "Package"])]
 
 if (length(package_list) == 0) {
-    print("All packages are installed!")
+    log("All packages are already installed!")
 } else {
-    print(paste("Number of packages to be installed: ", length(package_list)))
+    log("Number of packages to be installed: ", length(package_list))
+}
+
+Ncpus <- parallel::detectCores()
+if (is.na(Ncpus)) {
+  Ncpus <- 1
 }
 
 for (package_name in package_list) {
-    print(paste("     Installing package --> ", package_name))
+    log("Installing package:", package_name)
     install.packages(
         package_name,
         repos = pkg_mirror,
-        dependencies = c("Depends", "Imports")
+        Ncpus = Ncpus,
+        dependencies = c("Depends", "Imports", "LinkingTo")
     )
     success <- library(
         package_name,
@@ -54,7 +63,9 @@ for (package_name in package_list) {
         logical.return = TRUE
     )
     if ( ! success ) {
-        print(paste("     Failed to install package --> ", package_name))
+        log("Failed to install package:", package_name)
         quit(status = 1, save = "no")
     }
 }
+
+log("Successfully installed all packages")
