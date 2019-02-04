@@ -272,8 +272,8 @@ def main(cfg):
         # Load paths to individual models output and plotting directories
         wdir = os.path.join(wdir_up, model)
         pdir = os.path.join(pdir_up, model)
-        if not os.path.exists(wdir):
-            os.makedirs(wdir)
+        os.makedirs(wdir)
+        os.makedirs(pdir)
         # Reading file names for the specific model
         filenames = data.get_info_list('filename', dataset=model)
         logger.info('Processing model: %s \n', model)
