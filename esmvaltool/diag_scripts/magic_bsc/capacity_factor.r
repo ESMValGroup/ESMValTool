@@ -145,15 +145,7 @@ seas_data_cf3 <- Mean1Dim(data_cf3, 2)
 seas_data_cf4 <- Mean1Dim(data_cf4, 2)
 seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 
-# nolint start
-# save(
-#   seas_erai_gwa,
-#   seas_erai_cf1, seas_erai_cf2, seas_erai_cf3,
-#   seas_erai_cf4, seas_erai_cf5, lats, lons, variable, seasons, first_year,
-#   last_year, bbox, nsdates, nleadtime, nlat, nlon, ratio,
-#   file="/esnas/scratch/llledo/PC_sensitivity/PC_sensitivity.Rdata"
-# )
-# nolint end
+
 
 ##############################
 # Make some plots
@@ -183,6 +175,11 @@ pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim( # nolint
 #---------------------------
 # Plot seasonal CF maps
 #---------------------------
+filepng <- paste0(
+        plot_dir, "/", "capacity_factor_",
+        model_names,  "_", start_year, "-", end_year, ".png")
+title <- paste0(seasons, " CF from ",
+        model_names, " (", start_year, "-", end_year, ")")
 PlotLayout( # nolint
     PlotEquiMap, # nolint
     c(3, 2),
@@ -190,134 +187,60 @@ PlotLayout( # nolint
     lon,
     lat,
     filled.continents = F,
-    toptitle = paste0(
-        seasons, " CF from ",
-        model_names, " (", start_year, "-", end_year, ")"
-    ),
-    fileout = paste0(
-        plot_dir, "/", "capacity_factor_",
-        model_names,  "_", start_year, "-", end_year, ".png"
-    )
+    toptitle = title,
+    fileout = filepng)
+
+filencdf <- paste0(plot_dir, "/", "capacity_factor_",
+        model_names,  "_", start_year, "-", end_year, ".nc")
+
+dimlon <- ncdim_def(
+  name = "lon",
+  units = "degrees_east",
+  vals = as.vector(lon),
+  longname = "longitude"
+)
+dimlat <- ncdim_def(
+  name = "lat",
+  units = "degrees_north",
+  vals = as.vector(lat),
+  longname = "latitude"
+)
+dimtime <- ncdim_def(
+  name = "season",
+  units = "season",
+  vals = start_year : end_year,
+  longname = "season of the year: DJF, MAM, JJA, SON"
+)
+dimcurve <- ncdim_def(
+  name = "curve",
+  units = "name",
+  vals = 1 : 5,
+  longname = "Power curves of considered turbines"
 )
 
-#---------------------------
-# Plot seasonal CF anomalies maps
-#---------------------------
-
-PlotLayout( #nolint
-    PlotEquiMap, # nolint
-    c(3, 2),
-    Mean1Dim(anom_data_cf_all, 2),
-    lon,
-    lat,
-    filled.continents = FALSE,
-    toptitle = paste0(
-        seasons, " CF Anomaly from ", model_names,
-        " (", start_year, "-", end_year, ")"
-    ),
-    col_titles = turb_types,
-    color_fun = q,
-    brks = seq(-0.25, 0.25, 0.05),
-    bar_scale = 0.5,
-    title_scale = 0.7,
-    axelab = FALSE,
-    fileout = paste0(
-        plot_dir, "/", "capacity_factor_anomaly_", model_names,
-        "_", start_year, "-", end_year, ".png"
-    )
+names(dim(seas_data_cf_all)) <- c("curve", "time", "lat", "lon")
+defdata <- ncvar_def(
+  name = "CapacityFactor",
+  units = "%",
+  dim = list(season = dimcurve, dimtime, lat = dimlat, lon = dimlon),
+  longname = paste0("Capacity Factor of wind on different turbines")
 )
+file <- nc_create(filencdf, list(defdata))
+ncvar_put(file, defdata, seas_data_cf_all)
+nc_close(file)
 
+    # Set provenance for output files
+    xprov <- list(ancestors = list(fullpath_filenames),
+                  authors = list("hunt_al", "manu_ni", "lled_ll", "caro_lo",
+                                 "bojo_dr", "gonz_nu"),
+                  projects = list("c3s-magic"),
+                  caption = title,
+                  statistics = list("Capacity Factor"),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  plotfile = filepng)
 
-#---------------------------
-# Scatterplot wind vs CF
-#---------------------------
-#---------------------------
-# Correlation maps
-#---------------------------
-corr <- function(data, i, j){
-  apply(
-    data,
-    c(3, 4),
-    function(x) {
-      cor(x[i, ], x[j, ])
-    }
-  )
-}
-cor12 <- corr(data, 1, 2)
-cor13 <- corr(data, 1, 3)
-cor14 <- corr(data, 1, 4)
-cor15 <- corr(data, 1, 5)
-cor24 <- corr(data, 2, 4)
-cor35 <- corr(data, 3, 5)
-
-PlotLayout( # nolint
-    PlotEquiMap, # nolint
-    c(1, 2),
-    list(cor13 ^ 2, cor35 ^ 2, cor24 ^ 2, cor15 ^ 2),
-    lon, lat, nrow = 2, ncol = 2,
-    filled.continents = FALSE,
-    toptitle = "Seasonal CF determination coef.",
-    titles = c(
-        "between cf1 and cf3",
-        "between cf3 and cf5",
-        "between cf2 and cf4",
-        "between cf1 and cf5"
-    ),
-    brks = c(0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.96, 0.98, 0.99, 1),
-    bar_scale = 0.5,
-    title_scale = 0.7,
-    axelab = FALSE,
-    color_fun = p,
-    fileout = paste0(
-        plot_dir, "/", "capacity_factor_correlation_maps_", model_names,
-        "_", start_year, "-", end_year, ".png"
-    )
-)
-
-#---------------------------
-# RMSE maps
-#---------------------------
-rmse <- function(data, i, j){
-  apply(
-    data,
-    c(3, 4),
-    function(x, y){
-      sqrt(mean( (x[i, ] - x[j, ]) ^ 2, na.rm = TRUE))
-    }
-  )
-}
-rmse12 <- rmse(anom_data_cf_all, 1, 2)
-rmse13 <- rmse(anom_data_cf_all, 1, 3)
-rmse35 <- rmse(anom_data_cf_all, 3, 5)
-rmse15 <- rmse(anom_data_cf_all, 1, 5)
-rmse24 <- rmse(anom_data_cf_all, 2, 4)
-
-PlotLayout( # nolint
-    PlotEquiMap, # nolint
-    c(1, 2),
-    list(rmse13, rmse35, rmse24, rmse15),
-    lon,
-    lat,
-    nrow = 2,
-    ncol = 2,
-    filled.continents = F,
-    toptitle = "Seasonal CF RMSE",
-    titles = c(
-        "between cf1 and cf3",
-        "between cf3 and cf5",
-        "between cf2 and cf4",
-        "between cf1 and cf5"
-    ),
-    brks = seq(0, 0.08, 0.01),
-    bar_scale = 0.5,
-    title_scale = 0.7,
-    axelab = FALSE,
-    color_fun = p,
-    fileout = paste0(
-        plot_dir, "/", "capacity_factor_rmse_maps_", model_names,
-        "_", start_year, "-", end_year, ".png"
-    )
-)
+      provenance[[filencdf]] <- xprov
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)
