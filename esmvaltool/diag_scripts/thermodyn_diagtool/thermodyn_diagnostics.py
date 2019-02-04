@@ -94,7 +94,7 @@ quantities are stored in different files, one for each year.
 In the plot directory figures are stored as PNG files in each model subdir.
 
 For the budgets (toab: TOA energy budget, atmb: atmospheric energy budget,
-surb: surface energy budget, latent: latent energy budget, wmass: water mass
+surb: surface energy budget, latent: latent energy budget, wmb: water mass
 budget) there can be found:
  - climatological mean fields (*_climap.png);
  - time series evolution of global, NH and SH mean fields (*_timeser.png)
@@ -331,7 +331,7 @@ def main(cfg):
             logger.info('Done\n')
             logger.info('Plotting the water mass and latent energy budgets\n')
             plotsmod.balances(wdir_up, pdir, [wm_file[0], wm_file[1]],
-                              ['wmass', 'latent'], model)
+                              ['wmb', 'latent'], model)
             logger.info('Done\n')
         else:
             pass
