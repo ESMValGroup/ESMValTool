@@ -379,7 +379,7 @@ def main(cfg):
                 logger.info('Water mass budget over land: %s\n',
                             wmb_la_gmean)
                 latent_oc_gmean, latent_la_gmean = comp.landoc_budg(
-                    model, wdir, wm_file[0], sftlf_fx, 'latent')
+                    model, wdir, wm_file[1], sftlf_fx, 'latent')
                 latent_oc_all[i_m] = latent_oc_gmean
                 latent_la_all[i_m] = latent_la_gmean
                 logger.info('Water mass budget over oceans: %s\n',
