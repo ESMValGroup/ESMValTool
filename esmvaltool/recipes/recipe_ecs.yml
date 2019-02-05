@@ -21,12 +21,13 @@ preprocessors:
     average_region:
       coord1: latitude
       coord2: longitude
+      fx_files: False
 
 
 diagnostics:
 
-  diag_ecs:
-    description: Calculate ECS.
+  cmip5:
+    description: Calculate ECS for all available CMIP5 models.
     variables:
       tas: &variable_settings
         preprocessor: spatial_mean
@@ -37,40 +38,59 @@ diagnostics:
       rtmt:
         <<: *variable_settings
     additional_datasets:
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240, end_year: 389}
-      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      # - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
-      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      # Day is out of range for month (wait for iris > 2.0)
-      # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-      # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+      - {dataset: bcc-csm1-1,    exp: piControl,   start_year: 160,  end_year: 309}
+      - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year: 160,  end_year: 309}
+      # - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year: 240,  end_year: 389}
+      # - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year: 240,  end_year: 389}
+      # - {dataset: CanESM2,       exp: piControl,   start_year: 2015, end_year: 2164}
+      # - {dataset: CanESM2,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: CCSM4,         exp: piControl,   start_year: 800,  end_year: 949}
+      # - {dataset: CCSM4,         exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: CNRM-CM5,      exp: piControl,   start_year: 1850, end_year: 1999}
+      # - {dataset: CNRM-CM5,      exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: CSIRO-Mk3-6-0, exp: piControl,   start_year: 1,    end_year: 150}
+      # - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year: 1,    end_year: 150}
+      # - {dataset: GFDL-CM3,      exp: piControl,   start_year: 1,    end_year: 150}
+      # - {dataset: GFDL-CM3,      exp: abrupt4xCO2, start_year: 1,    end_year: 150}
+      # - {dataset: GISS-E2-H,     exp: piControl,   start_year: 1200, end_year: 1349}
+      # - {dataset: GISS-E2-H,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: GISS-E2-R,     exp: piControl,   start_year: 3331, end_year: 3480}
+      # - {dataset: GISS-E2-R,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
+      # - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+      # # - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
+      # # - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
+      # - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
+      # - {dataset: MIROC5,        exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+      # - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1800, end_year: 1949}
+      # - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year: 1,    end_year: 150}
+      # - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 2015, end_year: 2164}
+      # - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # # Day is out of range for month (wait for iris > 2.0)
+      # # - {dataset: ACCESS1-0,     exp: piControl,   start_year: 300,  end_year: 449}
+      # # - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year: 300,  end_year: 449}
     scripts:
-      ecs:
+      ecs: &ecs_script
         script: climate_metrics/ecs.py
         plot_ecs_regression: True
+
+  cmip6:
+    description: Calculate ECS for all available CMIP6 models.
+    variables:
+      tas:
+        <<: *variable_settings
+        project: CMIP6
+      rtmt:
+        <<: *variable_settings
+        project: CMIP6
+    additional_datasets:
+      # Data only available for few models for now (04-02-2019)
+      - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+    scripts:
+      ecs:
+        <<: *ecs_script

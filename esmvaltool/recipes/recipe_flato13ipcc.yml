@@ -1,4 +1,4 @@
-# ESMValTool
+#v/ ESMValTool
 # recipe_flato13ipcc.yml
 ---
 documentation:
@@ -14,7 +14,7 @@ documentation:
 
   maintainer:
     - righ_ma
-    
+
   references:
     - flato13ipcc
 
@@ -41,6 +41,7 @@ preprocessors:
     average_region:
       coord1: latitude
       coord2: longitude
+      fx_files: False
 
   clim_ref:
     regrid:

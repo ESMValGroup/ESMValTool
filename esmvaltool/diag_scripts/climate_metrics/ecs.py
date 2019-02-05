@@ -41,15 +41,39 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+EXP_4XCO2 = {
+    'CMIP5': 'abrupt4xCO2',
+    'CMIP6': 'abrupt-4xCO2',
+}
+
+
+def check_input_data(cfg):
+    """Check input data."""
+    if not variables_available(cfg, ['tas', 'rtmt']):
+        raise ValueError("This diagnostic needs 'tas' and 'rtmt' "
+                         "variables if 'read_external_file' is not given")
+    input_data = cfg['input_data'].values()
+    project_group = group_metadata(input_data, 'project')
+    projects = list(project_group.keys())
+    if len(projects) > 1:
+        raise ValueError("This diagnostic supports only unique 'project' "
+                         "attributes, got {}".format(projects))
+    exp_group = group_metadata(input_data, 'exp')
+    exps = set(exp_group.keys())
+    if exps != {'piControl', EXP_4XCO2[projects[0]]}:
+        raise ValueError("This diagnostic needs 'piControl' and '{}' "
+                         "experiments, got {}".format(EXP_4XCO2[projects[0]],
+                                                      exps))
+
 
 def get_anomaly_data(tas_data, rtmt_data, dataset):
     """Calculate anomaly data for both variables."""
+    project = tas_data[0]['project']
+    exp_4xco2 = EXP_4XCO2[project]
     paths = {
-        'tas_4x': select_metadata(
-            tas_data, dataset=dataset, exp='abrupt4xCO2'),
+        'tas_4x': select_metadata(tas_data, dataset=dataset, exp=exp_4xco2),
         'tas_pi': select_metadata(tas_data, dataset=dataset, exp='piControl'),
-        'rtmt_4x': select_metadata(
-            rtmt_data, dataset=dataset, exp='abrupt4xCO2'),
+        'rtmt_4x': select_metadata(rtmt_data, dataset=dataset, exp=exp_4xco2),
         'rtmt_pi': select_metadata(
             rtmt_data, dataset=dataset, exp='piControl'),
     }
@@ -62,6 +86,15 @@ def get_anomaly_data(tas_data, rtmt_data, dataset):
         cubes[key] = cube
 
     # Substract piControl run from abrupt4xCO2 experiment
+    shape = None
+    for cube in cubes.values():
+        if shape is None:
+            shape = cube.shape
+        else:
+            if cube.shape != shape:
+                raise ValueError(
+                    "Expected all cubes of dataset '{}' to have identical "
+                    "shapes, got {} and {}".format(dataset, shape, cube.shape))
     cubes['tas_4x'].data -= cubes['tas_pi'].data
     cubes['rtmt_4x'].data -= cubes['rtmt_pi'].data
     return (cubes['tas_4x'], cubes['rtmt_4x'], ancestor_files)
@@ -112,7 +145,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
 
     # Regression line
-    x_reg = np.linspace(-1.0, 8.0, 2)
+    x_reg = np.linspace(-1.0, 9.0, 2)
     y_reg = reg_stats.slope * x_reg + reg_stats.intercept
 
     # Plot data
@@ -138,9 +171,9 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
         },
         axes_functions={
             'set_title': dataset_name,
-            'set_xlabel': 'tas / ' + tas_cube.units.name,
-            'set_ylabel': 'rtmt / ' + rtmt_cube.units.name,
-            'set_xlim': [0.0, 7.0],
+            'set_xlabel': 'tas / ' + tas_cube.units.origin,
+            'set_ylabel': 'rtmt / ' + rtmt_cube.units.origin,
+            'set_xlim': [0.0, 8.0],
             'set_ylim': [-2.0, 10.0],
             'text': {
                 'args': [0.05, 0.9, text],
@@ -217,9 +250,7 @@ def main(cfg):
     if cfg.get('read_external_file'):
         (ecs, clim_sens, external_file) = read_external_file(cfg)
     else:
-        if not variables_available(cfg, ['tas', 'rtmt']):
-            raise ValueError("This diagnostic needs 'tas' and 'rtmt' "
-                             "variables if 'read_external_file' is not given")
+        check_input_data(cfg)
         ecs = {}
         clim_sens = {}
         external_file = None
