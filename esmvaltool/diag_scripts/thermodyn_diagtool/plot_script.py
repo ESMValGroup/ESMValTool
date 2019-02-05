@@ -132,9 +132,9 @@ def balances(wdir, plotpath, filena, name, model):
     for i_f in np.arange(nsub):
         fig = plt.figure()
         axi = plt.subplot(111)
-        axi.plot(dims[3], timeser[:, 0], 'k', label='Global')
-        axi.plot(dims[3], timeser[:, 1], 'r', label='SH')
-        axi.plot(dims[3], timeser[:, 2], 'b', label='NH')
+        axi.plot(dims[3], timeser[i_f, :, 0], 'k', label='Global')
+        axi.plot(dims[3], timeser[i_f, :, 1], 'r', label='SH')
+        axi.plot(dims[3], timeser[i_f, :, 2], 'b', label='NH')
         plt.title('Annual mean {}'.format(ext_name[i_f]))
         plt.xlabel('Years')
         plt.ylabel('[W/m2]')
