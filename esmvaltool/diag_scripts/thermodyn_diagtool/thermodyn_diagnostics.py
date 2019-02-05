@@ -1,4 +1,6 @@
-"""The diagnostic tool for climate system thermodynamics.
+"""MAIN PROGRAM.
+
+The diagnostic tool for climate system thermodynamics.
 
 Author
 Valerio Lembo

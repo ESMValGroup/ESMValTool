@@ -1,4 +1,6 @@
-"""Module for computation of the auxiliary variables needed by the tool.
+"""AUXILIARY FIELDS RETRIEVAL.
+
+Module for computation of the auxiliary variables needed by the tool.
 
 Here the thermodynamic diagnostic tool script computes
 some auxiliary variables.
@@ -299,11 +301,12 @@ def write_output(wdir, model, file_list, varlist):
     tlcl_temp = wdir + '/tlcl.nc'
     removeif(tlcl_temp)
     w_nc_fid = Dataset(tlcl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean LCL temperature from {} model. ",
+    w_nc_fid.description = ("Monthly mean LCL temperature from {} model. "
+                            .format(model),
                             "Calculated by Thermodynamics model diagnostics ",
                             "in ESMValTool. Author Valerio Lembo, ",
                             "Meteorologisches Institut, Universitaet ",
-                            "Hamburg.".format(model))
+                            "Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)
@@ -320,11 +323,12 @@ def write_output(wdir, model, file_list, varlist):
     tabl_temp = wdir + '/tabl.nc'
     removeif(tabl_temp)
     w_nc_fid = Dataset(tabl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean temperature at BL top for {} ",
-                            "model. Calculated by Thermodynamics model ",
-                            "diagnostics in ESMValTool. Author Valerio ",
+    w_nc_fid.description = ("Monthly mean temperature at BL top for {} model. "
+                            .format(model),
+                            "Calculated by Thermodynamics model diagnostics ",
+                            "in ESMValTool. Author Valerio ",
                             "Lembo, Meteorologisches Institut, ",
-                            "Universitaet Hamburg.".format(model))
+                            "Universitaet Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)
@@ -341,11 +345,12 @@ def write_output(wdir, model, file_list, varlist):
     htop_temp = wdir + '/htop.nc'
     removeif(htop_temp)
     w_nc_fid = Dataset(htop_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean height of the BL top for {} ",
-                            "model. Calculated by Thermodynamics model ",
-                            "diagnostics in ESMValTool. Author Valerio ",
+    w_nc_fid.description = ("Monthly mean height of the BL top for {} model. "
+                            .format(model),
+                            "Calculated by Thermodynamics model diagnostics ",
+                            "in ESMValTool. Author Valerio ",
                             "Lembo, Meteorologisches Institut, ",
-                            "Universitaet Hamburg.".format(model))
+                            "Universitaet Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)

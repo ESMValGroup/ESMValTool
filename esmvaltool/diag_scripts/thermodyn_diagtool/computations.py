@@ -1,4 +1,6 @@
-"""Module containing all the core computations.
+"""INTERNAL COMPUTATIONS.
+
+Module containing all the core computations.
 
 This module contains all the basic computations needed by the thermodynamics
 diagnostic tool.
@@ -235,14 +237,12 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     logger.info('Material entropy production associated with '
                 'potential energy of the droplet: %s\n', spot)
     logger.info('3. Kinetic energy dissipation\n')
-    minentr = kinentr(logger, aux_file, tasvert_file, lect, lec)
-    matentr = (float(sensentr) - float(evapentr)
-               + float(rainentr) + float(snowentr)
-               + float(potentr) + float(minentr)
-               - float(meltentr))
+    skin = kinentr(logger, aux_file, tasvert_file, lect, lec)
+    matentr = (float(ssens) - float(sevap) + float(srain) + float(ssnow)
+               + float(spot) + float(skin) - float(smelt))
     logger.info('Material entropy production with '
                 'the direct method: %s\n', matentr)
-    irrevers = ((matentr - float(minentr)) / float(minentr))
+    irrevers = ((matentr - float(skin)) / float(skin))
     entr_list = [sensentr_file, evapentr_file, rainentr_file,
                  snowentr_file, meltentr_file, potentr_file]
     return matentr, irrevers, entr_list

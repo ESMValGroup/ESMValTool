@@ -1,4 +1,6 @@
-"""Plotting module for Thermodyn_diagtool.
+"""FUNCTIONS FOR PLOTS.
+
+Plotting module for Thermodyn_diagtool.
 
 The module provides plots for a single model of:
 - climatological mean maps of TOA, atmospheric and surface energy budgets;
