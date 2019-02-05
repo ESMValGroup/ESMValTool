@@ -452,9 +452,6 @@ def multi_model_contours(
         for threshold in tmp_thresholds:
             thresholds[threshold] = True
 
-    regions = regions
-    thresholds = thresholds
-
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 

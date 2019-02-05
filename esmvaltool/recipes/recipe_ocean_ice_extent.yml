@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_SeaIceExtent.yml
+# recipe_ocean_ice_extent.yml
 ---
 documentation:
   description: |

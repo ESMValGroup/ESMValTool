@@ -10,4 +10,5 @@ Recipes
    recipe_flato13ipcc
    recipe_perfmetrics
    recipe_collins13ipcc
+   recipe_oceans
    recipe_runoff_et
