@@ -169,3 +169,19 @@ def seasonal_mean(cube):
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return cube.extract(three_months_bound)
+
+
+def annual_mean(cube):
+    """
+    Function to compute annual means.
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+    Returns
+    -------
+    iris.cube.Cube
+        Annual mean cube
+    """
+    return cube.aggregated_by('year', iris.analysis.MEAN)
