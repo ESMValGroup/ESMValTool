@@ -342,7 +342,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
                     .format(infile[0], infile[2], infile[1], infile[3]),
                     output=vertenergy_file)
     cdo.mul(input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'
-             .format(vertenergy_file, infile[6], infile[4]),
+             .format(vertenergy_file, infile[4], infile[6]),
              output=aux_file)
     vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
@@ -568,7 +568,7 @@ def potentr(model, wdir, infile, aux_file):
              .format(htop_file, prrmask_file, prsnmask_file),
              options='-b F32', output=poten_file)
     flist = [poten_file, tcolumn_file, aux_file]
-    potentr_gmean = entr(flist, 'tlcl', 'spotp', potentr_file,
+    potentr_gmean = entr(flist, 'htop', 'spotp', potentr_file,
                          potentr_mean_file)
     potentr_gmean = masktonull(potentr_gmean)
     return potentr_gmean, potentr_file
@@ -706,7 +706,7 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
             .format(filelist[0], str(LC_SUB), filelist[4],
-                    str(L_C), auxlist[1]),
+                    str(L_C), auxlist[2]),
             output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
