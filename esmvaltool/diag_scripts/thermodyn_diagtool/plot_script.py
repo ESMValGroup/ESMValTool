@@ -58,7 +58,7 @@ def balances(wdir, plotpath, filena, name, model):
     tr_maxm = np.zeros([nsub, 2, len(dims[3])])
     lim = [55, 55, 25]
     for i_f in np.arange(nsub):
-        transp = transport(zmean[i_f, :, :], timeser[:, 0], dims[1])
+        transp = transport(zmean[i_f, :, :], timeser[i_f, :, 0], dims[1])
         transp_mean[i_f, :], list_peak = transports_preproc(dims[1], ndims[3],
                                                             lim[i_f], transp)
         lat_maxm[i_f, :, :] = list_peak[0]
@@ -72,6 +72,9 @@ def balances(wdir, plotpath, filena, name, model):
         timesery[2, :] = (-3, 3)
         coords = [dims[0], dims[1]]
         plot_climap_eb(model, pdir, coords, tmean, ext_name)
+        fig = plt.figure()
+        strings = ['Meridional heat transports', 'Latitude [deg]', '[W]']
+        lats = dims[1]
         for i in np.arange(nsub):
             filename = filena[i] + '.nc'
             if name[i] == 'toab':
@@ -91,11 +94,10 @@ def balances(wdir, plotpath, filena, name, model):
             cdo.chname('lat,{}'.format(lat_model), input=nc_f,
                        output='aux.nc')
             move('aux.nc', nc_f)
-        fig = plt.figure()
-        fnam = pdir + '/{}_transp.png'.format(model)
-        strings = ['Meridional heat transports', 'Latitude [deg]', '[W]', fnam]
-        lats = dims[1]
-        plot_1m_transp(np.tile(lats, (3, 1)), transp_mean, transpty, strings)
+            plot_1m_transp(lats, transp_mean[i, :], transpty, strings)
+        plt.grid()
+        plt.savefig(pdir + '/{}_transp.png'.format(model))
+        plt.close(fig)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
@@ -115,12 +117,18 @@ def balances(wdir, plotpath, filena, name, model):
         filena[1] = filena[1].split('.nc', 1)[0]
         filename = filena[1] + '.nc'
         pr_output(transp_mean[1, :], filename, nc_f, 'latent')
-        fnam = pdir + '/{}_wmb_transp.png'.format(model)
-        strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]', fnam]
+        strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
+        fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[0, :], transpwy, strings)
-        fnam = pdir + '/{}_latent_transp.png'.format(model)
-        strings = ['Latent heat transports', 'Latitude [deg]', '[W]', fnam]
+        plt.grid()
+        plt.savefig(pdir + '/{}_wmb_transp.png'.format(model))
+        plt.close(fig)
+        strings = ['Latent heat transports', 'Latitude [deg]', '[W]']
+        fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[1, :], transply, strings)
+        plt.grid()
+        plt.savefig(pdir + '/{}_latent_transp.png'.format(model))
+        plt.close(fig)
     for i_f in np.arange(nsub):
         fig = plt.figure()
         axi = plt.subplot(111)
@@ -233,12 +241,13 @@ def global_averages(nsub, filena, name):
     vary = np.nanmean(var_r, axis=2)
     zmean = np.nanmean(vary, axis=3)
     tmean = np.nanmean(vary, axis=1)
+    timeser = np.zeros([nsub, ntime, nlats, nlons])
     for i_f in np.arange(nsub):
-        zmean_w = latwgt(lats, zmean[i_f, :, :])
+        zmean_w = latwgt(lats, zmean[i_f, :, 3])
         gmean = np.nansum(zmean_w, axis=1)
         shmean = hemean(0, lats, zmean[i_f, :, :])
         nhmean = hemean(1, lats, zmean[i_f, :, :])
-        timeser = np.column_stack((gmean, shmean, nhmean))
+        timeser[i_f, :, :] = np.column_stack((gmean, shmean, nhmean))
     return dims, ndims, tmean, zmean, timeser
 
 
@@ -501,12 +510,11 @@ def plot_1m_transp(lats, yval, ylim, strings):
     row 1 is the total, row 2 the atmospheric, row 3 the oceanic transport;
     - ylim: a range for the y-axis;
     - strings: a list of strings containing the title of the figure, the names
-    of the x and y axes, the name of the file to save the figure to;
+    of the x and y axes;
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    fig = plt.figure()
     plt.subplot(111)
     plt.plot(lats, yval)
     plt.title(strings[0], fontsize=10)
@@ -515,9 +523,6 @@ def plot_1m_transp(lats, yval, ylim, strings):
     plt.tight_layout()
     plt.ylim(ylim)
     plt.xlim(-90, 90)
-    plt.grid()
-    plt.savefig(strings[3])
-    plt.close(fig)
 
 
 def plot_mm_ebscatter(pdir, eb_list):
@@ -806,8 +811,8 @@ def pr_output(varout, filep, nc_f, nameout):
     fourc = fourier_coefficients
     nc_fid = Dataset(filep, 'r')
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-    w_nc_fid.description = "Total, atmospheric and oceanic annual \
-                            mean meridional heat transports"
+    w_nc_fid.description = ("Total, atmospheric and oceanic annual ",
+                            "mean meridional heat transports")
     fourc.extr_lat(nc_fid, w_nc_fid)
     w_nc_var = w_nc_fid.createVariable(nameout, 'f8', ('lat'))
     varatts(w_nc_var, nameout)
@@ -847,10 +852,9 @@ def transport(zmean, gmean, lat):
     cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     for j_l in range(len(lat) - 1):
-        cumb[:, j_l] = (-2 *
-                        np.nansum(latwgt(lat[j_l:len(lat)],
-                                         zmn_ub[:, j_l:len(lat)]),
-                                  axis=1))
+        cumb[:, j_l] = (-2 * np.nansum(latwgt(lat[j_l:len(lat)],
+                                              zmn_ub[:, j_l:len(lat)]),
+                                       axis=1))
     r_earth = 6.371 * 10 ** 6
     transp = 2 * p_i * cumb * r_earth * r_earth
     return [zmn_ub, transp]
@@ -941,7 +945,7 @@ def varatts(w_nc_var, varname):
                             'units': u"W", 'level_desc': 'sfc'})
     elif varname == 'wmb':
         w_nc_var.setncatts({'long_name': u"Merid. water mass transport",
-                            'units': u"W", 'level_desc': 'sfc'})
+                            'units': u"Kg*s-1", 'level_desc': 'sfc'})
     elif varname == 'latent':
         w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
                             'units': u"W", 'level_desc': 'sfc'})
