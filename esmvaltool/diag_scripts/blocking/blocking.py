@@ -297,8 +297,8 @@ class Blocking(object):
             plot_path = self._get_plot_name('blocking1D', filename)
             plt.savefig(plot_path)
             plt.close()
-        result.remove_coord('time')
-        iris.util.promote_aux_coord_to_dim_coord(result, 'month_number')
+        # result.remove_coord('time')
+        # iris.util.promote_aux_coord_to_dim_coord(result, 'month_number')
         return result
 
     def _get_plot_name(self, name, filename, month=None):
