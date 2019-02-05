@@ -52,8 +52,8 @@ begin
   ; Version
   VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Lmon"
 
   ; CMOR table
   CMOR_TABLE = \
@@ -132,7 +132,7 @@ begin
       ; Reapply mask of missing values
       xx = where(lmask, xx@_FillValue, xx)
 
-      ; Define output field
+      ; Define output array
       output = \
         new((/dimsizes(time), dimsizes(xx&lat), dimsizes(xx&lon)/), float)
       output!0 = "time"
@@ -191,7 +191,7 @@ begin
 
       ; Outfile
       fout = output_dir_path + \
-        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + FIELD + "_" + \
+        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + MIP + "_" + \
         VARIABLES(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
       ; Write variable

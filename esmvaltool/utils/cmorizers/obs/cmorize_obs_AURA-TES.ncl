@@ -44,8 +44,8 @@ begin
   YEAR1 = 2005
   YEAR2 = 2011
 
-  ; Field
-  FIELD = "T3M"
+  ; MIP
+  MIP = "Amon"
 
   ; CMOR table
   CMOR_TABLE = \
@@ -173,7 +173,7 @@ begin
 
   ; Outfile
   fout = output_dir_path + \
-    "OBS_" + OBSNAME + "_sat_1_" + FIELD + "_tro3_" + \
+    "OBS_" + OBSNAME + "_sat_1_" + MIP + "_tro3_" + \
     YEAR1 + "01-" + YEAR2 + "12.nc"
 
   ; Write variable
