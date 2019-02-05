@@ -561,14 +561,14 @@ def potentr(model, wdir, infile, aux_file):
     prrmask_file = infile[1]
     prsnmask_file = infile[2]
     tcolumn_file = infile[3]
-    poten_file = wdir + '/{}_potentialEnergy_droplet.nc'.format(model)
+    poten_file = wdir + '/{}_potEnergy_drop.nc'.format(model)
     potentr_file = wdir + '/{}_pot_drop_entr.nc'.format(model)
-    potentr_mean_file = wdir + '/{}_potentialdropEnergy_gmean.nc'.format(model)
+    potentr_mean_file = wdir + '/{}_potEnergy_drop_gmean.nc'.format(model)
     cdo.mulc(GRAV, input='-mul {} -add {} {}'
              .format(htop_file, prrmask_file, prsnmask_file),
              options='-b F32', output=poten_file)
     flist = [poten_file, tcolumn_file, aux_file]
-    potentr_gmean = entr(flist, 'htop', 'spotp', potentr_file,
+    potentr_gmean = entr(flist, 'tlcl', 'spotp', potentr_file,
                          potentr_mean_file)
     potentr_gmean = masktonull(potentr_gmean)
     return potentr_gmean, potentr_file
