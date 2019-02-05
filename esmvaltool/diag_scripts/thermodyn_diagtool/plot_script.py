@@ -241,7 +241,7 @@ def global_averages(nsub, filena, name):
     vary = np.nanmean(var_r, axis=2)
     zmean = np.nanmean(vary, axis=3)
     tmean = np.nanmean(vary, axis=1)
-    timeser = np.zeros([nsub, ntime, 3])
+    timeser = np.zeros([nsub, yr_0, 3])
     for i_f in np.arange(nsub):
         zmean_w = latwgt(lats, zmean[i_f, :, :])
         gmean = np.nansum(zmean_w, axis=1)
