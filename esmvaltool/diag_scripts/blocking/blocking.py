@@ -166,7 +166,7 @@ class Blocking(object):
                 logger.info('Root Mean Square Error:')
                 logger.info(rms.data)
 
-        if self.cfg[n.WRITE_PLOTS]:
+        if self.cfg[n.WRITE_PLOTS] and self.compute_2d:
             self.create_comparison_plot(datasets, correlation, error)
             for month in range(1, 13):
                 self.create_comparison_plot(

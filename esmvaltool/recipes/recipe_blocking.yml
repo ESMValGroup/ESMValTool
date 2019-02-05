@@ -50,26 +50,26 @@ diagnostics:
         field: T2M
         preprocessor: extract
     scripts:
-#      blocking1D:
-#        script: blocking/blocking.py
-#        title: "Blocking diagnostic 1D"
-#        compute_2d: False
-#        compute_1d: True
-#        central_latitude: 60.0
-#        span: 20.0
-#        offset: 5.0
-#        north_threshold: -10.0
-#        south_threshold: 0.0
-#        smoothing_window: 5
-#        max_color_scale: 10
-
-      blocking2D:
+      blocking1D:
         script: blocking/blocking.py
-        title: "Blocking diagnostic 2D"
-        compute_2d: True
-        compute_1d: False
-        span: 15.0
+        title: "Blocking diagnostic 1D"
+        compute_2d: False
+        compute_1d: True
+        central_latitude: 60.0
+        span: 20.0
+        offset: 5.0
         north_threshold: -10.0
         south_threshold: 0.0
-        persistence: 5
+        smoothing_window: 5
         max_color_scale: 10
+
+      # blocking2D:
+      #   script: blocking/blocking.py
+      #   title: "Blocking diagnostic 2D"
+      #   compute_2d: True
+      #   compute_1d: False
+      #   span: 15.0
+      #   north_threshold: -10.0
+      #   south_threshold: 0.0
+      #   persistence: 5
+      #   max_color_scale: 10
