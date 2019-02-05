@@ -392,9 +392,9 @@ def globall_cg(d3v, g_w, d_s, dims):
 
     @author: Valerio Lembo
     """
-    ntp = dims[3]
     nlev = dims[0]
     nlat = dims[2]
+    ntp = dims[3]
     gmn = np.zeros([3, ntp - 1])
     aux1 = np.zeros([nlev, int(nlat / 2), ntp - 1])
     aux2 = np.zeros([nlev, int(nlat / 2), ntp - 1])

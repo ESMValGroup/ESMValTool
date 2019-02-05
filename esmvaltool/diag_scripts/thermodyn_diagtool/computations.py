@@ -328,6 +328,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
     """
     cdo = Cdo()
     horzentropy_file = wdir + '/{}_horizEntropy.nc'.format(model)
+    vertenergy_file = wdir + '/{}_verticalEnergy.nc'.format(model)
     vertentropy_file = wdir + '/{}_verticalEntropy.nc'.format(model)
     vertentropy_mean_file = wdir + '/{}_vertEntropy_gmean.nc'.format(model)
     horzentropy_mean_file = wdir + '/{}_horizEntropy_gmean.nc'.format(model)
@@ -339,11 +340,10 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
                              horzentropy_mean_file)
     cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'
                     .format(infile[0], infile[2], infile[1], infile[3]),
-                    output=aux_file)
-    cdo.mulc('-1', input='-mul  -sub -yearmonmean -reci {} \
-             -yearmonmean -reci {} {}'
-             .format(infile[6], infile[4], aux_file),
-             output=vertentropy_file)
+                    output=vertenergy_file)
+    cdo.mul(input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'
+             .format(vertenergy_file, infile[6], infile[4]),
+             output=aux_file)
     vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     return horzentr_mean, vertentr_mean, vertentropy_file
@@ -705,7 +705,7 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}"
-            .format(filelist[0], str(LC_SUB), filelist[3],
+            .format(filelist[0], str(LC_SUB), filelist[4],
                     str(L_C), auxlist[1]),
             output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,

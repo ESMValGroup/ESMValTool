@@ -134,7 +134,8 @@ class Fluxogram():
             else:
                 for key in dict_oth:
                     value = dict_oth[key]
-                    switcher[flux.dire](value, flux, plt)
+                    if flux.dire == key:
+                        switcher[flux.dire](value, flux, plt)
             plt.gca().add_patch(arrow)
         # draw all storages
         for storage in self.storages:

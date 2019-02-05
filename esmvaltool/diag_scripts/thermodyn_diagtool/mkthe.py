@@ -102,13 +102,6 @@ def init_mkthe(model, wdir, filelist, flags):
     cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
     f_l = Dataset(te_gmean_file)
     te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
-    # temperature of the atmosphere-surface interface
-    tasvert_file = wdir + '/{}_tvertavg.nc'.format(model)
-    removeif(tasvert_file)
-    cdo.fldmean(input='-mulc,0.5 -add {} -selvar,tas {}'
-                .format(ts_file, tasmn_file), options='-b F32',
-                output=tasvert_file)
-    # evaporation from latent heat fluxes at the surface
     if wat in {'y', 'yes'} and entr in {'n', 'no'}:
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
@@ -117,7 +110,7 @@ def init_mkthe(model, wdir, filelist, flags):
             evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
             mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
                        hfss_file, te_file]
-            tabl_file, tlcl_file, htop_file = mkthe_main(wdir, mk_list, model)
+            htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list, model)
             # Working temperatures for the hydrological cycle
             tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
             removeif(tcloud_file)
@@ -366,10 +359,8 @@ def write_output(wdir, model, file_list, varlist):
     w_nc_fid.close()  # close the new file
     tlcl_file = wdir + '/{}_tlcl.nc'.format(model)
     cdo.setrtomiss('400,1e36', input=tlcl_temp, output=tlcl_file)
-    tabl_temp = wdir + '/tabl.nc'
     tabl_file = wdir + '/{}_tabl.nc'.format(model)
     cdo.setrtomiss('400,1e36', input=tabl_temp, output=tabl_file)
-    htop_temp = wdir + '/htop.nc'
     htop_file = wdir + '/{}_htop.nc'.format(model)
     cdo.setrtomiss('12000,1e36', input=htop_temp, output=htop_file)
     return htop_file, tabl_file, tlcl_file
