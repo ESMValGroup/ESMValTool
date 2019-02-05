@@ -23,7 +23,7 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import extract_levels, regrid
 from ._time_area import (extract_month, extract_season, seasonal_mean,
-                         time_average)
+                         time_average, annual_mean)
 from ._time_area import time_slice as extract_time
 from ._volume_pp import depth_integration, extract_trajectory, extract_transect
 from ._volume_pp import volume_average as average_volume
@@ -48,6 +48,7 @@ __all__ = [
     'extract_time',
     'extract_season',
     'extract_month',
+    'annual_mean',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction
