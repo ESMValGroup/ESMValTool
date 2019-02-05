@@ -342,8 +342,8 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
                     .format(infile[0], infile[2], infile[1], infile[3]),
                     output=vertenergy_file)
     cdo.mul(input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'
-             .format(vertenergy_file, infile[4], infile[6]),
-             output=aux_file)
+            .format(vertenergy_file, infile[4], infile[6]),
+            output=aux_file)
     vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     return horzentr_mean, vertentr_mean, vertentropy_file
