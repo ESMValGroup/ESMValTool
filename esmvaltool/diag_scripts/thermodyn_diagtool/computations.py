@@ -670,7 +670,7 @@ def snowentr(model, wdir, infile, aux_file):
     cdo.mulc(str(LC_SUB), input='-setmisstoc,0 {}'.format(prsnmask_file),
              options='-b F32', output=latsnow_file)
     flist = [latsnow_file, infile[1], aux_file]
-    snowentr_gmean = entr(flist, 'prsn', 'srain', snowentr_file,
+    snowentr_gmean = entr(flist, 'prsn', 'ssnow', snowentr_file,
                           snowentr_mean_file)
     snowentr_gmean = masktonull(snowentr_gmean)
     return snowentr_gmean, latsnow_file, snowentr_file

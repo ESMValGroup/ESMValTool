@@ -393,7 +393,6 @@ def main(cfg):
                 pass
         else:
             pass
-        # Compute the Lorenz Energy Cycle.
         if lec in {'y', 'yes'}:
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
@@ -405,7 +404,6 @@ def main(cfg):
             logger.info('Done\n')
         else:
             pass
-        # Compute the material entropy production
         if entr in {'y', 'yes'}:
             if met in {'1', '3'}:
                 _, _, te_file, _ = mkthe.init_mkthe(
@@ -432,8 +430,7 @@ def main(cfg):
                 logger.info('Done\n')
             if met in {'2', '3'}:
                 matentr, irrevers, entr_list = comp.direntr(
-                    logger, model, wdir, filenames, aux_file,
-                    lect, lec, flags)
+                    logger, model, wdir, filenames, aux_file, lect, lec, flags)
                 matentr_all[i_m, 0] = matentr
                 if met in {'3'}:
                     diffentr = (float(np.nanmean(vertentr_mean))
