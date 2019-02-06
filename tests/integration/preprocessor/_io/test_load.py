@@ -47,7 +47,7 @@ class TestLoad(unittest.TestCase):
         cubes = load(temp_file)
         cube = cubes[0]
         self.assertEqual(1, len(cubes))
-        self.assertEqual(tempfile, cube.attributes['source_file'])
+        self.assertEqual(temp_file, cube.attributes['source_file'])
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points == np.array([1,
                                                                     2])).all())

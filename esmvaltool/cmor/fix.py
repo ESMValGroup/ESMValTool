@@ -88,14 +88,15 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
     fixed_cubes = []
     by_file = defaultdict(list)
     for cube in cubes:
-        by_file[cube._some_file].append(cube)
+        by_file[cube.attributes['source_file']].append(cube)
 
     for cube_list in by_file.values():
         for fix in fixes:
             cube_list = fix.fix_metadata(cube_list)
             if len(cube_list) != 1:
                 raise ValueError(
-                    'Cubes were not reduced to one after fixing: %s' % cube_list
+                    'Cubes were not reduced to one after'
+                    'fixing: %s' % cube_list
                 )
 
         cube = cube_list[0]
