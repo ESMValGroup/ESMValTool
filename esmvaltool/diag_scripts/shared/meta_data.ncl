@@ -51,7 +51,7 @@ begin
     enter_msg(scriptname, funcname)
 
     str0 = "? " + systemfunc("basename " + nc_file) + ":"
-    n = dimsizes(diag_authors)
+    n = dimsizes(infiles)
     str1 = ": ancestors: ["
     str1 = str1 + infiles(0)
     if(n.ge.1) then
