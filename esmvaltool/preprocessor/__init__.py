@@ -13,7 +13,7 @@ from ._area_pp import area_slice as extract_region
 from ._area_pp import (zonal_means, extract_named_regions)
 from ._derive import derive
 from ._download import download
-from ._io import (_get_debug_filename, cleanup, concatenate, load_cubes, save,
+from ._io import (_get_debug_filename, cleanup, concatenate, load, save,
                   write_metadata)
 from ._mask import (mask_above_threshold, mask_below_threshold,
                     mask_fillvalues, mask_inside_range, mask_landsea,
@@ -36,7 +36,7 @@ __all__ = [
     # File reformatting/CMORization
     'fix_file',
     # Load cubes from file
-    'load_cubes',
+    'load',
     # Derive variable
     'derive',
     # Metadata reformatting/CMORization
@@ -202,16 +202,13 @@ def preprocess(items, step, **settings):
     if itype.endswith('s'):
         result.append(_run_preproc_function(function, items, settings))
     else:
-        try:
-            for item in items:
-                result.append(_run_preproc_function(function, item, settings))
-        except TypeError:
-            pass
+        for item in items:
+            result.append(_run_preproc_function(function, item, settings))
 
     items = []
     for item in result:
         if isinstance(item,
-                      (PreprocessorFile, Cube, CubeList, six.string_types)):
+                      (PreprocessorFile, Cube, six.string_types)):
             items.append(item)
         else:
             items.extend(item)
@@ -223,7 +220,7 @@ def get_step_blocks(steps, order):
     """Group steps into execution blocks."""
     blocks = []
     prev_step_type = None
-    for step in order[order.index('load_cubes') + 1:order.index('save')]:
+    for step in order[order.index('load') + 1:order.index('save')]:
         if step in steps:
             step_type = step in MULTI_MODEL_FUNCTIONS
             if step_type is not prev_step_type:
@@ -270,7 +267,7 @@ class PreprocessorFile(TrackedFile):
     def prepare(self):
         """Apply preliminary file operations on product."""
         if not self._prepared:
-            for step in DEFAULT_ORDER[:DEFAULT_ORDER.index('load_cubes')]:
+            for step in DEFAULT_ORDER[:DEFAULT_ORDER.index('load')]:
                 if step in self.settings:
                     self.files = preprocess(self.files, step,
                                             **self.settings[step])
@@ -281,8 +278,8 @@ class PreprocessorFile(TrackedFile):
         """Cubes."""
         if self.is_closed:
             self.prepare()
-            self._cubes = preprocess(self.files, 'load_cubes',
-                                     **self.settings.get('load_cubes', {}))
+            self._cubes = preprocess(self.files, 'load',
+                                     **self.settings.get('load', {}))
         return self._cubes
 
     @cubes.setter

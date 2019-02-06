@@ -276,7 +276,7 @@ def _get_default_settings(variable, config_user, derive=False):
         }
 
     # Configure loading
-    settings['load_cubes'] = {
+    settings['load'] = {
         'callback': concatenate_callback,
     }
     # Configure merge

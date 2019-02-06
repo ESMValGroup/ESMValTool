@@ -56,7 +56,7 @@ DEFAULT_PREPROCESSOR_STEPS = (
     'fix_data',
     'fix_file',
     'fix_metadata',
-    'load_cubes',
+    'load',
     'save',
 )
 
@@ -260,7 +260,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
         preproc_dir,
         'CMIP5_CanESM2_Oyr_historical_r1i1p1_TO3Y_chl_2000-2005_fixed')
     defaults = {
-        'load_cubes': {
+        'load': {
             'callback':
             concatenate_callback,
         },

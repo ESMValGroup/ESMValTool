@@ -7,6 +7,7 @@ variables to be sure that all known errors are
 fixed.
 
 """
+from collections import defaultdict
 from iris.cube import Cube, CubeList
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
@@ -44,7 +45,7 @@ def fix_file(file, short_name, project, dataset, output_dir):
     return file
 
 
-def fix_metadata(cube_list, short_name, project, dataset, cmor_table=None,
+def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                  mip=None):
     """
     Fix cube metadata if fixes are required and check it anyway.
@@ -56,7 +57,7 @@ def fix_metadata(cube_list, short_name, project, dataset, cmor_table=None,
 
     Parameters
     ----------
-    cube_list: iris.cube.CubeList
+    cubes: iris.cube.CubeList
         Cubes to fix
     short_name; str
         Variable's short name
@@ -81,24 +82,34 @@ def fix_metadata(cube_list, short_name, project, dataset, cmor_table=None,
         If the checker detects errors in the metadata that it can not fix.
 
     """
-    for fix in Fix.get_fixes(
-            project=project, dataset=dataset, variable=short_name):
-        cube_list = fix.fix_metadata(cube_list)
-    if len(cube_list) != 1:
-        raise ValueError(
-            'Cubes were not reduced to one after fixing: %s' % cube_list
-        )
+    fixes = Fix.get_fixes(
+        project=project, dataset=dataset, variable=short_name
+    )
+    fixed_cubes = []
+    by_file = defaultdict(list)
+    for cube in cubes:
+        by_file[cube._some_file].append(cube)
 
-    cube = cube_list[0]
-    if cmor_table and mip:
-        checker = _get_cmor_checker(
-            table=cmor_table,
-            mip=mip,
-            short_name=short_name,
-            fail_on_error=False,
-            automatic_fixes=True)
-        checker(cube).check_metadata()
-    return cube
+    for cube_list in by_file.values():
+        for fix in fixes:
+            cube_list = fix.fix_metadata(cube_list)
+            if len(cube_list) != 1:
+                raise ValueError(
+                    'Cubes were not reduced to one after fixing: %s' % cube_list
+                )
+
+        cube = cube_list[0]
+        if cmor_table and mip:
+            checker = _get_cmor_checker(
+                table=cmor_table,
+                mip=mip,
+                short_name=short_name,
+                fail_on_error=False,
+                automatic_fixes=True)
+            checker(cube).check_metadata()
+        del cube.attributes['source_file']
+        fixed_cubes.append(cube)
+    return fixed_cubes
 
 
 def fix_data(cube, short_name, project, dataset, cmor_table=None, mip=None):
