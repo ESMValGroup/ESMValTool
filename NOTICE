@@ -5,7 +5,7 @@ PLEASE READ THIS SOFTWARE LICENSE ("LICENSE") CAREFULLY. USE OF THE SOFTWARE CON
 DATE: 6 February 2019
 ========================================================================
 
-THIS LICENSE APPLIES TO THE ESMValTool Version 1.0 TRUNK VERSION THAT IS RELEASED AS OPEN-SOURCE SOFTWARE UNDER THE APACHE LICENSE, VERSION 2.0
+THIS LICENSE APPLIES TO THE ESMValTool VERSION 1.0 AND VERSION 2.0 THAT IS RELEASED AS OPEN-SOURCE SOFTWARE UNDER THE APACHE LICENSE
 
 ========================================================================
 
@@ -14,12 +14,12 @@ Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) and partne
 ==========================================
 (1) ESMValTool VERSION 2.0 CORE DEVELOPMENT TEAM
 ==========================================
-Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR), Germany - ESMValTool Project Investigator (PI)
-Copyright 2017- Alfred-Wegener-Institute Bremerhaven (AWI), Germany
-Copyright 2017- Barcelona Computing Center (BSC), Spain
-Copyright 2016- Ludwig Maximilian University of Munich, Germany
+Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR), Germany - ESMValTool Principal Investigator (PI)
+Copyright 2017- Alfred-Wegener-Institute (AWI), Germany
+Copyright 2017- Barcelona Supercomputing Center (BSC), Spain
+Copyright 2016- Ludwig Maximilian University, Germany
 Copyright 2017- Netherlands e-Science Center (NLeSC), Netherlands
-Copyright 2019- Plymouth Marine Laboratory, Plymouth, UK
+Copyright 2019- Plymouth Marine Laboratory, UK
 Copyright 2017- University of Reading, UK
 
 ==========================================
@@ -109,6 +109,7 @@ Citing the Software Documentation Paper and registering your paper(s) will serve
 ==========================================
 
 In addition to using the Software, we encourage the community to join the Software Development Team and to contribute additional diagnostics and performance metrics or other software improvements. Contributing back the new diagnostics and performance metrics or other software improvements will help to enhance the capability of the Software, which is of vital importance for securing future funding. You should consider this an obligation if you have taken advantage of the Software, which represents a product of considerable effort by the development team.
+
 ==========================================
 
 To join the ESMValTool Development Team, please contact Prof. Veronika Eyring (veronika.eyring@dlr.de) and Dr. Axel Lauer (axel.lauer@dlr.de).
