@@ -81,9 +81,9 @@ class TestFixMetadata(unittest.TestCase):
         self.cube = mock.Mock()
         self.cube.attributes = {'source_file': 'source_file'}
         self.fixed_cube = mock.Mock()
-        self.cube.attributes = {'source_file': 'source_file'}
+        self.fixed_cube.attributes = {'source_file': 'source_file'}
         self.mock_fix = mock.Mock()
-        self.mock_fix.fix_metadata.return_value = [[self.fixed_cube]]
+        self.mock_fix.fix_metadata.return_value = [self.fixed_cube]
 
     def test_fix(self):
         """Check that the returned fix is applied."""
