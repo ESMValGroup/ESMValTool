@@ -79,9 +79,9 @@ class TestFixMetadata(unittest.TestCase):
     def setUp(self):
         """Prepare for testing."""
         self.cube = mock.Mock()
-        self.cube.attributtes = {'source_file': 'source_file'}
+        self.cube.attributes = {'source_file': 'source_file'}
         self.fixed_cube = mock.Mock()
-        self.cube.attributtes = {'source_file': 'source_file'}
+        self.cube.attributes = {'source_file': 'source_file'}
         self.mock_fix = mock.Mock()
         self.mock_fix.fix_metadata.return_value = [[self.fixed_cube]]
 
