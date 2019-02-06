@@ -19,10 +19,19 @@
 ---
 
 CMIP6:
-  input_dir: 'CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[version]'
+  input_dir:
+    default: '/'
+    DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
+  institutes:
+    'CNRM-CM6-1': ['CNRM-CERFACS']
+    'CNRM-ESM2-1': ['CNRM-CERFACS']
+    'GFDL-AM4': ['NOAA-GFDL']
+    'GISS-E2-1-G': ['NASA-GISS']
+    'IPSL-CM6A-LR': ['IPSL']
+
 
 CMIP5:
   input_dir:
@@ -37,6 +46,7 @@ CMIP5:
   input_fx_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
+    CP4CDS: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[fx_var]/latest/'
     DKRZ: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
     ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
   input_fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
