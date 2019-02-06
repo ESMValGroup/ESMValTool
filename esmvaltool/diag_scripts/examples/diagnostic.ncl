@@ -63,6 +63,7 @@ begin
   ; Shortcuts to current variable and field
   ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
   field_type0 = variable_info[0]@field
 
   ; The number of variables is the size of the variable_info list
@@ -189,17 +190,17 @@ begin
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
 
   ; collect meta-data and call ESMValMD function
-  nc_file = "nc_file.nc"
-  plot_file = "plotfile.nc"
+  nc_file = ncdf_outfile
+  plot_file = map@outfile
   caption = "Mean of variable: " + var0
-  statistics = (/"mean"/)
+  statistics = ("mean")
   domain = ("glob")
   plottype = ("geo")
-  diag_des = ("Description")
-  authors = (/"author1", "author2"/)
-  references = (/"ref1", "ref2"/)
-  infiles := (/"infile1.nc", "infile2.nc"/)
+  authors = (/"righ_ma", "gott_kl"/)
+  references = (/"acknow_author"/)
+  ;infiles := (/"infile1.nc", "infile2.nc"/)
+  infiles = metadata_att_as_array(info0, "filename")
   ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-           diag_des, authors, references, infiles)
+           authors, references, infiles)
 
 end
