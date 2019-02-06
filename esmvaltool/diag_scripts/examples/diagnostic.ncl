@@ -198,7 +198,6 @@ begin
   plottype = ("geo")
   authors = (/"righ_ma", "gott_kl"/)
   references = (/"acknow_author"/)
-  ;infiles := (/"infile1.nc", "infile2.nc"/)
   infiles = metadata_att_as_array(info0, "filename")
   ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
            authors, references, infiles)
