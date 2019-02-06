@@ -69,6 +69,7 @@ from itertools import product
 import cartopy
 import iris
 import iris.quickplot as qplt
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
