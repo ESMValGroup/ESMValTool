@@ -99,8 +99,7 @@ class TestFixMetadata(unittest.TestCase):
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[]):
             cube_returned = fix_metadata([self.cube], 'short_name', 'project',
-                                         'model')
-            print(cube_returned)
+                                         'model')[0]
             self.assertTrue(cube_returned is self.cube)
             self.assertTrue(cube_returned is not self.fixed_cube)
 
