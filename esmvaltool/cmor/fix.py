@@ -94,13 +94,14 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
         cube_list = CubeList(cube_list)
         for fix in fixes:
             cube_list = fix.fix_metadata(cube_list)
-            if len(cube_list) != 1:
-                raise ValueError(
-                    'Cubes were not reduced to one after'
-                    'fixing: %s' % cube_list
-                )
 
+        if len(cube_list) != 1:
+            raise ValueError(
+                'Cubes were not reduced to one after'
+                'fixing: %s' % cube_list
+            )
         cube = cube_list[0]
+        
         if cmor_table and mip:
             checker = _get_cmor_checker(
                 table=cmor_table,
