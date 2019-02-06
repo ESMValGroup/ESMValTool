@@ -102,8 +102,9 @@ def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
     cube.standard_name = standard_name
     cube.long_name = long_name
     cube.units = units
+    cube.attributes['source_file'] = cubes[0].attributes['source_file']
 
-    return iris.cube.CubeList((cube,))
+    return cube
 
 
 def get_all_derived_variables():
