@@ -50,7 +50,7 @@ begin
     scriptname = "diag_scripts/shared/lib/meta_data.ncl"
     enter_msg(scriptname, funcname)
 
-    str0 = "? " + systemfunc("basename " + nc_file) + ":"
+    str0 = "? " + nc_file
     n = dimsizes(infiles)
     str1 = ": ancestors: ["
     str1 = str1 + infiles(0)
@@ -69,7 +69,7 @@ begin
       end do
     end if
     str2 = str2 + "]"
-    str3 = "  caption: " + caption
+    str3 = "  caption: '" + caption + "'"
     str4 = "  domain: " + domain
     str5 = "  plotfile: " + outfile
     str6 = "  plot_type: " + plottype
