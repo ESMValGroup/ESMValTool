@@ -15,12 +15,12 @@
 ;    Select the V004 and V005 projects.
 ;    Download the script file for both projects.
 ;    To download the data use: wget -i <scriptfile>.
-;    From the downloaded data, pick only the *.he5 files and save them in the
+;    From the downloaded data, pick only the *.he5 files and put them in
 ;    input_dir_path.
 ;    Data is freely available, but a registration is required.
 ;
 ; Modification history
-;    20190108-A_righ_ma: adapted for v2.
+;    20190108-A_righ_ma: adapted to v2.
 ;    20140129-A_righ_ma: written.
 ;
 ; #############################################################################
@@ -44,8 +44,8 @@ begin
   YEAR1 = 2005
   YEAR2 = 2011
 
-  ; Field
-  FIELD = "T3M"
+  ; MIP
+  MIP = "Amon"
 
   ; CMOR table
   CMOR_TABLE = \
@@ -68,14 +68,12 @@ begin
     log_info("Processing date " + yy + sprinti("%0.2i", mm))
 
     ; Find files
-    fname  = input_dir_path + "/" + \
-      "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + \
-      "_F01_10.he5"
+    fname  = input_dir_path + "TES-Aura_L3-O3-M" + \
+      yy + "m" + sprinti("%0.2i", mm) + "_F01_10.he5"
 
     if (.not.isfilepresent(fname)) then  ; alternative name
-      fname = input_dir_path + "/" + \
-        "TES-Aura_L3-O3-M" + yy + "m" + sprinti("%0.2i", mm) + \
-        "_C01_F01_10.he5"
+      fname = input_dir_path + "TES-Aura_L3-O3-M" + \
+        yy + "m" + sprinti("%0.2i", mm) + "_C01_F01_10.he5"
     end if
 
     if (.not.isfilepresent(fname)) then
@@ -167,22 +165,15 @@ begin
   delete(clon)
 
   ; Set global attributes
-  gAtt = True
-  gAtt@history       = "Created on " + systemfunc("date")
-  gAtt@host          = systemfunc("echo $HOST")
-  gAtt@user          = systemfunc("echo $USER")
-  gAtt@period        = YEAR1 + "-" + YEAR2
-  gAtt@field         = FIELD
-  gAtt@tier          = TIER
-  gAtt@source        = "https://search.earthdata.nasa.gov/"
-  gAtt@reference     = "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
-    "44, 1102-1105, doi:10.1109/TGRS.2005.863716, 2006."
-  gAtt@title = OBSNAME + " data CMORized for the ESMValTool v2.0"
-  gAtt@conventions = "CF/CMOR"
+  gAtt = set_global_atts( \
+    OBSNAME, TIER, \
+    "https://search.earthdata.nasa.gov/search?q=TL3O3M", \
+    "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
+    "doi:10.1109/TGRS.2005.863716, 2006", "")
 
   ; Outfile
-  fout = output_dir_path + "/" + \
-    "OBS_" + OBSNAME + "_sat_1_" + FIELD + "_tro3_" + \
+  fout = output_dir_path + \
+    "OBS_" + OBSNAME + "_sat_1_" + MIP + "_tro3_" + \
     YEAR1 + "01-" + YEAR2 + "12.nc"
 
   ; Write variable
