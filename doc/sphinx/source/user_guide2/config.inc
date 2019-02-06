@@ -85,7 +85,7 @@ turns on or off the writing of netCDF files.
     download_path: ./downloads
 
 The ``download_path`` setting is the path to place any required downloadable
-data files. This method was neccesairy because certain python toolkits such as
+data files. This method was necessary because certain Python toolkits such as
 cartopy will attempt to download data files at run time, typically geographic
 data files such as coastlines or land surface maps. This can fail if the
 machine does not have access to the wider internet. This location allows us
