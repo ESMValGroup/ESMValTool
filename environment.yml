@@ -7,12 +7,16 @@ channels:
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - iris=1.13
+  - graphviz
   - matplotlib<3
   - python-stratify
+  - esmpy
   # Multi language support:
   - ncl
-  - ncurses>5
-  # TODO: add R, julia
+  - ncurses=6.1=hfc679d8_1
+  - r-base
+  - r-rcpp
+  # TODO: add julia
 
   - pip:
       # TODO: include dummydata in esmvaltool repository and move to setup.py

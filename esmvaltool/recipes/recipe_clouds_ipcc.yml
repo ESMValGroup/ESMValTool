@@ -1,11 +1,15 @@
+# ESMValTool
 # recipe_clouds_ipcc.yml
 ---
 documentation:
   description: |
-    Diagnostics of clouds and hydrological cycle: multi-model mean bias,
-    zonal means; similar to IPCC AR5 fig. 9.5
+    Diagnostics of clouds and hydrological cycle multi-model mean bias,
+    zonal means; similar to IPCC AR5 fig. 9.5.
 
   authors:
+    - laue_ax
+
+  maintainer:
     - laue_ax
 
   references:

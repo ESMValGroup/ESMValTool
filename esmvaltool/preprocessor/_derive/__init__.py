@@ -1,12 +1,10 @@
 """Automatically derive variables."""
 
-
 import importlib
 import logging
 import os
 
 import iris
-import yaml
 
 from ._derived_variable_base import DerivedVariableBase
 
@@ -18,8 +16,8 @@ ALL_DERIVED_VARIABLES = {}
 def get_required(short_name, field=None):
     """Return all required variables for derivation.
 
-    Get variable `short_name` and `field` pairs required for derivation
-    and optionally a list of needed fx files.
+    Get all information (at least `short_name`) required for derivation and
+    optionally a list of needed fx files.
 
     Parameters
     ----------
@@ -31,8 +29,9 @@ def get_required(short_name, field=None):
     Returns
     -------
     dict
-        Dictionary containing a list of tuples `(short_name, field)` with the
-        `vars` key and optionally a list of fx files with the key `fx_files`.
+        Dictionary containing a :obj:`list` of dictionaries (including at least
+        the key `short_name`) with the key `vars` and optionally a :obj:`list`
+        of fx variables with the key `fx_files`.
 
     """
     frequency = field[2] if field else 'M'
@@ -40,17 +39,23 @@ def get_required(short_name, field=None):
     return derived_var.get_required(frequency)
 
 
-def derive(cubes, variable, fx_files=None):
+def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
     """Derive variable.
 
     Parameters
     ----------
-    cubes : iris.cube.CubeList
+    cubes: iris.cube.CubeList
         Includes all the needed variables for derivation defined in
         :func:`get_required`.
-    variable : dict
-        All information of the derived variable.
-    fx_files : dict, optional
+    short_name: str
+        short_name
+    standard_name: str
+        standard_name
+    long_name: str
+        long_name
+    units: str
+        units
+    fx_files: dict, optional
         If required, dictionary containing fx files  with `short_name`
         (keys) and path (values) of the fx variable.
 
@@ -60,8 +65,6 @@ def derive(cubes, variable, fx_files=None):
         The new derived variable.
 
     """
-    short_name = variable['short_name']
-
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
         return cubes[0]
@@ -73,8 +76,9 @@ def derive(cubes, variable, fx_files=None):
             if fx_path is not None:
                 cubes.append(iris.load_cube(fx_path))
             else:
-                logger.debug("Requested fx variable '%s' for derivation of "
-                             "'%s' not found", fx_var, short_name)
+                logger.debug(
+                    "Requested fx variable '%s' for derivation of "
+                    "'%s' not found", fx_var, short_name)
 
     # Derive correct variable
     derived_var = DerivedVariableBase.get_derived_variable(short_name)
@@ -82,16 +86,11 @@ def derive(cubes, variable, fx_files=None):
 
     # Set standard attributes
     cube.var_name = short_name
-    if variable['standard_name'] not in iris.std_names.STD_NAMES:
-        iris.std_names.STD_NAMES[variable['standard_name']] = {
-            'canonical_units': variable['units']
-        }
-    for attribute in ('standard_name', 'long_name', 'units'):
-        setattr(cube, attribute, variable[attribute])
-
-    # Set attributes required by preprocessor
-    cube.attributes['_filename'] = variable['filename']
-    cube.attributes['metadata'] = yaml.safe_dump(variable)
+    if standard_name not in iris.std_names.STD_NAMES:
+        iris.std_names.STD_NAMES[standard_name] = {'canonical_units': units}
+    cube.standard_name = standard_name
+    cube.long_name = long_name
+    cube.units = units
 
     return cube
 
@@ -115,8 +114,7 @@ def get_all_derived_variables():
             var_module = importlib.import_module(
                 'esmvaltool.preprocessor._derive.{}'.format(var_name))
             try:
-                derived_var = getattr(var_module,
-                                      'DerivedVariable')(var_name)
+                derived_var = getattr(var_module, 'DerivedVariable')(var_name)
                 ALL_DERIVED_VARIABLES[var_name] = derived_var
             except AttributeError:
                 pass

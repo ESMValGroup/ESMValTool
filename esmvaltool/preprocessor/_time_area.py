@@ -1,32 +1,48 @@
-"""
-Time operations on cubes
+"""Time operations on cubes.
 
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+import logging
+
 import iris
 import iris.coord_categorisation
 import numpy as np
 
 from .._config import use_legacy_iris
 
+logger = logging.getLogger(__name__)
 
-# slice cube over a restricted time period
-def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
+
+def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
                end_day):
-    """
-    Slice cube on time.
+    """Slice cube on time.
 
-    Function that returns a subset of the original cube (slice)
-    given two dates of interest start date and end date
-    start date and end date should be given in a yr,mo,d (int)format e.g.
-    time_slice(cube, 2006, 2, 2, 2010, 1, 1) or
-    time_slice(cube, '2006', '2', '2', '2010', '1', '1');
+    Parameters
+    ----------
+        cube: iris.cube.Cube
+            input cube.
+        start_year: int
+            start year
+        start_month: int
+            start month
+        start_day: int
+            start day
+        end_year: int
+            end year
+        end_month: int
+            end month
+        end_day: int
+            end day
 
-    Returns a cube
+    Returns
+    -------
+    iris.cube.Cube
+        Sliced cube.
+
     """
     import datetime
-    time_units = mycube.coord('time').units
+    time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
         if start_day > 30:
             start_day = 30
@@ -39,11 +55,21 @@ def time_slice(mycube, start_year, start_month, start_day, end_year, end_month,
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
     if use_legacy_iris():
-        my_constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
+        constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
     else:
-        my_constraint = iris.Constraint(
+        constraint = iris.Constraint(
             time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
-    cube_slice = mycube.extract(my_constraint)
+
+    cube_slice = cube.extract(constraint)
+
+    # Issue when time dimension was removed when only one point as selected.
+    if cube_slice.ndim != cube.ndim:
+        time_1 = cube.coord('time')
+        time_2 = cube_slice.coord('time')
+        if time_1 == time_2:
+            logger.debug('No change needed to time.')
+            return cube
+
     return cube_slice
 
 
@@ -66,9 +92,9 @@ def extract_season(cube, season):
     return cube.extract(iris.Constraint(clim_season=season.lower()))
 
 
-def extract_month(mycube, month):
+def extract_month(cube, month):
     """
-    Slice cube to get only the data belonging to a specific month
+    Slice cube to get only the data belonging to a specific month.
 
     Parameters
     ----------
@@ -77,20 +103,18 @@ def extract_month(mycube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
-    season_cube = mycube.extract(iris.Constraint(month_number=month))
-    return season_cube
+    return cube.extract(iris.Constraint(month_number=month))
 
 
-# get the time average
 def time_average(cube):
     """
-    Compute time average
+    Compute time average.
 
     Get the time average over the entire cube. The average is weighted by the
     bounds of the time coordinate.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
         cube: iris.cube.Cube
             input cube.
 
@@ -135,8 +159,8 @@ def seasonal_mean(cube):
     if not cube.coords('season_year'):
         iris.coord_categorisation.add_season_year(
             cube, 'time', name='season_year')
-    annual_seasonal_mean = cube.aggregated_by(['clim_season', 'season_year'],
-                                              iris.analysis.MEAN)
+    cube = cube.aggregated_by(['clim_season', 'season_year'],
+                              iris.analysis.MEAN)
 
     # TODO: This preprocessor is not calendar independent.
     def spans_three_months(time):
@@ -144,4 +168,4 @@ def seasonal_mean(cube):
         return (time.bound[1] - time.bound[0]) == 2160
 
     three_months_bound = iris.Constraint(time=spans_three_months)
-    return annual_seasonal_mean.extract(three_months_bound)
+    return cube.extract(three_months_bound)
