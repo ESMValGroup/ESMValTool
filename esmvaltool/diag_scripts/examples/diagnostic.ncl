@@ -53,6 +53,7 @@ load "./diag_scripts/shared/statistics.ncl"  ; load statistics functions
 load "./diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
+load "./diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -186,5 +187,19 @@ begin
   ; Option 2: pass data via netCDF file
   ; -> useful for non-NCL routines & metrics
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
+
+  ; collect meta-data and call ESMValMD function
+  nc_file = "nc_file.nc"
+  plot_file = "plotfile.nc"
+  caption = "Mean of variable: " + var0
+  statistics = (/"mean"/)
+  domain = ("glob")
+  plottype = ("geo")
+  diag_des = ("Description")
+  authors = (/"author1", "author2"/)
+  references = (/"ref1", "ref2"/)
+  infiles := (/"infile1.nc", "infile2.nc"/)
+  ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+           diag_des, authors, references, infiles)
 
 end

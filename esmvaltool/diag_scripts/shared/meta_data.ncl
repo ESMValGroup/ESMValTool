@@ -96,7 +96,7 @@ begin
 
     str_list = [/str/]
 
-    yaml_file = outfile + "_diag_prov.yml"
+    yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
     write_table(yaml_file, "a", str_list, "%s %s %s %s %s %s %s %s %s")
     delete(str)
 
