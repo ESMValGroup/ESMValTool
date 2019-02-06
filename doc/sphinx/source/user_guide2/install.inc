@@ -95,6 +95,15 @@ conda.
 Ideally, you should want to create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
+Note that it is advisable to update conda to the latest version before 
+installing ESMValTool. Using the following command:
+
+.. code-block::bash
+
+    conda update -n base conda
+    conda update --all
+
+
 To create a environment using Python 3.x
 
 .. code-block:: bash
@@ -142,7 +151,8 @@ the following command:
 
 .. code-block:: bash
 
-    python ESMValTool/setup.py install
+    cd ESMValTool
+    python setup.py install
 
 The next step is to check that the installation works properly.
 To do this, run the tool with --version:
@@ -159,5 +169,5 @@ confirm that no errors are reported:
 
 .. code-block:: bash
 
-    python ESMValTool/setup.py test
+    python setup.py test
 
