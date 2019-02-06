@@ -27,6 +27,7 @@
 ;     Effect of different regridding methods not yet determined
 ;
 ; Modification history
+;    20190205-A_gier_be: Adapted to new ncl structures
 ;    20181101-A_gier_be: moved collect from main script
 ;
 ; #############################################################################
@@ -34,7 +35,7 @@ load "interface_scripts/interface.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 
 begin
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
 
   ; Define file type
   file_type = config_user_info@output_file_type
@@ -372,5 +373,5 @@ begin
   draw(plot)
   frame(wks)
 
-  leave_msg(diag_script, "")
+  leave_msg(DIAG_SCRIPT, "")
 end
