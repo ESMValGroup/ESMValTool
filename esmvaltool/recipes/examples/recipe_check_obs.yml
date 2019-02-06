@@ -1,0 +1,87 @@
+---
+documentation:
+  description: |
+    Test recipe for OBS.
+
+  authors:
+    - righ_ma
+
+datasets:
+#  - {dataset: ESACCI-AEROSOL,       project: OBS,  tier: 2,  type: sat,  version: SU-v4.21,                                    start_year: 1997,  end_year: 2011}
+#  - {dataset: ESACCI-CLOUD,         project: OBS,  tier: 2,  type: sat,  version: AVHRR-fv3.0,                                 start_year: 1982,  end_year: 2016}
+#  - {dataset: ESACCI-FIRE,          project: OBS,  tier: 2,  type: sat,  version: L4-BA-MERIS-fv4.1,                           start_year: 2005,  end_year: 2011}
+#  - {dataset: ESACCI-LANDCOVER,     project: OBS,  tier: 2,  type: sat,  version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998,  end_year: 2012}
+#  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,  version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
+#  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,  version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
+  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly,  version: 1,              start_year: 1948,  end_year: 2018}
+
+  #  - {dataset: AURA-TES,  project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
+
+
+#  - {dataset: WOA,  project: OBS,  tier: 2,  type: clim,  version: L3, start_year: 2000,  end_year: 2000}
+
+
+preprocessors:
+  nopp:
+    extract_levels: false
+    regrid: false
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+diagnostics:
+  testobs:
+    description: Test reading of observational data
+    variables:
+      hur:
+        preprocessor: nopp
+        mip: Amon
+        field: T3M
+      hus:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      pr:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      ta:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      tas:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      ua:
+        preprocessor: nopp
+        mip: Amon
+        field: T3M
+      va:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      wap:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      zg:
+        preprocessor: nopp        
+        mip: Amon
+        field: T3M
+      pr:
+        preprocessor: nopp        
+        mip: day
+        field: T3M
+      rlut:
+        preprocessor: nopp        
+        mip: day
+        field: T3M
+      ua:
+        preprocessor: nopp        
+        mip: day
+        field: T3M
+      va:
+        preprocessor: nopp        
+        mip: day
+        field: T3M
+    scripts: null
