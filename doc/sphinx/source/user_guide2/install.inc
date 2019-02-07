@@ -101,8 +101,6 @@ installing ESMValTool. Using the following command:
 .. code-block::bash
 
     conda update -n base conda
-    conda update --all
-
 
 To create a environment using Python 3.x
 
