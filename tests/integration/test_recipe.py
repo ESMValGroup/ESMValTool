@@ -263,8 +263,6 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
         'load': {
             'callback':
             concatenate_callback,
-            'constraints': ('mass_concentration_of_phytoplankton_expressed_'
-                            'as_chlorophyll_in_sea_water'),
         },
         'concatenate': {},
         'fix_file': {

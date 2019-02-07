@@ -12,7 +12,7 @@ class Testxco2Stderr(unittest.TestCase):
         self.fix = xco2Stderr()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.units.origin, '1.0e-6')
         self.assertEqual(cube.data[0], 1)
 
@@ -27,7 +27,7 @@ class Testxco2Stddev(unittest.TestCase):
         self.fix = xco2Stddev()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.units.origin, '1.0e-6')
         self.assertEqual(cube.data[0], 1)
 
@@ -42,7 +42,7 @@ class Testxch4Stddev(unittest.TestCase):
         self.fix = xch4Stddev()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.units.origin, '1.0e-9')
         self.assertEqual(cube.data[0], 1)
 
@@ -57,7 +57,7 @@ class Testxch4Stderr(unittest.TestCase):
         self.fix = xch4Stderr()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.units.origin, '1.0e-9')
         self.assertEqual(cube.data[0], 1)
 

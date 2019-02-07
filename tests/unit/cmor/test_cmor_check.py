@@ -340,8 +340,12 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_time_automatic_fix(self):
         """Test automatic fix for time units"""
-        self.cube.coord('time').units = 'days since 1950-1-1 00:00:00'
-        self._check_cube(automatic_fixes=True)
+        self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
+        self._check_cube()
+        self.assertEquals(
+            self.cube.coord('time').units.origin,
+            'days since 1950-1-1 00:00:00'
+        )
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""
@@ -351,6 +355,11 @@ class TestCMORCheck(unittest.TestCase):
     def test_bad_standard_name(self):
         """Fail if coordinates have bad standard names at metadata step"""
         self.cube.coord('time').standard_name = 'region'
+        self._check_fails_in_metadata()
+
+    def test_bad_out_name(self):
+        """Fail if coordinates have bad short names at metadata step"""
+        self.cube.coord('latitude').var_name = 'region'
         self._check_fails_in_metadata()
 
     def test_bad_data_units(self):

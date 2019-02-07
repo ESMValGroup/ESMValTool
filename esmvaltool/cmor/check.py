@@ -268,7 +268,18 @@ class CMORCheck(object):
                                           coordinate.standard_name,
                                           cube_coord.standard_name)
                 except iris.exceptions.CoordinateNotFoundError:
-                    self.report_error(self._does_msg, coordinate.name, 'exist')
+                    try:
+                        coord = self._cube.coord(coordinate.standard_name)
+                        self.report_error(
+                            'Coordinate {0} has var name {1} instead of {2}',
+                            coordinate.name,
+                            coord.var_name, coordinate.out_name
+                        )
+
+                    except iris.exceptions.CoordinateNotFoundError:
+                        self.report_error(
+                            self._does_msg, coordinate.name, 'exist'
+                        )
 
     def _check_coords(self):
         for coordinate in self._cmor_var.coordinates.values():
@@ -400,10 +411,10 @@ class CMORCheck(object):
         else:
             coord.convert_units(
                 cf_units.Unit(
-                    'days since 1950-01-01 00:00:00',
+                    'days since 1950-1-1 00:00:00',
                     calendar=coord.units.calendar))
             simplified_cal = self._simplify_calendars(coord.units.calendar)
-            coord.units = cf_units.Unit(coord.units.name, simplified_cal)
+            coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
 
         tol = 0.001
         intervals = {
