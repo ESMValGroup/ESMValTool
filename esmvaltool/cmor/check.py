@@ -274,7 +274,18 @@ class CMORCheck(object):
                                           coordinate.standard_name,
                                           cube_coord.standard_name)
                 except iris.exceptions.CoordinateNotFoundError:
-                    self.report_error(self._does_msg, coordinate.name, 'exist')
+                    try:
+                        coord = self._cube.coord(coordinate.standard_name)
+                        self.report_error(
+                            'Coordinate {0} has var name {1} instead of {2}',
+                            coordinate.name,
+                            coord.var_name, coordinate.out_name
+                        )
+
+                    except iris.exceptions.CoordinateNotFoundError:
+                        self.report_error(
+                            self._does_msg, coordinate.name, 'exist'
+                        )
 
     def _check_coords(self):
         for coordinate in self._cmor_var.coordinates.values():
