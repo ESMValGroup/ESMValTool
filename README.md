@@ -17,7 +17,7 @@ This is the development branch for version 2 of ESMValTool. ESMValTool version 2
 ## Installing from source [recommended]
 Please see [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) for instructions on installing ESMValTool from source.
 
-## Installing the ESMValTool from Anaconda
+## Installing from Anaconda
 The Anaconda package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
 
 First install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by
