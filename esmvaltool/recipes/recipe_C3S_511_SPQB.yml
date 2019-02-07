@@ -40,7 +40,7 @@ diagnostics:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         data_colors: RdYlGn
         levels: [30000.]
-        show_latex: False #options are: True/False/no_latex
+        show_latex: no_latex #options are: True/False/no_latex
         
 #  diagnostic1:
 #    description: Multi-product quality brief.
