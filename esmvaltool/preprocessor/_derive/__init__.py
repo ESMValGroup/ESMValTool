@@ -86,7 +86,10 @@ def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
 
     # Set standard attributes
     cube.var_name = short_name
-    cube.standard_name = standard_name
+    if standard_name:
+        cube.standard_name = standard_name
+    else:
+        cube.standard_name = None
     cube.long_name = long_name
     cube.units = units
 
