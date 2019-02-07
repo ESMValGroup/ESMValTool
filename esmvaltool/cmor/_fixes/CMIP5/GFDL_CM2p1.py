@@ -7,6 +7,7 @@ from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
 class allvars(base_allvars):
     """Fixes for all variables."""
 
+
 class sftof(Fix):
     """Fixes for sftof."""
 
