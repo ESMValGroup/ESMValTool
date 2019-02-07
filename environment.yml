@@ -6,7 +6,6 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - iris
   - graphviz
   - matplotlib<3
   - python-stratify
