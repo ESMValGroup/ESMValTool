@@ -38,6 +38,11 @@ Example use:
 [sudo] docker run -ti esmvalgroup/esmvaltool
 ```
 
+## Running ESMValTool
+- Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
+- Available recipes are located in the directory `esmvaltool/recipes`.
+- Run e.g. `esmvaltool -c ~/config-user.yml examples/recipe_python.yml
+
 ## Getting help
 The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://esmvaltool.readthedocs.io), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
 
