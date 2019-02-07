@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MIROC ESM model"""
 import cf_units
 from iris.coords import DimCoord

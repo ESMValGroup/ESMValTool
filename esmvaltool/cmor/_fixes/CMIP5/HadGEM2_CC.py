@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for HadGEM2_CC"""
 import iris
 import numpy as np

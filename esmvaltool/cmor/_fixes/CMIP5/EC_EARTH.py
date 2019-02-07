@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for EC-Earth model."""
 from ..fix import Fix
 

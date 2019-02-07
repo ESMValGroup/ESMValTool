@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for ESA CCI ozone."""
 import cf_units
 import iris.cube

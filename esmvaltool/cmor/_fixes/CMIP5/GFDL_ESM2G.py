@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for GFDL ESM2G"""
 import iris
 from iris.coords import AuxCoord

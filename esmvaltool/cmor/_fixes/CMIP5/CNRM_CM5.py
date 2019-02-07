@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for CNRM-CM5 model."""
 from ..fix import Fix
 

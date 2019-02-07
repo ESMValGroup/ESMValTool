@@ -1,4 +1,5 @@
-"""Fixes for GFDL CM2p1 model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for GFDL CM2p1 model."""
 from ..fix import Fix
 from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
 
@@ -8,7 +9,7 @@ class allvars(base_allvars):
 
 
 class sftof(Fix):
-    """Fixes for sftof"""
+    """Fixes for sftof."""
 
     def fix_data(self, cube):
         """

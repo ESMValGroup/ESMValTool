@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for FGOALS-g2 model"""
 from cf_units import Unit
 

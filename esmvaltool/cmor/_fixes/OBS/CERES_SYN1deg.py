@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for CERES-SYN1deg model."""
 from ..fix import Fix
 
