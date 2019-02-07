@@ -586,8 +586,8 @@ nc_close(file)
 
 colnames(rmse) <- paste("Obs", 1 : ncenters)
 rownames(rmse) <- paste("Pre", 1 : ncenters)
-filepng3 <- paste0(file.path(plot_dir, "Table_"), var0, "_", frequency, "_rmse_",
-            model_names,
+filepng3 <- paste0(file.path(plot_dir, "Table_"), var0, "_", frequency,
+            "_rmse_", model_names,
            "_", start_projection, "_", end_projection, "_", start_historical,
            "_", end_historical, ".png")
 png(filepng3, height = 6, width = 18, units = "cm", res = 100)
