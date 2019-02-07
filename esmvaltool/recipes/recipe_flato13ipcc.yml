@@ -41,7 +41,6 @@ preprocessors:
     average_region:
       coord1: latitude
       coord2: longitude
-      fx_files: False
 
   clim_ref:
     regrid:
