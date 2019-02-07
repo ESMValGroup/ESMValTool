@@ -117,6 +117,7 @@ def main(cfg):
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
+        data.pop('standard_name', '')
 
         # Provenance
         caption = ("Temporal evolution of temperature variability metric psi "

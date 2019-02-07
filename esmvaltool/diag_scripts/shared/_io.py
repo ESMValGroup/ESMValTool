@@ -4,6 +4,7 @@ import logging
 import os
 
 import iris
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +158,12 @@ def metadata_to_netcdf(cube, metadata):
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
     cube.var_name = metadata.pop('short_name')
+    if 'standard_name' in metadata:
+        standard_name = metadata.pop('standard_name')
+        try:
+            cube.standard_name = standard_name
+        except ValueError:
+            logger.debug("Got invalid standard_name '%s'", standard_name)
     for (attr, val) in metadata.items():
         if isinstance(val, bool):
             metadata[attr] = str(val)
@@ -177,6 +184,64 @@ def save_iris_cube(cube, path):
     """
     iris.save(cube, path)
     logger.info("Wrote %s", path)
+
+
+def save_1d_data(cubes, path, var_attrs, attributes=None):
+    """Save scalar data for multiple datasets.
+
+    Create 1D cube with the auxiliary dimension `dataset` and save scalar data
+    for every appearing dataset.
+
+    Parameters
+    ----------
+    cubes : dict of iris.cube.Cube
+        1D `iris.cube.Cube`s (values) and corresponding datasets (keys).
+    path : str
+        Path to the new file.
+    var_attrs : dict
+        Attributes for the variable (`short_name`, `long_name`, or `units`).
+    attributes : dict, optional
+        Additional attributes for the cube.
+
+    Raises
+    ------
+    ValueError
+        Cubes are not 1D or coordinate variables differ.
+
+    """
+    if not _has_necessary_attributes(
+            [var_attrs], only_var_attrs=True, log_level='error'):
+        logger.error("Cannot write file '%s'", path)
+        return
+    dim_coord = None
+    datasets = []
+    data = []
+    for (dataset, cube) in cubes.items():
+        if cube.ndim != 1:
+            raise ValueError("Dimension of cube {} is not 1".format(cube))
+        if dim_coord is None:
+            dim_coord = cube.coord(dimensions=(0, ))
+        else:
+            if cube.coord(dimensions=(0, )) != dim_coord:
+                raise ValueError(
+                    "Expected only cubes with identical dimensions, got {} "
+                    "and {}".format(dim_coord, cube.coord(dimensions=(0, ))))
+        datasets.append(dataset)
+        data.append(cube.data)
+    dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
+    if attributes is None:
+        attributes = {}
+    var_attrs['var_name'] = var_attrs.pop('short_name')
+
+    # Create new cube
+    cube = iris.cube.Cube(
+        np.array(data),
+        aux_coords_and_dims=[(dataset_coord, 0)],
+        dim_coords_and_dims=[(dim_coord, 1)],
+        attributes=attributes,
+        **var_attrs)
+    cube.attributes['filename'] = path
+    save_iris_cube(cube, path)
 
 
 def save_scalar_data(data, path, var_attrs, attributes=None):
