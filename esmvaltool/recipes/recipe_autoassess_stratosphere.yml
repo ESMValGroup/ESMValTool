@@ -1,23 +1,26 @@
-#################
-#The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
-#changed for ESMValTool to two datasets; the recipe can accomodate as many pairs of datasets to be compared as the 
-#user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
-#(autoassess_stratosphere.py), the (control_model, exp_model) pair may vary accoding to the user's
-#needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the
-#time data is within the (start_year, end_year) specified in datasets: section. Preprocessing is basic and just
-#extracts levels and regrids onto the reference ERA-Interim dataset; this is done once.
-#################
-#### CAVEATS
-#################
-# - The original autoassess diagnostic needs MERRA obs data as well;
-#   add MERRA file request in this namelist when running.
-#################
-# RECIPE IS FULLY WORKING BUT ADD MERRA FOR OBS !!!
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_stratosphere.yml
 ---
 documentation:
-  description: Recipe that runs the Autoassess Stratosphere assessment area diagnostic.   
+  description: |
+    Recipe that runs the Autoassess Stratosphere assessment area diagnostic.
+    The original stratospehre diagnostic from autoassess accepts two input UM
+    suites; this has now been changed for ESMValTool to two datasets; the
+    recipe can accomodate as many pairs of datasets to be compared as the user
+    needs. This is handled in the diagnostics/aa_strato/scripts. While the
+    script is the same (autoassess_stratosphere.py), the (control_model,
+    exp_model) pair may vary accoding to the user needs. Different (start,
+    end) dates can also be specified (in autoassess format) per run, as long as
+    the time data is within the (start_year, end_year) specified in datasets
+    section. Preprocessing is basic and just extracts levels and regrids onto
+    the reference ERA-Interim dataset; this is done once.
+    The original autoassess diagnostic needs MERRA obs data as well, add MERRA
+    file request in this namelist when running.
+
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:

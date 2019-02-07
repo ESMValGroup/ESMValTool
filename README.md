@@ -1,9 +1,10 @@
 # ESMValTool
+[![Documentation Status](https://readthedocs.org/projects/esmvaltool/badge/?version=version2_development)](https://esmvaltool.readthedocs.io/en/version2_development/?badge=version2_development)
 [![DOIBadge](https://img.shields.io/badge/DOI-10.17874%2Fac8548f0315-blue.svg)](https://doi.org/10.17874/ac8548f0315)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
-[![Codacy Coverage Badge](https://api.codacy.com/project/badge/Coverage/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Coverage)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ESMValGroup?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool.svg?style=svg)](https://circleci.com/gh/ESMValGroup/ESMValTool)
+[![Codacy Coverage Badge](https://api.codacy.com/project/badge/Coverage/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
 [![Docker Build Status](https://img.shields.io/docker/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
 [![Anaconda-Server Badge](https://anaconda.org/esmvalgroup/esmvaltool/badges/installer/conda.svg)](https://conda.anaconda.org/esmvalgroup)
 
@@ -17,12 +18,12 @@ This is the development branch for version 2 of ESMValTool. To get started devel
 To install in development mode, follow these instructions.
 - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by
 running `apt install build-essential gfortran`.
-- [Download and install conda](https://conda.io/docs/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
+- [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
 - If using (t)csh shell, do not prepend the installation path (`<prefix>`) to the environment variable PATH (as recommended by the installation procedure), but add `source <prefix>/etc/profile.d/conda.csh` to the `.cshrc`/`.tcshrc` file instead
 - Update conda: `conda update -y conda`
 - Create a conda environment: `conda create -y -n esmvaltool python=3`
 - Activate the esmvaltool environment: `source activate esmvaltool` (or `conda activate esmvaltool` if using (t)csh shell)
-- Clone the ESMValTool github repository: `git clone git@github.com/ESMValGroup/ESMValTool`
+- Clone the ESMValTool github repository: `git clone git@github.com:ESMValGroup/ESMValTool.git`
 - Go to the esmvaltool directory: `cd ESMValTool`
 - Check out the version 2 development branch: `git checkout version2_development`
 - Update the esmvaltool conda environment `conda env update`

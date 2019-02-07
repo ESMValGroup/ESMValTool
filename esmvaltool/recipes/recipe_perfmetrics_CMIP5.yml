@@ -1,3 +1,4 @@
+# ESMValTool
 # recipe_perfmetrics_CMIP5.yml
 ---
 documentation:
@@ -10,6 +11,9 @@ documentation:
     - fran_fr
     - righ_ma
     - eyri_ve
+
+  maintainer:
+    - righ_ma
 
   references:
     - gleckler08jgr

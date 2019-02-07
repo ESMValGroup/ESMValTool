@@ -1,7 +1,13 @@
+# ESMValTool
 ---
 documentation:
-  description: Validation of CONTROL and EXPERIMENT datasets.
+  description: |
+    Validation of CONTROL and EXPERIMENT datasets.
+
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:
@@ -22,7 +28,7 @@ preprocessors:
 
 diagnostics:
   validation_with_CERES-EBAF:
-    description: "CMIP5 vs CERES-EBAF" 
+    description: "CMIP5 vs CERES-EBAF"
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var

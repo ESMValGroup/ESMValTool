@@ -54,7 +54,7 @@ REQUIREMENTS = {
         'mock',
         'nose',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
         'pytest-html',
@@ -78,7 +78,6 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
-
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -223,8 +222,12 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
-                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
-                'mip_convert_setup = esmvaltool.utils.mip_convert.esmvt_mipconv_setup:main'
+                'cmorize_obs = esmvaltool.'
+                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
+                'nclcodestyle = esmvaltool.'
+                'utils.nclcodestyle.nclcodestyle:_main',
+                'mip_convert_setup = esmvaltool.'
+                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
             ],
         },
         cmdclass={
