@@ -55,7 +55,7 @@ begin
 
   ; Period
   YEAR1 = 1979
-  YEAR2 = 1981  ; 2018
+  YEAR2 = 2018
 
   ; Selected variable (standard name)
   VARS = (/"psl", "ta", "zg", "hus", "ua", \
@@ -113,8 +113,6 @@ begin
     ; Create timeseries
     do yy = YEAR1, YEAR2
 
-      log_info("Year " + yy)
-
       fill_start = 0
 
       ; land sea mask is invariant
@@ -137,10 +135,10 @@ begin
 
       ; Read variable
       xx = f->$NAME(vID)$
-      
+
       ; Add to missing values count
       fill_start = fill_start + num(ismissing(xx))
- 
+
       ; Unpack variable according to metadata information
       tmp1 = todouble(xx)
       tmp1 = tmp1 * xx@scale_factor + xx@add_offset
@@ -148,7 +146,7 @@ begin
       copy_VarMeta(xx, output)
       delete(xx)
       delete(tmp1)
-      
+
       ; Calculate clwvi = lwp + iwp
       if (VARS(vID).eq."clwvi") then
 
@@ -165,7 +163,7 @@ begin
                     "corresponding to selected year")
         end if
         delete(date)
-        
+
         ; Read iwp from 2nd file
         xx2 = f2->$iwpname$
 
@@ -328,7 +326,7 @@ begin
       if (VARS(vID).eq."tas") then
         output@coordinates = "height"
       end if
-        
+
       ; Write variable
       write_nc(fout, VARS(vID), output, gAtt)
       delete(gAtt)
