@@ -24,14 +24,3 @@ class pctisccp(Fix):
         cube *= 100
         cube.metadata = metadata
         return cube
-
-
-
-
-
-
-
-
-        
-
-
