@@ -15,7 +15,7 @@ ESMValTool: A community diagnostic and performance metrics tool for routine eval
 This is the development branch for version 2 of ESMValTool. ESMValTool version 2 is under rapid development, an installation from source is recommended at the moment.
 
 ## Installing from source [recommended]
-Please see CONTRIBUTING.md for instructions on installing ESMValTool from source.
+Please see [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) for instructions on installing ESMValTool from source.
 
 ## Installing the ESMValTool from Anaconda
 The Anaconda package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
@@ -40,3 +40,7 @@ Example use:
 
 ## Getting help
 The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://esmvaltool.readthedocs.io), is to open an [issue on GitHub]((https://github.com/ESMValGroup/ESMValTool/issues).
+
+## Contributing
+If you would like to contribute a new diagnostic or feature, please have a look at [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md).
+
