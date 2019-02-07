@@ -34,19 +34,12 @@ begin
 
   ; Source name
   OBSNAME = "WOA"
-
+  
   ; Tier
   TIER = 2
 
   ; Period
   YEAR = 2000
-
-  ; Field
-  FIELD = "TO3Y"
-
-  ; CMOR table
-  CMOR_TABLE = \
-    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Omon"
 
   ; Selected variables (standard name)
   VARS = (/"thetao", "so", "o2", "no3", "po4", "si"/)
@@ -61,6 +54,14 @@ begin
              "woa13_all_n00_01.nc", \
              "woa13_all_p00_01.nc", \
              "woa13_all_i00_01.nc"/)
+
+  ; MIP
+  MIP = "Omon"
+
+  ; CMOR table
+  CMOR_TABLE = \
+    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+
 
 end
 
@@ -98,7 +99,7 @@ begin
     opt = 0
     opt@calendar = "standard"
     ctime = todouble(output&time)  ; this also removes attributes
-    ctime = cd_inv_calendar(YEAR, 6, 15, 0, 0, 0, TUNITS, opt)
+    ctime = cd_inv_calendar(YEAR, 7, 1, 0, 0, 0, TUNITS, opt)
     ctime@long_name = "time"
     ctime@axis = "T"
     ctime@units = TUNITS
@@ -131,23 +132,15 @@ begin
     delete(clon)
 
     ; Set global attributes
-    gAtt = True
-    gAtt@history       = "Created on " + systemfunc("date")
-    gAtt@host          = systemfunc("echo $HOST")
-    gAtt@user          = systemfunc("echo $USER")
-    gAtt@period        = YEAR
-    gAtt@field         = FIELD
-    gAtt@tier          = TIER
-    gAtt@source        = "https://data.nodc.noaa.gov/woa/WOA13/DATAv2/"
-    gAtt@reference     = "Locarnini, R. A., et al. World Ocean Atlas " + \
-      "2013, Volume 1: Temperature. S. Levitus, Ed., A. Mishonov " + \
-      "technical editor, NOAA Atlas NESDIS 73, 2013"
-    gAtt@title = OBSNAME + " data CMORized for the ESMValTool v2.0"
-    gAtt@conventions = "CF/CMOR"
+    gAtt = set_global_atts( \
+      OBSNAME, TIER, \
+      "https://data.nodc.noaa.gov/woa/WOA13/DATAv2/", \
+      "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013", \
+      "")
 
     ; Outfile
-    fout = output_dir_path + "/" + \
-      "OBS_" + OBSNAME + "_clim_L3_" + FIELD + "_" + VARS(vv) + "_" + \
+    fout = output_dir_path + \
+      "OBS_" + OBSNAME + "_clim_L3_" + MIP + "_" + VARS(vv) + "_" + \
       YEAR + "01-" + YEAR + "12.nc"
 
     ; Write variable
