@@ -1,4 +1,4 @@
-"""multimodel statistics
+"""multimodel statistics.
 
 Functions for multi-model operations
 supports a multitude of multimodel statistics
@@ -13,7 +13,7 @@ It operates on different (time) spans:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import reduce
 
 import cf_units
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_time_offset(time_unit):
-    """Return a datetime object equivalent to tunit"""
+    """Return a datetime object equivalent to tunit."""
     # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
     cfunit = cf_units.Unit(time_unit, calendar=cf_units.CALENDAR_STANDARD)
     time_offset = cfunit.num2date(0)
@@ -34,7 +34,7 @@ def _get_time_offset(time_unit):
 
 
 def _plev_fix(dataset, pl_idx):
-    """Extract valid plev data
+    """Extract valid plev data.
 
     this function takes care of situations
     in which certain plevs are completely
@@ -56,7 +56,7 @@ def _plev_fix(dataset, pl_idx):
 
 
 def _compute_statistic(datas, statistic_name):
-    """Compute multimodel statistic"""
+    """Compute multimodel statistic."""
     datas = np.ma.array(datas)
     statistic = datas[0]
 
@@ -150,7 +150,7 @@ def _put_in_cube(template_cube, cube_data, statistic, t_axis):
 
 
 def _datetime_to_int_days(cube):
-    """Return list of int(days) converted from cube datetime cells"""
+    """Return list of int(days) converted from cube datetime cells."""
     if use_legacy_iris():
         time_cells = [
             cube.coord('time').units.num2date(cell.point)
@@ -202,10 +202,10 @@ def _get_overlap(cubes):
 
 def _slice_cube(cube, t_1, t_2):
     """
-    Efficient slicer
+    Efficient slicer.
 
     Simple cube data slicer on indices
-    of common time-data elements
+    of common time-data elements.
     """
     time_pts = [t for t in cube.coord('time').points]
     converted_t = _datetime_to_int_days(cube)
@@ -217,14 +217,14 @@ def _slice_cube(cube, t_1, t_2):
 
 
 def _monthly_t(cubes):
-    """Rearrange time points for monthly data"""
+    """Rearrange time points for monthly data."""
     # get original cubes tpoints
     days = {day for cube in cubes for day in _datetime_to_int_days(cube)}
     return sorted(days)
 
 
 def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
-    """Construct a contiguous collection over time"""
+    """Construct a contiguous collection over time."""
     for idx_cube, cube in enumerate(cubes):
         # reset mask
         ndat.mask = True
@@ -245,8 +245,11 @@ def _assemble_overlap_data(cubes, interval, statistic):
     sl_1, sl_2 = _slice_cube(cubes[0], start, stop)
     stats_dats = np.ma.zeros(cubes[0].data[sl_1:sl_2 + 1].shape)
 
+    # keep this outside the following loop
+    # this speeds up the code by a factor of 15
+    indices = [_slice_cube(cube, start, stop) for cube in cubes]
+
     for i in range(stats_dats.shape[0]):
-        indices = [_slice_cube(cube, start, stop) for cube in cubes]
         time_data = [
             cube.data[indx[0]:indx[1] + 1][i]
             for cube, indx in zip(cubes, indices)
