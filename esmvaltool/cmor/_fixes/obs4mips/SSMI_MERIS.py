@@ -1,5 +1,5 @@
 """Fixes for CCSM4 model"""
-import numpy as np
+from iris.cube import CubeList
 
 from ..fix import Fix
 
