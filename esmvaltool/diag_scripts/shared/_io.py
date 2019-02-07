@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 VAR_KEYS = [
     'long_name',
-    'standard_name',
     'units',
 ]
 NECESSARY_KEYS = VAR_KEYS + [
@@ -18,18 +17,6 @@ NECESSARY_KEYS = VAR_KEYS + [
     'project',
     'short_name',
 ]
-
-
-def _add_standard_name_to_iris(standard_name, units, cube=None):
-    """Add (invalid) `standard_name` to iris."""
-    if standard_name is None:
-        return
-    if standard_name not in iris.std_names.STD_NAMES:
-        iris.std_names.STD_NAMES[standard_name] = {
-            'canonical_units': units,
-        }
-    if cube is not None:
-        cube.standard_name = standard_name
 
 
 def _has_necessary_attributes(metadata,
@@ -138,9 +125,6 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
     metadata = []
     for path in all_files:
         cube = iris.load_cube(path)
-        _add_standard_name_to_iris(
-            cube.attributes.pop('invalid_standard_name', None), cube.units,
-            cube)
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
@@ -170,8 +154,6 @@ def metadata_to_netcdf(cube, metadata):
     if not _has_necessary_attributes([metadata], 'error'):
         logger.error("Cannot save cube %s", cube)
         return
-    _add_standard_name_to_iris(metadata['standard_name'], metadata['units'],
-                               cube)
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
     cube.var_name = metadata.pop('short_name')
@@ -210,8 +192,7 @@ def save_scalar_data(data, path, var_attrs, attributes=None):
     path : str
         Path to the new file.
     var_attrs : dict
-        Attributes for the variable (`short_name`, `standard_name`, `long_name`
-        or `units`).
+        Attributes for the variable (`short_name`, `long_name`, or `units`).
     attributes : dict, optional
         Additional attributes for the cube.
 
@@ -221,7 +202,6 @@ def save_scalar_data(data, path, var_attrs, attributes=None):
         logger.error("Cannot write file '%s'", path)
         return
     dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
-    _add_standard_name_to_iris(var_attrs['standard_name'], var_attrs['units'])
     if attributes is None:
         attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')

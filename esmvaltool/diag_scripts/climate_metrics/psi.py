@@ -107,7 +107,6 @@ def main(cfg):
     psis = {}
     psi_attrs = {
         'short_name': 'psi',
-        'standard_name': 'temperature_variability_metric',
         'long_name': 'Temperature variability metric',
         'units': cf_units.Unit('K'),
     }

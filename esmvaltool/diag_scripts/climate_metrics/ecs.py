@@ -221,17 +221,18 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
 def write_data(ecs_data, clim_sens_data, ancestor_files, cfg):
     """Write netcdf files."""
     data = [ecs_data, clim_sens_data]
-    var_attrs = [{
-        'short_name': 'ecs',
-        'standard_name': 'equilibrium_climate_sensitivity',
-        'long_name': 'Equilibrium Climate Sensitivity (ECS)',
-        'units': cf_units.Unit('K'),
-    }, {
-        'short_name': 'lambda',
-        'standard_name': 'climate_sensitivity',
-        'long_name': 'Climate Sensitivity',
-        'units': cf_units.Unit('W m-2 K-1'),
-    }]
+    var_attrs = [
+        {
+            'short_name': 'ecs',
+            'long_name': 'Equilibrium Climate Sensitivity (ECS)',
+            'units': cf_units.Unit('K'),
+        },
+        {
+            'short_name': 'lambda',
+            'long_name': 'Climate Sensitivity',
+            'units': cf_units.Unit('W m-2 K-1'),
+        },
+    ]
     for (idx, var_attr) in enumerate(var_attrs):
         path = get_diagnostic_filename(var_attr['short_name'], cfg)
         save_scalar_data(data[idx], path, var_attr)
