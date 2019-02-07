@@ -21,9 +21,6 @@ datasets:
 #  - {dataset: AURA-TES,  project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
 
 
-
-
-
 preprocessors:
   nopp:
     extract_levels: false
@@ -35,13 +32,28 @@ diagnostics:
   testobs:
     description: Test reading of observational data
     variables:
-#OK      thetao:
-#OK      so:
-#RANK!      no3:
-#MIP?      o2:
-#RANK!      si:
-#RANK!      po4:
+      thetao:
         preprocessor: nopp
         mip: Omon
+        field: T3M
+      so:
+        preprocessor: nopp
+        mip: Omon
+        field: T3M
+      no3:
+        preprocessor: nopp
+        mip: Oyr
+        field: T3M
+      o2:
+        preprocessor: nopp
+        mip: Oyr
+        field: T3M
+      si:
+        preprocessor: nopp
+        mip: Oyr
+        field: T3M
+      po4:
+        preprocessor: nopp
+        mip: Oyr
         field: T3M
     scripts: null
