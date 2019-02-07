@@ -47,10 +47,10 @@ def land_surf_rad(run):
 
             elif fld == 'SurfRadNLW':
                 ebaf_fld = get_supermean(
-                    'surface_net_downward_longwave_radiation', season,
+                    'Surface Net downward Longwave Radiation', season,
                     run['clim_root'], obs_flag='CERES-EBAF')
                 run_fld_rad = get_supermean(
-                    'surface_net_downward_longwave_radiation', season,
+                    'Surface Net downward Longwave Radiation', season,
                     supermean_data_dir)
 
             else:
