@@ -1,0 +1,21 @@
+SOURCE: CMIP5
+!============
+variable_entry:    ohc
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_content
+units:             J
+cell_methods:      time: mean area: where sea
+cell_measures:     volume: volcello
+long_name:         Heat content in grid cell
+comment:           Heat content
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+type:              real
+!----------------------------------
+!
