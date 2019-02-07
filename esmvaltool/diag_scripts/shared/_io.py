@@ -6,6 +6,8 @@ import os
 import iris
 import numpy as np
 
+from ._iris_helpers import unify_coordinate
+
 logger = logging.getLogger(__name__)
 
 VAR_KEYS = [
@@ -171,21 +173,6 @@ def metadata_to_netcdf(cube, metadata):
     save_iris_cube(cube, metadata['filename'])
 
 
-def save_iris_cube(cube, path):
-    """Save `iris.cube.Cube`.
-
-    Parameters
-    ----------
-    cube : iris.cube.Cube
-        Cube to be saved.
-    path : str
-        Path to the new file.
-
-    """
-    iris.save(cube, path)
-    logger.info("Wrote %s", path)
-
-
 def save_1d_data(cubes, path, var_attrs, attributes=None):
     """Save scalar data for multiple datasets.
 
@@ -216,22 +203,30 @@ def save_1d_data(cubes, path, var_attrs, attributes=None):
     dim_coord = None
     datasets = []
     data = []
+    unify_coordinate(cubes.values(), 0)
     for (dataset, cube) in cubes.items():
+        print(cube)
         if cube.ndim != 1:
             raise ValueError("Dimension of cube {} is not 1".format(cube))
+        coord = cube.coord(dimensions=(0, ), dim_coords=True)
         if dim_coord is None:
-            dim_coord = cube.coord(dimensions=(0, ))
+            dim_coord = coord
         else:
-            if cube.coord(dimensions=(0, )) != dim_coord:
+            if coord.name() != dim_coord.name():
                 raise ValueError(
-                    "Expected only cubes with identical dimensions, got {} "
-                    "and {}".format(dim_coord, cube.coord(dimensions=(0, ))))
+                    "Expected only cubes with identical coordinates, got '{}' "
+                    "and '{}'".format(dim_coord.name(), coord.name()))
+            if coord.shape != dim_coord.shape:
+                raise ValueError(
+                    "Expected only cubes with identical coordinates shapes, "
+                    "got {} and {}".format(dim_coord.shape, coord.shape))
         datasets.append(dataset)
         data.append(cube.data)
     dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
     if attributes is None:
         attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')
+    print(np.array(data).shape)
 
     # Create new cube
     cube = iris.cube.Cube(
@@ -242,6 +237,21 @@ def save_1d_data(cubes, path, var_attrs, attributes=None):
         **var_attrs)
     cube.attributes['filename'] = path
     save_iris_cube(cube, path)
+
+
+def save_iris_cube(cube, path):
+    """Save `iris.cube.Cube`.
+
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        Cube to be saved.
+    path : str
+        Path to the new file.
+
+    """
+    iris.save(cube, path)
+    logger.info("Wrote %s", path)
 
 
 def save_scalar_data(data, path, var_attrs, attributes=None):

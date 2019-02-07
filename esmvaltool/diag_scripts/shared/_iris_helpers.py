@@ -105,3 +105,22 @@ def match_dataset_coordinates(cubes):
                  sorted(common_elements))
     check_dataset_coordinates(new_cubes)
     return new_cubes
+
+
+def unify_coordinate(cubes, coord_idx):
+    """Unify different coordinates of cubes.
+
+    Unifies the selected coordinate of all the cubes by adding missing values
+    if necessary.
+
+    Parameters
+    ----------
+    cubes : list of iris.cube.Cube
+        Cubes to be processed.
+    coord_idx : int
+        Index of the coordinate dimension.
+
+    """
+    coord_name = None
+    if coord_name == 'time':
+        iris.util.unify_time_units(cubes)

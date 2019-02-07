@@ -108,7 +108,7 @@ def main(cfg):
     psi_attrs = {
         'short_name': 'psi',
         'long_name': 'Temperature variability metric',
-        'units': cf_units.Unit('K'),
+        'units': 'K',
     }
     grouped_data = group_metadata(input_data, 'dataset')
     for (dataset, [data]) in grouped_data.items():

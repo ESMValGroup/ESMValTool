@@ -6,8 +6,8 @@ from ._base import (ProvenanceLogger, extract_variables, get_cfg,
                     sorted_metadata, variables_available)
 from ._diag import Datasets, Variable, Variables
 from ._io import (get_all_ancestor_files, get_ancestor_file,
-                  metadata_to_netcdf, netcdf_to_metadata, save_iris_cube,
-                  save_scalar_data)
+                  metadata_to_netcdf, netcdf_to_metadata, save_1d_data,
+                  save_iris_cube, save_scalar_data)
 from ._iris_helpers import (check_dataset_coordinates, iris_project_constraint,
                             match_dataset_coordinates)
 from ._validation import apply_supermeans, get_control_exper_obs
@@ -37,6 +37,7 @@ __all__ = [
     'get_ancestor_file',
     'metadata_to_netcdf',
     'netcdf_to_metadata',
+    'save_1d_data',
     'save_iris_cube',
     'save_scalar_data',
     # Iris helpers

@@ -35,7 +35,7 @@ from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, get_ancestor_file, get_diagnostic_filename,
     get_plot_filename, group_metadata, iris_project_constraint,
     match_dataset_coordinates, netcdf_to_metadata, plot, run_diagnostic,
-    variables_available)
+    save_1d_data, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -43,6 +43,17 @@ plt.style.use(plot.get_path_to_mpl_style())
 COLOR_SMALL_LAMBDA = '#800060'
 COLOR_LARGE_LAMBDA = '#009900'
 (FIG, AXES) = plt.subplots()
+TAS_ATTRS = {
+    'standard_name': 'air_temperature',
+    'short_name': 'tas',
+    'long_name': 'Near-Surface Air Temperature',
+    'units': 'K',
+}
+PSI_ATTRS = {
+    'short_name': 'psi',
+    'long_name': 'Temperature variability metric',
+    'units': 'K',
+}
 
 
 def _get_model_color(model, lambda_cube):
@@ -119,16 +130,23 @@ def get_external_cubes(cfg):
 
 def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     """Plot temperature anomaly versus time."""
+    base_constraint = iris.Constraint(year=lambda cell: 1961 <= cell <= 1990)
+    for cube in tas_cubes.values():
+        cube.data -= np.mean(cube.extract(base_constraint).data)
+
+    # Save netcdf file
+    filename = 'temperature_anomaly_{}'.format(obs_name)
+    save_1d_data(tas_cubes, filename, TAS_ATTRS)
+
+    # Plot
     if not cfg['write_plots']:
         return
     models = lambda_cube.coord('dataset').points
 
     # Plot lines
-    base_constraint = iris.Constraint(year=lambda cell: 1961 <= cell <= 1990)
     for model in models:
         col = _get_model_color(model, lambda_cube)
         cube = tas_cubes[model]
-        cube.data -= np.mean(cube.extract(base_constraint).data)
         AXES.plot(cube.coord('year').points, cube.data, color=col)
     obs_style = plot.get_dataset_style('OBS', 'cox18nature.yml')
     obs_cube = tas_cubes[obs_name]
@@ -146,7 +164,7 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     AXES.set_xlabel('Year')
     AXES.set_ylabel('Temperature anomaly / K')
     legend = _get_line_plot_legend()
-    _save_fig(cfg, 'temperature_anomaly_{}'.format(obs_name), legend)
+    _save_fig(cfg, filename, legend)
 
 
 def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
