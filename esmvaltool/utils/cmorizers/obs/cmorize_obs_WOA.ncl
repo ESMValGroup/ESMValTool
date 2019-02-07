@@ -34,7 +34,7 @@ begin
 
   ; Source name
   OBSNAME = "WOA"
-  
+
   ; Tier
   TIER = 2
 
@@ -56,11 +56,11 @@ begin
              "woa13_all_i00_01.nc"/)
 
   ; MIP
-  MIP = "Omon"
+  MIPS = (/"Omon", "Omon", "Oyr", "Oyr", "Oyr", "Oyr"/)
 
   ; CMOR table
   CMOR_TABLE = \
-    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
 
 
 end
@@ -90,7 +90,7 @@ begin
     end if
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vv), CMOR_TABLE)
+    tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
@@ -140,7 +140,7 @@ begin
 
     ; Outfile
     fout = output_dir_path + \
-      "OBS_" + OBSNAME + "_clim_L3_" + MIP + "_" + VARS(vv) + "_" + \
+      "OBS_" + OBSNAME + "_clim_L3_" + MIPS(vv) + "_" + VARS(vv) + "_" + \
       YEAR + "01-" + YEAR + "12.nc"
 
     ; Write variable
