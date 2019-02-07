@@ -38,7 +38,7 @@ requirements:
     # esmvaltool
     - python
     - graphviz    
-    - iris=2.2.0
+    - iris
     - python-stratify
     # Normally installed via pip:
     - cartopy
