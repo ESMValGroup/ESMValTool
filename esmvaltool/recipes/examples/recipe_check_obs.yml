@@ -19,7 +19,8 @@ datasets:
 
 # TIER 3
 #  - {dataset: AURA-TES,   project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
-  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
+#  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
+  - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
 
 
 preprocessors:
@@ -33,76 +34,8 @@ diagnostics:
   testobs:
     description: Test reading of observational data
     variables:
-      # clivi:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # clt:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # clwvi:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # hus:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # prw:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # ps:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # psl:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # ta:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # tas:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # tauu:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # tauv:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # ts:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # ua:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # va:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # wap:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # zg:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      psl:
+      toz:
         preproc: nopp
-        mip: day
-        field: T2Ds
-      tos:
-        preproc: nopp
-        mip: Omon
-        field: T2ms
+        mip: Amon
+        field: T2Ms
     scripts: null
