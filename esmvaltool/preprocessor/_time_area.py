@@ -171,7 +171,7 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def annual_mean(cube):
+def annual_mean(cube, decadal=False):
     """
     Function to compute annual means.
 
@@ -184,4 +184,13 @@ def annual_mean(cube):
     iris.cube.Cube
         Annual mean cube
     """
-    return cube.aggregated_by('year', iris.analysis.MEAN)
+    def get_decade(coord, value):
+        """Callback function to get decades from cube."""
+        date = coord.units.num2date(value)
+        return date.year - date.year % 10
+    if decadal:
+        iris.coord_categorisation.add_categorised_coord(cube, 'decade',
+                                                        'time', get_decade)
+        return cube.aggregated_by('decade', iris.analysis.MEAN)
+    else:
+        return cube.aggregated_by('year', iris.analysis.MEAN)
