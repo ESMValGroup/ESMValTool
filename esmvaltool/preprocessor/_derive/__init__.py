@@ -65,22 +65,10 @@ def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
         The new derived variable.
 
     """
-    short_name = short_name
-    # Do nothing if variable is already available
-    logger.info(cubes)
-
-    cube_list = iris.cube.CubeList()
-    for cube in cubes:
-        if isinstance(cube, iris.cube.CubeList):
-            cube_list.extend(cube)
-        else:
-            cube_list.append(cube)
-    cubes = cube_list
-
-    selected_cubes = [c for c in cubes if c.var_name == short_name]
-    if len(selected_cubes) > 0:
-        return iris.cube.CubeList(selected_cubes)
-
+    if short_name == cubes[0].var_name:
+        return cubes[0]
+        
+    cubes = iris.cube.CubeList(cubes)
     # Preprare input cubes and add fx files if necessary
     if fx_files:
         for (fx_var, fx_path) in fx_files.items():
