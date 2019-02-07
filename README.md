@@ -23,7 +23,7 @@ running `apt install build-essential gfortran`.
 - Update conda: `conda update -y conda`
 - Create a conda environment: `conda create -y -n esmvaltool python=3`
 - Activate the esmvaltool environment: `source activate esmvaltool` (or `conda activate esmvaltool` if using (t)csh shell)
-- Clone the ESMValTool github repository: `git clone git@github.com/ESMValGroup/ESMValTool`
+- Clone the ESMValTool github repository: `git clone git@github.com:ESMValGroup/ESMValTool.git`
 - Go to the esmvaltool directory: `cd ESMValTool`
 - Check out the version 2 development branch: `git checkout version2_development`
 - Update the esmvaltool conda environment `conda env update`

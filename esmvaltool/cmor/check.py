@@ -206,9 +206,9 @@ class CMORCheck(object):
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
                 if attr not in self._cube.attributes:
-                    # It is usually missing in CMIP5 data, so we only report
+                    # It is usually missing in CMIP data, so we only report
                     # a warning in that case
-                    if self._cmor_var.table_type == 'CMIP5':
+                    if self._cmor_var.table_type in ('CMIP5', 'CMIP6'):
                         self.report_warning('{}: attribute {} not present',
                                             self._cube.var_name, attr)
                     else:
