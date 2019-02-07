@@ -10,7 +10,7 @@ class xco2Stderr(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fix cube units
 
@@ -60,7 +60,7 @@ class xch4Stderr(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fix cube units
 

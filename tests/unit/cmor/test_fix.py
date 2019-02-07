@@ -53,19 +53,19 @@ class TestGetCube(unittest.TestCase):
         )
 
     def test_get_second_cube(self):
-        """Test selecting second cube"""
+        """Test selecting second cube."""
         self.assertIs(
             self.cube_2,
             self.fix.get_cube_from_list(self.cubes, "cube2")
         )
 
     def test_get_default_raises(self):
-        """Check that the default raises (Fix is not a cube)"""
+        """Check that the default raises (Fix is not a cube)."""
         with self.assertRaises(Exception):
             self.fix.get_cube_from_list(self.cubes)
 
     def test_get_default(self):
-        """Check that the default raises (Fix is a cube)"""
+        """Check that the default raises (Fix is a cube)."""
         self.cube_1.var_name = 'Fix'
         self.assertIs(
             self.cube_1,
@@ -123,17 +123,17 @@ class TestFixMetadata(unittest.TestCase):
 
 
 class TestFixData(unittest.TestCase):
-    """Fix data tests"""
+    """Fix data tests."""
 
     def setUp(self):
-        """Prepare for testing"""
+        """Prepare for testing."""
         self.cube = mock.Mock()
         self.fixed_cube = mock.Mock()
         self.mock_fix = mock.Mock()
         self.mock_fix.fix_data.return_value = self.fixed_cube
 
     def test_fix(self):
-        """Check that the returned fix is applied"""
+        """Check that the returned fix is applied."""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[self.mock_fix]):
             cube_returned = fix_data(self.cube, 'short_name', 'project',
@@ -142,7 +142,7 @@ class TestFixData(unittest.TestCase):
             self.assertTrue(cube_returned is self.fixed_cube)
 
     def test_nofix(self):
-        """Check that the same cube is returned if no fix is available"""
+        """Check that the same cube is returned if no fix is available."""
         with mock.patch('esmvaltool.cmor._fixes.fix.Fix.get_fixes',
                         return_value=[]):
             cube_returned = fix_data(self.cube, 'short_name', 'project',

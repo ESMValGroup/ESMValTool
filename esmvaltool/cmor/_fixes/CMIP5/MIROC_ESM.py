@@ -8,11 +8,11 @@ from ..fix import Fix
 
 
 class tro3(Fix):
-    """Fixes for tro3"""
+    """Fixes for tro3."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

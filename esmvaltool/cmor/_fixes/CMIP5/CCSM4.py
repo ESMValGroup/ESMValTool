@@ -11,7 +11,7 @@ class rlut(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

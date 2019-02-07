@@ -12,7 +12,7 @@ class tro3prof(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata for tro3prof
+        Fix metadata for tro3prof.
 
         Fix air_pressure coordinate
         """

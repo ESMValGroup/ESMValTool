@@ -6,7 +6,7 @@ from ..fix import Fix
 
 
 class allvars(Fix):
-    """Common fixes"""
+    """Common fixes."""
 
     def fix_metadata(self, cubes):
         """
@@ -37,11 +37,11 @@ class allvars(Fix):
 
 
 class co2(Fix):
-    """Fixes for co2"""
+    """Fixes for co2."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

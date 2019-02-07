@@ -11,7 +11,7 @@ class prw(Fix):
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Remove error and number of observations cubes
 
