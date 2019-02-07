@@ -15,10 +15,11 @@ datasets:
 #  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,     version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
 #  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
 #  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1948,  end_year: 2018}
-  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
+#  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
 
 # TIER 3
-#  - {dataset: AURA-TES,  project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
+#  - {dataset: AURA-TES,   project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
+  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
 
 
 preprocessors:
@@ -32,28 +33,76 @@ diagnostics:
   testobs:
     description: Test reading of observational data
     variables:
-      thetao:
-        preprocessor: nopp
+      # clivi:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # clt:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # clwvi:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # hus:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # prw:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # ps:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # psl:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # ta:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # tas:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # tauu:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # tauv:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # ts:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # ua:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # va:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # wap:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # zg:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      psl:
+        preproc: nopp
+        mip: day
+        field: T2Ds
+      tos:
+        preproc: nopp
         mip: Omon
-        field: T3M
-      so:
-        preprocessor: nopp
-        mip: Omon
-        field: T3M
-      no3:
-        preprocessor: nopp
-        mip: Oyr
-        field: T3M
-      o2:
-        preprocessor: nopp
-        mip: Oyr
-        field: T3M
-      si:
-        preprocessor: nopp
-        mip: Oyr
-        field: T3M
-      po4:
-        preprocessor: nopp
-        mip: Oyr
-        field: T3M
+        field: T2ms
     scripts: null
