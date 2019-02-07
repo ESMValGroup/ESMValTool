@@ -180,11 +180,11 @@ class TestCMORCheck(unittest.TestCase):
         self._check_warnings_on_metadata()
 
     def test_check_with_no_positive_CMIP6(self):
-        """Check CMIP6 variable with no positive attribute report error"""
+        """Check CMIP6 variable with no positive attribute report warning."""
         self.cube = self.get_cube(self.var_info)
         self.var_info.positive = 'up'
         self.var_info.table_type = 'CMIP6'
-        self._check_fails_in_metadata()
+        self._check_warnings_on_metadata()
 
     def test_invalid_rank(self):
         """Test check fails in metadata step when rank is not correct"""
