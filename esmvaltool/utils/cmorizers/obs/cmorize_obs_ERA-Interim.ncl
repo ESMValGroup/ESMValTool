@@ -61,30 +61,30 @@ begin
   VARS = (/"psl", "ta", "zg", "hus", "ua", \
            "va", "tas", "ps", "tos", "tauu", \
            "tauv", "clwvi", "clivi", "sftlf", "clt", \
-           "prw", "ts", "wap"/)
+           "prw", "ts", "wap", "psl"/)
 
   ; Name in the raw data
   NAME = (/"msl", "t", "z", "q", "u", \
            "v", "t2m", "sp", "sst", "iews", \
            "inss", "p56.162", "p57.162", "lsm", "tcc", \
-           "tcwv", "skt", "w"/)
+           "tcwv", "skt", "w", "msl"/)
 
   ; Units in the input  data and corresponding conversion facto to CMOR units
   RAWUNITS = (/"Pa", "K", "m**2 s**-2", "kg kg**-1", "m s**-1", \
                "m s**-1", "K", "Pa", "K", "N m**-2", \
                "N m**-2", "kg m**-2", "kg m**-2", "(0 - 1)", "(0 - 1)",\
-               "kg m**-2", "K", "Pa s**-1"/)
+               "kg m**-2", "K", "Pa s**-1", "Pa"/)
 
   CONVERSION = (/1., 1., 1./9.80665, 1., 1., \
                 1., 1., 1., 1., 1., \
                 1., 1., 1., 100., 100.,\
-                1., 1., 1./)
+                1., 1., 1., 1./)
 
   ; MIPs
   MIPS = (/"day", "Amon", "Amon", "Amon", "Amon", \
            "Amon", "Amon", "Amon", "Omon", "Amon", \
            "Amon", "Amon", "Amon", "fx", "Amon", \
-           "Amon", "Amon", "Amon"/)
+           "Amon", "Amon", "Amon", "Amon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
@@ -118,14 +118,17 @@ begin
       ; land sea mask is invariant
       if (MIPS(vID).eq."fx") then
         fname = input_dir_path + "ERA-Interim_" + NAME(vID) + ".nc"
+        print("path1: " + fname) 
         f = addfile(fname, "r")
       else
         fname = input_dir_path + \
           "ERA-Interim_" + NAME(vID) + "_" + freq1 + "_" + yy + ".nc"
+        print("path2: " + fname) 
         f = addfile(fname, "r")
 
         ; Check time coordinate
         date = cd_calendar(f->time, 0)
+        print("Date: " + date)
         if (any(date(:, 0).ne.yy)) then
           error_msg("f", DIAG_SCRIPT, "", "time coordinate not " + \
                     "corresponding to selected year")
@@ -135,10 +138,10 @@ begin
 
       ; Read variable
       xx = f->$NAME(vID)$
-
+      
       ; Add to missing values count
       fill_start = fill_start + num(ismissing(xx))
-
+ 
       ; Unpack variable according to metadata information
       tmp1 = todouble(xx)
       tmp1 = tmp1 * xx@scale_factor + xx@add_offset
@@ -146,7 +149,7 @@ begin
       copy_VarMeta(xx, tmp2)
       delete(xx)
       delete(tmp1)
-
+      
       ; Calculate clwvi = lwp + iwp
       if (VARS(vID).eq."clwvi") then
 
@@ -163,7 +166,7 @@ begin
                     "corresponding to selected year")
         end if
         delete(date)
-
+        
         ; Read iwp from 2nd file
         xx2 = f2->$iwpname$
 
@@ -223,7 +226,7 @@ begin
 
     ; Format time coordinate
     if (MIPS(vID).ne."fx") then
-      ctime = time_attrib(output&time, YEAR1, YEAR2, freq2)
+      ctime = time_attrib(output&time, yy, yy, freq2)
       delete(output&time)
       output&time = ctime
       delete(ctime)
