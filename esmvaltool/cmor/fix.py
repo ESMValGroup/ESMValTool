@@ -101,7 +101,7 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                 'fixing: %s' % cube_list
             )
         cube = cube_list[0]
-        
+
         if cmor_table and mip:
             checker = _get_cmor_checker(
                 table=cmor_table,
