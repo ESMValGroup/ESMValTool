@@ -414,21 +414,6 @@ class TestCMORCheck(unittest.TestCase):
         """Fail at metadata if frequency is not supported"""
         self._check_fails_in_metadata(frequency='wrong_freq')
 
-    # For the moment, we don't have a variable definition with these values
-    # to test
-
-    def test_data_not_valid_max(self):
-        """Warning if data is above valid_max in data step"""
-        self.var_info.valid_max = '10000'
-        self.cube.data[0] = 100000000000
-        self._check_warnings_on_data()
-
-    def test_data_not_valid_min(self):
-        """Warning if data is below valid_min in data step"""
-        self.var_info.valid_min = '-100'
-        self.cube.data[0] = -100000000000
-        self._check_warnings_on_data()
-
     def _check_fails_on_data(self):
         checker = CMORCheck(self.cube, self.var_info)
         checker.check_metadata()
