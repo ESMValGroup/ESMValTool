@@ -67,7 +67,7 @@ def derive(cubes, short_name, standard_name, long_name, units, fx_files=None):
     """
     if short_name == cubes[0].var_name:
         return cubes[0]
-        
+
     cubes = iris.cube.CubeList(cubes)
     # Preprare input cubes and add fx files if necessary
     if fx_files:
