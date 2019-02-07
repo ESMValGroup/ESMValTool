@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LogFormatterMathtext
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
@@ -27,6 +28,9 @@ def label_in_perc_multiple(x, pos=0):
 
 def label_in_perc_single(x, pos=0):
     return '%1.1f%%' % (x * 100)
+
+def label_in_exp(x,pos=0):
+    return r"$10^{%.1f}$" % (x)
 
 
 MPLSTYLE = os.path.dirname(
@@ -385,31 +389,49 @@ class Plot2D(object):
         if (all(lat is not None for lat in self.lat_vars) and
                 all(lon is not None for lon in self.lon_vars)):
             self.plot_type = 'latlon'
+            self.x_axis = 'longitude'
+            self.y_axis = 'latitude'
+            self.data_transposed = False
 
         # Lat/time plot
         elif (all(lat is not None for lat in self.lat_vars) and
               all(time is not None for time in self.time_vars)):
             self.plot_type = 'lattime'
+            self.x_axis = 'time'
+            self.y_axis = 'latitude'
+            self.data_transposed = True
 
         # Lon/time plot
         elif (all(lon is not None for lon in self.lon_vars) and
               all(time is not None for time in self.time_vars)):
             self.plot_type = 'lontime'
+            self.x_axis = 'longitude'
+            self.y_axis = 'time'
+            self.data_transposed = False
 
         # Lat/lev plot
         elif (all(lat is not None for lat in self.lat_vars) and
               all(lev is not None for lev in self.lev_vars)):
             self.plot_type = 'latlev'
+            self.x_axis = 'latitude'
+            self.y_axis = 'air_pressure'
+            self.data_transposed = False
 
         # Lon/lev plot
         elif (all(lon is not None for lon in self.lon_vars) and
               all(lev is not None for lev in self.lev_vars)):
             self.plot_type = 'lonlev'
+            self.x_axis = 'longitude'
+            self.y_axis = 'air_pressure'
+            self.data_transposed = False
 
         # time/lev plot
         elif (all(time is not None for time in self.time_vars) and
               all(lev is not None for lev in self.lev_vars)):
             self.plot_type = 'timelev'
+            self.x_axis = 'time'
+            self.y_axis = 'air_pressure'
+            self.data_transposed = True
 
         # Default case
         else:
@@ -423,19 +445,18 @@ class Plot2D(object):
 ###############################################################################
 
     def plot(
-            self,
-            summary_plot=False,
-            colorbar_ticks=None,
-            x_label=None,
-            y_label=None,
-            title=None,
-            ax=None,
-            fig=None,
-            vminmax=None,
-            color=None,
-            color_type=None,
-            color_reverse=False,
-            ext_cmap='neither'):
+        self,
+        summary_plot=False,
+        title=None,
+        ax=None,
+        vminmax=None,
+        color=None,
+        color_type=None,
+        color_reverse=False,
+        ext_cmap='neither',
+        y_log=False,
+        contour_levels=None,
+    ):
         """
         Arguments
             summary_plot   : Add summary line plot
@@ -469,12 +490,18 @@ class Plot2D(object):
             if color_type is None or color_type not in color.keys():
                 if color_reverse:
                     col_save = color["default"]
-                    color["default"] = color["default"] + "_r"
+                    if color["default"][-2:] == "_r":
+                        color["default"] = color["default"][:-2]
+                    else:
+                        color["default"] = color["default"] + "_r"
                 brewer_cmap = mpl_cm.get_cmap(color["default"], lut=11)
             else:
                 if color_reverse:
                     col_save = color[color_type]
-                    color[color_type] = color[color_type] + "_r"
+                    if color[color_type][-2:] == "_r":
+                        color[color_type] = color[color_type][:-2]
+                    else:
+                        color[color_type] = color[color_type] + "_r"
                 brewer_cmap = mpl_cm.get_cmap(color[color_type], lut=11)
 
         brewer_cmap.set_bad("grey", 0.1)
@@ -518,12 +545,23 @@ class Plot2D(object):
             vmax = np.ceil(vmax * 10**rounder) / 10**rounder
             levels = np.round(np.linspace(vmin, vmax, num=11), rounder)
 
+        # Logarithmic y axis
+        y_logarithmic = False
+        if y_log:
+            if 'lev' in self.plot_type:
+                y_logarithmic = True
+            else:
+                self.logger.warning("Logarithmic y axis is only supported for "
+                                    "level plots")
+
         # Check axes
         if ax is None:
             ax = [plt.gca()]
         try:
-            if len(ax) == 3:
+            if len(ax) == 3 and not summary_plot:
                 summary_plot = True
+                self.logger.warning("Too many plot axes (3)! Summary plot "
+                                    "will automatically be added.")
             elif len(ax) > 3 or len(ax) < 2:
                 raise ValueError("Invalid input: axes should not be more "
                                  "than 3 or less than 2!")
@@ -533,7 +571,7 @@ class Plot2D(object):
         # Plot summary if necessary
         if summary_plot:
             if len(ax) < 3:
-                raise ValueError("Invalid input: Need 2 axes for summary plot")
+                raise ValueError("Invalid input: Need 3 axes for summary plot")
             plt.sca(ax[1])
 
             # Latlon plot and multiple cubes not supported yet
@@ -568,7 +606,7 @@ class Plot2D(object):
             if self.plot_type == 'lattime':
                 x = cube_line
                 y = cube_line.coord(lat_var)
-                latrange = cube.coords(lat_var).pop()
+                latrange = cube_line.coords(lat_var).pop()
                 latrange = (np.min(latrange.points), np.max(latrange.points))
                 plt.gca().set_xlim(vmin, vmax)
                 plt.gca().set_ylim(latrange)
@@ -577,21 +615,33 @@ class Plot2D(object):
             elif self.plot_type == 'lontime':
                 x = cube_line.coord(lon_var)
                 y = cube_line
-                lonrange = cube.coords(lon_var).pop()
+                lonrange = cube_line.coords(lon_var).pop()
                 lonrange = (np.min(lonrange.points), np.max(lonrange.points))
                 plt.gca().set_ylim(vmin, vmax)
                 plt.gca().set_xlim(lonrange)
             # Lev plots
             else:
+                if y_logarithmic:
+                    cube_line.coord(lev_var).points = np.log10(
+                        cube_line.coord(lev_var).points)
                 x = cube_line
                 y = cube_line.coord(lev_var)
-                levrange = cube.coords(lev_var).pop()
+                levrange = cube_line.coords(lev_var).pop()
                 levrange = (np.min(levrange.points), np.max(levrange.points))
                 plt.gca().set_xlim(vmin, vmax)
                 plt.gca().set_ylim(levrange)
 
             # Plot
             iplt.plot(x, y)
+            if y_logarithmic:
+#                locs = plt.gca().get_yticks()
+#                (bottom, top) = plt.gca().get_ylim()
+#                labels = np.round(10**locs, decimals=1)
+#                plt.gca().set_yticklabels(labels)
+                plt.gca().set_ylim(levrange[::-1])
+                plt.gca().yaxis.set_major_formatter(
+                        FuncFormatter(label_in_exp))
+
 
         # Setup axes for plotting multiple cubes
         n_columns = min([self.n_cubes, self.__class__.MAX_COLUMNS])
@@ -616,8 +666,40 @@ class Plot2D(object):
             # Plot map
             # (this needs to be done due to an error in cartopy)
             try:
-                iplt.pcolormesh(cube, cmap=brewer_cmap, vmin=vmin,
+                if y_logarithmic:
+                    cube.coord(lev_var).points = np.log10(
+                        cube.coord(lev_var).points)
+                if contour_levels:
+                    options = {
+                        'colors': 'black',
+                        'linewidths': 2,
+                    }
+                    if 'time' not in self.plot_type:
+                        cs = iplt.contour(cube,
+                                          contour_levels,
+                                          **options)
+                    else:
+                        if self.data_transposed:
+                            data = cube.data.transpose()
+                        else:
+                            data = cube.data
+                        cs = plt.contour(cube.coord(self.x_axis).points,
+                                         cube.coord(self.y_axis).points,
+                                         data,
+                                         contour_levels,
+                                         **options)
+                    plt.clabel(cs, cs.levels)
+                iplt.pcolormesh(cube,
+                                cmap=brewer_cmap,
+                                vmin=vmin,
                                 vmax=vmax)
+                if y_logarithmic:
+#                    (locs, _) = plt.yticks()
+#                    (bottom, top) = plt.ylim()
+#                    labels = np.round(10**locs, decimals=1)
+#                    plt.yticks(locs, labels)
+                    plt.ylim(levrange[::-1])
+                    plt.gca().yaxis.set_major_formatter(FuncFormatter(label_in_exp))
                 if 'time' in self.plot_type:
                     time_coord = cube.coord(self.time_vars[idx])
                     locs = [tp for tp in time_coord.points if
@@ -834,15 +916,11 @@ class Plot1D(object):
 
 ###############################################################################
 
-    def plot(self, summary_plot=False, colorbar_ticks=None, x_label=None,
-             y_label=None, title=None, ax=None, fig=None, vminmax=None):
+    def plot(self, title=None, ax=None):
         """
         Arguments
-            summary_plot   : Add summary line plot
-            colorbar_ticks : Ticks of the colorbar
-            x_label        : label of x-axis
-            y_label        : label of y-axis
             title          : title of the plot
+            ax             : ax to put the plot in
 
         Returns
             Matplotlib figure instance

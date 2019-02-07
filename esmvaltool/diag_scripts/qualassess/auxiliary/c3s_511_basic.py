@@ -18,7 +18,7 @@ import string
 import collections
 import csv
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 #from scipy import stats
@@ -63,7 +63,6 @@ class __Diagnostic_skeleton__(object):
         self.__cfg__ = None
         self.__logger__ = logging.getLogger(os.path.basename(__file__))
 
-        self.__project_info__ = None  # empty project info
         self.__plot_dir__ = '.' + os.sep  # default plot directory
         self.__work_dir__ = '.' + os.sep  # default work dir
 
@@ -71,13 +70,8 @@ class __Diagnostic_skeleton__(object):
         self.__output_type__ = 'png'  # default ouput file type
         self.__regions__ = {}  # default regions
 
-        self.__verbosity_level__ = 0  # default information during runtime
-        self.__debug_info__ = "No debug info"  # default debug information
-        self.__config__ = dict()  # default configuration input
-
         self.__basetags__ = []
         self.__infile__ = None
-        self.__inpath__ = None
 
         self.__time_period__ = None
         self.__dataset_id__ = None
@@ -108,14 +102,16 @@ class __Diagnostic_skeleton__(object):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         raise ImplementationError(
-            "set_info", "This method has to be implemented.")
+            "set_info",
+            "This method has to be implemented.")
         return
 
     def read_data(self):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         raise ImplementationError(
-            "read_data", "This method has to be implemented.")
+            "read_data",
+            "This method has to be implemented.")
         return
 
     def run_diagnostic(self):
@@ -128,7 +124,9 @@ class __Diagnostic_skeleton__(object):
         this_function = inspect.currentframe().f_code.co_name
         self.__logger__.error(this_function + " is not implemented!")
         self.__do_report__(content={}, filename="do_overview_default")
-#        raise ImplementationError("__do_overview__","This method has to be implemented.")
+        raise ImplementationError(
+            "__do_overview__",
+            "This method has to be implemented.")
         return
 
     def __do_mean_var__(self):
@@ -448,10 +446,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #        if not self.__output_type__ == 'png':
 #            raise ConfigurationError("self.__output_type__", "Only png is currently supported.")
         self.__regions__ = {
-            'Europe_1991-2000': {
+            'Europe_2000': {
                 'latitude': (30, 75),
                 'longitude': (-10, 35),
-                'time': (datetime.datetime(1991, 1, 1),
+                'time': (datetime.datetime(2000, 1, 1),
                          datetime.datetime(2000, 12, 31)
                          )}}  # default region
 #
@@ -541,7 +539,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         return
 
     def run_diagnostic(self):
-#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_1991-2000']
+#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_2000']
         self.__do_overview__()
         self.__do_mean_var__()
         self.__do_trends__()
@@ -567,16 +565,27 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 # self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1]
 # + ['li1']]))
         self.__logger__.info({y: self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
-        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3]))
+        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3])) 
+        self.__logger__.info("attributes")
+        self.__logger__.info(li2)
+        for l in li2:
+            self.__logger__.info(self.__dict__[l])
+            self.__logger__.info(type(self.__dict__[l]))
+            self.__logger__.info("-----------------------------------------------------------")
         #######################################################################
         pass
 
     def __do_overview__(self):
 
         this_function = "overview"
+        
+        list_of_plots = []
 
         if not self.var3D:
-            list_of_plots = self.__overview_procedures_2D__(cube=self.sp_data)
+            lop = self.__overview_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_overview_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -589,6 +598,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                      "cube.")
                 lop = self.__overview_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+                lop = self.__add_overview_procedures_2D__(loc_cube, level=lev)
+                list_of_plots = list_of_plots + lop
+            lop = self.__overview_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_overview_procedures_3D__()
+            list_of_plots = list_of_plots + lop
 
         # dimension information
         lon_range = self.sp_data.coord("longitude").points
@@ -615,9 +630,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         overview_dict = collections.OrderedDict()
 
-        overview_dict.update(
-                {'longitude range [' + str(
-                        self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
+        overview_dict.update({'longitude range [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
             [("min", str(lon_range_spec[0])), ("max", str(lon_range_spec[2]))])})
         overview_dict.update({'longitude frequency [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
             [("min", str(lon_freq_spec[0])), ("average", str(lon_freq_spec[1])), ("max", str(lon_freq_spec[2]))])})
@@ -836,13 +849,69 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         del all_data
 
         return list_of_plots
+    
+    def __add_overview_procedures_2D__(self, cube=None, level=None):
+        return []
+    
+    def __overview_procedures_3D__(self, cube=None):
+        return []
+    
+    def __add_overview_procedures_3D__(self, cube=None):
+        return []
 
     def __do_mean_var__(self):
-
+        
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+        
+        map_area = iris.analysis.cartography.area_weights(next(self.sp_data.slices(["latitude","longitude"])))
+        map_area = map_area / np.mean(map_area)
+        self.__logger__.warning(map_area)
+        
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+                
+        latlon_list = []
+        
+        for latlon in self.sp_data.slices(["latitude","longitude"]):
+            latlon = latlon * map_area
+            latlon.remove_coord("month_number")
+            latlon.remove_coord("year")
+            latlon.remove_coord("day_of_month")
+            latlon.remove_coord("day_of_year")
+            latlon_list.append(latlon)
+            
+        cube_list = iris.cube.CubeList(latlon_list)
+        
+        old_data=self.sp_data.copy()
+        
+        self.sp_data = cube_list.merge_cube()
+        
+        self.__logger__.warning(old_data.__dict__.keys())
+        self.__logger__.warning(old_data.__dict__["_standard_name"])
+        self.__logger__.warning(old_data.__dict__["long_name"])
+        self.__logger__.warning(old_data.__dict__["_var_name"])
+        self.__logger__.warning(self.sp_data.__dict__.keys())
+        self.__logger__.warning(self.sp_data.__dict__["_standard_name"])
+        self.__logger__.warning(self.sp_data.__dict__["long_name"])
+        self.__logger__.warning(self.sp_data.__dict__["_var_name"])
+        
+        self.sp_data.standard_name = old_data.standard_name
+        self.sp_data.long_name = old_data.long_name
+        self.sp_data.var_name = old_data.var_name
+            
+        self.__logger__.warning("cube being lazy")
+        self.__logger__.warning(self.sp_data.has_lazy_data())
+        
         this_function = "mean and variability"
 
+        list_of_plots = []
+
         if not self.var3D:
-            list_of_plots = self.__mean_var_procedures_2D__(cube=self.sp_data)
+            lop = self.__mean_var_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_mean_var_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -850,7 +919,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                         iris.Constraint(coord_values={str(self.level_dim): lambda cell: cell == lev}))
                 lop = self.__mean_var_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+                lop = self.__add_mean_var_procedures_2D__(loc_cube, level=lev)
+                list_of_plots = list_of_plots + lop
             lop = self.__mean_var_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_mean_var_procedures_3D__()
             list_of_plots = list_of_plots + lop
 
         # produce report
@@ -901,9 +974,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         maths = ["MEAN",
                  "STD_DEV",
-                 #                 "LOG_COV",
+                 #"LOG_COV",
                  "PERCENTILE",
-                 "CLIMATOLOGY"]
+                 "CLIMATOLOGY",
+                 ]
 
         percentiles = [1., 5., 10., 50., 90., 95., 99.]
 
@@ -916,7 +990,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 temp_series_1d = cube.collapsed(
                     long_left_over,
                     iris.analysis.MEAN,
-                    weights=iris.analysis.cartography.area_weights(cube))
+#                    weights=iris.analysis.cartography.area_weights(cube)
+                    )
 
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_" + "temp_series_1d" + "." + self.__output_type__
@@ -965,8 +1040,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                             d,
                             iris.analysis.__dict__["W" + m],
                             percent=percentiles,
-                            weights=iris.analysis.cartography.area_weights(
-                                    cube))
+#                            weights=iris.analysis.cartography.area_weights(
+#                                    cube)
+                            )
 
                         precentile_list = list()
 
@@ -1083,7 +1159,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     loc_data = cube.collapsed(
                         d,
                         iris.analysis.__dict__[m],
-                        weights=iris.analysis.cartography.area_weights(cube))
+#                        weights=iris.analysis.cartography.area_weights(cube)
+                        )
 
                     mean_std_cov.update({m: loc_data})
 
@@ -1095,7 +1172,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     mean_std_cov.update({m: utils.weighted_STD_DEV(
                         cube,
                         d,
-                        weights=iris.analysis.cartography.area_weights(cube))})
+#                        weights=iris.analysis.cartography.area_weights(cube)
+                        )})
 
                 elif m == "LOG_COV":
 
@@ -1114,7 +1192,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 # plotting routine
                 vminmax = None
                 ctype = None
-
+                
                 if np.any([m_typ in m for m_typ in [
                           "MEAN", "PERCENTILE", "CLIMATOLOGY"]]):
                     vminmax = disp_min_max["abs_vals"]
@@ -1235,6 +1313,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         return list_of_plots
     
+    def __add_mean_var_procedures_2D__(self, cube=None, level=None):
+        return []
+    
     def __mean_var_procedures_3D__(self, cube=None):
         
         if cube is None:
@@ -1259,10 +1340,17 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             short_left_over = np.array([sl[0:3] for sl in long_left_over])
             
             stat_dict[d].update({"slo":short_left_over,"llo":long_left_over})
+#            weights=iris.analysis.cartography.area_weights(cube)
             
-            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))})
+            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg,
+                     iris.analysis.MEAN,
+#                     weights=weights
+                     )})
             vminmaxmean=np.nanpercentile(np.concatenate([vminmaxmean,np.nanpercentile(stat_dict[d]["level_dim_mean"].data,[5,95])]),[0,100])
-            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube,long_agg,weights=iris.analysis.cartography.area_weights(cube))})
+            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube,
+                     long_agg,
+#                     weights=weights
+                     )})
             vminmaxstd=np.nanpercentile(np.concatenate([vminmaxstd,np.nanpercentile(stat_dict[d]["level_dim_std"].data,[5,95])]),[0,100])
             
         for d in reg_dimensions:
@@ -1284,7 +1372,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                        title=" ".join([self.__dataset_id__[indx] for 
                                        indx in [0,2,1,3]]) + " (" + 
                                      self.__time_period__ + ")",
-                       vminmax=vminmaxmean)
+                       vminmax=vminmaxmean,
+                       y_log=True)
                 fig.savefig(filename)
                 plt.close(fig.number)
             
@@ -1308,9 +1397,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
-                print(stat_dict[d]["level_dim_mean"])
-                print('Warning: blank figure!')
+                self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
+                self.__logger__.error(stat_dict[d]["level_dim_mean"])
+                self.__logger__.error('Warning: blank figure!')
                 
                 x=Plot2D_blank(stat_dict[d]["level_dim_mean"])
                 
@@ -1370,7 +1459,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                        color_type="Sequential",
                        title=" ".join([self.__dataset_id__[indx] for 
                                        indx in [0,2,1,3]]) + " (" + 
-                    self.__time_period__ + ")",vminmax=vminmaxstd)
+                                        self.__time_period__ + ")",
+                       vminmax=vminmaxstd,
+                       y_log=True)
                 fig.savefig(filename)
                 plt.close(fig.number)
             
@@ -1433,13 +1524,21 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          self.authors)
         
         return list_of_plots
+    
+    def __add_mean_var_procedures_3D__(self, cube=None):
+        return []
 
     def __do_trends__(self):
 
         this_function = "trends and stability"
+        
+        list_of_plots = []
 
         if not self.var3D:
-            list_of_plots = self.__trends_procedures_2D__(cube=self.sp_data)
+            lop = self.__trends_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_trend_procedures_2D__(cube=self.sp_data)
+            list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -1447,6 +1546,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     coord_values={str(self.level_dim): lambda cell: cell == lev}))
                 lop = self.__trends_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
+            lop = self.__trend_procedures_3D__()
+            list_of_plots = list_of_plots + lop
+            lop = self.__add_trend_procedures_3D__()
+            list_of_plots = list_of_plots + lop
 
         # produce report
         expected_input, found = \
@@ -1638,6 +1741,15 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         del S
 
         return list_of_plots
+    
+    def __add_trend_procedures_2D__(self, cube=None, level=None):
+        return []
+    
+    def __trend_procedures_3D__(self, cube=None):
+        return []    
+    
+    def __add_trend_procedures_3D__(self, cube=None):
+        return []
 
     def __do_maturity_matrix__(self):
 

@@ -94,5 +94,9 @@ doc/sphinx/build
 *.grib
 *.RData
 *.Rdata
+*.Rhistory
 *.rdata
 *.pkl
+
+# ESMF log files
+*.ESMF_LogFile

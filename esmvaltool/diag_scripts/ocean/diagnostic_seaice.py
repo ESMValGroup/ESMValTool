@@ -26,18 +26,16 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import numpy as np
 from itertools import product
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
+import cartopy
 import iris
 import iris.quickplot as qplt
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
-import cartopy
-
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -48,15 +46,11 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 def create_ice_cmap(threshold):
     """Create colour map with ocean blue below 15% and white above 15%."""
     threshold = threshold / 100.
-    ice_cmap_dict = {'red': ((0., 0.0313, 0.0313),
-                             (threshold, 0.0313, 1.),
-                             (1., 1., 1.)),
-                     'green': ((0., 0.237, 0.237),
-                               (threshold, 0.237, 1.),
-                               (1., 1., 1.)),
-                     'blue':  ((0., 0.456, 0.456),
-                               (threshold, 0.456, 1.),
-                               (1., 1., 1.))}
+    ice_cmap_dict = {
+        'red': ((0., 0.0313, 0.0313), (threshold, 0.0313, 1.), (1., 1., 1.)),
+        'green': ((0., 0.237, 0.237), (threshold, 0.237, 1.), (1., 1., 1.)),
+        'blue': ((0., 0.456, 0.456), (threshold, 0.456, 1.), (1., 1., 1.))
+    }
 
     return matplotlib.colors.LinearSegmentedColormap('ice_cmap', ice_cmap_dict)
 
@@ -78,7 +72,7 @@ def calculate_area_time_series(cube, plot_type, threshold):
             collapsed cube, in units of m^2
     """
     data = []
-    times = diagtools.timecoord_to_float(cube.coord('time'))
+    times = diagtools.cube_time_to_float(cube)
     for time_itr, time in enumerate(times):
         icedata = cube[time_itr].data
 
@@ -91,8 +85,8 @@ def calculate_area_time_series(cube, plot_type, threshold):
             # Ice area is cover * cell area
             total_area = np.sum(icedata * area)
 
-        logger.debug('Calculating time series area: %s, %s, %s,',
-                     time_itr, time, total_area)
+        logger.debug('Calculating time series area: %s, %s, %s,', time_itr,
+                     time, total_area)
         data.append(total_area)
 
     ######
@@ -137,19 +131,19 @@ def make_ts_plots(
         for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
             layer = str(layer)
 
-            times, data = calculate_area_time_series(cube_layer,
-                                                     plot_type,
+            times, data = calculate_area_time_series(cube_layer, plot_type,
                                                      threshold)
 
             plt.plot(times, data)
 
             # Add title to plot
-            title = ' '.join([metadata['dataset'], pole, 'hemisphere',
-                              season, plot_type])
+            title = ' '.join(
+                [metadata['dataset'], pole, 'hemisphere', season, plot_type])
             if layer:
-                title = ' '.join(
-                    [title, '(', layer,
-                     str(cube_layer.coords('depth')[0].units), ')'])
+                title = ' '.join([
+                    title, '(', layer,
+                    str(cube_layer.coords('depth')[0].units), ')'
+                ])
             plt.title(title)
 
             # y axis label:
@@ -209,27 +203,22 @@ def make_polar_map(
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
     linrange = np.linspace(0., 100., 21.)
-    qplt.contourf(cube,
-                  linrange,
-                  cmap=cmap,
-                  linewidth=0,
-                  rasterized=True)
+    qplt.contourf(cube, linrange, cmap=cmap, linewidth=0, rasterized=True)
     plt.tight_layout()
 
-    ax1.add_feature(cartopy.feature.LAND,
-                    zorder=10,
-                    facecolor=[0.8, 0.8, 0.8], )
+    ax1.add_feature(
+        cartopy.feature.LAND,
+        zorder=10,
+        facecolor=[0.8, 0.8, 0.8],
+    )
 
-    ax1.gridlines(linewidth=0.5,
-                  color='black',
-                  zorder=20,
-                  alpha=0.5,
-                  linestyle='--')
+    ax1.gridlines(
+        linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
     try:
         plt.gca().coastlines()
     except AttributeError:
         logger.warning('make_polar_map: Not able to add coastlines')
-    return fig, ax1
+    return fig
 
 
 def get_pole(cube):
@@ -308,21 +297,21 @@ def make_map_plots(
             time_str = get_time_string(cube)
 
             # Make the polar map.
-            fig, ax1 = make_polar_map(cube,
-                                      pole=pole,
-                                      cmap=cmap)
+            make_polar_map(cube, pole=pole, cmap=cmap)
 
             # Add title to plot
             title = ' '.join([metadata['dataset'], plot_type, time_str])
             if layer:
-                title = ' '.join([title, '(', layer,
-                                  str(cube_layer.coords('depth')[0].units),
-                                  ')'])
+                title = ' '.join([
+                    title, '(', layer,
+                    str(cube_layer.coords('depth')[0].units), ')'
+                ])
             plt.title(title)
 
             # Determine image filename:
-            suffix = '_'.join(['ortho_map', plot_type, time_str,
-                               str(layer_index)])
+            suffix = '_'.join(
+                ['ortho_map', plot_type, time_str,
+                 str(layer_index)])
             suffix = suffix.replace(' ', '') + image_extention
             if multi_model:
                 path = diagtools.folder(cfg['plot_dir'])
@@ -351,13 +340,10 @@ def agregate_by_season(cube):
     as the seasonal mean changes the cube units.
     """
     if not cube.coords('clim_season'):
-        iris.coord_categorisation.add_season(cube,
-                                             'time',
-                                             name='clim_season')
+        iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
     if not cube.coords('season_year'):
-        iris.coord_categorisation.add_season_year(cube,
-                                                  'time',
-                                                  name='season_year')
+        iris.coord_categorisation.add_season_year(
+            cube, 'time', name='season_year')
     return cube.aggregated_by(['clim_season', 'season_year'],
                               iris.analysis.MEAN)
 
@@ -409,15 +395,11 @@ def make_map_extent_plots(
             ax1 = plt.subplot(111, projection=projection)
             ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
-        ax1.add_feature(cartopy.feature.LAND,
-                        zorder=10,
-                        facecolor=[0.8, 0.8, 0.8])
+        ax1.add_feature(
+            cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8])
 
-        ax1.gridlines(linewidth=0.5,
-                      color='black',
-                      zorder=20,
-                      alpha=0.5,
-                      linestyle='--')
+        ax1.gridlines(
+            linewidth=0.5, color='black', zorder=20, alpha=0.5, linestyle='--')
 
         try:
             plt.gca().coastlines()
@@ -445,35 +427,45 @@ def make_map_extent_plots(
                          rasterized=True)
 
         # Add legend
-        legend_size = len(plot_desc.keys()) + 1
+        legend_size = len(plot_desc) + 1
         ncols = int(legend_size / 25) + 1
-        ax1.set_position([ax1.get_position().x0,
-                          ax1.get_position().y0,
-                          ax1.get_position().width * (1. - 0.1 * ncols),
-                          ax1.get_position().height])
+        ax1.set_position([
+            ax1.get_position().x0,
+            ax1.get_position().y0,
+            ax1.get_position().width * (1. - 0.1 * ncols),
+            ax1.get_position().height
+        ])
 
         fig.set_size_inches(7 + ncols * 1.2, 7)
 
         # Construct dummy plots.
-        for i in sorted(plot_desc.keys()):
-            plt.plot([], [],
-                     c=plot_desc[i]['c'][0],
-                     lw=plot_desc[i]['lw'][0],
-                     ls=plot_desc[i]['ls'][0],
-                     label=plot_desc[i]['label'],)
+        for i in sorted(plot_desc):
+            plt.plot(
+                [],
+                [],
+                c=plot_desc[i]['c'][0],
+                lw=plot_desc[i]['lw'][0],
+                ls=plot_desc[i]['ls'][0],
+                label=plot_desc[i]['label'],
+            )
 
-        legd = ax1.legend(loc='center left',
-                          ncol=ncols,
-                          prop={'size': 10},
-                          bbox_to_anchor=(1., 0.5))
+        legd = ax1.legend(
+            loc='center left',
+            ncol=ncols,
+            prop={'size': 10},
+            bbox_to_anchor=(1., 0.5))
         legd.draw_frame(False)
         legd.get_frame().set_alpha(0.)
 
         # Add title to plot
-        title = ' '.join([metadata['dataset'], ])
+        title = ' '.join([
+            metadata['dataset'],
+        ])
         if layer:
-            title = ' '.join([title, '(', layer,
-                              str(cube_layer.coords('depth')[0].units), ')'])
+            title = ' '.join([
+                title, '(', layer,
+                str(cube_layer.coords('depth')[0].units), ')'
+            ])
         plt.title(title)
 
         # Determine image filename:
@@ -510,7 +502,7 @@ def main(cfg):
         )
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(

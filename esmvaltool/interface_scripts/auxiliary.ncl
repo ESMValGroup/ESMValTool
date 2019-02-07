@@ -527,13 +527,34 @@ begin
       log_debug(" Keeping existing " + outfile + " with suffix ." + sysdate)
     else if (existing .eq. "append") then
       ncdf = addfile(outfile, "w")
+      dimNames = getvardims(data)
+      dim_dim = dimsizes(dimNames)
+      ; define dimensions in case not defined yet
+      dimSzs = new(dimsizes(dimNames), long)
+      dimUnlim = new(dimsizes(dimNames), logical)
+      dimUnlim(:) = False
+      do i = 0, dim_dim - 1
+        dimSzs(i) = dimsizes(data&$dimNames(i)$)
+      end do
+      filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+      filevardef(ncdf, varname, typeof(data), dimNames)
+      ; Copy attributes associated with each variable to the file
+      do i = 0, dim_dim - 1
+        ; No attribute assignment to variable if no attributes are available
+        if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
+          filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
+        end if
+      end do
+      filevarattdef(ncdf, varname, data)
     else
       system("rm -f " + outfile)
       ncdf = addfile(outfile, "c")
+      ncdf = ncdf_define(ncdf, data)
     end if
     end if
   else  ; Outfile does not exist yet
     ncdf = addfile(outfile, "c")
+    ncdf = ncdf_define(ncdf, data)
   end if
 
   ; Write to netCDF
@@ -541,7 +562,6 @@ begin
 ;    ncdf->$varname$ = data
   ; Option 2: write with explicit file definition
   dimNames = getvardims(data)
-  ncdf = ncdf_define(ncdf, data)
   do i = 0, dimsizes(dimNames) - 1
     if (typeof(data&$dimNames(i)$).eq."string") then
       ; Convert string array to two dimensional character array
@@ -639,7 +659,7 @@ function ncdf_define(ncdf, data)
 ;    20131112-A_gott_kl: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim
+  dimUnlim, atts
 begin
 
   funcname = "ncdf_define"
@@ -1383,7 +1403,7 @@ begin
 end
 
 ; #############################################################################
-undef("write_ignore_warnings")
+undef("write_ignore_warnings")  ; FIX-ME: to be removed
 procedure write_ignore_warnings(warnings[*]:string,
                                 warn_file_str[1]:string)
 ;
@@ -1419,7 +1439,7 @@ begin
 end
 
 ; #############################################################################
-undef("get_ref_dataset_idx")
+undef("get_ref_dataset_idx")  ; FIX-ME to be removed
 function get_ref_dataset_idx(datasets[1]:logical,\
                              dataset_ref_name:string)
 ;
@@ -1449,7 +1469,7 @@ begin
   idx_ref = new(nrefs, integer)
   do ii = 0, nrefs - 1
     idx_ref(ii) = \
-      ind(input_file_info@dataset.eq.str_squeeze(dataset_ref_name(ii)))
+      ind(datasets@dataset.eq.str_squeeze(dataset_ref_name(ii)))
     if (ismissing(idx_ref(ii))) then
       error_msg("f", scriptname, funcname, "reference dataset " + \
                 dataset_ref_name(ii) + " not found in the datasets list")

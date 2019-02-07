@@ -18,11 +18,9 @@
 ###############################################################################
 
 datasets:
-#  - {model: CDS-XCO2, project: OBS,    tier: L3,    type: sat,       start_year: 2003,  end_year: 2016}
-  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
-#  - {dataset: XCH4, obssystem: sat, project: CDS-OBS,  level: L3, start_year: 2003,  end_year: 2016}
-#[project]_[dataset]_[type]_[version]_[field]_[short_name]
-#OBS_sat_CDS-XCH4_L3_T2Ms_xch4_2003-2016
+#  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+  - {dataset: XCH4, type: sat, project: OBS,  level: L3, version: CDS, start_year: 2003,  end_year: 2016}
+# looks for: [project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*
 preprocessors:
   noop: {}
 
@@ -30,11 +28,13 @@ diagnostics:
   SPQB:
     description: Single product quality brief.
     variables:
-      ta:
+#      ta:
+      xch4:
         preprocessor: noop
-        field: T3Ms
-#        derive: True
-        mip: Amip
+        field: T2Ms
+#        field: T3Ms
+        derive: False
+        mip: Amon
     scripts:
       SPQB_basic_report:
         script: qualassess/DUMMY_C3S_511_SPQB.py

@@ -32,11 +32,12 @@ REQUIREMENTS = {
         'cf_units',
         'cython',
         # 'scitools-iris',  # Only iris 2 is on PyPI
-        'matplotlib',
+        'matplotlib<3',
         'netCDF4',
         'numba',
         'numpy',
         'pillow',
+        'prov[dot]',
         'psutil',
         'pyyaml',
         'shapely',
@@ -53,8 +54,9 @@ REQUIREMENTS = {
         'mock',
         'nose',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.9',
         'pytest-cov',
+        'pytest-env',
         'pytest-html',
         'pytest-metadata>=1.5.1',
     ],
@@ -67,6 +69,7 @@ REQUIREMENTS = {
         'pydocstyle',
         'pylint',
         'sphinx',
+        'sphinx_rtd_theme',
         'yamllint',
         'yapf',
     ],
@@ -75,7 +78,6 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
-
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -219,7 +221,12 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
-                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+                'cmorize_obs = esmvaltool.'
+                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
+                'nclcodestyle = esmvaltool.'
+                'utils.nclcodestyle.nclcodestyle:_main',
+                'mip_convert_setup = esmvaltool.'
+                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
             ],
         },
         cmdclass={
