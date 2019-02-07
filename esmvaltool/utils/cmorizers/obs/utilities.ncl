@@ -275,13 +275,13 @@ undef("lev_attrib")
 function lev_attrib(coord:numeric)
 ;
 ; Arguments
-;    coord: input ocean lev coordinate.
+;    coord: input ocean level coordinate.
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
 ;
 ; Description
-;    Assigns attributes to the ocean lev coordinate.
+;    Assigns attributes to the ocean level coordinate.
 ;
 ; Caveats
 ;
