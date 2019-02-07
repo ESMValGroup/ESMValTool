@@ -39,7 +39,7 @@ Example use:
 ```
 
 ## Getting help
-The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://esmvaltool.readthedocs.io), is to open an [issue on GitHub]((https://github.com/ESMValGroup/ESMValTool/issues).
+The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://esmvaltool.readthedocs.io), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
 
 ## Contributing
 If you would like to contribute a new diagnostic or feature, please have a look at [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md).
