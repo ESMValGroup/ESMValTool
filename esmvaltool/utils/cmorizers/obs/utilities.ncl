@@ -7,7 +7,7 @@
 ;    function check_time_range
 ;    function time_attrib
 ;    function plev_attrib
-;    function depth_attrib
+;    function lev_attrib
 ;    function lat_attrib
 ;    function lon_attrib
 ;    function read_cmor
@@ -258,15 +258,9 @@ begin
   copy_VarCoords(coord, out_coord)
   out_coord@positive = "down"
   out_coord@axis     = "Z"
-  if (coord@units .eq. "m") then
-    out_coord@long_name     = "ocean depth coordinate"
-    out_coord@units         = "m"
-    out_coord@standard_name = "depth"
-  else
-    out_coord@long_name     = "pressure"
-    out_coord@units         = "Pa"
-    out_coord@standard_name = "air_pressure"
-  end if
+  out_coord@long_name     = "pressure"
+  out_coord@units         = "Pa"
+  out_coord@standard_name = "air_pressure"
   if (isatt(out_coord, "_FillValue")) then
     delete(out_coord@_FillValue)
   end if
@@ -277,17 +271,17 @@ begin
 end
 
 ; #############################################################################
-undef("depth_attrib")
-function depth_attrib(coord:numeric)
+undef("lev_attrib")
+function lev_attrib(coord:numeric)
 ;
 ; Arguments
-;    coord: input ocean depth coordinate.
+;    coord: input ocean lev coordinate.
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
 ;
 ; Description
-;    Assigns attributes to the ocean depth coordinate.
+;    Assigns attributes to the ocean lev coordinate.
 ;
 ; Caveats
 ;

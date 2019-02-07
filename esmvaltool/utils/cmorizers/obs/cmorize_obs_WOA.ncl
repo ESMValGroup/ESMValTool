@@ -112,11 +112,11 @@ begin
     delete(ctime)
 
     ; Format vertical coordinate
-    output!1 = "depth"
-    cdepth = depth_attrib(output&depth)
-    delete(output&depth)
-    output&depth = cdepth
-    delete(cdepth)
+    output!1 = "lev"
+    clev = lev_attrib(output&lev)
+    delete(output&lev)
+    output&lev = clev
+    delete(clev)
 
     ; Format latitude coordinate
     clat = lat_attrib(output&lat)
