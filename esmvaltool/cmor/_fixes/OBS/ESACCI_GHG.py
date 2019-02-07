@@ -1,11 +1,11 @@
-"""Fixes for ESA-CCI GHG"""
+"""Fixes for ESA-CCI GHG."""
 import cf_units
 
 from ..fix import Fix
 
 
 class xco2Stderr(Fix):
-    """Fixes for xco2Stderr"""
+    """Fixes for xco2Stderr."""
 
     def fix_metadata(self, cubes):
         """
@@ -49,13 +49,13 @@ class xco2Stderr(Fix):
 
 
 class xco2Stddev(xco2Stderr):
-    """Fixes for xco2Stddev"""
+    """Fixes for xco2Stddev."""
 
     pass
 
 
 class xch4Stderr(Fix):
-    """Fixes for xch4Stderr"""
+    """Fixes for xch4Stderr."""
 
     def fix_metadata(self, cubes):
         """
@@ -99,6 +99,6 @@ class xch4Stderr(Fix):
 
 
 class xch4Stddev(xch4Stderr):
-    """Fixes for xch4Stddev"""
+    """Fixes for xch4Stddev."""
 
     pass

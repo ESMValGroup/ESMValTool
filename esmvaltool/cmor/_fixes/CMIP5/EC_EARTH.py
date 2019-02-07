@@ -1,9 +1,9 @@
-"""Fixes for EC-Earth model"""
+"""Fixes for EC-Earth model."""
 from ..fix import Fix
 
 
 class sic(Fix):
-    """Fixes for sic"""
+    """Fixes for sic."""
 
     def fix_data(self, cube):
         """
@@ -27,7 +27,7 @@ class sic(Fix):
 
 
 class sftlf(Fix):
-    """Fixes for sftlf"""
+    """Fixes for sftlf."""
 
     def fix_data(self, cube):
         """

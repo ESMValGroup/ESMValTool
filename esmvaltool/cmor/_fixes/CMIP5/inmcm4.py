@@ -1,11 +1,11 @@
-"""Fixes for inmcm4 model"""
+"""Fixes for inmcm4 model."""
 import iris
 
 from ..fix import Fix
 
 
 class gpp(Fix):
-    """Fixes for gpp"""
+    """Fixes for gpp."""
 
     def fix_data(self, cube):
         """
@@ -29,7 +29,7 @@ class gpp(Fix):
 
 
 class lai(Fix):
-    """Fixes for lai"""
+    """Fixes for lai."""
 
     def fix_data(self, cube):
         """
@@ -53,7 +53,7 @@ class lai(Fix):
 
 
 class nbp(Fix):
-    """Fixes for nbp"""
+    """Fixes for nbp."""
 
     def fix_file(self, filepath, output_dir):
         """

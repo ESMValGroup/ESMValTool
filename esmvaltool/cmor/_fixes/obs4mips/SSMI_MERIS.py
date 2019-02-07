@@ -1,4 +1,4 @@
-"""Fixes for CCSM4 model"""
+"""Fixes for CCSM4 model."""
 from iris.cube import CubeList
 
 from ..fix import Fix
@@ -6,7 +6,7 @@ from ..fix import Fix
 
 # noinspection PyPep8Naming
 class prw(Fix):
-    """Fixes for prw"""
+    """Fixes for prw."""
 
     def fix_metadata(self, cubes):
         """

@@ -1,4 +1,4 @@
-"""Fixes for ESA CCI ozone"""
+"""Fixes for ESA CCI ozone."""
 import cf_units
 import iris.cube
 
@@ -6,7 +6,7 @@ from ..fix import Fix
 
 
 class tro3prof(Fix):
-    """Fixes for tro3prof"""
+    """Fixes for tro3prof."""
 
     def fix_metadata(self, cubes):
         """

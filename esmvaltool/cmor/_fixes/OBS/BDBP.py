@@ -1,4 +1,4 @@
-"""Fixes for BDBP"""
+"""Fixes for BDBP."""
 
 import cf_units
 import iris.cube
@@ -7,7 +7,7 @@ from ..fix import Fix
 
 
 class tro3prof(Fix):
-    """Class to fix tro3prof"""
+    """Class to fix tro3prof."""
 
     def fix_metadata(self, cubes):
         """

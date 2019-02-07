@@ -1,4 +1,4 @@
-"""Fixes for CESM1-BGC model"""
+"""Fixes for CESM1-BGC model."""
 
 from cf_units import Unit
 
@@ -6,7 +6,7 @@ from ..fix import Fix
 
 
 class co2(Fix):
-    """Fixes for co2 variable"""
+    """Fixes for co2 variable."""
 
     def fix_data(self, cube):
         """

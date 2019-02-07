@@ -1,4 +1,4 @@
-"""Fixes for CCSM4 model"""
+"""Fixes for CCSM4 model."""
 import numpy as np
 
 from ..fix import Fix
@@ -6,7 +6,7 @@ from ..fix import Fix
 
 # noinspection PyPep8Naming
 class rlut(Fix):
-    """Fixes for rlut"""
+    """Fixes for rlut."""
 
     def fix_metadata(self, cubes):
         """
@@ -31,25 +31,25 @@ class rlut(Fix):
 
 
 class rlutcs(rlut):
-    """Fixes for rlutcs"""
+    """Fixes for rlutcs."""
 
     pass
 
 
 class rsut(rlut):
-    """Fixes for rsut"""
+    """Fixes for rsut."""
 
     pass
 
 
 class rsutcs(rlut):
-    """Fixes for rsutcs"""
+    """Fixes for rsutcs."""
 
     pass
 
 
 class so(Fix):
-    """Fixes for so"""
+    """Fixes for so."""
 
     def fix_metadata(self, cubes):
         """

@@ -47,7 +47,7 @@ class fgco2(Fix):
 
 
 class ch4(Fix):
-    """Fixes for ch4"""
+    """Fixes for ch4."""
 
     def fix_metadata(self, cubes):
         """
@@ -89,7 +89,7 @@ class ch4(Fix):
 
 
 class co2(Fix):
-    """Fixes for co2"""
+    """Fixes for co2."""
 
     def fix_metadata(self, cubes):
         """
@@ -131,7 +131,7 @@ class co2(Fix):
 
 
 class spco2(Fix):
-    """Fixes for spco2"""
+    """Fixes for spco2."""
 
     def fix_data(self, cube):
         """

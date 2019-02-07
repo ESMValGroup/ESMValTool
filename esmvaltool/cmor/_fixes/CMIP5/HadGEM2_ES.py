@@ -1,4 +1,4 @@
-"""Fixes for HadGEM2_ES"""
+"""Fixes for HadGEM2_ES."""
 import numpy as np
 import iris
 
@@ -6,7 +6,7 @@ from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all vars"""
+    """Fixes common to all vars."""
 
     def fix_metadata(self, cubes):
         """
@@ -32,7 +32,7 @@ class allvars(Fix):
 
 
 class o2(Fix):
-    """Fixes for o2"""
+    """Fixes for o2."""
 
     def fix_file(self, filepath, output_dir):
         """

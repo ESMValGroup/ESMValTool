@@ -4,7 +4,7 @@ from ..fix import Fix
 
 
 class sftof(Fix):
-    """Fixes for sftof"""
+    """Fixes for sftof."""
 
     def fix_data(self, cube):
         """

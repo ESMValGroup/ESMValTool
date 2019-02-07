@@ -1,9 +1,9 @@
-"""Fixes for CNRM-CM5 model"""
+"""Fixes for CNRM-CM5 model."""
 from ..fix import Fix
 
 
 class msftmyz(Fix):
-    """Fixes for msftmyz"""
+    """Fixes for msftmyz."""
 
     def fix_data(self, cube):
         """
@@ -27,6 +27,6 @@ class msftmyz(Fix):
 
 
 class msftmyzba(msftmyz):
-    """Fixes for msftmyzba"""
+    """Fixes for msftmyzba."""
 
     pass

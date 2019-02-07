@@ -1,9 +1,9 @@
-"""Fixes for MPI ESM LR model"""
+"""Fixes for MPI ESM LR model."""
 from ..fix import Fix
 
 
 class pctisccp(Fix):
-    """Fixes for pctisccp"""
+    """Fixes for pctisccp."""
 
     def fix_data(self, cube):
         """

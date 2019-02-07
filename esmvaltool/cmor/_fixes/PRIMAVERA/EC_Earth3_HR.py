@@ -3,7 +3,7 @@ from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all variables"""
+    """Fixes common to all variables."""
 
     def fix_metadata(self, cubes):
         """
