@@ -1,1 +1,1 @@
-"""Fixes for OBS project"""
+"""Fixes for OBS project."""
