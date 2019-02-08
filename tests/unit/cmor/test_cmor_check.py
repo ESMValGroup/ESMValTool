@@ -201,7 +201,7 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_with_scalar_coords(self):
         """Check succeeds even if a required coordinate is a scalar coord"""
         self.cube = self.cube.extract(
-            iris.Constraint(time=self.cube.coord('time').points[0])
+            iris.Constraint(time=self.cube.coord('time').cell(0))
         )
         self._check_cube()
 
