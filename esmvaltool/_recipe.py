@@ -704,7 +704,7 @@ def _get_derive_input_variables(variables, config_user):
         derive_input[group].append(var)
 
     for variable in variables:
-        _add_cmor_info(variable, derive=True)
+
         group_prefix = variable['variable_group'] + '_derive_input_'
         if not variable.get('force_derivation') and get_input_filelist(
                 variable=variable,
@@ -739,7 +739,8 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 variable['preprocessor'], variable['short_name'])
     variables = _limit_datasets(variables, profile,
                                 config_user.get('max_datasets'))
-
+    for variable in variables:
+        _add_cmor_info(variable)
     # Create preprocessor task(s)
     derive_tasks = []
     if variable.get('derive'):
@@ -748,6 +749,8 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
         derive_input = _get_derive_input_variables(variables, config_user)
 
         for derive_variables in derive_input.values():
+            for derive_variable in derive_variables:
+                _add_cmor_info(derive_variable)
             derive_name = task_name.split(
                 TASKSEP)[0] + TASKSEP + derive_variables[0]['variable_group']
             task = _get_single_preprocessor_task(
@@ -756,10 +759,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 config_user,
                 name=derive_name)
             derive_tasks.append(task)
-    else:
-        # Add CMOR info
-        for variable in variables:
-            _add_cmor_info(variable)
+
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
