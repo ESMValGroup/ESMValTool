@@ -29,7 +29,7 @@ class xco2(Fix):
         cube = cubes[0]
         cube.units = cf_units.Unit('1.0e-6')
         cube = cube.intersection(longitude=(0, 360))
-        return CubeList(cube)
+        return CubeList([cube])
 
     def fix_data(self, cube):
         """
