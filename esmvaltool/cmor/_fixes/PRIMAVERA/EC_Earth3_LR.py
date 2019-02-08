@@ -5,7 +5,7 @@ from ..fix import Fix
 class allvars(Fix):
     """Fixes common to all variables"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fixes cube metadata
 
@@ -19,9 +19,10 @@ class allvars(Fix):
         Cube:
             Fixed cube. It is the same instance that was received
         """
-        latitude = cube.coord('latitude')
-        latitude.var_name = 'lat'
+        for cube in cubes:
+            latitude = cube.coord('latitude')
+            latitude.var_name = 'lat'
 
-        longitude = cube.coord('longitude')
-        longitude.var_name = 'lon'
-        return cube
+            longitude = cube.coord('longitude')
+            longitude.var_name = 'lon'
+        return cubes
