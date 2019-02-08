@@ -460,7 +460,7 @@ def main(cfg):
     logger.info('Scatter plots')
     summary_varlist = [atmb_all, baroc_eff_all, horzentr_all, lec_all,
                        matentr_all, te_all, toab_all, vertentr_all]
-    plotsmod.plot_mm_summaryscat(pdir, summary_varlist)
+    plotsmod.plot_mm_summaryscat(pdir_up, summary_varlist)
     logger.info('Scatter plots for inter-annual variability of'
                 ' some quantities')
     eb_list = [toab_all, atmb_all, surb_all]

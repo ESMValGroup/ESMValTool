@@ -208,7 +208,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
 
 
 def averages(x_c, g_w):
-    """Compute time, zonal and global mean averages.
+    """Compute time, zonal and global mean averages of initial fields.
 
     Arguments:
     - x_c: the input field as (lev, lat, wave);
@@ -217,9 +217,7 @@ def averages(x_c, g_w):
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
-    # Compute zonal mean of time means
     xc_ztmn = np.squeeze(np.real(x_c[:, :, 0]))
-    # Compute global mean of time means
     xc_gmn = np.nansum(xc_ztmn * g_w[np.newaxis, :], axis=1) / np.nansum(g_w)
     return xc_ztmn, xc_gmn
 
@@ -231,7 +229,7 @@ def averages_comp(fld, g_w, d_s, dims):
     - fld: the component of the LEC (time, lev, lat, wave);
     - g_w: the Gaussian weights for meridional averaging;
     - d_s: the Delta sigma of the sigma levels;
-    - nlat: the number of dimensions;
+    - dims: a list containing the dimensions length0;
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
@@ -314,7 +312,7 @@ def diagram(filen, listf, dims):
     kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
     list_lorenz = [azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout,
                    kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as, as2at,
-                   kt2kz, kt2ks, ks2kz]
+                   kt2kz, ks2kt, ks2kz]
     flux = fluxogram.Fluxogram(1000, 1000)
     flux.add_storage("AZ", 600, 0, 0)
     flux.add_storage("ASE", 600, 0.75, 0.25)
@@ -407,11 +405,11 @@ def globall_cg(d3v, g_w, d_s, dims):
             aux1[l_l, i_h, :] = fac * np.real(d3v[l_l, i_h, :]) * g_w[i_h]
             aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :])
                                  * g_w[i_h + nhem - 1])
-        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :],
-                                   axis=0) / np.nansum(g_w[0:nhem])
+        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0)
+                         / np.nansum(g_w[0:nhem])
                          * d_s[l_l])
-        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :],
-                                   axis=0) / np.nansum(g_w[0:nhem])
+        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0)
+                         / np.nansum(g_w[0:nhem])
                          * d_s[l_l])
     gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
     gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
@@ -444,7 +442,6 @@ def init(logfile, filep):
     u_a = dataset0.variables['ua'][:, :, :, :]
     v_a = dataset0.variables['va'][:, :, :, :]
     wap = dataset0.variables['wap'][:, :, :, :]
-    nlat = np.shape(t_a)[2]
     nfc = np.shape(t_a)[3]
     lev = dataset0.variables['plev'][:]
     nlev = len(lev)
@@ -501,14 +498,11 @@ def makek(u_t, v_t, nlat, ntp, nlev):
 
     @author: Valerio Lembo
     """
-    e_k = np.zeros([nlev, nlat, ntp - 1])
     ck1 = u_t * np.conj(u_t)
     ck2 = v_t * np.conj(v_t)
-    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
-                                 v_t[:, :, 0] * v_t[:, :, 0])
     e_k = np.real(ck1 + ck2)
-    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
-                                 v_t[:, :, 0] * v_t[:, :, 0])
+    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0]
+                                 + v_t[:, :, 0] * v_t[:, :, 0])
     return e_k
 
 
