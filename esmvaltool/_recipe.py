@@ -240,12 +240,12 @@ def _limit_datasets(variables, profile, max_datasets=0):
 
     logger.info("Limiting the number of datasets to %s", max_datasets)
 
-    required_datasets = {
+    required_datasets = [
         (profile.get('extract_levels') or {}).get('levels'),
         (profile.get('regrid') or {}).get('target_grid'),
         variables[0].get('reference_dataset'),
         variables[0].get('alternative_dataset'),
-    }
+    ]
 
     limited = [v for v in variables if v['dataset'] in required_datasets]
     for variable in variables:
