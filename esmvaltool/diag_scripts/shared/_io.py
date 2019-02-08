@@ -6,7 +6,7 @@ import os
 import iris
 import numpy as np
 
-from ._iris_helpers import unify_coordinate
+from ._iris_helpers import unify_1d_cubes
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +154,7 @@ def metadata_to_netcdf(cube, metadata):
         Metadata for the cube.
 
     """
+    metadata = dict(metadata)
     if not _has_necessary_attributes([metadata], 'error'):
         logger.error("Cannot save cube %s", cube)
         return
@@ -173,7 +174,7 @@ def metadata_to_netcdf(cube, metadata):
     save_iris_cube(cube, metadata['filename'])
 
 
-def save_1d_data(cubes, path, var_attrs, attributes=None):
+def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -185,54 +186,38 @@ def save_1d_data(cubes, path, var_attrs, attributes=None):
         1D `iris.cube.Cube`s (values) and corresponding datasets (keys).
     path : str
         Path to the new file.
+    coord_name : str
+        Name of the coordinate.
     var_attrs : dict
         Attributes for the variable (`short_name`, `long_name`, or `units`).
     attributes : dict, optional
         Additional attributes for the cube.
 
-    Raises
-    ------
-    ValueError
-        Cubes are not 1D or coordinate variables differ.
-
     """
+    var_attrs = dict(var_attrs)
+    if not cubes:
+        logger.error("No cubes given")
+        return
     if not _has_necessary_attributes(
             [var_attrs], only_var_attrs=True, log_level='error'):
         logger.error("Cannot write file '%s'", path)
         return
-    dim_coord = None
     datasets = []
     data = []
-    unify_coordinate(cubes.values(), 0)
+    cubes = unify_1d_cubes(cubes, coord_name)
     for (dataset, cube) in cubes.items():
-        print(cube)
-        if cube.ndim != 1:
-            raise ValueError("Dimension of cube {} is not 1".format(cube))
-        coord = cube.coord(dimensions=(0, ), dim_coords=True)
-        if dim_coord is None:
-            dim_coord = coord
-        else:
-            if coord.name() != dim_coord.name():
-                raise ValueError(
-                    "Expected only cubes with identical coordinates, got '{}' "
-                    "and '{}'".format(dim_coord.name(), coord.name()))
-            if coord.shape != dim_coord.shape:
-                raise ValueError(
-                    "Expected only cubes with identical coordinates shapes, "
-                    "got {} and {}".format(dim_coord.shape, coord.shape))
         datasets.append(dataset)
         data.append(cube.data)
     dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
+    coord = cubes[list(cubes.keys())[0]].coord(coord_name)
     if attributes is None:
         attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')
-    print(np.array(data).shape)
 
     # Create new cube
     cube = iris.cube.Cube(
         np.array(data),
-        aux_coords_and_dims=[(dataset_coord, 0)],
-        dim_coords_and_dims=[(dim_coord, 1)],
+        aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
         attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path
@@ -272,6 +257,7 @@ def save_scalar_data(data, path, var_attrs, attributes=None):
         Additional attributes for the cube.
 
     """
+    var_attrs = dict(var_attrs)
     if not _has_necessary_attributes(
             [var_attrs], only_var_attrs=True, log_level='error'):
         logger.error("Cannot write file '%s'", path)

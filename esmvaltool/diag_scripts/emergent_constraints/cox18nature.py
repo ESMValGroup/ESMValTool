@@ -136,7 +136,8 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
 
     # Save netcdf file
     filename = 'temperature_anomaly_{}'.format(obs_name)
-    save_1d_data(tas_cubes, filename, TAS_ATTRS)
+    save_1d_data(tas_cubes, get_diagnostic_filename(filename, cfg), 'year',
+                 TAS_ATTRS)
 
     # Plot
     if not cfg['write_plots']:

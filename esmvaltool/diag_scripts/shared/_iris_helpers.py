@@ -9,34 +9,43 @@ from ._base import group_metadata
 logger = logging.getLogger(__name__)
 
 
-def check_dataset_coordinates(cubes):
-    """Compare dataset coordinates of cubes and raise error if not identical.
+def check_coordinate(cubes, coord_name):
+    """Compare coordinate of cubes and raise error if not identical.
 
     Parameters
     ----------
     cubes : list of iris.cube.Cube
         Cubes to be compared.
+    coord_name : str
+        Name of the coordinate.
 
     Returns
     -------
     numpy.array
-        All datasets.
+        Points of the coordinate.
 
     Raises
     ------
     ValueError
-        Coordinate `dataset` differs for the input cubes.
+        Given coordinate differs for the input cubes.
 
     """
     coord = None
     for cube in cubes:
+        try:
+            new_coord = cube.coord(coord_name)
+        except iris.exceptions.CoordinateNotFoundError:
+            raise ValueError("'{}' is not a coordinate of cube {}".format(
+                coord_name, cube))
         if coord is None:
-            coord = cube.coord('dataset')
+            coord = new_coord
         else:
-            if cube.coord('dataset') != coord:
+            if new_coord != coord:
                 raise ValueError("Expected cubes with identical coordinates "
-                                 "'dataset', got {} and {}".format(
-                                     cube.coord('dataset'), coord))
+                                 "'{}', got {} and {}".format(
+                                     coord_name, new_coord, coord))
+    logger.debug("Successfully checked coordinate '%s' of cubes %s",
+                 coord_name, cubes)
     return coord.points
 
 
@@ -101,26 +110,73 @@ def match_dataset_coordinates(cubes):
         cube = cube.extract(iris.Constraint(dataset=common_elements))
         sorted_idx = np.argsort(cube.coord('dataset').points)
         new_cubes.append(cube[sorted_idx])
-    logger.debug("Matched 'dataset' coordinates of cubes to %s",
-                 sorted(common_elements))
-    check_dataset_coordinates(new_cubes)
+    check_coordinate(new_cubes, 'dataset')
+    logger.debug(
+        "Successfully matched 'dataset' coordinates of cubes %s to "
+        "%s", cubes, sorted(common_elements))
     return new_cubes
 
 
-def unify_coordinate(cubes, coord_idx):
-    """Unify different coordinates of cubes.
+def unify_1d_cubes(cubes, coord_name):
+    """Unify 1D cubes by transforming them to identical coordinate.
 
-    Unifies the selected coordinate of all the cubes by adding missing values
-    if necessary.
+    Use longest coordinate as reference and transform other cubes to it by
+    adding missing values.
 
     Parameters
     ----------
-    cubes : list of iris.cube.Cube
+    cubes : dict of iris.cube.Cube
         Cubes to be processed.
-    coord_idx : int
-        Index of the coordinate dimension.
+    coord_name : str
+        Name of the coordinate.
+
+    Returns
+    -------
+    dict of iris.cube.Cube
+        Transformed cubes.
+
+    Raises
+    ------
+    ValueError
+        Cubes are not 1D, coordinate name differs or not all cube coordinates
+        are subsets of longest coordinate.
 
     """
-    coord_name = None
+    ref_coord = None
+    for cube in cubes.values():
+        if cube.ndim != 1:
+            raise ValueError("Dimension of cube {} is not 1".format(cube))
+        try:
+            new_coord = cube.coord(coord_name)
+        except iris.exceptions.CoordinateNotFoundError:
+            raise ValueError("'{}' is not a coordinate of cube {}".format(
+                coord_name, cube))
+        if ref_coord is None:
+            ref_coord = new_coord
+        else:
+            if ref_coord.shape[0] < new_coord.shape[0]:
+                ref_coord = new_coord
     if coord_name == 'time':
-        iris.util.unify_time_units(cubes)
+        iris.util.unify_time_units(cubes.values())
+
+    # Transform all cubes
+    new_cubes = {}
+    for (key, cube) in cubes.items():
+        coord = cube.coord(coord_name)
+        if not np.all(np.isin(coord.points, ref_coord.points)):
+            raise ValueError(
+                "Coordinate '{}' of cube\n{}\nis not subset of reference "
+                "coordinate (longest coordinate in list of cubes)".format(
+                    coord_name, cube))
+        new_data = np.full(ref_coord.shape, np.nan)
+        indices = np.where(np.in1d(ref_coord.points, coord.points))
+        new_data[indices] = np.ma.filled(cube.data, np.nan)
+        new_cube = iris.cube.Cube(
+            np.ma.masked_invalid(new_data),
+            aux_coords_and_dims=[(ref_coord, 0)])
+        new_cube.metadata = cube.metadata
+        new_cubes[key] = new_cube
+    check_coordinate(new_cubes.values(), 'year')
+    logger.debug("Successfully unified 1D coordinate '%s' of cubes %s to %s",
+                 coord_name, cubes.values(), ref_coord)
+    return new_cubes
