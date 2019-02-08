@@ -46,6 +46,7 @@ requirements:
     - cython
     - esmpy
     - matplotlib<3
+    - nc-time-axis
     - netCDF4
     - numba
     - numpy
