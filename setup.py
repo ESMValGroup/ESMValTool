@@ -33,6 +33,7 @@ REQUIREMENTS = {
         'cython',
         'scitools-iris',
         'matplotlib<3',
+        'nc-time-axis',
         'netCDF4',
         'numba',
         'numpy',
