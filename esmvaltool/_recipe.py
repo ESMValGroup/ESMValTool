@@ -94,7 +94,7 @@ def _update_from_others(variable, keys, datasets):
                 variable[key] = value
 
 
-def _add_cmor_info(variable, override=False, derive=False):
+def _add_cmor_info(variable, override=False):
     """Add information from CMOR tables to variable."""
     logger.debug("If not present: adding keys from CMOR table to %s", variable)
 
@@ -104,7 +104,8 @@ def _add_cmor_info(variable, override=False, derive=False):
 
     if variable['cmor_table'] not in CMOR_TABLES:
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
-
+        
+    derive = variable['derive']
     # Copy the following keys from CMOR table
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
