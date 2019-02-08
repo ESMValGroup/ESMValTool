@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for bcc-csm1-1."""
 import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline
