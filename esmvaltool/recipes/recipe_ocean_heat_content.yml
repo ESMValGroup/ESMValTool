@@ -18,13 +18,13 @@ documentation:
 
 datasets:
   - {dataset: EC-Earth3-HR, institute: EC-Earth-Consortium, grid: gn,
-     project: PRIMAVERA, exp: control-1950,  ensemble: r1i1p1f1,
+     project: PRIMAVERA, exp: spinup-1950,  ensemble: r1i1p1f1,
      start_year: 1950,  end_year: 1999,
      mesh_file:  '/gws/nopw/j04/primavera1/masks/mesh_masks/EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O25L75.nc'}
-  - {dataset: EC-Earth3-LR, institute: EC-Earth-Consortium, grid: gn,
-     project: PRIMAVERA, exp: control-1950,  ensemble: r1i1p1f1, version: v20180501,
-     start_year: 1950,  end_year: 1999,
-     mesh_file:  '/gws/nopw/j04/primavera1/masks/mesh_masks/EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O1L75.nc'}
+  # - {dataset: EC-Earth3-LR, institute: EC-Earth-Consortium, grid: gn,
+  #    project: PRIMAVERA, exp: control-1950,  ensemble: r1i1p1f1, version: v20180501,
+  #    start_year: 1950,  end_year: 1999,
+  #    mesh_file:  '/gws/nopw/j04/primavera1/masks/mesh_masks/EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O1L75.nc'}
   - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
   - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
   - {dataset: EC-EARTH,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
