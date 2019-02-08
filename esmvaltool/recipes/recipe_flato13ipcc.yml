@@ -1,16 +1,20 @@
+# ESMValTool
 # recipe_flato13ipcc.yml
 ---
 documentation:
 
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
-    9.2, 9.4, 9.5, 9.8, 9.42a
+    9.2, 9.4, 9.5, 9.8, 9.42a.
 
   authors:
     - bock_ls
     - laue_ax
     - schl_ma
 
+  maintainer:
+    - righ_ma
+    
   references:
     - flato13ipcc
 
@@ -287,6 +291,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -390,6 +395,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -490,6 +496,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}

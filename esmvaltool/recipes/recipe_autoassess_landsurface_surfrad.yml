@@ -1,19 +1,19 @@
-#################
-#it runs:
-#  - surfrad
-#################
-#### CAVEATS
-# land-sea masks are not averaged over time (annual)
-# but are fixed i.e. using sftlf (lat-lon) grid
-# (the original Autoassess diagnostic used time-dependent .pp masks -
-# these can still be implemented if present in autoassess_source)
-#################
-# RECIPE IS FULLY WORKING BUT MASKS NEED TO BE CHECKED !!!
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_landsurface_surfrad.yml
 ---
 documentation:
-  description: Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Land-sea masks are not averaged over time (annual) but are fixed, i.e.
+    using sftlf (lat-lon) grid. The original  Autoassess diagnostic used
+    time-dependent .pp masks these can still be implemented if present in
+    autoassess_source. The recipe is fully working but masks need to be
+    checked.
+
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:
@@ -36,11 +36,13 @@ diagnostics:
         derive: true
         force_derivation: false
         fx_files: [sftlf]
+        frequency: mon
       rlns: # Surf LW net all sky
         field: T2Ms
         derive: true
         force_derivation: false
         fx_files: [sftlf]
+        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:

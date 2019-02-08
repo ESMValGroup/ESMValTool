@@ -22,7 +22,7 @@ exclude_paths: [
     'doc/sphinx/**',
     'esmvaltool/doc/sphinx/**',
     # cmor tables
-    'esmvaltool/interface_scripts/cmip*-cmor-tables/**',
+    'esmvaltool/cmor/tables/**',
     # old stuff
     'backend/**',
     'diag_scripts/**',
