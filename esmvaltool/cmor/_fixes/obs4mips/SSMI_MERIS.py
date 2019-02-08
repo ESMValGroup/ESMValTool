@@ -1,18 +1,19 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
-"""Fixes for FGOALS-g2 model"""
-from cf_units import Unit
+"""Fixes for CCSM4 model."""
+from iris.cube import CubeList
 
 from ..fix import Fix
 
 
-class allvars(Fix):
-    """Fixes common to all vars"""
+# noinspection PyPep8Naming
+class prw(Fix):
+    """Fixes for prw."""
 
     def fix_metadata(self, cubes):
         """
         Fix metadata.
 
-        Fixes time units
+        Remove error and number of observations cubes
 
         Parameters
         ----------
@@ -23,7 +24,5 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        for cube in cubes:
-            time = cube.coord('time')
-            time.units = Unit(time.units.name, time.units.calendar)
-        return cubes
+        cube = self.get_cube_from_list(cubes)
+        return CubeList([cube])
