@@ -43,7 +43,7 @@ import iris
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import esmvaltool.diag_scripts.shared as diag
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
