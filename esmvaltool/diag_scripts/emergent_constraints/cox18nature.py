@@ -34,7 +34,8 @@ import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, plot, run_diagnostic, variables_available)
+    group_metadata, io, plot, run_diagnostic, select_metadata,
+    variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -42,6 +43,7 @@ plt.style.use(plot.get_path_to_mpl_style())
 COLOR_SMALL_LAMBDA = '#800060'
 COLOR_LARGE_LAMBDA = '#009900'
 (FIG, AXES) = plt.subplots()
+
 ECS_ATTRS = {
     'short_name': 'ecs',
     'long_name': 'Equilibrium Climate Sensitivity (ECS)',
@@ -58,6 +60,14 @@ PSI_ATTRS = {
     'long_name': 'Temperature variability metric',
     'units': 'K',
 }
+
+
+def _get_ancestor_files(cfg, obs_name, project='CMIP5'):
+    """Get ancestor files for provenance."""
+    datasets = select_metadata(cfg['input_data'].values(), project=project)
+    datasets.extend(
+        select_metadata(cfg['input_data'].values(), dataset=obs_name))
+    return [d['filename'] for d in datasets]
 
 
 def _get_model_color(model, lambda_cube):
@@ -165,8 +175,8 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
         "Simulated change in global temperature from CMIP5 models (coloured "
         "lines), compared to the global temperature anomaly from the {} "
         "dataset (black dots). The anomalies are relative to a baseline "
-        "period of 1961–1990.".format(obs_name), ['anomaly'], ['times'],
-        list(cfg['input_data'].keys()))
+        "period of 1961-1990.".format(obs_name), ['anomaly'], ['times'],
+        _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -194,8 +204,9 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
         AXES.set_xlabel('Year')
         AXES.set_ylabel('Temperature anomaly / K')
         legend = _get_line_plot_legend()
-        plot_path = _save_fig(cfg, filename, legend)
-        provenance_record['plot_file'] = plot_path
+
+        # Save plot
+        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -208,13 +219,13 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
     netcdf_path = get_diagnostic_filename(filename, cfg)
     io.save_1d_data(psi_cubes, netcdf_path, 'year', PSI_ATTRS)
     provenance_record = get_provenance_record(
-        "Ψ metric of variability versus time, from the CMIP5 models "
+        "Psi metric of variability versus time, from the CMIP5 models "
         "(coloured lines), and the {0} observational data (black circles). "
-        "The Ψ values are calculated for windows of width {1} yr, after "
+        "The psi values are calculated for windows of width {1} yr, after "
         "linear de-trending in each window. These {1}-yr windows are shown "
         "for different end times.".format(obs_name, cfg.get(
-            'window_length', 55)), ['correlation', 'variability'], ['times'],
-        list(cfg['input_data'].keys()))
+            'window_length', 55)), ['corr', 'var'], ['times'],
+        _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -242,8 +253,9 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
         AXES.set_xlabel('Year')
         AXES.set_ylabel(r'$\Psi$ / K')
         legend = _get_line_plot_legend()
-        plot_path = _save_fig(cfg, filename, legend)
-        provenance_record['plot_file'] = plot_path
+
+        # Save plot
+        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -254,21 +266,21 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
     """Plot emergent relationship."""
     filename = 'emergent_relationship_{}'.format(
         obs_cube.attributes['dataset'])
-    ecs_cube.add_aux_coord(
-        iris.coords.AuxCoord(psi_cube.points, ih.convert_to_iris(PSI_ATTRS)),
+    cube = ecs_cube.copy()
+    cube.add_aux_coord(
+        iris.coords.AuxCoord(psi_cube.data, **ih.convert_to_iris(PSI_ATTRS)),
         0)
     netcdf_path = get_diagnostic_filename(filename, cfg)
-    io.save_iris_cube(ecs_cube, netcdf_path)
+    io.save_iris_cube(cube, netcdf_path)
     provenance_record = get_provenance_record(
-        "Emergent relationship between ECS and the Ψ metric. The black dot-"
+        "Emergent relationship between ECS and the psi metric. The black dot-"
         "dashed line shows the best-fit linear regression across the model "
         "ensemble, with the prediction error for the fit given by the black "
         "dashed lines. The vertical blue lines show the observational "
         "constraint from the {} observations: the mean (dot-dashed line) and "
         "the mean plus and minus one standard deviation (dashed lines).".
-        format(obs_cube.attributes['dataset']),
-        ['mean', 'correlation', 'variability'], ['scatter'],
-        list(cfg['input_data'].keys()))
+        format(obs_cube.attributes['dataset']), ['mean', 'corr', 'var'],
+        ['scatter'], _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
     if cfg['write_plots']:
@@ -315,8 +327,7 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         legend = AXES.legend(loc='upper left')
 
         # Save plot
-        plot_path = _save_fig(cfg, filename, legend)
-        provenance_record['plot_file'] = plot_path
+        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -339,12 +350,13 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
         long_name='Probability density function',
         units='K-1')
     cube.add_aux_coord(
-        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)))
+        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.save_iris_cube(cube, netcdf_path)
     provenance_record = get_provenance_record(
         "The PDF for ECS. The orange histograms show the prior distributions "
         "that arise from equal weighting of the CMIP5 models in 0.5 K bins.",
-        ['mean'], ['other'], list(cfg['input_data'].keys()))
+        ['mean'], ['other'],
+        _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
     if cfg['write_plots']:
@@ -369,8 +381,7 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
         legend = AXES.legend(loc='upper left')
 
         # Save plot
-        plot_path = _save_fig(cfg, filename, legend)
-        provenance_record['plot_file'] = plot_path
+        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -394,14 +405,14 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
         long_name='Cumulative distribution function',
         units='1')
     cube.add_aux_coord(
-        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)))
+        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.save_iris_cube(cube, netcdf_path)
     provenance_record = get_provenance_record(
         "The CDF for ECS. The horizontal dot-dashed lines show the {}% "
         "confidence limits. The orange histograms show the prior "
         "distributions that arise from equal weighting of the CMIP5 models in "
         "0.5 K bins.".format(int(confidence_level * 100)), ['mean'], ['other'],
-        list(cfg['input_data'].keys()))
+        _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
     if cfg['write_plots']:

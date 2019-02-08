@@ -254,7 +254,7 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     var_attrs : dict
         Attributes for the variable (`short_name`, `long_name`, or `units`).
     aux_coord : iris.coords.AuxCoord, optional
-        Optional auxialiary coordinate.
+        Optional auxiliary coordinate.
     attributes : dict, optional
         Additional attributes for the cube.
 
