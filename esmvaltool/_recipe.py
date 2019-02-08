@@ -719,7 +719,6 @@ def _get_derive_input_variables(variables, config_user):
                                              variable['field'])['vars']:
                 var = copy.deepcopy(variable)
                 var.update(new_variable)
-                _add_cmor_info(var, override=True, derive=True)
                 append(group_prefix, var)
 
     return derive_input
