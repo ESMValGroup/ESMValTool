@@ -8,18 +8,18 @@ To get started developing, follow the instructions below. More detailed instruct
 
 ## Getting started
 To install in development mode, follow these instructions.
-- Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available.
-- [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
-- To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
-- Update conda: `conda update -y conda`
-- Create a conda environment: `conda create -y -n esmvaltool python=3`
-- Activate the esmvaltool environment: `conda activate esmvaltool`
-- Clone the ESMValTool github repository: `git clone git@github.com:ESMValGroup/ESMValTool`
-- Go to the esmvaltool directory: `cd ESMValTool`
-- Update the esmvaltool conda environment `conda env update`
-- Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
-- If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences.
-- Test that your installation was succesful by running `esmvaltool -h`.
+  - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available.
+  - [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
+  - To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
+  - Update conda: `conda update -y conda`
+  - Create a conda environment: `conda create -y -n esmvaltool python=3`
+  - Activate the esmvaltool environment: `conda activate esmvaltool`
+  - Clone the ESMValTool github repository: `git clone git@github.com:ESMValGroup/ESMValTool`
+  - Go to the esmvaltool directory: `cd ESMValTool`
+  - Update the esmvaltool conda environment `conda env update`
+  - Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
+  - If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences.
+  - Test that your installation was succesful by running `esmvaltool -h`.
 
 ## Running tests
 Go to the directory where the repository is cloned and run `python setup.py test --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
@@ -41,7 +41,7 @@ yapf -i some_file.py
 to add/remove whitespace as required by the standard.
 
 To check if your code adheres to the standard, go to the directory where the repository is cloned, e.g. `cd ESMValTool`.
-and run 
+and run
 ```
 prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 ```
@@ -78,7 +78,7 @@ Make sure that your newly added documentation builds without warnings or errors.
 ## Pull requests and code review
 New development should preferably be done in a new git branch in the main ESMValTool github repository. However, for scientists requiring confidentiality, private repositories are available. It is recommended that you open a pull request early, as this will cause CircleCI to run the unit tests and Codacy to analyse your code. It's also easier to get help from other developers if your code is visible in a pull request.
 
-You can view the results of the automatic checks below your pull request. If one of the tests shows a red cross instead of a green approval sign, please click the link and try to solve the issue. Note that this kind of automated checks make it easier to review code, but they are not flawless, so occasionally Codacy will report false positives. 
+You can view the results of the automatic checks below your pull request. If one of the tests shows a red cross instead of a green approval sign, please click the link and try to solve the issue. Note that this kind of automated checks make it easier to review code, but they are not flawless, so occasionally Codacy will report false positives.
 
 ### Diagnostic script contributions
 A pull request with diagnostic code should preferably not introduce new Codacy issues. However, we understand that there is a limit to how much time can be spend on polishing code, so up to 10 new (non-trivial) issues is still an acceptable amount.
