@@ -200,14 +200,8 @@ class CMORCheck(object):
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
                 if attr not in self._cube.attributes:
-                    # It is usually missing in CMIP data, so we only report
-                    # a warning in that case
-                    if self._cmor_var.table_type in ('CMIP5', 'CMIP6'):
-                        self.report_warning('{}: attribute {} not present',
-                                            self._cube.var_name, attr)
-                    else:
-                        self.report_error('{}: attribute {} not present',
-                                          self._cube.var_name, attr)
+                    self.report_warning('{}: attribute {} not present',
+                                        self._cube.var_name, attr)
                 elif self._cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
@@ -559,6 +553,7 @@ class CMORCheck(object):
 def _get_cmor_checker(table,
                       mip,
                       short_name,
+                      frequency,
                       fail_on_error=True,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
@@ -570,19 +565,20 @@ def _get_cmor_checker(table,
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
     if var_info is None:
-        var_info = CMOR_TABLES['default'].get_variable(mip, short_name)
+        var_info = CMOR_TABLES['custom'].get_variable(mip, short_name)
 
     def _checker(cube):
         return CMORCheck(
             cube,
             var_info,
+            frequency=frequency,
             fail_on_error=fail_on_error,
             automatic_fixes=automatic_fixes)
 
     return _checker
 
 
-def cmor_check_metadata(cube, cmor_table, mip, short_name):
+def cmor_check_metadata(cube, cmor_table, mip, short_name, frequency):
     """Check if metadata conforms to variable's CMOR definiton.
 
     None of the checks at this step will force the cube to load the data.
@@ -597,14 +593,16 @@ def cmor_check_metadata(cube, cmor_table, mip, short_name):
         Variable's mip.
     short_name: basestring
         Variable's short name.
+    frequency: basestring
+        Data frequency.
 
     """
-    checker = _get_cmor_checker(cmor_table, mip, short_name)
+    checker = _get_cmor_checker(cmor_table, mip, short_name, frequency)
     checker(cube).check_metadata()
     return cube
 
 
-def cmor_check_data(cube, cmor_table, mip, short_name):
+def cmor_check_data(cube, cmor_table, mip, short_name, frequency):
     """Check if data conforms to variable's CMOR definiton.
 
     The checks performed at this step require the data in memory.
@@ -618,15 +616,17 @@ def cmor_check_data(cube, cmor_table, mip, short_name):
     mip:
         Variable's mip.
     short_name: basestring
-        Variable's short name.
+        Variable's short name
+    frequency: basestring
+        Data frequency
 
     """
-    checker = _get_cmor_checker(cmor_table, mip, short_name)
+    checker = _get_cmor_checker(cmor_table, mip, short_name, frequency)
     checker(cube).check_data()
     return cube
 
 
-def cmor_check(cube, cmor_table, mip, short_name):
+def cmor_check(cube, cmor_table, mip, short_name, frequency):
     """Check if cube conforms to variable's CMOR definiton.
 
     Equivalent to calling cmor_check_metadata and cmor_check_data
@@ -642,8 +642,10 @@ def cmor_check(cube, cmor_table, mip, short_name):
         Variable's mip.
     short_name: basestring
         Variable's short name.
+    frequency: basestring
+        Data frequency.
 
     """
-    cmor_check_metadata(cube, cmor_table, mip, short_name)
-    cmor_check_data(cube, cmor_table, mip, short_name)
+    cmor_check_metadata(cube, cmor_table, mip, short_name, frequency)
+    cmor_check_data(cube, cmor_table, mip, short_name, frequency)
     return cube
