@@ -6,6 +6,7 @@ from iris.cube import CubeList
 
 from ..fix import Fix
 
+
 class xco2(Fix):
     """Fixes for xco2"""
 
@@ -25,7 +26,6 @@ class xco2(Fix):
         iris.cube.CubeList
 
         """
-        print("*** FIX XCO2 METADATA ***")
         cube = cubes[0]
         cube.units = cf_units.Unit('1.0e-6')
         cube = cube.intersection(longitude=(0, 360))
@@ -48,7 +48,6 @@ class xco2(Fix):
         iris.cube.Cube
 
         """
-        print("*** FIX XCO2 DATA ***")
         metadata = cube.metadata
         cube *= 1.0e6
         cube.metadata = metadata

@@ -64,7 +64,10 @@ class DerivedVariable(DerivedVariableBase):
         p_layer_widths = _pressure_level_widths(
             co2_cube, ps_cube, top_limit=0.0)
 
-        #iris.save(p_layer_widths, '/pf/b/b380103/workesm/esmvaltool_output/p_layer_widths.nc')
+        # iris.save(
+        #     p_layer_widths,
+        #     '/pf/b/b380103/workesm/esmvaltool_output/p_layer_widths.nc'
+        # )
 
         # latitudes (1-dim array)
         lat = co2_cube.coord('latitude').points
@@ -80,14 +83,17 @@ class DerivedVariable(DerivedVariableBase):
         g_4d_array = iris.util.broadcast_to_shape(g0**2, zg_cube.shape, [2])
         g_4d_array = np.sqrt(g_4d_array.data + 2. * FAIR_COR * zg_cube.data)
 
-        #outcube = co2_cube.copy(g_4d_array)
-        #iris.save(outcube, '/pf/b/b380103/workesm/esmvaltool_output/g_4d_array.nc')
+        # outcube = co2_cube.copy(g_4d_array)
+        # iris.save(
+        #     outcube,
+        #     '/pf/b/b380103/workesm/esmvaltool_output/g_4d_array.nc'
+        # )
 
         # number of dry air particles (air molecules excluding water vapor)
         # within each layer
         n_dry = (hus_cube * -1. + 1.) * N_AVO * p_layer_widths.data / (MW_AIR * g_4d_array)
 
-        #iris.save(n_dry, '/pf/b/b380103/workesm/esmvaltool_output/n_dry.nc')
+        # iris.save(n_dry, '/pf/b/b380103/workesm/esmvaltool_output/n_dry.nc')
 
         # number of CO2 molecules per layer
         co2_cube = co2_cube * n_dry
@@ -98,9 +104,13 @@ class DerivedVariable(DerivedVariableBase):
             n_dry.collapsed('air_pressure', iris.analysis.SUM))
         xco2_cube.units = co2_cube.units
 
-        #iris.save(xco2_cube, '/pf/b/b380103/workesm/esmvaltool_output/xco2_new.nc')
+        # iris.save(
+        #     xco2_cube,
+        #     '/pf/b/b380103/workesm/esmvaltool_output/xco2_new.nc'
+        # )
 
         return xco2_cube
+
 
 # Helper functions
 def _pressure_level_widths(co2_cube, ps_cube, top_limit=0.0):
