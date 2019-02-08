@@ -14,13 +14,14 @@ datasets:
 #  - {dataset: ESACCI-LANDCOVER,     project: OBS,  tier: 2,  type: sat,     version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998,  end_year: 2012}
 #  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,     version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
 #  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
+  - {dataset: HadISST,              project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1870,  end_year: 2017}
 #  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1948,  end_year: 2018}
 #  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
 
 # TIER 3
 #  - {dataset: AURA-TES,   project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
 #  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
-  - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
+#  - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
 
 
 preprocessors:
@@ -34,8 +35,16 @@ diagnostics:
   testobs:
     description: Test reading of observational data
     variables:
-      toz:
+      ts:
         preproc: nopp
         mip: Amon
+        field: T2Ms
+      tos:
+        preproc: nopp
+        mip: Omon
+        field: T2Ms
+      sic:
+        preproc: nopp
+        mip: OImon
         field: T2Ms
     scripts: null
