@@ -158,12 +158,12 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [reference_dataset, alternative_dataset]
+    # mask_fillvalues:
+    #   threshold_fraction: 0.95
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean, median]
+    #   exclude: [reference_dataset, alternative_dataset]
 
   ppALL:
     extract_levels:
@@ -1894,6 +1894,61 @@ diagnostics:
         normalization: [centered_median]
 
   ### sic: SEA-ICE CONCENTRATION (NH) #########################################
+  sic_nh:
+    description: Sea-ice concentration (NH)
+    variables:
+      sic:
+        preprocessor: ppNOLEV1x1
+        # reference_dataset: to-be-added
+        # alternative_dataset: to-be-added
+        mip: OImon
+        field: T2Ms
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3} #### strange result
+      - {dataset: bcc-csm1-1} #### NoneType is not subscriptable
+      - {dataset: bcc-csm1-1-m} #### NoneType is not subscriptable
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC} #### Units
+      - {dataset: CESM1-CAM5}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: inmcm4} #### could not broadcast input
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M} #### could not broadcast input
+    scripts: null
 
   ### sic: SEA-ICE CONCENTRATION (SH) #########################################
 
