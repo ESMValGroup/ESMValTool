@@ -64,7 +64,7 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
                     'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec, grid_center=False):
+def _stock_cube(spec, lat_offset=True):
     """
     Create a stock cube
 
@@ -108,11 +108,11 @@ def _stock_cube(spec, grid_center=False):
     mid_dx, mid_dy = dx / 2, dy / 2
 
     # Construct the latitude coordinate, with bounds.
-    if grid_center:
-        ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
-    else:
+    if lat_offset:
         ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
                             _LAT_RANGE / dy)
+    else:
+        ydata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dy + 1)
     lats = iris.coords.DimCoord(
         ydata, standard_name='latitude', units='degrees_north', var_name='lat')
     lats.guess_bounds()
@@ -132,7 +132,7 @@ def _stock_cube(spec, grid_center=False):
     return cube
 
 
-def regrid(cube, target_grid, scheme, grid_center=False):
+def regrid(cube, target_grid, scheme, lat_offset=True):
     """
     Perform horizontal regridding.
 
@@ -179,13 +179,9 @@ def regrid(cube, target_grid, scheme, grid_center=False):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            if grid_center:
-                target_grid = _CACHE.setdefault(target_grid,
-                                                _stock_cube(target_grid,
-                                                            grid_center))
-            else:
-                target_grid = _CACHE.setdefault(target_grid,
-                                                _stock_cube(target_grid))
+            target_grid = _CACHE.setdefault(target_grid,
+                                            _stock_cube(target_grid,
+                                                            lat_offset))
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = cube.coord_system()
