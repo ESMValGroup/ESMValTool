@@ -279,8 +279,6 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['load'] = {
         'callback': concatenate_callback,
     }
-    if not derive:
-        settings['load']['constraints'] = variable['standard_name']
     # Configure merge
     settings['concatenate'] = {}
 

@@ -27,6 +27,6 @@ class TestAllVars(unittest.TestCase):
         They should be lat and lon instead of the original latitude and
         longitude
         """
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.coord('latitude').var_name, 'lat')
         self.assertEqual(cube.coord('longitude').var_name, 'lon')

@@ -1,5 +1,5 @@
 """Unit tests for the esmvaltool.preprocessor._mapping module."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 from __future__ import absolute_import, division, print_function
 
 import cf_units
