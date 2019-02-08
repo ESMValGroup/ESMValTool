@@ -6,7 +6,7 @@ import os
 import iris
 import numpy as np
 
-from ._iris_helpers import unify_1d_cubes
+from .iris_helpers import unify_1d_cubes
 
 logger = logging.getLogger(__name__)
 

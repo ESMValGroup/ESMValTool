@@ -31,11 +31,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
+import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_ancestor_file, get_diagnostic_filename,
-    get_plot_filename, group_metadata, iris_project_constraint,
-    match_dataset_coordinates, netcdf_to_metadata, plot, run_diagnostic,
-    save_1d_data, variables_available)
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    group_metadata, io, plot, run_diagnostic, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -120,11 +119,12 @@ def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
     cubes = []
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
-        filepath = get_ancestor_file(cfg, filename)
+        filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
-        cube = cube.extract(iris_project_constraint(['OBS'], cfg, negate=True))
+        cube = cube.extract(
+            ih.iris_project_constraint(['OBS'], cfg, negate=True))
         cubes.append(cube)
-    cubes = match_dataset_coordinates(cubes)
+    cubes = ih.match_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])
 
 
@@ -136,8 +136,8 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
 
     # Save netcdf file
     filename = 'temperature_anomaly_{}'.format(obs_name)
-    save_1d_data(tas_cubes, get_diagnostic_filename(filename, cfg), 'year',
-                 TAS_ATTRS)
+    io.save_1d_data(tas_cubes, get_diagnostic_filename(filename, cfg), 'year',
+                    TAS_ATTRS)
 
     # Plot
     if not cfg['write_plots']:
@@ -368,7 +368,7 @@ def main(cfg):
     # Get time-dependent psi data
     psi_cubes = {}
     psi_obs = []
-    psi_data = netcdf_to_metadata(cfg, pattern='psi_*.nc')
+    psi_data = io.netcdf_to_metadata(cfg, pattern='psi_*.nc')
     for (dataset, [data]) in group_metadata(psi_data, 'dataset').items():
         cube = iris.load_cube(data['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)

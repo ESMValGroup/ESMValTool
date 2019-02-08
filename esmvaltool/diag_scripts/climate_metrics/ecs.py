@@ -36,8 +36,8 @@ from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, plot, run_diagnostic, save_iris_cube,
-    save_scalar_data, select_metadata, variables_available)
+    get_plot_filename, group_metadata, io, plot, run_diagnostic,
+    select_metadata, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -203,7 +203,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
         **extract_variables(cfg, as_iris=True)['rtmt'])
     netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
                                           cfg)
-    save_iris_cube(cube, netcdf_path)
+    io.save_iris_cube(cube, netcdf_path)
 
     # Provenance
     provenance_record = get_provenance_record(
@@ -235,7 +235,7 @@ def write_data(ecs_data, clim_sens_data, ancestor_files, cfg):
     ]
     for (idx, var_attr) in enumerate(var_attrs):
         path = get_diagnostic_filename(var_attr['short_name'], cfg)
-        save_scalar_data(data[idx], path, var_attr)
+        io.save_scalar_data(data[idx], path, var_attr)
         caption = "{long_name} for multiple climate models.".format(**var_attr)
         provenance_record = get_provenance_record(caption)
         provenance_record['ancestors'] = ancestor_files

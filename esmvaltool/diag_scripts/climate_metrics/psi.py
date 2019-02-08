@@ -33,8 +33,8 @@ import numpy as np
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, group_metadata,
-    metadata_to_netcdf, run_diagnostic, save_scalar_data, variables_available)
+    ProvenanceLogger, get_diagnostic_filename, group_metadata, io,
+    run_diagnostic, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -130,14 +130,15 @@ def main(cfg):
 
         # Save psi for every dataset
         data['filename'] = out_path
-        metadata_to_netcdf(psi_cube, data)
+        io.metadata_to_netcdf(psi_cube, data)
 
         # Save averaged psi
         psis[dataset] = np.mean(psi_cube.data)
 
     # Save averaged psis for every dataset in one file
     out_path = get_diagnostic_filename('psi', cfg)
-    save_scalar_data(psis, out_path, psi_attrs, attributes=psi_cube.attributes)
+    io.save_scalar_data(
+        psis, out_path, psi_attrs, attributes=psi_cube.attributes)
 
     # Provenance
     caption = "{long_name} for mutliple climate models.".format(**psi_attrs)
