@@ -19,7 +19,7 @@ class TestAll(unittest.TestCase):
         self.fix = allvars()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
 
         time = cube.coord('time')
         self.assertEqual(time.units.origin,

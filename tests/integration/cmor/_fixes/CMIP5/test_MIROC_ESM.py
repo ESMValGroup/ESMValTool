@@ -14,7 +14,7 @@ class TestCo2(unittest.TestCase):
         self.fix = co2()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('1e-6'))
 
@@ -36,7 +36,7 @@ class TestGpp(unittest.TestCase):
         self.fix = gpp()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('g m-2 day-1'))
 
@@ -58,12 +58,12 @@ class TestAll(unittest.TestCase):
     def test_fix_metadata_plev(self):
         time = self.cube.coord('time')
         time.units = Unit("days since 1-1-1", time.units.calendar)
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         cube.coord('air_pressure')
 
     def test_fix_metadata_no_plev(self):
         self.cube.remove_coord('AR5PL35')
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         with self.assertRaises(CoordinateNotFoundError):
             cube.coord('air_pressure')
 
