@@ -114,7 +114,12 @@ class OceanHeatContent(object):
             dataset_info = self.datasets.get_dataset_info(filename)
             thetao = iris.load_cube(filename,
                                     'sea_water_potential_temperature')
-            area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
+            if dataset_info[n.FX_FILES]['areacello']:
+                area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
+            else:
+                e1t = iris.load_cube(dataset_info['mesh_file'], 'e1t')
+                e2t = iris.load_cube(dataset_info['mesh_file'], 'e2t')
+                area_cello = iris.util.squeeze(e1t * e2t)
 
             self._compute_depth_weights(thetao)
 
@@ -267,14 +272,14 @@ class OceanHeatContent(object):
                     str(self.datasets.get_info_list(n.END_YEAR)[dataset])
                 ])
             )
-
-        plt.title(self.cfg[n.SCRIPT].replace('_', ' '))
+        script = self.cfg[n.SCRIPT]
+        plt.figure(1)
+        plt.title(script.replace('_', ' '))
         plt.xlabel('Month')
         plt.ylabel('OHC (%s)' % ohc_compare[0].units)
         plt.legend()
         plt.grid()
         plt.tight_layout()
-        script = self.cfg[n.SCRIPT]
         datasets = '_'.join(self.datasets.get_info_list(n.DATASET))
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
         plt_name = \
@@ -286,7 +291,13 @@ class OceanHeatContent(object):
             )
         plt.figure(1).savefig(os.path.join(self.cfg[n.PLOT_DIR], plt_name))
         plt.close(1)
-
+        plt.figure(2)
+        plt.title(script.replace('_', ' '))
+        plt.xlabel('Month')
+        plt.ylabel('OHC (%s)' % ohc_compare[0].units)
+        plt.legend()
+        plt.grid()
+        plt.tight_layout()
         stan_plt_name = \
             '{script}_{type_of_plot}_comparison_standarized_{datasets}' \
             '.{out_type}'.format(

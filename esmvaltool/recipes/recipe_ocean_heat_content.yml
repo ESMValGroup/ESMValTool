@@ -19,12 +19,15 @@ documentation:
 datasets:
   - {dataset: EC-Earth3-HR, expid: a0qp, institute: EC-Earth-Consortium, grid: gn,
      project: PRIMAVERA_HR, exp: historical,  ensemble: r1i1p1f1,
-     start_year: 2000,  end_year: 2001}
+     start_year: 2011,  end_year: 2013,
+     mesh_file: '/esarchive/autosubmit/con_files/mesh_mask_nemo.Ec3.2_O25L75.nc'}
   - {dataset: EC-Earth3-LR, expid: a13c, institute: EC-Earth-Consortium, grid: gn,
     project: PRIMAVERA, exp: historical,  ensemble: r1i1p1f1, version: v20180501,
-    start_year: 1950,  end_year: 1960}
-#  - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
-#  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 1905}
+    start_year: 2011,  end_year: 2013,
+    mesh_file: '/esarchive/autosubmit/con_files/mesh_mask_nemo.Ec3.2_O1L75.nc'}
+
+#  - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+#  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
 #  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
