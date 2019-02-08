@@ -239,7 +239,7 @@ def save_iris_cube(cube, path):
     logger.info("Wrote %s", path)
 
 
-def save_scalar_data(data, path, var_attrs, attributes=None):
+def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
@@ -253,6 +253,8 @@ def save_scalar_data(data, path, var_attrs, attributes=None):
         Path to the new file.
     var_attrs : dict
         Attributes for the variable (`short_name`, `long_name`, or `units`).
+    aux_coord : iris.coords.AuxCoord, optional
+        Optional auxialiary coordinate.
     attributes : dict, optional
         Additional attributes for the cube.
 
@@ -266,9 +268,12 @@ def save_scalar_data(data, path, var_attrs, attributes=None):
     if attributes is None:
         attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')
+    coords = [(dataset_coord, 0)]
+    if aux_coord is not None:
+        coords.append((aux_coord, 0))
     cube = iris.cube.Cube(
         list(data.values()),
-        aux_coords_and_dims=[(dataset_coord, 0)],
+        aux_coords_and_dims=coords,
         attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path

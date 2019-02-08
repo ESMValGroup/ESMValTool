@@ -49,6 +49,26 @@ def check_coordinate(cubes, coord_name):
     return coord.points
 
 
+def convert_to_iris(dict_):
+    """Change all appearances of `short_name` to `var_name`.
+
+    Parameters
+    ----------
+    dict_ : dict
+        Dictionary to convert.
+
+    Returns
+    -------
+    dict
+        Converted dictionary.
+
+    """
+    dict_ = dict(dict_)
+    if 'short_name' in dict_:
+        dict_['var_name'] = dict_.pop('short_name')
+    return dict_
+
+
 def iris_project_constraint(projects, cfg, negate=False):
     """Create `iris.Constraint` to select specific projects from data.
 
