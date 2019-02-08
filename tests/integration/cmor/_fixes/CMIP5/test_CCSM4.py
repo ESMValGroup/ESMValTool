@@ -12,7 +12,7 @@ class TestsRlut(unittest.TestCase):
 
     def setUp(self):
         """Prepare tests"""
-        self.cube = Cube([1, 2], var_name='rlut')
+        self.cube = Cube([1.0, 2.0], var_name='rlut')
         self.cube.add_dim_coord(DimCoord([0.50001, 1.499999],
                                          standard_name='latitude',
                                          bounds=[[0.00001, 0.999999],
@@ -37,7 +37,7 @@ class TestsRlutcs(unittest.TestCase):
 
     def setUp(self):
         """Prepare tests"""
-        self.cube = Cube([1, 2], var_name='rlut')
+        self.cube = Cube([1.0, 2.0], var_name='rlut')
         self.cube.add_dim_coord(DimCoord([0.50001, 1.499999],
                                          standard_name='latitude',
                                          bounds=[[0.00001, 0.999999],
@@ -62,7 +62,7 @@ class TestSo(unittest.TestCase):
 
     def setUp(self):
         """Prepare tests"""
-        self.cube = Cube([1, 2], var_name='so', units='1.0')
+        self.cube = Cube([1.0, 2.0], var_name='so', units='1.0')
         self.fix = so()
 
     def test_fix_metadata(self):

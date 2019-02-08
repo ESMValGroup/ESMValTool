@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.OBS.ESACCI_GHG import (
 
 class Testxco2Stderr(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='xco2Stderr', units='1')
+        self.cube = Cube([1.0], var_name='xco2Stderr', units='1')
         self.fix = xco2Stderr()
 
     def test_fix_metadata(self):
@@ -23,7 +23,7 @@ class Testxco2Stderr(unittest.TestCase):
 
 class Testxco2Stddev(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='xco2Stddev', units='1')
+        self.cube = Cube([1.0], var_name='xco2Stddev', units='1')
         self.fix = xco2Stddev()
 
     def test_fix_metadata(self):
@@ -38,7 +38,7 @@ class Testxco2Stddev(unittest.TestCase):
 
 class Testxch4Stddev(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='xch4Stddev', units='1')
+        self.cube = Cube([1.0], var_name='xch4Stddev', units='1')
         self.fix = xch4Stddev()
 
     def test_fix_metadata(self):
@@ -53,7 +53,7 @@ class Testxch4Stddev(unittest.TestCase):
 
 class Testxch4Stderr(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='xch4Stderr', units='1')
+        self.cube = Cube([1.0], var_name='xch4Stderr', units='1')
         self.fix = xch4Stderr()
 
     def test_fix_metadata(self):
