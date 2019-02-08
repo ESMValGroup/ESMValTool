@@ -36,13 +36,11 @@ diagnostics:
         derive: true
         force_derivation: false
         fx_files: [sftlf]
-        frequency: mon
       rlns: # Surf LW net all sky
         field: T2Ms
         derive: true
         force_derivation: false
         fx_files: [sftlf]
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:

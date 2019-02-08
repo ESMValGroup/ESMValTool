@@ -12,7 +12,7 @@ documentation:
 
   maintainer:
     - pred_va
-  
+
   projects:
     - cmug
 
@@ -35,44 +35,38 @@ preprocessors:
 
 diagnostics:
   radiation_Amon_obs_CERES-EBAF:
-    description: "CMIP5 vs CERES-EBAF" 
+    description: "CMIP5 vs CERES-EBAF"
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       rsnt: # TOA SW net
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       swcre: # TOA SW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       lwcre: # TOA LW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       rsns: # Surf SW net all sky
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       rlns: # Surf LW net all sky
         preprocessor: pp_rad_derive_var
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
         field: T2Ms
