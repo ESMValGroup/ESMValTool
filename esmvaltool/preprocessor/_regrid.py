@@ -64,7 +64,7 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
                     'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec, lat_offset=True):
+def _stock_cube(spec, lat_offset=True, lon_offset=True):
     """
     Create a stock cube
 
@@ -118,7 +118,11 @@ def _stock_cube(spec, lat_offset=True):
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
-    xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
+    if lon_offset:
+        xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx,
+                            _LON_RANGE / dx)
+    else:
+        xdata = np.linspace(_LON_MIN, _LON_MAX - dx, _LON_RANGE / dx)
     lons = iris.coords.DimCoord(
         xdata, standard_name='longitude', units='degrees_east', var_name='lon')
     lons.guess_bounds()
@@ -132,7 +136,7 @@ def _stock_cube(spec, lat_offset=True):
     return cube
 
 
-def regrid(cube, target_grid, scheme, lat_offset=True):
+def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     """
     Perform horizontal regridding.
 
@@ -181,7 +185,8 @@ def regrid(cube, target_grid, scheme, lat_offset=True):
             # and cache the resulting stock cube for later use.
             target_grid = _CACHE.setdefault(target_grid,
                                             _stock_cube(target_grid,
-                                                            lat_offset))
+                                                        lat_offset,
+                                                        lon_offset))
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = cube.coord_system()
