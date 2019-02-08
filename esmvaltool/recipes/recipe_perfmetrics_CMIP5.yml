@@ -1561,7 +1561,6 @@ diagnostics:
         reference_dataset: CERES-EBAF
         mip: Amon
         field: T2Ms
-        frequency: mon
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1634,7 +1633,6 @@ diagnostics:
         reference_dataset: CERES-EBAF
         mip: Amon
         field: T2Ms
-        frequency: mon
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1863,7 +1861,6 @@ diagnostics:
         alternative_dataset: NIWA
         mip: Amon
         field: T2Ms
-        frequency: mon
         derive: true
         force_derivation: false
         project: CMIP5

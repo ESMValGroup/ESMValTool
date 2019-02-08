@@ -11,7 +11,7 @@ documentation:
 
   maintainer:
     - laue_ax
-    
+
   references:
     - lauer13jclim
 
@@ -134,7 +134,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
          start_year: 1988, end_year: 2007, tier: 3}
@@ -191,7 +190,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -208,7 +206,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -282,7 +279,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
          start_year: 1988, end_year: 2007, tier: 3}
@@ -299,7 +295,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -316,7 +311,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -355,7 +349,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
          start_year: 1988, end_year: 2007, tier: 3}
@@ -404,7 +397,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -421,7 +413,6 @@ diagnostics:
         mip: Amon
         field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}

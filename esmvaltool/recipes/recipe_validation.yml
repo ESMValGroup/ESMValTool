@@ -35,7 +35,6 @@ diagnostics:
         field: T2Ms
         derive: true
         force_derivation: false
-        frequency: mon
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
         field: T2Ms
