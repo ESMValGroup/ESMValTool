@@ -400,10 +400,9 @@ def _update_fx_settings(settings, variable, config_user):
                 fx_files_dict['sftgif'])
 
     for step in ('average_region', 'average_volume'):
-        if step in settings and settings[step].get('fx_files') is not None:
-            var = dict(variable)
+        if setting.get(step, {}).get('fx_files'):
             settings[step]['fx_files'] = get_input_fx_filelist(
-                variable=var,
+                variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'],
             )
