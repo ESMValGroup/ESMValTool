@@ -6,6 +6,7 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
+  - iris
   - graphviz
   - matplotlib<3
   - python-stratify
@@ -15,6 +16,7 @@ dependencies:
   - ncurses=6.1=hfc679d8_1
   - r-base
   - r-rcpp
+  - libunwind  #  specifically for Python3.7+
   # TODO: add julia
 
   - pip:
