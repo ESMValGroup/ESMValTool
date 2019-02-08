@@ -104,8 +104,8 @@ def _add_cmor_info(variable, override=False):
 
     if variable['cmor_table'] not in CMOR_TABLES:
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
-        
-    derive = variable['derive']
+
+    derive = variable.get('derive', False)
     # Copy the following keys from CMOR table
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
@@ -759,7 +759,6 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 config_user,
                 name=derive_name)
             derive_tasks.append(task)
-
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
