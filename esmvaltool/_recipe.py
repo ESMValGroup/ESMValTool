@@ -750,7 +750,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
 
         for derive_variables in derive_input.values():
             for derive_variable in derive_variables:
-                _add_cmor_info(derive_variable)
+                _add_cmor_info(derive_variable, override=True)
             derive_name = task_name.split(
                 TASKSEP)[0] + TASKSEP + derive_variables[0]['variable_group']
             task = _get_single_preprocessor_task(
