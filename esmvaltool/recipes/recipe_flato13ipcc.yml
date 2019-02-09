@@ -1,4 +1,4 @@
-#v/ ESMValTool
+# ESMValTool
 # recipe_flato13ipcc.yml
 ---
 documentation:
@@ -741,8 +741,7 @@ diagnostics:
       - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
@@ -750,8 +749,7 @@ diagnostics:
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-CM3, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
@@ -760,14 +758,10 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: historical, start_year: 1961, end_year: 1990}
-      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-      #    end_year: 1999}
-      # - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961,
-      #    end_year: 1990}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961, end_year: 1990}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
       - {dataset: MIROC5, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
