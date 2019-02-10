@@ -238,8 +238,9 @@ begin
       "https://ladsweb.modaps.eosdis.nasa.gov/search/order", "", "")
 
     ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + \
-      MIPS(vv) + "_" + VARS(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_" + \
+      str_sub_str(VERSION, "_", "-") + "_" + MIPS(vv) + "_" + VARS(vv) + \
+      "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ; Write variable
     write_nc(fout, VARS(vv), output, gAtt)
