@@ -97,8 +97,11 @@ begin
 
   ; CMOR table: Amon version is used also for 3hr, since not all variables are
   ; available in 3hr (the tables are identical anyway)
+  CMOR_TABLE = new(dimsizes(MIPS), string)
   CMOR_TABLE = getenv("esmvaltool_root") + \
     "/cmor/tables/cmip5/Tables/CMIP5_Amon"
+  CMOR_TABLE(ind(VARS.eq."rluscs")) =  getenv("esmvaltool_root") + \
+    "/cmor/tables/custom/CMOR_rluscs.dat"
 
 end
 
