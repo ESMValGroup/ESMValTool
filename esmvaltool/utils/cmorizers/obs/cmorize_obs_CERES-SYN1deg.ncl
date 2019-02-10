@@ -171,7 +171,7 @@ begin
       delete(clon)
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARS(vv), CMOR_TABLE)
+      tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
