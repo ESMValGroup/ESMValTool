@@ -340,8 +340,12 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_time_automatic_fix(self):
         """Test automatic fix for time units"""
-        self.cube.coord('time').units = 'days since 1950-1-1 00:00:00'
-        self._check_cube(automatic_fixes=True)
+        self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
+        self._check_cube()
+        self.assertEquals(
+            self.cube.coord('time').units.origin,
+            'days since 1950-1-1 00:00:00'
+        )
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""
@@ -351,6 +355,11 @@ class TestCMORCheck(unittest.TestCase):
     def test_bad_standard_name(self):
         """Fail if coordinates have bad standard names at metadata step"""
         self.cube.coord('time').standard_name = 'region'
+        self._check_fails_in_metadata()
+
+    def test_bad_out_name(self):
+        """Fail if coordinates have bad short names at metadata step"""
+        self.cube.coord('latitude').var_name = 'region'
         self._check_fails_in_metadata()
 
     def test_bad_data_units(self):
@@ -413,21 +422,6 @@ class TestCMORCheck(unittest.TestCase):
     def test_frequency_not_supported(self):
         """Fail at metadata if frequency is not supported"""
         self._check_fails_in_metadata(frequency='wrong_freq')
-
-    # For the moment, we don't have a variable definition with these values
-    # to test
-
-    def test_data_not_valid_max(self):
-        """Warning if data is above valid_max in data step"""
-        self.var_info.valid_max = '10000'
-        self.cube.data[0] = 100000000000
-        self._check_warnings_on_data()
-
-    def test_data_not_valid_min(self):
-        """Warning if data is below valid_min in data step"""
-        self.var_info.valid_min = '-100'
-        self.cube.data[0] = -100000000000
-        self._check_warnings_on_data()
 
     def _check_fails_on_data(self):
         checker = CMORCheck(self.cube, self.var_info)

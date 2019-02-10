@@ -279,8 +279,6 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['load'] = {
         'callback': concatenate_callback,
     }
-    if not derive:
-        settings['load']['constraints'] = variable['standard_name']
     # Configure merge
     settings['concatenate'] = {}
 
@@ -400,14 +398,9 @@ def _update_fx_settings(settings, variable, config_user):
                 fx_files_dict['sftgif'])
 
     for step in ('average_region', 'average_volume'):
-        if step in settings and settings[step].get('fx_files') is not False:
-            var = dict(variable)
-            if step == 'average_region':
-                var['fx_files'] = ['areacello', ]
-            if step == 'average_volume':
-                var['fx_files'] = ['volcello', ]
+        if settings.get(step, {}).get('fx_files'):
             settings[step]['fx_files'] = get_input_fx_filelist(
-                variable=var,
+                variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'],
             )
