@@ -181,7 +181,8 @@ function time_attrib(coord:numeric,
 ;    coord: input time coordinate.
 ;    year1: start year.
 ;    year2: end year.
-;    frequency: time frequency ("M" for monthly, "D" for daily).
+;    frequency: time frequency ("M" for monthly, "D" for daily, other
+;               arguments are ignored)
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
@@ -209,7 +210,11 @@ begin
     cal = "standard"
   end if
 
-  tmp = check_time_range(coord, year1, year2, frequency)
+  if (any(frequency.eq.(/"M", "D"/))) then
+    tmp = check_time_range(coord, year1, year2, frequency)
+  else
+    tmp = coord
+  end if
 
   out_coord = todouble(tmp)  ; this also removes attributes
   copy_VarCoords(coord, out_coord)
