@@ -26,4 +26,7 @@ class allvars(Fix):
 
             longitude = cube.coord('longitude')
             longitude.var_name = 'lon'
+            
+            cube.remove_coord('cell index along first dimension')
+            cube.remove_coord('cell index along second dimension')
         return cubes
