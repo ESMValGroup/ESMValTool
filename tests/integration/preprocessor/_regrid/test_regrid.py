@@ -50,6 +50,27 @@ class Test(tests.Test):
         expected = np.array([[[1.5]], [[5.5]], [[9.5]]])
         self.assertArrayEqual(result.data, expected)
 
+    def test_regrid__linear_extrapolate(self):
+        data = np.empty((1, 1))
+        grid = iris.cube.Cube(data)
+        lons = iris.coords.DimCoord(
+            [1.5],
+            standard_name='longitude',
+            bounds=[[1, 2]],
+            units='degrees_east',
+            coord_system=self.cs)
+        lats = iris.coords.DimCoord(
+            [1.5],
+            standard_name='latitude',
+            bounds=[[1, 2]],
+            units='degrees_north',
+            coord_system=self.cs)
+        coords_spec = [(lats, 0), (lons, 1)]
+        grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
+        result = regrid(self.cube, grid, 'linear_extrapolate')
+        expected = np.array([[[1.5]], [[5.5]], [[9.5]]])
+        self.assertArrayEqual(result.data, expected)
+
     def test_regrid__linear_extrapolate_with_mask(self):
         data = np.empty((3, 3))
         grid = iris.cube.Cube(data)
