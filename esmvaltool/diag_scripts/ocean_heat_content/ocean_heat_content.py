@@ -116,8 +116,11 @@ class OceanHeatContent(object):
             thetao = iris.load_cube(filename,
                                     'sea_water_potential_temperature')
             if dataset_info[n.FX_FILES]['areacello']:
+                constraint = iris.Constraint(
+                    cube_func=lambda(c: c.var_name == 'areacello')
+                )
                 area_cello = iris.load_cube(
-                    dataset_info[n.FX_FILES]['areacello'], 'cell_area'
+                    dataset_info[n.FX_FILES]['areacello'], constraint
                 )
             else:
                 e1t = iris.load_cube(dataset_info['mesh_file'], 'e1t')
