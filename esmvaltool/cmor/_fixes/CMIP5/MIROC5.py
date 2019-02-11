@@ -1,13 +1,15 @@
-"""Fixes for MIROC5 model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for MIROC5 model."""
+import numpy as np
 from ..fix import Fix
 
 
 class sftof(Fix):
-    """Fixes for sftof"""
+    """Fixes for sftof."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -27,11 +29,11 @@ class sftof(Fix):
 
 
 class snw(Fix):
-    """Fixes for snw"""
+    """Fixes for snw."""
 
-    def fix_metadata(self, cube):
+    def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -51,7 +53,7 @@ class snw(Fix):
 
 
 class snc(snw):
-    """Fixes for snc"""
+    """Fixes for snc."""
 
     pass
 
@@ -83,3 +85,28 @@ class snc(snw):
     #     end do
     #     ret = 0
     # end if
+
+
+class msftmyz(Fix):
+    """Fixes for msftmyz."""
+
+    def fix_data(self, cube):
+        """
+        Fix data.
+
+        Fixes mask
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.data = np.ma.array(cube.data)
+        cube.data = np.ma.masked_where(cube.data.mask + (cube.data == 0.),
+                                       cube.data)
+
+        return cube

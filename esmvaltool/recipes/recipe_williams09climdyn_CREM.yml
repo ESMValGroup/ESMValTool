@@ -1,11 +1,15 @@
+# ESMValTool
 # recipe_williams09climdyn_CREM.yml
 ---
 documentation:
   description: |
-    Cloud Regime Error Metric (CREM) by Williams and Webb (2009)
+    Cloud Regime Error Metric (CREM) by Williams and Webb (2009).
 
   authors:
     - will_ke
+    - laue_ax
+
+  maintainer:
     - laue_ax
 
   references:

@@ -1,34 +1,29 @@
 """Test diagnostic script runs."""
 import contextlib
-import os
-import shutil
 import sys
-import tempfile
 from textwrap import dedent
 
 import pytest
 import yaml
+from six import text_type
 
 from esmvaltool._main import run
 
 
-@pytest.fixture
-def tempdir():
-    dirname = tempfile.mkdtemp()
-    yield dirname
-    shutil.rmtree(dirname)
-
-
 def write_config_user_file(dirname):
-    config_file = os.path.join(dirname, 'config-user.yml')
+    config_file = dirname / 'config-user.yml'
     cfg = {
-        'output_dir': dirname,
-        'rootpath': {},
+        'output_dir': str(dirname / 'output_dir'),
+        'rootpath': {
+            'default': str(dirname / 'input_dir'),
+        },
+        'drs': {
+            'CMIP5': 'BADC',
+        },
         'log_level': 'debug',
     }
-    with open(config_file, 'w') as file:
-        yaml.safe_dump(cfg, file)
-    return config_file
+    config_file.write_text(yaml.safe_dump(cfg, encoding=None))
+    return str(config_file)
 
 
 @contextlib.contextmanager
@@ -41,8 +36,7 @@ def arguments(*args):
 
 def check(result_file):
     """Check the results."""
-    with open(result_file, 'r') as file:
-        result = yaml.safe_load(file)
+    result = yaml.safe_load(result_file.read_text())
 
     print(result)
 
@@ -103,18 +97,21 @@ SCRIPTS = {
 
 @pytest.mark.install
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tempdir, script_file, script):
+def test_diagnostic_run(tmp_path, script_file, script):
 
-    recipe_file = os.path.join(tempdir, 'recipe_test.yml')
-    script_file = os.path.join(tempdir, script_file)
-    result_file = os.path.join(tempdir, 'result.yml')
+    recipe_file = tmp_path / 'recipe_test.yml'
+    script_file = tmp_path / script_file
+    result_file = tmp_path / 'result.yml'
 
     # Write script to file
-    with open(script_file, 'w') as file:
-        file.write(script)
+    script_file.write_text(text_type(script))
 
     # Create recipe
     recipe = dedent("""
+        documentation:
+          description: Recipe with no data.
+          authors: [ande_bo]
+
         diagnostics:
           diagnostic_name:
             scripts:
@@ -122,11 +119,15 @@ def test_diagnostic_run(tempdir, script_file, script):
                 script: {}
                 setting_name: {}
         """.format(script_file, result_file))
-    with open(recipe_file, 'w') as file:
-        file.write(recipe)
+    recipe_file.write_text(text_type(recipe))
 
-    config_user_file = write_config_user_file(tempdir)
-    with arguments('esmvaltool', '-c', config_user_file, recipe_file):
+    config_user_file = write_config_user_file(tmp_path)
+    with arguments(
+            'esmvaltool',
+            '-c',
+            config_user_file,
+            str(recipe_file),
+    ):
         run()
 
     check(result_file)

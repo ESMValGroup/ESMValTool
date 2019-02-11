@@ -34,24 +34,25 @@ requirements:
     - python {{ python }}
     # Normally installed via pip:
     - setuptools_scm
-    - r-base
-    - r-rcpp
-    - libgfortran-ng
   run:
     # esmvaltool
     - python
+    - graphviz    
     - iris=1.13
     - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf_units
     - cython
+    - esmpy
     - matplotlib<3
     - netCDF4
     - numba
     - numpy
     - pillow
+    - prov
     - psutil
+    - pydot
     - python-cdo
     - pyyaml
     - shapely
@@ -61,11 +62,9 @@ requirements:
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
-    - julia=1.0.2
-    - gcc
+    - julia>=1.0.3
     - r-base
     - r-rcpp
-    - libgfortran-ng
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
