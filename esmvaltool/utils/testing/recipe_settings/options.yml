@@ -19,7 +19,7 @@ recipe_ensclus.yml:
     - EAT  # Euro-Atlantic
     - PNA  # Pacific North American
     - NH   # Northern Hemisphere
-    - Eu   # Europe
+    - EU   # Europe
   extreme:
     - 60th_percentile
     - 75th_percentile
@@ -27,7 +27,7 @@ recipe_ensclus.yml:
     - mean
     - maximum
     - std
-#    - trend  # broken
+    - trend
   numclus:  # number of clusters
     - 2
     - 3
