@@ -202,7 +202,7 @@ recipe_quantilebias.yml:
 
 recipe_hyint.yml:
   norm_years:  # first and last year of reference normalization period to be used for normalized indices
-
+    - [2004,2006]
   selfields:  # indices to be plotted. Select one or more fields from the following list (order-sensitive) as a numerical index:
     - [1]  # SDII
     - [2]  # DSL
@@ -237,6 +237,7 @@ recipe_hyint.yml:
     - [13]  # timeseries with multiple models
     - [14]  # summary trend coefficients multiple regions
     - [15]  # summary trend coefficients multiple models
+    - [2, 3, 12, 13, 14, 15]
   # Undocumented options
   # Select single plot or multi-panel figure
   multipanel:
@@ -251,9 +252,3 @@ recipe_hyint.yml:
   autolevels:
     - true
     - false
-  # ------- Advanced settings ----------
-  topography_highres:
-    - "~/work/data/Elevation/GMTED2010_15n030_0125deg.nc"
-  boxregion:
-    - false  #-2 # !=0 plot region boxes over maps with thickness = abs(boxregion) and
-                 # white (>0) or grey (<0).  This automatically works on global maps only.
