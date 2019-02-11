@@ -111,6 +111,7 @@ class OceanHeatContent(object):
         ohc1d_compare_timeseries = CubeList()
         ohc1d_compare_monthly = CubeList()
         for filename in self.datasets:
+            logger.info('Working in %s', filename)
             dataset_info = self.datasets.get_dataset_info(filename)
             thetao = iris.load_cube(filename,
                                     'sea_water_potential_temperature')
@@ -250,7 +251,7 @@ class OceanHeatContent(object):
         ohc1d_compare.append(ohc1d)
 
     def _comparison_plot(self, ohc_compare, type_of_plot):
-
+        logger.info('Creating comparison plot for %s', type_of_plot)
         for dataset in range(len(ohc_compare)):
             ohc_mean = ohc_compare[dataset].collapsed(
                 'time', iris.analysis.MEAN
