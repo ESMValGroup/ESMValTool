@@ -1,3 +1,4 @@
 lintr
 logging
+rcpp
 yaml
