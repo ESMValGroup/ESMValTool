@@ -117,7 +117,7 @@ class OceanHeatContent(object):
                                     'sea_water_potential_temperature')
             if dataset_info[n.FX_FILES]['areacello']:
                 constraint = iris.Constraint(
-                    cube_func=lambda(c: c.var_name == 'areacello')
+                    cube_func=lambda c: c.var_name == 'areacello'
                 )
                 area_cello = iris.load_cube(
                     dataset_info[n.FX_FILES]['areacello'], constraint
