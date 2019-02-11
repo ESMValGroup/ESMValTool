@@ -63,7 +63,7 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
                     'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec, lat_offset=False, lon_offset=False):
+def _stock_cube(spec, lat_offset=True, lon_offset=True):
     """
     Create a stock cube.
 
@@ -79,9 +79,9 @@ def _stock_cube(spec, lat_offset=False, lon_offset=False):
     spec : str
         Specifies the 'MxN' degree cell-specification for the global grid.
     lat_offset : bool
-        Offset the grid center on LAT coordinate.
+        Offset the grid center on LAT coordinate. Default True.
     lon_offset : bool
-        Offset the grid center on LON coordinate.
+        Offset the grid center on LON coordinate. Default True.
 
     Returns
     -------
@@ -139,7 +139,7 @@ def _stock_cube(spec, lat_offset=False, lon_offset=False):
     return cube
 
 
-def regrid(cube, target_grid, scheme, lat_offset=False, lon_offset=False):
+def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     """
     Perform horizontal regridding.
 
@@ -155,9 +155,9 @@ def regrid(cube, target_grid, scheme, lat_offset=False, lon_offset=False):
     scheme : str
         The regridding scheme to perform, see `regrid.HORIZONTAL_SCHEMES`.
     lat_offset : bool
-        Offset the grid center on LAT coordinate.
+        Offset the grid center on LAT coordinate. Default True.
     lon_offset : bool
-        Offset the grid center on LON coordinate.
+        Offset the grid center on LON coordinate. defaukt True.
 
     Returns
     -------
@@ -190,24 +190,24 @@ def regrid(cube, target_grid, scheme, lat_offset=False, lon_offset=False):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            if lat_offset and not lon_offset:
+            if not lon_offset and lat_offset:
                 target_grid = _CACHE.setdefault(
                     target_grid,
                     _stock_cube(target_grid,
-                                lat_offset=lat_offset)
+                                lon_offset=False)
                 )
-            if lon_offset and not lat_offset:
+            if not lat_offset and lon_offset:
                 target_grid = _CACHE.setdefault(
                     target_grid,
                     _stock_cube(target_grid,
-                                lon_offset=lon_offset)
+                                lat_offset=False)
                 )
-            if lat_offset and lon_offset:
+            if not lat_offset and not lon_offset:
                 target_grid = _CACHE.setdefault(
                     target_grid,
                     _stock_cube(target_grid,
-                                lat_offset=lat_offset,
-                                lon_offset=lon_offset)
+                                lat_offset=False,
+                                lon_offset=False)
                 )
             else:
                 target_grid = _CACHE.setdefault(

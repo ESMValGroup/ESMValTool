@@ -19,14 +19,16 @@ from esmvaltool.preprocessor._regrid import (
 
 
 class Test(tests.Test):
-    def _check(self, dx, dy, lat_off=False, lon_off=False):
+    def _check(self, dx, dy, lat_off=True, lon_off=True):
         # Generate the expected stock cube coordinate points.
         dx, dy = float(dx), float(dy)
         mid_dx, mid_dy = dx / 2, dy / 2
         if lat_off and lon_off:
-            expected_lat_points = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
+            expected_lat_points = np.linspace(_LAT_MIN + mid_dy,
+                                              _LAT_MAX - mid_dy,
                                               _LAT_RANGE / dy)
-            expected_lon_points = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx,
+            expected_lon_points = np.linspace(_LON_MIN + mid_dx,
+                                              _LON_MAX - mid_dx,
                                               _LON_RANGE / dx)
         else:
             expected_lat_points = np.linspace(_LAT_MIN, _LAT_MAX,
@@ -105,9 +107,10 @@ class Test(tests.Test):
     def test_specs_offset(self):
         specs = ['0.5x0.5', '1x1', '2.5x2.5', '5x5', '10x10']
         for spec in specs:
-            result = stock_cube(spec, lat_offset=True, lon_offset=True)
+            result = stock_cube(spec, lat_offset=False, lon_offset=False)
             self.assertEqual(result, self.Cube)
-            self._check(*list(map(float, spec.split('x'))), lat_off=True, lon_off=True)
+            self._check(*list(map(float, spec.split('x'))),
+                        lat_off=False, lon_off=False)
 
 
 if __name__ == '__main__':
