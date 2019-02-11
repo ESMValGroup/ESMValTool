@@ -83,11 +83,11 @@ You can view the results of the automatic checks below your pull request. If one
 ### Diagnostic script contributions
 A pull request with diagnostic code should preferably not introduce new Codacy issues. However, we understand that there is a limit to how much time can be spend on polishing code, so up to 10 new (non-trivial) issues is still an acceptable amount.
 
-Never make changes to the esmvaltool core, e.g. a new preprocessor function, in diagnostic script pull requests. If you need to make this kind of change, create a separate pull request for it.
+Never make changes to the esmvaltool core, e.g. a new preprocessor function, in diagnostic script pull requests. If you need to make this kind of change, create a separate pull request for it in the public repository.
 
 ### Contributing to the core of ESMValTool
 Contributions to the core of ESMValTool should
-- Preferably be covered by unit tests. Unit tests are mandatory for new preprocessor functions or modifications to existing functions. If you do not know how to start with writing unit tests, let us know in a comment on the pull request and a core development team member will try to help you get started.
-- Introduce no new issues on Codacy (but note that style issues reported in unit test code are not worth the effort of fixing).
-
-
+  - Go into the public repository.
+  - Preferably be covered by unit tests. Unit tests are mandatory for new preprocessor functions or modifications to existing functions. If you do not know how to start with writing unit tests, let us know in a comment on the pull request and a core development team member will try to help you get started.
+ - Be accompanied by appropriate documentation.
+ - Introduce no new issues on Codacy (but note that style issues reported in unit test code are not worth the effort of fixing).
