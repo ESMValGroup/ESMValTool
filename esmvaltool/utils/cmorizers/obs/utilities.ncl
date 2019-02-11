@@ -462,7 +462,12 @@ begin
     end if
     tmp = ind(str_get_field(data(:, 0), 1, ":").eq."variable_entry")
     if (dimsizes(tmp).gt.1) then
-      idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      next = min(ind(tmp.gt.idxu))
+      if (.not.ismissing(next))
+        idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      else
+        idxd = dimsizes(data(:, 0)) -1
+      end if
       data := data(idxu:idxd, 0)
       delete(idxd)
     else
