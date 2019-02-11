@@ -15,18 +15,17 @@ from copy import deepcopy
 
 import iris
 import iris.exceptions
+from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 import numpy as np
+from numpy import ma
 import six
 import stratify
-from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
-from numpy import ma
 
 from . import _regrid_esmpy
 from ..cmor.table import CMOR_TABLES
 from ..cmor.fix import fix_file, fix_metadata
 
 # Regular expression to parse a "MxN" cell-specification.
-# or a "MxNc" (latitudes centered on 0) cell-specification.
 _CELL_SPEC = re.compile(
     r'''\A
         \s*(?P<dx>\d+(\.\d+)?)\s*
@@ -64,9 +63,9 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
                     'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec, lat_offset=True, lon_offset=True):
+def _stock_cube(spec, lat_offset=False, lon_offset=False):
     """
-    Create a stock cube
+    Create a stock cube.
 
     Create a global cube with M degree-east by N degree-north regular grid
     cells.
@@ -79,6 +78,10 @@ def _stock_cube(spec, lat_offset=True, lon_offset=True):
     ----------
     spec : str
         Specifies the 'MxN' degree cell-specification for the global grid.
+    lat_offset : bool
+        Offset the grid center on LAT coordinate.
+    lon_offset : bool
+        Offset the grid center on LON coordinate.
 
     Returns
     -------
@@ -136,7 +139,7 @@ def _stock_cube(spec, lat_offset=True, lon_offset=True):
     return cube
 
 
-def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
+def regrid(cube, target_grid, scheme, lat_offset=False, lon_offset=False):
     """
     Perform horizontal regridding.
 
@@ -151,6 +154,10 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
         latitude (degrees) for a global, regular target grid.
     scheme : str
         The regridding scheme to perform, see `regrid.HORIZONTAL_SCHEMES`.
+    lat_offset : bool
+        Offset the grid center on LAT coordinate.
+    lon_offset : bool
+        Offset the grid center on LON coordinate.
 
     Returns
     -------
@@ -183,10 +190,30 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            target_grid = _CACHE.setdefault(target_grid,
-                                            _stock_cube(target_grid,
-                                                        lat_offset,
-                                                        lon_offset))
+            if lat_offset and not lon_offset:
+                target_grid = _CACHE.setdefault(
+                    target_grid,
+                    _stock_cube(target_grid,
+                                lat_offset=lat_offset)
+                )
+            if lon_offset and not lat_offset:
+                target_grid = _CACHE.setdefault(
+                    target_grid,
+                    _stock_cube(target_grid,
+                                lon_offset=lon_offset)
+                )
+            if lat_offset and lon_offset:
+                target_grid = _CACHE.setdefault(
+                    target_grid,
+                    _stock_cube(target_grid,
+                                lat_offset=lat_offset,
+                                lon_offset=lon_offset)
+                )
+            else:
+                target_grid = _CACHE.setdefault(
+                    target_grid,
+                    _stock_cube(target_grid)
+                )
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = cube.coord_system()
