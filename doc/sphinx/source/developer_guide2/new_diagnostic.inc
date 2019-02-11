@@ -59,7 +59,7 @@ Using the interfaces from Python
 --------------------------------
 Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` to start your script and make use of a
 :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Have a look at the example
-Python diagnostic in esmvaltool/recipes/examples/diagnostic.py for a complete example.
+Python diagnostic in esmvaltool/diag_scripts/examples/diagnostic.py for a complete example.
 
 Using the interfaces from NCL
 -----------------------------
