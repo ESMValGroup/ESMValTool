@@ -28,11 +28,11 @@ def linear_expand(filename, cwd):
     yield filename
 
     options_file = Path(__file__).parent / 'options.yml'
-    options = yaml.safe_load(options_file.read_text()).get(filename.name, {})
+    options = yaml.safe_load(options_file.read_text()).get(filename.name)
 
     recipe = yaml.safe_load(filename.read_text())
 
-    for key in options:
+    for key in options or {}:
         for diag_name, diagnostic in recipe['diagnostics'].items():
             for script_name, script in diagnostic['scripts'].items():
                 for value in options[key]:
