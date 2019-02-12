@@ -197,7 +197,7 @@ begin
   authors = (/"righ_ma", "gott_kl"/)
   references = (/"acknow_author"/)
   infiles = metadata_att_as_array(info0, "filename")
-  ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
            authors, references, infiles)
 
 end
