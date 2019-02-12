@@ -151,7 +151,7 @@ begin
 
   end if
 
-  ; Instantaneous case
+  ; 3-hourly case
   ; Nothing to check
 
   ; Set calendar
@@ -210,11 +210,7 @@ begin
     cal = "standard"
   end if
 
-  if (any(frequency.eq.(/"M", "D"/))) then
-    tmp = check_time_range(coord, year1, year2, frequency)
-  else
-    tmp = coord
-  end if
+  tmp = check_time_range(coord, year1, year2, frequency)
 
   out_coord = todouble(tmp)  ; this also removes attributes
   copy_VarCoords(coord, out_coord)
