@@ -180,7 +180,7 @@ def annual_mean(cube, decadal=False):
     are treated equally.
 
     Parameters
-    ---------
+    ----------
         cube: iris.cube.Cube
             input cube.
         decadal: bool
