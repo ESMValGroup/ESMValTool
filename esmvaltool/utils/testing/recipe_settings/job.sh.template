@@ -13,4 +13,4 @@ module load contrib/gnu/gcc/8.2.0
 . conda/etc/profile.d/conda.sh
 conda activate esmvaltool
 
-esmvaltool -c {config} {recipe}
+esmvaltool -c {config} {recipe} --skip-nonexistent
