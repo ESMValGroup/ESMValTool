@@ -1,28 +1,11 @@
 ---
 documentation:
   description: |
-    Test recipe for OBS.
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just for testing the CMORization procedure.
 
   authors:
     - righ_ma
-
-#datasets:
-# TIER 2
-#  - {dataset: ESACCI-AEROSOL,       project: OBS,  tier: 2,  type: sat,     version: SU-v4.21,                                    start_year: 1997,  end_year: 2011}
-#  - {dataset: ESACCI-CLOUD,         project: OBS,  tier: 2,  type: sat,     version: AVHRR-fv3.0,                                 start_year: 1982,  end_year: 2016}
-#  - {dataset: ESACCI-FIRE,          project: OBS,  tier: 2,  type: sat,     version: L4-BA-MERIS-fv4.1,                           start_year: 2005,  end_year: 2011}
-#  - {dataset: ESACCI-LANDCOVER,     project: OBS,  tier: 2,  type: sat,     version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998,  end_year: 2012}
-#  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,     version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
-#  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
-#  - {dataset: HadISST,              project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1870,  end_year: 2017}
-#  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1948,  end_year: 2018}
-#  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
-
-# TIER 3
-#  - {dataset: AURA-TES,   project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
-#  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
-#  - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
-
 
 preprocessors:
   nopp:
@@ -33,6 +16,117 @@ preprocessors:
 
 diagnostics:
 
+  ################################################
+  ### TIER 2 #####################################
+  ################################################
+
+  ESACCI-AEROSOL:
+    description: ESACCI-AEROSOL
+    variables:
+      abs550aer:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
+      od550aer:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
+      # od550aerStderr:
+      #   preproc: nopp
+      #   mip: aero
+      #   field: T2Ms
+      od550lt1aer:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
+      od870aer:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
+      # od870aerStderr:
+      #   preproc: nopp
+      #   mip: aero
+      #   field: T2Ms
+    additional_datasets:
+      - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
+    scripts: null
+
+  ################################################
+
+  ESACCI-CLOUD:
+    description: ESACCI-CLOUD
+    variables:
+      clivi:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      clt:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      # cltStderr:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      clwvi:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms        
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, tier: 2, type: sat, version: AVHRR-fv3.0, start_year: 1982, end_year: 2016}
+    scripts: null
+
+  ################################################
+
+  ESACCI-FIRE:
+    description: ESACCI-FIRE
+    variables:
+      burntArea:
+        preproc: nopp
+        mip: Lmon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ESACCI-FIRE, project: OBS, tier: 2, type: sat, version: L4-BA-MERIS-fv4.1, start_year: 2005, end_year: 2011}
+    scripts: null
+
+  ################################################
+#  - {dataset: ESACCI-LANDCOVER,     project: OBS,  tier: 2,  type: sat,     version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998,  end_year: 2012}
+  ################################################
+#  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,     version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
+  ################################################
+#  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
+  ################################################
+#  - {dataset: HadISST,              project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1870,  end_year: 2017}
+  ################################################
+#  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1948,  end_year: 2018}
+
+  ##############################################
+
+  PATMOS-x:
+    description: PATMOS-x
+    variables:
+      clt:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: PATMOS-x, project: OBS, tier: 2, type: sat, version: NOAA, start_year: 1982, end_year: 2018}
+    scripts: null
+
+  ################################################
+#  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
+
+
+
+  ################################################
+  ### TIER 3 #####################################
+  ################################################
+
+#  - {dataset: AURA-TES,   project: OBS,  tier: 3,  type: sat,  version: 1,  start_year: 2005,  end_year: 2011}
+  ################################################
+#  - {dataset: ERA-Interim,  project: OBS,  tier: 3,  type: reanaly,  version: 1,  start_year: 1979,  end_year: 1981}
+  ################################################
+#  - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
   ################################################
   CERES_mon:
     description: MODIS
