@@ -6,7 +6,7 @@ documentation:
   authors:
     - righ_ma
 
-datasets:
+#datasets:
 # TIER 2
 #  - {dataset: ESACCI-AEROSOL,       project: OBS,  tier: 2,  type: sat,     version: SU-v4.21,                                    start_year: 1997,  end_year: 2011}
 #  - {dataset: ESACCI-CLOUD,         project: OBS,  tier: 2,  type: sat,     version: AVHRR-fv3.0,                                 start_year: 1982,  end_year: 2016}
@@ -14,7 +14,7 @@ datasets:
 #  - {dataset: ESACCI-LANDCOVER,     project: OBS,  tier: 2,  type: sat,     version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998,  end_year: 2012}
 #  - {dataset: ESACCI-SOILMOISTURE,  project: OBS,  tier: 2,  type: sat,     version: L3S-SSMV-COMBINED-v4.2,                      start_year: 2005,  end_year: 2011}
 #  - {dataset: ESACCI-SST,           project: OBS,  tier: 2,  type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB,               start_year: 1992,  end_year: 2010}
-  - {dataset: HadISST,              project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1870,  end_year: 2017}
+#  - {dataset: HadISST,              project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1870,  end_year: 2017}
 #  - {dataset: NCEP,                 project: OBS,  tier: 2,  type: reanaly, version: 1,                                           start_year: 1948,  end_year: 2018}
 #  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
 
@@ -32,19 +32,139 @@ preprocessors:
     multi_model_statistics: false
 
 diagnostics:
-  testobs:
-    description: Test reading of observational data
+
+  ################################################
+  CERES_mon:
+    description: MODIS
     variables:
-      ts:
+      rlds:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      tos:
+      rldscs:
         preproc: nopp
-        mip: Omon
+        mip: Amon
         field: T2Ms
-      sic:
+      rlus:
         preproc: nopp
-        mip: OImon
+        mip: Amon
         field: T2Ms
+      rlut:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rlutcs:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsds:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsdt:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsus:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsut:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsutcs:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: CERES-SYN1deg, project: OBS, tier: 3, type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
+    scripts: null
+
+  ################################################
+  CERES_3hr:
+    description: MODIS
+    variables:
+      rlds:
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
+#     rldscs:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+#     rlus:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+      # rluscs:
+      #   preproc: nopp
+      #   mip: 3hr
+      #   field: T2Ms
+      # rlut:
+      #   preproc: nopp
+      #   mip: 3hr
+      #   field: T2Ms
+      # rlutcs:
+      #   preproc: nopp
+      #   mip: 3hr
+      #   field: T2Ms
+#     rsds:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+#     rsdscs:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+#     rsus:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+#     rsuscs:
+#       preproc: nopp
+#       mip: 3hr
+#       field: T2Ms
+      # rsut:
+      #   preproc: nopp
+      #   mip: 3hr
+      #   field: T2Ms
+      # rsutcs:
+      #   preproc: nopp
+      #   mip: 3hr
+      #   field: T2Ms
+    additional_datasets:
+      - {dataset: CERES-SYN1deg, project: OBS, tier: 3, type: sat, version: Ed3A, start_year: 2004, end_year: 2005}
+    scripts: null
+
+  ################################################
+  MODIS:
+    description: MODIS
+    variables:
+      od550aer:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
+      # clivi:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # clwvi:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      clt:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      # lwpStderr:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+      # iwpStderr:
+      #   preproc: nopp
+      #   mip: Amon
+      #   field: T2Ms
+    additional_datasets:
+      - {dataset: MODIS, project: OBS, tier: 3, type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
