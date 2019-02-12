@@ -180,11 +180,12 @@ class TestTimeAverage(tests.Test):
         self.assertArrayEqual(result.data, expected)
 
 
-class TestTimeAverage(tests.Test):
+class TestAnnualAverage(tests.Test):
     """Test class for the :func:`esmvaltool.preprocessor._time_area` module"""
 
-    def make_time_series(self, number_years=2):
-        """ Makes a cube with time only dimension."""
+    @staticmethod
+    def make_time_series(number_years=2):
+        """Make a cube with time only dimension."""
         times = np.array([i * 30 + 15 for i in range(0, 12 * number_years, 1)])
         bounds = np.array([i * 30 for i in range(0, 12 * number_years + 1, 1)])
         bounds = np.array([[bnd, bounds[index + 1]]
