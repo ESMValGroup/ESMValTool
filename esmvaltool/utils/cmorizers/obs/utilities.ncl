@@ -462,7 +462,7 @@ begin
       if (.not.ismissing(next))
         idxd = tmp(min(ind(tmp.gt.idxu))) - 2
       else
-        idxd = dimsizes(data(:, 0)) -1
+        idxd = dimsizes(data(:, 0)) - 1
       end if
       data := data(idxu:idxd, 0)
       delete(idxd)
