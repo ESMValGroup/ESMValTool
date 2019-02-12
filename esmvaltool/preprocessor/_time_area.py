@@ -179,7 +179,7 @@ def annual_mean(cube, decadal=False):
     uneven time periods are present. Ie, all data inside the year/decade
     are treated equally.
 
-    Arguments
+    Parameters
     ---------
         cube: iris.cube.Cube
             input cube.
