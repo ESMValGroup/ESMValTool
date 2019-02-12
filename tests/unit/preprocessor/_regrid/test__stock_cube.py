@@ -104,7 +104,7 @@ class Test(tests.Test):
             self.assertEqual(result, self.Cube)
             self._check(*list(map(float, spec.split('x'))))
 
-    def test_specs_offset(self):
+    def test_specs_no_offset(self):
         specs = ['0.5x0.5', '1x1', '2.5x2.5', '5x5', '10x10']
         for spec in specs:
             result = stock_cube(spec, lat_offset=False, lon_offset=False)

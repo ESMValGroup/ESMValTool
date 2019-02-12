@@ -52,7 +52,6 @@ class Test(tests.Test):
 
     def test_regrid__linear_extrapolate(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [1.5],
             standard_name='longitude',

@@ -15,15 +15,15 @@ from copy import deepcopy
 
 import iris
 import iris.exceptions
-from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 import numpy as np
-from numpy import ma
 import six
 import stratify
+from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
+from numpy import ma
 
 from . import _regrid_esmpy
-from ..cmor.table import CMOR_TABLES
 from ..cmor.fix import fix_file, fix_metadata
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(
@@ -79,9 +79,13 @@ def _stock_cube(spec, lat_offset=True, lon_offset=True):
     spec : str
         Specifies the 'MxN' degree cell-specification for the global grid.
     lat_offset : bool
-        Offset the grid center on LAT coordinate. Default True.
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
     lon_offset : bool
-        Offset the grid center on LON coordinate. Default True.
+        Offset the grid centers of the longitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
 
     Returns
     -------
@@ -153,11 +157,20 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
         of the form 'MxN', which specifies the extent of the cell, longitude by
         latitude (degrees) for a global, regular target grid.
     scheme : str
-        The regridding scheme to perform, see `regrid.HORIZONTAL_SCHEMES`.
+        The regridding scheme to perform, choose from (arg : func)
+        `linear`: Linear(extrapolation_mode=`mask`),
+        `linear_extrapolate`: Linear(extrapolation_mode=`extrapolate`),
+        `nearest`: Nearest(extrapolation_mode=`mask`),
+        `area_weighted`: AreaWeighted(),
+        `unstructured_nearest`: UnstructuredNearest()
     lat_offset : bool
-        Offset the grid center on LAT coordinate. Default True.
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
     lon_offset : bool
-        Offset the grid center on LON coordinate. defaukt True.
+        Offset the grid centers of the longitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
 
     Returns
     -------
