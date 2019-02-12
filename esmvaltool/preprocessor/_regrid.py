@@ -203,30 +203,10 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            if not lon_offset and lat_offset:
-                target_grid = _CACHE.setdefault(
-                    target_grid,
-                    _stock_cube(target_grid,
-                                lon_offset=False)
-                )
-            if not lat_offset and lon_offset:
-                target_grid = _CACHE.setdefault(
-                    target_grid,
-                    _stock_cube(target_grid,
-                                lat_offset=False)
-                )
-            if not lat_offset and not lon_offset:
-                target_grid = _CACHE.setdefault(
-                    target_grid,
-                    _stock_cube(target_grid,
-                                lat_offset=False,
-                                lon_offset=False)
-                )
-            else:
-                target_grid = _CACHE.setdefault(
-                    target_grid,
-                    _stock_cube(target_grid)
-                )
+            target_grid = _CACHE.setdefault(
+                target_grid,
+                _stock_cube(target_grid, lat_offset, lon_offset),
+            )
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = cube.coord_system()
@@ -490,8 +470,8 @@ def get_cmor_levels(cmor_table, coordinate):
 
     """
     if cmor_table not in CMOR_TABLES:
-        raise ValueError("Level definition cmor_table '{}' not available"
-                         .format(cmor_table))
+        raise ValueError("Level definition cmor_table '{}' not available".
+                         format(cmor_table))
 
     if coordinate not in CMOR_TABLES[cmor_table].coords:
         raise ValueError('Coordinate {} not available for {}'.format(
@@ -504,11 +484,16 @@ def get_cmor_levels(cmor_table, coordinate):
     if cmor.value:
         return [float(cmor.value)]
 
-    raise ValueError('Coordinate {} in {} does not have requested values'
-                     .format(coordinate, cmor_table))
+    raise ValueError(
+        'Coordinate {} in {} does not have requested values'.format(
+            coordinate, cmor_table))
 
 
-def get_reference_levels(filename, project, dataset, short_name, fix_dir,
+def get_reference_levels(filename,
+                         project,
+                         dataset,
+                         short_name,
+                         fix_dir,
                          coordinate='air_pressure'):
     """Get level definition from a CMOR coordinate.
 
