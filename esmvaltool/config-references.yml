@@ -80,9 +80,13 @@ authors:
     name: Cionni, Irene
     institute: ENEA, Italy
     email: irene.cionni 'at' enea.it
+  crez_ba:
+    name: Crezee, Bas
+    institute: ETH Zürich, Switzerland
+    email: bas.crezee 'at' env.ethz.ch
   davi_ed:
     name: Davin, Edouard Leopold
-    institute: ETH, CH
+    institute: ETH Zürich, Switzerland
     email: edouard.davin 'at' env.ethz.ch
   ehbr_ca:
     name: Ehbrecht, Carsten
