@@ -1,4 +1,4 @@
-.. _config::
+.. _config:
 
 *******************
 Configuration files
