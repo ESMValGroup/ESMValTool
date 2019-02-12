@@ -83,9 +83,8 @@ def _stock_cube(spec, lat_offset=True, lon_offset=True):
         pole by half a grid step. This argument is ignored if `target_grid`
         is a cube or file.
     lon_offset : bool
-        Offset the grid centers of the longitude coordinate w.r.t. the
-        pole by half a grid step. This argument is ignored if `target_grid`
-        is a cube or file.
+        Offset the grid centers of the longitude coordinate by half a grid
+        step. This argument is ignored if `target_grid` is a cube or file.
 
     Returns
     -------
@@ -157,20 +156,19 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
         of the form 'MxN', which specifies the extent of the cell, longitude by
         latitude (degrees) for a global, regular target grid.
     scheme : str
-        The regridding scheme to perform, choose from (arg : func)
-        `linear`: Linear(extrapolation_mode=`mask`),
-        `linear_extrapolate`: Linear(extrapolation_mode=`extrapolate`),
-        `nearest`: Nearest(extrapolation_mode=`mask`),
-        `area_weighted`: AreaWeighted(),
-        `unstructured_nearest`: UnstructuredNearest()
+        The regridding scheme to perform, choose from
+        `linear`,
+        `linear_extrapolate`,
+        `nearest`,
+        `area_weighted`,
+        `unstructured_nearest`
     lat_offset : bool
         Offset the grid centers of the latitude coordinate w.r.t. the
         pole by half a grid step. This argument is ignored if `target_grid`
         is a cube or file.
     lon_offset : bool
-        Offset the grid centers of the longitude coordinate w.r.t. the
-        pole by half a grid step. This argument is ignored if `target_grid`
-        is a cube or file.
+        Offset the grid centers of the longitude coordinate step.
+        This argument is ignored if `target_grid` is a cube or file.
 
     Returns
     -------
