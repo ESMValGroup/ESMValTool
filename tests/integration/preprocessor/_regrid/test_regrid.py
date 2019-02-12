@@ -67,9 +67,9 @@ class Test(tests.Test):
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'linear_extrapolate')
-        expected = ma.empty((3, 3, 3))
-        expected.mask = ma.masked
-        expected[:, 1, 1] = np.array([1.5, 5.5, 9.5])
+        expected = [[[-3., -1.5, 0.], [0., 1.5, 3.], [3., 4.5, 6.]],
+                    [[1., 2.5, 4.], [4., 5.5, 7.], [7., 8.5, 10.]],
+                    [[5., 6.5, 8.], [8., 9.5, 11.], [11., 12.5, 14.]]]
         self.assertArrayEqual(result.data, expected)
 
     def test_regrid__linear_extrapolate_with_mask(self):
