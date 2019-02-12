@@ -63,7 +63,13 @@ Python diagnostic in esmvaltool/diag_scripts/examples/diagnostic.py for a comple
 
 Using the interfaces from NCL
 -----------------------------
-TODO: write this
+Always call the ESMValMD procedure after plotting from your ncl diag_script. 
+
+.. code:: ncl
+
+        ESMValMD(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
+
+Have a look at the example NCL diagnostic in esmvaltool/diag_scripts/examples/diagnostic.ncl for a complete example.
 
 Generic interface between backend and diagnostic
 ------------------------------------------------

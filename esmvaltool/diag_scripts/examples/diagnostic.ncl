@@ -53,7 +53,7 @@ load "./diag_scripts/shared/statistics.ncl"  ; load statistics functions
 load "./diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
-load "./diag_scripts/shared/meta_data.ncl"
+;load "./diag_scripts/shared/meta_data.ncl"
 
 begin
 
