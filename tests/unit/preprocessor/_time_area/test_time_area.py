@@ -181,7 +181,7 @@ class TestTimeAverage(tests.Test):
 
 
 class TestAnnualAverage(tests.Test):
-    """Test class for the :func:`esmvaltool.preprocessor._time_area` module"""
+    """Test class for the :func:`esmvaltool.preprocessor._time_area` module."""
 
     @staticmethod
     def make_time_series(number_years=2):

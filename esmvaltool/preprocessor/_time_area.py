@@ -194,9 +194,10 @@ def annual_mean(cube, decadal=False):
         """Callback function to get decades from cube."""
         date = coord.units.num2date(value)
         return date.year - date.year % 10
+
     if decadal:
         iris.coord_categorisation.add_categorised_coord(cube, 'decade',
                                                         'time', get_decade)
         return cube.aggregated_by('decade', iris.analysis.MEAN)
-    else:
-        return cube.aggregated_by('year', iris.analysis.MEAN)
+
+    return cube.aggregated_by('year', iris.analysis.MEAN)
