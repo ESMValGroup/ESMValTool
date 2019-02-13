@@ -198,6 +198,6 @@ begin
   references = (/"acknow_author"/)
   infiles = metadata_att_as_array(info0, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-           authors, references, infiles)
+                 authors, references, infiles)
 
 end
