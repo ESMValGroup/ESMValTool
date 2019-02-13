@@ -176,7 +176,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
       # Startup graphics for multiple years in one figure
       if (plot_type == 4) {
-        field_label <- "multiindex" # paste(field_names, collapse = "-")
+        field_label <- "multiindex" 
         figname <- getfilename_figure(
           plot_dir_exp, field_label, year1, year2, model_idx, season,
           "multiyear", region_codes[iregion], label, "map", output_file_type
@@ -209,7 +209,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
         #  Startup graphics for multiple fields/quantities in one figure
         if (plot_type == 3) {
-          field_label <- "multiindex" # paste(field_names, collapse = "-")
+          field_label <- "multiindex"
           figname <- getfilename_figure(
             plot_dir_exp, field_label, year1, year2, model_idx,
             season, time_label_fig, region_codes[iregion], label, "map",
@@ -235,7 +235,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           #       is stored at iyear=1)
           field_ref <- field_ref[, , iyear]
           field_exp <- field_exp[, , iyear_ref]
-          tmp.field <- field_exp
+          tmp_field <- field_exp
 
           # define quantity-dependent properties (exp, ref, exp-ref)
           tmp.colorbar <- c(F, T, T)
@@ -278,14 +278,14 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           # LOOP over quantity (exp,ref,exp-ref difference) to be plotted
           for (iquantity in c(1:nquantity[plot_type])) {
             if (iquantity == 2) {
-              tmp.field <- field_ref
+              tmp_field <- field_ref
             }
             if (iquantity == 3) {
               tmp.palette <- palette2
-              tmp.field <- field_exp - field_ref
+              tmp_field <- field_exp - field_ref
               if (is.na(levels_m[ifield, 3]) | is.na(levels_m[ifield, 4])) {
-                tmp.field.max <- max(abs(tmp.field), na.rm=T) 
-                tmp.levels <- seq(-tmp.field.max, tmp.field.max,
+                tmp_field_max <- max(abs(tmp_field), na.rm = T)
+                tmp.levels <- seq(-tmp_field_max, tmp_field_max,
                                   len = nlev)
               } else {
                 tmp.levels <- seq(levels_m[ifield, 3], levels_m[ifield, 4],
@@ -319,13 +319,13 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             if (autolevels && (autolevels_scale != 1)) {
               autorange <- max(tmp.levels) - min(tmp.levels)
               meanrange <- mean(tmp.levels)
-              tmp.levels <- seq(meanrange - autorange * autolevels_scale, 
+              tmp.levels <- seq(meanrange - autorange * autolevels_scale,
                                 meanrange + autorange * autolevels_scale,
                                 len = nlev)
             }
  
             # contours
-            filled_contour3(ics, ipsilon, tmp.field,
+            filled_contour3(ics, ipsilon, tmp_field,
               xlab = "Longitude", ylab = "Latitude",
               main = tmp.titles[iquantity], levels = tmp.levels,
                      color.palette = tmp.palette,
@@ -409,7 +409,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             }
             if ( (tmp.colorbar[iquantity]) & add_colorbar) {
               image_scale3(volcano, levels = tmp.levels,
-                           new.fig.scale = new_fig_scale,
+                           new_fig_scale = new_fig_scale,
                            color.palette = tmp.palette, colorbar.label =
                            paste(title_unit_m[ifield, 1],
                            title_unit_m[ifield, 4]),

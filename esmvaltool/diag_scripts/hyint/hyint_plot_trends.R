@@ -268,18 +268,18 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           if (autolevels && (autolevels_scale != 1)) {
             autorange <- max(tmp.levels) - min(tmp.levels)
             meanrange <- mean(tmp.levels)
-            tmp.levels <- seq(meanrange - autorange * autolevels_scale, 
+            tmp.levels <- seq(meanrange - autorange * autolevels_scale,
                               meanrange + autorange * autolevels_scale,
                               len = nlev)
           }
- 
+
           # Base plot
           if (!(plot_type == 13 & model_idx > 1) & ilabel == 1) {
             ylab <- paste0(title_unit_m[ifield, 1])
             if (title_unit_m[ifield, 4] != "") {
               ylab <- paste0(ylab, title_unit_m[ifield, 4])
             }
-            plot(time, type = "n", 
+            plot(time, type = "n",
                  ylim = c(tmp.levels[1], tmp.levels[length(tmp.levels)]),
                  xlim = xlim, xlab = "Year", ylab = ylab,
                  main = title_unit_m[ifield, 3])

@@ -486,10 +486,10 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   }
 
   ## Making topographic map
-  cmd <- paste("cdo -f nc topo ", loc, "/topo.nc", sep = "")
+  cmd <- paste("cdo -f nc topo ", loc, "/", "topo.nc", sep = "")
   print(cmd)
   system(cmd)
-  
+ 
   ## Regridding the topographic map to chosen grid
   cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc "),
                regridded_topo, sep = ""
@@ -1161,7 +1161,7 @@ scale_figure <- function(plot_type, diag_script_cfg,
   pdf_width <- pdf_width * figure_rel_width[plot_type]
   x11_width <- x11_width * figure_rel_width[plot_type]
 
-  figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type] 
+  figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type]
                                     * npancol / npanrow)
 
   plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
@@ -1288,7 +1288,7 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
                          colorbar.label = "image.scale", extend = T,
                          line.label = 2, line.colorbar = 0, cex.label = 1,
                          cex.colorbar = 1, colorbar.width = 1,
-                         new.fig.scale = c(-0.07, -0.03, 0.1, -0.1), ...) {
+                         new_fig_scale = c(-0.07, -0.03, 0.1, -0.1), ...) {
 
   # save properties from main plotting region
   old.par <- par(no.readonly = TRUE)
@@ -1300,10 +1300,10 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   yscal <- (old.fig[4] - old.fig[3])
   lw <- colorbar.width
   lp <- line.colorbar / 100
-  new.fig <- c(old.fig[2] + new.fig.scale[1] * xscal * lw - lp,
-               old.fig[2] + new.fig.scale[2] * xscal - lp,
-               old.fig[3] + new.fig.scale[3] * yscal,
-               old.fig[4] + new.fig.scale[4] * yscal)
+  new.fig <- c(old.fig[2] + new_fig_scale[1] * xscal * lw - lp,
+               old.fig[2] + new_fig_scale[2] * xscal - lp,
+               old.fig[3] + new_fig_scale[3] * yscal,
+               old.fig[4] + new_fig_scale[4] * yscal)
 
   if (missing(levels)) {
     levels <- seq(min(z), max(z), , 12)

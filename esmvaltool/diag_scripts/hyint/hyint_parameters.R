@@ -9,7 +9,7 @@
 #####################################################################
 
 
-run_diagnostic<- T
+run_diagnostic <- T
 force_diagnostic <- F
 run_regridding <- T
 force_regridding <- F
