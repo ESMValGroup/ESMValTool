@@ -17,50 +17,54 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0}
-  - {dataset: ACCESS1-3}
-  - {dataset: MPI-ESM-MR}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85],  ensemble: r1i1p1, start_year: 2000, end_year: 2010}
 
-preprocessors:
-  preproc:
-    mask_landsea:
-      mask_out: sea
+#preprocessors:
+#  preproc:
+#    mask_landsea:
+#      mask_out: sea
 
 diagnostics:
   hyint:
     description: HyInt hydroclimatic indices calculation and plotting
     variables:
-       pr:
+      pr:
  #       preprocessor: preproc
-        reference_dataset: "ACCESS1-0"
+        project: CMIP5
         exp: [historical,rcp85]
         ensemble: r1i1p1
         start_year: 2000
         end_year: 2010
-        project: CMIP5
+        reference_dataset: "ACCESS1-0"
         mip: day
         field: T2Ds
+    additional_datasets:
+      - {dataset: ACCESS1-3}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
     scripts:
       main:
         script: hyint/hyint.R
         # General
+        run_diagnostic: true
         run_timeseries: true
+        write_netcdf: true
         write_plots: true       
  
         # Reference normalization period to be used for normalized indices 
-        norm_years: [2000,2004]
+        norm_years: [2000, 2004]
 
         # Select one or more fields for timeseries and maps from the following 
         # list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        # selfields: [8, 4, 1, 9, 3, 2]
-        selfields: [5, 6, 7, 1, 2, 4]
+        selfields: [8, 4, 1, 9, 3, 2]
 
         # Select regions for timeseries and maps from the following list
         # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
         # 5=Africa,6=North America,7=India,8=Europe,9=East-Asia,
         # 10=Australia
-        selregions: [2, 3, 4, 5]
+        selregions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
  
         # Select type of plot:
         # 1) single panel lon/lat map per individual index, multi-year mean
