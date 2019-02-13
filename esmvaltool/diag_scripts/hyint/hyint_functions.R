@@ -489,7 +489,7 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   cmd <- paste("cdo -f nc topo ", loc, "/", "topo.nc", sep = "")
   print(cmd)
   system(cmd)
- 
+
   ## Regridding the topographic map to chosen grid
   cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc "),
                regridded_topo, sep = ""

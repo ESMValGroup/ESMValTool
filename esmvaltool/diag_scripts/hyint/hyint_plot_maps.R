@@ -176,7 +176,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
       # Startup graphics for multiple years in one figure
       if (plot_type == 4) {
-        field_label <- "multiindex" 
+        field_label <- "multiindex"
         figname <- getfilename_figure(
           plot_dir_exp, field_label, year1, year2, model_idx, season,
           "multiyear", region_codes[iregion], label, "map", output_file_type
@@ -323,7 +323,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                                 meanrange + autorange * autolevels_scale,
                                 len = nlev)
             }
- 
+
             # contours
             filled_contour3(ics, ipsilon, tmp_field,
               xlab = "Longitude", ylab = "Latitude",
