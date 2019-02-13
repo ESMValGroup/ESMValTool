@@ -86,10 +86,16 @@ def sel_area(lat, lon, var, area):
         # printarea = 'Northern Hemisphere'
         lat_n = 90.0
         lat_s = 0.0
-        lon_w = lon.min()
-        lon_e = lon.max()
-        var_roll = var
-        lon_new = lon
+        # lat and lon are extracted from the netcdf file, assumed to be 1D
+        # If 0<lon<360, convert to -180<lon<180
+        if lon.min() >= 0:
+            lon_new = lon - 180
+            var_roll = np.roll(var, int(len(lon) / 2), axis=2)
+        else:
+            var_roll = var
+            lon_new = lon
+        lon_w = lon_new.min()
+        lon_e = lon_new.max()
 
     elif area == 'EU':
         # printarea = 'Europe'

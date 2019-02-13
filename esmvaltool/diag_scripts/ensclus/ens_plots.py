@@ -54,9 +54,15 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     xpos = int(np.ceil(np.sqrt(numens * 1.6)))
     ypos = int(np.ceil(numens / xpos))
     fig = plt.figure(figsize=(24, 14))
-
+    if min(lon) < 180. < max(lon):
+        clon = 180.
+    else:
+        clon = 0.
     for nens in range(numens):
-        axes = plt.subplot(xpos, ypos, nens + 1, projection=ccrs.PlateCarree())
+        axes = plt.subplot(xpos, ypos, nens + 1,
+                           projection=ccrs.PlateCarree(central_longitude=clon))
+        axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
+                        crs=ccrs.PlateCarree())
         axes.coastlines("110m")
 
         # Plot Data
@@ -78,7 +84,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     cbar = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cbar.ax.tick_params(labelsize=18)
     cbar.set_ticks(np.arange(rangecbarmin, rangecbarmax + delta, delta*20))
-    
+
     plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + field_to_plot +
                  ' (' + varunits + ')', fontsize=45, fontweight='bold')
 
